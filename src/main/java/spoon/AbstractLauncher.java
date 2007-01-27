@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,7 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
  * This abstract class defines the common tasks and options for launching a
  * program processing. To be subclassed for concrete launchers.
  */
-public abstract class AbstractLauncher implements Runnable {
+public abstract class AbstractLauncher {
 
 	private String[] args = new String[0];
 
@@ -520,7 +519,7 @@ public abstract class AbstractLauncher implements Runnable {
 	/**
 	 * Starts the Spoon processing.
 	 */
-	public void run() {
+	public void run() throws Exception {
 
 		getFactory().getEnvironment().debugMessage(
 				"loading command-line arguments...");
@@ -550,36 +549,14 @@ public abstract class AbstractLauncher implements Runnable {
 		String progArgs[] = getArguments().getStringArray("arguments");
 
 		if (progClass != null) {
-			try {
-				// Launch main class using reflection
-				getFactory().getEnvironment().debugMessage(
-						"running class: '" + progClass+"'...");
-				Class clas = getClass().getClassLoader().loadClass(progClass);
-				Class mainArgType[] = { (new String[0]).getClass() };
-				Method main = clas.getMethod("main", mainArgType);
-				Object argsArray[] = { progArgs };
-				main.invoke(null, argsArray);
-
-			} catch (ClassNotFoundException e) {
-				getFactory().getEnvironment().report(null, Severity.ERROR,
-						"class not found: " + e.getMessage());
-				if (getFactory().getEnvironment().isDebug())
-					e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				getFactory().getEnvironment().report(null, Severity.ERROR,
-						"no such method: " + e.getMessage());
-				if (getFactory().getEnvironment().isDebug())
-					e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
-
+			// Launch main class using reflection
+			getFactory().getEnvironment().debugMessage(
+					"running class: '" + progClass+"'...");
+			Class clas = getClass().getClassLoader().loadClass(progClass);
+			Class mainArgType[] = { (new String[0]).getClass() };
+			Method main = clas.getMethod("main", mainArgType);
+			Object argsArray[] = { progArgs };
+			main.invoke(null, argsArray);
 		}
 
 	}

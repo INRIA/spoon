@@ -47,8 +47,13 @@ public class Launcher extends AbstractLauncher {
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
 	 */
-	public static void main(String[] args) throws JSAPException {
-		new Launcher(args).run();
+	public static void main(String[] args) throws Exception {
+        try {
+            new Launcher(args).run();
+        } catch(Exception exc) {
+            exc.printStackTrace();
+            throw exc;
+        }
 	}
 
 	/**
@@ -132,7 +137,7 @@ public class Launcher extends AbstractLauncher {
 	 * Starts the Spoon processing.
 	 */
 	@Override
-	public void run() {
+	public void run() throws Exception {
 		super.run();
 
 		// display GUI

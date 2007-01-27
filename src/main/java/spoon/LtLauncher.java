@@ -48,7 +48,7 @@ public class LtLauncher extends Launcher {
 	 * @throws Exception
 	 *             any untrapped exception
 	 */
-	static public void main(String args[]) throws JSAPException {
+	static public void main(String args[]) throws Exception {
 		new LtLauncher(args).run();
 	}
 
@@ -111,52 +111,49 @@ public class LtLauncher extends Launcher {
 	/**
 	 * Processes the program within a {@link SpoonClassLoader}.
 	 */
-	public void run() {
-		try {
-			getFactory().getEnvironment().debugMessage(
-					"loading command-line arguments...");
-			processArguments();
+    @Override
+	public void run() throws Exception {
+		getFactory().getEnvironment().debugMessage(
+				"loading command-line arguments...");
+		processArguments();
 
-			getFactory().getEnvironment().debugMessage("start Processing...");
+		getFactory().getEnvironment().debugMessage("start Processing...");
 
-			long t = System.currentTimeMillis();
-			build();
-			getFactory().getEnvironment().debugMessage(
-					"model built in " + (System.currentTimeMillis() - t)
-							+ " ms");
-			t = System.currentTimeMillis();
-			process();
-			getFactory().getEnvironment().debugMessage(
-					"model processed in " + (System.currentTimeMillis() - t)
-							+ " ms");
-			t = System.currentTimeMillis();
+		long t = System.currentTimeMillis();
+		build();
+		getFactory().getEnvironment().debugMessage(
+				"model built in " + (System.currentTimeMillis() - t)
+						+ " ms");
+		t = System.currentTimeMillis();
+		process();
+		getFactory().getEnvironment().debugMessage(
+				"model processed in " + (System.currentTimeMillis() - t)
+						+ " ms");
+		t = System.currentTimeMillis();
 
-			// Create a CompilingClassLoader
-			SpoonClassLoader ccl = new SpoonClassLoader();
-			ccl.setFactory(getFactory());
-			if (getArguments().getString("sourcepath") != null)
-				ccl.setSourcePath(new File(getArguments().getString(
-						"sourcepath")));
+		// Create a CompilingClassLoader
+		SpoonClassLoader ccl = new SpoonClassLoader();
+		ccl.setFactory(getFactory());
+		if (getArguments().getString("sourcepath") != null)
+			ccl.setSourcePath(new File(getArguments().getString(
+					"sourcepath")));
 
-			// Create runtime processing manager
-			ProcessingManager pm = new RuntimeProcessingManager(getFactory());
-			for (String s : getLtProcessorTypes())
-				pm.addProcessor(s);
-			ccl.setProcessingManager(pm);
+		// Create runtime processing manager
+		ProcessingManager pm = new RuntimeProcessingManager(getFactory());
+		for (String s : getLtProcessorTypes())
+			pm.addProcessor(s);
+		ccl.setProcessingManager(pm);
 
-			getFactory().getEnvironment().debugMessage("running...");
-			// Gets main class
-			String progClass = getArguments().getString("class");
-			String progArgs[] = getArguments().getStringArray("arguments");
+		getFactory().getEnvironment().debugMessage("running...");
+		// Gets main class
+		String progClass = getArguments().getString("class");
+		String progArgs[] = getArguments().getStringArray("arguments");
 
-			// Launch main class using reflection
-			Class clas = ccl.loadClass(progClass);
-			Class mainArgType[] = { (new String[0]).getClass() };
-			Method main = clas.getMethod("main", mainArgType);
-			Object argsArray[] = { progArgs };
-			main.invoke(null, argsArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// Launch main class using reflection
+		Class clas = ccl.loadClass(progClass);
+		Class mainArgType[] = { (new String[0]).getClass() };
+		Method main = clas.getMethod("main", mainArgType);
+		Object argsArray[] = { progArgs };
+		main.invoke(null, argsArray);
 	}
 }
