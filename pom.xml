@@ -1,0 +1,304 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>fr.inria.gforge.spoon</groupId>
+  <artifactId>spoon-core</artifactId>
+  <packaging>jar</packaging>
+  <version>1.1-SNAPSHOT</version>
+  <name>Spoon Core</name>
+  <description>
+    Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements,
+    expressions...) can be accessed both for reading and modification.
+  </description>
+  <url>http://spoon.gforge.inria.fr/</url>
+  <inceptionYear>2006</inceptionYear>
+  <licenses>
+    <license>
+      <name>CeCILL-C</name>
+      <comments>French equivalent to LGPL</comments>
+      <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>gforge</system>
+    <url>http://gforge.inria.fr/tracker/?group_id=73</url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList>
+      <name>spoon-discuss</name>
+      <subscribe>http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss</subscribe>
+      <unsubscribe>http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss</unsubscribe>
+      <archive>http://lists.gforge.inria.fr/pipermail/spoon-discuss/</archive>
+    </mailingList>
+  </mailingLists>
+  <scm>
+    <connection>scm:cvs:pserver:anonymous@scm.gforge.inria.fr:/cvsroot/spoon/${artifactId}</connection>
+    <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/${artifactId}/?cvsroot=spoon</url>
+  </scm>
+  <developers>
+    <developer>
+      <name>Renaud Pawlak</name>
+      <email>renaud.pawlak@inria.fr</email>
+      <organization>inria</organization>
+      <roles>
+        <role>Project Manager</role>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Nicolas Petitprez</name>
+      <email>nicolas.petitprez@lifl.fr</email>
+      <organization>inria</organization>
+      <roles>
+        <role>Project Manager</role>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Carlos Noguera</name>
+      <email>noguera@lifl.fr</email>
+      <organization>inria</organization>
+      <roles>
+        <role>Project Manager</role>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Didier Donsez</name>
+      <email>didier.donsez@imag.fr</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Lionel Seinturier</name>
+      <email>Lionel.Seinturier@lifl.fr</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Nicolas Pessemier</name>
+      <email>Nicolas.Pessemier@lifl.fr</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Olivier Barais</name>
+      <email>barais@irisa.fr</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>David Bernard</name>
+      <email>dwayneb@users.sourceforge.net</email>
+      <roles>
+        <role>Developer</role>
+        <role>maven support</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>core</artifactId>
+      <version>3.2.0.666</version>
+    </dependency>
+    <dependency>
+      <groupId>com.martiansoftware</groupId>
+      <artifactId>jsap</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.6.5</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>spoon.Launcher</mainClass>
+              <addClasspath>true</addClasspath>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>sun.jdk</groupId>
+            <artifactId>tools</artifactId>
+            <version>1.5.0</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/../lib/tools.jar</systemPath>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <configuration>
+              <tasks>
+                <property name="project.src.java" value="${basedir}/src/main/java" />
+                <!--Spoon on spoon -->
+                <echo>Spoon on spoon</echo>
+                <echo>phase1 : recompile Spoon with spoon</echo>
+                <taskdef name="spoon" classname="spoon.SpoonTask" classpathref="maven.test.classpath" />
+
+                <mkdir dir="${project.build.directory}/spooned1" />
+                <mkdir dir="${project.build.directory}/spooned1-classes" />
+                <!-- compile="true" build="${project.build.directory}/spooned1-classes" -->
+                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned1">
+                  <sourceSet dir="${project.src.java}" />
+                </spoon>
+                <javac srcdir="${project.build.directory}/spooned1" source="1.5" target="1.5" classpathref="maven.test.classpath" nowarn="true" destdir="${project.build.directory}/spooned1-classes" />
+
+                <echo>phase2 : recompile Spoon with recompiled spoon and javac</echo>
+                <mkdir dir="${project.build.directory}/spooned2" />
+                <path id="spoon2.classpath">
+                  <pathelement location="${project.build.directory}/spooned1-classes" />
+                  <path refid="maven.dependency.classpath" />
+                </path>
+                <taskdef name="spoon2" classname="spoon.SpoonTask" classpathref="spoon2.classpath" />
+                <spoon2 classpathref="spoon2.classpath" verbose="true" output="${project.build.directory}/spooned2">
+                  <sourceSet dir="${project.build.directory}/spooned1" />
+                </spoon2>
+                <javac srcdir="${project.build.directory}/spooned2" source="1.5" target="1.5" classpathref="maven.test.classpath" nowarn="true" />
+
+                <echo>phase3 : clean</echo>
+                <delete dir="${project.build.directory}/spooned1" />
+                <delete dir="${project.build.directory}/spooned1-classes" />
+                <delete dir="${project.build.directory}/spooned2" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+            <!--descriptorRef>project</descriptorRef-->
+          </descriptorRefs>
+          <descriptor>src/main/assembly/project.xml</descriptor>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <linkXref>true</linkXref>
+          <sourceEncoding>utf-8</sourceEncoding>
+          <minimumTokens>100</minimumTokens>
+          <targetJdk>1.5</targetJdk>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>pmd</report>
+              <report>cpd</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>net.objectlab</groupId>
+        <artifactId>mvn-qalab-plugin</artifactId>
+        <version>2.2</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>report-merge-chart</report>
+              <report>report-movers-all</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <minmemory>128m</minmemory>
+          <maxmemory>512</maxmemory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <!--
+          <configuration>
+          <tags>TODO, @todo, FIXME, @deprecated</tags>
+          </configuration>
+        -->
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <version>2.0-beta-2</version>
+        <configuration>
+          <issueLinkTemplate>%URL%/tracker/index.php?aid=%ISSUE%</issueLinkTemplate>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+  <distributionManagement>
+    <repository>
+      <id>gforge.inria.fr</id>
+      <name>inria</name>
+      <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>gforge.inria.fr</id>
+      <name>inria</name>
+      <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/maven2</url>
+    </snapshotRepository>
+    <site>
+      <id>gforge.inria.fr</id>
+      <name>inria</name>
+      <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/${artifactId}/${version}</url>
+    </site>
+  </distributionManagement>
+  <properties>
+    <runtime.log>target/velocity.log</runtime.log>
+  </properties>
+</project>

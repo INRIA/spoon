@@ -1,0 +1,290 @@
+/* 
+ * Spoon - http://spoon.gforge.inria.fr/
+ * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
+ * 
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify 
+ * and/or redistribute the software under the terms of the CeCILL-C license as 
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *  
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
+
+package spoon.support.gui;
+
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Enumeration;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+
+import spoon.reflect.Factory;
+import spoon.reflect.declaration.CtPackage;
+import spoon.support.SerializationModelStreamer;
+
+public class SpoonModelTree extends JFrame implements KeyListener,
+		MouseListener {
+
+	private static final long serialVersionUID = 1L;
+
+	Enumeration enume;
+
+	private Factory factory;
+
+	private JPanel jContentPane = null;
+
+	private JScrollPane jScrollPane = null;
+
+	private JTree jTree = null;
+
+	JPopupMenu menu;
+
+	private DefaultMutableTreeNode root; // @jve:decl-index=0:visual-constraint="207,57"
+
+	String searchValue;
+
+	/**
+	 * This is the default constructor
+	 */
+	public SpoonModelTree(Factory factory) {
+		super();
+		SpoonTreeBuilder cst = new SpoonTreeBuilder();
+		for (CtPackage p : factory.Package().getAllRoots())
+			cst.scan(p);
+		this.factory = factory;
+		this.root = cst.getRoot();
+		initialize();
+	}
+
+	/**
+	 * This method initializes jContentPane
+	 * 
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getJContentPane() {
+		if (jContentPane == null) {
+			GridLayout gridLayout = new GridLayout();
+			gridLayout.setRows(1);
+			jContentPane = new JPanel();
+			jContentPane.setLayout(gridLayout);
+			jContentPane.add(getJScrollPane(), null);
+		}
+		return jContentPane;
+	}
+
+	/**
+	 * This method initializes jScrollPane
+	 * 
+	 * @return javax.swing.JScrollPane
+	 */
+	private JScrollPane getJScrollPane() {
+		if (jScrollPane == null) {
+			jScrollPane = new JScrollPane();
+			jScrollPane.setViewportView(getJTree());
+		}
+		return jScrollPane;
+	}
+
+	/**
+	 * This method initializes jTree
+	 * 
+	 * @return javax.swing.JTree
+	 */
+	private JTree getJTree() {
+		if (jTree == null) {
+			jTree = new JTree(root);
+			jTree.addKeyListener(this);
+			jTree.addMouseListener(this);
+		}
+		return jTree;
+	}
+
+	private JPopupMenu getMenu() {
+		if (menu == null) {
+			menu = new JPopupMenu();
+
+			JMenuItem item = new JMenuItem("Save");
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+
+					JFileChooser chooser = new JFileChooser();
+					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					boolean cont = chooser.showSaveDialog(SpoonModelTree.this) == JFileChooser.APPROVE_OPTION;
+					if (cont) {
+						SerializationModelStreamer ser = new SerializationModelStreamer();
+						try {
+							ser.save(factory, new FileOutputStream(chooser
+									.getSelectedFile()));
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			});
+
+			menu.add(item);
+			menu.addSeparator();
+
+			// show reflect table
+			item = new JMenuItem("Reflect");
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree
+							.getLastSelectedPathComponent();
+					if (node == null) {
+						node = root;
+					}
+					new SpoonObjectFieldsTable(node.getUserObject());
+				}
+			});
+			menu.add(item);
+
+			menu.addSeparator();
+
+			// Search value
+			item = new JMenuItem("Search");
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					search();
+				}
+			});
+			menu.add(item);
+
+			// Search value
+			item = new JMenuItem("Search next");
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					next();
+				}
+			});
+			menu.add(item);
+		}
+		return menu;
+	}
+
+	/**
+	 * This method initializes this
+	 * 
+	 * @return void
+	 */
+	private void initialize() {
+		this.setSize(640, 480);
+		this.setLocation((getGraphicsConfiguration().getDevice()
+				.getDisplayMode().getWidth() - getWidth()) / 2,
+				(getGraphicsConfiguration().getDevice().getDisplayMode()
+						.getHeight() - getHeight()) / 2);
+
+		this.setContentPane(getJContentPane());
+		this.setTitle("Spoon");
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setVisible(true);
+	}
+
+	public void keyPressed(KeyEvent e) {
+
+	}
+
+	public void keyReleased(KeyEvent e) {
+
+	}
+
+	public void keyTyped(KeyEvent e) {
+		switch (e.getKeyChar()) {
+		case ('s'):
+
+			break;
+		case ('n'):
+			next();
+			break;
+		case ('o'):
+			if (jTree.getLastSelectedPathComponent() != null)
+				new SpoonObjectFieldsTable(((DefaultMutableTreeNode) jTree
+						.getLastSelectedPathComponent()).getUserObject());
+			break;
+		}
+	}
+
+	private void maybeShowPopup(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			getMenu().show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+
+	public void mouseClicked(MouseEvent e) {
+
+	}
+
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	public void mouseExited(MouseEvent e) {
+	}
+
+	public void mousePressed(MouseEvent e) {
+		getJTree().setSelectionRow(
+				getJTree().getClosestRowForLocation(e.getX(), e.getY()));
+		maybeShowPopup(e);
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		maybeShowPopup(e);
+	}
+
+	public DefaultMutableTreeNode next() {
+		DefaultMutableTreeNode current = null;
+		while (enume != null && enume.hasMoreElements()) {
+			current = (DefaultMutableTreeNode) enume.nextElement();
+			if (current.getUserObject() != null
+					&& current.getUserObject().toString().contains(searchValue)) {
+				setVisible(current);
+				return current;
+			}
+		}
+		return null;
+	}
+
+	public DefaultMutableTreeNode search() {
+		searchValue = JOptionPane.showInputDialog(this,
+				"Enter value to search:", "Search");
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree
+				.getLastSelectedPathComponent();
+		if (node == null) {
+			node = root;
+		}
+		enume = node.depthFirstEnumeration();
+
+		if (searchValue != null)
+			return next();
+		else
+			return null;
+	}
+
+	public void setVisible(DefaultMutableTreeNode node) {
+		TreePath path = new TreePath(node.getPath());
+		getJTree().scrollPathToVisible(path);
+		getJTree().setSelectionPath(path);
+	}
+
+}

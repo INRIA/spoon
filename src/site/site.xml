@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <bannerRight>
+    <name>Spoon</name>
+    <src>images/spoon.jpg</src>
+  </bannerRight>
+  <bannerLeft>
+    <src>images/inria.png</src>
+  </bannerLeft>
+  <publishDate position="left" format="yyyy-MM-dd HH:mm" />
+  <skin>
+    <groupId>fr.inria.gforge.spoon</groupId>
+    <artifactId>spoon-maven-skin</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </skin>
+  <poweredBy>
+    <logo name="Build with Maven 2" href="http://maven.apache.org" img="images/logos/maven-feather.png" />
+    <!--logo name="CC-GNU LGPL" href="http://creativecommons.org/licenses/LGPL/2.1/" img="http://creativecommons.org/images/public/cc-LGPL-a.png" /-->
+  </poweredBy>
+
+  <body>
+    <links>
+      <item name="home" href="http://spoon.gforge.inria.fr/" />
+      <item name="javadoc" href="apidocs/index.html" />
+      <item name="forge" href="http://gforge.inria.fr/projects/spoon/" />
+    </links>
+    <!--menu ref="parent"/-->
+    <menu ref="reports" inherit="bottom"/>
+  </body>
+</project>
