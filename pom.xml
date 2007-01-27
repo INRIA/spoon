@@ -174,7 +174,7 @@
                 <!-- 
                   <javac srcdir="${project.build.directory}/spooned1" source="1.5" target="1.5" classpathref="maven.test.classpath" nowarn="true" destdir="${project.build.directory}/spooned1-classes" />
                 -->
-                <echo>phase2 : recompile Spoon with recompiled spoon and javac</echo>
+                <echo>phase2 : recompile Spoon with recompiled spoon</echo>
                 <mkdir dir="${project.build.directory}/spooned2" />
                 <path id="spoon2.classpath">
                   <pathelement location="${project.build.directory}/spooned1-classes" />
