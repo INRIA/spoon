@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE qalab [<!ELEMENT qalab (summary,file*)>
+<!ATTLIST qalab version CDATA #REQUIRED>
+<!ELEMENT summary (summaryresult*)>
+<!ELEMENT file (result+)>
+<!ATTLIST file id ID #REQUIRED>
+<!ATTLIST file path CDATA #REQUIRED>
+<!ELEMENT result EMPTY>
+<!ATTLIST result date CDATA #REQUIRED>
+<!ATTLIST result statvalue CDATA #REQUIRED>
+<!ATTLIST result type CDATA #REQUIRED>
+<!ELEMENT summaryresult EMPTY>
+<!ATTLIST summaryresult date CDATA #REQUIRED>
+<!ATTLIST summaryresult statvalue CDATA #REQUIRED>
+<!ATTLIST summaryresult filecount CDATA #REQUIRED>
+<!ATTLIST summaryresult type CDATA #REQUIRED>
+]>
+<qalab version="1.1">
+    <summary>
+        <summaryresult date="2007-01-09" filecount="23" statvalue="42" type="pmd"/>
+        <summaryresult date="2007-01-09" filecount="22" statvalue="279" type="pmd-cpd"/>
+        <summaryresult date="2007-01-27" filecount="23" statvalue="42" type="pmd"/>
+        <summaryresult date="2007-01-27" filecount="22" statvalue="279" type="pmd-cpd"/>
+    </summary>
+    <file id="spoon_SpoonClassLoader.java" path="spoon/SpoonClassLoader.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_processing_AbstractProcessor.java" path="spoon/processing/AbstractProcessor.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_processing_ProcessingManager.java" path="spoon/processing/ProcessingManager.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_reflect_Factory.java" path="spoon/reflect/Factory.java">
+        <result date="2007-01-09" statvalue="11" type="pmd"/>
+        <result date="2007-01-27" statvalue="11" type="pmd"/>
+    </file>
+    <file id="spoon_reflect_declaration_SourcePosition.java" path="spoon/reflect/declaration/SourcePosition.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_reflect_eval_SymbolicEvaluationStack.java" path="spoon/reflect/eval/SymbolicEvaluationStack.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_reflect_eval_SymbolicInstance.java" path="spoon/reflect/eval/SymbolicInstance.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_reflect_eval_SymbolicStackFrame.java" path="spoon/reflect/eval/SymbolicStackFrame.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_reflect_visitor_DefaultJavaPrettyPrinter.java" path="spoon/reflect/visitor/DefaultJavaPrettyPrinter.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+    <file id="spoon_reflect_visitor_ModelConsistencyChecker.java" path="spoon/reflect/visitor/ModelConsistencyChecker.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_support_JavaOutputProcessor.java" path="spoon/support/JavaOutputProcessor.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+    <file id="spoon_support_reflect_code_CtInvocationImpl.java" path="spoon/support/reflect/code/CtInvocationImpl.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_support_reflect_declaration_CtElementImpl.java" path="spoon/support/reflect/declaration/CtElementImpl.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_support_reflect_declaration_SourcePositionImpl.java" path="spoon/support/reflect/declaration/SourcePositionImpl.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+    <file id="spoon_support_reflect_eval_VisitorPartialEvaluator.java" path="spoon/support/reflect/eval/VisitorPartialEvaluator.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+    <file id="spoon_support_reflect_eval_VisitorSymbolicEvaluator.java" path="spoon/support/reflect/eval/VisitorSymbolicEvaluator.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+    <file
+        id="spoon_support_reflect_reference_CtVariableReferenceImpl.java" path="spoon/support/reflect/reference/CtVariableReferenceImpl.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_support_template_Parameters.java" path="spoon/support/template/Parameters.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+    <file id="spoon_support_template_SubstitutionVisitor.java" path="spoon/support/template/SubstitutionVisitor.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+    <file id="spoon_support_util_BasicCompilationUnit.java" path="spoon/support/util/BasicCompilationUnit.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+    <file id="spoon_template_Local.java" path="spoon/template/Local.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_template_Template.java" path="spoon/template/Template.java">
+        <result date="2007-01-09" statvalue="1" type="pmd"/>
+        <result date="2007-01-27" statvalue="1" type="pmd"/>
+    </file>
+    <file id="spoon_template_TemplateMatcher.java" path="spoon/template/TemplateMatcher.java">
+        <result date="2007-01-09" statvalue="2" type="pmd"/>
+        <result date="2007-01-27" statvalue="2" type="pmd"/>
+    </file>
+</qalab>
