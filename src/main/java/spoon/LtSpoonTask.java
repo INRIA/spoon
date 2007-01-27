@@ -38,6 +38,7 @@ public class LtSpoonTask extends SpoonTask {
 	 */
 	public LtSpoonTask() {
 		setClassname(LtLauncher.class.getName());
+        setFailonerror(true);
 	}
 
 	/**

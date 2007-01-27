@@ -110,6 +110,7 @@ public class SpoonTask extends Java {
 	 */
 	public SpoonTask() {
 		setClassname("spoon.Launcher");
+        setFailonerror(true);        
 	}
 
 	/**
