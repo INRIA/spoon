@@ -168,7 +168,7 @@
                 <mkdir dir="${project.build.directory}/spooned1" />
                 <mkdir dir="${project.build.directory}/spooned1-classes" />
                 <!-- compile="true" build="${project.build.directory}/spooned1-classes" -->
-                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned1" compile="true" build="${project.build.directory}/spooned1-classes" maxmemory="512m" fork="true">
+                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned1" compile="true" build="${project.build.directory}/spooned1-classes" maxmemory="512m" fork="false">
                   <sourceSet dir="${project.src.java}" />
                 </spoon>
                 <!-- 
@@ -206,10 +206,19 @@
         <configuration>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
-            <!--descriptorRef>project</descriptorRef-->
+            <!-- descriptorRef>project</descriptorRef-->
           </descriptorRefs>
-          <descriptor>src/main/assembly/project.xml</descriptor>
+          <!-- descriptor>src/main/assembly/project.xml</descriptor-->
         </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- append to the packaging phase. -->
+            <goals>
+              <goal>attached</goal> <!-- goals == mojos -->
+            </goals>
+          </execution>
+        </executions>        
       </plugin>
     </plugins>
   </build>
