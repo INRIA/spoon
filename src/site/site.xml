@@ -8,11 +8,13 @@
     <src>images/inria.png</src>
   </bannerLeft>
   <publishDate position="left" format="yyyy-MM-dd HH:mm" />
+  <!-- 
   <skin>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-maven-skin</artifactId>
     <version>1.0-SNAPSHOT</version>
   </skin>
+  -->
   <poweredBy>
     <logo name="Build with Maven 2" href="http://maven.apache.org" img="images/logos/maven-feather.png" />
     <!--logo name="CC-GNU LGPL" href="http://creativecommons.org/licenses/LGPL/2.1/" img="http://creativecommons.org/images/public/cc-LGPL-a.png" /-->
