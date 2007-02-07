@@ -33,8 +33,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:cvs:pserver:anonymous@scm.gforge.inria.fr:/cvsroot/spoon/${artifactId}</connection>
+    <connection>scm:cvs:pserver:anonymous@scm.gforge.inria.fr:/cvsroot/spoon:${artifactId}</connection>
     <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/${artifactId}/?cvsroot=spoon</url>
+    <developerConnection>scm:cvs:ext:${username}@scm.gforge.inria.fr:/cvsroot/spoon:${artifactId}</developerConnection>
   </scm>
   <developers>
     <developer>
