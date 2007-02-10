@@ -5,23 +5,24 @@
   </properties>
   <body>
     <release version="1.1-SNAPSHOT" date="2006-12-19" description="???">
+      <action dev="Renaud Pawlak" type="fix" due-to="Horia Ciu">fix a null parent in field accesses</action>
       <action dev="Renaud Pawlak" type="remove" due-to="Erol Akarsu">do not print implicit default constructors</action>
       <action dev="Renaud Pawlak" type="remove" due-to="Erol Akarsu">do not print implicit calls to super()</action>
-      <action dev="Renaud Pawlak" type="fix">fixed pretty print bug when multiple initializers in ifs</action>
+      <action dev="Renaud Pawlak" type="fix" due-to="Lionel Seinturier">fixed pretty print bug when multiple initializers in ifs</action>
       <action dev="Renaud Pawlak" type="update" due-to="David Bernard">better handling of exceptions</action>
-      <action dev="Renaud Pawlak" type="add">support advanced enum syntax</action>
-      <action dev="Renaud Pawlak" type="update">getActualClass uses the ClassLoader.loadClass method instead of the Class.forName method</action>
+      <action dev="Renaud Pawlak" type="add" due-to="Lionel Seinturier">support advanced enum syntax</action>
+      <action dev="Renaud Pawlak" type="update" due-to="Didier Donsez">getActualClass uses the ClassLoader.loadClass method instead of the Class.forName method</action>
       <action dev="Renaud Pawlak" type="add" due-to="David Bernard">added support for CodeSnippets (expressions and statements) in the metamodel</action>
       <action dev="Renaud Pawlak" type="add">implement the getColumn method in source position and take tabulations into account</action>
       <action dev="Renaud Pawlak" type="update">rename some elements (and deprecate old ones)</action>
-      <action dev="Renaud Pawlak" type="fix">fixed a bug when multiple bounds in generics declarations</action>
-      <action dev="Renaud Pawlak" type="add">
-        added support for fragments: a way to implement transformation at a source-code text level rather than an AST level (can be useful when preferving formatting is required)
+      <action dev="Renaud Pawlak" type="fix">fix a bug when multiple bounds in generics declarations</action>
+      <action dev="Renaud Pawlak" type="add" due-to="Steve Blackburn">
+        add support for fragments: a way to implement transformation at a source-code text level rather than an AST level (can be useful when preferving formatting is required)
       </action>
-      <action dev="Renaud Pawlak" type="fix" issue="1588">fixed bug in the file path of the source position</action>
+      <action dev="Renaud Pawlak" type="fix" issue="1588" due-to="Franci and others">fixed bug in the file path of the source position</action>
       <action dev="Renaud Pawlak" type="add">added tabulation configuration in the environment (+command-line and ANT support)</action>
-      <action dev="Renaud Pawlak" type="add">added a generic processor to annotate the code from annotation specified in an XML file</action>
-      <action dev="Renaud Pawlak" type="add">added some compilation tests</action>
+      <action dev="Renaud Pawlak and Didier Donsez" type="add" due-to="Didier Donsez">added a generic processor to annotate the code from annotation specified in an XML file</action>
+      <action dev="Renaud Pawlak" type="add">added some compilation and generic processing tests</action>
     </release>
     <release version="1.0" date="2006-09-107" description="initial release (burrito)"></release>
   </body>
