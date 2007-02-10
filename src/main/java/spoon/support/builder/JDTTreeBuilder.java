@@ -2387,6 +2387,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 								.createFieldAccess();
 						other.setVariable(references.getVariableReference(b));
 						other.setTarget(fa);
+						fa.setParent(other);
 						fa = other;
 					}
 				}
