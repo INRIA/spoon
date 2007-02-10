@@ -145,6 +145,13 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <dependencies>
           <dependency>
@@ -161,10 +168,20 @@
             <configuration>
               <tasks>
                 <property name="project.src.java" value="${basedir}/src/main/java" />
-                <!--Spoon on spoon -->
-                <echo>Spoon on spoon</echo>
-                <echo>phase1 : recompile Spoon with spoon</echo>
+                <property name="project.test.java" value="${basedir}/src/test/java" />
                 <taskdef name="spoon" classname="spoon.SpoonTask" classpathref="maven.test.classpath" />
+                <echo>TEST 1: Processing tests</echo>
+                <mkdir dir="${project.build.directory}/spooned-test" />
+                <mkdir dir="${project.build.directory}/spooned-test-classes" />
+                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned-test" compile="true" build="${project.build.directory}/spooned-test-classes" fork="false">
+                  <sourceSet dir="${project.test.java}" />
+                  <processor type="spoon.test.processing.TestProcessor" />
+                </spoon>
+                <delete dir="${project.build.directory}/spooned-test" />
+                <delete dir="${project.build.directory}/spooned-test-classes" />
+                <!--Spoon on spoon -->
+                <echo>TEST 2: Spoon on Spoon</echo>
+                <echo>PHASE 1: recompile Spoon with Spoon</echo>
 
                 <mkdir dir="${project.build.directory}/spooned1" />
                 <mkdir dir="${project.build.directory}/spooned1-classes" />
@@ -175,21 +192,23 @@
                 <!-- 
                   <javac srcdir="${project.build.directory}/spooned1" source="1.5" target="1.5" classpathref="maven.test.classpath" nowarn="true" destdir="${project.build.directory}/spooned1-classes" />
                 -->
-                <echo>phase2 : recompile Spoon with recompiled spoon</echo>
+                <echo>PHASE 2: recompile Spoon with recompiled Spoon</echo>
                 <mkdir dir="${project.build.directory}/spooned2" />
                 <path id="spoon2.classpath">
                   <pathelement location="${project.build.directory}/spooned1-classes" />
                   <path refid="maven.compile.classpath" />
                 </path>
                 <property name="spoon2_classpath" refid="spoon2.classpath" />
+                <!--
                 <echo message="classpath2= ${spoon2_classpath}" />
+                -->
                 <taskdef name="spoon2" classname="spoon.SpoonTask" classpathref="spoon2.classpath" />
                 <spoon2 classpathref="spoon2.classpath" verbose="true" output="${project.build.directory}/spooned2">
                   <sourceSet dir="${project.build.directory}/spooned1" />
                 </spoon2>
                 <javac srcdir="${project.build.directory}/spooned2" source="1.5" target="1.5" classpathref="maven.test.classpath" nowarn="true" />
 
-                <echo>phase3 : clean</echo>
+                <echo>PHASE 3: clean</echo>
                 <delete dir="${project.build.directory}/spooned1" />
                 <delete dir="${project.build.directory}/spooned1-classes" />
                 <delete dir="${project.build.directory}/spooned2" />
