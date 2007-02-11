@@ -1,0 +1,19 @@
+<!ELEMENT spoon (processor*, template*,  mode?)>
+
+<!ELEMENT processor (property*)>
+<!ATTLIST processor name CDATA #REQUIRED>
+<!ATTLIST processor class ID #REQUIRED>
+<!ATTLIST processor doc CDATA #IMPLIED>
+<!ATTLIST processor active (true|false) "false">
+<!ATTLIST processor mandatory (true|false) "false">
+<!ATTLIST processor fullprocessing (true|false) "false">
+<!ATTLIST processor visible (true|false) "true">
+
+<!ELEMENT template (#PCDATA)>
+<!ATTLIST template path CDATA #IMPLIED>
+
+<!ELEMENT property (value*)>
+<!ATTLIST property name CDATA #REQUIRED>
+<!ATTLIST property value CDATA #IMPLIED>
+<!ATTLIST property doc CDATA #IMPLIED>
+<!ELEMENT value (#PCDATA)>
