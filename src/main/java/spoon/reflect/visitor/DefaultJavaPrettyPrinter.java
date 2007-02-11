@@ -387,6 +387,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 	private boolean isHiddenByField(CtType<?> container, CtTypeReference<?> type) {
 		if (container == null)
 			return false;
+		// TODO: Deal with anonymous class better
+		if (container.getSimpleName() == null
+				|| container.getSimpleName().equals(""))
+			return false;
 		for (CtFieldReference<?> f : container.getReference().getAllFields()) {
 			if (f.getSimpleName().equals(type.getSimpleName())) {
 				return true;
