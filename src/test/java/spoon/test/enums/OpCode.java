@@ -12,4 +12,7 @@ public enum OpCode implements Performable {
     OpCode(int numOp) { this.numOp = numOp; }
     private int numOp;
     private OpCode OP;
+    public int dummy() {
+    	return OP.numOp+numOp;
+    }
 }

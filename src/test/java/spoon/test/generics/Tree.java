@@ -10,6 +10,7 @@ class Tree<V extends Serializable & Comparable<V>> {
 	<T> T node2() { return null; }
 	<T extends Tree<V> & Comparable<T>> T node3() { 
 		List<V> l=new ArrayList<V>();
+		if(l==null);
 		return null; }
 	<T extends Tree<V> & Comparable<T>> T node4() { return null; }
 	
