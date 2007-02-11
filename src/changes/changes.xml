@@ -5,6 +5,7 @@
   </properties>
   <body>
     <release version="1.1-SNAPSHOT" date="2006-12-19" description="???">
+      <action dev="Renaud Pawlak" type="fix" due-to="Johan Fabry">fix bug #1999 (however, annonymous classes would need to be referencable in future versions)</action>
       <action dev="Renaud Pawlak" type="fix" due-to="Horia Ciu">fix a null parent in field accesses</action>
       <action dev="Renaud Pawlak" type="remove" due-to="Erol Akarsu">do not print implicit default constructors</action>
       <action dev="Renaud Pawlak" type="remove" due-to="Erol Akarsu">do not print implicit calls to super()</action>
