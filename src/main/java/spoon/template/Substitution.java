@@ -84,7 +84,12 @@ public abstract class Substitution {
 					}
 				}
 				if (!t1.equals(targetType.getReference())) {
-					Class c = t1.getActualClass();
+					Class c=null;
+					try {
+						c = t1.getActualClass();
+					} catch(Exception e) {
+						// swallow it
+					}
 					if (c != null && c.isInterface()) {
 						targetType.getSuperInterfaces().add(t1);
 					}
