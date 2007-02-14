@@ -178,7 +178,7 @@
                   <sourceSet dir="${project.test.java}" />
                   <processor type="spoon.test.processing.TestProcessor" />
                 </spoon>
-                <!-- <delete dir="${project.build.directory}/spooned-test" /> -->
+                <delete dir="${project.build.directory}/spooned-test" /> 
                 <delete dir="${project.build.directory}/spooned-test-classes" />
 -->
                 <!--Spoon on spoon -->
