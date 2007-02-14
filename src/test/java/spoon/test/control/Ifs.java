@@ -1,13 +1,7 @@
 package spoon.test.control;
 
-public class IfTests {
+public class Ifs {
 
-	
-	void simpleLoop() {
-		for(int i=0,j=0;i<2;j++) {
-			
-		}
-	}
 	
 	Token jj_nt;
 	int jj_ntk;
