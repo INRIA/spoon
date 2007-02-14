@@ -590,7 +590,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				forLoop.getForInit().add((CtStatement) child);
 				return;
 			}
-			if (forLoop.getExpression() == null
+			if (!context.forupdate && forLoop.getExpression() == null
 					&& child instanceof CtExpression) {
 				forLoop.setExpression((CtExpression<Boolean>) child);
 				return;
