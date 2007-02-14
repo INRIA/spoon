@@ -3,7 +3,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <name>Spoon Core</name>
   <description>
     Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements,
@@ -35,6 +35,7 @@
     <connection>scm:cvs:pserver:anonymous@scm.gforge.inria.fr:/cvsroot/spoon:${artifactId}</connection>
     <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/${artifactId}/?cvsroot=spoon</url>
     <developerConnection>scm:cvs:ext:${username}@scm.gforge.inria.fr:/cvsroot/spoon:${artifactId}</developerConnection>
+    <tag>v1_1</tag>
   </scm>
   <developers>
     <developer>
