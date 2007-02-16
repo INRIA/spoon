@@ -3,7 +3,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>
     Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements,
@@ -244,7 +244,7 @@
         <artifactId>maven-source-plugin</artifactId>
         <executions>
           <execution>
-            <phase>deploy</phase>
+            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
@@ -260,7 +260,7 @@
         </configuration>
         <executions>
           <execution>
-            <phase>deploy</phase>
+            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
