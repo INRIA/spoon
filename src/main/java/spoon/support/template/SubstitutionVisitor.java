@@ -32,7 +32,6 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -229,6 +228,17 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
 			CtFieldReference<?> ref = fieldAccess.getVariable();
+			if("length".equals(ref.getSimpleName())) {
+				if(fieldAccess.getTarget() instanceof CtFieldAccess) {
+					ref=((CtFieldAccess)fieldAccess.getTarget()).getVariable();
+					if (Parameters.isParameterSource(ref)) {
+						Object[] value = (Object[])Parameters.getValue(template, ref
+								.getSimpleName(), null);
+						fieldAccess.replace(fieldAccess.getFactory().Code().createLiteral(value.length));
+						throw new SkipException(fieldAccess);
+					}
+				}
+			}
 			if (Parameters.isParameterSource(ref)) {
 				// replace direct field parameter accesses
 				Object value = Parameters.getValue(template, ref
@@ -571,14 +581,18 @@ public class SubstitutionVisitor extends CtScanner {
 		} catch (SkipException e) {
 			// System.out.println(e.getMessage());
 		} catch (UndefinedParameterException upe) {
-			if (element instanceof CtStatement) {
-				element.replace(null);
-			} else {
-				throw upe;
-			}
+			removeEnclosingStatement(element);
 		}
 	}
 
+	private void removeEnclosingStatement(CtElement e) {
+		if(!(e.getParent() instanceof CtBlock)) {
+			removeEnclosingStatement(e.getParent());
+		} else {
+			e.replace(null);
+		}
+	}
+	
 	/**
 	 * Replaces parameters in reference names (even if detected as a substring).
 	 */
