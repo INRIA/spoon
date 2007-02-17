@@ -29,9 +29,12 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -51,6 +54,8 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.Query;
+import spoon.support.query.VariableAccessFilter;
 import spoon.template.Local;
 import spoon.template.Parameter;
 import spoon.template.Template;
@@ -221,6 +226,32 @@ public class SubstitutionVisitor extends CtScanner {
 			super.visitCtClass(ctClass);
 		}
 
+		@Override
+		public void visitCtForEach(CtForEach foreach) {
+			if (foreach.getExpression() instanceof CtFieldAccess) {
+				CtFieldAccess<?> fa = (CtFieldAccess<?>) foreach
+						.getExpression();
+				if (Parameters.isParameterSource(fa.getVariable())) {
+					Object[] value = (Object[]) Parameters.getValue(template,
+							fa.getVariable().getSimpleName(), null);
+					CtStatementList<?> l = foreach.getFactory().Core()
+							.createStatementList();
+					CtStatement body = foreach.getBody();
+					for (int i = 0; i < value.length; i++) {
+						CtStatement b = foreach.getFactory().Core().clone(body);
+						for(CtVariableAccess va:Query.getElements(b, new VariableAccessFilter(foreach
+								.getVariable().getReference()))) {
+							va.replace((CtElement)value[i]);
+						}
+						l.getStatements().add(b);
+					}
+					foreach.replace(l);
+					throw new SkipException(foreach);
+				}
+			}
+			super.visitCtForEach(foreach);
+		}
+
 		/**
 		 * Replaces direct field parameter accesses.
 		 */
@@ -228,13 +259,15 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
 			CtFieldReference<?> ref = fieldAccess.getVariable();
-			if("length".equals(ref.getSimpleName())) {
-				if(fieldAccess.getTarget() instanceof CtFieldAccess) {
-					ref=((CtFieldAccess)fieldAccess.getTarget()).getVariable();
+			if ("length".equals(ref.getSimpleName())) {
+				if (fieldAccess.getTarget() instanceof CtFieldAccess) {
+					ref = ((CtFieldAccess) fieldAccess.getTarget())
+							.getVariable();
 					if (Parameters.isParameterSource(ref)) {
-						Object[] value = (Object[])Parameters.getValue(template, ref
-								.getSimpleName(), null);
-						fieldAccess.replace(fieldAccess.getFactory().Code().createLiteral(value.length));
+						Object[] value = (Object[]) Parameters.getValue(
+								template, ref.getSimpleName(), null);
+						fieldAccess.replace(fieldAccess.getFactory().Code()
+								.createLiteral(value.length));
 						throw new SkipException(fieldAccess);
 					}
 				}
@@ -586,13 +619,13 @@ public class SubstitutionVisitor extends CtScanner {
 	}
 
 	private void removeEnclosingStatement(CtElement e) {
-		if(!(e.getParent() instanceof CtBlock)) {
+		if (!(e.getParent() instanceof CtBlock)) {
 			removeEnclosingStatement(e.getParent());
 		} else {
 			e.replace(null);
 		}
 	}
-	
+
 	/**
 	 * Replaces parameters in reference names (even if detected as a substring).
 	 */
