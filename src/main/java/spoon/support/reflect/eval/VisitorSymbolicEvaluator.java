@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import spoon.processing.Severity;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
@@ -55,7 +56,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -74,7 +74,6 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.eval.StepKind;
@@ -86,11 +85,9 @@ import spoon.reflect.eval.SymbolicInstance;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
@@ -439,8 +436,10 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 								.getType(), false);
 					}
 				} else {
-					result = new SymbolicInstance(this, executable.getType(),
-							false);
+					if (!executable.isConstructor()) {
+						result = new SymbolicInstance(this, executable
+								.getType(), false);
+					}
 				}
 			}
 		} catch (ReturnException e) {
@@ -451,38 +450,44 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		return result;
 	}
 
+	private void skip(CtElement e) {
+		e.getFactory().getEnvironment().report(null, Severity.WARNING, e, "symbolic evaluator: ignoring unsupported element");
+	}
+	
 	public <A extends Annotation> void visitCtAnnotation(
 			CtAnnotation<A> annotation) {
-		throw new RuntimeException("Unknow Element");
+		skip(annotation);
 	}
 
 	public <A extends Annotation> void visitCtAnnotationType(
 			CtAnnotationType<A> annotationType) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable impl) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
 			CtArrayAccess<T, E> arrayAccess) {
-		throw new RuntimeException("Unknow Element");
+		skip(arrayAccess);
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtCodeSnippetExpression(
 			CtCodeSnippetExpression<T> expression) {
+		skip(expression);
 	}
 
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
+		skip(statement);
 	}
 
 	public void visitCtAssert(CtAssert asserted) {
-		throw new RuntimeException("Unknow Element");
+		skip(asserted);
 	}
 
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
@@ -553,27 +558,27 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public void visitCtBreak(CtBreak breakStatement) {
-		throw new RuntimeException("Unknow Element");
+		skip(breakStatement);
 	}
 
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
-		throw new RuntimeException("Unknow Element");
+		skip(caseStatement);
 	}
 
 	public void visitCtCatch(CtCatch catchBlock) {
-		throw new RuntimeException("Unknow Element");
+		skip(catchBlock);
 	}
 
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public void visitCtConstructor(CtConstructor c) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public void visitCtContinue(CtContinue continueStatement) {
-		throw new RuntimeException("Unknow Element");
+		skip(continueStatement);
 	}
 
 	public void visitCtDo(CtDo doLoop) {
@@ -582,20 +587,16 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public <T extends Enum> void visitCtEnum(CtEnum<T> ctEnum) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
-	}
-
-	public void visitCtExpression(CtExpression<?> expression) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtField(CtField<T> f) {
-		throw new RuntimeException("Unknow Element");
+		skip(f);
 	}
 
 	boolean isAccessible(CtFieldReference<?> field) {
@@ -632,7 +633,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public void visitCtFor(CtFor forLoop) {
@@ -650,11 +651,6 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		evaluate(foreach.getBody());
 	}
 
-	public void visitCtGenericElementReference(
-			CtGenericElementReference reference) {
-		throw new RuntimeException("Unknow Element");
-	}
-
 	public void visitCtIf(CtIf ifElement) {
 		evaluate(ifElement.getCondition());
 		evaluateBranches(ifElement.getThenStatement(), ifElement
@@ -662,13 +658,13 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		CtExecutableReference<T> eref = invocation.getExecutable();
-//		if (eref.getSimpleName().equals("<init>"))
-//			return;
+		// if (eref.getSimpleName().equals("<init>"))
+		// return;
 		List<SymbolicInstance> arguments = new ArrayList<SymbolicInstance>();
 		for (CtExpression expr : invocation.getArguments()) {
 			SymbolicInstance o = evaluate(expr);
@@ -713,19 +709,18 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
-		throw new RuntimeException("Unknow Element");
+		skip(newArray);
 	}
 
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
-		CtSimpleType<T> c = newClass.getType().getDeclaration();
 		// CtExecutable<T> e = eref.getDeclaration();
 		List<SymbolicInstance> arguments = new ArrayList<SymbolicInstance>();
 		for (CtExpression expr : newClass.getArguments()) {
@@ -735,41 +730,35 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		SymbolicInstance<T> i = new SymbolicInstance<T>(this, newClass
 				.getType(), false);
 		heap.store(i);
-		if (c != null) {
-			// evaluate the constructor
-			invoke(newClass, newClass.getExecutable(), i, arguments);
-		}
+		// evaluate the constructor
+		invoke(newClass, newClass.getExecutable(), i, arguments);
 		// TODO: something better for externals
 		result = i;
 	}
 
 	public <T, A extends T> void visitCtOperatorAssignement(
 			CtOperatorAssignment<T, A> assignment) {
-		throw new RuntimeException("Unknow Element");
+		skip(assignment);
 	}
 
 	public void visitCtPackage(CtPackage ctPackage) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public void visitCtPackageReference(CtPackageReference reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtParameter(CtParameter<T> parameter) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <R> void visitCtStatementList(CtStatementList<R> statements) {
-		throw new RuntimeException("Unknow Element");
+		skip(statements);
 	}
 
 	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
-	}
-
-	public void visitCtReference(CtReference reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
@@ -778,16 +767,11 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
-		throw new RuntimeException("Unknow Element");
+		skip(switchStatement);
 	}
 
 	public void visitCtSynchronized(CtSynchronized synchro) {
-		throw new RuntimeException("Unknow Element");
-	}
-
-	public <T, E extends CtExpression<?>> void visitCtTargetedExpression(
-			CtTargetedExpression<T, E> targetedExpression) {
-		throw new RuntimeException("Unknow Element");
+		skip(synchro);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -820,15 +804,15 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Not evaluable");
 	}
 
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
@@ -856,10 +840,6 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 		CtVariableReference<?> vref = variableAccess.getVariable();
 		result = stack.getVariableValue(vref);
-	}
-
-	public void visitCtVariableReference(CtVariableReference reference) {
-		throw new RuntimeException("Unknow Element");
 	}
 
 	public void visitCtWhile(CtWhile whileLoop) {
