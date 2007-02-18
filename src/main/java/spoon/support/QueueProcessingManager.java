@@ -132,6 +132,9 @@ public class QueueProcessingManager implements ProcessingManager {
 	public void process(Collection<? extends CtElement> elements) {
 		Processor p;
 		while ((p = getProcessors().poll()) != null) {
+			if(getFactory().getEnvironment().isVerbose()) {
+				getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
+			}
 			current = p;
 			p.initProperties(AbstractProcessor.loadProperties(p));
 			p.init();
