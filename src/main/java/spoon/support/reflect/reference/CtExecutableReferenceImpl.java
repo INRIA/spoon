@@ -63,6 +63,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return actualTypeArguments;
 	}
 
+	public boolean isConstructor() {
+		return getSimpleName().equals("<init>");
+	}
+	
 	@Override
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		A annotation = super.getAnnotation(annotationType);
