@@ -33,6 +33,11 @@ public interface CtExecutableReference<T> extends CtReference,
 		CtGenericElementReference, CtModifiableReference {
 
 	/**
+	 * Tells if this is a reference to a constructor.
+	 */
+	boolean isConstructor();
+	
+	/**
 	 * Gets the runtime method that corresponds to an executable reference if
 	 * any.
 	 * 
