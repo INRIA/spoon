@@ -137,9 +137,8 @@ public class SourcePositionImpl implements SourcePosition, Cloneable,
 	 */
 	public String toString() {
 		int ln = getLine();
-		return (ln >= 1) ? getFile().getAbsolutePath() : getFile()
-				.getAbsolutePath()
-				+ ":" + ln;
+		return (ln >= 1) ? getFile().getAbsolutePath() + ":" + ln : getFile()
+				.getAbsolutePath();
 	}
 
 	@Override
