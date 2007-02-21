@@ -101,12 +101,31 @@ public class SpoonletXmlHandler extends DefaultHandler {
 			prop = new XmlProcessorProperties(launcher.getFactory(), attributes
 					.getValue("class"));
 		} else if (localName.equals("template")) {
-			String foldername = attributes.getValue("folder");
-			for (CtResource r : spoonletIndex) {
-				if (r.getName().startsWith(foldername)) {
-					launcher.addTemplateResource(r);
+			if (attributes.getValue("path") != null){
+				String foldername = attributes.getValue("path");
+				for (CtResource r : spoonletIndex) {
+					if (r.getName().startsWith(foldername)) {
+						launcher.addTemplateResource(r);
+					}
 				}
 			}
+			if (attributes.getValue("folder") != null){
+				String foldername = attributes.getValue("folder");
+				for (CtResource r : spoonletIndex) {
+					if (r.getName().startsWith(foldername)) {
+						launcher.addTemplateResource(r);
+					}
+				}
+			}			
+			if (attributes.getValue("file") != null){
+				String filename = attributes.getValue("file");
+				for (CtResource r : spoonletIndex) {
+					if (r.getName().startsWith(filename)) {
+						launcher.addTemplateResource(r);
+					}
+				}
+			}
+			
 		} else if (localName.equals("property")) {
 			propName = attributes.getValue("name");
 			if (attributes.getValue("value") != null) {
