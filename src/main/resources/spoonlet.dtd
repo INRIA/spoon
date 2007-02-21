@@ -11,6 +11,8 @@
 
 <!ELEMENT template (#PCDATA)>
 <!ATTLIST template path CDATA #IMPLIED>
+<!ATTLIST template folder CDATA #IMPLIED>
+<!ATTLIST template file CDATA #IMPLIED>
 
 <!ELEMENT property (value*)>
 <!ATTLIST property name CDATA #REQUIRED>
