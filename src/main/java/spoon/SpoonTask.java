@@ -135,6 +135,10 @@ public class SpoonTask extends Java {
 		templatefilesets.addElement(set);
 	}
 
+	public void addSpoonletSet(FileSet set){
+		spoonletfileset.addElement(set);
+	}
+	
 	/**
 	 * Executes the task.
 	 */
@@ -391,5 +395,7 @@ public class SpoonTask extends Java {
 	public void setTabSize(int tabSize) {
 		this.tabSize = tabSize;
 	}
+	
+	
 
 }
