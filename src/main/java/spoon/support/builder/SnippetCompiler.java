@@ -101,13 +101,13 @@ public class SnippetCompiler {
 	private static CtClass<?> createWrapper(CtStatement st, Factory f) {
 		CtClass<?> w = f.Class().create("Wrapper");
 				
-		CtBlock<?> body = f.Core().createBlock();
+		CtBlock<Void> body = f.Core().createBlock();
 		
 		body.getStatements().add(st);
 		
 		Set<ModifierKind> x = new TreeSet<ModifierKind>();
 		
-		f.Method().create(w, x, f.Type().createReference(void.class), "wrap", new ArrayList<CtParameter<?>>(), new TreeSet<CtTypeReference<? extends Throwable>>());
+		f.Method().create(w, x, f.Type().createReference(void.class), "wrap", new ArrayList<CtParameter<?>>(), new TreeSet<CtTypeReference<? extends Throwable>>(),body);
 		
 		return w;
 	}
