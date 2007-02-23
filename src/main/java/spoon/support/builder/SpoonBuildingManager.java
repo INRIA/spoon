@@ -19,7 +19,11 @@ package spoon.support.builder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
 
 import spoon.processing.Builder;
 import spoon.reflect.Factory;
@@ -75,14 +79,34 @@ public class SpoonBuildingManager implements Builder {
 		boolean srcSuccess,templateSuccess;
 		factory.getEnvironment().debugMessage("compiling sources: "+source.getAllJavaFiles());
 		long t=System.currentTimeMillis();
-		srcSuccess=new JDTCompiler().compileSrc(factory, source.getAllJavaFiles());
+		JDTCompiler compiler = new JDTCompiler();
+		srcSuccess=compiler.compileSrc(factory, source.getAllJavaFiles());
+		if(!srcSuccess){
+			for(CategorizedProblem[] cps :compiler.probs){
+				for (int i = 0; i < cps.length; i++) {
+					CategorizedProblem problem = cps[i];
+					if(problem!=null)
+						getProbs().add(problem.getMessage());
+				}
+			}
+		}
 		factory.getEnvironment().debugMessage("compiled in "+(System.currentTimeMillis()-t)+" ms");
 		factory.getEnvironment().debugMessage("compiling templates: "+templates.getAllJavaFiles());
 		t=System.currentTimeMillis();
-		templateSuccess=new JDTCompiler().compileTemplate(factory, templates.getAllJavaFiles());
+		templateSuccess=compiler.compileTemplate(factory, templates.getAllJavaFiles());
 		factory.Template().parseTypes();
 		factory.getEnvironment().debugMessage("compiled in "+(System.currentTimeMillis()-t)+" ms");
 		return srcSuccess&&templateSuccess;
+	}
+	
+	List<String> probs;
+	
+	public List<String> getProbs() {
+		if (probs == null) {
+			probs = new ArrayList<String>();
+			
+		}
+		return probs;
 	}
 
 	public Set<File> getInputSources() {

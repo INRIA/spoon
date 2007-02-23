@@ -17,6 +17,8 @@
 
 package spoon.processing;
 
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
+
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -200,5 +202,13 @@ public interface Environment extends FactoryAccessor {
 	 * Sets Spoon to use tabulations in the source code.
 	 */
 	void useTabulations(boolean b);
+	
+	/**
+	 * Gets the current input path
+	 * @return
+	 */
+	String getSourcePath();
+	
+	INameEnvironment getLibraries();
 
 }

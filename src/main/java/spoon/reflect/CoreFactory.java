@@ -378,5 +378,10 @@ public interface CoreFactory {
 	 * Creates a compilation unit.
 	 */
 	CompilationUnit createCompilationUnit();
+	
+	/**
+	 * Creates a virtual compilation unit.
+	 */
+	CompilationUnit createVirtualCompilationUnit();
 
 }

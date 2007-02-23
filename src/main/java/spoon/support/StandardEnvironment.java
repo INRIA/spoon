@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.xml.sax.SAXException;
 
 import spoon.processing.Environment;
@@ -343,6 +344,14 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public void setTabulationSize(int tabulationSize) {
 		this.tabulationSize = tabulationSize;
+	}
+
+	public String getSourcePath() {
+		return ".";
+	}
+
+	public INameEnvironment getLibraries() {
+		return null;
 	}
 	
 }
