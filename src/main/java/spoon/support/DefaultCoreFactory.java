@@ -573,4 +573,10 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return cu;
 	}
 	
+	public CompilationUnit createVirtualCompilationUnit() {
+		CompilationUnit cu=new CompilationUnitVirtualImpl();
+		cu.setFactory(getMainFactory());
+		return cu;
+	}
+	
 }

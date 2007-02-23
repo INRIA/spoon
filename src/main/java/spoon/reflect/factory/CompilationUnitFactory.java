@@ -54,6 +54,10 @@ public class CompilationUnitFactory extends SubFactory {
 	public CompilationUnit create(String filePath) {
 		CompilationUnit cu = compilationUnits.get(filePath);
 		if (cu == null) {
+			if("".equals(filePath)){
+				cu =  factory.Core().createVirtualCompilationUnit();
+				return cu;
+			}
 			cu = factory.Core().createCompilationUnit();
 			cu.setFile(new File(filePath));
 			compilationUnits.put(filePath, cu);

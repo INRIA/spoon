@@ -39,6 +39,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
@@ -47,6 +48,8 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.support.builder.CtSnippetCompilationError;
+import spoon.support.builder.SnippetCompiler;
 
 /**
  * This sub-factory contains utility methods to create code elements. To avoid
@@ -396,16 +399,40 @@ public class CodeFactory extends SubFactory {
 		return ret;
 	}
 
+	/**
+	 * Creates a Code Snippet expression.
+	 * 
+	 * @param <T> The type of the expression represented by the CodeSnippet
+	 * @param expression The string that contains the expression.
+	 * @return a new CtCodeSnippetExpression.
+	 */
 	public <T> CtCodeSnippetExpression<T> createCodeSnippetExpression(String expression) {
 		CtCodeSnippetExpression<T> e = factory.Core().createCodeSnippetExpression();
 		e.setValue(expression);
 		return e;
 	}	
 
+	/**
+	 * Creates a Code Snippet statment.
+	 * 
+	 * @param statement The String containing the statement.
+	 * @return a new CtCodeSnippetStatement
+	 */
 	public CtCodeSnippetStatement createCodeSnippetStatement(String statement) {
 		CtCodeSnippetStatement e = factory.Core().createCodeSnippetStatement();
 		e.setValue(statement);
 		return e;
 	}	
 	
+	public <T extends CtStatement> T compileCodeSnippetStatement(CtCodeSnippetStatement st, Class<T> expectedCtType) throws CtSnippetCompilationError{
+		return SnippetCompiler.compileStatement(st, expectedCtType);
+	}
+	
+	public  <T>  CtExpression<T> compileCodeSnippetExpression(CtCodeSnippetExpression<T> st,Class<T> expectedType) throws CtSnippetCompilationError {
+		return SnippetCompiler.compileExpression(st, expectedType);
+	}
+	
+	public void compileAndReplaceSnippetsIn(CtType<?> c){
+		SnippetCompiler.compileAndReplaceSnippetsIn(c);
+	}
 }

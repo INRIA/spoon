@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
@@ -93,13 +94,13 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 		args.add("-enableJavadoc");
 		args.add("-noExit");
 		// args.add("-nowarn");
-		args.add(".");
+		args.add(f.getEnvironment().getSourcePath());
 
 //		JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
 //				new PrintWriter(System.err));
 		configure(args.toArray(new String[0]));
 //		f.getEnvironment().debugMessage("compiling src: "+files);
-		CompilationUnitDeclaration[] units = getUnits(files);
+		CompilationUnitDeclaration[] units = getUnits(files,f);
 //		f.getEnvironment().debugMessage("got units in "+(System.currentTimeMillis()-t)+" ms");
 		
 		JDTTreeBuilder builder = new JDTTreeBuilder(f);
@@ -132,7 +133,7 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 //				new PrintWriter(System.err));
 		configure(args.toArray(new String[0]));
 
-		CompilationUnitDeclaration[] units = getUnits(streams);
+		CompilationUnitDeclaration[] units = getUnits(streams,f);
 
 		JDTTreeBuilder builder = new JDTTreeBuilder(f);
 		builder.template = true;
@@ -171,18 +172,31 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 		return units;
 	}
 
-	public CompilationUnitDeclaration[] getUnits(List<CtFile> streams)
+	public CompilationUnitDeclaration[] getUnits(List<CtFile> streams,Factory f)
 			throws Exception {
 		this.startTime = System.currentTimeMillis();
-		INameEnvironment environment = getLibraryAccess();
+		INameEnvironment environment = f.getEnvironment().getLibraries();
+		if(environment == null)
+			environment = getLibraryAccess();
 		this.batchCompiler = new Compiler(environment, getHandlingPolicy(),
 				this.options, this, getProblemFactory(), this.out, false);
 		return batchCompiler.compileUnits(getCompilationUnits(streams));
 	}
-
+	
+	List<CategorizedProblem[]> probs;
+	
+	public List<CategorizedProblem[]> getProbs() {
+		if (probs == null) {
+			probs = new ArrayList<CategorizedProblem[]>();
+			
+		}
+		return probs;
+	}
+	
 	public void acceptResult(CompilationResult result) {
 		if (result.hasErrors()) {
 			System.err.println(result);
+			getProbs().add(result.problems);
 			success=false;
 		}
 	}
