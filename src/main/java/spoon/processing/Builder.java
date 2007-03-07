@@ -19,20 +19,20 @@ package spoon.processing;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
-import spoon.reflect.Factory;
 import spoon.support.builder.CtResource;
 
 /**
  * This interface defines the API to build a Spoon meta-model from input sources
- * given as files. You should add your sources, and use {@link #build(Factory)}
+ * given as files. You should add your sources, and use {@link #build()}
  * to create the Spoon meta-model. Once the meta-model is built and stored in
  * the factory, it can be processed by using a
  * {@link spoon.processing.ProcessingManager}. As an example of use, take a
  * look at the {@link spoon.Launcher} implementation.
  */
-public interface Builder {
+public interface Builder extends FactoryAccessor {
 	/**
 	 * Adds a file/directory to be built. By default, the files could be Java
 	 * source files or Jar files. Directories are processed recursively.
@@ -90,7 +90,7 @@ public interface Builder {
 	Set<File> getTemplateSources();
 
 	/**
-	 * Builds the program's model with a given factory and stores the result
+	 * Builds the program's model with the current factory and stores the result
 	 * into this factory. Note that this method can only be used once on a given
 	 * factory. If more attempts are made, it throws an exception.
 	 * 
@@ -100,6 +100,19 @@ public interface Builder {
 	 * @exception Exception
 	 *                when a building problem occurs
 	 */
-	boolean build(Factory factory) throws Exception;
+	boolean build() throws Exception;
+
+	/**
+	 * This method should be called before starting the compilation in order to
+	 * perform plateform specific initializations. Override the method in
+	 * subclasses do add new initializations.
+	 */
+	void initCompiler();
+
+	/**
+	 * Gets the list of problems that may have been reported by the compiler
+	 * when building the model.
+	 */
+	List<String> getProblems();
 
 }

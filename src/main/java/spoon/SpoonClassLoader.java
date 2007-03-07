@@ -34,7 +34,6 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.RuntimeProcessingManager;
 import spoon.support.StandardEnvironment;
-import spoon.support.builder.SpoonBuildingManager;
 import spoon.support.util.JDTCompiler;
 
 /**
@@ -165,9 +164,9 @@ public class SpoonClassLoader extends ClassLoader {
 			File f = resolve(qualifiedName);
 			if (f == null || !f.exists())
 				throw new ClassNotFoundException(qualifiedName);
-			Builder builder = new SpoonBuildingManager();
+			Builder builder = getFactory().getBuilder();
 			builder.addInputSource(f);
-			builder.build(getFactory());
+			builder.build();
 			c = getFactory().Type().get(qualifiedName);
 		}
 

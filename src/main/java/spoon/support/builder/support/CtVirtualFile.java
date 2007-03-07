@@ -36,7 +36,7 @@ public class CtVirtualFile implements CtFile{
 	}
 
 	public CtFolder getParent() {
-		return new CtFolderVirtual();
+		return new CtVirtualFolder();
 	}
 
 	public String getPath() {

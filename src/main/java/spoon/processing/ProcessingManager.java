@@ -19,14 +19,13 @@ package spoon.processing;
 
 import java.util.Collection;
 
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtElement;
 
 /**
  * The processing manager defines the API to process a program model of a given
  * {@link spoon.reflect.Factory} with a set of processors. The program model has
  * been previously built using a {@link spoon.processing.Builder} - see
- * {@link spoon.processing.Builder#build(Factory)}. To use, add processors to
+ * {@link spoon.processing.Builder#build()}. To use, add processors to
  * the manager, and then call the {@code process} method. The processors will be
  * removed from the manager once applied. Also, the method
  * {@link spoon.processing.Processor#processingDone()} is upcalled.

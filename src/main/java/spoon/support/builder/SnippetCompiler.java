@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.processing.Builder;
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -25,57 +26,53 @@ import spoon.reflect.visitor.Query;
 import spoon.support.builder.support.CtVirtualFile;
 
 public class SnippetCompiler {
-	
-	
-	
 
 	@SuppressWarnings("unchecked")
-	static public <T extends CtStatement> T compileStatement(CtCodeSnippetStatement st, Class<T> expectedType) throws CtSnippetCompilationError {
+	static public <T extends CtStatement> T compileStatement(
+			CtCodeSnippetStatement st, Class<T> expectedType)
+			throws CtSnippetCompilationError {
 		CtStatement s = compileStatement(st);
 		if (expectedType.isAssignableFrom(s.getClass())) {
-			return (T)s;
+			return (T) s;
 		}
-		throw new CtSnippetCompilationError("Incorrect Type for snippet "+st.toString());
+		throw new CtSnippetCompilationError("Incorrect Type for snippet "
+				+ st.toString());
 	}
-	
-	
-	static public void compileAndReplaceSnippetsIn(CtType<?> c){
+
+	static public void compileAndReplaceSnippetsIn(CtType<?> c) {
 		Factory f = c.getFactory();
-		CtType<?> workCopy =c;
-		Set<ModifierKind> backup = new TreeSet<ModifierKind>(workCopy.getModifiers());
-		
+		CtType<?> workCopy = c;
+		Set<ModifierKind> backup = new TreeSet<ModifierKind>(workCopy
+				.getModifiers());
+
 		workCopy.getModifiers().remove(ModifierKind.PUBLIC);
-				
-		try{
+
+		try {
 			build(f, workCopy.toString());
-		}finally{			
-			//restore modifiers
+		} finally {
+			// restore modifiers
 			c.setModifiers(backup);
 		}
-		
-		
+
 	}
-	
-	static public CtStatement compileStatement(CtCodeSnippetStatement st) throws CtSnippetCompilationError {
+
+	static public CtStatement compileStatement(CtCodeSnippetStatement st)
+			throws CtSnippetCompilationError {
 
 		return internalCompileStatement(st);
 	}
 
-
 	private static CtStatement internalCompileStatement(CtStatement st) {
 		Factory f = st.getFactory();
 		CtClass<?> w = createWrapper(st, f);
-		
+
 		compile(f, w);
-		
-		
+
 		CtSimpleType c = f.Type().get("Wrapper");
-		
-		
-		
-		//Get the part we want
-		
-		CtMethod wrapper = Query.getElements(c, new Filter<CtMethod>(){
+
+		// Get the part we want
+
+		CtMethod wrapper = Query.getElements(c, new Filter<CtMethod>() {
 
 			public Class<CtMethod> getType() {
 				return CtMethod.class;
@@ -84,62 +81,64 @@ public class SnippetCompiler {
 			public boolean matches(CtMethod element) {
 				return element.getSimpleName().equals("wrap");
 			}
-			
+
 		}).get(0);
-		
-		CtStatement ret = (CtStatement)wrapper.getBody().getStatements().get(0);
-		//Clean up
-		
+
+		CtStatement ret = (CtStatement) wrapper.getBody().getStatements()
+				.get(0);
+		// Clean up
+
 		c.getPackage().getTypes().remove(c);
-		
-		//check typing?
-		
+
+		// check typing?
+
 		return ret;
 	}
 
-
 	private static CtClass<?> createWrapper(CtStatement st, Factory f) {
 		CtClass<?> w = f.Class().create("Wrapper");
-				
+
 		CtBlock<Void> body = f.Core().createBlock();
-		
+
 		body.getStatements().add(st);
-		
+
 		Set<ModifierKind> x = new TreeSet<ModifierKind>();
-		
-		f.Method().create(w, x, f.Type().createReference(void.class), "wrap", new ArrayList<CtParameter<?>>(), new TreeSet<CtTypeReference<? extends Throwable>>(),body);
-		
+
+		f.Method().create(w, x, f.Type().createReference(void.class), "wrap",
+				new ArrayList<CtParameter<?>>(),
+				new TreeSet<CtTypeReference<? extends Throwable>>(), body);
+
 		return w;
 	}
 
+	private static void compile(Factory f, CtType<?> w)
+			throws CtSnippetCompilationError {
 
-	private static void compile(Factory f, CtType<?> w) throws CtSnippetCompilationError {
-		
 		String contents = w.toString();
-		
+
 		build(f, contents);
-		
+
 	}
 
-	private static void build(Factory f, String contents, String name){
-//		Build contents
+	private static void build(Factory f, String contents, String name) {
+		// Build contents
 		boolean success;
-		SpoonBuildingManager builder = new SpoonBuildingManager();
+		Builder builder = f.getBuilder();
 		try {
-			builder.addInputSource(new CtVirtualFile(contents,name));
-			success = builder.build(f);
+			builder.addInputSource(new CtVirtualFile(contents, name));
+			success = builder.build();
 		} catch (Exception e) {
 			success = debugCompilationError(f, e);
 		}
-		
-		if(!success){
-			throw new CtSnippetCompilationError(builder.getProbs());
+
+		if (!success) {
+			throw new CtSnippetCompilationError(builder.getProblems());
 		}
 	}
-	
 
-	private static void build(Factory f, String contents) throws CtSnippetCompilationError {
-		build(f,contents,"");
+	private static void build(Factory f, String contents)
+			throws CtSnippetCompilationError {
+		build(f, contents, "");
 	}
 
 	private static boolean debugCompilationError(Factory f, Exception e) {
@@ -153,27 +152,25 @@ public class SnippetCompiler {
 		success = false;
 		return success;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	static public  <T>  CtExpression<T> compileExpression(CtCodeSnippetExpression<T> st,Class<T> cl) throws CtSnippetCompilationError {
-		//create wrapping template
-		
-		
+	static public <T> CtExpression<T> compileExpression(
+			CtCodeSnippetExpression<T> st, Class<T> cl)
+			throws CtSnippetCompilationError {
+		// create wrapping template
+
 		Factory f = st.getFactory();
 		CtClass<?> w = createWrapper(st, cl, f);
-		
+
 		String contents = w.toString();
-		
-		build(f,contents);
-		
-		
+
+		build(f, contents);
+
 		CtSimpleType c = f.Type().get("Wrapper");
-		
-		
-		
-		//Get the part we want
-		
-		CtMethod wrapper = Query.getElements(c, new Filter<CtMethod>(){
+
+		// Get the part we want
+
+		CtMethod wrapper = Query.getElements(c, new Filter<CtMethod>() {
 
 			public Class<CtMethod> getType() {
 				return CtMethod.class;
@@ -182,40 +179,34 @@ public class SnippetCompiler {
 			public boolean matches(CtMethod element) {
 				return element.getSimpleName().equals("wrap");
 			}
-			
+
 		}).get(0);
-		
-		CtReturn<T> ret = (CtReturn<T>)wrapper.getBody().getStatements().get(0);
-		
-		
-		
-		//Clean up (delete wrapper from factory)
+
+		CtReturn<T> ret = (CtReturn<T>) wrapper.getBody().getStatements()
+				.get(0);
+
+		// Clean up (delete wrapper from factory)
 		c.getPackage().getTypes().remove(c);
-		
+
 		return ret.getReturnedExpression();
 	}
 
-
-	private static <T> CtClass<?> createWrapper(CtExpression<T> st, Class<T> cl, Factory f) {
+	private static <T> CtClass<?> createWrapper(CtExpression<T> st,
+			Class<T> cl, Factory f) {
 		CtClass<?> w = f.Class().create("Wrapper");
-		
 
 		CtBlock<T> body = f.Core().createBlock();
 		CtReturn<T> ret = f.Core().createReturn();
 		ret.setReturnedExpression(st);
 		body.getStatements().add(ret);
-		
+
 		Set<ModifierKind> x = new TreeSet<ModifierKind>();
 
-		f.Method().create(w, x,
-				f.Type().createReference(cl), "wrap",
+		f.Method().create(w, x, f.Type().createReference(cl), "wrap",
 				new ArrayList<CtParameter<?>>(),
-				new TreeSet<CtTypeReference<? extends Throwable>>(),body);
-		
+				new TreeSet<CtTypeReference<? extends Throwable>>(), body);
+
 		return w;
 	}
 
 }
-
-
-

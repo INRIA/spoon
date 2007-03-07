@@ -27,32 +27,34 @@ import org.eclipse.jdt.core.compiler.CategorizedProblem;
 
 import spoon.processing.Builder;
 import spoon.reflect.Factory;
-import spoon.support.builder.support.CtFolderVirtual;
+import spoon.support.builder.support.CtVirtualFolder;
 
 public class SpoonBuildingManager implements Builder {
 
+	Factory factory;
+
 	private boolean build = false;
 
-	CtFolderVirtual source = new CtFolderVirtual();
+	CtVirtualFolder sources = new CtVirtualFolder();
 
-	CtFolderVirtual templates = new CtFolderVirtual();
+	CtVirtualFolder templates = new CtVirtualFolder();
 
-	public SpoonBuildingManager() {
-		super();
+	public SpoonBuildingManager(Factory factory) {
+		this.factory=factory;
 	}
 
 	public void addInputSource(CtResource source) throws IOException {
 		if (source.isFile())
-			this.source.addFile((CtFile) source);
+			this.sources.addFile((CtFile) source);
 		else
-			this.source.addFolder((CtFolder) source);
+			this.sources.addFolder((CtFolder) source);
 	}
 
 	public void addInputSource(File source) throws IOException {
 		if (FileFactory.isFile(source))
-			this.source.addFile(FileFactory.createFile(source));
+			this.sources.addFile(FileFactory.createFile(source));
 		else
-			this.source.addFolder(FileFactory.createFolder(source));
+			this.sources.addFolder(FileFactory.createFolder(source));
 	}
 
 	public void addTemplateSource(CtResource source) throws IOException {
@@ -69,62 +71,88 @@ public class SpoonBuildingManager implements Builder {
 			this.templates.addFolder(FileFactory.createFolder(source));
 	}
 
-	public boolean build(Factory factory) throws Exception {
-		if (build)
+	JDTCompiler compiler = null;
+
+	public boolean build() throws Exception {
+		if (factory == null) {
+			throw new Exception("Factory not initialized");
+		}
+		if (build) {
 			throw new Exception("Model already built");
+		}
 		build = true;
-		factory.setBuilder(this);
 		JDTCompiler.JAVA_COMPLIANCE = factory.getEnvironment()
 				.getComplianceLevel();
-		boolean srcSuccess,templateSuccess;
-		factory.getEnvironment().debugMessage("compiling sources: "+source.getAllJavaFiles());
-		long t=System.currentTimeMillis();
-		JDTCompiler compiler = new JDTCompiler();
-		srcSuccess=compiler.compileSrc(factory, source.getAllJavaFiles());
-		if(!srcSuccess){
-			for(CategorizedProblem[] cps :compiler.probs){
+		boolean srcSuccess, templateSuccess;
+		factory.getEnvironment().debugMessage(
+				"compiling sources: " + sources.getAllJavaFiles());
+		long t = System.currentTimeMillis();
+		compiler = new JDTCompiler();
+		initCompiler();
+		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
+		if (!srcSuccess) {
+			for (CategorizedProblem[] cps : compiler.probs) {
 				for (int i = 0; i < cps.length; i++) {
 					CategorizedProblem problem = cps[i];
-					if(problem!=null)
-						getProbs().add(problem.getMessage());
+					if (problem != null)
+						getProblems().add(problem.getMessage());
 				}
 			}
 		}
-		factory.getEnvironment().debugMessage("compiled in "+(System.currentTimeMillis()-t)+" ms");
-		factory.getEnvironment().debugMessage("compiling templates: "+templates.getAllJavaFiles());
-		t=System.currentTimeMillis();
-		templateSuccess=compiler.compileTemplate(factory, templates.getAllJavaFiles());
+		factory.getEnvironment().debugMessage(
+				"compiled in " + (System.currentTimeMillis() - t) + " ms");
+		factory.getEnvironment().debugMessage(
+				"compiling templates: " + templates.getAllJavaFiles());
+		t = System.currentTimeMillis();
+		templateSuccess = compiler.compileTemplate(factory, templates
+				.getAllJavaFiles());
 		factory.Template().parseTypes();
-		factory.getEnvironment().debugMessage("compiled in "+(System.currentTimeMillis()-t)+" ms");
-		return srcSuccess&&templateSuccess;
+		factory.getEnvironment().debugMessage(
+				"compiled in " + (System.currentTimeMillis() - t) + " ms");
+		return srcSuccess && templateSuccess;
 	}
-	
-	List<String> probs;
-	
-	public List<String> getProbs() {
-		if (probs == null) {
-			probs = new ArrayList<String>();
-			
+
+	public void initCompiler() {
+		// does nothing by default
+	}
+
+	public List<String> problems;
+
+	public List<String> getProblems() {
+		if (problems == null) {
+			problems = new ArrayList<String>();
 		}
-		return probs;
+		return problems;
 	}
 
 	public Set<File> getInputSources() {
 		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("not implemented");
 	}
 
-	public CtFolderVirtual getSource() {
-		return source;
+	public CtVirtualFolder getSource() {
+		return sources;
 	}
 
-	public CtFolderVirtual getTemplates() {
+	public CtVirtualFolder getTemplates() {
 		return templates;
 	}
 
 	public Set<File> getTemplateSources() {
 		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("not implemented");
+	}
+
+	public Factory getFactory() {
+		return factory;
+	}
+
+	public void setFactory(Factory factory) {
+		this.factory = factory;
+	}
+
+	public JDTCompiler getCompiler() {
+		return compiler;
 	}
 
 }
