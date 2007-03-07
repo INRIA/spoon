@@ -23,7 +23,7 @@ import java.util.List;
 import spoon.support.builder.CtFile;
 import spoon.support.builder.CtFolder;
 
-public class CtFolderVirtual implements CtFolder {
+public class CtVirtualFolder implements CtFolder {
 	List<CtFile> files = new ArrayList<CtFile>();
 
 	List<CtFolder> folders = new ArrayList<CtFolder>();

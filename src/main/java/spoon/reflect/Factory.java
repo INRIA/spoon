@@ -56,6 +56,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.builder.SpoonBuildingManager;
 
 /**
  * This class defines the entry point API to create and access the program's
@@ -246,7 +247,7 @@ public class Factory implements Serializable {
 		}
 		return CompilationUnit;
 	}
-	
+
 	private TemplateFactory Template;
 
 	/**
@@ -301,20 +302,15 @@ public class Factory implements Serializable {
 		this.Core.setMainFactory(this);
 	}
 
-	private transient Builder builder;
+	protected transient Builder builder;
 
 	/**
-	 * Returns the builder that was used to build the model of this factory ({@link Builder#build(Factory)}).
+	 * Returns a builder for this factory (creates it if not existing yet).
 	 */
 	public Builder getBuilder() {
+		if (builder == null)
+			builder = new SpoonBuildingManager(this);
 		return builder;
-	}
-
-	/**
-	 * Sets the builder (used in {@link Builder#build(Factory)}).
-	 */
-	public void setBuilder(Builder builder) {
-		this.builder = builder;
 	}
 
 	/**
@@ -377,8 +373,7 @@ public class Factory implements Serializable {
 	 * @return an array of type T
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T convertArray(Class<T> type,
-			Collection<Object> val) {
+	public <T> T convertArray(Class<T> type, Collection<Object> val) {
 		if (type.equals(boolean.class)) {
 			boolean[] ret = new boolean[val.size()];
 			int i = 0;
@@ -472,5 +467,5 @@ public class Factory implements Serializable {
 		}
 		return null;
 	}
-	
+
 }

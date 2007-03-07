@@ -172,10 +172,16 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 		return units;
 	}
 
+	INameEnvironment environment=null;
+	
+	public void setEnvironment(INameEnvironment environment) {
+		this.environment=environment;
+	}
+	
 	public CompilationUnitDeclaration[] getUnits(List<CtFile> streams,Factory f)
 			throws Exception {
 		this.startTime = System.currentTimeMillis();
-		INameEnvironment environment = f.getEnvironment().getLibraries();
+		INameEnvironment environment = this.environment;
 		if(environment == null)
 			environment = getLibraryAccess();
 		this.batchCompiler = new Compiler(environment, getHandlingPolicy(),

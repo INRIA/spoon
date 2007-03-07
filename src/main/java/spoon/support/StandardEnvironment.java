@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.xml.sax.SAXException;
 
 import spoon.processing.Environment;
@@ -350,8 +349,4 @@ public class StandardEnvironment implements Serializable, Environment {
 		return ".";
 	}
 
-	public INameEnvironment getLibraries() {
-		return null;
-	}
-	
 }

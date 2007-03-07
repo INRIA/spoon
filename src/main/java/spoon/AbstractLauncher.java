@@ -43,7 +43,6 @@ import spoon.support.builder.CtFile;
 import spoon.support.builder.CtFolder;
 import spoon.support.builder.CtResource;
 import spoon.support.builder.FileFactory;
-import spoon.support.builder.SpoonBuildingManager;
 import spoon.support.builder.support.CtFolderZip;
 import spoon.support.processing.SpoonletXmlHandler;
 
@@ -123,7 +122,7 @@ public abstract class AbstractLauncher {
 	 */
 	protected boolean build() {
 		// building
-		Builder builder = new SpoonBuildingManager();
+		Builder builder = getFactory().getBuilder();
 
 		try {
 			for (CtResource f : getInputSources()) {
@@ -140,7 +139,7 @@ public abstract class AbstractLauncher {
 		}
 		boolean success=false;
 		try {
-			success=builder.build(getFactory());
+			success=builder.build();
 		} catch (Exception e) {
 			getFactory().getEnvironment().report(null, Severity.ERROR,
 					"Error while loading resource : " + e.getMessage());
