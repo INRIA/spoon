@@ -48,6 +48,8 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 		return componentType.getSimpleName();
 	}
 
+	
+	
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtArrayTypeReference(this);
 	}
@@ -72,6 +74,15 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 		if (c == null)
 			return null;
 		return (Class) Array.newInstance(c, 0).getClass();
+	}
+
+	public int getDimensionCount() {
+		if (getComponentType() instanceof CtArrayTypeReference) {
+			return ((CtArrayTypeReference<?>) getComponentType())
+					.getDimensionCount() + 1;
+		} else {
+			return 1;
+		}
 	}
 
 }
