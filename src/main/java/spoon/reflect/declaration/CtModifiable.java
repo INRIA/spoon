@@ -19,10 +19,12 @@ package spoon.reflect.declaration;
 
 import java.util.Set;
 
+import spoon.processing.FactoryAccessor;
+
 /**
  * This interface defines an element that accepts modifiers.
  */
-public interface CtModifiable {
+public interface CtModifiable extends FactoryAccessor {
 	/**
 	 * Returns the modifiers of this element, excluding annotations. Implicit
 	 * modifiers, such as the {@code public} and {@code static} modifiers of
