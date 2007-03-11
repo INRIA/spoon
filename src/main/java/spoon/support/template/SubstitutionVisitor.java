@@ -239,9 +239,10 @@ public class SubstitutionVisitor extends CtScanner {
 					CtStatement body = foreach.getBody();
 					for (int i = 0; i < value.length; i++) {
 						CtStatement b = foreach.getFactory().Core().clone(body);
-						for(CtVariableAccess va:Query.getElements(b, new VariableAccessFilter(foreach
-								.getVariable().getReference()))) {
-							va.replace((CtElement)value[i]);
+						for (CtVariableAccess va : Query.getElements(b,
+								new VariableAccessFilter(foreach.getVariable()
+										.getReference()))) {
+							va.replace((CtElement) value[i]);
 						}
 						l.getStatements().add(b);
 					}
@@ -424,7 +425,6 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <T> void scanCtTypedElement(CtTypedElement<T> e) {
 			if (e.getType() != null
-					&& (!(e.getType() instanceof CtArrayTypeReference))
 					&& parameterNames.contains(e.getType().getSimpleName())) {
 				// replace type parameters
 				// TODO: this would probably not work with inner classes!!!
@@ -432,9 +432,19 @@ public class SubstitutionVisitor extends CtScanner {
 				Object o = Parameters.getValue(template, e.getType()
 						.getSimpleName(), null);
 				if (o instanceof Class) {
-					t = f.Type().createReference(((Class<T>) o));
-				} else if (o instanceof CtTypeReference) {
-					t = (CtTypeReference<T>) o;
+					// TODO: CHECK THAT THIS IS STILL WORKING
+					o = f.Type().createReference(((Class<T>) o));
+				}
+				if (o instanceof CtTypeReference) {
+					if (e.getType() instanceof CtArrayTypeReference
+							&& !(o instanceof CtArrayTypeReference)) {
+						t = e.getFactory().Type().createArrayReference(
+								(CtTypeReference) o,
+								((CtArrayTypeReference) e.getType())
+										.getDimensionCount());
+					} else {
+						t = (CtTypeReference<T>) o;
+					}
 					e.setType(t);
 				} else {
 					throw new RuntimeException(
