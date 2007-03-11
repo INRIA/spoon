@@ -4,7 +4,10 @@
     <author>Renaud Pawlak</author>
   </properties>
   <body>
-    <release version="1.1.1" date="2007-02-20" description="???">
+    <release version="1.2" date="2007-02-20" description="???">
+      <action dev="Renaud Pawlak" type="add" due-to="Lionel Seinturier">better doc for the CtArrayTypeReference interface (feature request #1826)</action>
+      <action dev="Renaud Pawlak" type="add" due-to="Horia Ciu">handle arrays better in template substitution (bug #2121)</action>
+      <action dev="Renaud Pawlak" type="add" due-to="Horia Ciu">added a method to get the dimension of an array type reference</action>
       <action dev="Renaud Pawlak" type="fix" due-to="Horia Ciu">fix model builing bug when the condition of a for loop is empty</action>
       <action dev="Renaud Pawlak" type="add" due-to="Horia Ciu">support length and foreach on array template parameters</action>
       <action dev="Renaud Pawlak" type="fix">better support of constructors in the symbolic evaluator</action>
