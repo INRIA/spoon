@@ -254,7 +254,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		void enter(CtElement e, ASTNode node) {
 			stack.push(new ASTPair(e, node));
 			// aststack.push(node);
-			if (compilationunitdeclaration != null) {				
+			if (compilationunitdeclaration != null) {
 				CoreFactory cf = factory.Core();
 				CompilationUnit cu = factory.CompilationUnit().create(
 						new String(compilationunitdeclaration.getFileName()));
@@ -2255,7 +2255,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				a.traverse(this, methodDeclaration.scope);
 
 		// Create block
-		if (!methodDeclaration.isAbstract()) {
+		if (!methodDeclaration.isAbstract()
+				&& (methodDeclaration.modifiers & ClassFileConstants.AccNative) == 0) {
 			CtBlock<?> b = factory.Core().createBlock();
 			context.enter(b, methodDeclaration);
 		}
