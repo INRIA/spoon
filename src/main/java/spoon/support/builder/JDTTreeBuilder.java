@@ -1000,6 +1000,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ret.add(ModifierKind.ABSTRACT);
 		if ((mod & ClassFileConstants.AccStrictfp) != 0)
 			ret.add(ModifierKind.STRICTFP);
+		if ((mod & ClassFileConstants.AccNative) != 0)
+			ret.add(ModifierKind.NATIVE);
 		return ret;
 	}
 
