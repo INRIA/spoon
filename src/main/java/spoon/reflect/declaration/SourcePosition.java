@@ -49,12 +49,26 @@ public interface SourcePosition extends Cloneable {
 	int getLine();
 
 	/**
+	 * Gets the end line in the source file (1 indexed). Prefer using
+	 * {@link #getSourceEnd()}}.
+	 */
+	int getEndLine();
+
+	/**
 	 * Gets the column in the source file (1 indexed). This method is slow
 	 * because it has to calculate the column number depending on
 	 * {@link Environment#getTabulationSize()} and
 	 * {@link CompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceStart()}.
 	 */
 	int getColumn();
+
+	/**
+	 * Gets the end column in the source file (1 indexed). This method is slow
+	 * because it has to calculate the column number depending on
+	 * {@link Environment#getTabulationSize()} and
+	 * {@link CompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceEnd()}.
+	 */
+	int getEndColumn();
 
 	/**
 	 * Clones this position.

@@ -20,6 +20,7 @@ package spoon.reflect.visitor;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -100,6 +101,8 @@ import spoon.support.util.SortedList;
  * A visitor for generating Java code from the program compile-time metamodel.
  */
 public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
+
+	Map<Integer, Integer> lineNumberMapping = new HashMap<Integer, Integer>();
 
 	/**
 	 * A scanner that calculates the imports for a given model.
@@ -288,6 +291,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 	 * Enters an expression.
 	 */
 	protected void enterCtExpression(CtExpression<?> e) {
+		if (e.getPosition() != null) {
+			lineNumberMapping.put(line, e.getPosition().getLine());
+		}
 		if (shouldSetBracket(e)) {
 			context.parenthesedExpression.push(e);
 			write("(");
@@ -307,6 +313,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 	 * Enters a statement.
 	 */
 	protected void enterCtStatement(CtStatement s) {
+		if (s.getPosition() != null) {
+			lineNumberMapping.put(line, s.getPosition().getLine());
+		}
 		writeAnnotations(s);
 		if (s.getLabel() != null)
 			write(s.getLabel()).write(" : ");
@@ -1191,6 +1200,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 		if (m.getBody() != null) {
 			write(" ");
 			visitCtBlock(m.getBody());
+			if (m.getBody().getStatements().isEmpty()
+					|| !(m.getBody().getStatements().get(
+							m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
+				lineNumberMapping.put(line, m.getBody().getPosition()
+						.getEndLine());
+			}
 		} else {
 			write(";");
 		}
@@ -1357,6 +1372,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 	}
 
 	<T> void visitCtSimpleType(CtSimpleType<T> type) {
+		lineNumberMapping.put(line, type.getPosition().getLine());
 		if (type.isTopLevel()) {
 			context.currentTopLevel = type;
 		}
@@ -1612,12 +1628,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 		return this;
 	}
 
+	int line = 1;
+
 	/**
 	 * Generates a new line starting with the current number of tabs.
 	 */
 	public DefaultJavaPrettyPrinter writeln() {
 		// context.currentLength = 0;
 		sbf.append(System.getProperty("line.separator"));
+		line++;
 		return writeTabs();
 	}
 
@@ -1749,5 +1768,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 			scan(t);
 			writeln().writeln();
 		}
+	}
+
+	public Map<Integer, Integer> getLineNumberMapping() {
+		return lineNumberMapping;
 	}
 }
