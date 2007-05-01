@@ -113,6 +113,10 @@ public class SourcePositionImpl implements SourcePosition, Cloneable,
 		return searchColumnNumber(lineSeparatorPositions, sourceStart);
 	}
 
+	public int getEndColumn() {
+		return searchColumnNumber(lineSeparatorPositions, sourceEnd);
+	}
+
 	public File getFile() {
 		if (compilationUnit == null)
 			return null;
@@ -121,6 +125,10 @@ public class SourcePositionImpl implements SourcePosition, Cloneable,
 
 	public int getLine() {
 		return searchLineNumber(lineSeparatorPositions, sourceStart);
+	}
+
+	public int getEndLine() {
+		return searchLineNumber(lineSeparatorPositions, sourceEnd);
 	}
 
 	public int getSourceEnd() {

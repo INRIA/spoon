@@ -256,14 +256,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 			// aststack.push(node);
 			if (compilationunitdeclaration != null) {
 				CoreFactory cf = factory.Core();
+				int sourceStart = node.sourceStart;
+				int sourceEnd = node.sourceEnd;
+				if ((e instanceof CtBlock)
+						&& (node instanceof MethodDeclaration)) {
+					sourceStart = ((MethodDeclaration) node).bodyStart;
+					sourceEnd = ((MethodDeclaration) node).bodyEnd;
+				}
 				CompilationUnit cu = factory.CompilationUnit().create(
 						new String(compilationunitdeclaration.getFileName()));
 				e
 						.setPosition(cf
 								.createSourcePosition(
 										cu,
-										node.sourceStart,
-										node.sourceEnd,
+										sourceStart,
+										sourceEnd,
 										compilationunitdeclaration.compilationResult.lineSeparatorPositions));
 			}
 			ASTPair pair = stack.peek();
@@ -2410,6 +2417,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					fa
 							.setType(references
 									.getTypeReference(qualifiedNameReference.resolvedType));
+					va.setParent(fa);
 					va = fa;
 				}
 			}

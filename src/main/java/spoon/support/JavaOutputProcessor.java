@@ -22,7 +22,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
@@ -68,16 +70,19 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		// super.init();
 	}
 
+	Map<String, Map<Integer, Integer>> lineNumberMappings = new HashMap<String, Map<Integer, Integer>>();
+
 	/**
 	 * Creates the Java file associated to the given element.
 	 */
 	public void createJavaFile(CtSimpleType<?> element) {
 
 		CompilationUnit cu = null;
-		if(element.getPosition()!=null) element.getPosition().getCompilationUnit();
+		if (element.getPosition() != null)
+			cu = element.getPosition().getCompilationUnit();
 
 		// skip non-main types
-		if (cu != null && cu.getMainType()!=element)
+		if (cu != null && cu.getMainType() != element)
 			return;
 
 		List<CtSimpleType<?>> toBePrinted = new ArrayList<CtSimpleType<?>>();
@@ -160,10 +165,15 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 					+ File.separatorChar + element.getSimpleName()
 					+ DefaultJavaPrettyPrinter.FILE_EXTENSION);
 			file.createNewFile();
-			if (!printedFiles.contains(file))
+			if (!printedFiles.contains(file)) {
 				printedFiles.add(file);
+			}
 			stream = new PrintStream(file);
 			stream.print(printer.getResult());
+			for (CtSimpleType t : toBePrinted) {
+				lineNumberMappings.put(t.getQualifiedName(), printer
+						.getLineNumberMapping());
+			}
 			stream.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -187,6 +197,10 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 
 	public void setOutputDirectory(File directory) {
 		this.directory = directory;
+	}
+
+	public Map<String, Map<Integer, Integer>> getLineNumberMappings() {
+		return lineNumberMappings;
 	}
 
 }

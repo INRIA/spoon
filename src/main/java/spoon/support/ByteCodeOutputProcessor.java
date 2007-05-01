@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.support.util.ClassFileUtil;
 import spoon.support.util.JDTCompiler;
 
 /**
@@ -46,6 +47,8 @@ public class ByteCodeOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	private List<ICompilationUnit> units = new ArrayList<ICompilationUnit>();
 
 	private List<File> printed = new ArrayList<File>();
+
+	private List<String> printedTypes = new ArrayList<String>();
 
 	private JavaOutputProcessor javaPrinter;
 
@@ -118,11 +121,18 @@ public class ByteCodeOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			getOutputDirectory().mkdirs();
 
 			for (ClassFile f : compiler.getClassFiles()) {
+				String fileName = new String(f.fileName()).replace('/',
+						File.separatorChar)
+						+ CLASS_EXT;
+				ClassFileUtil.adjustLineNumbers(f.getBytes(), f.headerOffset
+						+ f.methodCountOffset - 1, javaPrinter
+						.getLineNumberMappings().get(
+								new String(f.fileName()).replace('/', '.')));
+				ClassFileUtil.writeToDisk(true, getOutputDirectory()
+						.getAbsolutePath(), fileName, f.getBytes());
 
-				ClassFile.writeToDisk(true, getOutputDirectory()
-						.getAbsolutePath(), new String(f.fileName()).replace(
-						'/', File.separatorChar)
-						+ CLASS_EXT, f);
+				printed.add(new File(getOutputDirectory(), fileName));
+				printedTypes.add(new String(f.fileName()).replace('/', '.'));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

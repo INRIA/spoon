@@ -1,6 +1,7 @@
 package spoon.reflect.visitor;
 
 import java.util.List;
+import java.util.Map;
 
 import spoon.reflect.declaration.CtSimpleType;
 
@@ -19,7 +20,6 @@ public interface JavaPrettyPrinter {
 	 */
 	final String PACKAGE_DECLARATION = "package-info" + FILE_EXTENSION;
 
-
 	/**
 	 * Gets the package declaration contents.
 	 */
@@ -33,6 +33,12 @@ public interface JavaPrettyPrinter {
 	/**
 	 * Calculates the resulting source file for a list of types.
 	 */
-	 void calculate(List<CtSimpleType<?>> types);
+	void calculate(List<CtSimpleType<?>> types);
+
+	/**
+	 * Gets the line number mapping between the generated code and the original
+	 * code.
+	 */
+	Map<Integer, Integer> getLineNumberMapping();
 
 }

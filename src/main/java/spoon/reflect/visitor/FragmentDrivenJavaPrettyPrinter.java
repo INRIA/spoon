@@ -1,7 +1,9 @@
 package spoon.reflect.visitor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import spoon.processing.Environment;
 import spoon.reflect.declaration.CompilationUnit;
@@ -21,6 +23,8 @@ public class FragmentDrivenJavaPrettyPrinter implements JavaPrettyPrinter {
 		}
 	}
 
+	Map<Integer,Integer> lineNumberMapping=new HashMap<Integer,Integer>();
+	
 	public StringBuffer getResult() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(compilationUnit.getOriginalSourceCode());
@@ -55,6 +59,10 @@ public class FragmentDrivenJavaPrettyPrinter implements JavaPrettyPrinter {
 
 	public void calculate(List<CtSimpleType<?>> types) {
 		// do nothing
+	}
+
+	public Map<Integer, Integer> getLineNumberMapping() {
+		return lineNumberMapping;
 	}
 
 }
