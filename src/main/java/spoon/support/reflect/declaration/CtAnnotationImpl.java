@@ -73,7 +73,25 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 
 	CtTypeReference<A> annotationType;
 
-	Map<String, Object> elementValues = new TreeMap<String, Object>();
+	Map<String, Object> elementValues = new TreeMap<String, Object>(){
+		
+		@Override
+		public Object put(String key, Object value) {
+			if(value instanceof Class[]){
+				Class[] valsNew = (Class[])value;
+				ArrayList ret = new ArrayList(valsNew.length);
+				
+				for (int i = 0; i < valsNew.length; i++) {
+					Class class1 = valsNew[i];
+					ret.add(i, getFactory().Type().createReference(class1));
+				}
+				return super.put(key, ret);
+			}
+			return super.put(key, value);
+
+		}
+		
+	};
 
 	public CtAnnotationImpl() {
 		super();
