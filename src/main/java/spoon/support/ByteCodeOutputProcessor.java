@@ -124,6 +124,7 @@ public class ByteCodeOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 				String fileName = new String(f.fileName()).replace('/',
 						File.separatorChar)
 						+ CLASS_EXT;
+//				System.out.println("--- adjusting "+fileName);
 				ClassFileUtil.adjustLineNumbers(f.getBytes(), f.headerOffset
 						+ f.methodCountOffset - 1, javaPrinter
 						.getLineNumberMappings().get(
