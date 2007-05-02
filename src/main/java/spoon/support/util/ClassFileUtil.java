@@ -42,9 +42,10 @@ public class ClassFileUtil {
 			Map<Integer, Integer> lineNumberMapping) {
 		if (lineNumberMapping == null)
 			return;
-		// printBytes(bytes, methodsOffset);
+//		printBytes(bytes, methodsOffset);
 		int offset = methodsOffset + 2;
 		int methodCount = u2(bytes, methodsOffset);
+//		System.out.println("- adjusting " + methodCount + " methods...");
 		for (int i = 0; i < methodCount; i++) {
 			offset = adjustMethod(bytes, offset, lineNumberMapping);
 		}
@@ -86,7 +87,7 @@ public class ClassFileUtil {
 			Map<Integer, Integer> lineNumberMapping) {
 		String attrName = getPoolString(bytes, u2(bytes, offset));
 		if ("LineNumberTable".equals(attrName)) {
-//			System.out.println("found line number table");
+			// System.out.println("found line number table");
 			int offset2 = offset + 6;
 			int lineCount = u2(bytes, offset2);
 			offset2 += 2;
@@ -94,14 +95,14 @@ public class ClassFileUtil {
 				int org = u2(bytes, offset2 + 2);
 				Integer pos = lineNumberMapping.get(org);
 				if (pos != null) {
-					int ipos=(int)pos;
-//					System.out.println("adjusting " + org + " -> "
-//							+ pos);
+					int ipos = (int) pos;
+					// System.out.println("adjusting " + org + " -> "
+					// + pos);
 					bytes[offset2 + 2] = (byte) (ipos >> 8);
 					bytes[offset2 + 3] = (byte) (ipos);
 					// ln.setLineNumber(pos.getLine());
 				} else {
-					//System.out.println("WARNING: no position for " + org);
+					// System.out.println("WARNING: no position for " + org);
 				}
 				offset2 += 4;
 			}
@@ -120,17 +121,38 @@ public class ClassFileUtil {
 
 	static String getPoolString(byte[] bytes, int index) {
 		int offset = 10;
-		while (index > 1) {
+		int i = index;
+		while (i > 1) {
+			if (bytes[offset] == ConstantType.Double
+					|| bytes[offset] == ConstantType.Long) {
+				// stupid adjustment because double and long take 2 entries
+				// many thanks to the guy who made this !$@% choice!
+				i--;
+			}
 			offset = skipPoolConstant(bytes, offset);
-			index--;
+			i--;
 		}
-		byte[] string = new byte[u2(bytes, offset + 1)];
-		System.arraycopy(bytes, offset + 3, string, 0, u2(bytes, offset + 1));
+		if (bytes[offset] != ConstantType.Utf8) {
+			throw new RuntimeException(
+					"error in pool constant: unable to get utf8 at " + index
+							+ " (o=" + offset + ")");
+		}
+		int length = u2(bytes, offset + 1);
+		byte[] string = new byte[length];
+		try {
+			System.arraycopy(bytes, offset + 3, string, 0, length);
+		} catch (Exception e) {
+			System.err.println("error getting the string: l=" + length + ", o="
+					+ offset);
+			printBytes(bytes, offset + 3);
+			e.printStackTrace();
+		}
 		return new String(string);
 	}
 
 	static int skipPoolConstant(byte[] bytes, int offset) {
-		switch (bytes[offset]) {
+		byte constantType = bytes[offset];
+		switch (constantType) {
 		case ConstantType.String:
 		case ConstantType.Class:
 			return offset + 3;
@@ -144,7 +166,12 @@ public class ClassFileUtil {
 		case ConstantType.Double:
 		case ConstantType.Long:
 			return offset + 9;
+			// return skipPoolConstant(bytes, offset);
 		case ConstantType.Utf8:
+			// int length = u2(bytes, offset + 1);
+			// byte[] string = new byte[length];
+			// System.arraycopy(bytes, offset + 3, string, 0, length);
+			// String s=new String(string);
 			return offset + 3 + u2(bytes, offset + 1);
 		default:
 			throw new RuntimeException("invalid constant pool");
@@ -200,7 +227,7 @@ public class ClassFileUtil {
 		}
 	}
 
-	public static String buildAllDirectoriesInto(String outputPath,
+	static String buildAllDirectoriesInto(String outputPath,
 			String relativeFileName) throws IOException {
 		char fileSeparatorChar = File.separatorChar;
 		String fileSeparator = File.separator;
