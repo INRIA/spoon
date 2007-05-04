@@ -1,7 +1,10 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.builder.CtSnippetCompilationError;
+import spoon.support.builder.SnippetCompiler;
 
 public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
 		CtCodeSnippetStatement {
@@ -22,6 +25,8 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
 		this.value = value;
 	}
 	
-	
+	public CtStatement compile() throws CtSnippetCompilationError{
+		return SnippetCompiler.compileStatement(this);
+	}
 
 }

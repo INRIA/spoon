@@ -28,7 +28,7 @@ import spoon.support.builder.support.CtVirtualFile;
 public class SnippetCompiler {
 
 	@SuppressWarnings("unchecked")
-	static public <T extends CtStatement> T compileStatement(
+	static public <T> T compileStatement(
 			CtCodeSnippetStatement st, Class<T> expectedType)
 			throws CtSnippetCompilationError {
 		CtStatement s = compileStatement(st);
@@ -39,9 +39,9 @@ public class SnippetCompiler {
 				+ st.toString());
 	}
 
-	static public void compileAndReplaceSnippetsIn(CtType<?> c) {
+	static public void compileAndReplaceSnippetsIn(CtSimpleType<?> c) {
 		Factory f = c.getFactory();
-		CtType<?> workCopy = c;
+		CtSimpleType<?> workCopy = c;
 		Set<ModifierKind> backup = new TreeSet<ModifierKind>(workCopy
 				.getModifiers());
 
@@ -155,12 +155,12 @@ public class SnippetCompiler {
 
 	@SuppressWarnings("unchecked")
 	static public <T> CtExpression<T> compileExpression(
-			CtCodeSnippetExpression<T> st, Class<T> cl)
+			CtCodeSnippetExpression<T> expr)
 			throws CtSnippetCompilationError {
 		// create wrapping template
 
-		Factory f = st.getFactory();
-		CtClass<?> w = createWrapper(st, cl, f);
+		Factory f = expr.getFactory();
+		CtClass<?> w = createWrapper(expr, f);
 
 		String contents = w.toString();
 
@@ -191,22 +191,22 @@ public class SnippetCompiler {
 		return ret.getReturnedExpression();
 	}
 
-	private static <T> CtClass<?> createWrapper(CtExpression<T> st,
-			Class<T> cl, Factory f) {
+	private static <R,B extends R> CtClass createWrapper(CtExpression<B> st,Factory f) {
 		CtClass<?> w = f.Class().create("Wrapper");
 
-		CtBlock<T> body = f.Core().createBlock();
-		CtReturn<T> ret = f.Core().createReturn();
+		CtBlock<B> body = f.Core().createBlock();
+		CtReturn<B> ret = f.Core().createReturn();
 		ret.setReturnedExpression(st);
 		body.getStatements().add(ret);
 
 		Set<ModifierKind> x = new TreeSet<ModifierKind>();
 
-		f.Method().create(w, x, f.Type().createReference(cl), "wrap",
+		f.Method().create(w, x, f.Type().createReference(Object.class), "wrap",
 				new ArrayList<CtParameter<?>>(),
 				new TreeSet<CtTypeReference<? extends Throwable>>(), body);
 
 		return w;
 	}
 
+	
 }

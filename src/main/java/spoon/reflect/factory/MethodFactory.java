@@ -71,12 +71,12 @@ public class MethodFactory extends ExecutableFactory {
 	 * @param body
 	 *            the method's body
 	 */
-	public <T> CtMethod<T> create(CtClass<?> target,
-			Set<ModifierKind> modifiers, CtTypeReference<T> returnType,
+	public <R,B extends R> CtMethod<R> create(CtClass<?> target,
+			Set<ModifierKind> modifiers, CtTypeReference<R> returnType,
 			String name, List<CtParameter<?>> parameters,
 			Set<CtTypeReference<? extends Throwable>> thrownTypes,
-			CtBlock<T> body) {
-		CtMethod<T> method = create(target, modifiers, returnType, name,
+			CtBlock<B> body) {
+		CtMethod<R> method = create(target, modifiers, returnType, name,
 				parameters, thrownTypes);
 		method.setBody(body);
 		body.setParent(method);
