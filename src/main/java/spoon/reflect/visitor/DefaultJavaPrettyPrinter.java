@@ -1200,9 +1200,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 		if (m.getBody() != null) {
 			write(" ");
 			visitCtBlock(m.getBody());
-			if (m.getBody().getStatements().isEmpty()
-					|| !(m.getBody().getStatements().get(
-							m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
+			if (m.getBody().getPosition() != null
+					&& (m.getBody().getStatements().isEmpty() || !(m.getBody()
+							.getStatements().get(
+									m.getBody().getStatements().size() - 1) instanceof CtReturn))) {
 				lineNumberMapping.put(line, m.getBody().getPosition()
 						.getEndLine());
 			}
@@ -1372,7 +1373,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 	}
 
 	<T> void visitCtSimpleType(CtSimpleType<T> type) {
-		lineNumberMapping.put(line, type.getPosition().getLine());
+		if (type.getPosition() != null) {
+			lineNumberMapping.put(line, type.getPosition().getLine());
+		}
 		if (type.isTopLevel()) {
 			context.currentTopLevel = type;
 		}
