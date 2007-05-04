@@ -118,6 +118,7 @@ import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableAccessImpl;
 import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.declaration.CompilationUnitImpl;
+import spoon.support.reflect.declaration.CompilationUnitVirtualImpl;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
 import spoon.support.reflect.declaration.CtAnnotationTypeImpl;
 import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
