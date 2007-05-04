@@ -73,44 +73,14 @@ public interface CtExecutableReference<T> extends CtReference,
 	/**
 	 * Returns <code>true</code> if this executable overrides the given
 	 * executable.
-	 * @deprecated Use {@link #isOverriding(CtExecutableReference)} instead
-	 */
-	boolean isOverloading(CtExecutableReference<?> executable);
-
-	/**
-	 * Returns <code>true</code> if this executable overrides the given
-	 * executable.
 	 */
 	boolean isOverriding(CtExecutableReference<?> executable);
 
 	/**
 	 * Returns the executable overriden by this one, if exists (null
 	 * otherwise).
-	 * @deprecated Use {@link #getOverridingExecutable()} instead
-	 */
-	CtExecutableReference<?> getOverloadedExecutable();
-
-	/**
-	 * Returns the executable overriden by this one, if exists (null
-	 * otherwise).
 	 */
 	CtExecutableReference<?> getOverridingExecutable();
-
-	/**
-	 * Gets an overriding executable for this executable from a given subtype,
-	 * if exists.
-	 * 
-	 * @param <S>
-	 *            subtype of T
-	 * @param subType
-	 *            starting bottom type to find an overriding executable
-	 *            (subtypes are not tested)
-	 * @return the first found (most concrete) executable that overrides this
-	 *         executable (null if none found)
-	 * @deprecated Use {@link #getOverridingExecutable(CtTypeReference)} instead
-	 */
-	<S extends T> CtExecutableReference<S> getOverloadingExecutable(
-			CtTypeReference<?> subType);
 
 	/**
 	 * Gets an overriding executable for this executable from a given subtype,

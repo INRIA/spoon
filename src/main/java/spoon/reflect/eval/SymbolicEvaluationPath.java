@@ -95,20 +95,28 @@ public class SymbolicEvaluationPath {
 		return res;
 	}
 
+	/**
+	 * Returns a new symbolic evaluation path that only contains the
+	 * {@link StepKind#ENTER} steps of this current path.
+	 */
 	public SymbolicEvaluationPath getEnterSteps() {
-		SymbolicEvaluationPath res=new SymbolicEvaluationPath();
-		for(SymbolicEvaluationStep s:getSteps()) {
-			if(s.kind==StepKind.ENTER) {
+		SymbolicEvaluationPath res = new SymbolicEvaluationPath();
+		for (SymbolicEvaluationStep s : getSteps()) {
+			if (s.kind == StepKind.ENTER) {
 				res.getSteps().add(s);
 			}
 		}
 		return res;
 	}
 
+	/**
+	 * Returns a new symbolic evaluation path that only contains the
+	 * {@link StepKind#EXIT} steps of this current path.
+	 */
 	public SymbolicEvaluationPath getExitSteps() {
-		SymbolicEvaluationPath res=new SymbolicEvaluationPath();
-		for(SymbolicEvaluationStep s:getSteps()) {
-			if(s.kind==StepKind.EXIT) {
+		SymbolicEvaluationPath res = new SymbolicEvaluationPath();
+		for (SymbolicEvaluationStep s : getSteps()) {
+			if (s.kind == StepKind.EXIT) {
 				res.getSteps().add(s);
 			}
 		}

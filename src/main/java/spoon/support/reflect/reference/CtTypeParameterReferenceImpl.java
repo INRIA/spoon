@@ -73,14 +73,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		return false;
 	}
 
-	/**
-	 * @deprecated Use {@link #isPrimitive()} instead
-	 */
-	@Override
-	public boolean isPrimitif() {
-		return isPrimitive();
-	}
-
 	@Override
 	public boolean isPrimitive() {
 		return false;

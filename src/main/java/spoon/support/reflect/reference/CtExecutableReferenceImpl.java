@@ -154,16 +154,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return type;
 	}
 
-	/**
-	 * @deprecated Use {@link #getOverridingExecutable(CtTypeReference<?>)}
-	 *             instead
-	 */
-	@SuppressWarnings("unchecked")
-	public <S extends T> CtExecutableReference<S> getOverloadingExecutable(
-			CtTypeReference<?> subType) {
-		return getOverridingExecutable(subType);
-	}
-
 	@SuppressWarnings("unchecked")
 	public <S extends T> CtExecutableReference<S> getOverridingExecutable(
 			CtTypeReference<?> subType) {
@@ -181,13 +171,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 			}
 		}
 		return getOverridingExecutable(c.getSuperclass());
-	}
-
-	/**
-	 * @deprecated Use {@link #isOverriding(CtExecutableReference<?>)} instead
-	 */
-	public boolean isOverloading(CtExecutableReference<?> executable) {
-		return isOverriding(executable);
 	}
 
 	public boolean isOverriding(CtExecutableReference<?> executable) {
@@ -342,13 +325,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 			}
 		}
 		return new TreeSet<ModifierKind>();
-	}
-
-	/**
-	 * @deprecated Use {@link #getOverridingExecutable()} instead
-	 */
-	public CtExecutableReference<?> getOverloadedExecutable() {
-		return getOverridingExecutable();
 	}
 
 	public CtExecutableReference<?> getOverridingExecutable() {

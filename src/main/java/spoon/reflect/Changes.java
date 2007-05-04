@@ -35,6 +35,12 @@ public class Changes {
 	List<CtElement> removed;
 
 	/**
+	 * Creates an instance to be further initialized.
+	 */
+	public Changes() {
+	}
+	
+	/**
 	 * Gets the list of elements added in the model.
 	 */
 	public List<CtElement> getAdded() {

@@ -302,6 +302,9 @@ public class Factory implements Serializable {
 		this.Core.setMainFactory(this);
 	}
 
+	/**
+	 * The builder associated to this factory.
+	 */
 	protected transient Builder builder;
 
 	/**

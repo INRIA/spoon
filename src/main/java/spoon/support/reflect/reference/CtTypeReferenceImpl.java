@@ -181,13 +181,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return type.isSubtypeOf(this);
 	}
 
-	/**
-	 * @deprecated Use {@link #isPrimitive()} instead
-	 */
-	public boolean isPrimitif() {
-		return isPrimitive();
-	}
-
 	public boolean isPrimitive() {
 		return (getSimpleName().equals("boolean")
 				|| getSimpleName().equals("byte")
