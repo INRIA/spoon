@@ -5,6 +5,7 @@
   </properties>
   <body>
     <release version="1.2" date="2007-05-04" description="???">
+      <action dev="Renaud Pawlak" type="fix">fix bug in compilation units so that they a now actually used to generate the code</action>
       <action dev="Carlos Noguera" type="add">added compilation support for code snippets</action>
       <action dev="Carlos Noguera" type="fix">allow annotation element values to be Class and Class[]</action>
       <action dev="Renaud Pawlak" type="add">added methods to get the end line and column of a source position</action>
