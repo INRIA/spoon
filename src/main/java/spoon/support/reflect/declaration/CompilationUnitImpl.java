@@ -15,8 +15,8 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	Factory factory;
 
-	List<CtSimpleType<?>> declaredTypes=new ArrayList<CtSimpleType<?>>();
-	
+	List<CtSimpleType<?>> declaredTypes = new ArrayList<CtSimpleType<?>>();
+
 	public List<CtSimpleType<?>> getDeclaredTypes() {
 		return declaredTypes;
 	}
@@ -28,17 +28,20 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	public CtSimpleType<?> getMainType() {
-		if(getFile()==null) return getDeclaredTypes().get(0);
-		for(CtSimpleType<?> t:getDeclaredTypes()) {
-			String name=getFile().getName();
-			name=name.substring(0,name.lastIndexOf("."));
-			if(t.getSimpleName().equals(name)) return t;
+		if (getFile() == null)
+			return getDeclaredTypes().get(0);
+		for (CtSimpleType<?> t : getDeclaredTypes()) {
+			String name = getFile().getName();
+			name = name.substring(0, name.lastIndexOf("."));
+			if (t.getSimpleName().equals(name))
+				return t;
 		}
-		throw new RuntimeException("Inconsistent compilation unit: "+file);
+		throw new RuntimeException("inconsistent compilation unit: '" + file
+				+ "': declared types are " + getDeclaredTypes());
 	}
 
 	public void setDeclaredTypes(List<CtSimpleType<?>> types) {
-		this.declaredTypes=types;
+		this.declaredTypes = types;
 	}
 
 	public void setFile(File file) {
