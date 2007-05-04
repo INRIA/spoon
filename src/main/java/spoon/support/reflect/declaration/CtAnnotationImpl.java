@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtFieldAccess;
@@ -73,24 +74,31 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 
 	CtTypeReference<A> annotationType;
 
-	Map<String, Object> elementValues = new TreeMap<String, Object>(){
-		
+	Map<String, Object> elementValues = new TreeMap<String, Object>() {
+
+		private static final long serialVersionUID = 3501647177461995350L;
+
 		@Override
 		public Object put(String key, Object value) {
-			if(value instanceof Class[]){
-				Class[] valsNew = (Class[])value;
-				ArrayList ret = new ArrayList(valsNew.length);
-				
+			if (value instanceof Class[]) {
+				Class[] valsNew = (Class[]) value;
+				ArrayList<CtTypeReference> ret = new ArrayList<CtTypeReference>(
+						valsNew.length);
+
 				for (int i = 0; i < valsNew.length; i++) {
-					Class class1 = valsNew[i];
+					Class<?> class1 = valsNew[i];
 					ret.add(i, getFactory().Type().createReference(class1));
 				}
 				return super.put(key, ret);
 			}
+			if (value instanceof Class) {
+				return super.put(key, getFactory().Type().createReference(
+						(Class<?>) value));
+			}
 			return super.put(key, value);
 
 		}
-		
+
 	};
 
 	public CtAnnotationImpl() {
@@ -286,6 +294,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 	}
 
 	public void setElementValues(Map<String, Object> values) {
-		this.elementValues = values;
+		for(Entry<String,Object> e:values.entrySet()) {
+			this.elementValues.put(e.getKey(),e.getValue());
+		}
 	}
 }
