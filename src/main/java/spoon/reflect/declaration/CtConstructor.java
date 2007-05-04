@@ -46,11 +46,4 @@ public interface CtConstructor<T> extends CtExecutable<T> {
 	 */
 	void setType(CtTypeReference<T> type);
 
-	/**
-	 * Returns true if this constructor is the implicit constructor
-	 * automatically added by the Java compiler.
-	 * @deprecated use {@link CtElement#isImplicit()}
-	 */
-	boolean isImplicitDefault();
-
 }

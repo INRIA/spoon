@@ -35,12 +35,6 @@ public interface CtTypeReference<T> extends CtReference,
 	public static final String NULL_TYPE_NAME = "<nulltype>";
 
 	/**
-	 * The name of the null type ("&lt;nulltype&gt;").
-	 * @deprecated Use {@link #NULL_TYPE_NAME} instead
-	 */
-	public static final String nulltype = NULL_TYPE_NAME;
-
-	/**
 	 * Gets the Java runtime class of the referenced type.
 	 * 
 	 * @return the Java class or null if the class is not found (not in
@@ -77,13 +71,6 @@ public interface CtTypeReference<T> extends CtReference,
 	 * instance of the given type.
 	 */
 	boolean isAssignableFrom(CtTypeReference<?> type);
-
-	/**
-	 * Return {@code true} if the referenced type is a primitive type (int,
-	 * double, boolean...).
-	 * @deprecated Use {@link #isPrimitive()} instead
-	 */
-	boolean isPrimitif();
 
 	/**
 	 * Return {@code true} if the referenced type is a primitive type (int,
