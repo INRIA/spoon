@@ -39,7 +39,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 	/**
 	 * Gets the body expression.
 	 */
-	CtBlock<R> getBody();
+	<B extends R> CtBlock<B> getBody();
 
 	/**
 	 * Gets the declaring type
@@ -67,7 +67,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 	/**
 	 * Sets the body expression.
 	 */
-	void setBody(CtBlock<R> body);
+	<B extends R> void setBody(CtBlock<B> body);
 
 	/**
 	 * Sets the parameters.

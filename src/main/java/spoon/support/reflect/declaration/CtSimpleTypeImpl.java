@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
+import spoon.support.builder.SnippetCompiler;
 import spoon.support.query.ReferenceTypeFilter;
 
 public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
@@ -135,4 +136,10 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		this.nestedTypes = nestedTypes;
 	}
 
+	public void compileAndReplaceSnippets() {
+		SnippetCompiler.compileAndReplaceSnippetsIn(this);
+		
+	}
+	
+	
 }

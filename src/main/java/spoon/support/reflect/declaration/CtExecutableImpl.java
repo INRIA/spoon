@@ -37,7 +37,7 @@ import spoon.reflect.reference.CtTypeReference;
 public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements
 		CtExecutable<R> {
 
-	CtBlock<R> body;
+	CtBlock body;
 
 	List<CtTypeReference<?>> formalTypeParameters = new ArrayList<CtTypeReference<?>>();
 
@@ -49,7 +49,8 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements
 		super();
 	}
 
-	public CtBlock<R> getBody() {
+	@SuppressWarnings("unchecked")
+	public <B extends R> CtBlock<B> getBody() {
 		return body;
 	}
 
@@ -65,7 +66,8 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements
 		return thrownTypes;
 	}
 
-	public void setBody(CtBlock<R> body) {
+	@SuppressWarnings("unchecked")
+	public <B extends R> void setBody(CtBlock<B> body) {
 		this.body = body;
 	}
 

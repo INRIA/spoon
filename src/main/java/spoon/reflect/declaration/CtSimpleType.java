@@ -20,6 +20,8 @@ package spoon.reflect.declaration;
 import java.util.List;
 import java.util.Set;
 
+import spoon.reflect.code.CtCodeSnippetExpression;
+import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -116,5 +118,14 @@ public interface CtSimpleType<T> extends CtNamedElement {
 	 * Sets some nested types.
 	 */
 	void setNestedTypes(Set<CtSimpleType<?>> nestedTypes);
+
+	/**
+	 * Compiles and replace all the code snippets that are found in this type.
+	 * 
+	 * @see CtCodeSnippet
+	 * @see CtCodeSnippetExpression
+	 * @see CtCodeSnippetStatement
+	 */
+	void compileAndReplaceSnippets();
 
 }
