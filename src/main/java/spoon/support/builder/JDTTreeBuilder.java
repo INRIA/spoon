@@ -303,7 +303,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				current.setParent(stack.peek().element);
 				exiter.child = current;
 				exiter.scan(stack.peek().element);
-			} else if (template && (current instanceof CtClass)) {
+			} 
+			if (template && (current instanceof CtClass)) {
 				factory.Template().add((CtClass<? extends Template>) current);
 			}
 		}
@@ -2720,6 +2721,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					pack = factory.Core().createPackage();
 					pack.setSimpleName(new String(packname));
 					type.setParent(pack);
+					context.enter(pack, typeDeclaration);
 				}
 			}
 			context.compilationunitdeclaration = scope.referenceContext;
