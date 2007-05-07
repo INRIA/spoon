@@ -17,7 +17,7 @@
   -->
   <poweredBy>
     <logo name="Build with Maven 2" href="http://maven.apache.org" img="images/logos/maven-feather.png" />
-    <!--logo name="CC-GNU LGPL" href="http://creativecommons.org/licenses/LGPL/2.1/" img="http://creativecommons.org/images/public/cc-LGPL-a.png" /-->
+    <logo name="Inria" href="http://gforge.inria.fr/" img="http://gforge.inria.fr/themes/inria/images/logo.png" />
   </poweredBy>
 
   <body>
