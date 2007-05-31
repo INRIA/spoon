@@ -23,7 +23,7 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * This abstract element defines a typed element.
  */
-public interface CtTypedElement<T> extends FactoryAccessor {
+public interface CtTypedElement<T> extends CtElement, FactoryAccessor {
 	/**
 	 * Gets this element's type.
 	 */
