@@ -4,7 +4,10 @@
     <author>Renaud Pawlak</author>
   </properties>
   <body>
-    <release version="1.2" date="2007-05-04" description="???">
+    <release version="1.3" date="2007-05-04" description="consolidatoin version">
+      <action dev="Renaud Pawlak" type="add" due-to="Lionel Cazenave">metamodel: CtTypedElement and CtModifiable now extend CtElement</action>
+    </release>
+    <release version="1.2" date="2007-05-04" description="consolidation version">
       <action dev="Renaud Pawlak" type="fix">code cleaning (removed deprecated elements), javadoc</action>
       <action dev="Renaud Pawlak" type="fix">fix bug in compilation units so that they a now actually used to generate the code</action>
       <action dev="Carlos Noguera" type="add">added compilation support for code snippets</action>
@@ -24,7 +27,7 @@
       <action dev="Renaud Pawlak" type="add">CtExecutableReference.isConstructor()</action>
       <action dev="Renaud Pawlak" type="add">traces to tell what processor is run in verbose mode</action>
     </release>
-    <release version="1.1" date="2007-02-13" description="???">
+    <release version="1.1" date="2007-02-13" description="consolidation version">
       <action dev="Renaud Pawlak" type="fix" due-to="Johan Fabry">fix bug #1999 (however, annonymous classes would need to be referencable in future versions)</action>
       <action dev="Renaud Pawlak" type="fix" due-to="Horia Ciu">fix a null parent in field accesses</action>
       <action dev="Renaud Pawlak" type="remove" due-to="Erol Akarsu">do not print implicit default constructors</action>
