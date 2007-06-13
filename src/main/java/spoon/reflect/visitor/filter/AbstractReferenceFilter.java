@@ -15,7 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.ReferenceFilter;

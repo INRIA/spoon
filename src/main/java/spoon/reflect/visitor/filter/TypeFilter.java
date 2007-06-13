@@ -15,15 +15,14 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
-import spoon.reflect.reference.CtReference;
+import spoon.reflect.declaration.CtElement;
 
 /**
- * This simple filter matches all the references of a given type.
+ * This simple filter matches all the elements of a given type.
  */
-public class ReferenceTypeFilter<T extends CtReference> extends
-		AbstractReferenceFilter<T> {
+public class TypeFilter<T extends CtElement> extends AbstractFilter<T> {
 
 	/**
 	 * Creates the filter.
@@ -31,11 +30,11 @@ public class ReferenceTypeFilter<T extends CtReference> extends
 	 * @param type
 	 *            the type that matches
 	 */
-	public ReferenceTypeFilter(Class<T> type) {
+	public TypeFilter(Class<T> type) {
 		super(type);
 	}
 
-	public boolean matches(T reference) {
+	public boolean matches(T element) {
 		return true;
 	}
 }

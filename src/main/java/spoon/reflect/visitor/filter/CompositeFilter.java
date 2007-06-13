@@ -15,21 +15,21 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 
 /**
  * This class defines a composite filter, which can compose several filters
- * together by using {@link spoon.support.query.FilteringOperator}.
+ * together by using {@link spoon.reflect.visitor.filter.FilteringOperator}.
  * 
  * @author Renaud Pawlak
  */
 public class CompositeFilter<T extends CtElement> implements Filter<T> {
 
 	/**
-	 * Defines the matching using {@link spoon.support.query.FilteringOperator}.
+	 * Defines the matching using {@link spoon.reflect.visitor.filter.FilteringOperator}.
 	 */
 	public boolean matches(T element) {
 		switch (operator) {

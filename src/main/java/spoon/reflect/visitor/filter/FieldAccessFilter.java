@@ -15,33 +15,29 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
-import java.lang.annotation.Annotation;
-
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.reference.CtFieldReference;
 
 /**
- * This filter matches all the elements annotated with a given annotation type.
+ * This simple filter matches all the accesses to a given field.
  */
-public class AnnotationFilter<E extends CtElement> extends AbstractFilter<E> {
-	Class<? extends Annotation> annotationType;
-
-	public AnnotationFilter(Class<? extends Annotation> annotationType) {
-		super(CtElement.class);
-		this.annotationType = annotationType;
-	}
+public class FieldAccessFilter extends AbstractFilter<CtFieldAccess<?>> {
+	CtFieldReference<?> field;
 
 	/**
-	 * Creates a new annotation filter.
+	 * Creates a new field access filter.
+	 * 
+	 * @param field
+	 *            the accessed field
 	 */
-	public AnnotationFilter(Class<E> elementType,
-			Class<? extends Annotation> annotationType) {
-		super(elementType);
-		this.annotationType = annotationType;
+	public FieldAccessFilter(CtFieldReference<?> field) {
+		super(CtFieldAccess.class);
+		this.field = field;
 	}
 
-	public boolean matches(E element) {
-		return element.getAnnotation(annotationType) != null;
+	public boolean matches(CtFieldAccess<?> fieldAccess) {
+		return fieldAccess.getVariable().equals(field);
 	}
 }

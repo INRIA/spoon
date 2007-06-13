@@ -45,7 +45,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
-import spoon.support.query.InvocationFilter;
+import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.support.template.DefaultParameterMatcher;
 import spoon.support.template.ParameterMatcher;
 import spoon.support.template.Parameters;

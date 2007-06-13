@@ -55,7 +55,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
-import spoon.support.query.VariableAccessFilter;
+import spoon.reflect.visitor.filter.VariableAccessFilter;
 import spoon.template.Local;
 import spoon.template.Parameter;
 import spoon.template.Template;

@@ -196,7 +196,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.Query;
-import spoon.support.query.TypeFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.template.Template;
 
 /**

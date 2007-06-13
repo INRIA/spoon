@@ -15,31 +15,31 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
-import spoon.reflect.reference.CtReference;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.Filter;
 
 /**
- * This simple filter matches all the references to a given element by using
- * reference equality.
+ * This class defines an abstract filter that needs to be subclassed in order to
+ * define the matching criteria.
+ * 
+ * @see spoon.reflect.visitor.Filter#matches(CtElement)
  */
-public class DirectReferenceFilter<T extends CtReference> extends
-		AbstractReferenceFilter<T> {
+public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 
-	CtReference reference;
+	Class<T> type;
 
 	/**
-	 * Creates the filter.
-	 * 
-	 * @param reference
-	 *            the matching reference
+	 * Creates a filter with the type of the potentitally matching elements.
 	 */
-	public DirectReferenceFilter(CtReference reference) {
-		super(reference.getClass());
-		this.reference = reference;
+	@SuppressWarnings("unchecked")
+	public AbstractFilter(Class<?> type) {
+		this.type = (Class<T>) type;
 	}
 
-	public boolean matches(T reference) {
-		return this.reference.equals(reference);
+	public Class<T> getType() {
+		return type;
 	}
+
 }

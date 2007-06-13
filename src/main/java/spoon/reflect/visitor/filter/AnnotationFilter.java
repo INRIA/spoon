@@ -15,26 +15,39 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
+
+import java.lang.annotation.Annotation;
 
 import spoon.reflect.declaration.CtElement;
 
 /**
- * This simple filter matches all the elements of a given type.
+ * This filter matches all the elements annotated with a given annotation type.
  */
-public class TypeFilter<T extends CtElement> extends AbstractFilter<T> {
+public class AnnotationFilter<E extends CtElement> extends AbstractFilter<E> {
+	Class<? extends Annotation> annotationType;
 
 	/**
 	 * Creates the filter.
 	 * 
-	 * @param type
-	 *            the type that matches
+	 * @param annotationType
+	 *            the annotation type which is searched
 	 */
-	public TypeFilter(Class<T> type) {
-		super(type);
+	public AnnotationFilter(Class<? extends Annotation> annotationType) {
+		super(CtElement.class);
+		this.annotationType = annotationType;
 	}
 
-	public boolean matches(T element) {
-		return true;
+	/**
+	 * Creates a new annotation filter.
+	 */
+	public AnnotationFilter(Class<E> elementType,
+			Class<? extends Annotation> annotationType) {
+		super(elementType);
+		this.annotationType = annotationType;
+	}
+
+	public boolean matches(E element) {
+		return element.getAnnotation(annotationType) != null;
 	}
 }

@@ -29,7 +29,7 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.support.query.TypeFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
