@@ -118,7 +118,7 @@ public class ByteCodeOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
             // Do compilation
             JDTCompiler compiler = new JDTCompiler();
             compiler.getCompilerOption().sourceLevel = getJavaCompliance();
-            compiler.getCompilerOption().complianceLevel = getJavaCompliance();
+            compiler.getCompilerOption().targetJDK = getJavaCompliance();
             compiler.compile(units.toArray(new ICompilationUnit[0]));
 
             getOutputDirectory().mkdirs();
