@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -54,13 +54,13 @@ public class ByteCodeOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 
 	/**
 	 * Creates a new processor for generating Java source files.
-	 * 
+	 *
 	 * @param outputDirectory
 	 *            the root output directory
 	 */
 	public ByteCodeOutputProcessor(JavaOutputProcessor javaPrinter,
 			File outputDirectory) {
-		this.outputDir = outputDirectory;
+		outputDir = outputDirectory;
 		this.javaPrinter = javaPrinter;
 	}
 
@@ -94,8 +94,9 @@ public class ByteCodeOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	}
 
 	public void process(CtSimpleType<?> element) {
-		if (!element.isTopLevel())
-			return;
+		if (!element.isTopLevel()) {
+            return;
+        }
 		// Create Java code and create ICompilationUnit
 		javaPrinter.getCreatedFiles().clear();
 		javaPrinter.createJavaFile(element);
@@ -116,6 +117,7 @@ public class ByteCodeOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			// Do compilation
 			JDTCompiler compiler = new JDTCompiler();
 			compiler.getCompilerOption().sourceLevel = getJavaCompliance();
+			compiler.getCompilerOption().complianceLevel = getJavaCompliance();
 			compiler.compile(units.toArray(new ICompilationUnit[0]));
 
 			getOutputDirectory().mkdirs();
@@ -142,7 +144,7 @@ public class ByteCodeOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	}
 
 	public void setOutputDirectory(File directory) {
-		this.outputDir = directory;
+		outputDir = directory;
 	}
 
 }
