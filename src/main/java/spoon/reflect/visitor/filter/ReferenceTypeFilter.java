@@ -15,29 +15,27 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
-import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.reference.CtReference;
 
 /**
- * This simple filter matches all the accesses to a given field.
+ * This simple filter matches all the references of a given type.
  */
-public class VariableAccessFilter extends AbstractFilter<CtVariableAccess<?>> {
-	CtVariableReference<?> variable;
+public class ReferenceTypeFilter<T extends CtReference> extends
+		AbstractReferenceFilter<T> {
 
 	/**
-	 * Creates a new field access filter.
+	 * Creates the filter.
 	 * 
-	 * @param variable
-	 *            the accessed variable
+	 * @param type
+	 *            the type that matches
 	 */
-	public VariableAccessFilter(CtVariableReference<?> variable) {
-		super(CtVariableAccess.class);
-		this.variable = variable;
+	public ReferenceTypeFilter(Class<T> type) {
+		super(type);
 	}
 
-	public boolean matches(CtVariableAccess<?> variableAccess) {
-		return variableAccess.getVariable().equals(variable);
+	public boolean matches(T reference) {
+		return true;
 	}
 }

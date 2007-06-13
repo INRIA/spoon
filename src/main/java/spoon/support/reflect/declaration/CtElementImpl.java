@@ -31,7 +31,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.support.query.AnnotationFilter;
+import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.visitor.ElementReplacer;
 import spoon.support.visitor.SignaturePrinter;
 

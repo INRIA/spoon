@@ -15,27 +15,30 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
-import spoon.reflect.code.CtCFlowBreak;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.reference.CtExecutableReference;
 
 /**
- * This simple filter matches all the occurences of a return or a throw
- * statement (end of execution flow).
+ * This simple filter matches all the accesses to a given executable or any
+ * executable that overrides it.
  */
-public class ReturnOrThrowFilter extends AbstractFilter<CtCFlowBreak> {
+public class InvocationFilter extends AbstractFilter<CtInvocation<?>> {
+	CtExecutableReference executable;
 
 	/**
-	 * Creates a filter.
+	 * Creates a new invocation filter.
+	 * 
+	 * @param executable
+	 *            the executable to be tested for being invoked
 	 */
-	public ReturnOrThrowFilter() {
-		super(CtCFlowBreak.class);
+	public InvocationFilter(CtExecutableReference executable) {
+		super(CtInvocation.class);
+		this.executable = executable;
 	}
 
-	public boolean matches(CtCFlowBreak cflowBreak) {
-		return (cflowBreak instanceof CtReturn)
-				|| (cflowBreak instanceof CtThrow);
+	public boolean matches(CtInvocation<?> invocation) {
+		return invocation.getExecutable().isOverriding(executable);
 	}
 }

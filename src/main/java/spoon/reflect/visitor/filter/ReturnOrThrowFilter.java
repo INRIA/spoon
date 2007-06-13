@@ -15,29 +15,27 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
-import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.code.CtCFlowBreak;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtThrow;
 
 /**
- * This simple filter matches all the accesses to a given field.
+ * This simple filter matches all the occurences of a return or a throw
+ * statement (end of execution flow).
  */
-public class FieldAccessFilter extends AbstractFilter<CtFieldAccess<?>> {
-	CtFieldReference<?> field;
+public class ReturnOrThrowFilter extends AbstractFilter<CtCFlowBreak> {
 
 	/**
-	 * Creates a new field access filter.
-	 * 
-	 * @param field
-	 *            the accessed field
+	 * Creates a filter.
 	 */
-	public FieldAccessFilter(CtFieldReference<?> field) {
-		super(CtFieldAccess.class);
-		this.field = field;
+	public ReturnOrThrowFilter() {
+		super(CtCFlowBreak.class);
 	}
 
-	public boolean matches(CtFieldAccess<?> fieldAccess) {
-		return fieldAccess.getVariable().equals(field);
+	public boolean matches(CtCFlowBreak cflowBreak) {
+		return (cflowBreak instanceof CtReturn)
+				|| (cflowBreak instanceof CtThrow);
 	}
 }

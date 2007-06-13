@@ -15,30 +15,29 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.reference.CtVariableReference;
 
 /**
- * This simple filter matches all the accesses to a given executable or any
- * executable that overrides it.
+ * This simple filter matches all the accesses to a given field.
  */
-public class InvocationFilter extends AbstractFilter<CtInvocation<?>> {
-	CtExecutableReference executable;
+public class VariableAccessFilter extends AbstractFilter<CtVariableAccess<?>> {
+	CtVariableReference<?> variable;
 
 	/**
-	 * Creates a new invocation filter.
+	 * Creates a new field access filter.
 	 * 
-	 * @param executable
-	 *            the executable to be tested for being invoked
+	 * @param variable
+	 *            the accessed variable
 	 */
-	public InvocationFilter(CtExecutableReference executable) {
-		super(CtInvocation.class);
-		this.executable = executable;
+	public VariableAccessFilter(CtVariableReference<?> variable) {
+		super(CtVariableAccess.class);
+		this.variable = variable;
 	}
 
-	public boolean matches(CtInvocation<?> invocation) {
-		return invocation.getExecutable().isOverriding(executable);
+	public boolean matches(CtVariableAccess<?> variableAccess) {
+		return variableAccess.getVariable().equals(variable);
 	}
 }

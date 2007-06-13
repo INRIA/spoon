@@ -93,7 +93,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Query;
-import spoon.support.query.TypeFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 /**
  * This visitor implements an abstract evaluator for the program compile-time

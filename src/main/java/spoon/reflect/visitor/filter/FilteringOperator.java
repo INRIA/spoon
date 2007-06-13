@@ -15,11 +15,11 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.query;
+package spoon.reflect.visitor.filter;
 
 /**
  * This enumeration defines the possible composition operators for filters. It
- * is used in {@link spoon.support.query.CompositeFilter}.
+ * is used in {@link spoon.reflect.visitor.filter.CompositeFilter}.
  * 
  * @see spoon.reflect.visitor.Filter
  */

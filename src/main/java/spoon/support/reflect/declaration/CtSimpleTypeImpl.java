@@ -29,8 +29,8 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.builder.SnippetCompiler;
-import spoon.support.query.ReferenceTypeFilter;
 
 public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		CtSimpleType<T> {
