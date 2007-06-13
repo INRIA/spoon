@@ -3,7 +3,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.2</version>
+  <version>1.3-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>
     Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements,
@@ -176,7 +176,7 @@
                   <sourceSet dir="${project.test.java}" />
                   <processor type="spoon.test.processing.TestProcessor" />
                 </spoon>
-                <!--delete dir="${project.build.directory}/spooned-test" /--> 
+                <!--delete dir="${project.build.directory}/spooned-test" /-->
                 <delete dir="${project.build.directory}/spooned-test-classes" />
 
                 <!--Spoon on spoon -->
@@ -189,7 +189,7 @@
                 <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned1" compile="true" build="${project.build.directory}/spooned1-classes" maxmemory="512m" fork="false">
                   <sourceSet dir="${project.src.java}" />
                 </spoon>
-                <!-- 
+                <!--
                   <javac srcdir="${project.build.directory}/spooned1" source="1.5" target="1.5" classpathref="maven.test.classpath" nowarn="true" destdir="${project.build.directory}/spooned1-classes" />
                 -->
                 <echo>PHASE 2: recompile Spoon with recompiled Spoon</echo>
@@ -238,7 +238,7 @@
               <goal>attached</goal> <!-- goals == mojos -->
             </goals>
           </execution>
-        </executions>        
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
@@ -249,7 +249,7 @@
               <goal>jar</goal>
             </goals>
           </execution>
-        </executions>        
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -265,7 +265,7 @@
               <goal>jar</goal>
             </goals>
           </execution>
-        </executions>        
+        </executions>
       </plugin>
     </plugins>
   </build>
