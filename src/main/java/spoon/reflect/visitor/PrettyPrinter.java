@@ -3,22 +3,13 @@ package spoon.reflect.visitor;
 import java.util.List;
 import java.util.Map;
 
+import spoon.reflect.declaration.CompilationUnit;
 import spoon.reflect.declaration.CtSimpleType;
 
 /**
- * This interface defines the Java pretty printers.
+ * This interface defines the pretty printers.
  */
-public interface JavaPrettyPrinter {
-
-	/**
-	 * Java file extension (.java).
-	 */
-	final String FILE_EXTENSION = ".java";
-
-	/**
-	 * Package declaration file name.
-	 */
-	final String PACKAGE_DECLARATION = "package-info" + FILE_EXTENSION;
+public interface PrettyPrinter {
 
 	/**
 	 * Gets the package declaration contents.
@@ -31,9 +22,11 @@ public interface JavaPrettyPrinter {
 	StringBuffer getResult();
 
 	/**
-	 * Calculates the resulting source file for a list of types.
+	 * Calculates the resulting source file for a list of types. The source
+	 * compilation unit is required for calculating the line numbers mapping.
 	 */
-	void calculate(List<CtSimpleType<?>> types);
+	void calculate(CompilationUnit sourceCompilationUnit,
+			List<CtSimpleType<?>> types);
 
 	/**
 	 * Gets the line number mapping between the generated code and the original
