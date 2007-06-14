@@ -4,10 +4,12 @@
     <author>Renaud Pawlak</author>
   </properties>
   <body>
-    <release version="1.3" date="" description="">
+    <release version="1.3" date="" description="fix version">
       <action dev="David Bernard" type="fix">allow compiler to generate bytecode 1.5 (with annotations)</action>
       <action dev="Renaud Pawlak" type="add" due-to="Lionel Cazenave">metamodel: CtTypedElement and CtModifiable now extend CtElement</action>
-      <action dev="Renaud Pawlak">Moved the filters to spoon/reflect/visitor/filter to that they can be publically available</action>
+      <action dev="Renaud Pawlak">moved the filters to spoon/reflect/visitor/filter to that they can be publically available</action>
+      <action dev="Renaud Pawlak and David Bernard" type="add">added CtElement.setPositions</action>
+      <action dev="Renaud Pawlak" type="add">filtered source positions that do not belong to the right source file</action>
     </release>
     <release version="1.2" date="2007-05-04" description="consolidation version">
       <action dev="Renaud Pawlak" type="fix">code cleaning (removed deprecated elements), javadoc</action>
