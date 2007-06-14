@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.SourcePosition;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
@@ -173,6 +174,15 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public void setPosition(SourcePosition position) {
 		this.position = position;
 	}
+	
+	public void setPositions(final SourcePosition position) {
+		accept(new CtScanner() {
+			public void enter(CtElement e) {
+			    e.setPosition(position);
+			}
+		});
+	}
+	
 
 	@Override
 	public String toString() {
