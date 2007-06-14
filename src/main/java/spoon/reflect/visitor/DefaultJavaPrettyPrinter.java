@@ -66,6 +66,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -100,7 +101,18 @@ import spoon.support.util.SortedList;
 /**
  * A visitor for generating Java code from the program compile-time metamodel.
  */
-public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
+public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
+
+	/**
+	 * Java file extension (.java).
+	 */
+	public static final String JAVA_FILE_EXTENSION = ".java";
+
+	/**
+	 * Package declaration file name.
+	 */
+	public static final String JAVA_PACKAGE_DECLARATION = "package-info"
+			+ JAVA_FILE_EXTENSION;
 
 	Map<Integer, Integer> lineNumberMapping = new HashMap<Integer, Integer>();
 
@@ -287,13 +299,28 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 		return this;
 	}
 
+	private void undefLine(int line) {
+		if(lineNumberMapping.get(line)==null) {
+			// overload mapping (undefined line)
+			lineNumberMapping.put(line, 0);
+		}
+	}
+
+	private void mapLine(int line, CtElement e) {
+		if (e.getPosition() != null
+				&& e.getPosition().getCompilationUnit() == sourceCompilationUnit) {
+			// only map elements comming from the source CU
+			lineNumberMapping.put(line, e.getPosition().getLine());
+		} else {
+			undefLine(line);
+		}
+	}
+
 	/**
 	 * Enters an expression.
 	 */
 	protected void enterCtExpression(CtExpression<?> e) {
-		if (e.getPosition() != null) {
-			lineNumberMapping.put(line, e.getPosition().getLine());
-		}
+		mapLine(line, e);
 		if (shouldSetBracket(e)) {
 			context.parenthesedExpression.push(e);
 			write("(");
@@ -313,9 +340,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 	 * Enters a statement.
 	 */
 	protected void enterCtStatement(CtStatement s) {
-		if (s.getPosition() != null) {
-			lineNumberMapping.put(line, s.getPosition().getLine());
-		}
+		mapLine(line, s);
 		writeAnnotations(s);
 		if (s.getLabel() != null)
 			write(s.getLabel()).write(" : ");
@@ -1200,12 +1225,19 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 		if (m.getBody() != null) {
 			write(" ");
 			visitCtBlock(m.getBody());
-			if (m.getBody().getPosition() != null
-					&& (m.getBody().getStatements().isEmpty() || !(m.getBody()
-							.getStatements().get(
-									m.getBody().getStatements().size() - 1) instanceof CtReturn))) {
-				lineNumberMapping.put(line, m.getBody().getPosition()
-						.getEndLine());
+			if (m.getBody().getPosition() != null) {
+				if (m.getBody().getPosition().getCompilationUnit() == sourceCompilationUnit) {
+					if (m.getBody().getStatements().isEmpty()
+							|| !(m.getBody().getStatements().get(
+									m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
+						lineNumberMapping.put(line, m.getBody().getPosition()
+								.getEndLine());
+					}
+				} else {
+					undefLine(line);
+				}
+			} else {
+				undefLine(line);
 			}
 		} else {
 			write(";");
@@ -1373,9 +1405,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 	}
 
 	<T> void visitCtSimpleType(CtSimpleType<T> type) {
-		if (type.getPosition() != null) {
-			lineNumberMapping.put(line, type.getPosition().getLine());
-		}
+		mapLine(line, type);
 		if (type.isTopLevel()) {
 			context.currentTopLevel = type;
 		}
@@ -1763,7 +1793,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, JavaPrettyPrinter {
 		write(statement.getValue());
 	}
 
-	public void calculate(List<CtSimpleType<?>> types) {
+	private CompilationUnit sourceCompilationUnit;
+
+	public void calculate(CompilationUnit sourceCompilationUnit,
+			List<CtSimpleType<?>> types) {
+		this.sourceCompilationUnit = sourceCompilationUnit;
 		for (CtSimpleType<?> t : types)
 			makeImports(t);
 		writeHeader(types);

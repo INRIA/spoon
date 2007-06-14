@@ -33,7 +33,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
-import spoon.reflect.visitor.JavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
 
 /**
  * A processor that generates compilable Java source files from the meta-model.
@@ -93,7 +93,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			toBePrinted.addAll(cu.getDeclaredTypes());
 		}
 
-		JavaPrettyPrinter printer = null;
+		PrettyPrinter printer = null;
 
 		if (getEnvironment().isUsingSourceCodeFragments()) {
 			try {
@@ -106,7 +106,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		}
 		if (printer == null) {
 			printer = new DefaultJavaPrettyPrinter(getEnvironment());
-			printer.calculate(toBePrinted);
+			printer.calculate(cu,toBePrinted);
 		}
 
 		CtPackage pack = element.getPackage();
@@ -144,7 +144,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 				&& element.getPackage().getAnnotations().size() > 0) {
 			File packageAnnot = new File(packageDir.getAbsolutePath()
 					+ File.separatorChar
-					+ JavaPrettyPrinter.PACKAGE_DECLARATION);
+					+ DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
 			if (!printedFiles.contains(packageAnnot))
 				printedFiles.add(packageAnnot);
 			try {
@@ -163,7 +163,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		try {
 			File file = new File(packageDir.getAbsolutePath()
 					+ File.separatorChar + element.getSimpleName()
-					+ DefaultJavaPrettyPrinter.FILE_EXTENSION);
+					+ DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
 			file.createNewFile();
 			if (!printedFiles.contains(file)) {
 				printedFiles.add(file);

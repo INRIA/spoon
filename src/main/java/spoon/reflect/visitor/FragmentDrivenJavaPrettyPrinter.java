@@ -17,7 +17,7 @@ import spoon.reflect.declaration.SourceCodeFragment;
  * {@link CompilationUnit#getSourceCodeFraments()} method.
  */
 
-public class FragmentDrivenJavaPrettyPrinter implements JavaPrettyPrinter {
+public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 
 	private void addjustFragments(List<SourceCodeFragment> fragments) {
 		int i = 0;
@@ -68,7 +68,8 @@ public class FragmentDrivenJavaPrettyPrinter implements JavaPrettyPrinter {
 		this.compilationUnit = compilationUnit;
 	}
 
-	public void calculate(List<CtSimpleType<?>> types) {
+	public void calculate(CompilationUnit originalCompilationUnit,
+			List<CtSimpleType<?>> types) {
 		// do nothing
 	}
 
