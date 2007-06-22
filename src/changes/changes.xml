@@ -10,6 +10,7 @@
       <action dev="Renaud Pawlak">moved the filters to spoon/reflect/visitor/filter to that they can be publically available</action>
       <action dev="Renaud Pawlak and David Bernard" type="add">added CtElement.setPositions</action>
       <action dev="Renaud Pawlak" type="add">filtered source positions that do not belong to the right source file</action>
+      <action dev="Renaud Pawlak" type="add">display version number when Spoon starts</action>
     </release>
     <release version="1.2" date="2007-05-04" description="consolidation version">
       <action dev="Renaud Pawlak" type="fix">code cleaning (removed deprecated elements), javadoc</action>
