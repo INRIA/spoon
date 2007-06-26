@@ -345,12 +345,12 @@
     <repository>
       <id>gforge.inria.fr</id>
       <name>inria</name>
-      <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/maven2</url>
+      <url>scp://gforge.inria.fr/home/groups/maven-repo/htdocs/releases</url>
     </repository>
     <snapshotRepository>
       <id>gforge.inria.fr</id>
       <name>inria</name>
-      <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/maven2</url>
+      <url>scp://gforge.inria.fr/home/groups/maven-repo/htdocs/snapshots</url>
     </snapshotRepository>
     <site>
       <id>gforge.inria.fr</id>
