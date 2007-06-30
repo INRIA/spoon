@@ -35,6 +35,48 @@ import spoon.support.util.RtHelper;
  */
 public class SymbolicInstance<T> {
 
+	/**
+	 * The true literal symbolic instance.
+	 */
+	public final static SymbolicInstance<Boolean> TRUE=new SymbolicInstance<Boolean>("true");
+	/**
+	 * The false literal symbolic instance.
+	 */
+	public final static SymbolicInstance<Boolean> FALSE=new SymbolicInstance<Boolean>("false");
+	/**
+	 * The null literal symbolic instance.
+	 */
+	public final static SymbolicInstance NULL=new SymbolicInstance("null");
+	/**
+	 * The 0 literal symbolic instance.
+	 */
+	public final static SymbolicInstance ZERO=new SymbolicInstance("0");
+	/**
+	 * The strictly positive domain symbolic instance.
+	 */
+	public final static SymbolicInstance POS_DOMAIN=new SymbolicInstance(">0");
+	/**
+	 * The positive domain symbolic instance.
+	 */
+	public final static SymbolicInstance ZEROPOS_DOMAIN=new SymbolicInstance(">=0");
+	/**
+	 * The strictly negative domain symbolic instance.
+	 */
+	public final static SymbolicInstance NEG_DOMAIN=new SymbolicInstance("<0");
+	/**
+	 * The positive domain symbolic instance.
+	 */
+	public final static SymbolicInstance ZERONEG_DOMAIN=new SymbolicInstance("<=0");
+	
+	/**
+	 * Creates a literal symbolic instance.
+	 */
+	public SymbolicInstance(String literal) {
+		this.literal=literal;
+	}
+
+	String literal=null;
+	
 	static long id = 0;
 
 	/**
@@ -86,6 +128,16 @@ public class SymbolicInstance<T> {
 		SymbolicInstance i = (SymbolicInstance) obj;
 		boolean b = concreteType.equals(i.concreteType)
 				&& fields.equals(i.fields) && isExternal == i.isExternal;
+		return b;
+	}
+
+	/**
+	 * Tests the equality by reference.
+	 */
+	public boolean equalsRef(Object obj) {
+		if(this==obj) return true;
+		SymbolicInstance i = (SymbolicInstance) obj;
+		boolean b = getId().equals(i.getId());
 		return b;
 	}
 
@@ -256,6 +308,7 @@ public class SymbolicInstance<T> {
 	 */
 	@Override
 	public String toString() {
+		if(literal!=null) return "#" + literal + "#";
 		return "#" + getId() + fields + "#";
 	}
 
