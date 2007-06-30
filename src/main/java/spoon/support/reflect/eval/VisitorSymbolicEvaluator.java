@@ -512,7 +512,19 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		case AND:
 		case OR:
 		case EQ:
+			if(left.equalsRef(right)) {
+				result = SymbolicInstance.TRUE;
+			} else {
+				result = SymbolicInstance.FALSE;
+			}
+			return;
 		case NE:
+			if(!left.equalsRef(right)) {
+				result = SymbolicInstance.TRUE;
+			} else {
+				result = SymbolicInstance.FALSE;
+			}
+			return;
 		case GE:
 		case LE:
 		case GT:
@@ -622,6 +634,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		}
 		if (target != null && !target.isExternal()) {
 			result = heap.get(target.getFieldValue(fieldAccess.getVariable()));
+			if(result==null) result=SymbolicInstance.NULL;
 		} else {
 			// set the type to the declared one
 			SymbolicInstance<T> i = new SymbolicInstance<T>(this, fieldAccess
@@ -652,7 +665,15 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public void visitCtIf(CtIf ifElement) {
-		evaluate(ifElement.getCondition());
+		SymbolicInstance result=evaluate(ifElement.getCondition());
+		if(result==SymbolicInstance.TRUE) {
+			evaluate(ifElement.getThenStatement());
+			return;
+		}
+		if(result==SymbolicInstance.FALSE) {
+			evaluate(ifElement.getElseStatement());
+			return;
+		}
 		evaluateBranches(ifElement.getThenStatement(), ifElement
 				.getElseStatement());
 	}
@@ -699,7 +720,11 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
-		result = new SymbolicInstance<T>(this, literal.getType(), false);
+		if(literal.getValue()==null) {
+			result = SymbolicInstance.NULL;
+		} else {
+			result = new SymbolicInstance<T>(this, literal.getType(), false);
+		}
 	}
 
 	public <T> void visitCtLocalVariable(final CtLocalVariable<T> localVariable) {
