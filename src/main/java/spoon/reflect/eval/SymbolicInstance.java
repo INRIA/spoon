@@ -117,6 +117,7 @@ public class SymbolicInstance<T> {
 	 * Gets the unique Id of this abstract instance.
 	 */
 	public String getId() {
+		if(literal!=null) return literal;
 		return getSymbolId(concreteType, symbolName);
 	}
 
