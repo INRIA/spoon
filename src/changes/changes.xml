@@ -4,6 +4,10 @@
     <author>Renaud Pawlak</author>
   </properties>
   <body>
+    <release version="1.4" date="2007-07-26" description="fix version">
+      <action dev="Renaud Pawlak" type="fix">fixed null type on string literals when they are within a string concatenation</action>
+      <action dev="Renaud Pawlak" type="fix">removed \r in javadoc comment that led to line number issues</action>
+    </release>
     <release version="1.3" date="2007-06-22" description="fix version">
       <action dev="David Bernard" type="fix">allow compiler to generate bytecode 1.5 (with annotations) - fix a bytecode line number problem when files contain annotations</action>
       <action dev="Renaud Pawlak" type="add" due-to="Lionel Cazenave">metamodel: CtTypedElement and CtModifiable now extend CtElement</action>
