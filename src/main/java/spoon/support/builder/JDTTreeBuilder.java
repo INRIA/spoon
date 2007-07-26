@@ -983,7 +983,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ret.append(docs[i].substring(docs[i].indexOf('*') + 1));
 			ret.append("\n");
 		}
-		return ret.toString();
+		// clean '\r'
+		StringBuffer ret2 = new StringBuffer();
+		for(int i=0; i<ret.length(); i++) {
+			if(ret.charAt(i)!='\r')
+				ret2.append(ret.charAt(i));
+		}
+		return ret2.toString();
 	}
 
 	public static Set<ModifierKind> getModifier(int mod) {
