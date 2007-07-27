@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
@@ -176,5 +177,11 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 * Sets this element to be implicit (will not be printed).
 	 */
 	void setImplicit(boolean b);
+
+	/**
+	 * Calculates and returns the set of all the types referenced by this
+	 * element (and sub-elements in the AST).
+	 */
+	Set<CtTypeReference> getReferencedTypes();
 
 }

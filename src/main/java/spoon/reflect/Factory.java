@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import spoon.processing.Builder;
 import spoon.processing.Environment;
-import spoon.reflect.declaration.CompilationUnit;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;

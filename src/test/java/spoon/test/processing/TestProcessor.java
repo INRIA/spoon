@@ -1,7 +1,11 @@
 package spoon.test.processing;
 
+import java.io.Serializable;
+
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Severity;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
@@ -18,6 +22,15 @@ public class TestProcessor extends AbstractProcessor<CtElement> {
 			if (((CtTypedElement) element).getType() == null) {
 				getEnvironment().report(this, Severity.WARNING, element,
 						"Element's type is null (" + element + ")");
+			}
+		}
+		if(element instanceof CtClass) {
+			CtClass c=(CtClass)element;
+			if(c.getSimpleName().equals("Secondary")) {
+				CompilationUnit cu=c.getPosition().getCompilationUnit();
+				cu.setAutoImport(false);
+				cu.getManualImports().add(getFactory().CompilationUnit().createImport(Serializable.class));
+				cu.getManualImports().add(getFactory().CompilationUnit().createImport(getFactory().Package().createReference("java.util")));
 			}
 		}
 	}

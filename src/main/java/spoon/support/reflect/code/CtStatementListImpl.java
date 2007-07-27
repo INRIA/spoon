@@ -22,8 +22,8 @@ import java.util.List;
 
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.SourcePosition;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtStatementListImpl<R> extends CtCodeElementImpl implements

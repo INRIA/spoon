@@ -22,7 +22,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import spoon.reflect.Factory;
-import spoon.reflect.declaration.CompilationUnit;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.Import;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.cu.ImportImpl;
 
 /**
  * A factory to create some evaluation utilities on the Spoon metamodel.
@@ -54,8 +59,8 @@ public class CompilationUnitFactory extends SubFactory {
 	public CompilationUnit create(String filePath) {
 		CompilationUnit cu = compilationUnits.get(filePath);
 		if (cu == null) {
-			if("".equals(filePath)){
-				cu =  factory.Core().createVirtualCompilationUnit();
+			if ("".equals(filePath)) {
+				cu = factory.Core().createVirtualCompilationUnit();
 				return cu;
 			}
 			cu = factory.Core().createCompilationUnit();
@@ -64,4 +69,33 @@ public class CompilationUnitFactory extends SubFactory {
 		}
 		return cu;
 	}
+
+	/**
+	 * Creates an import for the given type.
+	 */
+	public Import createImport(CtTypeReference type) {
+		return new ImportImpl(type);
+	}
+
+	/**
+	 * Creates an import for the given type.
+	 */
+	public Import createImport(Class<?> type) {
+		return new ImportImpl(getFactory().Type().createReference(type));
+	}
+
+	/**
+	 * Creates an import for the given field.
+	 */
+	public Import createImport(CtFieldReference field) {
+		return new ImportImpl(field);
+	}
+
+	/**
+	 * Creates an import for the given package.
+	 */
+	public Import createImport(CtPackageReference pack) {
+		return new ImportImpl(pack);
+	}
+
 }

@@ -3,7 +3,7 @@ package spoon.reflect.visitor;
 import java.util.List;
 import java.util.Map;
 
-import spoon.reflect.declaration.CompilationUnit;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtSimpleType;
 
 /**

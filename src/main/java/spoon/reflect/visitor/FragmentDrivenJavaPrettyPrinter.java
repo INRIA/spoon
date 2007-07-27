@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.processing.Environment;
-import spoon.reflect.declaration.CompilationUnit;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourceCodeFragment;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.SourceCodeFragment;
 
 /**
  * This pretty printer is used when Spoon is use with the "fragments" mode. This

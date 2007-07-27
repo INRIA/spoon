@@ -66,7 +66,8 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.declaration.CompilationUnit;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.Import;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -300,7 +301,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void undefLine(int line) {
-		if(lineNumberMapping.get(line)==null) {
+		if (lineNumberMapping.get(line) == null) {
 			// overload mapping (undefined line)
 			lineNumberMapping.put(line, 0);
 		}
@@ -1643,17 +1644,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!types.isEmpty()) {
 			CtPackage pack = types.get(0).getPackage();
 			scan(pack).writeln().writeln();
-			for (CtTypeReference<?> ref : importsContext.imports.values()) {
-				// ignore non-top-level type
-				if (ref.getPackage() != null) {
-					// ignore java.lang package
-					if (!ref.getPackage().getSimpleName().equals("java.lang"))
-						// ignore type in same package
+			if (sourceCompilationUnit != null
+					&& !sourceCompilationUnit.isAutoImport()) {
+				for (Import i : sourceCompilationUnit.getManualImports()) {
+					write(i + ";").writeln();
+				}
+			} else {
+				for (CtTypeReference<?> ref : importsContext.imports.values()) {
+					// ignore non-top-level type
+					if (ref.getPackage() != null) {
+						// ignore java.lang package
 						if (!ref.getPackage().getSimpleName().equals(
-								pack.getQualifiedName())) {
-							write("import " + ref.getQualifiedName() + ";")
-									.writeln();
-						}
+								"java.lang"))
+							// ignore type in same package
+							if (!ref.getPackage().getSimpleName().equals(
+									pack.getQualifiedName())) {
+								write("import " + ref.getQualifiedName() + ";")
+										.writeln();
+							}
+					}
 				}
 			}
 			writeln();

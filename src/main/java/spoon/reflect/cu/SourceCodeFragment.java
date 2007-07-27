@@ -1,4 +1,4 @@
-package spoon.reflect.declaration;
+package spoon.reflect.cu;
 
 /**
  * This class defines textual source code fragments that can be attached to a
