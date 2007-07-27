@@ -24,9 +24,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.reflect.Factory;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.SourcePosition;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -35,6 +35,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.visitor.ElementReplacer;
 import spoon.support.visitor.SignaturePrinter;
+import spoon.support.visitor.TypeReferenceScanner;
 
 /**
  * The implementation for {@link spoon.test.spoon.reflect.Declaration}.
@@ -209,4 +210,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		this.implicit = implicit;
 	}
 
+	public Set<CtTypeReference> getReferencedTypes() {
+		TypeReferenceScanner s=new TypeReferenceScanner();
+		s.scan(this);
+		return s.getReferences();
+	}
+	
 }

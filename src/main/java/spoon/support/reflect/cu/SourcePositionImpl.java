@@ -15,13 +15,13 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.reflect.declaration;
+package spoon.support.reflect.cu;
 
 import java.io.File;
 import java.io.Serializable;
 
-import spoon.reflect.declaration.CompilationUnit;
-import spoon.reflect.declaration.SourcePosition;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
 
 /**
  * This class represents the position of a Java program element in a source

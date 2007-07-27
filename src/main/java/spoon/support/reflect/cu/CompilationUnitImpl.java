@@ -1,15 +1,18 @@
-package spoon.support.reflect.declaration;
+package spoon.support.reflect.cu;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.Factory;
-import spoon.reflect.declaration.CompilationUnit;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.Import;
+import spoon.reflect.cu.SourceCodeFragment;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.SourceCodeFragment;
 
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
@@ -128,4 +131,26 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		this.factory = factory;
 	}
 
+	boolean autoImport=true;
+	
+	Set<Import> manualImports=new HashSet<Import>();
+
+	public boolean isAutoImport() {
+		return autoImport;
+	}
+
+	public void setAutoImport(boolean autoImport) {
+		this.autoImport = autoImport;
+	}
+
+	public Set<Import> getManualImports() {
+		return manualImports;
+	}
+
+	public void setManualImports(Set<Import> manualImports) {
+		this.manualImports = manualImports;
+	}
+	
+	
+	
 }

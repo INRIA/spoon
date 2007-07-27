@@ -28,7 +28,7 @@ import java.util.Map;
 
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
-import spoon.reflect.declaration.CompilationUnit;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;

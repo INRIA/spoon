@@ -36,10 +36,10 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.SourcePosition;
 import spoon.support.processing.XmlProcessorProperties;
 
 /**
