@@ -15,7 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.reflect;
+package spoon.support.reflect.cu;
 
 import java.util.Comparator;
 
