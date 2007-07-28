@@ -96,7 +96,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.reflect.CtLineElementComparator;
+import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
 /**
