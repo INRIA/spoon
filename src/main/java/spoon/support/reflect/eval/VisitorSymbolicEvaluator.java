@@ -489,14 +489,19 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	public void visitCtAssert(CtAssert asserted) {
 		skip(asserted);
 	}
-
+	
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
 		if (assignment.getAssigned() instanceof CtVariableAccess) {
 			CtVariableReference<T> vref = ((CtVariableAccess<T>) assignment
 					.getAssigned()).getVariable();
 			SymbolicInstance res = evaluate(assignment.getAssignment());
 			if (vref instanceof CtFieldReference) {
-				stack.getThis().setFieldValue(heap, vref, res);
+				CtExpression<?> target = ((CtFieldAccess<?>)assignment.getAssigned()).getTarget();
+				if (target == null) {
+					stack.getThis().setFieldValue(heap, vref, res);
+				} else {
+					((SymbolicInstance<?>)evaluate(target)).setFieldValue(heap, vref, res);
+				}
 			} else {
 				stack.setVariableValue(vref, res);
 			}
