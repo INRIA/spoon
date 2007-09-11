@@ -287,7 +287,7 @@ public class SymbolicInstance<T> {
 	 */
 	public void setFieldValue(SymbolicHeap heap, CtVariableReference<?> fref,
 			SymbolicInstance value) {
-		if (fields.containsKey(fref)) {
+		if (fields.containsKey(fref) || isExternal()) {
 			fields.put(fref, value.getId());
 			heap.store(value);
 		} else {
