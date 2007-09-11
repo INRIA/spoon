@@ -301,6 +301,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		// System.out.println("[evaluating
 		// "+element.getClass().getSimpleName()+"]");
 		element.accept(this);
+		if(result==null) result=SymbolicInstance.NULL;
 		return result;
 	}
 
@@ -353,8 +354,9 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 				e.printStackTrace();
 				// swallow it
 			}
+			
 			// System.out.println("END");
-			// stack.dumpFrameStack();
+			// dumpPaths();
 			// heap.dump();
 		} while (!branchingPoints.isEmpty());
 		// dumpPaths();
@@ -398,6 +400,11 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			if (decl != null) {
 				if (decl.getBody() != null) {
 					evaluate(decl.getBody());
+					if (executable.isConstructor()) {
+						result = target;
+					} else {
+						result = null;
+					}
 				} else {
 					result = new SymbolicInstance(this, executable.getType(),
 							false);
@@ -439,6 +446,9 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 					if (!executable.isConstructor()) {
 						result = new SymbolicInstance(this, executable
 								.getType(), false);
+					} else {
+						// TODO: JJ - verify this
+						result = target;
 					}
 				}
 			}
@@ -491,6 +501,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 	
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
+		
 		if (assignment.getAssigned() instanceof CtVariableAccess) {
 			CtVariableReference<T> vref = ((CtVariableAccess<T>) assignment
 					.getAssigned()).getVariable();
@@ -639,7 +650,6 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		}
 		if (target != null && !target.isExternal()) {
 			result = heap.get(target.getFieldValue(fieldAccess.getVariable()));
-			if(result==null) result=SymbolicInstance.NULL;
 		} else {
 			// set the type to the declared one
 			SymbolicInstance<T> i = new SymbolicInstance<T>(this, fieldAccess
