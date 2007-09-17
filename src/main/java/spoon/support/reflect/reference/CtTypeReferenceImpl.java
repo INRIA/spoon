@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import java.awt.geom.Arc2D.Float;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
