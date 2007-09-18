@@ -10,6 +10,8 @@
       <action dev="Renaud Pawlak" type="add">added a getReferencedTypes method in CtElement</action>
       <action dev="Renaud Pawlak" type="add">added import in compilation units</action>
       <action dev="Renaud Pawlak" type="add">add a spoon.reflect.cu package for compilation units and related classes</action>
+      <action dev="Lionel Senturier" type="fix">fixed wrong import in CtTypeReferenceImpl</action>
+      <action dev="Renaud Pawlak" type="fix">support for template inheritance in substitution</action>
     </release>
     <release version="1.3" date="2007-06-22" description="fix version">
       <action dev="David Bernard" type="fix">allow compiler to generate bytecode 1.5 (with annotations) - fix a bytecode line number problem when files contain annotations</action>
