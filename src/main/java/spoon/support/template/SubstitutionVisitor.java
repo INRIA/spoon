@@ -462,6 +462,8 @@ public class SubstitutionVisitor extends CtScanner {
 			scanCtGenericElementReference(reference);
 		}
 
+		
+		
 		/**
 		 * Replaces type parameters and references to the template type with
 		 * references to the target type (only if the referenced element exists
@@ -479,6 +481,18 @@ public class SubstitutionVisitor extends CtScanner {
 				reference.setDeclaringType(targetRef.getDeclaringType());
 				reference.setPackage(targetRef.getPackage());
 				reference.setSimpleName(targetRef.getSimpleName());
+			} else if(templateTypeRef.isAssignableFrom(reference)) {
+				// this can only be a template inheritance case (to be verified)
+				CtTypeReference<?> sc=targetRef.getSuperclass();
+				if(sc!=null) {
+					reference.setDeclaringType(sc.getDeclaringType());
+					reference.setPackage(sc.getPackage());
+					reference.setSimpleName(sc.getSimpleName());
+				} else {
+					reference.setDeclaringType(null);
+					reference.setPackage(f.Package().createReference("java.lang"));
+					reference.setSimpleName("Object");
+				}
 			}
 			if (parameterNames.contains(reference.getSimpleName())) {
 				// replace type parameters
@@ -576,6 +590,8 @@ public class SubstitutionVisitor extends CtScanner {
 
 	CtTypeReference<? extends Template> templateRef;
 
+	CtTypeReference<Template> templateTypeRef;
+
 	CtClass<? extends Template> templateType;
 
 	Collection<String> parameterNames;
@@ -605,6 +621,7 @@ public class SubstitutionVisitor extends CtScanner {
 		this.targetRef = f.Type().createReference(targetType);
 		// substitute target ref
 		this.targetRef.accept(this);
+		this.templateTypeRef= f.Type().createReference(Template.class);
 	}
 
 	/**
