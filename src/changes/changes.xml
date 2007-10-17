@@ -5,6 +5,7 @@
   </properties>
   <body>
     <release version="1.4" date="2007-07-26" description="fix version">
+	  <action dev="Renaud Pawlak" type="fix">in substitution: replace default implicit constructor when inserting a parameter-free constructor</action>
       <action dev="Renaud Pawlak" type="fix">fixed null type on string literals when they are within a string concatenation</action>
       <action dev="Renaud Pawlak" type="fix">removed \r in javadoc comment that led to line number issues</action>
       <action dev="Renaud Pawlak" type="add">added a getReferencedTypes method in CtElement</action>
