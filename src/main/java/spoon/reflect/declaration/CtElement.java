@@ -43,8 +43,14 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	void accept(CtVisitor visitor);
 
 	/**
-	 * Searches for an annotation of the given class that annotates the current
-	 * element.
+	 * Searches for an annotation (proxy) of the given class that annotates the
+	 * current element.
+	 * 
+	 * <p>
+	 * NOTE: before using an annotation proxy, you have to make sure that all
+	 * the types referenced by the annotation have been compiled and are in the
+	 * classpath so that accessed values can be converted into the actual types.
+	 * Otherwise, use {@link #getAnnotation(CtTypeReference)}.
 	 * 
 	 * @param <A>
 	 *            the annotation's type
