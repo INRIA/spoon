@@ -39,22 +39,22 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	/**
 	 * Sets the tried body.
 	 */
-	CtBlock getBody();
+	CtBlock<?> getBody();
 
 	/**
 	 * Sets the tried body.
 	 */
-	void setBody(CtBlock body);
+	void setBody(CtBlock<?> body);
 
 	/**
 	 * Gets the <i>finalizer</i> block of this <code>try</code> (<code>finally</code>
 	 * part).
 	 */
-	CtBlock getFinalizer();
+	CtBlock<?> getFinalizer();
 
 	/**
 	 * Sets the <i>finalizer</i> block of this <code>try</code> (<code>finally</code>
 	 * part).
 	 */
-	void setFinalizer(CtBlock finalizer);
+	void setFinalizer(CtBlock<?> finalizer);
 }

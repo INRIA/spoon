@@ -8,7 +8,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 public class ImportImpl implements Import {
 
-	public ImportImpl(CtTypeReference type) {
+	public ImportImpl(CtTypeReference<?> type) {
 		reference=type;
 	}
 
@@ -16,7 +16,7 @@ public class ImportImpl implements Import {
 		reference=pack;
 	}
 
-	public ImportImpl(CtFieldReference field) {
+	public ImportImpl(CtFieldReference<?> field) {
 		reference=field;
 	}
 

@@ -53,7 +53,7 @@ public class ExecutableFactory extends SubFactory {
 	/**
 	 * Creates an anonymous executable (initializer block) in a target class).
 	 */
-	public CtAnonymousExecutable createAnonymous(CtClass<?> target, CtBlock body) {
+	public CtAnonymousExecutable createAnonymous(CtClass<?> target, CtBlock<?> body) {
 		CtAnonymousExecutable a = factory.Core().createAnonymousExecutable();
 		target.getAnonymousExecutables().add(a);
 		a.setParent(target);

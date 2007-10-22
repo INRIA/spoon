@@ -97,9 +97,11 @@ public class InterfaceFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param cl
-	 *            java class
+	 *            the java class: note that this class should be Class<T> but
+	 *            it then poses problem when T is a generic type itself
 	 */
-	public <T> CtInterface<T> get(Class<T> cl) {
+	@SuppressWarnings("unchecked")
+	public <T> CtInterface<T> get(Class<?> cl) {
 		try {
 			return (CtInterface<T>) super.get(cl);
 		} catch (Exception e) {

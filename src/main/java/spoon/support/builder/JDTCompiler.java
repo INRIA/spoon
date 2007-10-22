@@ -42,7 +42,7 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 
 		@SuppressWarnings("deprecation")
 		public Compiler(INameEnvironment environment,
-				IErrorHandlingPolicy policy, Map settings,
+				IErrorHandlingPolicy policy, Map<?,?> settings,
 				ICompilerRequestor requestor, IProblemFactory problemFactory,
 				PrintWriter out, boolean statementsRecovery) {
 			super(environment, policy, settings, requestor, problemFactory,

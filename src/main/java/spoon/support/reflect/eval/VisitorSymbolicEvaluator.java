@@ -101,9 +101,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
  */
 public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 
-	List<CtTypeReference> statefullExternals = new ArrayList<CtTypeReference>();
+	List<CtTypeReference<?>> statefullExternals = new ArrayList<CtTypeReference<?>>();
 
-	public List<CtTypeReference> getStatefullExternals() {
+	public List<CtTypeReference<?>> getStatefullExternals() {
 		return statefullExternals;
 	}
 
@@ -149,12 +149,12 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		paths.clear();
 	}
 
-	private SymbolicInstance result = null;
+	private SymbolicInstance<?> result = null;
 
 	void enterExecutable(CtAbstractInvocation<?> caller,
-			CtExecutableReference<?> eref, SymbolicInstance target,
-			List<SymbolicInstance> args) {
-		Map<CtVariableReference, SymbolicInstance> variables = new HashMap<CtVariableReference, SymbolicInstance>();
+			CtExecutableReference<?> eref, SymbolicInstance<?> target,
+			List<SymbolicInstance<?>> args) {
+		Map<CtVariableReference<?>, SymbolicInstance<?>> variables = new HashMap<CtVariableReference<?>, SymbolicInstance<?>>();
 		CtExecutable<?> e = eref.getDeclaration();
 		if (e != null) {
 			// initialize arguments
@@ -164,7 +164,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			}
 			// initialize local variables
 			for (CtVariable<?> v : Query.getElements(e.getBody(),
-					new TypeFilter<CtVariable>(CtVariable.class))) {
+					new TypeFilter<CtVariable<?>>(CtVariable.class))) {
 				variables.put(v.getReference(), null);
 			}
 		}
@@ -224,7 +224,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 
 		public List<CtElement> completedBranches = new ArrayList<CtElement>();
 
-		public SymbolicInstance evaluate(VisitorSymbolicEvaluator evaluator) {
+		public SymbolicInstance<?> evaluate(VisitorSymbolicEvaluator evaluator) {
 			return evaluator.evaluate(uncompletedBranches.get(0));
 		}
 
@@ -294,8 +294,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	public SymbolicInstance evaluate(CtElement element) {
+	public SymbolicInstance<?> evaluate(CtElement element) {
 		if (element == null)
 			return null;
 		// System.out.println("[evaluating
@@ -305,22 +304,32 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> SymbolicInstance<T> evaluate(CtExpression<T> expression) {
+		if (expression == null)
+			return null;
+		// System.out.println("[evaluating
+		// "+element.getClass().getSimpleName()+"]");
+		expression.accept(this);
+		if(result==null) result=SymbolicInstance.NULL;
+		return (SymbolicInstance<T>)result;
+	}
+
 	// private boolean evaluationCompleted() {
 	// return branchingPoints.size() == 1
 	// && branchingPoints.peek().uncompletedBranches.size() == 1;
 	// }
 
-	@SuppressWarnings("unchecked")
-	public void invoke(CtExecutable executable, SymbolicInstance... args) {
+	public void invoke(CtExecutable<?> executable, SymbolicInstance<?>... args) {
 		do {
 			resetCurrentEvaluation();
 			// AbstractInstance.dumpHeap();
 			startPath();
-			List<SymbolicInstance> cargs = new ArrayList<SymbolicInstance>();
-			for (SymbolicInstance i : args) {
+			List<SymbolicInstance<?>> cargs = new ArrayList<SymbolicInstance<?>>();
+			for (SymbolicInstance<?> i : args) {
 				cargs.add(i == null ? null : i.getClone());
 			}
-			SymbolicInstance target = heap.getType(this, executable
+			SymbolicInstance<?> target = heap.getType(this, executable
 					.getDeclaringType().getReference());
 			try {
 				invoke(null, executable.getReference(), target, cargs);
@@ -334,17 +343,16 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		// dumpPaths();
 	}
 
-	@SuppressWarnings("unchecked")
-	public void invoke(SymbolicInstance target, CtExecutable executable,
-			List<SymbolicInstance> args) {
+	public void invoke(SymbolicInstance<?> target, CtExecutable<?> executable,
+			List<SymbolicInstance<?>> args) {
 		do {
 			resetCurrentEvaluation();
 			// AbstractInstance.dumpHeap();
 			startPath();
-			List<SymbolicInstance> cargs = null;
+			List<SymbolicInstance<?>> cargs = null;
 			if (args != null) {
-				cargs = new ArrayList<SymbolicInstance>();
-				for (SymbolicInstance i : args) {
+				cargs = new ArrayList<SymbolicInstance<?>>();
+				for (SymbolicInstance<?> i : args) {
 					cargs.add(i == null ? null : i.getClone());
 				}
 			}
@@ -365,7 +373,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	/**
 	 * Tell if the given method follows the getter naming conventions.
 	 */
-	boolean isGetter(CtExecutableReference e) {
+	boolean isGetter(CtExecutableReference<?> e) {
 		return e.getSimpleName().startsWith("get")
 				&& e.getParameterTypes().size() == 0;
 	}
@@ -373,12 +381,12 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	/**
 	 * Tell if the given method follows the setter naming conventions.
 	 */
-	boolean isSetter(CtExecutableReference e) {
+	boolean isSetter(CtExecutableReference<?> e) {
 		return e.getSimpleName().startsWith("set")
 				&& e.getParameterTypes().size() == 1;
 	}
 
-	boolean isStateFullExternal(CtTypeReference type) {
+	boolean isStateFullExternal(CtTypeReference<?> type) {
 		for (CtTypeReference<?> t : getStatefullExternals()) {
 			if (t.isAssignableFrom(type)) {
 				return true;
@@ -389,8 +397,8 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 
 	@SuppressWarnings("unchecked")
 	private <T> SymbolicInstance<T> invoke(CtAbstractInvocation<?> caller,
-			CtExecutableReference<T> executable, SymbolicInstance target,
-			List<SymbolicInstance> args) {
+			CtExecutableReference<T> executable, SymbolicInstance<?> target,
+			List<SymbolicInstance<?>> args) {
 		enterExecutable(caller, executable, target, args);
 		// System.out.println("[invoking " + caller + "]");
 		// stack.dump();
@@ -457,7 +465,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		} finally {
 			exitExecutable(executable);
 		}
-		return result;
+		return (SymbolicInstance<T>)result;
 	}
 
 	private void skip(CtElement e) {
@@ -496,7 +504,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		skip(statement);
 	}
 
-	public void visitCtAssert(CtAssert asserted) {
+	public <T> void visitCtAssert(CtAssert<T> asserted) {
 		skip(asserted);
 	}
 	
@@ -505,7 +513,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		if (assignment.getAssigned() instanceof CtVariableAccess) {
 			CtVariableReference<T> vref = ((CtVariableAccess<T>) assignment
 					.getAssigned()).getVariable();
-			SymbolicInstance res = evaluate(assignment.getAssignment());
+			SymbolicInstance<?> res = evaluate(assignment.getAssignment());
 			if (vref instanceof CtFieldReference) {
 				CtExpression<?> target = ((CtFieldAccess<?>)assignment.getAssigned()).getTarget();
 				if (target == null) {
@@ -601,7 +609,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		throw new RuntimeException("Not evaluable");
 	}
 
-	public void visitCtConstructor(CtConstructor c) {
+	public <T> void visitCtConstructor(CtConstructor<T> c) {
 		throw new RuntimeException("Not evaluable");
 	}
 
@@ -614,7 +622,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		evaluate(doLoop.getLoopingExpression());
 	}
 
-	public <T extends Enum> void visitCtEnum(CtEnum<T> ctEnum) {
+	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		throw new RuntimeException("Not evaluable");
 	}
 
@@ -638,7 +646,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			return;
 		}
 		if (fieldAccess.getVariable().getSimpleName().equals("class")) {
-			SymbolicInstance type = heap.getType(this, fieldAccess.getType());
+			SymbolicInstance<?> type = heap.getType(this, fieldAccess.getType());
 			result = type;
 			return;
 		}
@@ -680,7 +688,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public void visitCtIf(CtIf ifElement) {
-		SymbolicInstance result=evaluate(ifElement.getCondition());
+		SymbolicInstance<?> result=evaluate(ifElement.getCondition());
 		if(result==SymbolicInstance.TRUE) {
 			evaluate(ifElement.getThenStatement());
 			return;
@@ -701,9 +709,9 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		CtExecutableReference<T> eref = invocation.getExecutable();
 		// if (eref.getSimpleName().equals("<init>"))
 		// return;
-		List<SymbolicInstance> arguments = new ArrayList<SymbolicInstance>();
-		for (CtExpression expr : invocation.getArguments()) {
-			SymbolicInstance o = evaluate(expr);
+		List<SymbolicInstance<?>> arguments = new ArrayList<SymbolicInstance<?>>();
+		for (CtExpression<?> expr : invocation.getArguments()) {
+			SymbolicInstance<?> o = evaluate(expr);
 			arguments.add(o);
 		}
 		SymbolicInstance<?> target = evaluate(invocation.getTarget());
@@ -724,7 +732,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		}
 		// CtExecutable<T> e = eref.getDeclaration();
 		// if (e != null) {
-		invoke(invocation, eref, (SymbolicInstance) target, arguments);
+		invoke(invocation, eref, (SymbolicInstance<?>) target, arguments);
 		// } else {
 		// // method is not accessible
 		// // set the result to the declared type
@@ -762,9 +770,9 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
 		// CtExecutable<T> e = eref.getDeclaration();
-		List<SymbolicInstance> arguments = new ArrayList<SymbolicInstance>();
-		for (CtExpression expr : newClass.getArguments()) {
-			SymbolicInstance o = evaluate(expr);
+		List<SymbolicInstance<?>> arguments = new ArrayList<SymbolicInstance<?>>();
+		for (CtExpression<?> expr : newClass.getArguments()) {
+			SymbolicInstance<?> o = evaluate(expr);
 			arguments.add(o);
 		}
 		SymbolicInstance<T> i = new SymbolicInstance<T>(this, newClass

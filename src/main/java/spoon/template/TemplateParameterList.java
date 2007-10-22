@@ -38,5 +38,5 @@ public interface TemplateParameterList<R> extends TemplateParameter<R> {
 	/**
 	 * See {@link TemplateParameter#getSubstitution(CtSimpleType)}.
 	 */
-	CtStatementList getSubstitution(CtSimpleType<?> targetType);
+	CtStatementList<R> getSubstitution(CtSimpleType<?> targetType);
 }

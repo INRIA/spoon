@@ -30,7 +30,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 		CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;
 
-	CtBlock body;
+	CtBlock<?> body;
 
 	Set<ModifierKind> modifiers = new TreeSet<ModifierKind>();
 
@@ -38,7 +38,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 		visitor.visitCtAnonymousExecutable(this);
 	}
 
-	public CtBlock getBody() {
+	public CtBlock<?> getBody() {
 		return body;
 	}
 
@@ -46,8 +46,8 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 		return modifiers;
 	}
 
-	public CtClass getOwnerClass() {
-		return (CtClass) parent;
+	public CtClass<?> getOwnerClass() {
+		return (CtClass<?>) parent;
 	}
 
 	public ModifierKind getVisibility() {
@@ -64,7 +64,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 		return modifiers.contains(modifier);
 	}
 
-	public void setBody(CtBlock block) {
+	public void setBody(CtBlock<?> block) {
 		body = block;
 	}
 

@@ -223,7 +223,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		Stack<CtElement> arrayInitializer = new Stack<CtElement>();
 
-		List<CtTypeReference> casts = new ArrayList<CtTypeReference>();
+		List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>();
 
 		CompilationUnitDeclaration compilationunitdeclaration;
 
@@ -244,7 +244,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		 */
 		Stack<ASTPair> stack = new Stack<ASTPair>();
 
-		Stack<CtTargetedExpression> target = new Stack<CtTargetedExpression>();
+		Stack<CtTargetedExpression<?,?>> target = new Stack<CtTargetedExpression<?,?>>();
 
 		public void addCreatedType(CtSimpleType<?> type) {
 			createdTypes.add(type);
@@ -294,6 +294,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		}
 
+		@SuppressWarnings("unchecked")
 		void exit(ASTNode node) {
 			ASTPair pair = stack.pop();
 			if (pair.node != node)
@@ -790,9 +791,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean bounds = false;
 
-		public CtTypeReference getBoundedTypeReference(TypeBinding binding) {
+		public CtTypeReference<?> getBoundedTypeReference(TypeBinding binding) {
 			bounds = true;
-			CtTypeReference ref = getTypeReference(binding);
+			CtTypeReference<?> ref = getTypeReference(binding);
 			bounds = false;
 			return ref;
 		}
@@ -1071,7 +1072,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		rst.remove(0);
 
 		if (rst.size() > 1) {
-			CtBinaryOperator op = factory.Core().createBinaryOperator();
+			CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
 			op.setKind(BinaryOperatorKind.PLUS);
 			context.enter(op, literal);
 			createExpression(literal, scope, rst);
@@ -1083,9 +1084,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	CtSimpleType<?> createType(TypeDeclaration typeDeclaration) {
-		CtSimpleType type = null;
+		CtSimpleType<?> type = null;
 		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
-			type = factory.Core().createAnnotationType();
+			type = (CtSimpleType<?>)factory.Core().createAnnotationType();
 		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
 			CtEnum<?> e = factory.Core().createEnum();
 			if (typeDeclaration.superInterfaces != null) {
@@ -1677,7 +1678,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(AND_AND_Expression and_and_Expression, BlockScope scope) {
-		CtBinaryOperator op = factory.Core().createBinaryOperator();
+		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
 		op
 				.setKind(getBinaryOperatorKind((and_and_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, and_and_Expression);
@@ -1756,7 +1757,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(ArrayInitializer arrayInitializer, BlockScope scope) {
 
 		if (context.annotationValueName.isEmpty()) {
-			CtNewArray array = factory.Core().createNewArray();
+			CtNewArray<?> array = factory.Core().createNewArray();
 			context.enter(array, arrayInitializer);
 		} else {
 			context.arrayInitializer.push(context.stack.peek().element);
@@ -1766,7 +1767,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayReference arrayReference, BlockScope scope) {
-		CtArrayAccess a = factory.Core().createArrayAccess();
+		CtArrayAccess<?,?> a = factory.Core().createArrayAccess();
 		context.enter(a, arrayReference);
 		arrayReference.receiver.traverse(this, scope);
 		context.arguments.push(a);
@@ -1777,7 +1778,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayTypeReference arrayTypeReference, BlockScope scope) {
-		CtLiteral<CtTypeReference> l = factory.Core().createLiteral();
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l
 				.setValue(references
 						.getTypeReference(arrayTypeReference.resolvedType));
@@ -1787,7 +1788,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(AssertStatement assertStatement, BlockScope scope) {
-		CtAssert a = factory.Core().createAssert();
+		CtAssert<?> a = factory.Core().createAssert();
 		context.enter(a, assertStatement);
 		assertStatement.assertExpression.traverse(this, scope);
 		context.arguments.push(a);
@@ -1800,7 +1801,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(Assignment assignment, BlockScope scope) {
-		CtAssignment assign = factory.Core().createAssignment();
+		CtAssignment<Object,Object> assign = factory.Core().createAssignment();
 		context.enter(assign, assignment);
 		return true;
 	}
@@ -1832,7 +1833,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(CaseStatement caseStatement, BlockScope scope) {
-		CtCase c = factory.Core().createCase();
+		CtCase<?> c = factory.Core().createCase();
 		context.enter(c, caseStatement);
 
 		if (caseStatement.constantExpression != null) {
@@ -1880,7 +1881,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(CompoundAssignment compoundAssignment, BlockScope scope) {
-		CtOperatorAssignment a = factory.Core().createOperatorAssignment();
+		CtOperatorAssignment<Object,Object> a = factory.Core().createOperatorAssignment();
 		a.setKind(getBinaryOperatorKind(compoundAssignment.operator));
 		context.enter(a, compoundAssignment);
 		return super.visit(compoundAssignment, scope);
@@ -1889,7 +1890,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConditionalExpression conditionalExpression,
 			BlockScope scope) {
-		CtConditional c = factory.Core().createConditional();
+		CtConditional<?> c = factory.Core().createConditional();
 		context.enter(c, conditionalExpression);
 		return super.visit(conditionalExpression, scope);
 	}
@@ -1968,7 +1969,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(EqualExpression equalExpression, BlockScope scope) {
-		CtBinaryOperator op = factory.Core().createBinaryOperator();
+		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
 		op
 				.setKind(getBinaryOperatorKind((equalExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, equalExpression);
@@ -2133,7 +2134,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(InstanceOfExpression instanceOfExpression,
 			BlockScope scope) {
-		CtBinaryOperator op = factory.Core().createBinaryOperator();
+		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
 		op.setKind(BinaryOperatorKind.INSTANCEOF);
 		context.enter(op, instanceOfExpression);
 		return true;
@@ -2305,7 +2306,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(OR_OR_Expression or_or_Expression, BlockScope scope) {
-		CtBinaryOperator op = factory.Core().createBinaryOperator();
+		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
 		op
 				.setKind(getBinaryOperatorKind((or_or_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, or_or_Expression);
@@ -2316,7 +2317,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(
 			ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference,
 			ClassScope scope) {
-		CtLiteral<CtTypeReference> l = factory.Core().createLiteral();
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l
 				.setValue(references
 						.getBoundedTypeReference(parameterizedQualifiedTypeReference.resolvedType));
@@ -2328,7 +2329,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(
 			ParameterizedSingleTypeReference parameterizedSingleTypeReference,
 			BlockScope scope) {
-		CtLiteral<CtTypeReference> l = factory.Core().createLiteral();
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l
 				.setValue(references
 						.getBoundedTypeReference(parameterizedSingleTypeReference.resolvedType));
@@ -2340,7 +2341,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(
 			ParameterizedSingleTypeReference parameterizedSingleTypeReference,
 			ClassScope scope) {
-		CtLiteral<CtTypeReference> l = factory.Core().createLiteral();
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l
 				.setValue(references
 						.getBoundedTypeReference(parameterizedSingleTypeReference.resolvedType));
@@ -2350,7 +2351,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(PostfixExpression postfixExpression, BlockScope scope) {
-		CtUnaryOperator op = factory.Core().createUnaryOperator();
+		CtUnaryOperator<?> op = factory.Core().createUnaryOperator();
 		if (postfixExpression.operator == OperatorIds.PLUS)
 			op.setKind(UnaryOperatorKind.POSTINC);
 		if (postfixExpression.operator == OperatorIds.MINUS)
@@ -2361,7 +2362,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(PrefixExpression prefixExpression, BlockScope scope) {
-		CtUnaryOperator op = factory.Core().createUnaryOperator();
+		CtUnaryOperator<?> op = factory.Core().createUnaryOperator();
 		if (prefixExpression.operator == OperatorIds.PLUS)
 			op.setKind(UnaryOperatorKind.PREINC);
 		if (prefixExpression.operator == OperatorIds.MINUS)
@@ -2442,7 +2443,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(QualifiedTypeReference arg0, BlockScope arg1) {
-		CtLiteral<CtTypeReference> l = factory.Core().createLiteral();
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l.setValue(references.getTypeReference(arg0.resolvedType));
 		context.enter(l, arg0);
 		return true; // do nothing by default, keep traversing
@@ -2450,7 +2451,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ReturnStatement returnStatement, BlockScope scope) {
-		CtReturn ret = factory.Core().createReturn();
+		CtReturn<?> ret = factory.Core().createReturn();
 		context.enter(ret, returnStatement);
 		return true;
 	}
@@ -2489,7 +2490,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(SingleTypeReference singleTypeReference,
 			BlockScope scope) {
-		CtLiteral<CtTypeReference> l = factory.Core().createLiteral();
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l.setValue(references
 				.getTypeReference(singleTypeReference.resolvedType));
 		context.enter(l, singleTypeReference);
@@ -2499,7 +2500,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(SingleTypeReference singleTypeReference,
 			ClassScope scope) {
-		CtLiteral<CtTypeReference> l = factory.Core().createLiteral();
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l.setValue(references
 				.getTypeReference(singleTypeReference.resolvedType));
 		context.enter(l, singleTypeReference);
@@ -2519,7 +2520,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(StringLiteralConcatenation literal, BlockScope scope) {
-		CtBinaryOperator op = factory.Core().createBinaryOperator();
+		CtBinaryOperator<String> op = factory.Core().createBinaryOperator();
 		op.setKind(BinaryOperatorKind.PLUS);
 		context.enter(op, literal);
 
@@ -2549,7 +2550,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(SwitchStatement switchStatement, BlockScope scope) {
-		CtSwitch s = factory.Core().createSwitch();
+		CtSwitch<?> s = factory.Core().createSwitch();
 		context.enter(s, switchStatement);
 
 		switchStatement.expression.traverse(this, switchStatement.scope);
@@ -2649,7 +2650,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
-		CtSimpleType t = createType(localTypeDeclaration);
+		CtSimpleType<?> t = createType(localTypeDeclaration);
 		t.setDocComment(getJavaDoc(localTypeDeclaration.javadoc, scope
 				.referenceCompilationUnit()));
 		context.enter(t, localTypeDeclaration);
@@ -2770,7 +2771,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(UnaryExpression unaryExpression, BlockScope scope) {
-		CtUnaryOperator op = factory.Core().createUnaryOperator();
+		CtUnaryOperator<?> op = factory.Core().createUnaryOperator();
 		op
 				.setKind(getUnaryOperator((unaryExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, unaryExpression);

@@ -70,7 +70,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	public CtSimpleType<?> getType(String simpleName) {
-		for (CtSimpleType t : types) {
+		for (CtSimpleType<?> t : types) {
 			if (t.getSimpleName().equals(simpleName)) {
 				return t;
 			}

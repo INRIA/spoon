@@ -294,12 +294,12 @@ public abstract class Substitution {
 	 *            the source template method
 	 * @return the generated method
 	 */
-	public static CtConstructor insertConstructor(CtClass<?> targetClass,
-			Template template, CtMethod<Void> sourceMethod) {
+	public static <T> CtConstructor<T> insertConstructor(CtClass<T> targetClass,
+			Template template, CtMethod<?> sourceMethod) {
 
 		if (targetClass instanceof CtInterface)
 			return null;
-		CtConstructor newConstructor = targetClass.getFactory().Constructor()
+		CtConstructor<T> newConstructor = targetClass.getFactory().Constructor()
 				.create(targetClass, sourceMethod);
 		newConstructor = substitute(targetClass, template, newConstructor);
 		targetClass.getConstructors().add(newConstructor);
@@ -344,16 +344,17 @@ public abstract class Substitution {
 	 *            the source template constructor
 	 * @return the generated constructor
 	 */
-	public static <T> CtConstructor insertConstructor(CtClass<?> targetClass,
-			Template template, CtConstructor sourceConstructor) {
+	@SuppressWarnings("unchecked")
+	public static <T> CtConstructor<T> insertConstructor(CtClass<T> targetClass,
+			Template template, CtConstructor<?> sourceConstructor) {
 
-		CtConstructor newConstrutor = substitute(targetClass, template,
-				sourceConstructor);
+		CtConstructor<T> newConstrutor = substitute(targetClass, template,
+				(CtConstructor<T>)sourceConstructor);
 		newConstrutor.setParent(targetClass);
 		// remove the implicit constructor if clashing
 		if(newConstrutor.getParameters().isEmpty()) {
 			CtConstructor<?> c=targetClass.getConstructor();
-			if(c.isImplicit()) targetClass.getConstructors().remove(c);
+			if(c!=null && c.isImplicit()) targetClass.getConstructors().remove(c);
 		}
 		targetClass.getConstructors().add(newConstrutor);
 		return newConstrutor;
@@ -473,9 +474,10 @@ public abstract class Substitution {
 	 * @return a copy of the template type where all the parameters has been
 	 *         substituted
 	 */
-	public static <T extends CtSimpleType> T substitute(Template template,
+	public static <T extends CtSimpleType<?>> T substitute(Template template,
 			T templateType) {
 		T result = templateType.getFactory().Core().clone(templateType);
+		result.setPositions(null);
 		result.setParent(templateType.getParent());
 		new SubstitutionVisitor(templateType.getFactory(), result, template)
 				.scan(result);
@@ -511,16 +513,16 @@ public abstract class Substitution {
 	public static void redirectTypeReferences(CtElement element,
 			CtTypeReference<?> source, CtTypeReference<?> target) {
 
-		List<CtTypeReference> refs = Query
+		List<CtTypeReference<?>> refs = Query
 				.getReferences(element,
-						new ReferenceTypeFilter<CtTypeReference>(
+						new ReferenceTypeFilter<CtTypeReference<?>>(
 								CtTypeReference.class));
 
 		String srcName = source.getQualifiedName();
 		String targetName = target.getSimpleName();
 		CtPackageReference targetPackage = target.getPackage();
 
-		for (CtTypeReference ref : refs) {
+		for (CtTypeReference<?> ref : refs) {
 			if (ref.getQualifiedName().equals(srcName)) {
 				ref.setSimpleName(targetName);
 				ref.setPackage(targetPackage);

@@ -57,7 +57,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean debug = false;
 
-	private FileGenerator defaultFileGenerator;
+	private FileGenerator<?> defaultFileGenerator;
 
 	private int errorCount = 0;
 
@@ -83,7 +83,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	/**
 	 * Creates a new environment.
 	 */
-	public StandardEnvironment(FileGenerator defaultFileGenerator) {
+	public StandardEnvironment(FileGenerator<?> defaultFileGenerator) {
 		this.defaultFileGenerator = defaultFileGenerator;
 	}
 
@@ -192,7 +192,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		}
 	}
 
-	public void report(Processor processor, Severity severity,
+	public void report(Processor<?> processor, Severity severity,
 			CtElement element, String message) {
 		StringBuffer buffer = new StringBuffer();
 
@@ -202,7 +202,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		buffer.append(message);
 
 		// Add sourceposition (javac format)
-		CtSimpleType<?> type = (element instanceof CtSimpleType) ? (CtSimpleType) element
+		CtSimpleType<?> type = (element instanceof CtSimpleType) ? (CtSimpleType<?>) element
 				: element.getParent(CtSimpleType.class);
 		SourcePosition sp = element.getPosition();
 
@@ -210,7 +210,7 @@ public class StandardEnvironment implements Serializable, Environment {
 			buffer.append(" (Unknown Source)");
 		} else {
 			buffer.append(" at " + type.getQualifiedName() + ".");
-			CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable) element
+			CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element
 					: element.getParent(CtExecutable.class);
 			if (exe != null)
 				buffer.append(exe.getSimpleName());
@@ -221,7 +221,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		print(buffer, severity);
 	}
 
-	public void report(Processor processor, Severity severity, String message) {
+	public void report(Processor<?> processor, Severity severity, String message) {
 		StringBuffer buffer = new StringBuffer();
 
 		prefix(buffer, severity);
@@ -309,8 +309,8 @@ public class StandardEnvironment implements Serializable, Environment {
 		processorProperties.put(processorName, prop);
 	}
 
-	public void report(Processor processor, Severity severity,
-			CtElement element, String message, ProblemFixer... fix) {
+	public void report(Processor<?> processor, Severity severity,
+			CtElement element, String message, ProblemFixer<?>... fix) {
 		// Fix not (yet) used in command-line mode
 		report(processor, severity, element, message);
 	}

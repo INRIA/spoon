@@ -91,7 +91,7 @@ public class TemplateFactory extends SubFactory implements Serializable {
 	 *            the runtime class
 	 * @return the compile-time class
 	 */
-	public <T> CtClass<T> get(Class<T> templateClass) {
+	public <T> CtClass<T> get(Class<?> templateClass) {
 		return get(templateClass.getName());
 	}
 

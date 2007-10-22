@@ -58,7 +58,7 @@ public class TemplateMatcher {
 
 	private static List<CtInvocation<?>> getMethods(
 			CtClass<? extends Template> root) {
-		CtExecutableReference methodRef = root.getFactory().Executable()
+		CtExecutableReference<?> methodRef = root.getFactory().Executable()
 				.createReference(
 						root.getFactory().Type().createReference(
 								TemplateParameter.class),
@@ -103,9 +103,9 @@ public class TemplateMatcher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<CtFieldReference> getVarargs(
+	private static List<CtFieldReference<?>> getVarargs(
 			CtClass<? extends Template> root, List<CtInvocation<?>> variables) {
-		List<CtFieldReference> fields = new ArrayList<CtFieldReference>();
+		List<CtFieldReference<?>> fields = new ArrayList<CtFieldReference<?>>();
 		for (CtFieldReference field : root.getReference().getAllFields()) {
 			if (field.getType().getActualClass() == CtStatementList.class) {
 				boolean alreadyAdded = false;
@@ -135,7 +135,7 @@ public class TemplateMatcher {
 
 	private List<CtTypeReference<?>> typeVariables;
 
-	private List<CtFieldReference> varArgs;
+	private List<CtFieldReference<?>> varArgs;
 
 	private List<CtInvocation<?>> variables;
 
@@ -162,7 +162,7 @@ public class TemplateMatcher {
 		return null == inv || inv.equals(o);
 	}
 
-	private CtElement checkListStatements(List teList) {
+	private CtElement checkListStatements(List<?> teList) {
 		for (Object tem : teList) {
 			if (variables.contains(tem) && tem instanceof CtInvocation) {
 				CtInvocation<?> listCand = (CtInvocation<?>) tem;
@@ -172,9 +172,9 @@ public class TemplateMatcher {
 				return ok ? listCand : null;
 			}
 			if (tem instanceof CtVariable) {
-				CtVariable var = (CtVariable) tem;
+				CtVariable<?> var = (CtVariable<?>) tem;
 				String name = var.getSimpleName();
-				for (CtFieldReference f : varArgs) {
+				for (CtFieldReference<?> f : varArgs) {
 					if (f.getSimpleName().equals(name)) {
 						return f.getDeclaration();
 					}
@@ -225,11 +225,11 @@ public class TemplateMatcher {
 			return new DefaultParameterMatcher();
 		}
 
-		Collection<CtFieldReference> fields = clazz.getReference()
+		Collection<CtFieldReference<?>> fields = clazz.getReference()
 				.getAllFields();
 
-		CtFieldReference param = null;
-		for (CtFieldReference field : fields) {
+		CtFieldReference<?> param = null;
+		for (CtFieldReference<?> field : fields) {
 			Parameter p = field.getAnnotation(Parameter.class);
 			if (p == null)
 				continue; // not a parameter.
@@ -291,7 +291,7 @@ public class TemplateMatcher {
 		return matches;
 	}
 
-	private ParameterMatcher getParameterInstance(CtFieldReference param)
+	private ParameterMatcher getParameterInstance(CtFieldReference<?> param)
 			throws InstantiationException, IllegalAccessException {
 		Parameter anParam = param.getAnnotation(Parameter.class);
 		if (anParam == null) {
@@ -438,8 +438,8 @@ public class TemplateMatcher {
 			return object.equals(inMulti);
 		}
 		if (object instanceof CtParameter) {
-			CtParameter param = (CtParameter) object;
-			for (CtFieldReference varArg : varArgs) {
+			CtParameter<?> param = (CtParameter<?>) object;
+			for (CtFieldReference<?> varArg : varArgs) {
 				if (param.getSimpleName().equals(varArg.getSimpleName())) {
 					return varArg.equals(inMulti);
 				}
@@ -587,9 +587,9 @@ public class TemplateMatcher {
 			if (inMulti instanceof CtInvocation) {
 				teList2.remove(inMulti);
 			} else if (inMulti instanceof CtVariable) {
-				CtVariable var = (CtVariable) inMulti;
-				for (Iterator iter = teList2.iterator(); iter.hasNext();) {
-					CtVariable teVar = (CtVariable) iter.next();
+				CtVariable<?> var = (CtVariable<?>) inMulti;
+				for (Iterator<?> iter = teList2.iterator(); iter.hasNext();) {
+					CtVariable<?> teVar = (CtVariable<?>) iter.next();
 					if (teVar.getSimpleName().equals(var.getSimpleName())) {
 						iter.remove();
 					}

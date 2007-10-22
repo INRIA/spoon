@@ -33,7 +33,7 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	void insertAfter(CtStatementList statements);
+	void insertAfter(CtStatementList<?> statements);
 
 	/**
 	 * Inserts a statement before the current statement.
@@ -43,7 +43,7 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	void insertBefore(CtStatementList statements);
+	void insertBefore(CtStatementList<?> statements);
 
 	/**
 	 * Gets the label of this statement if defined.

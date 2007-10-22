@@ -368,7 +368,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtLoop(doLoop);
 	}
 
-	public <T extends Enum> void visitCtEnum(CtEnum<T> ctEnum) {
+	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		visitCtClass(ctEnum);
 	}
 

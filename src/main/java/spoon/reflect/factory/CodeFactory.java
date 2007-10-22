@@ -325,13 +325,13 @@ public class CodeFactory extends SubFactory {
 	 *            the assigned expression
 	 * @return a variable assignment
 	 */
-	public <T> CtAssignment createVariableAssignment(
-			CtVariableReference<T> variable, boolean isStatic,
+	public <A,T extends A> CtAssignment<A,T> createVariableAssignment(
+			CtVariableReference<A> variable, boolean isStatic,
 			CtExpression<T> expression) {
-		CtAssignment<T, T> va = factory.Core().createAssignment();
+		CtAssignment<A, T> va = factory.Core().createAssignment();
 		va.setAssignment(expression);
 		expression.setParent(va);
-		CtVariableAccess<T> vaccess = createVariableAccess(variable, isStatic);
+		CtVariableAccess<A> vaccess = createVariableAccess(variable, isStatic);
 		va.setAssigned(vaccess);
 		vaccess.setParent(va);
 		return va;

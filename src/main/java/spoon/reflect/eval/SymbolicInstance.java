@@ -46,27 +46,27 @@ public class SymbolicInstance<T> {
 	/**
 	 * The null literal symbolic instance.
 	 */
-	public final static SymbolicInstance NULL=new SymbolicInstance("null");
+	public final static SymbolicInstance<?> NULL=new SymbolicInstance<Object>("null");
 	/**
 	 * The 0 literal symbolic instance.
 	 */
-	public final static SymbolicInstance ZERO=new SymbolicInstance("0");
+	public final static SymbolicInstance<?> ZERO=new SymbolicInstance<Object>("0");
 	/**
 	 * The strictly positive domain symbolic instance.
 	 */
-	public final static SymbolicInstance POS_DOMAIN=new SymbolicInstance(">0");
+	public final static SymbolicInstance<?> POS_DOMAIN=new SymbolicInstance<Object>(">0");
 	/**
 	 * The positive domain symbolic instance.
 	 */
-	public final static SymbolicInstance ZEROPOS_DOMAIN=new SymbolicInstance(">=0");
+	public final static SymbolicInstance<?> ZEROPOS_DOMAIN=new SymbolicInstance<Object>(">=0");
 	/**
 	 * The strictly negative domain symbolic instance.
 	 */
-	public final static SymbolicInstance NEG_DOMAIN=new SymbolicInstance("<0");
+	public final static SymbolicInstance<?> NEG_DOMAIN=new SymbolicInstance<Object>("<0");
 	/**
 	 * The positive domain symbolic instance.
 	 */
-	public final static SymbolicInstance ZERONEG_DOMAIN=new SymbolicInstance("<=0");
+	public final static SymbolicInstance<?> ZERONEG_DOMAIN=new SymbolicInstance<Object>("<=0");
 	
 	/**
 	 * Creates a literal symbolic instance.
@@ -104,7 +104,7 @@ public class SymbolicInstance<T> {
 	 *            the name (can be null)
 	 * @return a unique Id or the type id if name is null
 	 */
-	public static String getSymbolId(CtTypeReference concreteType, String name) {
+	public static String getSymbolId(CtTypeReference<?> concreteType, String name) {
 		CtTypeReference<?> t = concreteType;
 		if (name != null) {
 			return t.getQualifiedName() + "$" + name;
@@ -126,7 +126,7 @@ public class SymbolicInstance<T> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		SymbolicInstance i = (SymbolicInstance) obj;
+		SymbolicInstance<?> i = (SymbolicInstance<?>) obj;
 		boolean b = concreteType.equals(i.concreteType)
 				&& fields.equals(i.fields) && isExternal == i.isExternal;
 		return b;
@@ -137,7 +137,7 @@ public class SymbolicInstance<T> {
 	 */
 	public boolean equalsRef(Object obj) {
 		if(this==obj) return true;
-		SymbolicInstance i = (SymbolicInstance) obj;
+		SymbolicInstance<?> i = (SymbolicInstance<?>) obj;
 		boolean b = getId().equals(i.getId());
 		return b;
 	}
@@ -162,12 +162,12 @@ public class SymbolicInstance<T> {
 				// skip external fields
 				if(f==null) continue;
 				if (isType && f.hasModifier(ModifierKind.STATIC)) {
-					SymbolicInstance r = evaluator.evaluate(f
+					SymbolicInstance<?> r = evaluator.evaluate(f
 							.getDefaultExpression());
 					fields.put(fr, r == null ? null : r.getId());
 				}
 				if (!isType && !f.hasModifier(ModifierKind.STATIC)) {
-					SymbolicInstance r = evaluator.evaluate(f
+					SymbolicInstance<?> r = evaluator.evaluate(f
 							.getDefaultExpression());
 					fields.put(fr, r == null ? null : r.getId());
 				}
@@ -181,7 +181,7 @@ public class SymbolicInstance<T> {
 								.getActualClass())) {
 							if (m.getName().startsWith("get")
 									&& m.getParameterTypes().length == 0) {
-								CtFieldReference f = concreteType
+								CtFieldReference<?> f = concreteType
 										.getFactory()
 										.Field()
 										.createReference(
@@ -224,7 +224,7 @@ public class SymbolicInstance<T> {
 
 	private CtTypeReference<T> concreteType;
 
-	private Map<CtVariableReference, String> fields = new TreeMap<CtVariableReference, String>();
+	private Map<CtVariableReference<?>, String> fields = new TreeMap<CtVariableReference<?>, String>();
 
 	// private Map<String, AbstractInstance> properties;
 
@@ -252,7 +252,7 @@ public class SymbolicInstance<T> {
 	 * @return null if non-existing field
 	 */
 	public String getFieldValue(String fname) {
-		for (CtVariableReference v : fields.keySet()) {
+		for (CtVariableReference<?> v : fields.keySet()) {
 			if (v.getSimpleName().equals(fname)) {
 				return fields.get(v);
 			}
@@ -286,7 +286,7 @@ public class SymbolicInstance<T> {
 	 * instance on the heap.
 	 */
 	public void setFieldValue(SymbolicHeap heap, CtVariableReference<?> fref,
-			SymbolicInstance value) {
+			SymbolicInstance<?> value) {
 		if (fields.containsKey(fref) || isExternal()) {
 			fields.put(fref, value.getId());
 			heap.store(value);
@@ -344,7 +344,7 @@ public class SymbolicInstance<T> {
 	/**
 	 * Gets the fields for this instance.
 	 */
-	public Map<CtVariableReference, String> getFields() {
+	public Map<CtVariableReference<?>, String> getFields() {
 		return fields;
 	}
 

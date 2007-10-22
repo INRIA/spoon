@@ -33,7 +33,7 @@ public class CtNewClassImpl<T> extends
 		CtTargetedExpressionImpl<T, CtExpression<?>> implements CtNewClass<T> {
 	private static final long serialVersionUID = 1L;
 
-	CtClass annonymousClass;
+	CtClass<?> annonymousClass;
 
 	List<CtExpression<?>> arguments = new ArrayList<CtExpression<?>>();
 
@@ -69,23 +69,23 @@ public class CtNewClassImpl<T> extends
 		CtStatementImpl.insertBefore(this, statement);
 	}
 
-	public void insertAfter(CtStatementList statements) {
+	public void insertAfter(CtStatementList<?> statements) {
 		CtStatementImpl.insertAfter(this, statements);
 	}
 
-	public void insertBefore(CtStatementList statements) {
+	public void insertBefore(CtStatementList<?> statements) {
 		CtStatementImpl.insertBefore(this, statements);
 	}
 
 	public void replace(CtElement element) {
 		if (element instanceof CtStatementList) {
-			CtStatementImpl.replace(this, (CtStatementList) element);
+			CtStatementImpl.replace(this, (CtStatementList<?>) element);
 		} else {
 			super.replace(element);
 		}
 	}
 
-	public void setAnonymousClass(CtClass annonymousClass) {
+	public void setAnonymousClass(CtClass<?> annonymousClass) {
 		this.annonymousClass = annonymousClass;
 	}
 

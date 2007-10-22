@@ -66,7 +66,7 @@ public abstract class SubFactory implements Serializable, FactoryAccessor {
 			if (o instanceof CtElement) {
 				((CtElement) o).setParent(parent);
 			} else if (o instanceof Collection) {
-				for (Object o2 : (Collection) o) {
+				for (Object o2 : (Collection<?>) o) {
 					((CtElement) o2).setParent(parent);
 				}
 			}

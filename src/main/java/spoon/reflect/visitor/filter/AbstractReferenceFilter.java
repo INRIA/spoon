@@ -24,6 +24,7 @@ import spoon.reflect.visitor.ReferenceFilter;
  * This class defines an abstract reference filter that needs to be subclassed
  * in order to define the matching criteria.
  * 
+ * @param T the type of the reference to be matched
  * @see spoon.reflect.visitor.ReferenceFilter#matches(CtReference)
  */
 public abstract class AbstractReferenceFilter<T extends CtReference> implements
@@ -32,9 +33,10 @@ public abstract class AbstractReferenceFilter<T extends CtReference> implements
 	Class<T> type;
 
 	/**
-	 * Creates a reference filter with the type of the potentitally matching
+	 * Creates a reference filter with the type of the potentially matching
 	 * references.
 	 */
+	// TODO: INFER TYPE BY INTROSPECTION
 	@SuppressWarnings("unchecked")
 	public AbstractReferenceFilter(Class<?> type) {
 		this.type = (Class<T>) type;

@@ -168,7 +168,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public void visitCtAssert(CtAssert asserted) {
+	public <T> void visitCtAssert(CtAssert<T> asserted) {
 		throw new RuntimeException("Unknow Element");
 	}
 
@@ -376,7 +376,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public void visitCtConstructor(CtConstructor c) {
+	public <T> void visitCtConstructor(CtConstructor<T> c) {
 		throw new RuntimeException("Unknow Element");
 	}
 
@@ -392,7 +392,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(w);
 	}
 
-	public <T extends Enum> void visitCtEnum(CtEnum<T> ctEnum) {
+	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		throw new RuntimeException("Unknow Element");
 	}
 
@@ -411,10 +411,10 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
 		if (fieldAccess.getVariable().getSimpleName().equals("class")) {
-			Class c = fieldAccess.getVariable().getDeclaringType()
+			Class<?> c = fieldAccess.getVariable().getDeclaringType()
 					.getActualClass();
 			if (c != null) {
-				CtLiteral<Class> l = fieldAccess.getFactory().Core()
+				CtLiteral<Class<?>> l = fieldAccess.getFactory().Core()
 						.createLiteral();
 				l.setValue(c);
 				setResult(l);
@@ -423,7 +423,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		}
 		if (fieldAccess.getFactory().Type().createReference(Enum.class)
 				.isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
-			CtLiteral<CtFieldReference> l = fieldAccess.getFactory().Core()
+			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core()
 					.createLiteral();
 			l.setValue(fieldAccess.getVariable());
 			setResult(l);
@@ -524,8 +524,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		i.setTarget(evaluate(i, invocation.getTarget()));
 		if (i.getTarget() != null && !(i.getTarget() instanceof CtLiteral))
 			constant = false;
-		for (CtExpression e : invocation.getArguments()) {
-			CtExpression re = evaluate(i, e);
+		for (CtExpression<?> e : invocation.getArguments()) {
+			CtExpression<?> re = evaluate(i, e);
 			if (!(re instanceof CtLiteral))
 				constant = false;
 			i.getArguments().add(re);
@@ -704,7 +704,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
-		CtVariable v = variableAccess.getVariable().getDeclaration();
+		CtVariable<?> v = variableAccess.getVariable().getDeclaration();
 
 		if (v != null && v.hasModifier(ModifierKind.FINAL)
 				&& v.getDefaultExpression() != null)
@@ -722,7 +722,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(a);
 	}
 
-	public void visitCtVariableReference(CtVariableReference reference) {
+	public <T> void visitCtVariableReference(CtVariableReference<T> reference) {
 		throw new RuntimeException("Unknow Element");
 	}
 

@@ -126,7 +126,7 @@ public interface CoreFactory {
 	/**
 	 * Creates an <code>assert</code> statement.
 	 */
-	CtAssert createAssert();
+	<T> CtAssert<T> createAssert();
 
 	/**
 	 * Creates an assignment expression.
@@ -186,7 +186,7 @@ public interface CoreFactory {
 	/**
 	 * Creates an enum.
 	 */
-	<T extends Enum> CtEnum<T> createEnum();
+	<T extends Enum<?>> CtEnum<T> createEnum();
 
 	/**
 	 * Creates an executable reference.

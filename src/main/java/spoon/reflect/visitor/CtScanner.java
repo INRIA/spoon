@@ -178,7 +178,7 @@ public class CtScanner implements CtVisitor {
 		if (o instanceof CtReference)
 			scan((CtReference) o);
 		if (o instanceof Collection<?>) {
-			for (Object obj : (Collection) o) {
+			for (Object obj : (Collection<?>) o) {
 				scan(obj);
 			}
 		}
@@ -326,7 +326,7 @@ public class CtScanner implements CtVisitor {
 		exit(doLoop);
 	}
 
-	public <T extends Enum> void visitCtEnum(CtEnum<T> ctEnum) {
+	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		enter(ctEnum);
 		scan(ctEnum.getAnnotations());
 		scan(ctEnum.getFields());

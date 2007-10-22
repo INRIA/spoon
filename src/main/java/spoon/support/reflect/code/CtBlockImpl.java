@@ -45,8 +45,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertBegin(CtStatementList<?> statements) {
-		List<CtInvocation> invocations = Query.getElements(this,
-				new TypeFilter<CtInvocation>(CtInvocation.class));
+		List<CtInvocation<?>> invocations = Query.getElements(this,
+				new TypeFilter<CtInvocation<?>>(CtInvocation.class));
 		if (invocations.size() > 0) {
 			CtInvocation<?> invoc = invocations.get(0);
 			if (invoc.getExecutable().getSimpleName().startsWith("<init>")) {
@@ -61,8 +61,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertBegin(CtStatement statement) {
-		List<CtInvocation> invocations = Query.getElements(this,
-				new TypeFilter<CtInvocation>(CtInvocation.class));
+		List<CtInvocation<?>> invocations = Query.getElements(this,
+				new TypeFilter<CtInvocation<?>>(CtInvocation.class));
 		if (invocations.size() > 0) {
 			CtInvocation<?> invoc = invocations.get(0);
 			if (invoc.getExecutable().getSimpleName().startsWith("<init>")) {
@@ -125,7 +125,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

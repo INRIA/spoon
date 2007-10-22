@@ -42,13 +42,13 @@ public interface CtClass<T extends Object> extends CtType<T> {
 	/**
 	 * Returns the constructor of the class that takes the given argument types.
 	 */
-	CtConstructor getConstructor(CtTypeReference<?>... parameterTypes);
+	CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes);
 
 	/**
 	 * Returns the constructors of this class. This includes the default
 	 * constructor if this class has no constructors explicitly declared.
 	 */
-	Set<CtConstructor> getConstructors();
+	Set<CtConstructor<T>> getConstructors();
 
 	/**
 	 * Returns the class type directly extended by this class.
@@ -66,7 +66,7 @@ public interface CtClass<T extends Object> extends CtType<T> {
 	/**
 	 * Sets the constructors for this class.
 	 */
-	void setConstructors(Set<CtConstructor> constructors);
+	void setConstructors(Set<CtConstructor<T>> constructors);
 
 	/**
 	 * Sets the superclass type.

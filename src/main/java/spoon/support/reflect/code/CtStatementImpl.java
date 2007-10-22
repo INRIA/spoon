@@ -33,9 +33,9 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		insertAfter(target, sts);
 	}
 
-	public static void replace(CtStatement target, CtStatementList statements) {
+	public static void replace(CtStatement target, CtStatementList<?> statements) {
 		insertAfter(target, statements);
-		CtBlock<?> parentBlock = (CtBlock) target.getParent();
+		CtBlock<?> parentBlock = (CtBlock<?>) target.getParent();
 		parentBlock.getStatements().remove(target);
 	}
 
@@ -46,7 +46,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 			throw new RuntimeException(
 					"cannot insert in this context (use insertEnd?)");
 		}
-		CtBlock<?> parentBlock = (CtBlock) e;
+		CtBlock<?> parentBlock = (CtBlock<?>) e;
 		int i = 0;
 		for (CtStatement s : parentBlock.getStatements()) {
 			i++;
@@ -75,7 +75,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 			throw new RuntimeException(
 					"cannot insert in this context (use insertEnd?)");
 		}
-		CtBlock<?> parentBlock = (CtBlock) e;
+		CtBlock<?> parentBlock = (CtBlock<?>) e;
 		int i = 0;
 		for (CtStatement s : parentBlock.getStatements()) {
 			if (s == target) {
@@ -94,7 +94,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		insertBefore(this, statement);
 	}
 
-	public void insertBefore(CtStatementList statements) {
+	public void insertBefore(CtStatementList<?> statements) {
 		insertBefore(this, statements);
 	}
 
@@ -102,13 +102,13 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		insertAfter(this, statement);
 	}
 
-	public void insertAfter(CtStatementList statements) {
+	public void insertAfter(CtStatementList<?> statements) {
 		insertAfter(this, statements);
 	}
 
 	public void replace(CtElement element) {
 		if (element instanceof CtStatementList) {
-			CtStatementImpl.replace(this, (CtStatementList) element);
+			CtStatementImpl.replace(this, (CtStatementList<?>) element);
 		} else {
 			super.replace(element);
 		}

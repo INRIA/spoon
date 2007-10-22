@@ -41,7 +41,7 @@ public class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements
 		visitor.visitCtVariableAccess(this);
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

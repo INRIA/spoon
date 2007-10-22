@@ -99,7 +99,7 @@ public interface CtTypeReference<T> extends CtReference,
 	 * Sets the reference to the declaring type. Should be set to null if the
 	 * referenced type is not a inner type.
 	 */
-	void setDeclaringType(CtTypeReference type);
+	void setDeclaringType(CtTypeReference<?> type);
 
 	/**
 	 * Sets the reference to the declaring package.
@@ -109,24 +109,24 @@ public interface CtTypeReference<T> extends CtReference,
 	/**
 	 * Gets the fields declared by this type.
 	 */
-	Collection<CtFieldReference> getDeclaredFields();
+	Collection<CtFieldReference<?>> getDeclaredFields();
 
 	/**
 	 * Gets the fields declared by this type and by all its supertypes if
 	 * applicable.
 	 */
-	Collection<CtFieldReference> getAllFields();
+	Collection<CtFieldReference<?>> getAllFields();
 
 	/**
 	 * Gets the executables declared by this type if applicable.
 	 */
-	Collection<CtExecutableReference> getDeclaredExecutables();
+	Collection<CtExecutableReference<?>> getDeclaredExecutables();
 
 	/**
 	 * Gets the executables declared by this type and by all its supertypes if
 	 * applicable.
 	 */
-	Collection<CtExecutableReference> getAllExecutables();
+	Collection<CtExecutableReference<?>> getAllExecutables();
 
 	/**
 	 * Gets the superclass of this type if applicable (only for classes).

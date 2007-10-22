@@ -45,7 +45,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		return elseStatement;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

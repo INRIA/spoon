@@ -30,7 +30,7 @@ public class TypeFilter<T extends CtElement> extends AbstractFilter<T> {
 	 * @param type
 	 *            the type that matches
 	 */
-	public TypeFilter(Class<T> type) {
+	public TypeFilter(Class<?> type) {
 		super(type);
 	}
 

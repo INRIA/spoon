@@ -51,7 +51,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		return assignment;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

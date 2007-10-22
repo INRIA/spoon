@@ -81,8 +81,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 		@Override
 		public Object put(String key, Object value) {
 			if (value instanceof Class[]) {
-				Class[] valsNew = (Class[]) value;
-				ArrayList<CtTypeReference> ret = new ArrayList<CtTypeReference>(
+				Class<?>[] valsNew = (Class<?>[]) value;
+				ArrayList<CtTypeReference<?>> ret = new ArrayList<CtTypeReference<?>>(
 						valsNew.length);
 
 				for (int i = 0; i < valsNew.length; i++) {
@@ -186,15 +186,15 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 		return value;
 	}
 
-	private Class getElementType(String name) {
+	private Class<?> getElementType(String name) {
 		// Try by CT reflection
-		CtSimpleType t = getAnnotationType().getDeclaration();
+		CtSimpleType<?> t = getAnnotationType().getDeclaration();
 		if (t != null) {
-			CtField f = t.getField(name);
+			CtField<?> f = t.getField(name);
 			return f.getType().getActualClass();
 		}
 		// Try with RT reflection
-		Class c = getAnnotationType().getActualClass();
+		Class<?> c = getAnnotationType().getActualClass();
 		for (Method m : c.getMethods()) {
 			if (m.getName().equals(name)) {
 				return m.getReturnType();
@@ -226,7 +226,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 		if (ret == null)
 			ret = getReflectValue(key);
 
-		Class type = getElementType(key);
+		Class<?> type = getElementType(key);
 
 		if (type.isArray()) {
 			if (!(ret instanceof Collection)) {
@@ -241,7 +241,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 				ret = lst;
 
 			}
-			Collection col = (Collection) ret;
+			Collection<?> col = (Collection<?>) ret;
 			Object[] array = (Object[]) Array.newInstance(type
 					.getComponentType(), col.size());
 			int i = 0;
@@ -279,7 +279,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 
 	private Object getReflectValue(String fieldname) {
 		try {
-			Class c = getAnnotationType().getActualClass();
+			Class<?> c = getAnnotationType().getActualClass();
 			Method m = c.getMethod(fieldname);
 			return m.getDefaultValue();
 		} catch (Exception e) {

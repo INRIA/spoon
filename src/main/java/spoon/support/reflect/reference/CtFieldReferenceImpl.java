@@ -159,7 +159,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 	}
 
 	public Set<ModifierKind> getModifiers() {
-		CtVariable v = getDeclaration();
+		CtVariable<?> v = getDeclaration();
 		if (v != null) {
 			return v.getModifiers();
 		} else {

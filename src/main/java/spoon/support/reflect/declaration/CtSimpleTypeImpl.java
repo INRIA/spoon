@@ -38,7 +38,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 	public Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage) {
 		Set<CtTypeReference<?>> typeRefs = new HashSet<CtTypeReference<?>>();
 		for (CtTypeReference<?> typeRef : Query
-				.getReferences(this, new ReferenceTypeFilter<CtTypeReference>(
+				.getReferences(this, new ReferenceTypeFilter<CtTypeReference<?>>(
 						CtTypeReference.class))) {
 			if (!(typeRef.isPrimitive()
 					|| (typeRef instanceof CtArrayTypeReference)
@@ -68,7 +68,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 
 	public CtSimpleType<?> getDeclaringType() {
 		if (parent instanceof CtSimpleType) {
-			return (CtSimpleType) parent;
+			return (CtSimpleType<?>) parent;
 		} else {
 			return null;
 		}

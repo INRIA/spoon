@@ -46,9 +46,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 
 	List<CtAnonymousExecutable> anonymousExecutable = new ArrayList<CtAnonymousExecutable>();
 
-	Set<CtConstructor> constructors = new TreeSet<CtConstructor>();
+	Set<CtConstructor<T>> constructors = new TreeSet<CtConstructor<T>>();
 
-	CtTypeReference superClass;
+	CtTypeReference<?> superClass;
 
 	public void accept(CtVisitor v) {
 		v.visitCtClass(this);
@@ -98,7 +98,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		return null;
 	}
 
-	public Set<CtConstructor> getConstructors() {
+	public Set<CtConstructor<T>> getConstructors() {
 		return constructors;
 	}
 
@@ -117,7 +117,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		anonymousExecutable.addAll(e);
 	}
 
-	public void setConstructors(Set<CtConstructor> constructors) {
+	public void setConstructors(Set<CtConstructor<T>> constructors) {
 		this.constructors = constructors;
 	}
 
@@ -130,7 +130,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		Set<CtAnnotation<? extends Annotation>> annot = super.getAnnotations();
 
 		if (getSuperclass() != null) {
-			CtSimpleType sup = getSuperclass().getDeclaration();
+			CtSimpleType<?> sup = getSuperclass().getDeclaration();
 			if (sup != null) {
 				for (CtAnnotation<? extends Annotation> a : sup
 						.getAnnotations()) {

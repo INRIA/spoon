@@ -49,7 +49,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	public CtType<?> getDeclaringType() {
-		return (CtType) parent;
+		return (CtType<?>) parent;
 	}
 
 }

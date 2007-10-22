@@ -40,7 +40,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 
 	Factory factory;
 
-	List<Processor> processors;
+	List<Processor<?>> processors;
 
 	ProcessingVisitor visitor;
 
@@ -57,7 +57,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		setFactory(factory);
 	}
 
-	public void addProcessor(Class<? extends Processor> type) {
+	public void addProcessor(Class<? extends Processor<?>> type) {
 		try {
 			Processor<?> p = type.newInstance();
 			p.setFactory(factory);
@@ -75,7 +75,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		}
 	}
 
-	public boolean addProcessor(Processor p) {
+	public boolean addProcessor(Processor<?> p) {
 		p.setFactory(getFactory());
 		return getProcessors().add(p);
 	}
@@ -83,7 +83,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
-			addProcessor((Class<? extends Processor>) Class
+			addProcessor((Class<? extends Processor<?>>) Class
 					.forName(qualifiedName));
 		} catch (ClassNotFoundException e) {
 			factory.getEnvironment().report(
@@ -102,9 +102,9 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		return factory;
 	}
 
-	public List<Processor> getProcessors() {
+	public List<Processor<?>> getProcessors() {
 		if (processors == null) {
-			processors = new LinkedList<Processor>();
+			processors = new LinkedList<Processor<?>>();
 		}
 		return processors;
 	}
@@ -115,8 +115,8 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		return visitor;
 	}
 
-	public boolean isToBeApplied(Class<? extends Processor> type) {
-		for (Processor p : getProcessors()) {
+	public boolean isToBeApplied(Class<? extends Processor<?>> type) {
+		for (Processor<?> p : getProcessors()) {
 			if (p.getClass() == type) {
 				return true;
 			}
@@ -131,7 +131,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	}
 
 	public void process(Collection<? extends CtElement> elements) {
-		for (Processor p : getProcessors()) {
+		for (Processor<?> p : getProcessors()) {
 			current = p;
 			process(elements, p);
 		}
@@ -141,7 +141,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	 * Recursively processes elements and their children with a given processor.
 	 */
 	public void process(Collection<? extends CtElement> elements,
-			Processor processor) {
+			Processor<?> processor) {
 		getFactory().getEnvironment().debugMessage(
 				"processing with '" + processor.getClass().getName()+"'...");
 		current = processor;
@@ -152,7 +152,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	}
 
 	public void process(CtElement element) {
-		for (Processor p : getProcessors()) {
+		for (Processor<?> p : getProcessors()) {
 			current = p;
 			process(element, p);
 		}

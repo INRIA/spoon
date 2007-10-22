@@ -31,7 +31,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 
 	List<CtTypeReference<?>> typeCasts = new ArrayList<CtTypeReference<?>>();
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

@@ -31,14 +31,14 @@ public interface CtAnonymousExecutable extends CtElement, CtModifiable {
 	 * 
 	 * @return the representation of this executable
 	 */
-	CtBlock getBody();
+	CtBlock<?> getBody();
 
 	/**
 	 * Gets the class that defines this element.
 	 * 
 	 * @return owner class
 	 */
-	CtClass getOwnerClass();
+	CtClass<?> getOwnerClass();
 
 	/**
 	 * Sets the executable block.
@@ -46,6 +46,6 @@ public interface CtAnonymousExecutable extends CtElement, CtModifiable {
 	 * @param block
 	 *            the representation of this executable
 	 */
-	void setBody(CtBlock block);
+	void setBody(CtBlock<?> block);
 
 }

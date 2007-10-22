@@ -20,6 +20,6 @@ package spoon.reflect.declaration;
 /**
  * This element represents an enumeration declaration.
  */
-public interface CtEnum<T extends Enum> extends CtClass<T> {
+public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 
 }

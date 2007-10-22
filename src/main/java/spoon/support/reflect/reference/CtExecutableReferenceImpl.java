@@ -228,8 +228,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return null;
 	}
 
-	public Constructor getActualConstructor() {
-		for (Constructor c : getDeclaringType().getActualClass()
+	public Constructor<?> getActualConstructor() {
+		for (Constructor<?> c : getDeclaringType().getActualClass()
 				.getDeclaredConstructors()) {
 			if (c.getParameterTypes().length != getParameterTypes().size())
 				continue;
@@ -298,7 +298,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public boolean isFinal() {
-		CtExecutable e = getDeclaration();
+		CtExecutable<T> e = getDeclaration();
 		if (e != null) {
 			return e.hasModifier(ModifierKind.FINAL);
 		} else {
@@ -311,7 +311,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public Set<ModifierKind> getModifiers() {
-		CtExecutable e = getDeclaration();
+		CtExecutable<T> e = getDeclaration();
 		if (e != null) {
 			return e.getModifiers();
 		} else {
@@ -319,7 +319,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 			if (m != null) {
 				return RtHelper.getModifiers(m.getModifiers());
 			}
-			Constructor c = getActualConstructor();
+			Constructor<?> c = getActualConstructor();
 			if (c != null) {
 				return RtHelper.getModifiers(c.getModifiers());
 			}

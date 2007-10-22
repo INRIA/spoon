@@ -42,5 +42,5 @@ public interface CtCatch extends CtCodeElement {
 	/**
 	 * Sets the catch's body.
 	 */
-	void setBody(CtBlock body);
+	void setBody(CtBlock<?> body);
 }

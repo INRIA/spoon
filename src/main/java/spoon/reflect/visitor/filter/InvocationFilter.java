@@ -25,7 +25,7 @@ import spoon.reflect.reference.CtExecutableReference;
  * executable that overrides it.
  */
 public class InvocationFilter extends AbstractFilter<CtInvocation<?>> {
-	CtExecutableReference executable;
+	CtExecutableReference<?> executable;
 
 	/**
 	 * Creates a new invocation filter.
@@ -33,7 +33,7 @@ public class InvocationFilter extends AbstractFilter<CtInvocation<?>> {
 	 * @param executable
 	 *            the executable to be tested for being invoked
 	 */
-	public InvocationFilter(CtExecutableReference executable) {
+	public InvocationFilter(CtExecutableReference<?> executable) {
 		super(CtInvocation.class);
 		this.executable = executable;
 	}

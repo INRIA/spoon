@@ -20,6 +20,7 @@ package spoon.reflect.factory;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtSimpleType;
 
 /**
  * The {@link CtEnum} sub-factory.
@@ -46,8 +47,8 @@ public class EnumFactory extends TypeFactory {
 	 * @param simpleName
 	 *            the simple name
 	 */
-	public CtEnum create(CtPackage owner, String simpleName) {
-		CtEnum e = factory.Core().createEnum();
+	public CtEnum<?> create(CtPackage owner, String simpleName) {
+		CtEnum<?> e = factory.Core().createEnum();
 		e.setSimpleName(simpleName);
 		owner.getTypes().add(e);
 		e.setParent(owner);
@@ -57,7 +58,7 @@ public class EnumFactory extends TypeFactory {
 	/**
 	 * Creates an enum from its qualified name.
 	 */
-	public CtEnum create(String qualifiedName) {
+	public CtEnum<?> create(String qualifiedName) {
 		return create(factory.Package().getOrCreate(
 				getPackageName(qualifiedName)), getSimpleName(qualifiedName));
 	}
@@ -82,11 +83,14 @@ public class EnumFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param cl
-	 *            java class
+	 *            the java class: note that this class should be Class<T> but
+	 *            it then poses problem when T is a generic type itself
 	 */
-	public <T extends Enum> CtEnum<T> get(Class<T> cl) {
+	@SuppressWarnings("unchecked")
+	public <T extends Enum<?>> CtEnum<T> get(Class<?> cl) {
 		try {
-			return (CtEnum<T>) super.get(cl);
+			CtSimpleType t=super.get(cl);
+			return (CtEnum<T>) t;
 		} catch (Exception e) {
 			return null;
 		}

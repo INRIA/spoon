@@ -45,8 +45,8 @@ public class SymbolicEvaluationStack {
 	/**
 	 * Constructs and returns the calling stack for this evaluation stack.
 	 */
-	public Stack<CtAbstractInvocation> getCallingStack() {
-		Stack<CtAbstractInvocation> s = new Stack<CtAbstractInvocation>();
+	public Stack<CtAbstractInvocation<?>> getCallingStack() {
+		Stack<CtAbstractInvocation<?>> s = new Stack<CtAbstractInvocation<?>>();
 		for (SymbolicStackFrame f : frameStack) {
 			s.add(f.getInvocation());
 		}
@@ -68,10 +68,10 @@ public class SymbolicEvaluationStack {
 	 *            the variables accessible from the frame (invocation's
 	 *            parameters)
 	 */
-	public void enterFrame(CtAbstractInvocation caller,
-			SymbolicInstance target, CtExecutableReference executable,
-			List<SymbolicInstance> arguments,
-			Map<CtVariableReference, SymbolicInstance> variables) {
+	public void enterFrame(CtAbstractInvocation<?> caller,
+			SymbolicInstance<?> target, CtExecutableReference<?> executable,
+			List<SymbolicInstance<?>> arguments,
+			Map<CtVariableReference<?>, SymbolicInstance<?>> variables) {
 		frameStack.push(new SymbolicStackFrame(caller,
 				frameStack.isEmpty() ? null : frameStack.peek().getThis(),
 				target, executable, arguments, variables));
@@ -94,7 +94,7 @@ public class SymbolicEvaluationStack {
 	/**
 	 * Gets the symbolic value of a variable within the top frame.
 	 */
-	public SymbolicInstance getVariableValue(CtVariableReference<?> vref) {
+	public SymbolicInstance<?> getVariableValue(CtVariableReference<?> vref) {
 		if (frameStack.peek().getVariables().containsKey(vref)) {
 			return frameStack.peek().getVariables().get(vref);
 		} else {
@@ -106,7 +106,7 @@ public class SymbolicEvaluationStack {
 	 * Sets the symbolic value of a variable within the top frame.
 	 */
 	public void setVariableValue(CtVariableReference<?> vref,
-			SymbolicInstance value) {
+			SymbolicInstance<?> value) {
 		if (frameStack.peek().getVariables().containsKey(vref)) {
 			frameStack.peek().getVariables().put(vref, value);
 		} else {
@@ -153,7 +153,7 @@ public class SymbolicEvaluationStack {
 	 * Gets the current result (returned value) for the top stack frame of this
 	 * stack.
 	 */
-	public SymbolicInstance getResult() {
+	public SymbolicInstance<?> getResult() {
 		return frameStack.peek().getResult();
 	}
 
@@ -161,7 +161,7 @@ public class SymbolicEvaluationStack {
 	 * Sets the current result (returned value) for the top stack frame of this
 	 * stack.
 	 */
-	public void setResult(SymbolicInstance result) {
+	public void setResult(SymbolicInstance<?> result) {
 		frameStack.peek().setResult(result);
 	}
 

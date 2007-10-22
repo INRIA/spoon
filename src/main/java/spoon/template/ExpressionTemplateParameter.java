@@ -39,14 +39,16 @@ public abstract class ExpressionTemplateParameter<T> implements
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> CtExpression<T> getExpression(
-			CtClass<? extends ExpressionTemplateParameter> p) {
-		CtBlock b = getExpressionBlock(p);
+			CtClass<? extends ExpressionTemplateParameter<?>> p) {
+		CtBlock<?> b = getExpressionBlock(p);
 		return ((CtReturn<T>) b.getStatements().get(0)).getReturnedExpression();
 	}
 
-	private static CtBlock getExpressionBlock(
-			CtClass<? extends ExpressionTemplateParameter> p) {
-		return p.getMethod("expression").getBody();
+	@SuppressWarnings("unchecked")
+	private static CtBlock<?> getExpressionBlock(
+			CtClass<? extends ExpressionTemplateParameter<?>> p) {
+		CtBlock b=p.getMethod("expression").getBody();
+		return b;
 	}
 
 	/**
@@ -62,8 +64,9 @@ public abstract class ExpressionTemplateParameter<T> implements
 	 */
 	public abstract T expression() throws Throwable;
 
-	public CtExpression getSubstitution(CtSimpleType<?> targetType) {
-		CtClass<? extends ExpressionTemplateParameter> c;
+	@SuppressWarnings("unchecked")
+	public CtExpression<T> getSubstitution(CtSimpleType<?> targetType) {
+		CtClass<? extends ExpressionTemplateParameter<?>> c;
 		CtBlock<?> b;
 		c = targetType.getFactory().Template().get(this.getClass());
 		if (c == null) {
@@ -75,7 +78,7 @@ public abstract class ExpressionTemplateParameter<T> implements
 		} else {
 			b = targetType.getFactory().Core().clone(getExpressionBlock(c));
 		}
-		return ((CtReturn<?>) b.getStatements().get(0)).getReturnedExpression();
+		return ((CtReturn<T>) b.getStatements().get(0)).getReturnedExpression();
 	}
 
 	public T S() {

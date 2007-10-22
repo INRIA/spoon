@@ -35,7 +35,7 @@ public class ProcessingVisitor extends CtScanner {
 
 	Factory factory;
 
-	Processor processor;
+	Processor<?> processor;
 
 	/**
 	 * The constructor.
@@ -57,7 +57,7 @@ public class ProcessingVisitor extends CtScanner {
 		return false;
 	}
 
-	public Processor getProcessor() {
+	public Processor<?> getProcessor() {
 		return processor;
 	}
 
@@ -81,10 +81,11 @@ public class ProcessingVisitor extends CtScanner {
 		if (e == null) {
 			return;
 		}
-		if (processor.getTraversalStrategy() == TraversalStrategy.PRE_ORDER
-				&& canBeProcessed(processor, e)) {
-			if (processor.isToBeProcessed(e)) {
-				processor.process(e);
+		Processor<CtElement> p=(Processor<CtElement>)processor;
+		if (p.getTraversalStrategy() == TraversalStrategy.PRE_ORDER
+				&& canBeProcessed(p, e)) {
+			if (p.isToBeProcessed(e)) {
+				p.process(e);
 			}
 		}
 		try {
@@ -93,15 +94,15 @@ public class ProcessingVisitor extends CtScanner {
 			this.scan(e);
 		}
 		// try {
-		if (processor.getTraversalStrategy() == TraversalStrategy.POST_ORDER
-				&& canBeProcessed(processor, e)) {
-			if (processor.isToBeProcessed(e)) {
-				processor.process(e);
+		if (p.getTraversalStrategy() == TraversalStrategy.POST_ORDER
+				&& canBeProcessed(p, e)) {
+			if (p.isToBeProcessed(e)) {
+				p.process(e);
 			}
 		}
 	}
 
-	public void setProcessor(Processor processor) {
+	public void setProcessor(Processor<?> processor) {
 		this.processor = processor;
 	}
 }

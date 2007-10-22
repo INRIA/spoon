@@ -26,7 +26,7 @@ public class CtSynchronizedImpl extends CtStatementImpl implements
 		CtSynchronized {
 	private static final long serialVersionUID = 1L;
 
-	CtBlock block;
+	CtBlock<?> block;
 
 	CtExpression<?> expression;
 
@@ -34,7 +34,7 @@ public class CtSynchronizedImpl extends CtStatementImpl implements
 		visitor.visitCtSynchronized(this);
 	}
 
-	public CtBlock getBlock() {
+	public CtBlock<?> getBlock() {
 		return block;
 	}
 
@@ -42,7 +42,7 @@ public class CtSynchronizedImpl extends CtStatementImpl implements
 		return expression;
 	}
 
-	public void setBlock(CtBlock block) {
+	public void setBlock(CtBlock<?> block) {
 		this.block = block;
 	}
 

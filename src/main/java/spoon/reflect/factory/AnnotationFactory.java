@@ -57,7 +57,7 @@ public class AnnotationFactory extends TypeFactory {
 	 * @param simpleName
 	 *            the name of annotation
 	 */
-	public <T extends Annotation> CtAnnotationType create(CtPackage owner,
+	public <T extends Annotation> CtAnnotationType<?> create(CtPackage owner,
 			String simpleName) {
 		CtAnnotationType<T> t = factory.Core().createAnnotationType();
 		t.setSimpleName(simpleName);
@@ -72,7 +72,7 @@ public class AnnotationFactory extends TypeFactory {
 	 * @param qualifiedName
 	 *            the fully qualified name of the annotation type.
 	 */
-	public CtAnnotationType create(String qualifiedName) {
+	public CtAnnotationType<?> create(String qualifiedName) {
 		return create(factory.Package().getOrCreate(
 				getPackageName(qualifiedName)), getSimpleName(qualifiedName));
 	}

@@ -44,23 +44,23 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 		visitor.visitCtTry(this);
 	}
 
-	CtBlock finalizer;
+	CtBlock<?> finalizer;
 
-	public CtBlock getFinalizer() {
+	public CtBlock<?> getFinalizer() {
 		return finalizer;
 	}
 
-	public void setFinalizer(CtBlock finalizer) {
+	public void setFinalizer(CtBlock<?> finalizer) {
 		this.finalizer = finalizer;
 	}
 
-	CtBlock body;
+	CtBlock<?> body;
 
-	public CtBlock getBody() {
+	public CtBlock<?> getBody() {
 		return body;
 	}
 
-	public void setBody(CtBlock body) {
+	public void setBody(CtBlock<?> body) {
 		this.body = body;
 	}
 
@@ -68,7 +68,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 		return null;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

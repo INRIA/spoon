@@ -67,7 +67,7 @@ public class SpoonClassLoader extends ClassLoader {
 		super(parent);
 	}
 
-	private Class createClass(String qualifiedName) {
+	private Class<?> createClass(String qualifiedName) {
 		try {
 			// Process file
 			processJavaFile(qualifiedName);
@@ -79,7 +79,7 @@ public class SpoonClassLoader extends ClassLoader {
 	}
 
 	/**
-	 * Gets the associtated (default) core factory.
+	 * Gets the associated (default) core factory.
 	 */
 	public CoreFactory getCoreFactory() {
 		if (coreFactory == null) {
@@ -128,7 +128,7 @@ public class SpoonClassLoader extends ClassLoader {
 		return sourcePath;
 	}
 
-	private Map<String, Class> classcache = new TreeMap<String, Class>();
+	private Map<String, Class<?>> classcache = new TreeMap<String, Class<?>>();
 
 	/**
 	 * Loads a given class from its name.
@@ -142,7 +142,7 @@ public class SpoonClassLoader extends ClassLoader {
 		}
 
 		// Try to gets from spoon factory
-		Class clas = null;
+		Class<?> clas = null;
 		clas = createClass(name);
 
 		// Try to get in system class
@@ -196,7 +196,7 @@ public class SpoonClassLoader extends ClassLoader {
 
 		for (ClassFile f : comp.getClassFiles()) {
 			String name = new String(f.fileName()).replace('/', '.');
-			Class cl = defineClass(name, f.getBytes(), 0, f.getBytes().length);
+			Class<?> cl = defineClass(name, f.getBytes(), 0, f.getBytes().length);
 			classcache.put(name, cl);
 		}
 

@@ -182,6 +182,6 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 * Calculates and returns the set of all the types referenced by this
 	 * element (and sub-elements in the AST).
 	 */
-	Set<CtTypeReference> getReferencedTypes();
+	Set<CtTypeReference<?>> getReferencedTypes();
 
 }

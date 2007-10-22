@@ -44,7 +44,7 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 		return null;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

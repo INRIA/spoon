@@ -170,7 +170,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			}
 			stream = new PrintStream(file);
 			stream.print(printer.getResult());
-			for (CtSimpleType t : toBePrinted) {
+			for (CtSimpleType<?> t : toBePrinted) {
 				lineNumberMappings.put(t.getQualifiedName(), printer
 						.getLineNumberMapping());
 			}

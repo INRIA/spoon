@@ -27,7 +27,7 @@ public class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> implements
 		CtFieldAccess<T> {
 	private static final long serialVersionUID = 1L;
 
-	CtExpression target;
+	CtExpression<?> target;
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtFieldAccess(this);
@@ -48,7 +48,7 @@ public class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> implements
 		super.setVariable(variable);
 	}
 
-	public void setTarget(CtExpression target) {
+	public void setTarget(CtExpression<?> target) {
 		this.target = target;
 	}
 

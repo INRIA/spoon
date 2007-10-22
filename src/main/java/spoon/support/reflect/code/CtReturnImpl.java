@@ -44,7 +44,7 @@ public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 		return null;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

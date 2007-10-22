@@ -39,7 +39,7 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * 
 	 * @see #getProcessors().
 	 */
-	void addProcessor(Class<? extends Processor> type);
+	void addProcessor(Class<? extends Processor<?>> type);
 
 	/**
 	 * Adds a processor.
@@ -67,7 +67,7 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * @see #process(Collection)
 	 * @see #process()
 	 */
-	boolean isToBeApplied(Class<? extends Processor> type);
+	boolean isToBeApplied(Class<? extends Processor<?>> type);
 
 	/**
 	 * Gets the processors that have been added to the manager and that will be
@@ -76,7 +76,7 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * @see #process(Collection)
 	 * @see #process()
 	 */
-	Collection<Processor> getProcessors();
+	Collection<Processor<?>> getProcessors();
 
 	/**
 	 * Recursively processes a collection of {@link CtElement}s with this

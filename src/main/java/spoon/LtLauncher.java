@@ -150,8 +150,8 @@ public class LtLauncher extends Launcher {
 		String progArgs[] = getArguments().getStringArray("arguments");
 
 		// Launch main class using reflection
-		Class clas = ccl.loadClass(progClass);
-		Class mainArgType[] = { (new String[0]).getClass() };
+		Class<?> clas = ccl.loadClass(progClass);
+		Class<?> mainArgType[] = { (new String[0]).getClass() };
 		Method main = clas.getMethod("main", mainArgType);
 		Object argsArray[] = { progArgs };
 		main.invoke(null, argsArray);

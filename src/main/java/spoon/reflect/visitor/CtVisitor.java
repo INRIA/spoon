@@ -179,7 +179,7 @@ public interface CtVisitor {
 	/**
 	 * Visits an enumeration declaration.
 	 */
-	<T extends Enum> void visitCtEnum(CtEnum<T> ctEnum);
+	<T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum);
 
 	/**
 	 * Visits a reference to an executable.

@@ -210,7 +210,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		this.implicit = implicit;
 	}
 
-	public Set<CtTypeReference> getReferencedTypes() {
+	public Set<CtTypeReference<?>> getReferencedTypes() {
 		TypeReferenceScanner s=new TypeReferenceScanner();
 		s.scan(this);
 		return s.getReferences();
