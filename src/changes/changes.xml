@@ -5,6 +5,8 @@
   </properties>
   <body>
     <release version="1.4" date="2007-07-26" description="fix version">
+	  <action dev="Renaud Pawlak" type="fix">when generating a new class with the substitution API, make sure that the positions are set to null so that the new class is actually printed out (otherwise, the compilation unit misleads the Java printer and the class is not printed)</action>
+	  <action dev="Renaud Pawlak" type="fix">migrated to Eclipse 3.3 (fixed generics warnings)</action>
 	  <action dev="Renaud Pawlak" type="fix">in substitution: replace default implicit constructor when inserting a parameter-free constructor</action>
       <action dev="Renaud Pawlak" type="fix">fixed null type on string literals when they are within a string concatenation</action>
       <action dev="Renaud Pawlak" type="fix">removed \r in javadoc comment that led to line number issues</action>
