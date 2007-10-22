@@ -68,17 +68,23 @@ public class SnippetCompiler {
 
 		compile(f, w);
 
-		CtSimpleType c = f.Type().get("Wrapper");
+		CtSimpleType<?> c = f.Type().get("Wrapper");
 
 		// Get the part we want
 
-		CtMethod wrapper = Query.getElements(c, new Filter<CtMethod>() {
+		CtMethod<?> wrapper = Query.getElements(c, new Filter<CtMethod<?>>() {
 
-			public Class<CtMethod> getType() {
-				return CtMethod.class;
+			@SuppressWarnings("unchecked")
+			public Class<CtMethod<?>> getType() {
+				try {
+					return (Class<CtMethod<?>>)Class.forName(CtMethod.class.getName());
+				} catch (Exception e) {
+					e.printStackTrace();
+					return null;
+				}
 			}
 
-			public boolean matches(CtMethod element) {
+			public boolean matches(CtMethod<?> element) {
 				return element.getSimpleName().equals("wrap");
 			}
 
@@ -191,7 +197,7 @@ public class SnippetCompiler {
 		return ret.getReturnedExpression();
 	}
 
-	private static <R,B extends R> CtClass createWrapper(CtExpression<B> st,Factory f) {
+	private static <R,B extends R> CtClass<?> createWrapper(CtExpression<B> st,Factory f) {
 		CtClass<?> w = f.Class().create("Wrapper");
 
 		CtBlock<B> body = f.Core().createBlock();

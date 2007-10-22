@@ -19,6 +19,7 @@ package spoon.reflect.eval;
 
 import java.util.List;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.reference.CtTypeReference;
@@ -32,7 +33,7 @@ public interface SymbolicEvaluator {
 	 * Returns the list of external classes that should be handled as statefull
 	 * beans.
 	 */
-	List<CtTypeReference> getStatefullExternals();
+	List<CtTypeReference<?>> getStatefullExternals();
 
 	/**
 	 * Gets all the evaluation paths resulting from an evaluation.
@@ -57,7 +58,7 @@ public interface SymbolicEvaluator {
 	 * @param args
 	 *            the arguments of the call (as symbolic instances)
 	 */
-	void invoke(CtExecutable executable, SymbolicInstance... args);
+	void invoke(CtExecutable<?> executable, SymbolicInstance<?>... args);
 
 	/**
 	 * Starts a symbolic evaluation by invoking a given executable.
@@ -69,8 +70,8 @@ public interface SymbolicEvaluator {
 	 * @param args
 	 *            the arguments of the call (as symbolic instances)
 	 */
-	void invoke(SymbolicInstance target, CtExecutable executable,
-			List<SymbolicInstance> args);
+	void invoke(SymbolicInstance<?> target, CtExecutable<?> executable,
+			List<SymbolicInstance<?>> args);
 
 	/**
 	 * Gets the heap of the current symbolic evaluation step.
@@ -86,5 +87,12 @@ public interface SymbolicEvaluator {
 	 * Evaluates the given meta-model element in the current context of the
 	 * evaluator.
 	 */
-	SymbolicInstance evaluate(CtElement element);
+	SymbolicInstance<?> evaluate(CtElement element);
+
+	/**
+	 * Evaluates the given meta-model expression in the current context of the
+	 * evaluator.
+	 */
+	<T> SymbolicInstance<T> evaluate(CtExpression<T> expresion);
+
 }

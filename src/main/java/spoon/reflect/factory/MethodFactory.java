@@ -71,7 +71,7 @@ public class MethodFactory extends ExecutableFactory {
 	 * @param body
 	 *            the method's body
 	 */
-	public <R,B extends R> CtMethod<R> create(CtClass<?> target,
+	public <R, B extends R> CtMethod<R> create(CtClass<?> target,
 			Set<ModifierKind> modifiers, CtTypeReference<R> returnType,
 			String name, List<CtParameter<?>> parameters,
 			Set<CtTypeReference<? extends Throwable>> thrownTypes,
@@ -169,12 +169,13 @@ public class MethodFactory extends ExecutableFactory {
 	/**
 	 * Gets all the main methods stored in this factory.
 	 */
-	public Collection<CtMethod> getMainMethods() {
-		Collection<CtMethod> methods = new ArrayList<CtMethod>();
+	public Collection<CtMethod<Void>> getMainMethods() {
+		Collection<CtMethod<Void>> methods = new ArrayList<CtMethod<Void>>();
 		for (CtSimpleType<?> t : factory.Type().getAll()) {
 			if (t instanceof CtClass) {
-				CtMethod<?> m = ((CtClass<?>) t).getMethod("main", factory
-						.Type().createArrayReference(
+				CtMethod<Void> m = ((CtClass<?>) t).getMethod(factory.Type()
+						.createReference(Void.class), "main", factory.Type()
+						.createArrayReference(
 								factory.Type().createReference(String.class)));
 				if (m != null && m.getModifiers().contains(ModifierKind.STATIC)) {
 					methods.add(m);

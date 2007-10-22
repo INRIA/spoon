@@ -58,22 +58,4 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements
 	public void setType(CtTypeReference<T> type) {
 	}
 
-	boolean implicitDefault=false;
-
-	public boolean isImplicitDefault() {
-		return implicitDefault;
-	}
-
-	public void setImplicitDefault(boolean implicitDefault) {
-		this.implicitDefault = implicitDefault;
-	}
-
-//	public boolean isImplicitDefault() {
-//		if (getDeclaringType() == null)
-//			return false;
-//		if (getDeclaringType().getPosition() == null || getPosition() == null)
-//			return false;
-//		return getDeclaringType().getPosition().equals(getPosition());
-//	}
-
 }

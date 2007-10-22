@@ -53,7 +53,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements
 
 	@Override
 	public CtExecutable<?> getParent() {
-		return (CtExecutable) super.getParent();
+		return (CtExecutable<?>) super.getParent();
 	}
 
 	@Override

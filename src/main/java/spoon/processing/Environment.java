@@ -96,13 +96,13 @@ public interface Environment extends FactoryAccessor {
 	 * @param message
 	 *            The message to report
 	 */
-	public void report(Processor processor, Severity severity,
+	public void report(Processor<?> processor, Severity severity,
 			CtElement element, String message);
 
 	/**
 	 * Helper method called by a processor to report an error, warning or
 	 * message as dictated by the severity parameter. Note that this does not
-	 * stop the processing or any remaing task. To do so, use
+	 * stop the processing or any remaining task. To do so, use
 	 * {@link #setProcessingStopped(boolean)}.
 	 * 
 	 * @param processor
@@ -116,8 +116,8 @@ public interface Environment extends FactoryAccessor {
 	 * @param fixes
 	 *            The problem fixer(s) to correct this problem
 	 */
-	public void report(Processor processor, Severity severity,
-			CtElement element, String message, ProblemFixer... fixes);
+	public void report(Processor<?> processor, Severity severity,
+			CtElement element, String message, ProblemFixer<?>... fixes);
 
 	/**
 	 * This method should be called to print out a message during the
@@ -130,7 +130,7 @@ public interface Environment extends FactoryAccessor {
 	 * @param message
 	 *            The message to report
 	 */
-	public void report(Processor processor, Severity severity, String message);
+	public void report(Processor<?> processor, Severity severity, String message);
 
 	/**
 	 * This method should be called to report the end of the processing.

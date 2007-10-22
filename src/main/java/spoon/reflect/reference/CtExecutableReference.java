@@ -51,7 +51,7 @@ public interface CtExecutableReference<T> extends CtReference,
 	 * 
 	 * @return the constructor (null if not found)
 	 */
-	Constructor getActualConstructor();
+	Constructor<?> getActualConstructor();
 
 	CtExecutable<T> getDeclaration();
 

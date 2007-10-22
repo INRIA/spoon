@@ -24,7 +24,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtEnumImpl<T extends Enum> extends CtClassImpl<T> implements
+public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements
 		CtEnum<T> {
 	private static final long serialVersionUID = 1L;
 

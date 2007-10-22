@@ -73,7 +73,7 @@ public class CompilationUnitFactory extends SubFactory {
 	/**
 	 * Creates an import for the given type.
 	 */
-	public Import createImport(CtTypeReference type) {
+	public Import createImport(CtTypeReference<?> type) {
 		return new ImportImpl(type);
 	}
 
@@ -87,7 +87,7 @@ public class CompilationUnitFactory extends SubFactory {
 	/**
 	 * Creates an import for the given field.
 	 */
-	public Import createImport(CtFieldReference field) {
+	public Import createImport(CtFieldReference<?> field) {
 		return new ImportImpl(field);
 	}
 

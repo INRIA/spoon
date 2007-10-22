@@ -472,7 +472,7 @@ public abstract class AbstractLauncher {
 		JSAPResult arguments = jsapArgs.parse(args);
 		if (!arguments.success()) {
 			// print out specific error messages describing the problems
-			for (java.util.Iterator errs = arguments.getErrorMessageIterator(); errs
+			for (java.util.Iterator<?> errs = arguments.getErrorMessageIterator(); errs
 					.hasNext();) {
 				System.err.println("Error: " + errs.next());
 			}
@@ -549,7 +549,7 @@ public abstract class AbstractLauncher {
 						+ " ms");
 		t = System.currentTimeMillis();
 		print();
-		FileGenerator fg = getFactory().getEnvironment()
+		FileGenerator<?> fg = getFactory().getEnvironment()
 				.getDefaultFileGenerator();
 		if (fg != null) {
 			if (arguments.getBoolean("compile")) {
@@ -578,8 +578,8 @@ public abstract class AbstractLauncher {
 			// Launch main class using reflection
 			getFactory().getEnvironment().debugMessage(
 					"running class: '" + progClass + "'...");
-			Class clas = getClass().getClassLoader().loadClass(progClass);
-			Class mainArgType[] = { (new String[0]).getClass() };
+			Class<?> clas = getClass().getClassLoader().loadClass(progClass);
+			Class<?> mainArgType[] = { (new String[0]).getClass() };
 			Method main = clas.getMethod("main", mainArgType);
 			Object argsArray[] = { progArgs };
 			main.invoke(null, argsArray);

@@ -92,7 +92,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
      * Helper method to load the properties of the given processor (uses
      * {@link Environment#getProcessorProperties(String)}).
      */
-    public static ProcessorProperties loadProperties(Processor p) {
+    public static ProcessorProperties loadProperties(Processor<?> p) {
         ProcessorProperties props = null;
         try {
             props = p.getFactory().getEnvironment().getProcessorProperties(
@@ -134,7 +134,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
     public boolean isToBeProcessed(E candidate) {
         if (candidate instanceof CtClass) {
             if (factory.Template().getAll().containsKey(
-                    ((CtClass) candidate).getQualifiedName())) {
+                    ((CtClass<?>) candidate).getQualifiedName())) {
                 return false;
             }
         }
@@ -144,7 +144,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
     /**
      * Helper method to initialize the properties of a given processor.
      */
-    public static void initProperties(Processor p,
+    public static void initProperties(Processor<?> p,
             ProcessorProperties properties) {
         if (properties != null) {
             for (Field f : RtHelper.getAllFields(p.getClass())) {

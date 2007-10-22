@@ -36,10 +36,10 @@ public interface CtSynchronized extends CtStatement {
 	/**
 	 * Gets the synchronized block.
 	 */
-	CtBlock getBlock();
+	CtBlock<?> getBlock();
 
 	/**
 	 * Sets the synchronized block.
 	 */
-	void setBlock(CtBlock block);
+	void setBlock(CtBlock<?> block);
 }

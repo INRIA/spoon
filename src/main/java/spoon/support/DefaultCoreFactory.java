@@ -272,8 +272,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
-	public CtAssert createAssert() {
-		CtAssert e = new CtAssertImpl();
+	public <T> CtAssert<T> createAssert() {
+		CtAssert<T> e = new CtAssertImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -344,7 +344,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
-	public <T extends Enum> CtEnum<T> createEnum() {
+	public <T extends Enum<?>> CtEnum<T> createEnum() {
 		CtEnum<T> e = new CtEnumImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;

@@ -32,7 +32,7 @@ public interface CtTypeParameter extends CtElement {
 	 * clause, then <tt>java.lang.Object</tt> is considered to be the sole
 	 * bound.
 	 */
-	List<CtTypeReference> getBounds();
+	List<CtTypeReference<?>> getBounds();
 
 	/**
 	 * Returns the name of this type parameter.
@@ -42,7 +42,7 @@ public interface CtTypeParameter extends CtElement {
 	/**
 	 * Sets the bounds of this type parameter.
 	 */
-	void setBounds(List<CtTypeReference> bounds);
+	void setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * Sets the name of this type parameter.

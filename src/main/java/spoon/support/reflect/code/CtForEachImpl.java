@@ -27,7 +27,7 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 
 	CtExpression<?> expression;
 
-	CtLocalVariable variable;
+	CtLocalVariable<?> variable;
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtForEach(this);

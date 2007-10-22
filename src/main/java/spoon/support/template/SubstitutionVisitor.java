@@ -93,7 +93,7 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <R> void scanCtExecutable(CtExecutable<R> e) {
 			// replace method parameters
-			for (CtParameter<?> parameter : new ArrayList<CtParameter>(e
+			for (CtParameter<?> parameter : new ArrayList<CtParameter<?>>(e
 					.getParameters())) {
 				String name = parameter.getSimpleName();
 				for (String pname : parameterNames) {
@@ -103,10 +103,10 @@ public class SubstitutionVisitor extends CtScanner {
 						int i = parameter.getParent().getParameters().indexOf(
 								parameter);
 						if (value instanceof List) {
-							List l = (List) value;
+							List<?> l = (List<?>) value;
 							for (Object p : l) {
 								CtParameter<?> p2 = e.getFactory().Core()
-										.clone((CtParameter) p);
+										.clone((CtParameter<?>) p);
 								p2.setParent(parameter.getParent());
 								parameter.getParent().getParameters().add(i++,
 										p2);
@@ -125,7 +125,7 @@ public class SubstitutionVisitor extends CtScanner {
 		 */
 		@Override
 		public void scanCtElement(CtElement e) {
-			CtAnnotation a = e.getAnnotation(e.getFactory().Type()
+			CtAnnotation<?> a = e.getAnnotation(e.getFactory().Type()
 					.createReference(Local.class));
 			if (a != null)
 				e.getAnnotations().remove(a);
@@ -154,7 +154,7 @@ public class SubstitutionVisitor extends CtScanner {
 					} else if ((value instanceof CtTypeReference)
 							&& (element instanceof CtSimpleType)) {
 						// replace with the type reference's name
-						name = name.replace(pname, ((CtTypeReference) value)
+						name = name.replace(pname, ((CtTypeReference<?>) value)
 								.getSimpleName());
 						element.setSimpleName(name);
 					}
@@ -186,18 +186,18 @@ public class SubstitutionVisitor extends CtScanner {
 		public <T> void visitCtClass(CtClass<T> ctClass) {
 			ctClass.getSuperInterfaces().remove(
 					f.Type().createReference(Template.class));
-			for (CtMethod m : new TreeSet<CtMethod>(ctClass.getMethods())) {
+			for (CtMethod<?> m : new TreeSet<CtMethod<?>>(ctClass.getMethods())) {
 				if (m.getAnnotation(Local.class) != null) {
 					ctClass.getMethods().remove(m);
 				}
 			}
-			for (CtConstructor c : new TreeSet<CtConstructor>(ctClass
+			for (CtConstructor<?> c : new TreeSet<CtConstructor<?>>(ctClass
 					.getConstructors())) {
 				if (c.getAnnotation(Local.class) != null) {
 					ctClass.getConstructors().remove(c);
 				}
 			}
-			for (CtField<?> field : new TreeSet<CtField>(ctClass.getFields())) {
+			for (CtField<?> field : new TreeSet<CtField<?>>(ctClass.getFields())) {
 				if (field.getAnnotation(Local.class) != null
 						|| Parameters.isParameterSource(field.getReference())) {
 					ctClass.getFields().remove(field);
@@ -211,10 +211,10 @@ public class SubstitutionVisitor extends CtScanner {
 								null);
 						int i = ctClass.getFields().indexOf(field);
 						if (value instanceof List) {
-							List l = (List) value;
+							List<?> l = (List<?>) value;
 							for (Object f : l) {
 								CtField<?> f2 = ctClass.getFactory().Core()
-										.clone((CtField) f);
+										.clone((CtField<?>) f);
 								f2.setParent(ctClass);
 								ctClass.getFields().add(i++, f2);
 							}
@@ -239,7 +239,7 @@ public class SubstitutionVisitor extends CtScanner {
 					CtStatement body = foreach.getBody();
 					for (int i = 0; i < value.length; i++) {
 						CtStatement b = foreach.getFactory().Core().clone(body);
-						for (CtVariableAccess va : Query.getElements(b,
+						for (CtVariableAccess<?> va : Query.getElements(b,
 								new VariableAccessFilter(foreach.getVariable()
 										.getReference()))) {
 							va.replace((CtElement) value[i]);
@@ -338,13 +338,13 @@ public class SubstitutionVisitor extends CtScanner {
 				if ((invocation.getTarget() instanceof CtFieldAccess)) {
 					fa = (CtFieldAccess<?>) invocation.getTarget();
 				}
-				if ((invocation.getTarget() instanceof CtArrayAccess && ((CtArrayAccess<?, CtExpression>) invocation
+				if ((invocation.getTarget() instanceof CtArrayAccess && ((CtArrayAccess<?, CtExpression<?>>) invocation
 						.getTarget()).getTarget() instanceof CtFieldAccess)) {
-					fa = (CtFieldAccess<?>) ((CtArrayAccess<?, CtExpression>) invocation
+					fa = (CtFieldAccess<?>) ((CtArrayAccess<?, CtExpression<?>>) invocation
 							.getTarget()).getTarget();
 				}
 				if (fa != null && fa.getTarget() == null) {
-					TemplateParameter<?> tparamValue = (TemplateParameter) Parameters
+					TemplateParameter<?> tparamValue = (TemplateParameter<?>) Parameters
 							.getValue(template, fa.getVariable()
 									.getSimpleName(), Parameters.getIndex(fa));
 					CtCodeElement r = null;
@@ -438,9 +438,9 @@ public class SubstitutionVisitor extends CtScanner {
 				if (o instanceof CtTypeReference) {
 					if (e.getType() instanceof CtArrayTypeReference
 							&& !(o instanceof CtArrayTypeReference)) {
-						t = e.getFactory().Type().createArrayReference(
-								(CtTypeReference) o,
-								((CtArrayTypeReference) e.getType())
+						t = (CtArrayTypeReference<T>)e.getFactory().Type().createArrayReference(
+								(CtTypeReference<?>) o,
+								((CtArrayTypeReference<?>) e.getType())
 										.getDimensionCount());
 					} else {
 						t = (CtTypeReference<T>) o;
@@ -481,18 +481,6 @@ public class SubstitutionVisitor extends CtScanner {
 				reference.setDeclaringType(targetRef.getDeclaringType());
 				reference.setPackage(targetRef.getPackage());
 				reference.setSimpleName(targetRef.getSimpleName());
-			} else if(templateTypeRef.isAssignableFrom(reference)) {
-				// this can only be a template inheritance case (to be verified)
-				CtTypeReference<?> sc=targetRef.getSuperclass();
-				if(sc!=null) {
-					reference.setDeclaringType(sc.getDeclaringType());
-					reference.setPackage(sc.getPackage());
-					reference.setSimpleName(sc.getSimpleName());
-				} else {
-					reference.setDeclaringType(null);
-					reference.setPackage(f.Package().createReference("java.lang"));
-					reference.setSimpleName("Object");
-				}
 			}
 			if (parameterNames.contains(reference.getSimpleName())) {
 				// replace type parameters
@@ -513,6 +501,18 @@ public class SubstitutionVisitor extends CtScanner {
 				reference.setPackage(t.getPackage());
 				reference.setSimpleName(t.getSimpleName());
 				reference.setDeclaringType(t.getDeclaringType());
+			} else if(templateTypeRef.isAssignableFrom(reference)) {
+				// this can only be a template inheritance case (to be verified)
+				CtTypeReference<?> sc=targetRef.getSuperclass();
+				if(sc!=null) {
+					reference.setDeclaringType(sc.getDeclaringType());
+					reference.setPackage(sc.getPackage());
+					reference.setSimpleName(sc.getSimpleName());
+				} else {
+					reference.setDeclaringType(null);
+					reference.setPackage(f.Package().createReference("java.lang"));
+					reference.setSimpleName("Object");
+				}
 			}
 			super.visitCtTypeReference(reference);
 		}
@@ -580,7 +580,7 @@ public class SubstitutionVisitor extends CtScanner {
 
 	InheritanceSustitutionScanner inheritanceScanner;
 
-	CtExecutableReference S;
+	CtExecutableReference<?> S;
 
 	CtTypeReference<?> targetRef;
 

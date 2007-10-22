@@ -97,9 +97,11 @@ public class ClassFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param cl
-	 *            java class
+	 *            the java class: note that this class should be Class<T> but
+	 *            it then poses problem when T is a generic type itself
 	 */
-	public <T> CtClass<T> get(Class<T> cl) {
+	@SuppressWarnings("unchecked")
+	public <T> CtClass<T> get(Class<?> cl) {
 		try {
 			return (CtClass<T>) super.get(cl);
 		} catch (Exception e) {

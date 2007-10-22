@@ -48,7 +48,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		return null;
 	}
 
-	public CtStatementList getSubstitution(CtSimpleType targetType) {
+	public CtStatementList<R> getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

@@ -37,12 +37,12 @@ public class TypeFactory extends SubFactory {
 
 	private static final long serialVersionUID = 1L;
 
-	CtTypeReference nullType;
+	CtTypeReference<?> nullType;
 
 	/**
 	 * Returns a reference on the null type (type of null).
 	 */
-	public CtTypeReference nullType() {
+	public CtTypeReference<?> nullType() {
 		if (nullType == null)
 			nullType = createReference(CtTypeReference.NULL_TYPE_NAME);
 		return nullType;
@@ -88,9 +88,9 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Creates a reference to an n-dimension array of given type.
 	 */
-	public CtArrayTypeReference createArrayReference(
+	public CtArrayTypeReference<?> createArrayReference(
 			CtTypeReference<?> reference, int n) {
-		CtTypeReference componentType = null;
+		CtTypeReference<?> componentType = null;
 		if (n == 1) {
 			return createArrayReference(reference);
 		} else {
@@ -203,8 +203,8 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Gets the list of all top-level created types.
 	 */
-	public List<CtSimpleType> getAll() {
-		List<CtSimpleType> types = new ArrayList<CtSimpleType>();
+	public List<CtSimpleType<?>> getAll() {
+		List<CtSimpleType<?>> types = new ArrayList<CtSimpleType<?>>();
 		for (CtPackage pack : factory.Package().getAll()) {
 			types.addAll(pack.getTypes());
 		}
@@ -214,10 +214,10 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Gets the list of all created types.
 	 */
-	public List<CtSimpleType> getAll(boolean includeNestedTypes) {
+	public List<CtSimpleType<?>> getAll(boolean includeNestedTypes) {
 		if (!includeNestedTypes)
 			return getAll();
-		List<CtSimpleType> types = new ArrayList<CtSimpleType>();
+		List<CtSimpleType<?>> types = new ArrayList<CtSimpleType<?>>();
 		for (CtPackage pack : factory.Package().getAll()) {
 			for (CtSimpleType<?> type : pack.getTypes()) {
 				addNestedType(types, type);
@@ -226,7 +226,7 @@ public class TypeFactory extends SubFactory {
 		return types;
 	}
 
-	private void addNestedType(List<CtSimpleType> list, CtSimpleType<?> t) {
+	private void addNestedType(List<CtSimpleType<?>> list, CtSimpleType<?> t) {
 		list.add(t);
 		for (CtSimpleType<?> nt : t.getNestedTypes()) {
 			addNestedType(list, nt);
@@ -237,12 +237,13 @@ public class TypeFactory extends SubFactory {
 	 * Gets a type from its runtime Java class.
 	 * 
 	 * @param <T>
-	 *            type of created class
+	 *            actual type of the class
 	 * @param cl
-	 *            java class
+	 *            the java class: note that this class should be Class<T> but
+	 *            it then poses problem when T is a generic type itself
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> CtSimpleType<T> get(Class<T> cl) {
+	public <T> CtSimpleType<T> get(Class<?> cl) {
 		return (CtSimpleType<T>) get(cl.getName());
 	}
 
@@ -338,7 +339,7 @@ public class TypeFactory extends SubFactory {
 	 *            the bounds
 	 */
 	public CtTypeParameter createTypeParameter(CtElement owner, String name,
-			List<CtTypeReference> bounds) {
+			List<CtTypeReference<?>> bounds) {
 		CtTypeParameter typeParam = factory.Core().createTypeParameter();
 		typeParam.setParent(owner);
 		typeParam.setName(name);
@@ -368,7 +369,7 @@ public class TypeFactory extends SubFactory {
 	 *            the bounds
 	 */
 	public CtTypeParameterReference createTypeParameterReference(String name,
-			List<CtTypeReference> bounds) {
+			List<CtTypeReference<?>> bounds) {
 		CtTypeParameterReference typeParam = factory.Core()
 				.createTypeParameterReference();
 		typeParam.setSimpleName(name);

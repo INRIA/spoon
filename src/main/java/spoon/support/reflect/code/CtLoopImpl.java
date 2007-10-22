@@ -30,7 +30,7 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 		return body;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType targetType) {
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

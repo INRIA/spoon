@@ -47,13 +47,13 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 	public boolean equals(Object object) {
 		if (!(object instanceof CtVariableReference))
 			return false;
-		CtVariableReference<?> ref = (CtVariableReference) object;
+		CtVariableReference<?> ref = (CtVariableReference<?>) object;
 		return this.type.equals(ref.getType())
 				&& this.simplename.equals(ref.getSimpleName());
 	}
 
 	public Set<ModifierKind> getModifiers() {
-		CtVariable v = getDeclaration();
+		CtVariable<T> v = getDeclaration();
 		if (v != null) {
 			return v.getModifiers();
 		} else {

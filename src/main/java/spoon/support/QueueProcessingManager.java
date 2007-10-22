@@ -41,7 +41,7 @@ public class QueueProcessingManager implements ProcessingManager {
 
 	Factory factory;
 
-	Queue<Processor> processors;
+	Queue<Processor<?>> processors;
 
 	ProcessingVisitor visitor;
 
@@ -58,7 +58,7 @@ public class QueueProcessingManager implements ProcessingManager {
 		setFactory(factory);
 	}
 
-	public void addProcessor(Class<? extends Processor> type) {
+	public void addProcessor(Class<? extends Processor<?>> type) {
 		try {
 			Processor<?> p = type.newInstance();
 			addProcessor(p);
@@ -82,7 +82,7 @@ public class QueueProcessingManager implements ProcessingManager {
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
-			addProcessor((Class<? extends Processor>) Class
+			addProcessor((Class<? extends Processor<?>>) Class
 					.forName(qualifiedName));
 		} catch (ClassNotFoundException e) {
 			factory.getEnvironment().report(
@@ -101,21 +101,22 @@ public class QueueProcessingManager implements ProcessingManager {
 		return factory;
 	}
 
-	public Queue<Processor> getProcessors() {
+	public Queue<Processor<?>> getProcessors() {
 		if (processors == null) {
-			processors = new LinkedList<Processor>();
+			processors = new LinkedList<Processor<?>>();
 		}
 		return processors;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected ProcessingVisitor getVisitor() {
 		if (visitor == null)
 			visitor = new ProcessingVisitor(getFactory());
 		return visitor;
 	}
 
-	public boolean isToBeApplied(Class<? extends Processor> type) {
-		for (Processor p : getProcessors()) {
+	public boolean isToBeApplied(Class<? extends Processor<?>> type) {
+		for (Processor<?> p : getProcessors()) {
 			if (p.getClass() == type) {
 				return true;
 			}
@@ -130,7 +131,7 @@ public class QueueProcessingManager implements ProcessingManager {
 	}
 
 	public void process(Collection<? extends CtElement> elements) {
-		Processor p;
+		Processor<?> p;
 		while ((p = getProcessors().poll()) != null) {
 			if(getFactory().getEnvironment().isVerbose()) {
 				getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
@@ -146,7 +147,7 @@ public class QueueProcessingManager implements ProcessingManager {
 	}
 
 	public void process(CtElement element) {
-		Processor p;
+		Processor<?> p;
 		while ((p = getProcessors().poll()) != null) {
 			current = p;
 			p.init();
@@ -156,6 +157,7 @@ public class QueueProcessingManager implements ProcessingManager {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void process(CtElement element, Processor<?> processor) {
 		getVisitor().setProcessor(processor);
 		getVisitor().scan(element);

@@ -41,7 +41,7 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 		return parameter;
 	}
 
-	public void setBody(CtBlock body) {
+	public void setBody(CtBlock<?> body) {
 		this.body = body;
 	}
 

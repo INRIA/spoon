@@ -37,7 +37,7 @@ public class SymbolicStackFrame {
 	 * Copies a frame from a given one (does not clone stateless info).
 	 */
 	public SymbolicStackFrame(SymbolicStackFrame frame) {
-		for (Entry<CtVariableReference, SymbolicInstance> e : frame.variables
+		for (Entry<CtVariableReference<?>, SymbolicInstance<?>> e : frame.variables
 				.entrySet()) {
 			SymbolicInstance<?> i = e.getValue();
 			variables.put(e.getKey(), i == null ? null : i.getClone());
@@ -48,8 +48,8 @@ public class SymbolicStackFrame {
 		invocation = frame.invocation;
 		executable = frame.executable;
 		if (frame.arguments != null) {
-			arguments = new ArrayList<SymbolicInstance>();
-			for (SymbolicInstance i : frame.arguments) {
+			arguments = new ArrayList<SymbolicInstance<?>>();
+			for (SymbolicInstance<?> i : frame.arguments) {
 				arguments.add(i == null ? null : i.getClone());
 			}
 		}
@@ -67,50 +67,50 @@ public class SymbolicStackFrame {
 				&& variables.equals(f.variables);
 	}
 
-	private Map<CtVariableReference, SymbolicInstance> variables = new HashMap<CtVariableReference, SymbolicInstance>();
+	private Map<CtVariableReference<?>, SymbolicInstance<?>> variables = new HashMap<CtVariableReference<?>, SymbolicInstance<?>>();
 
-	private SymbolicInstance target;
+	private SymbolicInstance<?> target;
 
-	private SymbolicInstance caller;
+	private SymbolicInstance<?> caller;
 
-	private CtAbstractInvocation invocation;
+	private CtAbstractInvocation<?> invocation;
 
-	private CtExecutableReference executable;
+	private CtExecutableReference<?> executable;
 
 	/**
 	 * Gets the parent invocation of this frame.
 	 */
-	public CtAbstractInvocation getInvocation() {
+	public CtAbstractInvocation<?> getInvocation() {
 		return invocation;
 	}
 
 	/**
 	 * Gets the <code>this</code> value.
 	 */
-	public SymbolicInstance getThis() {
+	public SymbolicInstance<?> getThis() {
 		return target;
 	}
 
 	/**
 	 * Gets the calling instance if applicable.
 	 */
-	public SymbolicInstance getCaller() {
+	public SymbolicInstance<?> getCaller() {
 		return caller;
 	}
 
 	/**
 	 * Gets the local variables defined for this frame.
 	 */
-	public Map<CtVariableReference, SymbolicInstance> getVariables() {
+	public Map<CtVariableReference<?>, SymbolicInstance<?>> getVariables() {
 		return variables;
 	}
 
-	List<SymbolicInstance> arguments;
+	List<SymbolicInstance<?>> arguments;
 
 	/**
 	 * Return the arguments (also present in the variables).
 	 */
-	public List<SymbolicInstance> getArguments() {
+	public List<SymbolicInstance<?>> getArguments() {
 		return arguments;
 	}
 
@@ -129,10 +129,10 @@ public class SymbolicStackFrame {
 	 *            the local variables defined within this frame (should be a
 	 *            copy)
 	 */
-	public SymbolicStackFrame(CtAbstractInvocation invocation, SymbolicInstance caller,
-			SymbolicInstance instance, CtExecutableReference executable,
-			List<SymbolicInstance> arguments,
-			Map<CtVariableReference, SymbolicInstance> variables) {
+	public SymbolicStackFrame(CtAbstractInvocation<?> invocation, SymbolicInstance<?> caller,
+			SymbolicInstance<?> instance, CtExecutableReference<?> executable,
+			List<SymbolicInstance<?>> arguments,
+			Map<CtVariableReference<?>, SymbolicInstance<?>> variables) {
 		super();
 		this.variables = variables;
 		this.caller = caller;
@@ -156,23 +156,23 @@ public class SymbolicStackFrame {
 	/**
 	 * Gets the executable of the frame.
 	 */
-	public CtExecutableReference getExecutable() {
+	public CtExecutableReference<?> getExecutable() {
 		return executable;
 	}
 
-	private SymbolicInstance result = null;
+	private SymbolicInstance<?> result = null;
 
 	/**
 	 * Gets the result of this frame execution.
 	 */
-	public SymbolicInstance getResult() {
+	public SymbolicInstance<?> getResult() {
 		return result;
 	}
 
 	/**
 	 * Sets the result of this frame execution.
 	 */
-	public void setResult(SymbolicInstance result) {
+	public void setResult(SymbolicInstance<?> result) {
 		this.result = result;
 	}
 

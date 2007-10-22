@@ -83,11 +83,11 @@ public class SymbolicEvaluationStep {
 	 * 
 	 * @return null if not found
 	 */
-	public SymbolicInstance get(String id) {
-		SymbolicInstance res = heap.get(id);
+	public SymbolicInstance<?> get(String id) {
+		SymbolicInstance<?> res = heap.get(id);
 		if (res != null)
 			return res;
-		for (SymbolicInstance i : frame.getVariables().values()) {
+		for (SymbolicInstance<?> i : frame.getVariables().values()) {
 			if (i != null && i.getId().equals(id)) {
 				return i;
 			}

@@ -80,7 +80,7 @@ public abstract class RtHelper {
 	private static void getAllIMethods(Class<?> c, List<Method> methods) {
 		for (Method m : c.getDeclaredMethods())
 			methods.add(m);
-		for (Class i : c.getInterfaces()) {
+		for (Class<?> i : c.getInterfaces()) {
 			getAllIMethods(i, methods);
 		}
 	}

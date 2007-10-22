@@ -91,12 +91,12 @@ public class EvalFactory extends SubFactory {
 	 * @return a map containing the paths for each entry point
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<CtMethod, List<SymbolicEvaluationPath>> createEvaluationPaths(
-			Collection<CtMethod> entryPoints) {
-		Map<CtMethod, List<SymbolicEvaluationPath>> paths = new HashMap<CtMethod, List<SymbolicEvaluationPath>>();
+	public Map<CtMethod<?>, List<SymbolicEvaluationPath>> createEvaluationPaths(
+			Collection<CtMethod<?>> entryPoints) {
+		Map<CtMethod<?>, List<SymbolicEvaluationPath>> paths = new HashMap<CtMethod<?>, List<SymbolicEvaluationPath>>();
 		for (CtMethod<?> m : entryPoints) {
 			SymbolicEvaluator evaluator = createSymbolicEvaluator();
-			List<SymbolicInstance> args = new ArrayList<SymbolicInstance>();
+			List<SymbolicInstance<?>> args = new ArrayList<SymbolicInstance<?>>();
 			for (CtParameter<?> p : m.getParameters()) {
 				SymbolicInstance arg = createSymbolicInstance(evaluator, p
 						.getType(), false);

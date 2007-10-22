@@ -151,7 +151,7 @@ public class SignaturePrinter implements CtVisitor {
 
 	public <T, A extends T> void visitCtAssignment(
 			CtAssignment<T, A> assignement) {
-		for (CtTypeReference ref : assignement.getTypeCasts()) {
+		for (CtTypeReference<?> ref : assignement.getTypeCasts()) {
 			write("(");
 			scan(ref);
 			write(")");
@@ -211,7 +211,7 @@ public class SignaturePrinter implements CtVisitor {
 	public <T> void visitCtConstructor(CtConstructor<T> c) {
 		write(c.getDeclaringType().getQualifiedName());
 		write("(");
-		for (CtParameter p : c.getParameters()) {
+		for (CtParameter<?> p : c.getParameters()) {
 			scan(p.getType());
 			write(",");
 		}
@@ -233,7 +233,7 @@ public class SignaturePrinter implements CtVisitor {
 		write(")");
 	}
 
-	public <T extends Enum> void visitCtEnum(CtEnum<T> ctEnum) {
+	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		write("enum ").write(ctEnum.getQualifiedName());
 	}
 
@@ -245,7 +245,7 @@ public class SignaturePrinter implements CtVisitor {
 		write(CtExecutable.EXECUTABLE_SEPARATOR);
 		write(reference.getSimpleName());
 		write("(");
-		for (CtTypeReference ref : reference.getParameterTypes()) {
+		for (CtTypeReference<?> ref : reference.getParameterTypes()) {
 			scan(ref);
 			write(",");
 		}
@@ -319,7 +319,7 @@ public class SignaturePrinter implements CtVisitor {
 		write(".");
 		scan(invocation.getExecutable());
 		write("(");
-		for (CtExpression e : invocation.getArguments()) {
+		for (CtExpression<?> e : invocation.getArguments()) {
 			scan(e);
 			write(",");
 		}
@@ -347,7 +347,7 @@ public class SignaturePrinter implements CtVisitor {
 		write(" ");
 		write(m.getSimpleName());
 		write("(");
-		for (CtParameter p : m.getParameters()) {
+		for (CtParameter<?> p : m.getParameters()) {
 			scan(p.getType());
 			write(",");
 		}
@@ -359,13 +359,13 @@ public class SignaturePrinter implements CtVisitor {
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		write("new ");
 		scan(newArray.getType());
-		for (CtExpression c : newArray.getDimensionExpressions()) {
+		for (CtExpression<?> c : newArray.getDimensionExpressions()) {
 			write("[");
 			scan(c);
 			write("]");
 		}
 		write("{");
-		for (CtExpression e : newArray.getElements()) {
+		for (CtExpression<?> e : newArray.getElements()) {
 			scan(e);
 			write(",");
 		}
@@ -427,7 +427,7 @@ public class SignaturePrinter implements CtVisitor {
 		write("switch(");
 		scan(switchStatement.getSelector());
 		write(")");
-		for (CtCase c : switchStatement.getCases())
+		for (CtCase<?> c : switchStatement.getCases())
 			scan(c);
 	}
 

@@ -48,7 +48,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 
 	private static final long serialVersionUID = 1L;
 
-	Enumeration enume;
+	Enumeration<?> enume;
 
 	private Factory factory;
 

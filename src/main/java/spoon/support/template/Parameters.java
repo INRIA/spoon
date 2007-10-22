@@ -55,9 +55,10 @@ public abstract class Parameters {
 	/**
 	 * Gets the index of a one-dimension array (helper).
 	 */
-	public static Integer getIndex(CtExpression e) {
+	@SuppressWarnings("unchecked")
+	public static Integer getIndex(CtExpression<?> e) {
 		if (e.getParent() instanceof CtArrayAccess) {
-			CtExpression<Integer> indexExpression = ((CtArrayAccess<?, CtExpression>) e
+			CtExpression<Integer> indexExpression = ((CtArrayAccess<?, CtExpression<Integer>>) e
 					.getParent()).getIndexExpression();
 			return ((CtLiteral<Integer>) indexExpression).getValue();
 		} else {
@@ -101,9 +102,9 @@ public abstract class Parameters {
 
 	static Map<Template, Map<String, Object>> finals = new HashMap<Template, Map<String, Object>>();
 
-	public static CtField getParameterField(
+	public static CtField<?> getParameterField(
 			CtClass<? extends Template> templateClass, String parameterName) {
-		for (CtField f : templateClass.getFields()) {
+		for (CtField<?> f : templateClass.getFields()) {
 			Parameter p = f.getAnnotation(Parameter.class);
 			if (p == null)
 				continue;
@@ -162,7 +163,7 @@ public abstract class Parameters {
 		return name;
 	}
 
-	private static String getParameterName(CtFieldReference f) {
+	private static String getParameterName(CtFieldReference<?> f) {
 		String name = f.getSimpleName();
 		Parameter p = f.getAnnotation(Parameter.class);
 		if (p != null && !p.value().equals("")) {
@@ -179,7 +180,7 @@ public abstract class Parameters {
 			CtClass<? extends Template> templateType) {
 		Collection<String> params = new ArrayList<String>();
 		try {
-			for (CtFieldReference f : templateType.getReference()
+			for (CtFieldReference<?> f : templateType.getReference()
 					.getAllFields()) {
 				if (isParameterSource(f)) {
 					params.add(getParameterName(f));

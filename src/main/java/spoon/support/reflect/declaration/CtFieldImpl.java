@@ -45,7 +45,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	public CtSimpleType<?> getDeclaringType() {
-		return (CtSimpleType) parent;
+		return (CtSimpleType<?>) parent;
 	}
 
 	public CtExpression<T> getDefaultExpression() {

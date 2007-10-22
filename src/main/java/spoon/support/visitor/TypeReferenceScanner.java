@@ -21,27 +21,27 @@ import spoon.reflect.visitor.CtScanner;
  */
 public class TypeReferenceScanner extends CtScanner {
 
-	Set<CtTypeReference> references;
+	Set<CtTypeReference<?>> references;
 
 	/**
 	 * Constructor.
 	 */
 	public TypeReferenceScanner() {
-		references = new HashSet<CtTypeReference>();
+		references = new HashSet<CtTypeReference<?>>();
 	}
 
 	/**
 	 * Constructor.
 	 * @param references a set to fill with the references
 	 */
-	public TypeReferenceScanner(HashSet<CtTypeReference> references) {
+	public TypeReferenceScanner(HashSet<CtTypeReference<?>> references) {
 		this.references = references;
 	}
 	
 	/**
 	 * Returns the set of calculated references.
 	 */
-	public Set<CtTypeReference> getReferences() {
+	public Set<CtTypeReference<?>> getReferences() {
 		return references;
 	}
 	
@@ -108,7 +108,7 @@ public class TypeReferenceScanner extends CtScanner {
 	}
 
 	@Override
-	public <T extends Enum> void visitCtEnum(CtEnum<T> ctEnum) {
+	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		addReference(ctEnum.getReference());
 		super.visitCtEnum(ctEnum);
 	}

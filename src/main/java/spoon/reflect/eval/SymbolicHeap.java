@@ -40,7 +40,7 @@ public class SymbolicHeap {
 	@SuppressWarnings("unchecked")
 	public SymbolicHeap(SymbolicHeap heap) {
 		statelessAbstractInstances.putAll(heap.statelessAbstractInstances);
-		for (Entry<String, SymbolicInstance> e : heap.statefullAbstractInstances
+		for (Entry<String, SymbolicInstance<?>> e : heap.statefullAbstractInstances
 				.entrySet()) {
 			statefullAbstractInstances.put(e.getKey(), new SymbolicInstance(e
 					.getValue()));
@@ -65,9 +65,9 @@ public class SymbolicHeap {
 		System.out.println("\t - stateless: " + statelessAbstractInstances);
 	}
 
-	private Map<String, SymbolicInstance> statefullAbstractInstances = new HashMap<String, SymbolicInstance>();
+	private Map<String, SymbolicInstance<?>> statefullAbstractInstances = new HashMap<String, SymbolicInstance<?>>();
 
-	private Map<String, SymbolicInstance> statelessAbstractInstances = new HashMap<String, SymbolicInstance>();
+	private Map<String, SymbolicInstance<?>> statelessAbstractInstances = new HashMap<String, SymbolicInstance<?>>();
 
 	/**
 	 * Gets/creates a symbolic value of a given type (automatically stored in
@@ -93,7 +93,7 @@ public class SymbolicHeap {
 	/**
 	 * Stores the given symbolic instance in the heap.
 	 */
-	public void store(SymbolicInstance instance) {
+	public void store(SymbolicInstance<?> instance) {
 		if (instance.isStateful()) {
 			statefullAbstractInstances.put(instance.getId(), instance);
 		} else {

@@ -29,7 +29,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference> bounds = new ArrayList<CtTypeReference>();
+	List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>();
 
 	boolean upper = true;
 
@@ -47,7 +47,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		return null;
 	}
 
-	public List<CtTypeReference> getBounds() {
+	public List<CtTypeReference<?>> getBounds() {
 		return bounds;
 	}
 
@@ -55,7 +55,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		return upper;
 	}
 
-	public void setBounds(List<CtTypeReference> bounds) {
+	public void setBounds(List<CtTypeReference<?>> bounds) {
 		this.bounds = bounds;
 	}
 

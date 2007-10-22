@@ -28,7 +28,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Gets the bounds (aka generics) of the referenced parameter.
 	 */
-	List<CtTypeReference> getBounds();
+	List<CtTypeReference<?>> getBounds();
 
 	/**
 	 * Returns {@code true} if the bounds are upper bounds.
@@ -38,7 +38,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Sets the bounds (aka generics) of the referenced parameter.
 	 */
-	void setBounds(List<CtTypeReference> Bounds);
+	void setBounds(List<CtTypeReference<?>> Bounds);
 
 	/**
 	 * Set to {@code true} if the bounds are upper bounds.

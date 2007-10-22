@@ -58,8 +58,9 @@ public class ConstructorFactory extends ExecutableFactory {
 	 *            the constructor to be copied
 	 * @return the new constructor
 	 */
-	public CtConstructor create(CtClass<?> target, CtConstructor source) {
-		CtConstructor newConstructor = factory.Core().clone(source);
+	@SuppressWarnings("unchecked")
+	public <T> CtConstructor<T> create(CtClass<T> target, CtConstructor<?> source) {
+		CtConstructor<T> newConstructor = factory.Core().clone((CtConstructor<T>)source);
 		target.getConstructors().add(newConstructor);
 		newConstructor.setParent(target);
 		return newConstructor;
@@ -75,8 +76,9 @@ public class ConstructorFactory extends ExecutableFactory {
 	 *            the method to be copied
 	 * @return the new constructor
 	 */
-	public <T> CtConstructor<T> create(CtClass<?> target, CtMethod<T> source) {
-		CtMethod<T> method = factory.Core().clone(source);
+	@SuppressWarnings("unchecked")
+	public <T> CtConstructor<T> create(CtClass<T> target, CtMethod<?> source) {
+		CtMethod<T> method = factory.Core().clone((CtMethod<T>)source);
 		CtConstructor<T> newConstructor = factory.Core().createConstructor();
 		newConstructor.setAnnotations(method.getAnnotations());
 		newConstructor.setBody(method.getBody());
@@ -102,7 +104,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	 * @param thrownTypes
 	 *            the thrown types
 	 */
-	public <T> CtConstructor<T> create(CtClass<?> target,
+	public <T> CtConstructor<T> create(CtClass<T> target,
 			Set<ModifierKind> modifiers, List<CtParameter<?>> parameters,
 			Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		CtConstructor<T> constructor = factory.Core().createConstructor();
