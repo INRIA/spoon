@@ -32,6 +32,11 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 
 	/**
 	 * Returns the actual annotation (a dynamic proxy for this element).
+	 * 
+	 * <p>
+	 * NOTE: before using an annotation proxy, you have to make sure that all
+	 * the types referenced by the annotation have been compiled and are in the
+	 * classpath so that accessed values can be converted into the actual types ({@link #getElementValue(String)}).
 	 */
 	A getActualAnnotation();
 
@@ -43,7 +48,12 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	CtTypeReference<A> getAnnotationType();
 
 	/**
-	 * Searches a value for a given key
+	 * Gets a value for a given key (with conversion if needed).
+	 * 
+	 * <p>
+	 * NOTE: in case of a type, the value is converted to the actual type. To
+	 * access the type as a reference, use {@link #getElementValues()}, which
+	 * returns a map containing the raw (unconverted) values.
 	 * 
 	 * @param key
 	 *            name of searched value
@@ -56,7 +66,12 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	 * the form of a map that associates element names with their corresponding
 	 * values.
 	 * 
-	 * @return this annotation's element anmes and their values, or an empty map
+	 * <p>
+	 * Note that <code>getElementValue("key")</code> is not completely similar
+	 * to <code>getElementValues().get("key")</code> since the former converts
+	 * type references into the actual types.
+	 * 
+	 * @return this annotation's element names and their values, or an empty map
 	 *         if there are none
 	 */
 	Map<String, Object> getElementValues();
@@ -72,7 +87,8 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	/**
 	 * Set's this annotation's element names and their values. This is in the
 	 * form of a map that associates element names with their corresponding
-	 * values.
+	 * values. Note that type values are stored as
+	 * {@link spoon.reflect.CtTypeReference}.
 	 */
 	void setElementValues(Map<String, Object> values);
 
