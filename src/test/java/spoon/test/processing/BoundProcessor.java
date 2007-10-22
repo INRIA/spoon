@@ -19,7 +19,7 @@ public class BoundProcessor extends
 		CtMethod<?> push = c.getMethod("push", getFactory().Type()
 				.createTypeParameterReference("T"));
 		BoundTestTemplate template = new BoundTestTemplate(b.max());
-		CtStatementList l = template.getSubstitution(c);
+		CtStatementList<?> l = template.getSubstitution(c);
 		l
 				.setPositions(c.getAnnotation(
 						getFactory().Type().createReference(Bound.class))

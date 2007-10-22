@@ -34,7 +34,7 @@ public class Stack<T> {
 	}
 	
 	public static void main(String[] args) {
-		Stack<Stack> s=new Stack<Stack>();
+		Stack<Stack<?>> s=new Stack<Stack<?>>();
 		for(int i=0;i<10;i++) {
 			s.push(s);
 			System.out.println(s.elements);

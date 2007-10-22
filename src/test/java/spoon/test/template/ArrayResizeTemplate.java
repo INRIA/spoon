@@ -17,7 +17,7 @@ public class ArrayResizeTemplate implements Template {
 	String __field_;
 
 	@Parameter()
-	Class _Type_;
+	Class<?> _Type_;
 
 	@Local
 	public ArrayResizeTemplate(CtField<?> field, int inc) {
@@ -39,7 +39,7 @@ public class ArrayResizeTemplate implements Template {
 	}
 
 	@Parameter
-	Class _TargetType_;
+	Class<?> _TargetType_;
 
 	static _TargetType_[] instances = new _TargetType_[_staticPoolSizeIncrement_];
 

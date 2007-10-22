@@ -7,7 +7,7 @@ import java.util.Vector;
 class TopLevel {
 
 	class InnerClass {
-		Vector v;
+		Vector<?> v;
 	}
 	
 }
@@ -17,7 +17,7 @@ class Secondary implements Serializable, I, K {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Map m;
+	Map<?,?> m;
 	String s;
 	int i;
 	void m() {}

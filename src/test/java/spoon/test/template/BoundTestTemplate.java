@@ -13,7 +13,7 @@ public class BoundTestTemplate extends StatementListTemplateParameter implements
 	public int _max_;
 
 	@Local
-	Collection elements;
+	Collection<?> elements;
 
 	public BoundTestTemplate(int _max_) {
 		this._max_ = _max_;
