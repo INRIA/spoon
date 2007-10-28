@@ -264,10 +264,15 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		write(reference.getType().getQualifiedName()).write(" ");
-		write(reference.getDeclaringType().getQualifiedName());
-		write(CtField.FIELD_SEPARATOR);
-		write(reference.getSimpleName());
+		// TODO: Fix this null pointer catch
+		try {
+			write(reference.getType().getQualifiedName()).write(" ");
+			write(reference.getDeclaringType().getQualifiedName());
+			write(CtField.FIELD_SEPARATOR);
+			write(reference.getSimpleName());
+		} catch (NullPointerException npe) {
+			System.err.println("Null Pointer Exception in SingnaturePrinter.visitCtFieldReference()");
+		}
 	}
 
 	public void visitCtFor(CtFor forLoop) {
