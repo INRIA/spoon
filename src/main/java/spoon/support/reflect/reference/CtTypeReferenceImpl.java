@@ -177,7 +177,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public boolean isAssignableFrom(CtTypeReference<?> type) {
-		return type.isSubtypeOf(this);
+		if (type != null) {
+			return type.isSubtypeOf(this);
+		}
+		return false;
 	}
 
 	public boolean isPrimitive() {

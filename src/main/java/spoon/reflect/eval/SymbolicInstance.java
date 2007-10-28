@@ -127,8 +127,12 @@ public class SymbolicInstance<T> {
 	@Override
 	public boolean equals(Object obj) {
 		SymbolicInstance<?> i = (SymbolicInstance<?>) obj;
-		boolean b = concreteType.equals(i.concreteType)
+
+		boolean b = false;
+		if (concreteType != null && i != null) {
+			b = concreteType.equals(i.concreteType)
 				&& fields.equals(i.fields) && isExternal == i.isExternal;
+		}
 		return b;
 	}
 
@@ -156,11 +160,21 @@ public class SymbolicInstance<T> {
 			CtTypeReference<T> concreteType, boolean isType) {
 		this.concreteType = concreteType;
 		CtSimpleType<T> type = concreteType.getDeclaration();
-		if (!concreteType.isPrimitive() && type != null) {
+		// TODO: check that enums are working properly
+		if (!concreteType.isPrimitive() && type != null && !Enum.class.isAssignableFrom(concreteType.getActualClass())) {
 			for (CtFieldReference<?> fr : concreteType.getAllFields()) {
 				CtField<?> f=fr.getDeclaration();
 				// skip external fields
 				if(f==null) continue;
+				
+				CtTypeReference<?> fieldType = f.getType();
+				
+				// TODO: check this
+				if(fieldType == null) {
+					fields.put(fr, null);
+					continue;
+				}
+				
 				if (isType && f.hasModifier(ModifierKind.STATIC)) {
 					SymbolicInstance<?> r = evaluator.evaluate(f
 							.getDefaultExpression());
@@ -291,6 +305,7 @@ public class SymbolicInstance<T> {
 			fields.put(fref, value.getId());
 			heap.store(value);
 		} else {
+			// TODO: JJ - recheck this
 			throw new RuntimeException("unknown field '" + fref
 					+ "' for target " + this);
 		}
@@ -347,5 +362,4 @@ public class SymbolicInstance<T> {
 	public Map<CtVariableReference<?>, String> getFields() {
 		return fields;
 	}
-
 }

@@ -18,6 +18,7 @@
 package spoon.reflect.factory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.eval.SymbolicEvaluatorObserver;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.eval.SymbolicEvaluationPath;
 import spoon.reflect.eval.SymbolicEvaluator;
@@ -91,11 +93,12 @@ public class EvalFactory extends SubFactory {
 	 * @return a map containing the paths for each entry point
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<CtMethod<?>, List<SymbolicEvaluationPath>> createEvaluationPaths(
-			Collection<CtMethod<?>> entryPoints) {
+	public void evaluate(
+			Collection<CtMethod<?>> entryPoints, SymbolicEvaluatorObserver... observers) {
 		Map<CtMethod<?>, List<SymbolicEvaluationPath>> paths = new HashMap<CtMethod<?>, List<SymbolicEvaluationPath>>();
 		for (CtMethod<?> m : entryPoints) {
 			SymbolicEvaluator evaluator = createSymbolicEvaluator();
+			evaluator.addObservers(Arrays.asList(observers));
 			List<SymbolicInstance<?>> args = new ArrayList<SymbolicInstance<?>>();
 			for (CtParameter<?> p : m.getParameters()) {
 				SymbolicInstance arg = createSymbolicInstance(evaluator, p
@@ -127,9 +130,8 @@ public class EvalFactory extends SubFactory {
 			} catch (Throwable th) {
 				th.printStackTrace();
 			}
-			paths.put(m, evaluator.getPaths());
+			// paths.put(m, evaluator.getPaths());
 		}
-		return paths;
+		// return paths;
 	}
-
 }

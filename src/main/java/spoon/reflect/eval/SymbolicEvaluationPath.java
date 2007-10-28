@@ -42,11 +42,11 @@ public class SymbolicEvaluationPath {
 	 * @param evaluator
 	 *            the current evaluator (its state is used to initialize the new
 	 *            step).
+	 * @return the new SymbolicEvaluationStep
 	 */
-	public void addStep(StepKind kind, SymbolicEvaluator evaluator) {
-		steps.add(new SymbolicEvaluationStep(kind, new SymbolicStackFrame(
-				evaluator.getStack().getFrameStack().peek()), new SymbolicHeap(
-				evaluator.getHeap())));
+	public SymbolicEvaluationStep addStep(SymbolicEvaluationStep step) {
+		steps.add(step);
+		return step;
 	}
 
 	/**

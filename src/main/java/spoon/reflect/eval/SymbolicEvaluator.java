@@ -38,12 +38,14 @@ public interface SymbolicEvaluator {
 	/**
 	 * Gets all the evaluation paths resulting from an evaluation.
 	 */
-	List<SymbolicEvaluationPath> getPaths();
+	//List<SymbolicEvaluationPath> getPaths();
 
 	/**
 	 * Dumps the evaluation paths.
 	 */
-	void dumpPaths();
+	//void dumpPaths();
+	
+	//SymbolicEvaluationPath getCurrentPath();
 
 	/**
 	 * Resets the state of this symbolic evaluator.
@@ -94,5 +96,9 @@ public interface SymbolicEvaluator {
 	 * evaluator.
 	 */
 	<T> SymbolicInstance<T> evaluate(CtExpression<T> expresion);
+
+	void addObserver(SymbolicEvaluatorObserver observer);
+
+	void addObservers(List<SymbolicEvaluatorObserver> evaluatorObservers);
 
 }
