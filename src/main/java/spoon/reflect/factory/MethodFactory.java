@@ -174,7 +174,7 @@ public class MethodFactory extends ExecutableFactory {
 		for (CtSimpleType<?> t : factory.Type().getAll()) {
 			if (t instanceof CtClass) {
 				CtMethod<Void> m = ((CtClass<?>) t).getMethod(factory.Type()
-						.createReference(Void.class), "main", factory.Type()
+						.createReference(void.class), "main", factory.Type()
 						.createArrayReference(
 								factory.Type().createReference(String.class)));
 				if (m != null && m.getModifiers().contains(ModifierKind.STATIC)) {
