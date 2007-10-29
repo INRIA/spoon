@@ -833,9 +833,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (binding == null)
 				return null;
 			if (binding instanceof RawTypeBinding) {
-				ref = getTypeReference(((ParameterizedTypeBinding) binding).type);
+				ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
 			} else if (binding instanceof ParameterizedTypeBinding) {
-				ref = getTypeReference(((ParameterizedTypeBinding) binding).type);
+				ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
 				if (((ParameterizedTypeBinding) binding).arguments != null)
 					for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
 						ref.getActualTypeArguments().add(getTypeReference(b));
@@ -1333,11 +1333,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(MarkerAnnotation annotation, BlockScope scope) {
-		context.exit(annotation);
-	}
-
-	@Override
-	public void endVisit(MarkerAnnotation annotation, CompilationUnitScope scope) {
 		context.exit(annotation);
 	}
 
@@ -2192,16 +2187,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MarkerAnnotation annotation, BlockScope scope) {
-		CtAnnotation a = factory.Core().createAnnotation();
-		a.setAnnotationType(references
-				.getTypeReference(annotation.resolvedType));
-		context.enter(a, annotation);
-		return true;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean visit(MarkerAnnotation annotation, CompilationUnitScope scope) {
 		CtAnnotation a = factory.Core().createAnnotation();
 		a.setAnnotationType(references
 				.getTypeReference(annotation.resolvedType));
