@@ -94,8 +94,7 @@ public class EvalFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public void evaluate(
-			Collection<CtMethod<?>> entryPoints, SymbolicEvaluatorObserver... observers) {
-		Map<CtMethod<?>, List<SymbolicEvaluationPath>> paths = new HashMap<CtMethod<?>, List<SymbolicEvaluationPath>>();
+			Collection<CtMethod<Void>> entryPoints, SymbolicEvaluatorObserver... observers) {
 		for (CtMethod<?> m : entryPoints) {
 			SymbolicEvaluator evaluator = createSymbolicEvaluator();
 			evaluator.addObservers(Arrays.asList(observers));
