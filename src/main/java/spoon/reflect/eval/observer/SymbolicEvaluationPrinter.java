@@ -6,7 +6,7 @@ import spoon.reflect.eval.SymbolicEvaluator;
 import spoon.support.reflect.eval.VisitorSymbolicEvaluator;
 
 public class SymbolicEvaluationPrinter implements SymbolicEvaluatorObserver {
-	// TODO: decide how to implement step number
+	
 	private int stepNumber = 0;
 	private int pathNumber = 0;
 	
