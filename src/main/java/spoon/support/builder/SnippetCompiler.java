@@ -129,7 +129,7 @@ public class SnippetCompiler {
 	private static void build(Factory f, String contents, String name) {
 		// Build contents
 		boolean success;
-		Builder builder = f.getBuilder();
+		Builder builder = new SnippetBuilder(f);
 		try {
 			builder.addInputSource(new CtVirtualFile(contents, name));
 			success = builder.build();
