@@ -360,6 +360,24 @@ public class TemplateMatcher {
 		if (template instanceof Collection) {
 			return matchCollections((Collection) target, (Collection) template);
 		}
+		
+		if(template instanceof Map){
+			if(template.equals(target)){
+				return true;
+			}
+			
+			Map temMap = (Map)template;
+			Map tarMap = (Map) target;
+			
+			if(!temMap.keySet().equals(tarMap.keySet())){
+				return false;
+			}
+			
+			return matchCollections(tarMap.values(),temMap.values());
+			
+			
+			
+		}
 
 		if (target instanceof CtElement || target instanceof CtReference) {
 			for (Field f : RtHelper.getAllFields(target.getClass())) {
