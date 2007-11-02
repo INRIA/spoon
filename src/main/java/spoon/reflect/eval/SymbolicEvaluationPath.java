@@ -35,14 +35,9 @@ public class SymbolicEvaluationPath {
 	List<SymbolicEvaluationStep> steps = new ArrayList<SymbolicEvaluationStep>();
 
 	/**
-	 * Creates and adds a step to this path.
+	 * Adds a step to this path.
 	 * 
-	 * @param kind
-	 *            the step kind
-	 * @param evaluator
-	 *            the current evaluator (its state is used to initialize the new
-	 *            step).
-	 * @return the new SymbolicEvaluationStep
+	 * @return the just added SymbolicEvaluationStep
 	 */
 	public SymbolicEvaluationStep addStep(SymbolicEvaluationStep step) {
 		steps.add(step);
