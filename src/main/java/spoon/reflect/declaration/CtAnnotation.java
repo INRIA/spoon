@@ -88,7 +88,7 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	 * Set's this annotation's element names and their values. This is in the
 	 * form of a map that associates element names with their corresponding
 	 * values. Note that type values are stored as
-	 * {@link spoon.reflect.CtTypeReference}.
+	 * {@link spoon.reflect.reference.CtTypeReference}.
 	 */
 	void setElementValues(Map<String, Object> values);
 

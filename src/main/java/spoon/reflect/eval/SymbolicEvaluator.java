@@ -35,17 +35,15 @@ public interface SymbolicEvaluator {
 	 */
 	List<CtTypeReference<?>> getStatefullExternals();
 
-	/**
-	 * Gets all the evaluation paths resulting from an evaluation.
-	 */
-	//List<SymbolicEvaluationPath> getPaths();
-
-	/**
-	 * Dumps the evaluation paths.
-	 */
-	//void dumpPaths();
-	
-	//SymbolicEvaluationPath getCurrentPath();
+//	/**
+//	 * Gets all the evaluation paths resulting from an evaluation.
+//	 */
+//	 List<SymbolicEvaluationPath> getPaths();
+//	/**
+//	 * Dumps the evaluation paths.
+//	 */
+//	 void dumpPaths();
+//	 SymbolicEvaluationPath getCurrentPath();
 
 	/**
 	 * Resets the state of this symbolic evaluator.
@@ -53,7 +51,10 @@ public interface SymbolicEvaluator {
 	void reset();
 
 	/**
-	 * Starts a symbolic evaluation by invoking a given static executable.
+	 * Starts a symbolic evaluation by invoking a given static executable. Note
+	 * that symbolic evaluation may have several paths and thus several results.
+	 * In order to access the evaluation information, you need to use
+	 * {@link #addObserver(SymbolicEvaluatorObserver)}.
 	 * 
 	 * @param executable
 	 *            to be invoked symbolically
@@ -63,7 +64,10 @@ public interface SymbolicEvaluator {
 	void invoke(CtExecutable<?> executable, SymbolicInstance<?>... args);
 
 	/**
-	 * Starts a symbolic evaluation by invoking a given executable.
+	 * Starts a symbolic evaluation by invoking a given executable. Note that
+	 * symbolic evaluation may have several paths and thus several results. In
+	 * order to access the evaluation information, you need to use
+	 * {@link #addObserver(SymbolicEvaluatorObserver)}.
 	 * 
 	 * @param target
 	 *            the target instance
@@ -74,6 +78,18 @@ public interface SymbolicEvaluator {
 	 */
 	void invoke(SymbolicInstance<?> target, CtExecutable<?> executable,
 			List<SymbolicInstance<?>> args);
+
+	/**
+	 * Starts a symbolic evaluation by invoking a given executable and
+	 * constructs default symbolic instances for the parameters and the target
+	 * when needed. Note that symbolic evaluation may have several paths and
+	 * thus several results. In order to access the evaluation information, you
+	 * need to use {@link #addObserver(SymbolicEvaluatorObserver)}.
+	 * 
+	 * @param executable
+	 *            to be invoked
+	 */
+	void invoke(CtExecutable<?> executable);
 
 	/**
 	 * Gets the heap of the current symbolic evaluation step.
@@ -97,8 +113,20 @@ public interface SymbolicEvaluator {
 	 */
 	<T> SymbolicInstance<T> evaluate(CtExpression<T> expresion);
 
+	/**
+	 * Adds an evaluation observer.
+	 * 
+	 * @param observer
+	 *            the observer to be notified from evaluation events
+	 */
 	void addObserver(SymbolicEvaluatorObserver observer);
 
+	/**
+	 * Adds some evaluation observers.
+	 * 
+	 * @param evaluatorObservers
+	 *            the observers to be notified from evaluation events
+	 */
 	void addObservers(List<SymbolicEvaluatorObserver> evaluatorObservers);
 
 }

@@ -17,26 +17,19 @@
 
 package spoon.reflect.factory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import spoon.reflect.Factory;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.eval.SymbolicEvaluatorObserver;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.eval.SymbolicEvaluationPath;
 import spoon.reflect.eval.SymbolicEvaluator;
+import spoon.reflect.eval.SymbolicEvaluatorObserver;
 import spoon.reflect.eval.SymbolicInstance;
+import spoon.reflect.eval.observer.SymbolicEvaluationPathsMaker;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtVariableReference;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.support.reflect.eval.VisitorSymbolicEvaluator;
 
@@ -63,9 +56,13 @@ public class EvalFactory extends SubFactory {
 
 	/**
 	 * Creates a symbolic evaluator on the Spoon meta-model.
+	 * 
+	 * @param observers
+	 *            the observers to be notified of the the evaluation progress
 	 */
-	public SymbolicEvaluator createSymbolicEvaluator() {
-		return new VisitorSymbolicEvaluator();
+	public SymbolicEvaluator createSymbolicEvaluator(
+			SymbolicEvaluatorObserver... observers) {
+		return new VisitorSymbolicEvaluator(observers);
 	}
 
 	/**
@@ -83,7 +80,7 @@ public class EvalFactory extends SubFactory {
 			boolean isType) {
 		return new SymbolicInstance<T>(evaluator, concreteType, isType);
 	}
-	
+
 	/**
 	 * Gets the symbolic evaluation paths of the program, as calculated by
 	 * {@link spoon.reflect.eval.SymbolicEvaluator}.
@@ -93,44 +90,15 @@ public class EvalFactory extends SubFactory {
 	 * @return a map containing the paths for each entry point
 	 */
 	@SuppressWarnings("unchecked")
-	public void evaluate(
-			Collection<CtMethod<Void>> entryPoints, SymbolicEvaluatorObserver... observers) {
+	public Map<CtMethod<?>, Collection<SymbolicEvaluationPath>> createSymbolicEvaluationPaths(
+			Collection<CtMethod<?>> entryPoints) {
+		Map<CtMethod<?>, Collection<SymbolicEvaluationPath>> results = new HashMap<CtMethod<?>, Collection<SymbolicEvaluationPath>>();
 		for (CtMethod<?> m : entryPoints) {
-			SymbolicEvaluator evaluator = createSymbolicEvaluator();
-			evaluator.addObservers(Arrays.asList(observers));
-			List<SymbolicInstance<?>> args = new ArrayList<SymbolicInstance<?>>();
-			for (CtParameter<?> p : m.getParameters()) {
-				SymbolicInstance arg = createSymbolicInstance(evaluator, p
-						.getType(), false);
-				evaluator.getHeap().store(arg);
-				args.add(arg);
-			}
-			// Create target(this) for the invocation
-			SymbolicInstance target = createSymbolicInstance(evaluator, m
-					.getDeclaringType().getReference(), m.getModifiers()
-					.contains(ModifierKind.STATIC));
-			// Seed the fields of the class
-			CtType<?> targetType = m.getDeclaringType();
-			for (CtField field : targetType.getFields()) {
-				if (!field.getModifiers().contains(ModifierKind.STATIC)
-						&& m.getModifiers().contains(ModifierKind.STATIC)) {
-					continue;
-				}
-
-				CtVariableReference<?> fref = field.getReference();
-				SymbolicInstance si = createSymbolicInstance(evaluator, fref
-						.getType(), false);
-				target.setFieldValue(evaluator.getHeap(), fref, si);
-			}
-
-			evaluator.getHeap().store(target);
-			try {
-				evaluator.invoke(target, m, args);
-			} catch (Throwable th) {
-				th.printStackTrace();
-			}
-			// paths.put(m, evaluator.getPaths());
+			SymbolicEvaluationPathsMaker pathsMaker = new SymbolicEvaluationPathsMaker();
+			SymbolicEvaluator evaluator = createSymbolicEvaluator(pathsMaker);
+			evaluator.invoke(m);
+			results.put(m, pathsMaker.getPaths());
 		}
-		// return paths;
+		return results;
 	}
 }
