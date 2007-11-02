@@ -15,6 +15,13 @@ import spoon.test.template.TemplateWithConstructor;
 
 public class TestProcessor extends AbstractProcessor<CtElement> {
 
+	@Override
+	public void init() {
+		super.init();
+		System.out.println("MAIN METHODS: "+getFactory().Method().getMainMethods());
+	}
+	
+	
 	public void process(CtElement element) {
 		if ((!(element instanceof CtPackage)) && element.getParent() == null) {
 			getEnvironment().report(this, Severity.ERROR, element,
