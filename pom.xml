@@ -10,7 +10,7 @@
     expressions...) can be accessed both for reading and modification.
   </description>
   <url>http://spoon.gforge.inria.fr/</url>
-  <inceptionYear>2006</inceptionYear>
+  <inceptionYear>2007</inceptionYear>
   <licenses>
     <license>
       <name>CeCILL-C</name>
@@ -341,6 +341,14 @@
       </plugin>
     </plugins>
   </reporting>
+  <repositories>
+    <repository>
+      <id>gforge.inria.fr</id>
+      <name>Maven Repository for Inria Projects</name>
+      <url>http://maven-repo.gforge.inria.fr/download/releases</url>
+      <releases />
+    </repository>
+  </repositories>
   <distributionManagement>
     <repository>
       <id>gforge.inria.fr</id>
