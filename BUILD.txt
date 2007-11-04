@@ -1,0 +1,46 @@
+The project need [Maven 2.0.x][1] and JDK 1.5 to be builded.
+Main build command :
+* generate the jar :
+  <code>
+    mvn clean package
+  </code>
+* compile only :
+  <code>
+    mvn compile
+  </code>
+* build all the jar (jar with spoon's classes, jar-with-dependencies, jar with sources, jar with javadoc) :
+  <code>
+    mvn package -Prelease
+  </code>
+* to install the artifact into your local repository :
+  <code>
+    mvn clean install -Prelease
+  </code>
+* release (include tagging the source, deploy to inria repository...):
+  * requirement : define account into $HOME/.m2/settings.xml (check before you could connect to ssh without passphrase)
+    <code type="xml">
+      <settings>
+      ...
+        <servers>
+          <server>
+            <id>gforge.inria.fr</id>
+            <username>*your_ssh_inria_account*</username>
+            <filePermissions>664</filePermissions>
+            <directoryPermissions>775</directoryPermissions>
+          </server>
+          ...
+      </servers>
+        ...
+      </settings>
+    </code>
+  * use the [maven release plugin][3]
+    <code>
+      mvn clean release:prepare -Prelease
+      mvn release:perform -Prelease
+    </code>
+
+To generate the javadoc with uml graph, you need to have [graphviz][2] available int the path.
+
+[1]: http://maven.apache.org/
+[2]: http://graphviz.org/
+[3]: http://maven.apache.org/plugins/maven-release-plugin/
