@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
@@ -102,7 +104,10 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
-
+  <properties>
+    <java.src.version>1.5</java.src.version>
+    <runtime.log>target/velocity.log</runtime.log>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
@@ -127,8 +132,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>${java.src.version}</source>
+          <target>${java.src.version}</target>
         </configuration>
       </plugin>
       <plugin>
@@ -143,6 +148,19 @@
           </archive>
         </configuration>
       </plugin>
+      <!-- clean coverage data before collecting -->
+      <plugin>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -156,7 +174,7 @@
           <dependency>
             <groupId>sun.jdk</groupId>
             <artifactId>tools</artifactId>
-            <version>1.5.0</version>
+            <version>${java.src.version}.0</version>
             <scope>system</scope>
             <systemPath>${java.home}/../lib/tools.jar</systemPath>
           </dependency>
@@ -172,7 +190,9 @@
                 <echo>TEST 1: Processing tests</echo>
                 <mkdir dir="${project.build.directory}/spooned-test" />
                 <mkdir dir="${project.build.directory}/spooned-test-classes" />
-                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned-test" compile="true" build="${project.build.directory}/spooned-test-classes" fork="false">
+                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned-test" compile="true" build="${project.build.directory}/spooned-test-classes"
+                  fork="false"
+                >
                   <sourceSet dir="${project.test.java}" />
                   <processor type="spoon.test.processing.TestProcessor" />
                 </spoon>
@@ -186,11 +206,13 @@
                 <mkdir dir="${project.build.directory}/spooned1" />
                 <mkdir dir="${project.build.directory}/spooned1-classes" />
                 <!-- compile="true" build="${project.build.directory}/spooned1-classes" -->
-                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned1" compile="true" build="${project.build.directory}/spooned1-classes" maxmemory="512m" fork="false">
+                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned1" compile="true" build="${project.build.directory}/spooned1-classes"
+                  maxmemory="512m" fork="false"
+                >
                   <sourceSet dir="${project.src.java}" />
                 </spoon>
                 <!--
-                  <javac srcdir="${project.build.directory}/spooned1" source="1.5" target="1.5" classpathref="maven.test.classpath" nowarn="true" destdir="${project.build.directory}/spooned1-classes" />
+                  <javac srcdir="${project.build.directory}/spooned1" source="${java.src.version}" target="${java.src.version}" classpathref="maven.test.classpath" nowarn="true" destdir="${project.build.directory}/spooned1-classes" />
                 -->
                 <echo>PHASE 2: recompile Spoon with recompiled Spoon</echo>
                 <mkdir dir="${project.build.directory}/spooned2" />
@@ -200,13 +222,13 @@
                 </path>
                 <property name="spoon2_classpath" refid="spoon2.classpath" />
                 <!--
-                <echo message="classpath2= ${spoon2_classpath}" />
+                  <echo message="classpath2= ${spoon2_classpath}" />
                 -->
                 <taskdef name="spoon2" classname="spoon.SpoonTask" classpathref="spoon2.classpath" />
                 <spoon2 classpathref="spoon2.classpath" verbose="true" output="${project.build.directory}/spooned2">
                   <sourceSet dir="${project.build.directory}/spooned1" />
                 </spoon2>
-                <javac srcdir="${project.build.directory}/spooned2" source="1.5" target="1.5" classpathref="maven.test.classpath" nowarn="true" />
+                <javac srcdir="${project.build.directory}/spooned2" source="${java.src.version}" target="${java.src.version}" classpathref="maven.test.classpath" nowarn="true" />
 
                 <echo>PHASE 3: clean</echo>
                 <delete dir="${project.build.directory}/spooned1" />
@@ -216,53 +238,6 @@
             </configuration>
             <goals>
               <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-            <!-- descriptorRef>project</descriptorRef-->
-          </descriptorRefs>
-          <!-- descriptor>src/main/assembly/project.xml</descriptor-->
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id> <!-- this is used for inheritance merges -->
-            <phase>package</phase> <!-- append to the packaging phase. -->
-            <goals>
-              <goal>attached</goal> <!-- goals == mojos -->
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <minmemory>128m</minmemory>
-          <maxmemory>512</maxmemory>
-          <excludePackageNames>spoon.support.*</excludePackageNames>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
             </goals>
           </execution>
         </executions>
@@ -280,7 +255,7 @@
           <linkXref>true</linkXref>
           <sourceEncoding>utf-8</sourceEncoding>
           <minimumTokens>100</minimumTokens>
-          <targetJdk>1.5</targetJdk>
+          <targetJdk>${java.src.version}</targetJdk>
         </configuration>
         <reportSets>
           <reportSet>
@@ -292,24 +267,32 @@
         </reportSets>
       </plugin>
       <plugin>
-        <groupId>net.objectlab</groupId>
-        <artifactId>mvn-qalab-plugin</artifactId>
-        <version>2.2</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>report-merge-chart</report>
-              <report>report-movers-all</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <minmemory>128m</minmemory>
-          <maxmemory>512</maxmemory>
           <excludePackageNames>spoon.support.*</excludePackageNames>
+          <minmemory>128m</minmemory>
+          <maxmemory>512m</maxmemory>
+          <encoding>UTF-8</encoding>
+          <docencoding>UTF-8</docencoding>
+          <charset>UTF-8</charset>
+          <doclet>gr.spinellis.umlgraph.doclet.UmlGraphDoc</doclet>
+          <docletArtifact>
+            <groupId>gr.spinellis</groupId>
+            <artifactId>UmlGraph</artifactId>
+            <version>4.6</version>
+          </docletArtifact>
+          <links>
+            <link>http://java.sun.com/j2se/${java.src.version}/docs/api/</link>
+            <link>http://slf4j.org/api/</link>
+            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+            <link>http://logging.apache.org/log4j/docs/api/</link>
+            <link>http://people.apache.org/~tobrien/wicket/apidocs/</link>
+            <link>http://commons.apache.org/lang/api-release/</link>
+            <link>http://commons.apache.org/io/api-release/</link>
+            <link>http://testng.org/javadocs/</link>
+            <link>http://junit.sourceforge.net/javadoc/</link>
+            <link>http://help.eclipse.org/help33/topic/org.eclipse.jdt.doc.isv/reference/api/</link>
+          </links>
         </configuration>
       </plugin>
       <plugin>
@@ -317,12 +300,27 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <!-- version 2.1 is bugged ouput coverage 100% or 0% -->
+        <version>2.0</version>
+        <configuration>
+          <formats>
+            <format>xml</format>
+            <format>html</format>
+          </formats>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
-        <!--
-          <configuration>
-          <tags>TODO, @todo, FIXME, @deprecated</tags>
-          </configuration>
-        -->
+        <configuration>
+          <tags>
+            <tag>TODO</tag>
+            <tag>FIXME</tag>
+            <tag>@todo</tag>
+            <tag>@deprecated</tag>
+          </tags>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -349,24 +347,80 @@
       <releases />
     </repository>
   </repositories>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+                <!-- descriptorRef>project</descriptorRef-->
+              </descriptorRefs>
+              <!-- descriptor>src/main/assembly/project.xml</descriptor-->
+            </configuration>
+            <executions>
+              <execution>
+                <id>make-assembly</id><!-- this is used for inheritance merges -->
+                <phase>package</phase><!-- append to the packaging phase. -->
+                <goals>
+                  <goal>attached</goal><!-- goals == mojos -->
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <minmemory>128m</minmemory>
+              <maxmemory>512</maxmemory>
+              <excludePackageNames>spoon.support.*</excludePackageNames>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <distributionManagement>
+        <repository>
+          <id>gforge.inria.fr</id>
+          <name>inria</name>
+          <url>scp://gforge.inria.fr/home/groups/maven-repo/htdocs/releases</url>
+        </repository>
+        <site>
+          <id>gforge.inria.fr</id>
+          <name>inria</name>
+          <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/${artifactId}/${version}</url>
+        </site>
+      </distributionManagement>
+    </profile>
+  </profiles>
   <distributionManagement>
-    <repository>
-      <id>gforge.inria.fr</id>
-      <name>inria</name>
-      <url>scp://gforge.inria.fr/home/groups/maven-repo/htdocs/releases</url>
-    </repository>
     <snapshotRepository>
       <id>gforge.inria.fr</id>
       <name>inria</name>
       <url>scp://gforge.inria.fr/home/groups/maven-repo/htdocs/snapshots</url>
     </snapshotRepository>
-    <site>
-      <id>gforge.inria.fr</id>
-      <name>inria</name>
-      <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/${artifactId}/${version}</url>
-    </site>
   </distributionManagement>
-  <properties>
-    <runtime.log>target/velocity.log</runtime.log>
-  </properties>
 </project>
