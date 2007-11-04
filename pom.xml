@@ -411,7 +411,7 @@
         <site>
           <id>gforge.inria.fr</id>
           <name>inria</name>
-          <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/${artifactId}/${version}</url>
+          <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/${project.artifactId}/${project.version}</url>
         </site>
       </distributionManagement>
     </profile>
