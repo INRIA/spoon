@@ -16,7 +16,7 @@ Main build command :
   <code>
     mvn clean install -Prelease
   </code>
-* release (include tagging the source, deploy to inria repository...):
+* release (include tagging the source, changing the version, deploy to inria repository...):
   * requirement : define account into $HOME/.m2/settings.xml (check before you could connect to ssh without passphrase)
     <code type="xml">
       <settings>
@@ -37,6 +37,14 @@ Main build command :
     <code>
       mvn clean release:prepare -Prelease
       mvn release:perform -Prelease
+    </code>
+* to generate site
+    <code>
+      mvn site
+    </code>
+* to publish the site
+    <code>
+      mvn clean site-deploy
     </code>
 
 To generate the javadoc with uml graph, you need to have [graphviz][2] available int the path.
