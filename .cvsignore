@@ -4,3 +4,4 @@ target
 .settings
 spoonBuild
 spooned
+cobertura.ser
