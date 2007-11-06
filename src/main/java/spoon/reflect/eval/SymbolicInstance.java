@@ -133,7 +133,9 @@ public class SymbolicInstance<T> {
         if ((concreteType != null) && (i != null)) {
             b = concreteType.equals(i.concreteType)
                 && fields.equals(i.fields) && (isExternal == i.isExternal);
-        }
+		} else if ((concreteType == null) && (i != null)) {
+			b = i.concreteType == null;
+		}
         return b;
     }
 
