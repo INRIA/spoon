@@ -30,43 +30,43 @@ import spoon.reflect.visitor.CtVisitor;
  * @author Renaud Pawlak
  */
 public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    CtExpression<T> defaultExpression;
+	CtExpression<T> defaultExpression;
 
-    CtTypeReference<T> type;
+	CtTypeReference<T> type;
 
-    public CtFieldImpl() {
-        super();
-    }
+	public CtFieldImpl() {
+		super();
+	}
 
-    public void accept(CtVisitor v) {
-        v.visitCtField(this);
-    }
+	public void accept(CtVisitor v) {
+		v.visitCtField(this);
+	}
 
-    public CtSimpleType<?> getDeclaringType() {
-        return (CtSimpleType<?>) parent;
-    }
+	public CtSimpleType<?> getDeclaringType() {
+		return (CtSimpleType<?>) parent;
+	}
 
-    public CtExpression<T> getDefaultExpression() {
-        return defaultExpression;
-    }
+	public CtExpression<T> getDefaultExpression() {
+		return defaultExpression;
+	}
 
-    @Override
-    public CtFieldReference<T> getReference() {
-        return getFactory().Field().createReference(this);
-    }
+	@Override
+	public CtFieldReference<T> getReference() {
+		return getFactory().Field().createReference(this);
+	}
 
-    public CtTypeReference<T> getType() {
-        return type;
-    }
+	public CtTypeReference<T> getType() {
+		return type;
+	}
 
-    public void setDefaultExpression(CtExpression<T> defaultExpression) {
-        this.defaultExpression = defaultExpression;
-    }
+	public void setDefaultExpression(CtExpression<T> defaultExpression) {
+		this.defaultExpression = defaultExpression;
+	}
 
-    public void setType(CtTypeReference<T> type) {
-        this.type = type;
-    }
+	public void setType(CtTypeReference<T> type) {
+		this.type = type;
+	}
 
 }

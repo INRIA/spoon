@@ -32,35 +32,35 @@ import spoon.reflect.declaration.CtSimpleType;
  * It corresponds to a {@link spoon.reflect.code.CtBlock}.
  */
 public abstract class TypedBlockTemplateParameter<R> implements
-        TemplateParameter<R> {
+		TemplateParameter<R> {
 
-    /**
-     * Creates a new block template parameter.
-     */
-    public TypedBlockTemplateParameter() {
-    }
+	/**
+	 * Creates a new block template parameter.
+	 */
+	public TypedBlockTemplateParameter() {
+	}
 
-    /**
-     * This method must be implemented to define the template block.
-     */
-    public abstract R block() throws Throwable;
+	/**
+	 * This method must be implemented to define the template block.
+	 */
+	public abstract R block() throws Throwable;
 
-    @SuppressWarnings("unchecked")
-    public CtBlock<R> getSubstitution(CtSimpleType targetType) {
-        CtClass<?> c;
-        c = targetType.getFactory().Template().get(this.getClass());
-        if (c == null) {
-            c = targetType.getFactory().Class().get(this.getClass());
-        }
-        CtMethod<R> m = (CtMethod<R>) c.getMethod("block");
-        if (this instanceof Template) {
-            return Substitution.substitute(targetType, (Template) this, m
-                    .getBody());
-        }
-        return targetType.getFactory().Core().clone(m.getBody());
-    }
+	@SuppressWarnings("unchecked")
+	public CtBlock<R> getSubstitution(CtSimpleType targetType) {
+		CtClass<?> c;
+		c = targetType.getFactory().Template().get(this.getClass());
+		if (c == null) {
+			c = targetType.getFactory().Class().get(this.getClass());
+		}
+		CtMethod<R> m = (CtMethod<R>) c.getMethod("block");
+		if (this instanceof Template) {
+			return Substitution.substitute(targetType, (Template) this, m
+					.getBody());
+		}
+		return targetType.getFactory().Core().clone(m.getBody());
+	}
 
-    public R S() {
-        return null;
-    }
+	public R S() {
+		return null;
+	}
 }

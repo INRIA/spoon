@@ -21,21 +21,21 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T>
-        implements CtLiteral<T> {
-    private static final long serialVersionUID = 1L;
+		implements CtLiteral<T> {
+	private static final long serialVersionUID = 1L;
 
-    T value;
+	T value;
 
-    public void accept(CtVisitor visitor) {
-        visitor.visitCtLiteral(this);
-    }
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtLiteral(this);
+	}
 
-    public T getValue() {
-        return value;
-    }
+	public T getValue() {
+		return value;
+	}
 
-    public void setValue(T value) {
-        this.value = value;
-    }
+	public void setValue(T value) {
+		this.value = value;
+	}
 
 }

@@ -26,64 +26,62 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
-        implements CtArrayTypeReference<T> {
-    private static final long serialVersionUID = 1L;
+		implements CtArrayTypeReference<T> {
+	private static final long serialVersionUID = 1L;
 
-    CtTypeReference<?> componentType;
+	CtTypeReference<?> componentType;
 
-    public CtArrayTypeReferenceImpl() {
-        super();
-    }
+	public CtArrayTypeReferenceImpl() {
+		super();
+	}
 
-    public CtTypeReference<?> getComponentType() {
-        return componentType;
-    }
+	public CtTypeReference<?> getComponentType() {
+		return componentType;
+	}
 
-    public void setComponentType(CtTypeReference<?> componentType) {
-        this.componentType = componentType;
-    }
+	public void setComponentType(CtTypeReference<?> componentType) {
+		this.componentType = componentType;
+	}
 
-    @Override
-    public String getSimpleName() {
-        return componentType.getSimpleName();
-    }
+	@Override
+	public String getSimpleName() {
+		return componentType.getSimpleName();
+	}
 
+	@Override
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtArrayTypeReference(this);
+	}
 
+	@Override
+	public String getQualifiedName() {
+		if (getComponentType().getDeclaringType() != null) {
+			return getComponentType().getDeclaringType().getQualifiedName()
+					+ CtSimpleType.INNERTTYPE_SEPARATOR + getSimpleName();
+		} else if (getComponentType().getPackage() != null) {
+			return getComponentType().getPackage().getSimpleName()
+					+ CtPackage.PACKAGE_SEPARATOR + getSimpleName();
+		} else {
+			return getSimpleName();
+		}
+	}
 
-    @Override
-    public void accept(CtVisitor visitor) {
-        visitor.visitCtArrayTypeReference(this);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public Class<T> getActualClass() {
+		Class c = getComponentType().getActualClass();
+		if (c == null) {
+			return null;
+		}
+		return (Class) Array.newInstance(c, 0).getClass();
+	}
 
-    @Override
-    public String getQualifiedName() {
-        if (getComponentType().getDeclaringType() != null) {
-            return getComponentType().getDeclaringType().getQualifiedName()
-                    + CtSimpleType.INNERTTYPE_SEPARATOR + getSimpleName();
-        } else if (getComponentType().getPackage() != null) {
-            return getComponentType().getPackage().getSimpleName()
-                    + CtPackage.PACKAGE_SEPARATOR + getSimpleName();
-        } else {
-            return getSimpleName();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<T> getActualClass() {
-        Class c = getComponentType().getActualClass();
-        if (c == null) {
-            return null;
-        }
-        return (Class) Array.newInstance(c, 0).getClass();
-    }
-
-    public int getDimensionCount() {
-        if (getComponentType() instanceof CtArrayTypeReference) {
-            return ((CtArrayTypeReference<?>) getComponentType())
-                    .getDimensionCount() + 1;
-        }
-        return 1;
-    }
+	public int getDimensionCount() {
+		if (getComponentType() instanceof CtArrayTypeReference) {
+			return ((CtArrayTypeReference<?>) getComponentType())
+					.getDimensionCount() + 1;
+		}
+		return 1;
+	}
 
 }

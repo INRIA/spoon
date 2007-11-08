@@ -26,107 +26,106 @@ import spoon.reflect.declaration.CtPackage;
  */
 public class ClassFactory extends TypeFactory {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Creates a class sub-factory.
-     *
-     * @param factory
-     *            the parent factory
-     */
-    public ClassFactory(Factory factory) {
-        super(factory);
-    }
+	/**
+	 * Creates a class sub-factory.
+	 *
+	 * @param factory
+	 *            the parent factory
+	 */
+	public ClassFactory(Factory factory) {
+		super(factory);
+	}
 
-    /**
-     * Creates an inner class.
-     *
-     * @param declaringClass
-     *            declaring class
-     * @param simpleName
-     *            simple name of inner class (without . or $)
-     */
-    public <T> CtClass<T> create(CtClass<?> declaringClass, String simpleName) {
-        CtClass<T> c = factory.Core().createClass();
-        c.setSimpleName(simpleName);
-        c.setParent(declaringClass);
-        return c;
-    }
+	/**
+	 * Creates an inner class.
+	 *
+	 * @param declaringClass
+	 *            declaring class
+	 * @param simpleName
+	 *            simple name of inner class (without . or $)
+	 */
+	public <T> CtClass<T> create(CtClass<?> declaringClass, String simpleName) {
+		CtClass<T> c = factory.Core().createClass();
+		c.setSimpleName(simpleName);
+		c.setParent(declaringClass);
+		return c;
+	}
 
-    /**
-     * Creates a top-level class.
-     *
-     * @param owner
-     *            the declaring package
-     * @param simpleName
-     *            the simple name
-     */
-    public <T> CtClass<T> create(CtPackage owner, String simpleName) {
-        CtClass<T> c = factory.Core().createClass();
-        c.setSimpleName(simpleName);
-        if (owner.getTypes().contains(c)) {
-            owner.getTypes().remove(c);
-        }
-        owner.getTypes().add(c);
-        c.setParent(owner);
-        return c;
-    }
+	/**
+	 * Creates a top-level class.
+	 *
+	 * @param owner
+	 *            the declaring package
+	 * @param simpleName
+	 *            the simple name
+	 */
+	public <T> CtClass<T> create(CtPackage owner, String simpleName) {
+		CtClass<T> c = factory.Core().createClass();
+		c.setSimpleName(simpleName);
+		if (owner.getTypes().contains(c)) {
+			owner.getTypes().remove(c);
+		}
+		owner.getTypes().add(c);
+		c.setParent(owner);
+		return c;
+	}
 
-    /**
-     * Creates a class from its qualified name.
-     *
-     * @param <T>
-     *            type of created class
-     * @param qualifiedName
-     *            full name of class to create. Name can contain . or $ for
-     *            inner types
-     */
-    public <T> CtClass<T> create(String qualifiedName) {
-        if (hasInnerType(qualifiedName) > 0) {
-            CtClass<?> declaringClass = create(getDeclaringTypeName(qualifiedName));
-            return create(declaringClass, getSimpleName(qualifiedName));
-        }
-        return create(factory.Package().getOrCreate(
-                getPackageName(qualifiedName)),
-                getSimpleName(qualifiedName));
-    }
+	/**
+	 * Creates a class from its qualified name.
+	 *
+	 * @param <T>
+	 *            type of created class
+	 * @param qualifiedName
+	 *            full name of class to create. Name can contain . or $ for
+	 *            inner types
+	 */
+	public <T> CtClass<T> create(String qualifiedName) {
+		if (hasInnerType(qualifiedName) > 0) {
+			CtClass<?> declaringClass = create(getDeclaringTypeName(qualifiedName));
+			return create(declaringClass, getSimpleName(qualifiedName));
+		}
+		return create(factory.Package().getOrCreate(
+				getPackageName(qualifiedName)), getSimpleName(qualifiedName));
+	}
 
-    /**
-     * Gets a class from its runtime Java class.
-     *
-     * @param <T>
-     *            type of created class
-     * @param cl
-     *            the java class: note that this class should be Class<T> but
-     *            it then poses problem when T is a generic type itself
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> CtClass<T> get(Class<?> cl) {
-        try {
-            return (CtClass<T>) super.get(cl);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	/**
+	 * Gets a class from its runtime Java class.
+	 *
+	 * @param <T>
+	 *            type of created class
+	 * @param cl
+	 *            the java class: note that this class should be Class<T> but
+	 *            it then poses problem when T is a generic type itself
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CtClass<T> get(Class<?> cl) {
+		try {
+			return (CtClass<T>) super.get(cl);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
-    /**
-     * Searches for a class from his qualified name.
-     *
-     * @param <T>
-     *            the type of the class
-     * @param qualifiedName
-     *            to search
-     * @return found class or null
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> CtClass<T> get(String qualifiedName) {
-        try {
-            return (CtClass<T>) super.get(qualifiedName);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	/**
+	 * Searches for a class from his qualified name.
+	 *
+	 * @param <T>
+	 *            the type of the class
+	 * @param qualifiedName
+	 *            to search
+	 * @return found class or null
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CtClass<T> get(String qualifiedName) {
+		try {
+			return (CtClass<T>) super.get(qualifiedName);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 }

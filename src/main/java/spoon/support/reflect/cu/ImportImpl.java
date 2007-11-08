@@ -8,39 +8,39 @@ import spoon.reflect.reference.CtTypeReference;
 
 public class ImportImpl implements Import {
 
-    public ImportImpl(CtTypeReference<?> type) {
-        reference=type;
-    }
+	public ImportImpl(CtTypeReference<?> type) {
+		reference = type;
+	}
 
-    public ImportImpl(CtPackageReference pack) {
-        reference=pack;
-    }
+	public ImportImpl(CtPackageReference pack) {
+		reference = pack;
+	}
 
-    public ImportImpl(CtFieldReference<?> field) {
-        reference=field;
-    }
+	public ImportImpl(CtFieldReference<?> field) {
+		reference = field;
+	}
 
-    CtReference reference;
+	CtReference reference;
 
-    @Override
-    public String toString() {
-        String str= "import "+reference.toString();
-        if(reference instanceof CtPackageReference) {
-            str+=".*";
-        }
-        return str;
-    }
+	@Override
+	public String toString() {
+		String str = "import " + reference.toString();
+		if (reference instanceof CtPackageReference) {
+			str += ".*";
+		}
+		return str;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof Import) {
-            return reference.equals(((Import)obj).getReference());
-        }
-        return false;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Import) {
+			return reference.equals(((Import) obj).getReference());
+		}
+		return false;
+	}
 
-    public CtReference getReference() {
-        return reference;
-    }
+	public CtReference getReference() {
+		return reference;
+	}
 
 }

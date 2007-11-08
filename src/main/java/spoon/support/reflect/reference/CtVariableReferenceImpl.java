@@ -26,39 +26,39 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
 public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
-        implements CtVariableReference<T> {
-    private static final long serialVersionUID = 1L;
+		implements CtVariableReference<T> {
+	private static final long serialVersionUID = 1L;
 
-    CtTypeReference<T> type;
+	CtTypeReference<T> type;
 
-    public CtVariableReferenceImpl() {
-        super();
-    }
+	public CtVariableReferenceImpl() {
+		super();
+	}
 
-    public CtTypeReference<T> getType() {
-        return type;
-    }
+	public CtTypeReference<T> getType() {
+		return type;
+	}
 
-    public void setType(CtTypeReference<T> type) {
-        this.type = type;
-    }
+	public void setType(CtTypeReference<T> type) {
+		this.type = type;
+	}
 
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof CtVariableReference)) {
-            return false;
-        }
-        CtVariableReference<?> ref = (CtVariableReference<?>) object;
-        return this.type.equals(ref.getType())
-                && simplename.equals(ref.getSimpleName());
-    }
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof CtVariableReference)) {
+			return false;
+		}
+		CtVariableReference<?> ref = (CtVariableReference<?>) object;
+		return this.type.equals(ref.getType())
+				&& simplename.equals(ref.getSimpleName());
+	}
 
-    public Set<ModifierKind> getModifiers() {
-        CtVariable<T> v = getDeclaration();
-        if (v != null) {
-            return v.getModifiers();
-        }
-        return new TreeSet<ModifierKind>();
-    }
+	public Set<ModifierKind> getModifiers() {
+		CtVariable<T> v = getDeclaration();
+		if (v != null) {
+			return v.getModifiers();
+		}
+		return new TreeSet<ModifierKind>();
+	}
 
 }
