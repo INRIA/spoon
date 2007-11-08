@@ -35,340 +35,351 @@ import spoon.support.util.RtHelper;
  */
 public class SymbolicInstance<T> {
 
-    /**
-     * The true literal symbolic instance.
-     */
-    public final static SymbolicInstance<Boolean> TRUE=new SymbolicInstance<Boolean>("true");
-    /**
-     * The false literal symbolic instance.
-     */
-    public final static SymbolicInstance<Boolean> FALSE=new SymbolicInstance<Boolean>("false");
-    /**
-     * The null literal symbolic instance.
-     */
-    public final static SymbolicInstance<?> NULL=new SymbolicInstance<Object>("null");
-    /**
-     * The 0 literal symbolic instance.
-     */
-    public final static SymbolicInstance<?> ZERO=new SymbolicInstance<Object>("0");
-    /**
-     * The strictly positive domain symbolic instance.
-     */
-    public final static SymbolicInstance<?> POS_DOMAIN=new SymbolicInstance<Object>(">0");
-    /**
-     * The positive domain symbolic instance.
-     */
-    public final static SymbolicInstance<?> ZEROPOS_DOMAIN=new SymbolicInstance<Object>(">=0");
-    /**
-     * The strictly negative domain symbolic instance.
-     */
-    public final static SymbolicInstance<?> NEG_DOMAIN=new SymbolicInstance<Object>("<0");
-    /**
-     * The positive domain symbolic instance.
-     */
-    public final static SymbolicInstance<?> ZERONEG_DOMAIN=new SymbolicInstance<Object>("<=0");
+	/**
+	 * The true literal symbolic instance.
+	 */
+	public final static SymbolicInstance<Boolean> TRUE = new SymbolicInstance<Boolean>(
+			"true");
+	/**
+	 * The false literal symbolic instance.
+	 */
+	public final static SymbolicInstance<Boolean> FALSE = new SymbolicInstance<Boolean>(
+			"false");
+	/**
+	 * The null literal symbolic instance.
+	 */
+	public final static SymbolicInstance<?> NULL = new SymbolicInstance<Object>(
+			"null");
+	/**
+	 * The 0 literal symbolic instance.
+	 */
+	public final static SymbolicInstance<?> ZERO = new SymbolicInstance<Object>(
+			"0");
+	/**
+	 * The strictly positive domain symbolic instance.
+	 */
+	public final static SymbolicInstance<?> POS_DOMAIN = new SymbolicInstance<Object>(
+			">0");
+	/**
+	 * The positive domain symbolic instance.
+	 */
+	public final static SymbolicInstance<?> ZEROPOS_DOMAIN = new SymbolicInstance<Object>(
+			">=0");
+	/**
+	 * The strictly negative domain symbolic instance.
+	 */
+	public final static SymbolicInstance<?> NEG_DOMAIN = new SymbolicInstance<Object>(
+			"<0");
+	/**
+	 * The positive domain symbolic instance.
+	 */
+	public final static SymbolicInstance<?> ZERONEG_DOMAIN = new SymbolicInstance<Object>(
+			"<=0");
 
-    /**
-     * Creates a literal symbolic instance.
-     */
-    public SymbolicInstance(String literal) {
-        this.literal=literal;
-    }
+	/**
+	 * Creates a literal symbolic instance.
+	 */
+	public SymbolicInstance(String literal) {
+		this.literal = literal;
+	}
 
-    String literal=null;
+	String literal = null;
 
-    static long id = 0;
+	static long id = 0;
 
-    /**
-     * Gets the next id to be attributed to the created instance.
-     */
-    private static long getNextId() {
-        return id++;
-    }
+	/**
+	 * Gets the next id to be attributed to the created instance.
+	 */
+	private static long getNextId() {
+		return id++;
+	}
 
-    /**
-     * Resets the id counter.
-     */
-    public static void resetIds() {
-        id = 0;
-    }
+	/**
+	 * Resets the id counter.
+	 */
+	public static void resetIds() {
+		id = 0;
+	}
 
-    private String symbolName = null;
+	private String symbolName = null;
 
-    /**
-     * Helper method to get the symbol's unique Id from its type and its name.
-     *
-     * @param concreteType
-     *            the type
-     * @param name
-     *            the name (can be null)
-     * @return a unique Id or the type id if name is null
-     */
-    public static String getSymbolId(CtTypeReference<?> concreteType, String name) {
-        CtTypeReference<?> t = concreteType;
-        if (name != null) {
-            return t.getQualifiedName() + "$" + name;
-        }
-        return t.getQualifiedName();
-    }
-
-    /**
-     * Gets the unique Id of this abstract instance.
-     */
-    public String getId() {
-        if(literal!=null) {
-            return literal;
-        }
-        return getSymbolId(concreteType, symbolName);
-    }
-
-    /**
-     * Tests the equality.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        SymbolicInstance<?> i = (SymbolicInstance<?>) obj;
-
-        boolean b = false;
-        if ((concreteType != null) && (i != null)) {
-            b = concreteType.equals(i.concreteType)
-                && fields.equals(i.fields) && (isExternal == i.isExternal);
-		} else if ((concreteType == null) && (i != null)) {
-			b = (i.concreteType == null) && ((literal == null) ? false : literal.equals(i.literal));
+	/**
+	 * Helper method to get the symbol's unique Id from its type and its name.
+	 *
+	 * @param concreteType
+	 *            the type
+	 * @param name
+	 *            the name (can be null)
+	 * @return a unique Id or the type id if name is null
+	 */
+	public static String getSymbolId(CtTypeReference<?> concreteType,
+			String name) {
+		CtTypeReference<?> t = concreteType;
+		if (name != null) {
+			return t.getQualifiedName() + "$" + name;
 		}
-        return b;
-    }
+		return t.getQualifiedName();
+	}
 
-    /**
-     * Tests the equality by reference.
-     */
-    public boolean equalsRef(Object obj) {
-        if(this==obj) {
-            return true;
-        }
-        SymbolicInstance<?> i = (SymbolicInstance<?>) obj;
-        boolean b = getId().equals(i.getId());
-        return b;
-    }
+	/**
+	 * Gets the unique Id of this abstract instance.
+	 */
+	public String getId() {
+		if (literal != null) {
+			return literal;
+		}
+		return getSymbolId(concreteType, symbolName);
+	}
 
-    /**
-     * Creates a new abstract instance (logical value).
-     *
-     * @param evaluator
-     *            the evaluator
-     * @param concreteType
-     *            the type of the instance
-     * @param isType
-     *            tells if it is a type instance or a regular instance
-     */
-    public SymbolicInstance(SymbolicEvaluator evaluator,
-            CtTypeReference<T> concreteType, boolean isType) {
-        this.concreteType = concreteType;
-        CtSimpleType<T> type = concreteType.getDeclaration();
-        // TODO: check that enums are working properly
-        if (!concreteType.isPrimitive() && (type != null) && !Enum.class.isAssignableFrom(concreteType.getActualClass())) {
-            for (CtFieldReference<?> fr : concreteType.getAllFields()) {
-                CtField<?> f=fr.getDeclaration();
-                // skip external fields
-                if(f==null) {
-                    continue;
-                }
+	/**
+	 * Tests the equality.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		SymbolicInstance<?> i = (SymbolicInstance<?>) obj;
 
-                CtTypeReference<?> fieldType = f.getType();
+		boolean b = false;
+		if ((concreteType != null) && (i != null)) {
+			b = concreteType.equals(i.concreteType) && fields.equals(i.fields)
+					&& (isExternal == i.isExternal);
+		} else if ((concreteType == null) && (i != null)) {
+			b = (i.concreteType == null)
+					&& ((literal == null) ? false : literal.equals(i.literal));
+		}
+		return b;
+	}
 
-                // TODO: check this
-                if(fieldType == null) {
-                    fields.put(fr, null);
-                    continue;
-                }
+	/**
+	 * Tests the equality by reference.
+	 */
+	public boolean equalsRef(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		SymbolicInstance<?> i = (SymbolicInstance<?>) obj;
+		boolean b = getId().equals(i.getId());
+		return b;
+	}
 
-                if (isType && f.hasModifier(ModifierKind.STATIC)) {
-                    SymbolicInstance<?> r = evaluator.evaluate(f
-                            .getDefaultExpression());
-                    fields.put(fr, r == null ? null : r.getId());
-                }
-                if (!isType && !f.hasModifier(ModifierKind.STATIC)) {
-                    SymbolicInstance<?> r = evaluator.evaluate(f
-                            .getDefaultExpression());
-                    fields.put(fr, r == null ? null : r.getId());
-                }
-            }
-        } else {
-            isExternal = true;
-            if (!isType) {
-                for (CtTypeReference<?> t : evaluator.getStatefullExternals()) {
-                    if (t.isAssignableFrom(concreteType)) {
-                        for (Method m : RtHelper.getAllMethods(concreteType
-                                .getActualClass())) {
-                            if (m.getName().startsWith("get")
-                                    && (m.getParameterTypes().length == 0)) {
-                                CtFieldReference<?> f = concreteType
-                                        .getFactory()
-                                        .Field()
-                                        .createReference(
-                                                concreteType,
-                                                concreteType
-                                                        .getFactory()
-                                                        .Type()
-                                                        .createReference(
-                                                                m
-                                                                        .getReturnType()),
-                                                m.getName().substring(3));
-                                fields.put(f, null);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // evaluator.getHeap().get(
-        // evaluator,
-        // concreteType.getFactory().Type()
-        // .createReference(
-        // m.getReturnType()));
+	/**
+	 * Creates a new abstract instance (logical value).
+	 *
+	 * @param evaluator
+	 *            the evaluator
+	 * @param concreteType
+	 *            the type of the instance
+	 * @param isType
+	 *            tells if it is a type instance or a regular instance
+	 */
+	public SymbolicInstance(SymbolicEvaluator evaluator,
+			CtTypeReference<T> concreteType, boolean isType) {
+		this.concreteType = concreteType;
+		CtSimpleType<T> type = concreteType.getDeclaration();
+		// TODO: check that enums are working properly
+		if (!concreteType.isPrimitive() && (type != null)
+				&& !Enum.class.isAssignableFrom(concreteType.getActualClass())) {
+			for (CtFieldReference<?> fr : concreteType.getAllFields()) {
+				CtField<?> f = fr.getDeclaration();
+				// skip external fields
+				if (f == null) {
+					continue;
+				}
 
-        if (isType) {
-            this.symbolName = "type";
-        } else {
-            this.symbolName = "" + getNextId();
-        }
-    }
+				CtTypeReference<?> fieldType = f.getType();
 
-    /**
-     * Tells if this logical value is stateful or not.
-     */
-    public boolean isStateful() {
-        return !fields.isEmpty();
-    }
+				// TODO: check this
+				if (fieldType == null) {
+					fields.put(fr, null);
+					continue;
+				}
 
-    private boolean isExternal = false;
+				if (isType && f.hasModifier(ModifierKind.STATIC)) {
+					SymbolicInstance<?> r = evaluator.evaluate(f
+							.getDefaultExpression());
+					fields.put(fr, r == null ? null : r.getId());
+				}
+				if (!isType && !f.hasModifier(ModifierKind.STATIC)) {
+					SymbolicInstance<?> r = evaluator.evaluate(f
+							.getDefaultExpression());
+					fields.put(fr, r == null ? null : r.getId());
+				}
+			}
+		} else {
+			isExternal = true;
+			if (!isType) {
+				for (CtTypeReference<?> t : evaluator.getStatefullExternals()) {
+					if (t.isAssignableFrom(concreteType)) {
+						for (Method m : RtHelper.getAllMethods(concreteType
+								.getActualClass())) {
+							if (m.getName().startsWith("get")
+									&& (m.getParameterTypes().length == 0)) {
+								CtFieldReference<?> f = concreteType
+										.getFactory()
+										.Field()
+										.createReference(
+												concreteType,
+												concreteType
+														.getFactory()
+														.Type()
+														.createReference(
+																m
+																		.getReturnType()),
+												m.getName().substring(3));
+								fields.put(f, null);
+							}
+						}
+					}
+				}
+			}
+		}
+		// evaluator.getHeap().get(
+		// evaluator,
+		// concreteType.getFactory().Type()
+		// .createReference(
+		// m.getReturnType()));
 
-    private CtTypeReference<T> concreteType;
+		if (isType) {
+			this.symbolName = "type";
+		} else {
+			this.symbolName = "" + getNextId();
+		}
+	}
 
-    private Map<CtVariableReference<?>, String> fields = new TreeMap<CtVariableReference<?>, String>();
+	/**
+	 * Tells if this logical value is stateful or not.
+	 */
+	public boolean isStateful() {
+		return !fields.isEmpty();
+	}
 
-    // private Map<String, AbstractInstance> properties;
+	private boolean isExternal = false;
 
-    /**
-     * Gets the type of the abstract instance.
-     */
-    public CtTypeReference<T> getConcreteType() {
-        return concreteType;
-    }
+	private CtTypeReference<T> concreteType;
 
-    /**
-     * Gets the value of a field belonging to this instance, as an abstract
-     * instance id.
-     *
-     * @return null if non-existing field
-     */
-    public String getFieldValue(CtVariableReference<?> fref) {
-        return fields.get(fref);
-    }
+	private Map<CtVariableReference<?>, String> fields = new TreeMap<CtVariableReference<?>, String>();
 
-    /**
-     * Gets the value of a field belonging to this instance and identified by
-     * its name, as an abstract instance id.
-     *
-     * @return null if non-existing field
-     */
-    public String getFieldValue(String fname) {
-        for (CtVariableReference<?> v : fields.keySet()) {
-            if (v.getSimpleName().equals(fname)) {
-                return fields.get(v);
-            }
-        }
-        return null;
-    }
+	// private Map<String, AbstractInstance> properties;
 
-    // /**
-    // * Sets the value of an assumed property belonging to this instance.
-    // */
-    // public void setPropertyValue(String propertyName, AbstractInstance value)
-    // {
-    // if (value == null)
-    // return;
-    // if (properties == null)
-    // properties = new HashMap<String, AbstractInstance>();
-    // properties.put(propertyName, value);
-    // }
-    //
-    // /**
-    // * Gets the value of an assumed property belonging to this instance.
-    // */
-    // public AbstractInstance getPropertyValue(String propertyName) {
-    // if (properties == null)
-    // return null;
-    // return properties.get(propertyName);
-    // }
+	/**
+	 * Gets the type of the abstract instance.
+	 */
+	public CtTypeReference<T> getConcreteType() {
+		return concreteType;
+	}
 
-    /**
-     * Sets the value of a field belonging to this instance, and stores the
-     * instance on the heap.
-     */
-    public void setFieldValue(SymbolicHeap heap, CtVariableReference<?> fref,
-            SymbolicInstance<?> value) {
-        if (fields.containsKey(fref) || isExternal()) {
-            fields.put(fref, value.getId());
-            heap.store(value);
-        } else {
-            // TODO: JJ - recheck this
-            throw new RuntimeException("unknown field '" + fref
-                    + "' for target " + this);
-        }
-    }
+	/**
+	 * Gets the value of a field belonging to this instance, as an abstract
+	 * instance id.
+	 *
+	 * @return null if non-existing field
+	 */
+	public String getFieldValue(CtVariableReference<?> fref) {
+		return fields.get(fref);
+	}
 
-    /**
-     * Tells if this instance is a wrapper for an instance external from the
-     * evaluator (regular Java object).
-     */
-    public boolean isExternal() {
-        return isExternal;
-    }
+	/**
+	 * Gets the value of a field belonging to this instance and identified by
+	 * its name, as an abstract instance id.
+	 *
+	 * @return null if non-existing field
+	 */
+	public String getFieldValue(String fname) {
+		for (CtVariableReference<?> v : fields.keySet()) {
+			if (v.getSimpleName().equals(fname)) {
+				return fields.get(v);
+			}
+		}
+		return null;
+	}
 
-    /**
-     * A string representation.
-     */
-    @Override
-    public String toString() {
-        if(literal!=null) {
-            return "#" + literal + "#";
-        }
-        return "#" + getId() + fields + "#";
-    }
+	// /**
+	// * Sets the value of an assumed property belonging to this instance.
+	// */
+	// public void setPropertyValue(String propertyName, AbstractInstance value)
+	// {
+	// if (value == null)
+	// return;
+	// if (properties == null)
+	// properties = new HashMap<String, AbstractInstance>();
+	// properties.put(propertyName, value);
+	// }
+	//
+	// /**
+	// * Gets the value of an assumed property belonging to this instance.
+	// */
+	// public AbstractInstance getPropertyValue(String propertyName) {
+	// if (properties == null)
+	// return null;
+	// return properties.get(propertyName);
+	// }
 
-    /**
-     * Gets a copy of this instance (if the instance is stateless, returns
-     * this).
-     */
-    public SymbolicInstance<T> getClone() {
-        if (!isStateful()) {
-            return this;
-        }
-        return new SymbolicInstance<T>(this);
-    }
+	/**
+	 * Sets the value of a field belonging to this instance, and stores the
+	 * instance on the heap.
+	 */
+	public void setFieldValue(SymbolicHeap heap, CtVariableReference<?> fref,
+			SymbolicInstance<?> value) {
+		if (fields.containsKey(fref) || isExternal()) {
+			fields.put(fref, value.getId());
+			heap.store(value);
+		} else {
+			// TODO: JJ - recheck this
+			throw new RuntimeException("unknown field '" + fref
+					+ "' for target " + this);
+		}
+	}
 
-    /**
-     * Creates a copy of the given instance.
-     */
-    public SymbolicInstance(SymbolicInstance<T> i) {
-        concreteType = i.concreteType;
-        isExternal = i.isExternal;
-        symbolName = i.symbolName;
-        fields.putAll(i.fields);
-    }
+	/**
+	 * Tells if this instance is a wrapper for an instance external from the
+	 * evaluator (regular Java object).
+	 */
+	public boolean isExternal() {
+		return isExternal;
+	}
 
-    /**
-     * Gets the name of this symbolic instance.
-     */
-    public String getSymbolName() {
-        return symbolName;
-    }
+	/**
+	 * A string representation.
+	 */
+	@Override
+	public String toString() {
+		if (literal != null) {
+			return "#" + literal + "#";
+		}
+		return "#" + getId() + fields + "#";
+	}
 
-    /**
-     * Gets the fields for this instance.
-     */
-    public Map<CtVariableReference<?>, String> getFields() {
-        return fields;
-    }
+	/**
+	 * Gets a copy of this instance (if the instance is stateless, returns
+	 * this).
+	 */
+	public SymbolicInstance<T> getClone() {
+		if (!isStateful()) {
+			return this;
+		}
+		return new SymbolicInstance<T>(this);
+	}
+
+	/**
+	 * Creates a copy of the given instance.
+	 */
+	public SymbolicInstance(SymbolicInstance<T> i) {
+		concreteType = i.concreteType;
+		isExternal = i.isExternal;
+		symbolName = i.symbolName;
+		fields.putAll(i.fields);
+	}
+
+	/**
+	 * Gets the name of this symbolic instance.
+	 */
+	public String getSymbolName() {
+		return symbolName;
+	}
+
+	/**
+	 * Gets the fields for this instance.
+	 */
+	public Map<CtVariableReference<?>, String> getFields() {
+		return fields;
+	}
 }

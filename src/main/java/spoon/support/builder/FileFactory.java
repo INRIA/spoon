@@ -26,45 +26,45 @@ import spoon.support.builder.support.CtFolderFile;
 import spoon.support.builder.support.CtFolderZip;
 
 public class FileFactory {
-    public static boolean isArchive(File f) {
-        return f.getName().endsWith(".jar") || f.getName().endsWith(".zip");
-    }
+	public static boolean isArchive(File f) {
+		return f.getName().endsWith(".jar") || f.getName().endsWith(".zip");
+	}
 
-    public static boolean isFile(File f) {
-        return f.isFile() && !isArchive(f);
-    }
+	public static boolean isFile(File f) {
+		return f.isFile() && !isArchive(f);
+	}
 
-    public static CtFile createFile(File f) throws FileNotFoundException {
-        if (!f.exists()) {
-            throw new FileNotFoundException(f.toString());
-        }
-        return new CtFileFile(f);
-    }
+	public static CtFile createFile(File f) throws FileNotFoundException {
+		if (!f.exists()) {
+			throw new FileNotFoundException(f.toString());
+		}
+		return new CtFileFile(f);
+	}
 
-    public static CtResource createResource(File f)
-            throws FileNotFoundException {
-        if (f.isFile()) {
-            return createFile(f);
-        }
-        return createFolder(f);
-    }
+	public static CtResource createResource(File f)
+			throws FileNotFoundException {
+		if (f.isFile()) {
+			return createFile(f);
+		}
+		return createFolder(f);
+	}
 
-    public static CtFolder createFolder(File f) throws FileNotFoundException {
-        if (!f.exists()) {
-            throw new FileNotFoundException(f.toString() + " does not exist");
-        }
-        try {
-            if (f.isDirectory()) {
-                return new CtFolderFile(f);
-            }
-            if (isArchive(f)) {
-                return new CtFolderZip(f);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+	public static CtFolder createFolder(File f) throws FileNotFoundException {
+		if (!f.exists()) {
+			throw new FileNotFoundException(f.toString() + " does not exist");
+		}
+		try {
+			if (f.isDirectory()) {
+				return new CtFolderFile(f);
+			}
+			if (isArchive(f)) {
+				return new CtFolderZip(f);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 }

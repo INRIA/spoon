@@ -32,40 +32,42 @@ import spoon.reflect.declaration.CtSimpleType;
  */
 public abstract class BlockTemplateParameter implements TemplateParameter<Void> {
 
-    /**
-     * Returns the block.
-     */
-    @SuppressWarnings("unchecked")
-    public static CtBlock<?> getBlock(CtClass<? extends BlockTemplateParameter> p) {
-        CtBlock b=p.getMethod("block").getBody();
-        return b;
-    }
+	/**
+	 * Returns the block.
+	 */
+	@SuppressWarnings("unchecked")
+	public static CtBlock<?> getBlock(
+			CtClass<? extends BlockTemplateParameter> p) {
+		CtBlock b = p.getMethod("block").getBody();
+		return b;
+	}
 
-    /**
-     * Creates a new block template parameter.
-     */
-    public BlockTemplateParameter() {
-    }
+	/**
+	 * Creates a new block template parameter.
+	 */
+	public BlockTemplateParameter() {
+	}
 
-    public CtBlock<?> getSubstitution(CtSimpleType<?> targetType) {
-        CtClass<? extends BlockTemplateParameter> c;
-        c = targetType.getFactory().Template().get(this.getClass());
-        if (c == null) {
-            c = targetType.getFactory().Class().get(this.getClass());
-        }
-        if (this instanceof Template) {
-            return Substitution.substitute(targetType, (Template) this, getBlock(c));
-        }
-        return targetType.getFactory().Core().clone(
-                c.getMethod("block").getBody());
-    }
+	public CtBlock<?> getSubstitution(CtSimpleType<?> targetType) {
+		CtClass<? extends BlockTemplateParameter> c;
+		c = targetType.getFactory().Template().get(this.getClass());
+		if (c == null) {
+			c = targetType.getFactory().Class().get(this.getClass());
+		}
+		if (this instanceof Template) {
+			return Substitution.substitute(targetType, (Template) this,
+					getBlock(c));
+		}
+		return targetType.getFactory().Core().clone(
+				c.getMethod("block").getBody());
+	}
 
-    public Void S() {
-        return null;
-    }
+	public Void S() {
+		return null;
+	}
 
-    /**
-     * This method must be implemented to define the template block.
-     */
-    public abstract void block() throws Throwable;
+	/**
+	 * This method must be implemented to define the template block.
+	 */
+	public abstract void block() throws Throwable;
 }

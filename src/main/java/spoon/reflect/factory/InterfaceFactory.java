@@ -27,87 +27,86 @@ import spoon.reflect.declaration.CtType;
  */
 public class InterfaceFactory extends TypeFactory {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Creates a new interface sub-factory.
-     *
-     * @param factory
-     *            the parent factory
-     */
-    public InterfaceFactory(Factory factory) {
-        super(factory);
-    }
+	/**
+	 * Creates a new interface sub-factory.
+	 *
+	 * @param factory
+	 *            the parent factory
+	 */
+	public InterfaceFactory(Factory factory) {
+		super(factory);
+	}
 
-    /**
-     * Creates an interface.
-     */
-    public <T> CtInterface<T> create(CtPackage owner, String simpleName) {
-        CtInterface<T> i = factory.Core().createInterface();
-        i.setSimpleName(simpleName);
-        owner.getTypes().add(i);
-        i.setParent(owner);
-        return i;
-    }
+	/**
+	 * Creates an interface.
+	 */
+	public <T> CtInterface<T> create(CtPackage owner, String simpleName) {
+		CtInterface<T> i = factory.Core().createInterface();
+		i.setSimpleName(simpleName);
+		owner.getTypes().add(i);
+		i.setParent(owner);
+		return i;
+	}
 
-    /**
-     * Creates an inner interface
-     */
-    public <T> CtInterface<T> create(CtType<T> owner, String simpleName) {
-        CtInterface<T> i = factory.Core().createInterface();
-        i.setSimpleName(simpleName);
-        owner.getNestedTypes().add(i);
-        i.setParent(owner);
-        return i;
-    }
+	/**
+	 * Creates an inner interface
+	 */
+	public <T> CtInterface<T> create(CtType<T> owner, String simpleName) {
+		CtInterface<T> i = factory.Core().createInterface();
+		i.setSimpleName(simpleName);
+		owner.getNestedTypes().add(i);
+		i.setParent(owner);
+		return i;
+	}
 
-    /**
-     * Creates an interface.
-     */
-    @SuppressWarnings("unchecked")
-    public <T> CtInterface<T> create(String qualifiedName) {
-        if (hasInnerType(qualifiedName) > 0) {
-            return create(
-                    (CtInterface<T>) create(getDeclaringTypeName(qualifiedName)),
-                    getSimpleName(qualifiedName));
-        }
-        return create(factory.Package().getOrCreate(
-                getPackageName(qualifiedName)),
-                getSimpleName(qualifiedName));
-    }
+	/**
+	 * Creates an interface.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> CtInterface<T> create(String qualifiedName) {
+		if (hasInnerType(qualifiedName) > 0) {
+			return create(
+					(CtInterface<T>) create(getDeclaringTypeName(qualifiedName)),
+					getSimpleName(qualifiedName));
+		}
+		return create(factory.Package().getOrCreate(
+				getPackageName(qualifiedName)), getSimpleName(qualifiedName));
+	}
 
-    /**
-     * Gets a created interface
-     *
-     * @return the interface or null if does not exist
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> CtInterface<T> get(String qualifiedName) {
-        try {
-            return (CtInterface<T>) super.get(qualifiedName);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	/**
+	 * Gets a created interface
+	 *
+	 * @return the interface or null if does not exist
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CtInterface<T> get(String qualifiedName) {
+		try {
+			return (CtInterface<T>) super.get(qualifiedName);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
-    /**
-     * Gets a interface from its runtime Java class.
-     *
-     * @param <T>
-     *            type of created class
-     * @param cl
-     *            the java class: note that this class should be Class<T> but
-     *            it then poses problem when T is a generic type itself
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> CtInterface<T> get(Class<?> cl) {
-        try {
-            return (CtInterface<T>) super.get(cl);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	/**
+	 * Gets a interface from its runtime Java class.
+	 *
+	 * @param <T>
+	 *            type of created class
+	 * @param cl
+	 *            the java class: note that this class should be Class<T> but
+	 *            it then poses problem when T is a generic type itself
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CtInterface<T> get(Class<?> cl) {
+		try {
+			return (CtInterface<T>) super.get(cl);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 }

@@ -28,55 +28,55 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements
-        CtVariableAccess<T> {
-    private static final long serialVersionUID = 1L;
+		CtVariableAccess<T> {
+	private static final long serialVersionUID = 1L;
 
-    List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>();
 
-    CtTypeReference<T> type;
+	CtTypeReference<T> type;
 
-    CtVariableReference<T> variable;
+	CtVariableReference<T> variable;
 
-    public void accept(CtVisitor visitor) {
-        visitor.visitCtVariableAccess(this);
-    }
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtVariableAccess(this);
+	}
 
-    @Override
-    public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
-        return getFactory().Core().clone(this);
-    }
+	@Override
+	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+		return getFactory().Core().clone(this);
+	}
 
-    @Override
-    public CtTypeReference<T> getType() {
-        return type;
-    }
+	@Override
+	public CtTypeReference<T> getType() {
+		return type;
+	}
 
-    @Override
-    public List<CtTypeReference<?>> getTypeCasts() {
-        return casts;
-    }
+	@Override
+	public List<CtTypeReference<?>> getTypeCasts() {
+		return casts;
+	}
 
-    public CtVariableReference<T> getVariable() {
-        return variable;
-    }
+	public CtVariableReference<T> getVariable() {
+		return variable;
+	}
 
-    @Override
-    public T S() {
-        return null;
-    }
+	@Override
+	public T S() {
+		return null;
+	}
 
-    @Override
-    public void setType(CtTypeReference<T> type) {
-        this.type = type;
-    }
+	@Override
+	public void setType(CtTypeReference<T> type) {
+		this.type = type;
+	}
 
-    @Override
-    public void setTypeCasts(List<CtTypeReference<?>> casts) {
-        this.casts = casts;
-    }
+	@Override
+	public void setTypeCasts(List<CtTypeReference<?>> casts) {
+		this.casts = casts;
+	}
 
-    public void setVariable(CtVariableReference<T> variable) {
-        this.variable = variable;
-    }
+	public void setVariable(CtVariableReference<T> variable) {
+		this.variable = variable;
+	}
 
 }

@@ -34,143 +34,143 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.RtHelper;
 
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
-        implements CtFieldReference<T> {
-    private static final long serialVersionUID = 1L;
+		implements CtFieldReference<T> {
+	private static final long serialVersionUID = 1L;
 
-    CtTypeReference<?> declaringType;
+	CtTypeReference<?> declaringType;
 
-    boolean fina = false;
+	boolean fina = false;
 
-    boolean stat = false;
+	boolean stat = false;
 
-    public CtFieldReferenceImpl() {
-        super();
-    }
+	public CtFieldReferenceImpl() {
+		super();
+	}
 
-    public void accept(CtVisitor visitor) {
-        visitor.visitCtFieldReference(this);
-    }
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtFieldReference(this);
+	}
 
-    public Member getActualField() {
-        try {
-            if (getDeclaringType().getActualClass().isAnnotation()) {
-                return getDeclaringType().getActualClass().getDeclaredMethod(
-                        getSimpleName());
-            }
-            return getDeclaringType().getActualClass().getDeclaredField(
-                    getSimpleName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+	public Member getActualField() {
+		try {
+			if (getDeclaringType().getActualClass().isAnnotation()) {
+				return getDeclaringType().getActualClass().getDeclaredMethod(
+						getSimpleName());
+			}
+			return getDeclaringType().getActualClass().getDeclaredField(
+					getSimpleName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
-    @Override
-    public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-        A annotation = super.getAnnotation(annotationType);
-        if (annotation != null) {
-            return annotation;
-        }
-        // use reflection
-        Class<?> c = getDeclaringType().getActualClass();
-        if (c.isAnnotation()) {
-            for (Method m : RtHelper.getAllMethods(c)) {
-                if (!getSimpleName().equals(m.getName())) {
-                    continue;
-                }
-                m.setAccessible(true);
-                return m.getAnnotation(annotationType);
-            }
-        } else {
-            for (Field f : RtHelper.getAllFields(c)) {
-                if (!getSimpleName().equals(f.getName())) {
-                    continue;
-                }
-                f.setAccessible(true);
-                return f.getAnnotation(annotationType);
-            }
-        }
-        return null;
-    }
+	@Override
+	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+		A annotation = super.getAnnotation(annotationType);
+		if (annotation != null) {
+			return annotation;
+		}
+		// use reflection
+		Class<?> c = getDeclaringType().getActualClass();
+		if (c.isAnnotation()) {
+			for (Method m : RtHelper.getAllMethods(c)) {
+				if (!getSimpleName().equals(m.getName())) {
+					continue;
+				}
+				m.setAccessible(true);
+				return m.getAnnotation(annotationType);
+			}
+		} else {
+			for (Field f : RtHelper.getAllFields(c)) {
+				if (!getSimpleName().equals(f.getName())) {
+					continue;
+				}
+				f.setAccessible(true);
+				return f.getAnnotation(annotationType);
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public Annotation[] getAnnotations() {
-        Annotation[] annotations = super.getAnnotations();
-        if (annotations != null) {
-            return annotations;
-        }
-        // use reflection
-        Class<?> c = getDeclaringType().getActualClass();
-        for (Field f : RtHelper.getAllFields(c)) {
-            if (!getSimpleName().equals(f.getName())) {
-                continue;
-            }
-            f.setAccessible(true);
-            return f.getAnnotations();
-        }
-        // If the fields belong to an annotation type, they are actually
-        // methods
-        for (Method m : RtHelper.getAllMethods(c)) {
-            if (!getSimpleName().equals(m.getName())) {
-                continue;
-            }
-            m.setAccessible(true);
-            return m.getAnnotations();
-        }
-        return null;
-    }
+	@Override
+	public Annotation[] getAnnotations() {
+		Annotation[] annotations = super.getAnnotations();
+		if (annotations != null) {
+			return annotations;
+		}
+		// use reflection
+		Class<?> c = getDeclaringType().getActualClass();
+		for (Field f : RtHelper.getAllFields(c)) {
+			if (!getSimpleName().equals(f.getName())) {
+				continue;
+			}
+			f.setAccessible(true);
+			return f.getAnnotations();
+		}
+		// If the fields belong to an annotation type, they are actually
+		// methods
+		for (Method m : RtHelper.getAllMethods(c)) {
+			if (!getSimpleName().equals(m.getName())) {
+				continue;
+			}
+			m.setAccessible(true);
+			return m.getAnnotations();
+		}
+		return null;
+	}
 
-    @SuppressWarnings("unchecked")
-    public CtField<T> getDeclaration() {
-        CtSimpleType<?> type = declaringType.getDeclaration();
-        if ((declaringType != null) && (type != null)) {
-            return (CtField<T>) type.getField(getSimpleName());
-        }
-        return null;
-    }
+	@SuppressWarnings("unchecked")
+	public CtField<T> getDeclaration() {
+		CtSimpleType<?> type = declaringType.getDeclaration();
+		if ((declaringType != null) && (type != null)) {
+			return (CtField<T>) type.getField(getSimpleName());
+		}
+		return null;
+	}
 
-    public CtTypeReference<?> getDeclaringType() {
-        return declaringType;
-    }
+	public CtTypeReference<?> getDeclaringType() {
+		return declaringType;
+	}
 
-    public String getQualifiedName() {
-        return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
-    }
+	public String getQualifiedName() {
+		return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
+	}
 
-    public boolean isFinal() {
-        return fina;
-    }
+	public boolean isFinal() {
+		return fina;
+	}
 
-    /**
-     * Tells if the referenced field is static.
-     */
-    public boolean isStatic() {
-        return stat;
-    }
+	/**
+	 * Tells if the referenced field is static.
+	 */
+	public boolean isStatic() {
+		return stat;
+	}
 
-    public void setDeclaringType(CtTypeReference<?> declaringType) {
-        this.declaringType = declaringType;
-    }
+	public void setDeclaringType(CtTypeReference<?> declaringType) {
+		this.declaringType = declaringType;
+	}
 
-    public void setFinal(boolean b) {
-        fina = b;
-    }
+	public void setFinal(boolean b) {
+		fina = b;
+	}
 
-    public void setStatic(boolean stat) {
-        this.stat = stat;
-    }
+	public void setStatic(boolean stat) {
+		this.stat = stat;
+	}
 
-    @Override
-    public Set<ModifierKind> getModifiers() {
-        CtVariable<?> v = getDeclaration();
-        if (v != null) {
-            return v.getModifiers();
-        }
-        Member m = getActualField();
-        if (m != null) {
-            return RtHelper.getModifiers(m.getModifiers());
-        }
-        return new TreeSet<ModifierKind>();
-    }
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		CtVariable<?> v = getDeclaration();
+		if (v != null) {
+			return v.getModifiers();
+		}
+		Member m = getActualField();
+		if (m != null) {
+			return RtHelper.getModifiers(m.getModifiers());
+		}
+		return new TreeSet<ModifierKind>();
+	}
 
 }
