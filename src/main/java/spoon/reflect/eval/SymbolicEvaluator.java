@@ -35,16 +35,6 @@ public interface SymbolicEvaluator {
 	 */
 	List<CtTypeReference<?>> getStatefullExternals();
 
-//	/**
-//	 * Gets all the evaluation paths resulting from an evaluation.
-//	 */
-//	 List<SymbolicEvaluationPath> getPaths();
-//	/**
-//	 * Dumps the evaluation paths.
-//	 */
-//	 void dumpPaths();
-//	 SymbolicEvaluationPath getCurrentPath();
-
 	/**
 	 * Resets the state of this symbolic evaluator.
 	 */
