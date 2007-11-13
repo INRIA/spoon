@@ -33,10 +33,10 @@ Main build command :
         ...
       </settings>
     </code>
-  * use the [maven release plugin][3]
+  * use the [maven release plugin][3] (use -Dmaven.scm.provider.cvs.implementation=cvs_native, if you have cvs in command line and trouble with default java cvs)
     <code>
-      mvn clean release:prepare -Prelease
-      mvn release:perform -Prelease
+      mvn clean release:prepare -Prelease -Dmaven.scm.provider.cvs.implementation=cvs_native
+      mvn release:perform -Prelease -Dmaven.scm.provider.cvs.implementation=cvs_native
     </code>
 * to generate site
     <code>
