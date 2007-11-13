@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.4</version>
   <name>Spoon Core</name>
   <description>
     Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements,
@@ -37,6 +35,7 @@
     <connection>scm:cvs:pserver:anonymous@scm.gforge.inria.fr:/cvsroot/spoon:spoon-core</connection>
     <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/?cvsroot=spoon</url>
     <developerConnection>scm:cvs:ext:dwayneb@scm.gforge.inria.fr:/cvsroot/spoon:spoon-core</developerConnection>
+    <tag>spoon-core-1_4</tag>
   </scm>
   <developers>
     <developer>
@@ -190,9 +189,7 @@
                 <echo>TEST 1: Processing tests</echo>
                 <mkdir dir="${project.build.directory}/spooned-test" />
                 <mkdir dir="${project.build.directory}/spooned-test-classes" />
-                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned-test" compile="true" build="${project.build.directory}/spooned-test-classes"
-                  fork="false"
-                >
+                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned-test" compile="true" build="${project.build.directory}/spooned-test-classes" fork="false">
                   <sourceSet dir="${project.test.java}" />
                   <processor type="spoon.test.processing.TestProcessor" />
                 </spoon>
@@ -206,9 +203,7 @@
                 <mkdir dir="${project.build.directory}/spooned1" />
                 <mkdir dir="${project.build.directory}/spooned1-classes" />
                 <!-- compile="true" build="${project.build.directory}/spooned1-classes" -->
-                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned1" compile="true" build="${project.build.directory}/spooned1-classes"
-                  maxmemory="512m" fork="false"
-                >
+                <spoon classpathref="maven.test.classpath" verbose="true" output="${project.build.directory}/spooned1" compile="true" build="${project.build.directory}/spooned1-classes" maxmemory="512m" fork="false">
                   <sourceSet dir="${project.src.java}" />
                 </spoon>
                 <!--
