@@ -33,12 +33,16 @@ Main build command :
         ...
       </settings>
     </code>
-  * use the [maven release plugin][3] (use -Dmaven.scm.provider.cvs.implementation=cvs_native, if you have cvs in command line and trouble with default java cvs)
+  * deploy to check (no compilation issue, no ssh issue) and to publish the last SNAPSHOT version
+  * generate a site (on local box), to check there is no site generation issue
+  * use the [maven release plugin][3]
+    * use -Dmaven.scm.provider.cvs.implementation=cvs_native, if you have cvs in command line and trouble with default java cvs
+    * use -Dusername=<your_cvs_login> if your account
     <code>
-      mvn clean release:prepare -Prelease -Dmaven.scm.provider.cvs.implementation=cvs_native
+      mvn clean release:prepare -Prelease -Dusername=<your_cvs_login> -Dmaven.scm.provider.cvs.implementation=cvs_native
       mvn release:perform -Prelease -Dmaven.scm.provider.cvs.implementation=cvs_native
     </code>
-* to generate site
+* to generate site (on local box)
     <code>
       mvn site
     </code>
