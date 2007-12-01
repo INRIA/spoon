@@ -337,7 +337,7 @@
     <repository>
       <id>gforge.inria.fr</id>
       <name>Maven Repository for Inria Projects</name>
-      <url>http://maven-repo.gforge.inria.fr/download/releases</url>
+      <url>http://maven-repo.gforge.inria.fr/releases</url>
       <releases />
     </repository>
   </repositories>
