@@ -48,7 +48,7 @@ Main build command :
     </code>
 * to publish the site
     <code>
-      mvn clean site-deploy
+      mvn clean site-deploy -Prelease
     </code>
 
 To generate the javadoc with uml graph, you need to have [graphviz][2] available int the path.
