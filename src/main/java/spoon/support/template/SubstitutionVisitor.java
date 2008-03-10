@@ -664,8 +664,8 @@ public class SubstitutionVisitor extends CtScanner {
 			String name = reference.getSimpleName();
 			for (String pname : parameterNames) {
 				if (name.contains(pname)) {
-					name = name.replace(pname, (String) Parameters.getValue(
-							template, pname, null));
+					name = name.replace(pname, Parameters.getValue(
+							template, pname, null).toString());
 					reference.setSimpleName(name);
 				}
 			}
