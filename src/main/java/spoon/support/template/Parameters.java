@@ -197,10 +197,17 @@ public abstract class Parameters {
 	 * Tells if a given field is a template parameter.
 	 */
 	public static boolean isParameterSource(CtFieldReference<?> ref) {
-		return (ref.getAnnotation(Parameter.class) != null)
-				|| (!((ref.getType() instanceof CtTypeParameterReference) || ref
-						.getSimpleName().equals("this")) && TemplateParameter.class
-						.isAssignableFrom(ref.getType().getActualClass()));
+		try {
+			return (ref.getAnnotation(Parameter.class) != null)
+					|| (!((ref.getType() instanceof CtTypeParameterReference) || ref
+							.getSimpleName().equals("this")) && TemplateParameter.class
+							.isAssignableFrom(ref.getType().getActualClass()));
+		} catch (RuntimeException e) {
+			if(e.getCause() instanceof ClassNotFoundException)
+				return false;
+			else
+				throw e;
+		}
 	}
 
 	/**
