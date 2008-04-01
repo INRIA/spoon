@@ -38,6 +38,8 @@ public interface CtAssert<T> extends CtStatement {
 
 	/**
 	 * Sets the expression of the assertion.
+	 *
+	 * For instance assert.setExpression(factory.createCodeSnippetExpression("param != null"))
 	 */
 	void setExpression(CtExpression<T> expression);
 }
