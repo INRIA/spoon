@@ -856,7 +856,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				writeln().scan(c);
 			}
 		}
+		
+		SortedList<CtElement> lst = new SortedList<CtElement>(
+				new CtLineElementComparator());
+		
+		lst.addAll(ctEnum.getAnonymousExecutables());
+		lst.addAll(ctEnum.getNestedTypes());
+		lst.addAll(ctEnum.getMethods());
+
+		context.currentThis.push(ctEnum.getReference());
+		for (CtElement el : lst) {
+			writeln().scan(el).writeln();
+		}
 		decTab().writeln().write("}");
+		context.currentThis.pop();
 	}
 
 	public <T> void visitCtExecutableReference(
