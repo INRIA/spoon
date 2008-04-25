@@ -19,6 +19,7 @@ package spoon.support.reflect.declaration;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -44,7 +45,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotation}.
- *
+ * 
  * @author Renaud Pawlak
  */
 public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
@@ -157,7 +158,17 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 						.getSimpleName());
 			}
 			// Value is a static final
-			return convertValue(field.getDefaultExpression());
+			if (field != null) {
+				return convertValue(field.getDefaultExpression());
+			} else {
+				try {
+					return ((Field) ((CtFieldReference) value).getActualField())
+							.get(null);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
 		} else if (value instanceof CtFieldAccess) {
 			// Get variable
 			return convertValue(((CtFieldAccess) value).getVariable());
