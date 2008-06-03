@@ -796,6 +796,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtContinue(CtContinue continueStatement) {
 		enterCtStatement(continueStatement);
 		write("continue");
+		if (continueStatement.getTargetLabel() != null) {
+			write(" " + continueStatement.getTargetLabel());
+		}
 	}
 
 	public void visitCtDo(CtDo doLoop) {
