@@ -25,6 +25,8 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	private static final long serialVersionUID = 1L;
 
 	CtStatement labelledStatement;
+	
+	String targetLabel;
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtContinue(this);
@@ -36,6 +38,14 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 
 	public void setLabelledStatement(CtStatement labelledStatement) {
 		this.labelledStatement = labelledStatement;
+	}
+	
+	public String getTargetLabel() {
+		return targetLabel;
+	}
+
+	public void setTargetLabel(String targetLabel) {
+		this.targetLabel = targetLabel;
 	}
 
 }
