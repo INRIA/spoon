@@ -1944,6 +1944,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(ContinueStatement continueStatement, BlockScope scope) {
 		CtContinue c = factory.Core().createContinue();
 		context.enter(c, continueStatement);
+		if(continueStatement.label != null){
+			c.setTargetLabel(new String(continueStatement.label));
+		}
 		return true;
 	}
 
