@@ -155,7 +155,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	@SuppressWarnings("unchecked")
 	public <T> CtExecutableReference<T> createReference(Constructor constructor) {
 		return createReference(factory.Type().createReference(
-				constructor.getDeclaringClass()), null, constructor.getName(),
+				constructor.getDeclaringClass()), factory.Type().createReference(constructor.getDeclaringClass()), constructor.getName(),
 				factory.Type().createReferences(
 						(List) Arrays.asList(constructor.getParameterTypes())));
 	}
