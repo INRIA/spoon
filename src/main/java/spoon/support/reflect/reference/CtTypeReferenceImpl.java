@@ -401,6 +401,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			for (Method m : c.getDeclaredMethods()) {
 				l.add(getFactory().Method().createReference(m));
 			}
+			for(Constructor cons: c.getDeclaredConstructors()){
+				CtExecutableReference<Object> consRef = getFactory().Constructor().createReference(cons);
+				l.add(consRef);
+			}
 			Class<?> sc = c.getSuperclass();
 			if (sc != null) {
 				l.addAll(getFactory().Type().createReference(sc)
