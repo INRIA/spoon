@@ -152,12 +152,11 @@ public class ConstructorFactory extends ExecutableFactory {
 	/**
 	 * Creates a constructor reference from an actual constructor.
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> CtExecutableReference<T> createReference(Constructor constructor) {
-		return createReference(factory.Type().createReference(
-				constructor.getDeclaringClass()), factory.Type().createReference(constructor.getDeclaringClass()), constructor.getName(),
+	public <T> CtExecutableReference<T> createReference(Constructor<T> constructor) {
+		CtTypeReference<T> type=factory.Type().createReference(constructor.getDeclaringClass());
+		return createReference(type, type, type.getSimpleName(),
 				factory.Type().createReferences(
-						(List) Arrays.asList(constructor.getParameterTypes())));
+						(List<Class<?>>) Arrays.asList(constructor.getParameterTypes())));
 	}
 
 }
