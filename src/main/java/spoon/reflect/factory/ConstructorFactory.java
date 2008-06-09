@@ -36,7 +36,7 @@ import spoon.reflect.reference.CtTypeReference;
  * The {@link CtConstructor} sub-factory.
  */
 public class ConstructorFactory extends ExecutableFactory {
-
+	
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -154,7 +154,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	 */
 	public <T> CtExecutableReference<T> createReference(Constructor<T> constructor) {
 		CtTypeReference<T> type=factory.Type().createReference(constructor.getDeclaringClass());
-		return createReference(type, type, type.getSimpleName(),
+		return createReference(type, type, CtExecutableReference.CONSTRUCTOR_NAME,
 				factory.Type().createReferences(
 						(List<Class<?>>) Arrays.asList(constructor.getParameterTypes())));
 	}

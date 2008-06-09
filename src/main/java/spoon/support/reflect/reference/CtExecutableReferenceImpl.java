@@ -63,9 +63,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return actualTypeArguments;
 	}
 
-	public boolean isConstructor() {
-		if(getDeclaringType()==null) return false;
-		return getSimpleName().equals(getDeclaringType().getSimpleName());
+	public boolean isConstructor() {		
+		return getSimpleName().equals(CONSTRUCTOR_NAME);
 	}
 
 	@Override

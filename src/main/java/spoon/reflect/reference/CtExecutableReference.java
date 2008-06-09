@@ -32,6 +32,8 @@ import spoon.reflect.declaration.CtExecutable;
 public interface CtExecutableReference<T> extends CtReference,
 		CtGenericElementReference, CtModifiableReference {
 
+	String CONSTRUCTOR_NAME = "<init>";
+	
 	/**
 	 * Tells if this is a reference to a constructor.
 	 */

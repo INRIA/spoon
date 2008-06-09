@@ -114,7 +114,7 @@ public class ExecutableFactory extends SubFactory {
 					((CtMethod<T>) e).getType(), e.getSimpleName(), refs);
 		}
 		return createReference(e.getDeclaringType().getReference(),
-				((CtConstructor<T>) e).getType(), e.getSimpleName(), refs);
+				((CtConstructor<T>) e).getType(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
 
 	/**
