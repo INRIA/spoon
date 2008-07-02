@@ -67,7 +67,16 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 			} else if (fieldname.equals("annotationType")) {
 				return annotation.getAnnotationType().getActualClass();
 			}
-			return getElementValue(fieldname);
+			Object ret = getElementValue(fieldname);
+			
+			//This is done here because return types should not be CT types; CtLiteral<String> vs String.
+			if (ret instanceof CtLiteral<?>) {
+				CtLiteral<?> l = (CtLiteral<?>) ret;
+				return l.getValue();
+			}
+			
+			
+			return ret;
 		}
 	}
 
@@ -187,6 +196,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 			if (!(ret instanceof CtCodeElement)) {
 				return convertValue(ret);
 			}
+			
 			return ret;
 		} else if (value instanceof CtTypeReference) {
 			// Get RT class for References
