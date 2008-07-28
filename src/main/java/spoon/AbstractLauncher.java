@@ -57,7 +57,6 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
 /**
  * This abstract class defines the common tasks and options for launching a
  * program processing. To be subclassed for concrete launchers.
- * Dummy comment.
  */
 public abstract class AbstractLauncher {
 
