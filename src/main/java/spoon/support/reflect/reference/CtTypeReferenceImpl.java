@@ -135,8 +135,17 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	@Override
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		A a = super.getAnnotation(annotationType);
-		if (a == null) {
-			return getActualClass().getAnnotation(annotationType);
+		if (a == null) { //Couldn't get annotation from CtModel, trying with RT reflection
+			try {
+				return getActualClass().getAnnotation(annotationType);
+			} catch (RuntimeException e) {
+//				if(e.getCause() instanceof ClassNotFoundException){
+//					// the RT fails because either the classpath is not set-up correctly, or the class is generated
+//					// since I don't know how to tell one from the other, I'll ignore the exception and return null.
+//					return null;
+//				}
+				throw e;
+			}
 		}
 		return a;
 	}
