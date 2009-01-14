@@ -330,7 +330,8 @@ public class CtScanner implements CtVisitor {
 		enter(ctEnum);
 		scan(ctEnum.getAnnotations());
 		scan(ctEnum.getFields());
-		scan(ctEnum.getNestedTypes());
+		scan(ctEnum.getMethods());
+		scan(ctEnum.getNestedTypes());		
 		exit(ctEnum);
 	}
 
