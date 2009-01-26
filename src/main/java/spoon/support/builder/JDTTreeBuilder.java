@@ -416,6 +416,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 		@Override
 		public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(
 				CtAnnotation<A> annotation) {
+			
+			//GANYMEDE FIX: JDT now inserts a simpletyperef below annotations that points
+			//to the type of the annotation. The JDTTreeBuilder supposes that this simpletyperef is
+			//in fact part of a member/value pair, and will try to construct the pair. I think it is safe to 
+			// ignore this, but we should really migrate to the JDT Binding API since this will only get worse
+			// Just to be safe I upcall the visitCtAnnotation in the inheritance scanner. 
+			if(context.annotationValueName.isEmpty()){ 
+				super.visitCtAnnotation(annotation);
+				return; 
+			}
+			
 			String name = context.annotationValueName.peek();
 			Object value = child;
 
@@ -2690,7 +2701,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				for (Annotation a : typeDeclaration.annotations) {
 					a.traverse(this, (BlockScope) null);
 				}
-			return false;
+			return true;
 		} else {
 			CtSimpleType<?> type = createType(typeDeclaration);
 
