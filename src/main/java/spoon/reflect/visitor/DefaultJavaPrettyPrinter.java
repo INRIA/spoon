@@ -816,7 +816,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (f.getDefaultExpression() != null) {
 			CtNewClass<?> nc = (CtNewClass<?>) f.getDefaultExpression();
 			if (nc.getArguments().size() > 0) {
-				write("(" + nc.getArguments().get(0) + ")");
+				write("(");
+				boolean first=true;
+				for (CtExpression<?> ctexpr : nc.getArguments()) {
+					if(first) first=false; else write(",");
+					write(ctexpr.toString());
+				}
+				write(")");
 			}
 			scan(nc.getAnonymousClass());
 		}
