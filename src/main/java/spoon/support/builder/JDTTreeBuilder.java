@@ -417,15 +417,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 		public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(
 				CtAnnotation<A> annotation) {
 			
-			//GANYMEDE FIX: JDT now inserts a simpletyperef below annotations that points
-			//to the type of the annotation. The JDTTreeBuilder supposes that this simpletyperef is
-			//in fact part of a member/value pair, and will try to construct the pair. I think it is safe to 
-			// ignore this, but we should really migrate to the JDT Binding API since this will only get worse
-			// Just to be safe I upcall the visitCtAnnotation in the inheritance scanner. 
-			if(context.annotationValueName.isEmpty()){ 
-				super.visitCtAnnotation(annotation);
-				return; 
-			}
+//			//GANYMEDE FIX: JDT now inserts a simpletyperef below annotations that points
+//			//to the type of the annotation. The JDTTreeBuilder supposes that this simpletyperef is
+//			//in fact part of a member/value pair, and will try to construct the pair. I think it is safe to 
+//			// ignore this, but we should really migrate to the JDT Binding API since this will only get worse
+//			// Just to be safe I upcall the visitCtAnnotation in the inheritance scanner. 
+//			if(context.annotationValueName.isEmpty()){ 
+//				super.visitCtAnnotation(annotation);
+//				return; 
+//			}
 			
 			String name = context.annotationValueName.peek();
 			Object value = child;
@@ -442,8 +442,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 					&& context.arrayInitializer.peek() == annotation) {
 				// Array
 				if (annotation.getElementValues().containsKey(name)) {
-					((ArrayList) annotation.getElementValues().get(name))
-							.add(value);
+					if (annotation.getElementValues().get(name) instanceof ArrayList) {
+						ArrayList list = (ArrayList) annotation.getElementValues().get(name);
+						list.add(value);
+					}else{
+						ArrayList lst = new ArrayList();
+						lst.add(value);
+						annotation.getElementValues().put(name, lst);
+					}
 				} else {
 					ArrayList lst = new ArrayList();
 					lst.add(value);
@@ -1384,6 +1390,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public void endVisit(
 			ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference,
 			ClassScope scope) {
+		if(skipTypeInAnnotation){
+			skipTypeInAnnotation = false;
+			return;
+		}
 		context.exit(parameterizedQualifiedTypeReference);
 	}
 
@@ -1391,6 +1401,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public void endVisit(
 			ParameterizedSingleTypeReference parameterizedSingleTypeReference,
 			BlockScope scope) {
+		if(skipTypeInAnnotation){
+			skipTypeInAnnotation = false;
+			return;
+		}
 		context.exit(parameterizedSingleTypeReference);
 	}
 
@@ -1398,6 +1412,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public void endVisit(
 			ParameterizedSingleTypeReference parameterizedSingleTypeReference,
 			ClassScope scope) {
+		if(skipTypeInAnnotation){
+			skipTypeInAnnotation = false;
+			return;
+		}
 		context.exit(parameterizedSingleTypeReference);
 	}
 
@@ -1432,6 +1450,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(QualifiedTypeReference arg0, BlockScope arg1) {
+		if(skipTypeInAnnotation){
+			skipTypeInAnnotation = false;
+			return;
+		}
 		context.exit(arg0);
 	}
 
@@ -1458,6 +1480,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(SingleTypeReference singleTypeReference,
 			BlockScope scope) {
+		if(skipTypeInAnnotation){
+			skipTypeInAnnotation = false;
+			return;
+		}
 		context.exit(singleTypeReference);
 	}
 
@@ -2205,6 +2231,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		a.setAnnotationType(references
 				.getTypeReference(annotation.resolvedType));
 		context.enter(a, annotation);
+		skipTypeInAnnotation = true;
 		return true;
 	}
 
@@ -2289,6 +2316,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		a.setAnnotationType(references
 				.getTypeReference(annotation.resolvedType));
 		context.enter(a, annotation);
+		skipTypeInAnnotation = true;
 		return true;
 	}
 
@@ -2316,6 +2344,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(
 			ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference,
 			ClassScope scope) {
+		if(skipTypeInAnnotation){
+			return true;
+		}
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l
 				.setValue(references
@@ -2328,6 +2359,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(
 			ParameterizedSingleTypeReference parameterizedSingleTypeReference,
 			BlockScope scope) {
+		if(skipTypeInAnnotation){
+			return true;
+		}
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l
 				.setValue(references
@@ -2340,6 +2374,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(
 			ParameterizedSingleTypeReference parameterizedSingleTypeReference,
 			ClassScope scope) {
+		if(skipTypeInAnnotation){
+			return true;
+		}
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l
 				.setValue(references
@@ -2442,6 +2479,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(QualifiedTypeReference arg0, BlockScope arg1) {
+		if(skipTypeInAnnotation){
+			return true;
+		}
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l.setValue(references.getTypeReference(arg0.resolvedType));
 		context.enter(l, arg0);
@@ -2454,6 +2494,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(ret, returnStatement);
 		return true;
 	}
+	boolean skipTypeInAnnotation = false;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -2463,6 +2504,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				.getTypeReference(annotation.resolvedType));
 		context.enter(a, annotation);
 		context.annotationValueName.push("value");
+		skipTypeInAnnotation = true;
 		return true;
 	}
 
@@ -2489,6 +2531,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(SingleTypeReference singleTypeReference,
 			BlockScope scope) {
+		if(skipTypeInAnnotation){
+			return true;
+		}
+//		if(context.annotationValueName.peek().equals("value")) return true; 
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l.setValue(references
 				.getTypeReference(singleTypeReference.resolvedType));
