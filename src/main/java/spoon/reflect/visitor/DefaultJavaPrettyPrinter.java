@@ -902,7 +902,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if ((f.getParent() == null)
 				|| !CtAnnotationType.class.isAssignableFrom(f.getParent()
-						.getClass())) {
+						.getClass())
+			    || f.getModifiers().contains(ModifierKind.STATIC)){
 			if (f.getDefaultExpression() != null) {
 				write(" = ");
 				scan(f.getDefaultExpression());
