@@ -2094,11 +2094,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 				.setVariable(references
 						.getVariableReference(fieldReference.binding));
 		acc.setType(references.getTypeReference(fieldReference.resolvedType));
-		if (fieldReference.receiverType instanceof ArrayBinding
-				&& new String(fieldReference.token).equals("length")) {
-			acc.getVariable().setDeclaringType(
-					references.getTypeReference(fieldReference.receiverType));
-		}
+		
+		//Hmmm Maybe this should not be commented, but I cannot see why we need it.
+		//Anyway, the problem is that in jdt-core 3.5+ fieldReferences no longer have a receiverType,
+		//As far as I can tell, this if makes sure that pika.length if pika is an array, gets the correct type.
+		//if anything, I guess that the jdt-core now does not think that length is a field... so we wouldn;t need this anymore.
+
+//		if (fieldReference.receiverType instanceof ArrayBinding
+//				&& new String(fieldReference.token).equals("length")) {
+//			acc.getVariable().setDeclaringType(
+//					references.getTypeReference(fieldReference.receiverType));
+//		}
 		context.enter(acc, fieldReference);
 
 		context.target.push(acc);
