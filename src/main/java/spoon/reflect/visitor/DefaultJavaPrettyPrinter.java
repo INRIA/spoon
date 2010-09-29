@@ -1180,8 +1180,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if(Character.isDigit(ch) || Character.isLetter(ch) || Character.isWhitespace(ch)){
 					buf.append(ch);
 				}else{
-					buf.append("\\u");
-					buf.append(charToHex(ch));
+//					buf.append("\\u");
+//					buf.append(charToHex(ch));
+					buf.append(ch);
 				}
 			}
 		}
