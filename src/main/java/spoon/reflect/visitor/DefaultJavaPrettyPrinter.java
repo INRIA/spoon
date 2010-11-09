@@ -1693,7 +1693,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			write("}");
 		} else if (value instanceof Enum) {
-			write(((Enum) value).getDeclaringClass().getName());
+			context.ignoreGenerics = true;
+			scan(env.getFactory().Type()
+					.createReference(((Enum) value).getDeclaringClass()));
+			context.ignoreGenerics = false;
 			write(".");
 			write(value.toString());
 		} else {
