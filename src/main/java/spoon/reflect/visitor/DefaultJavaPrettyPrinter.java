@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import spoon.processing.Environment;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -372,7 +372,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see spoon.reflect.visitor.JavaPrettyPrinter#getPackageDeclaration()
 	 */
 	public String getPackageDeclaration() {
@@ -386,8 +386,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			a.accept(this);
 		}
 
-		if (!context.currentTopLevel.getPackage().getQualifiedName().equals(
-				CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+		if (!context.currentTopLevel.getPackage().getQualifiedName()
+				.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 			write("package "
 					+ context.currentTopLevel.getPackage().getQualifiedName()
 					+ ";");
@@ -401,7 +401,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see spoon.reflect.visitor.JavaPrettyPrinter#getResult()
 	 */
 	public StringBuffer getResult() {
@@ -678,11 +678,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			// writing enum case expression
 			if ((caseStatement.getCaseExpression() instanceof CtFieldAccess)
 					&& ((CtFieldAccess) caseStatement.getCaseExpression())
-							.getVariable().getType().getQualifiedName().equals(
-									((CtFieldAccess) caseStatement
-											.getCaseExpression()).getVariable()
-											.getDeclaringType()
-											.getQualifiedName())) {
+							.getVariable()
+							.getType()
+							.getQualifiedName()
+							.equals(((CtFieldAccess) caseStatement
+									.getCaseExpression()).getVariable()
+									.getDeclaringType().getQualifiedName())) {
 				write(((CtFieldAccess) caseStatement.getCaseExpression())
 						.getVariable().getSimpleName());
 			} else {
@@ -817,9 +818,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			CtNewClass<?> nc = (CtNewClass<?>) f.getDefaultExpression();
 			if (nc.getArguments().size() > 0) {
 				write("(");
-				boolean first=true;
+				boolean first = true;
 				for (CtExpression<?> ctexpr : nc.getArguments()) {
-					if(first) first=false; else write(",");
+					if (first)
+						first = false;
+					else
+						write(",");
 					write(ctexpr.toString());
 				}
 				write(")");
@@ -865,10 +869,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				writeln().scan(c);
 			}
 		}
-		
+
 		SortedList<CtElement> lst = new SortedList<CtElement>(
 				new CtLineElementComparator());
-		
+
 		lst.addAll(ctEnum.getAnonymousExecutables());
 		lst.addAll(ctEnum.getNestedTypes());
 		lst.addAll(ctEnum.getMethods());
@@ -903,7 +907,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if ((f.getParent() == null)
 				|| !CtAnnotationType.class.isAssignableFrom(f.getParent()
 						.getClass())
-			    || f.getModifiers().contains(ModifierKind.STATIC)){
+				|| f.getModifiers().contains(ModifierKind.STATIC)) {
 			if (f.getDefaultExpression() != null) {
 				write(" = ");
 				scan(f.getDefaultExpression());
@@ -1174,22 +1178,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				// buf.append((char) ('0' + (ch >> 3) % 8));
 				// buf.append((char) ('0' + (ch) % 8));
 				// } else {
-				
+
 				// }
-				
-				if(Character.isDigit(ch) || Character.isLetter(ch) || Character.isWhitespace(ch)){
+
+				if (Character.isDigit(ch) || Character.isLetter(ch)
+						|| Character.isWhitespace(ch)) {
 					buf.append(ch);
-				}else{
-//					buf.append("\\u");
-//					buf.append(charToHex(ch));
+				} else {
+					// buf.append("\\u");
+					// buf.append(charToHex(ch));
 					buf.append(ch);
 				}
 			}
 		}
 		return buf.toString();
 	}
-	
-	 static public String byteToHex(byte b) {
+
+	static public String byteToHex(byte b) {
 		// Returns hex String representation of byte b
 		char hexDigit[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 				'a', 'b', 'c', 'd', 'e', 'f' };
@@ -1297,8 +1302,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (m.getBody().getPosition() != null) {
 				if (m.getBody().getPosition().getCompilationUnit() == sourceCompilationUnit) {
 					if (m.getBody().getStatements().isEmpty()
-							|| !(m.getBody().getStatements().get(
-									m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
+							|| !(m.getBody()
+									.getStatements()
+									.get(m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
 						lineNumberMapping.put(line, m.getBody().getPosition()
 								.getEndLine());
 					}
@@ -1686,6 +1692,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				removeLastChar();
 			}
 			write("}");
+		} else if (value instanceof Enum) {
+			write(((Enum) value).getDeclaringClass().getName());
+			write(".");
+			write(value.toString());
 		} else {
 			write(value.toString());
 		}
@@ -1731,11 +1741,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					// ignore non-top-level type
 					if (ref.getPackage() != null) {
 						// ignore java.lang package
-						if (!ref.getPackage().getSimpleName().equals(
-								"java.lang")) {
+						if (!ref.getPackage().getSimpleName()
+								.equals("java.lang")) {
 							// ignore type in same package
-							if (!ref.getPackage().getSimpleName().equals(
-									pack.getQualifiedName())) {
+							if (!ref.getPackage().getSimpleName()
+									.equals(pack.getQualifiedName())) {
 								write("import " + ref.getQualifiedName() + ";")
 										.writeln();
 							}
