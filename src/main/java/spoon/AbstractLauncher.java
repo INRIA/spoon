@@ -524,7 +524,7 @@ public abstract class AbstractLauncher {
 	public void run() throws Exception {
 
 		getFactory().getEnvironment()
-				.reportProgressMessage("Spoon version 1.4");
+				.reportProgressMessage("Spoon version 2.0");
 
 		getFactory().getEnvironment().debugMessage(
 				"loading command-line arguments...");
