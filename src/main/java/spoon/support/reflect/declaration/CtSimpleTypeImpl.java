@@ -17,17 +17,20 @@
 
 package spoon.support.reflect.declaration;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.builder.SnippetCompiler;
@@ -67,10 +70,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 	}
 
 	public CtSimpleType<?> getDeclaringType() {
-		if (parent instanceof CtSimpleType) {
-			return (CtSimpleType<?>) parent;
-		}
-		return null;
+		return getParent(CtSimpleType.class);
 	}
 
 	public CtField<?> getField(String name) {
@@ -86,13 +86,49 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		return fields;
 	}
 
-	public CtSimpleType<?> getNestedType(String name) {
-		for (CtSimpleType<?> t : nestedTypes) {
-			if (t.getSimpleName().equals(name)) {
-				return t;
+	public CtSimpleType<?> getNestedType(final String name) {
+		class NestedTypeScanner extends CtScanner {
+			CtSimpleType<?> type;
+
+			public void checkType(CtSimpleType<?> type) {
+				if (type.getSimpleName().equals(name)
+						&& CtSimpleTypeImpl.this
+								.equals(type.getDeclaringType())) {
+					this.type = type;
+				}
+			}
+
+			public <U> void visitCtClass(
+					spoon.reflect.declaration.CtClass<U> ctClass) {
+				super.visitCtClass(ctClass);
+				checkType(ctClass);
+			}
+
+			public <U> void visitCtInterface(
+					spoon.reflect.declaration.CtInterface<U> intrface) {
+				super.visitCtInterface(intrface);
+				checkType(intrface);
+			}
+
+			public <U extends java.lang.Enum<?>> void visitCtEnum(
+					spoon.reflect.declaration.CtEnum<U> ctEnum) {
+				super.visitCtEnum(ctEnum);
+				checkType(ctEnum);
+			}
+
+			public <A extends Annotation> void visitCtAnnotationType(
+					CtAnnotationType<A> annotationType) {
+				super.visitCtAnnotationType(annotationType);
+				checkType(annotationType);
+			};
+
+			CtSimpleType<?> getType() {
+				return type;
 			}
 		}
-		return null;
+		NestedTypeScanner scanner = new NestedTypeScanner();
+		scanner.scan(this);
+		return scanner.getType();
 	}
 
 	public Set<CtSimpleType<?>> getNestedTypes() {
