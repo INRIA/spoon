@@ -20,6 +20,7 @@ package spoon.reflect.declaration;
 import java.util.List;
 import java.util.Set;
 
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -27,7 +28,7 @@ import spoon.reflect.reference.CtTypeReference;
  * 
  * @author Renaud Pawlak
  */
-public interface CtClass<T extends Object> extends CtType<T> {
+public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 
 	/**
 	 * Gets the fields defined by this class.

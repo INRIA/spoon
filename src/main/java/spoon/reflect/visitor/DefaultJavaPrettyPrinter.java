@@ -1880,7 +1880,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!((e instanceof CtBlock) || (e instanceof CtIf)
 				|| (e instanceof CtFor) || (e instanceof CtForEach)
 				|| (e instanceof CtWhile) || (e instanceof CtTry)
-				|| (e instanceof CtSwitch) || (e instanceof CtSynchronized))) {
+				|| (e instanceof CtSwitch) || (e instanceof CtSynchronized) || (e instanceof CtClass))) {
 			write(";");
 		}
 	}
