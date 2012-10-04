@@ -87,13 +87,13 @@ public class EnumFactory extends TypeFactory {
 	 *            it then poses problem when T is a generic type itself
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Enum<?>> CtEnum<T> get(Class<?> cl) {
+	public <T extends Enum<?>> CtEnum<T> getEnum(Class<?> cl) {
 		try {
 			CtSimpleType t=super.get(cl);
 			return (CtEnum<T>) t;
 		} catch (Exception e) {
 			return null;
 		}
-	}
+	} 
 
 }
