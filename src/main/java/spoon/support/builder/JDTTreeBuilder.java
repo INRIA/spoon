@@ -1355,6 +1355,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(MarkerAnnotation annotation, BlockScope scope) {
 		context.exit(annotation);
+		skipTypeInAnnotation = false;
 	}
 
 	@Override
@@ -1378,6 +1379,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	public void endVisit(NormalAnnotation annotation, BlockScope scope) {
 		context.exit(annotation);
+		skipTypeInAnnotation = false;
 	}
 
 	@Override
@@ -1472,6 +1474,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			throw new RuntimeException("unconsistant Stack");
 		}
 		context.exit(annotation);
+		skipTypeInAnnotation = false;
 	}
 
 	@Override
