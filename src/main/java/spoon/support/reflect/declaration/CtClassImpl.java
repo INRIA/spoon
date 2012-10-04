@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -36,7 +38,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
- *
+ * 
  * @author Renaud Pawlak
  */
 public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
@@ -154,5 +156,33 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 			}
 		}
 		return false;
+	}
+
+	public void insertAfter(CtStatement statement) {
+		spoon.support.reflect.code.CtStatementImpl.insertAfter(this, statement);
+	}
+
+	public void insertAfter(CtStatementList<?> statements) {
+		spoon.support.reflect.code.CtStatementImpl
+				.insertAfter(this, statements);
+	}
+
+	public void insertBefore(CtStatement statement) {
+		spoon.support.reflect.code.CtStatementImpl
+				.insertBefore(this, statement);
+	}
+
+	public void insertBefore(CtStatementList<?> statements) {
+		spoon.support.reflect.code.CtStatementImpl.insertBefore(this,
+				statements);
+	}
+
+	public String getLabel() {
+		return null;
+	}
+
+	public void setLabel(String label) {
+		throw new UnsupportedOperationException(
+				"cannot set a label on a class declaration");
 	}
 }
