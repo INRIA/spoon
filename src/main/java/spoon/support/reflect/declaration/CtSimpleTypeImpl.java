@@ -100,25 +100,34 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 
 			public <U> void visitCtClass(
 					spoon.reflect.declaration.CtClass<U> ctClass) {
-				super.visitCtClass(ctClass);
+				scan(ctClass.getNestedTypes());
+				scan(ctClass.getConstructors());
+				scan(ctClass.getMethods());
+
 				checkType(ctClass);
 			}
 
 			public <U> void visitCtInterface(
 					spoon.reflect.declaration.CtInterface<U> intrface) {
-				super.visitCtInterface(intrface);
+				scan(intrface.getNestedTypes());
+				scan(intrface.getMethods());
+
 				checkType(intrface);
 			}
 
 			public <U extends java.lang.Enum<?>> void visitCtEnum(
 					spoon.reflect.declaration.CtEnum<U> ctEnum) {
-				super.visitCtEnum(ctEnum);
+				scan(ctEnum.getNestedTypes());
+				scan(ctEnum.getConstructors());
+				scan(ctEnum.getMethods());
+
 				checkType(ctEnum);
 			}
 
 			public <A extends Annotation> void visitCtAnnotationType(
 					CtAnnotationType<A> annotationType) {
-				super.visitCtAnnotationType(annotationType);
+				scan(annotationType.getNestedTypes()); 
+
 				checkType(annotationType);
 			};
 
