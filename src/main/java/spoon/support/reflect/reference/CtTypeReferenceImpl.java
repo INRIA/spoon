@@ -135,15 +135,18 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	@Override
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		A a = super.getAnnotation(annotationType);
-		if (a == null) { //Couldn't get annotation from CtModel, trying with RT reflection
+		if (a == null) { // Couldn't get annotation from CtModel, trying with RT
+							// reflection
 			try {
 				return getActualClass().getAnnotation(annotationType);
 			} catch (RuntimeException e) {
-//				if(e.getCause() instanceof ClassNotFoundException){
-//					// the RT fails because either the classpath is not set-up correctly, or the class is generated
-//					// since I don't know how to tell one from the other, I'll ignore the exception and return null.
-//					return null;
-//				}
+				// if(e.getCause() instanceof ClassNotFoundException){
+				// // the RT fails because either the classpath is not set-up
+				// correctly, or the class is generated
+				// // since I don't know how to tell one from the other, I'll
+				// ignore the exception and return null.
+				// return null;
+				// }
 				throw e;
 			}
 		}
@@ -410,8 +413,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			for (Method m : c.getDeclaredMethods()) {
 				l.add(getFactory().Method().createReference(m));
 			}
-			for(Constructor<?> cons: c.getDeclaredConstructors()){
-				CtExecutableReference<?> consRef = getFactory().Constructor().createReference(cons);
+			for (Constructor<?> cons : c.getDeclaredConstructors()) {
+				CtExecutableReference<?> consRef = getFactory().Constructor()
+						.createReference(cons);
 				l.add(consRef);
 			}
 			Class<?> sc = c.getSuperclass();
@@ -502,6 +506,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			}
 		}
 		return new TreeSet<CtTypeReference<?>>();
+	}
+
+	public boolean isAnonymous() {
+		return getSimpleName().isEmpty();
 	}
 
 }

@@ -926,7 +926,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref = reference;
 			} else if (binding instanceof LocalTypeBinding) {
 				ref = factory.Core().createTypeReference();
-				ref.setSimpleName(new String(binding.sourceName()));
+				if (binding.isAnonymousType())
+					ref.setSimpleName("");
+				else
+					ref.setSimpleName(new String(binding.sourceName()));
 			} else if (binding instanceof SourceTypeBinding) {
 				ref = factory.Core().createTypeReference();
 				if (binding.isAnonymousType()) {
