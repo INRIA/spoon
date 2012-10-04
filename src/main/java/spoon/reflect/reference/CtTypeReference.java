@@ -79,6 +79,11 @@ public interface CtTypeReference<T> extends CtReference,
 	boolean isPrimitive();
 
 	/**
+	 * Return {@code true} if the referenced type is a anonymous type
+	 */
+	boolean isAnonymous();
+
+	/**
 	 * Returns the corresponding non-primitive type for a primitive type (the
 	 * same type otherwhise).
 	 */

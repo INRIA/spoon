@@ -937,7 +937,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		if (reference.getSimpleName().equals("this")) {
 			if (context.currentThis.isEmpty()
-					|| !reference.getType().equals(context.currentThis.peek())) {
+					|| (!reference.getType().equals(context.currentThis.peek()) && !reference
+							.getDeclaringType().isAnonymous())) {
 				context.ignoreGenerics = true;
 				scan(reference.getDeclaringType());
 				write(".");
