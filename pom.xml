@@ -110,8 +110,8 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>core</artifactId>
-      <!--<version>3.3.0.771</version>-->
-      <version>3.5.1.v_R35x</version>
+      <version>3.3.0.771</version>
+<!--       <version>3.5.1.v_R35x</version> -->
     </dependency>
     <dependency>
       <groupId>com.martiansoftware</groupId>
