@@ -1000,6 +1000,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 				throw new RuntimeException("Unknow VariableBinding");
 			}
 		}
+
+		public List<CtTypeReference<?>> getBoundedTypesReferences(
+				TypeBinding[] genericTypeArguments) {
+			List<CtTypeReference<?>> res = new ArrayList<CtTypeReference<?>>();
+			for (TypeBinding tb : genericTypeArguments) {
+				res.add(getBoundedTypeReference(tb));
+			}
+			return res;
+		}
 	}
 
 	public static String cleanJavadoc(String doc) {
@@ -2274,6 +2283,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			for (Expression e : messageSend.arguments) {
 				e.traverse(this, scope);
 			}
+		if (messageSend.genericTypeArguments != null)
+			inv.setGenericTypes(references.getBoundedTypesReferences(messageSend.genericTypeArguments));
 		context.popArgument(inv);
 		return false;
 	}
