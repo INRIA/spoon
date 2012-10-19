@@ -17,6 +17,10 @@
 
 package spoon.reflect.code;
 
+import java.util.List;
+
+import spoon.reflect.reference.CtTypeReference;
+
 /**
  * This code element defines a concrete invocation.
  * 
@@ -25,5 +29,8 @@ package spoon.reflect.code;
  */
 public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement,
 		CtTargetedExpression<T, CtExpression<?>> {
+
+	public void setGenericTypes(List<CtTypeReference<?>> list);
+	public List<CtTypeReference<?>> getGenericTypes();
 
 }

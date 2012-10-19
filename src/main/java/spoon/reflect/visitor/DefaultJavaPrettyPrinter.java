@@ -172,7 +172,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		public <T> void visitCtExecutableReference(
 				CtExecutableReference<T> reference) {
 			enterReference(reference);
-			scanReferences(reference.getParameterTypes());
+			if (reference.getDeclaringType() != null && reference.getDeclaringType().getDeclaringType()==null){
+				addImport(reference.getDeclaringType());
+			}
 			scanReferences(reference.getActualTypeArguments());
 			exitReference(reference);
 		}
@@ -251,6 +253,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		boolean skipArray = false;
 
 		int target = 0;
+
+		boolean ignoreStaticAccess = false;
+
+		boolean ignoreEnclosingClass = false;
 
 		void enterTarget() {
 			target++;
@@ -927,10 +933,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (fieldAccess.getTarget() != null) {
 			scan(fieldAccess.getTarget());
 			write(".");
+			context.ignoreStaticAccess = true;
 		}
 		context.ignoreGenerics = true;
 		scan(fieldAccess.getVariable());
 		context.ignoreGenerics = false;
+		context.ignoreStaticAccess = false;
 		exitCtExpression(fieldAccess);
 	}
 
@@ -969,7 +977,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 
-			if (isStatic && printType) {
+			if (isStatic && printType && !context.ignoreStaticAccess) {
 				context.ignoreGenerics = true;
 				scan(reference.getDeclaringType());
 				context.ignoreGenerics = false;
@@ -1123,6 +1131,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				scan(invocation.getTarget());
 				context.exitTarget();
 				write(".");
+			}
+			boolean removeLastChar = false;
+			if(invocation.getGenericTypes()!=null && invocation.getGenericTypes().size()>0){
+				write("<");
+				for (CtTypeReference<?> ref : invocation.getGenericTypes()) {
+					scan(ref);
+					write(",");
+					removeLastChar=true;
+				}
+				if (removeLastChar)
+					removeLastChar();
+				write(">");
 			}
 			write(invocation.getExecutable().getSimpleName());
 		}
@@ -1412,7 +1432,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(")");
 			scan(newClass.getAnonymousClass());
 		} else {
+			if (newClass.getTarget() != null)
+				context.ignoreEnclosingClass = true;
+
 			write("new ").scan(newClass.getType());
+			context.ignoreEnclosingClass = false;
 
 			if ((newClass.getExecutable() != null)
 					&& (newClass.getExecutable().getActualTypeArguments() != null)) {
@@ -1596,7 +1620,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
-				if (context.currentTopLevel != null) {
+				if (!context.ignoreEnclosingClass
+						&& context.currentTopLevel != null) {
 					boolean ign = context.ignoreGenerics;
 					context.ignoreGenerics = true;
 					scan(ref.getDeclaringType());

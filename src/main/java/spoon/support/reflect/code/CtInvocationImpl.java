@@ -27,6 +27,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtInvocationImpl<T> extends
@@ -41,10 +42,19 @@ public class CtInvocationImpl<T> extends
 
 	List<CtExpression<Integer>> indexExpressions = new ArrayList<CtExpression<Integer>>();
 
+	List<CtTypeReference<?>> genericTypes = new ArrayList<CtTypeReference<?>>();
+
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtInvocation(this);
 	}
 
+	public void setGenericTypes(List<CtTypeReference<?>> genericTypes) {
+		this.genericTypes =genericTypes;
+	}
+	
+	public List<CtTypeReference<?>> getGenericTypes(){
+		return this.genericTypes;
+	}
 	@Override
 	public void setTarget(CtExpression<?> target) {
 		// TODO Auto-generated method stub
