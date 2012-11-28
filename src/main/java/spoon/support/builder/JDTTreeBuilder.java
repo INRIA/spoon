@@ -85,6 +85,7 @@ import org.eclipse.jdt.internal.compiler.ast.PostfixExpression;
 import org.eclipse.jdt.internal.compiler.ast.PrefixExpression;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedSuperReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
@@ -598,7 +599,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		@Override
 		public void visitCtDo(CtDo doLoop) {
-			if (child instanceof CtExpression
+			if (doLoop.getBody()!=null && child instanceof CtExpression
 					&& doLoop.getLoopingExpression() == null) {
 				doLoop.setLoopingExpression((CtExpression<Boolean>) child);
 				return;
@@ -928,8 +929,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref = factory.Core().createTypeReference();
 				if (binding.isAnonymousType())
 					ref.setSimpleName("");
-				else
+				else{
 					ref.setSimpleName(new String(binding.sourceName()));
+					if (((LocalTypeBinding) binding).enclosingMethod == null && binding.enclosingType() != null && binding.enclosingType() instanceof LocalTypeBinding)
+						ref.setDeclaringType(getTypeReference(binding
+								.enclosingType()));
+				}
 			} else if (binding instanceof SourceTypeBinding) {
 				ref = factory.Core().createTypeReference();
 				if (binding.isAnonymousType()) {
@@ -1523,6 +1528,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(QualifiedSuperReference qualifiedsuperReference, BlockScope scope) {
+		context.exit(qualifiedsuperReference);
+	}
+	@Override
 	public void endVisit(SuperReference superReference, BlockScope scope) {
 		context.exit(superReference);
 	}
@@ -1648,11 +1657,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public String getJavaDoc(Javadoc javadoc,
 			CompilationUnitDeclaration declaration) {
 		if (javadoc != null) {
+			try{
 			String s = new String(
 					declaration.compilationResult.compilationUnit.getContents(),
 					javadoc.sourceStart, javadoc.sourceEnd
 							- javadoc.sourceStart + 1);
 			return cleanJavadoc(s);
+			}catch(StringIndexOutOfBoundsException e){//BCUTAG trouver cause
+				return null;
+			}
 		}
 		return null;
 	}
@@ -1975,6 +1988,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 				c.getThrownTypes().add(
 						references.getTypeReference(r.resolvedType));
 		}
+		for (TypeBinding b : constructorDeclaration.binding.typeVariables) {
+			c.getFormalTypeParameters().add(
+					references.getBoundedTypeReference(b));
+		}
 
 		// Create block
 		if (!constructorDeclaration.isAbstract()) {
@@ -2194,6 +2211,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
 		op.setKind(BinaryOperatorKind.INSTANCEOF);
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
+		l.setValue(references.getBoundedTypeReference(instanceOfExpression.type.resolvedType));
+		op.setRightHandOperand(l);
 		context.enter(op, instanceOfExpression);
 		return true;
 	}
@@ -2544,7 +2564,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(va, singleNameReference);
 		return true;
 	}
-
+	
+	@Override
+	public boolean visit(
+    		QualifiedSuperReference qualifiedSuperReference,
+    		BlockScope scope) {
+		if (skipTypeInAnnotation) {
+			return true;
+		}
+		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
+		CtTypeReference<?> withoutSuper = references.getTypeReference(qualifiedSuperReference.qualification.resolvedType);
+		withoutSuper.setSuperReference(true);
+		l.setValue(withoutSuper);
+		context.enter(l, qualifiedSuperReference);
+		return false;
+	}
+	
 	@Override
 	public boolean visit(SingleTypeReference singleTypeReference,
 			BlockScope scope) {
@@ -2569,7 +2604,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return true; // do nothing by default, keep traversing
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(StringLiteral stringLiteral, BlockScope scope) {
 		CtLiteral<String> s = factory.Core().createLiteral();
