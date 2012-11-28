@@ -143,4 +143,14 @@ public interface CtTypeReference<T> extends CtReference,
 	 */
 	Set<CtTypeReference<?>> getSuperInterfaces();
 
+	/**
+	 * Returns true if the reference refers to the super implementation
+	 */
+	boolean isSuperReference();
+
+	/**
+	 * Says that this reference refers to the super implementation
+	 */
+	void setSuperReference(boolean b);
+
 }
