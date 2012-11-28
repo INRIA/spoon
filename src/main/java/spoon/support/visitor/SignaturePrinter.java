@@ -18,6 +18,7 @@
 package spoon.support.visitor;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
@@ -348,6 +349,8 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtMethod(CtMethod<T> m) {
+		scan(m.getFormalTypeParameters());
+		write(" ");
 		scan(m.getType());
 		write(" ");
 		write(m.getSimpleName());
@@ -359,6 +362,28 @@ public class SignaturePrinter implements CtVisitor {
 		if (!m.getParameters().isEmpty())
 			clearLast();
 		write(")");
+	}
+	
+	public void scan(List<CtTypeReference<?>> formalTypeParameters) {
+		if(formalTypeParameters!=null && formalTypeParameters.size()>0){
+			write("<");
+			for (CtTypeReference<?> type : formalTypeParameters) {
+				write(type.getQualifiedName());
+				if(type instanceof CtTypeParameterReference){
+					CtTypeParameterReference tmp = (CtTypeParameterReference)type;
+					if(tmp.getBounds()!=null && tmp.getBounds().size()>0){
+						write(" extends ");
+						for (CtTypeReference<?> tmp2 : tmp.getBounds()) {
+							write(tmp2.getQualifiedName());
+						}
+						clearLast();
+					}
+				}
+				write(",");
+			}
+			clearLast();
+			write(">");
+		}
 	}
 
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
