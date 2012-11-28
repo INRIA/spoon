@@ -20,6 +20,7 @@ package spoon.support.builder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ public class SpoonBuildingManager implements Builder {
 	CtVirtualFolder templates = new CtVirtualFolder();
 
 	public SpoonBuildingManager(Factory factory) {
-		this.factory=factory;
+		this.factory = factory;
 	}
 
 	public void addInputSource(CtResource source) throws IOException {
@@ -104,8 +105,8 @@ public class SpoonBuildingManager implements Builder {
 		factory.getEnvironment().debugMessage(
 				"compiling templates: " + templates.getAllJavaFiles());
 		t = System.currentTimeMillis();
-		templateSuccess = compiler.compileTemplate(factory, templates
-				.getAllJavaFiles());
+		templateSuccess = compiler.compileTemplate(factory,
+				templates.getAllJavaFiles());
 		factory.Template().parseTypes();
 		factory.getEnvironment().debugMessage(
 				"compiled in " + (System.currentTimeMillis() - t) + " ms");
@@ -113,6 +114,7 @@ public class SpoonBuildingManager implements Builder {
 	}
 
 	public void initCompiler() {
+		// compiler.setEnvironment(compiler.batchCompiler.);
 		// does nothing by default
 	}
 
@@ -126,8 +128,11 @@ public class SpoonBuildingManager implements Builder {
 	}
 
 	public Set<File> getInputSources() {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("not implemented");
+		Set<File> files = new HashSet<File>();
+		for (CtFolder file : getSource().getSubFolder()) {
+			files.add(new File(file.getPath()));
+		}
+		return files;
 	}
 
 	public CtVirtualFolder getSource() {
