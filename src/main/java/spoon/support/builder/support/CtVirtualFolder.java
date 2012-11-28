@@ -77,7 +77,7 @@ public class CtVirtualFolder implements CtFolder {
 	}
 
 	public String getPath() {
-		return toString();
+		return "Virtual folder";
 	}
 	
 

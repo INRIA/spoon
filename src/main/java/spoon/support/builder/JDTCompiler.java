@@ -17,8 +17,11 @@
 
 package spoon.support.builder;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +82,7 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 		}
 	}
 
-	public static int JAVA_COMPLIANCE = 5;
+	public static int JAVA_COMPLIANCE = 6;
 
 	boolean success=true;
 	
@@ -93,6 +96,22 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
+		ClassLoader currentClassLoader = ClassLoader.getSystemClassLoader();
+		
+		if(currentClassLoader instanceof URLClassLoader){
+			URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
+			if(urls!=null && urls.length>0){
+				String classpath = ".";
+				for (URL url : urls) {
+					classpath+=File.pathSeparator+url.getFile();
+				}
+				if(classpath!=null){
+					args.add("-cp");
+					args.add(classpath);
+				}
+			}
+		}
+		
 		// args.add("-nowarn");
 		args.add(f.getEnvironment().getSourcePath());
 
