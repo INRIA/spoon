@@ -514,7 +514,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return getSimpleName().isEmpty();
 	}
 
-	@Override
 	public boolean isSuperReference() {
 		return isSuperReference ;
 	}
