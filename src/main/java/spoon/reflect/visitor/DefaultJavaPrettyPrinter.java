@@ -249,6 +249,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		boolean printDocs = true;
 
 		boolean printShortName = false;
+		boolean isInvocation = false;
 
 		boolean skipArray = false;
 
@@ -437,6 +438,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		// TODO: Deal with anonymous class better
 		if ((container.getSimpleName() == null)
 				|| container.getSimpleName().equals("")) {
+			return false;
+		}
+		// TODO: Deal with internal class better
+		if (container.getQualifiedName().contains("$")) {
 			return false;
 		}
 		for (CtFieldReference<?> f : container.getReference().getAllFields()) {
@@ -966,8 +971,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (reference.isFinal() && reference.isStatic()) {
 				if (context.currentTopLevel != null) {
 					CtTypeReference<?> ref = reference.getDeclaringType();
-					CtTypeReference<?> ref2 = context.currentTopLevel
-							.getReference();
+					CtTypeReference<?> ref2;
+					if(context.currentThis!=null && context.currentThis.size()>0)
+						ref2 = context.currentThis.lastElement();
+					else
+						ref2 = context.currentTopLevel.getReference();
 					// print type if not annonymous class ref and not within the
 					// current scope
 					printType = !ref.getSimpleName().equals("")
@@ -1119,9 +1127,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (invocation.getExecutable().isStatic()) {
 				CtTypeReference<?> type = invocation.getExecutable()
 						.getDeclaringType();
-				if (isHiddenByField(invocation.getParent(CtType.class), type)) {
-					importsContext.imports.remove(type.getSimpleName());
-				}
+				CtType typeTmp = invocation.getParent(CtType.class);
+//				if (isHiddenByField(invocation.getParent(CtType.class), type)) {
+//					importsContext.imports.remove(type.getSimpleName());
+//				}
 				context.ignoreGenerics = true;
 				scan(type);
 				context.ignoreGenerics = false;
@@ -1136,7 +1145,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if(invocation.getGenericTypes()!=null && invocation.getGenericTypes().size()>0){
 				write("<");
 				for (CtTypeReference<?> ref : invocation.getGenericTypes()) {
+					context.isInvocation = true;
 					scan(ref);
+					context.isInvocation = false;
 					write(",");
 					removeLastChar=true;
 				}
@@ -1193,23 +1204,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				buf.append("\\\\");
 				break;
 			default:
-				// if (ch < 32 || 128 <= ch && ch < 255) {
-				// buf.append("\\");
-				// buf.append((char) ('0' + (ch >> 6) % 8));
-				// buf.append((char) ('0' + (ch >> 3) % 8));
-				// buf.append((char) ('0' + (ch) % 8));
-				// } else {
-
-				// }
-
-				if (Character.isDigit(ch) || Character.isLetter(ch)
-						|| Character.isWhitespace(ch)) {
-					buf.append(ch);
-				} else {
-					// buf.append("\\u");
-					// buf.append(charToHex(ch));
-					buf.append(ch);
-				}
+				buf.append(ch);
 			}
 		}
 		return buf.toString();
@@ -1243,7 +1238,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(quote(String.valueOf(literal.getValue())));
 			write("'");
 		} else if (literal.getValue() instanceof String) {
-			write("\"" + quote((String) literal.getValue()) + "\"");
+			// JDT removes unicode values, as a result, it may change
+			// the semantics of spooned programs.
+			// Consequently, we fixed JDT it self (see char[] org.eclipse.jdt.internal.compiler.parser.Scanner.getCurrentTokenSourceString())
+			// and we then disable the old quoting which is now incorrect (no quoting of \)
+			// If we port Spoon to a newer version of JDT
+			// we have to forward port the JDT fix and keep this one
+			// write("\"" + quote((String) literal.getValue()) + "\"");
+			write("\"" + ((String) literal.getValue()) + "\"");
 		} else if (literal.getValue() instanceof Class) {
 			write(((Class<?>) literal.getValue()).getName());
 		} else if (literal.getValue() instanceof CtReference) {
@@ -1594,7 +1596,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
-		if (!ref.getBounds().isEmpty()
+		if (!context.isInvocation && !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
 						.getQualifiedName().equals("java.lang.Object"))) {
 			if (ref.isUpper()) {
@@ -1615,8 +1617,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 			return;
 		}
-		if ((importsContext.isImported(ref) && !context.ignoreImport)
-				|| context.printShortName) {
+		if (
+//				(importsContext.isImported(ref) && !context.ignoreImport && ref.getPackage()!=null)|| 
+				context.printShortName) {
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
@@ -1633,6 +1636,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(ref.getQualifiedName());
 			}
 		}
+		if(ref.isSuperReference())
+			write(".super");
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
@@ -1765,23 +1770,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				for (Import i : sourceCompilationUnit.getManualImports()) {
 					write(i + ";").writeln();
 				}
-			} else {
-				for (CtTypeReference<?> ref : importsContext.imports.values()) {
-					// ignore non-top-level type
-					if (ref.getPackage() != null) {
-						// ignore java.lang package
-						if (!ref.getPackage().getSimpleName()
-								.equals("java.lang")) {
-							// ignore type in same package
-							if (!ref.getPackage().getSimpleName()
-									.equals(pack.getQualifiedName())) {
-								write("import " + ref.getQualifiedName() + ";")
-										.writeln();
-							}
-						}
-					}
-				}
-			}
+			} 
+			// no more imports :)
+//			else {
+//				for (CtTypeReference<?> ref : importsContext.imports.values()) {
+//					// ignore non-top-level type
+//					if (ref.getPackage() != null) {
+//						// ignore java.lang package
+//						if (!ref.getPackage().getSimpleName()
+//								.equals("java.lang")) {
+//							// ignore type in same package
+//							if (!ref.getPackage().getSimpleName()
+//									.equals(pack.getQualifiedName())) {
+//								write("import " + ref.getQualifiedName() + ";")
+//										.writeln();
+//							}
+//						}
+//					}
+//				}
+//			}
 			writeln();
 		}
 		return this;

@@ -54,6 +54,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	CtPackageReference pack;
 
+	boolean isSuperReference = false;
+
 	public CtTypeReferenceImpl() {
 		super();
 	}
@@ -510,6 +512,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	public boolean isAnonymous() {
 		return getSimpleName().isEmpty();
+	}
+
+	@Override
+	public boolean isSuperReference() {
+		return isSuperReference ;
+	}
+	
+	public void setSuperReference(boolean b){
+		isSuperReference = b;
 	}
 
 }
