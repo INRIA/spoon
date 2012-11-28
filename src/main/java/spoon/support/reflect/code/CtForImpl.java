@@ -17,22 +17,22 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.ChildList;
 
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<Boolean> expression;
 
-	List<CtStatement> forInit = new ArrayList<CtStatement>();
+	List<CtStatement> forInit = new ChildList<CtStatement>(this);
 
-	List<CtStatement> forUpdate = new ArrayList<CtStatement>();
+	List<CtStatement> forUpdate = new ChildList<CtStatement>(this);
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtFor(this);
@@ -52,15 +52,15 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	public void setExpression(CtExpression<Boolean> expression) {
 		this.expression = expression;
+		expression.setParent(this);
 	}
 
 	public void setForInit(List<CtStatement> forInit) {
-		this.forInit = forInit;
+		this.forInit = new ChildList<CtStatement>(forInit,this);
 	}
 
 	public void setForUpdate(List<CtStatement> forUpdate) {
-		this.forUpdate = forUpdate;
-
+		this.forUpdate = new ChildList<CtStatement>(forUpdate,this);
 	}
 
 }

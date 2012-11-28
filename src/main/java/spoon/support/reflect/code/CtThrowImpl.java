@@ -34,6 +34,7 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 
 	public void setThrownExpression(CtExpression<? extends Throwable> expression) {
 		this.throwExpression = expression;
+		throwExpression.setParent(this);
 	}
 
 	public void accept(CtVisitor visitor) {

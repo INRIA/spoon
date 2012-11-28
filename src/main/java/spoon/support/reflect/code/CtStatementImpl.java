@@ -18,13 +18,17 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 
 public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		CtStatement {
+	private static final long serialVersionUID = 1L;
 
 	public static void insertAfter(CtStatement target, CtStatement statement) {
 		CtStatementList<?> sts = target.getFactory().Core()
@@ -71,12 +75,62 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 	public static void insertBefore(CtStatement target,
 			CtStatementList<?> statements) {
 		CtElement e = target.getParent();
-		if ((e instanceof CtExecutable)) {
+		if (e instanceof CtExecutable) {
 			throw new RuntimeException(
 					"cannot insert in this context (use insertEnd?)");
 		}
-		CtBlock<?> parentBlock = (CtBlock<?>) e;
 		int i = 0;
+		CtBlock<?> parentBlock;
+		if(e instanceof CtIf){
+			boolean inThen=true;
+			CtStatement stat = ((CtIf) e).getThenStatement();
+			if(stat!=target){
+				stat = ((CtIf) e).getElseStatement();
+				inThen=false;
+			}
+			if(stat!=target){
+				throw new IllegalArgumentException("should not happen");
+			}
+			if(stat instanceof CtBlock){
+				parentBlock = (CtBlock<?>) stat;
+			}else{
+				CtBlock<?> block = target.getFactory().Core().createBlock();
+				block.getStatements().add(stat);
+				stat.setParent(block);
+				if(inThen)
+					((CtIf) e).setThenStatement(block);
+				else
+					((CtIf) e).setElseStatement(block);
+				block.setParent(e);
+				parentBlock = block;
+			}
+		}else if(e instanceof CtLoop){
+			CtStatement stat = ((CtLoop) e).getBody();
+			if(stat instanceof CtBlock){
+				parentBlock = (CtBlock<?>) stat;
+			}else{
+				CtBlock<?> block = target.getFactory().Core().createBlock();
+				block.getStatements().add(stat);
+				stat.setParent(block);
+				((CtLoop) e).setBody(block);
+				block.setParent(e);
+				parentBlock = block;
+			}
+		}else if(e instanceof CtCase){
+			for (CtStatement s : ((CtCase<?>) e).getStatements()) {
+				if (s == target) {
+					break;
+				}
+				i++;
+			}
+			for (int j = statements.getStatements().size() - 1; j >= 0; j--) {
+				CtStatement s = statements.getStatements().get(j);
+				((CtCase<?>) e).getStatements().add(i, s);
+			}
+			return;
+		}else{
+			parentBlock = (CtBlock<?>) e;//BCUTAG bad cast
+		}
 		for (CtStatement s : parentBlock.getStatements()) {
 			if (s == target) {
 				break;

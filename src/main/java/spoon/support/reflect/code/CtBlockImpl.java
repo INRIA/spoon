@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtBlock;
@@ -30,11 +29,12 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.util.ChildList;
 
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtStatement> statements = new ArrayList<CtStatement>();
+	List<CtStatement> statements = new ChildList<CtStatement>(this);
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtBlock(this);
@@ -114,7 +114,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void setStatements(List<CtStatement> statements) {
-		this.statements = statements;
+		this.statements = new ChildList<CtStatement>(statements,this);
 	}
 
 	public R S() {

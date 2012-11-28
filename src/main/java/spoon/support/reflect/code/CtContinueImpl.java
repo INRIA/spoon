@@ -38,6 +38,7 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 
 	public void setLabelledStatement(CtStatement labelledStatement) {
 		this.labelledStatement = labelledStatement;
+		labelledStatement.setParent(this);
 	}
 	
 	public String getTargetLabel() {

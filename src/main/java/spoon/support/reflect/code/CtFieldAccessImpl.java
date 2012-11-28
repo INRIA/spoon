@@ -37,7 +37,6 @@ public class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> implements
 		return target;
 	}
 
-	@SuppressWarnings("unchecked")
 	public CtFieldReference<T> getVariable() {
 		return (CtFieldReference<T>) super.getVariable();
 	}
@@ -50,6 +49,7 @@ public class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> implements
 
 	public void setTarget(CtExpression<?> target) {
 		this.target = target;
+		target.setParent(this);
 	}
 
 }

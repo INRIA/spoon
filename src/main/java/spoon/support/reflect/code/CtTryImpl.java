@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtBlock;
@@ -26,18 +25,19 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.ChildList;
 
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
 
-	List<CtCatch> catchers = new ArrayList<CtCatch>();
+	List<CtCatch> catchers = new ChildList<CtCatch>(this);
 
 	public List<CtCatch> getCatchers() {
 		return catchers;
 	}
 
 	public void setCatchers(List<CtCatch> catchers) {
-		this.catchers = catchers;
+		this.catchers = new ChildList<CtCatch>(catchers,this);
 	}
 
 	public void accept(CtVisitor visitor) {
@@ -52,6 +52,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	public void setFinalizer(CtBlock<?> finalizer) {
 		this.finalizer = finalizer;
+		finalizer.setParent(this);
 	}
 
 	CtBlock<?> body;
@@ -62,6 +63,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	public void setBody(CtBlock<?> body) {
 		this.body = body;
+		body.setParent(this);
 	}
 
 	public Void S() {

@@ -77,7 +77,7 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements
 
 	public void setOperand(CtExpression<T> expression) {
 		this.operand = expression;
-
+		operand.setParent(this);
 	}
 
 	public void setKind(UnaryOperatorKind kind) {

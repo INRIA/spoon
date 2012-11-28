@@ -27,6 +27,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 		CtExpression<T> {
+	private static final long serialVersionUID = 1L;
 	CtTypeReference<T> type;
 
 	List<CtTypeReference<?>> typeCasts = new ArrayList<CtTypeReference<?>>();
