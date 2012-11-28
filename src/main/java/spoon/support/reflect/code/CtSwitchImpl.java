@@ -17,18 +17,18 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.ChildList;
 
 public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtCase<? super S>> cases = new ArrayList<CtCase<? super S>>();
+	List<CtCase<? super S>> cases = new ChildList<CtCase<? super S>>(this);
 
 	CtExpression<S> expression;
 
@@ -45,11 +45,12 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	}
 
 	public void setCases(List<CtCase<? super S>> cases) {
-		this.cases = cases;
+		this.cases = new ChildList<CtCase<? super S>>(cases,this);
 	}
 
 	public void setSelector(CtExpression<S> selector) {
 		this.expression = selector;
+		expression.setParent(this);
 	}
 
 }

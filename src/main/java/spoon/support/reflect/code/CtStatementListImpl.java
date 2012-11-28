@@ -17,20 +17,21 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.ChildList;
 
 public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		CtStatementList<R> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtStatement> statements = new ArrayList<CtStatement>();
+	List<CtStatement> statements = new ChildList<CtStatement>(this);
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtStatementList(this);
@@ -41,7 +42,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 	}
 
 	public void setStatements(List<CtStatement> statements) {
-		this.statements = statements;
+		this.statements = new ChildList<CtStatement>(statements,this);
 	}
 
 	public R S() {

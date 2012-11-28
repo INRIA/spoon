@@ -23,6 +23,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 public abstract class CtCodeElementImpl extends CtElementImpl implements
 		CtCodeElement {
+	private static final long serialVersionUID = 1L;
 	public CtCodeElementImpl() {
 		super();
 	}

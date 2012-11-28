@@ -17,20 +17,20 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.ChildList;
 
 public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 		CtNewArray<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtExpression<Integer>> dimensionExpressions = new ArrayList<CtExpression<Integer>>();
+	List<CtExpression<Integer>> dimensionExpressions = new ChildList<CtExpression<Integer>>(this);
 
-	List<CtExpression<?>> expression = new ArrayList<CtExpression<?>>();
+	List<CtExpression<?>> expression = new ChildList<CtExpression<?>>(this);
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtNewArray(this);
@@ -46,10 +46,10 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 
 	public void setDimensionExpressions(
 			List<CtExpression<Integer>> dimensionExpressions) {
-		this.dimensionExpressions = dimensionExpressions;
+		this.dimensionExpressions = new ChildList<CtExpression<Integer>>(dimensionExpressions,this);
 	}
 
 	public void setElements(List<CtExpression<?>> expression) {
-		this.expression = expression;
+		this.expression = new ChildList<CtExpression<?>>(expression,this);
 	}
 }

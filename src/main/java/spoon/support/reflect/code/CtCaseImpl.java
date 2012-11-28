@@ -17,20 +17,20 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.ChildList;
 
 public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<E> caseExpression;
 
-	List<CtStatement> statements = new ArrayList<CtStatement>();
+	List<CtStatement> statements = new ChildList<CtStatement>(this);
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCase(this);
@@ -46,10 +46,11 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	public void setCaseExpression(CtExpression<E> caseExpression) {
 		this.caseExpression = caseExpression;
+		caseExpression.setParent(this);
 	}
 
 	public void setStatements(List<CtStatement> statements) {
-		this.statements = statements;
+		this.statements = new ChildList<CtStatement>(statements,this);
 	}
 
 }

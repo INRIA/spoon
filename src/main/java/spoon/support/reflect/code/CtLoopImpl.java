@@ -23,6 +23,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtSimpleType;
 
 public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
+	private static final long serialVersionUID = 1L;
 
 	CtStatement body;
 
@@ -40,5 +41,6 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 
 	public void setBody(CtStatement body) {
 		this.body = body;
+		this.body.setParent(this);
 	}
 }

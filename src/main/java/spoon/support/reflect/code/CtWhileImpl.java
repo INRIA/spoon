@@ -36,6 +36,7 @@ public class CtWhileImpl extends CtLoopImpl implements CtWhile {
 
 	public void setLoopingExpression(CtExpression<Boolean> expression) {
 		this.expression = expression;
+		expression.setParent(this);
 	}
 
 }

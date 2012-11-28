@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtExpression;
@@ -28,6 +27,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.ChildList;
 
 public class CtNewClassImpl<T> extends
 		CtTargetedExpressionImpl<T, CtExpression<?>> implements CtNewClass<T> {
@@ -35,7 +35,7 @@ public class CtNewClassImpl<T> extends
 
 	CtClass<?> annonymousClass;
 
-	List<CtExpression<?>> arguments = new ArrayList<CtExpression<?>>();
+	List<CtExpression<?>> arguments = new ChildList<CtExpression<?>>(this);
 
 	CtExecutableReference<T> executable;
 
@@ -87,10 +87,11 @@ public class CtNewClassImpl<T> extends
 
 	public void setAnonymousClass(CtClass<?> annonymousClass) {
 		this.annonymousClass = annonymousClass;
+		annonymousClass.setParent(this);
 	}
 
 	public void setArguments(List<CtExpression<?>> arguments) {
-		this.arguments = arguments;
+		this.arguments = new ChildList<CtExpression<?>>(arguments,this);
 	}
 
 	public void setExecutable(CtExecutableReference<T> executable) {

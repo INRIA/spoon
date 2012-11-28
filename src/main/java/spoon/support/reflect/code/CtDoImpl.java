@@ -36,5 +36,6 @@ public class CtDoImpl extends CtLoopImpl implements CtDo {
 
 	public void setLoopingExpression(CtExpression<Boolean> expression) {
 		this.expression = expression;
+		expression.setParent(this);
 	}
 }

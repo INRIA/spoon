@@ -43,10 +43,12 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 
 	public void setBody(CtBlock<?> body) {
 		this.body = body;
+		this.body.setParent(this);
 	}
 
 	public void setParameter(CtLocalVariable<? extends Throwable> parameter) {
 		this.parameter = parameter;
+		parameter.setParent(this);
 	}
 
 }

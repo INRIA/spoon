@@ -22,6 +22,7 @@ import spoon.reflect.code.CtTargetedExpression;
 
 public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>>
 		extends CtExpressionImpl<E> implements CtTargetedExpression<E, T> {
+	private static final long serialVersionUID = 1L;
 
 	T target;
 
@@ -31,6 +32,7 @@ public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>>
 
 	public void setTarget(T target) {
 		this.target = target;
+		target.setParent(this);
 	}
 
 }
