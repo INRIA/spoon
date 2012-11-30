@@ -140,6 +140,7 @@ import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
+import spoon.support.util.ChildList;
 import spoon.support.util.RtHelper;
 
 /**
@@ -204,14 +205,18 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 									.getMethod("clone").invoke(fieldValue);
 							c.clear();
 							f.set(result, c);
+							
+							if (fieldValue instanceof ChildList)
+								((ChildList)c).setParent(cloningContext.peek());
+							
 							for (Object o : (Collection) fieldValue) {
 								c.add(clone(o));
 							}
 						} else if (fieldValue instanceof Map) {
 							// System.err.println(" cloning collection " + f+" :
 							// "+cloningContext.peek().getClass().getSimpleName());
-							Map m = (Map) fieldValue.getClass().getMethod(
-									"clone").invoke(fieldValue);
+							Map m = (Map) fieldValue.getClass()
+									.getMethod("clone").invoke(fieldValue);
 							// m.clear();
 							f.set(result, m);
 							for (Entry e : ((Map<?, ?>) fieldValue).entrySet()) {
@@ -540,13 +545,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		CtCodeSnippetExpression<T> e = new CtCodeSnippetExpressionImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
-	}	
+	}
 
 	public CtCodeSnippetStatement createCodeSnippetStatement() {
 		CtCodeSnippetStatement e = new CtCodeSnippetStatementImpl();
 		e.setFactory(getMainFactory());
 		return e;
-	}	
+	}
 
 	public CtWhile createWhile() {
 		CtWhile e = new CtWhileImpl();
@@ -562,22 +567,22 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		this.mainFactory = mainFactory;
 	}
 
-	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int start,
-			int end, int[] lineSeparatorPositions) {
+	public SourcePosition createSourcePosition(CompilationUnit compilationUnit,
+			int start, int end, int[] lineSeparatorPositions) {
 		return new SourcePositionImpl(compilationUnit, start, end,
 				lineSeparatorPositions);
 	}
 
 	public CompilationUnit createCompilationUnit() {
-		CompilationUnit cu=new CompilationUnitImpl();
+		CompilationUnit cu = new CompilationUnitImpl();
 		cu.setFactory(getMainFactory());
 		return cu;
 	}
-	
+
 	public CompilationUnit createVirtualCompilationUnit() {
-		CompilationUnit cu=new CompilationUnitVirtualImpl();
+		CompilationUnit cu = new CompilationUnitVirtualImpl();
 		cu.setFactory(getMainFactory());
 		return cu;
 	}
-	
+
 }
