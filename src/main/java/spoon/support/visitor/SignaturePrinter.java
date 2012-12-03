@@ -349,8 +349,10 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		scan(m.getFormalTypeParameters());
-		write(" ");
+		if (!m.getFormalTypeParameters().isEmpty()) {
+			scan(m.getFormalTypeParameters());
+			write(" ");
+		}
 		scan(m.getType());
 		write(" ");
 		write(m.getSimpleName());

@@ -238,6 +238,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 			// }
 			if (result instanceof CtElement) {
 				cloningContext.pop();
+				if (cloningContext.size() == 1)
+					cloningContext.pop();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
