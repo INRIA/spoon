@@ -3,7 +3,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5</version>
   <name>Spoon Core</name>
   <description>Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -29,9 +29,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://scm.gforge.inria.fr/svn/spoon/trunk</connection>
-    <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/?cvsroot=spoon</url>
-    <developerConnection>scm:svn:svn+ssh:petitpre@scm.gforge.inria.fr:/svnroot/spoon/trunk</developerConnection>
+    <connection>scm:svn:svn://scm.gforge.inria.fr/svnroot/spoon/tags/spoon-core-1.5</connection>
+    <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/tags/spoon-core-1.5?cvsroot=spoon</url>
+    <developerConnection>scm:svn:svn+ssh://petitpre@scm.gforge.inria.fr/svnroot/spoon/tags/spoon-core-1.5</developerConnection>
   </scm>
   <developers>
     <developer>
@@ -85,6 +85,13 @@
     <developer>
       <name>Olivier Barais</name>
       <email>barais@irisa.fr</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+        <developer>
+      <name>Benoit Cornu</name>
+      <email>benoit.cornu@inria.fr</email>
       <roles>
         <role>Developer</role>
       </roles>
