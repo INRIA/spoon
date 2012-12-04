@@ -3,12 +3,9 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>2.0-SNAPSHOT</version>
+  <version>1.5-SNAPSHOT</version>
   <name>Spoon Core</name>
-  <description>
-    Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements,
-    expressions...) can be accessed both for reading and modification.
-  </description>
+  <description>Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification.</description>
   <url>http://spoon.gforge.inria.fr/</url>
   <inceptionYear>2007</inceptionYear>
   <licenses>
@@ -32,9 +29,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:cvs:pserver:anonymous@scm.gforge.inria.fr:/cvsroot/spoon:spoon-core</connection>
+    <connection>scm:svn:https://scm.gforge.inria.fr/svn/spoon/trunk</connection>
     <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/?cvsroot=spoon</url>
-    <developerConnection>scm:cvs:ext:dwayneb@scm.gforge.inria.fr:/cvsroot/spoon:spoon-core</developerConnection>
+    <developerConnection>scm:svn:svn+ssh:petitpre@scm.gforge.inria.fr:/svnroot/spoon/trunk</developerConnection>
   </scm>
   <developers>
     <developer>
@@ -110,8 +107,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>core</artifactId>
-      <version>3.3.0.771</version>
-<!--       <version>3.5.1.v_R35x</version> -->
+      <version>3.3.8.201211290939</version>
     </dependency>
     <dependency>
       <groupId>com.martiansoftware</groupId>
@@ -352,12 +348,12 @@
         <repository>
           <id>gforge.inria.fr</id>
           <name>inria</name>
-          <url>scp://gforge.inria.fr/home/groups/maven-repo/htdocs/releases</url>
+          <url>scp://scm.gforge.inria.fr/home/groups/maven-repo/htdocs/releases</url>
         </repository>
         <site>
           <id>gforge.inria.fr</id>
           <name>inria</name>
-          <url>scp://gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/${project.artifactId}</url>
+          <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/${project.artifactId}</url>
         </site>
       </distributionManagement>
     </profile>
@@ -366,7 +362,11 @@
     <snapshotRepository>
       <id>gforge.inria.fr</id>
       <name>inria</name>
-      <url>scp://gforge.inria.fr/home/groups/maven-repo/htdocs/snapshots</url>
+      <url>scp://scm.gforge.inria.fr/home/groups/maven-repo/htdocs/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
+  <organization>
+  	<name>Inria</name>
+  	<url>http://www.inria.fr</url>
+  </organization>
 </project>
