@@ -4,6 +4,9 @@
     <author>Renaud Pawlak</author>
   </properties>
   <body>
+         <release version="1.5" date="2012-12-04" description="fix version">
+	  <action dev="Benoit cornu" type="fix">allow spoon to work on "big" java 5 programs</action>
+    </release>
     <release version="1.4" date="2007-11-09" description="fix version">
 	  <action dev="Renaud Pawlak" type="fix">when generating a new class with the substitution API, make sure that the positions are set to null so that the new class is actually printed out (otherwise, the compilation unit misleads the Java printer and the class is not printed)</action>
 	  <action dev="Renaud Pawlak" type="fix">migrated to Eclipse 3.3 (fixed generics warnings)</action>
