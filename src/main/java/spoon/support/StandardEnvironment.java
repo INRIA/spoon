@@ -305,7 +305,7 @@ public class StandardEnvironment implements Serializable, Environment {
         this.xmlRootFolder = xmlRootFolder;
     }
 
-    int complianceLevel = 5;
+    int complianceLevel = 6;
 
     public int getComplianceLevel() {
         return complianceLevel;
