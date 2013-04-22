@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.eclipse.jdt.internal.compiler.util.Messages;
+import spoon.eclipse.jdt.internal.compiler.util.Messages;
 
 public class ClassFileUtil {
 

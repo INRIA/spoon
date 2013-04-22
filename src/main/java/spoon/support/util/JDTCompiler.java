@@ -23,15 +23,15 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.internal.compiler.ClassFile;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
-import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
-import org.eclipse.jdt.internal.compiler.batch.FileSystem;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
+import spoon.eclipse.jdt.internal.compiler.ClassFile;
+import spoon.eclipse.jdt.internal.compiler.CompilationResult;
+import spoon.eclipse.jdt.internal.compiler.ICompilerRequestor;
+import spoon.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
+import spoon.eclipse.jdt.internal.compiler.batch.FileSystem;
+import spoon.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import spoon.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import spoon.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import spoon.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 
 public class JDTCompiler implements ICompilerRequestor {
 
@@ -77,7 +77,7 @@ public class JDTCompiler implements ICompilerRequestor {
 	}
 
 	public List<ClassFile> compile(ICompilationUnit[] units) {
-		org.eclipse.jdt.internal.compiler.Compiler compiler = new org.eclipse.jdt.internal.compiler.Compiler(
+		spoon.eclipse.jdt.internal.compiler.Compiler compiler = new spoon.eclipse.jdt.internal.compiler.Compiler(
 				getLibraryAccess(), getHandlingPolicy(), getCompilerOption(),
 				this, new DefaultProblemFactory());
 		compiler.compile(units);
