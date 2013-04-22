@@ -26,22 +26,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.core.compiler.CategorizedProblem;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
-import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
-import org.eclipse.jdt.internal.compiler.IProblemFactory;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-import org.eclipse.jdt.internal.compiler.batch.Main;
-import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
-import org.eclipse.jdt.internal.compiler.util.Util;
+import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
+import spoon.eclipse.jdt.internal.compiler.CompilationResult;
+import spoon.eclipse.jdt.internal.compiler.ICompilerRequestor;
+import spoon.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
+import spoon.eclipse.jdt.internal.compiler.IProblemFactory;
+import spoon.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import spoon.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+import spoon.eclipse.jdt.internal.compiler.batch.Main;
+import spoon.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import spoon.eclipse.jdt.internal.compiler.util.Util;
 
 import spoon.reflect.Factory;
 
 public class JDTCompiler extends Main implements ICompilerRequestor {
 
-	class Compiler extends org.eclipse.jdt.internal.compiler.Compiler {
+	class Compiler extends spoon.eclipse.jdt.internal.compiler.Compiler {
 
 		@SuppressWarnings("deprecation")
 		public Compiler(INameEnvironment environment,
@@ -113,7 +113,8 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 		}
 		
 		// args.add("-nowarn");
-		args.add(f.getEnvironment().getSourcePath());
+		String srcPath = f.getEnvironment().getSourcePath();
+		args.add(srcPath);
 
 //		JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
 //				new PrintWriter(System.err));

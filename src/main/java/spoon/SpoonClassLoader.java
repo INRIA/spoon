@@ -21,8 +21,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.jdt.internal.compiler.ClassFile;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import spoon.eclipse.jdt.internal.compiler.ClassFile;
+import spoon.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
 import spoon.processing.Builder;
 import spoon.processing.Environment;

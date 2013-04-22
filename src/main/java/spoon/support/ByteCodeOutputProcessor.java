@@ -21,9 +21,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.internal.compiler.ClassFile;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import spoon.eclipse.jdt.internal.compiler.ClassFile;
+import spoon.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import spoon.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;

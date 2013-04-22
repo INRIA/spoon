@@ -20,10 +20,10 @@ package spoon.support.util;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.eclipse.jdt.internal.compiler.util.Util;
+import spoon.eclipse.jdt.core.IJavaElement;
+import spoon.eclipse.jdt.core.compiler.CharOperation;
+import spoon.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import spoon.eclipse.jdt.internal.compiler.util.Util;
 
 /**
  * A basic implementation of <code>ICompilationUnit</code> for use in the
@@ -82,7 +82,7 @@ public class BasicCompilationUnit implements ICompilationUnit {
 	}
 
 	/**
-	 * @see org.eclipse.jdt.internal.compiler.env.IDependent#getFileName()
+	 * @see spoon.eclipse.jdt.internal.compiler.env.IDependent#getFileName()
 	 */
 	public char[] getFileName() {
 		return this.fileName;

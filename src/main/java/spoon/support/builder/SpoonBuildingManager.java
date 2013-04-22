@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.core.compiler.CategorizedProblem;
+import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
 
 import spoon.processing.Builder;
 import spoon.reflect.Factory;

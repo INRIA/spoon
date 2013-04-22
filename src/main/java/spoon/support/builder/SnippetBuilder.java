@@ -1,6 +1,6 @@
 package spoon.support.builder;
 
-import org.eclipse.jdt.core.compiler.CategorizedProblem;
+import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
 
 import spoon.reflect.Factory;
 
