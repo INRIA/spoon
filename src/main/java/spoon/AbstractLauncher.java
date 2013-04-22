@@ -239,7 +239,7 @@ public abstract class AbstractLauncher {
 		opt2.setLongFlag("compliance");
 		opt2.setHelp("set java compliance level (1,2,3,4,5 or 6)");
 		opt2.setStringParser(JSAP.INTEGER_PARSER);
-		opt2.setDefault("5");
+		opt2.setDefault("6");
 		jsap.registerParameter(opt2);
 
 		// setting Input files & Directory
