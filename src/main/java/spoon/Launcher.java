@@ -49,7 +49,10 @@ public class Launcher extends AbstractLauncher {
 	 */
 	public static void main(String[] args) throws Exception {
         try {
-            new Launcher(args).run();
+        	if(args.length!=0)
+        		new Launcher(args).run();
+        	else
+        		new Launcher(new String[]{"--help"}).run();
         } catch(Exception exc) {
             exc.printStackTrace();
             throw exc;
