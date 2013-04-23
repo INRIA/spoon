@@ -949,9 +949,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		if (reference.getSimpleName().equals("this")) {
-			if (context.currentThis.isEmpty()
-					|| (!reference.getType().equals(context.currentThis.peek()) && !reference
-							.getDeclaringType().isAnonymous())) {
+			CtSimpleType<?> tmp = context.currentTopLevel;
+			boolean sameTopLevel=false;
+			if(tmp!=null 
+					&& tmp.getSimpleName()!=null && tmp.getSimpleName().equals(reference.getType().getSimpleName()) 
+					&& tmp.getPackage()!=null 
+					&& tmp.getPackage().getSimpleName().equals(reference.getType().getPackage().getSimpleName()))
+				sameTopLevel=true;
+			if (reference.getType().getDeclaringType()==null && !(context.currentThis.isEmpty() && sameTopLevel) && (context.currentThis.isEmpty()
+					|| (!reference.getType().equals(context.currentThis.peek()) 
+					&& !reference.getDeclaringType().isAnonymous()))) {
 				context.ignoreGenerics = true;
 				scan(reference.getDeclaringType());
 				write(".");
@@ -1623,14 +1630,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
-				if (!context.ignoreEnclosingClass
-						&& context.currentTopLevel != null) {
+//				if (!context.ignoreEnclosingClass
+//						&& context.currentTopLevel != null) {
 					boolean ign = context.ignoreGenerics;
 					context.ignoreGenerics = true;
 					scan(ref.getDeclaringType());
 					write(".");
 					context.ignoreGenerics = ign;
-				}
+//				}
 				write(ref.getSimpleName());
 			} else {
 				write(ref.getQualifiedName());
