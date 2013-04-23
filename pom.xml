@@ -113,9 +113,9 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.eclipse.jdt</groupId>
+			<groupId>spoon.eclipse.jdt</groupId>
 			<artifactId>core</artifactId>
-			<version>3.3.8.201211290939</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.martiansoftware</groupId>
