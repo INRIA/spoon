@@ -68,6 +68,11 @@ public interface Environment extends FactoryAccessor {
 	 * Returns true if Spoon is in debug mode.
 	 */
 	public boolean isDebug();
+	
+	/**
+	 * Returns true is we let Spoon handle imports
+	 */
+	public boolean isAutoImports();
 
 	/**
 	 * Tells if the processing is stopped, generally because one of the

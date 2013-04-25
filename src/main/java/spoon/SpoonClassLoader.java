@@ -18,6 +18,7 @@
 package spoon;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -152,7 +153,27 @@ public class SpoonClassLoader extends ClassLoader {
 
 		if (clas == null)
 			throw new ClassNotFoundException(name);
+
+		try {
+			injectMetaClass(clas);
+		} catch (Exception e) {
+		}
+
 		return clas;
+	}
+
+	private void injectMetaClass(Class<?> clas) throws NoSuchFieldException,
+			SecurityException, IllegalArgumentException, IllegalAccessException {
+		// try to inject metaclass
+		Field field = clas.getField("METACLASS");
+		if (field == null) {
+			return;
+		}
+		System.out.println("try to inject metaclass in" + clas.getName());
+
+		CtSimpleType<?> metaclass = factory.Type().get(clas);
+		field.setAccessible(true);
+		field.set(null, metaclass);
 	}
 
 	private void processJavaFile(String qualifiedName) throws Exception {
@@ -177,7 +198,8 @@ public class SpoonClassLoader extends ClassLoader {
 		getProcessingManager().process(c);
 
 		// Printing it
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getEnvironment());
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
+				getEnvironment());
 		printer.scan(c);
 
 		String[] tmp = c.getQualifiedName().split("[.]");
@@ -196,7 +218,8 @@ public class SpoonClassLoader extends ClassLoader {
 
 		for (ClassFile f : comp.getClassFiles()) {
 			String name = new String(f.fileName()).replace('/', '.');
-			Class<?> cl = defineClass(name, f.getBytes(), 0, f.getBytes().length);
+			Class<?> cl = defineClass(name, f.getBytes(), 0,
+					f.getBytes().length);
 			classcache.put(name, cl);
 		}
 

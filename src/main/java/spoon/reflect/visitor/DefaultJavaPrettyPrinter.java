@@ -121,7 +121,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * A scanner that calculates the imports for a given model.
 	 */
 	private class ImportScanner extends CtScanner {
-		@SuppressWarnings("unchecked")
 		Map<String, CtTypeReference<?>> imports = new TreeMap<String, CtTypeReference<?>>();
 
 		/**
@@ -172,7 +171,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		public <T> void visitCtExecutableReference(
 				CtExecutableReference<T> reference) {
 			enterReference(reference);
-			if (reference.getDeclaringType() != null && reference.getDeclaringType().getDeclaringType()==null){
+			if (reference.getDeclaringType() != null
+					&& reference.getDeclaringType().getDeclaringType() == null) {
 				addImport(reference.getDeclaringType());
 			}
 			scanReferences(reference.getActualTypeArguments());
@@ -238,10 +238,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		/** Layout variables */
 		int jumped = 0;
 
-		int lineLength = 80;
-
-		int lineLengthMargin = 5;
-
 		int nbTabs = 0;
 
 		Stack<CtExpression<?>> parenthesedExpression = new Stack<CtExpression<?>>();
@@ -253,27 +249,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		boolean skipArray = false;
 
-		int target = 0;
-
 		boolean ignoreStaticAccess = false;
 
 		boolean ignoreEnclosingClass = false;
 
 		void enterTarget() {
-			target++;
 		}
 
 		void exitTarget() {
 			if (jumped > 0) {
 				jumped--;
-			} else {
-				target--;
 			}
-		}
-
-		void jumpTarget() {
-			jumped++;
-			target--;
 		}
 
 	}
@@ -460,9 +446,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Make the imports for a given type.
 	 */
 	public void makeImports(CtSimpleType<?> type) {
-		context.currentTopLevel = type;
-		importsContext.addImport(context.currentTopLevel.getReference());
-		importsContext.scan(context.currentTopLevel);
+		if (env.isAutoImports()) {
+			context.currentTopLevel = type;
+			importsContext.addImport(context.currentTopLevel.getReference());
+			importsContext.scan(context.currentTopLevel);
+		}
 	}
 
 	/**
@@ -681,7 +669,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
 		enterCtStatement(caseStatement);
 		if (caseStatement.getCaseExpression() != null) {
@@ -950,15 +938,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		if (reference.getSimpleName().equals("this")) {
 			CtSimpleType<?> tmp = context.currentTopLevel;
-			boolean sameTopLevel=false;
-			if(tmp!=null 
-					&& tmp.getSimpleName()!=null && tmp.getSimpleName().equals(reference.getType().getSimpleName()) 
-					&& tmp.getPackage()!=null 
-					&& tmp.getPackage().getSimpleName().equals(reference.getType().getPackage().getSimpleName()))
-				sameTopLevel=true;
-			if (reference.getType().getDeclaringType()==null && !(context.currentThis.isEmpty() && sameTopLevel) && (context.currentThis.isEmpty()
-					|| (!reference.getType().equals(context.currentThis.peek()) 
-					&& !reference.getDeclaringType().isAnonymous()))) {
+			boolean sameTopLevel = false;
+			if (tmp != null
+					&& tmp.getSimpleName() != null
+					&& tmp.getSimpleName().equals(
+							reference.getType().getSimpleName())
+					&& tmp.getPackage() != null
+					&& tmp.getPackage()
+							.getSimpleName()
+							.equals(reference.getType().getPackage()
+									.getSimpleName()))
+				sameTopLevel = true;
+			if (reference.getType().getDeclaringType() == null
+					&& !(context.currentThis.isEmpty() && sameTopLevel)
+					&& (context.currentThis.isEmpty() || (!reference.getType()
+							.equals(context.currentThis.peek()) && !reference
+							.getDeclaringType().isAnonymous()))) {
 				context.ignoreGenerics = true;
 				scan(reference.getDeclaringType());
 				write(".");
@@ -979,7 +974,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (context.currentTopLevel != null) {
 					CtTypeReference<?> ref = reference.getDeclaringType();
 					CtTypeReference<?> ref2;
-					if(context.currentThis!=null && context.currentThis.size()>0)
+					if (context.currentThis != null
+							&& context.currentThis.size() > 0)
 						ref2 = context.currentThis.lastElement();
 					else
 						ref2 = context.currentTopLevel.getReference();
@@ -1135,9 +1131,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				CtTypeReference<?> type = invocation.getExecutable()
 						.getDeclaringType();
 				CtType typeTmp = invocation.getParent(CtType.class);
-//				if (isHiddenByField(invocation.getParent(CtType.class), type)) {
-//					importsContext.imports.remove(type.getSimpleName());
-//				}
+				if (isHiddenByField(invocation.getParent(CtType.class), type)) {
+					importsContext.imports.remove(type.getSimpleName());
+				}
 				context.ignoreGenerics = true;
 				scan(type);
 				context.ignoreGenerics = false;
@@ -1149,14 +1145,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(".");
 			}
 			boolean removeLastChar = false;
-			if(invocation.getGenericTypes()!=null && invocation.getGenericTypes().size()>0){
+			if (invocation.getGenericTypes() != null
+					&& invocation.getGenericTypes().size() > 0) {
 				write("<");
 				for (CtTypeReference<?> ref : invocation.getGenericTypes()) {
 					context.isInvocation = true;
 					scan(ref);
 					context.isInvocation = false;
 					write(",");
-					removeLastChar=true;
+					removeLastChar = true;
 				}
 				if (removeLastChar)
 					removeLastChar();
@@ -1247,8 +1244,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else if (literal.getValue() instanceof String) {
 			// JDT removes unicode values, as a result, it may change
 			// the semantics of spooned programs.
-			// Consequently, we fixed JDT it self (see char[] org.eclipse.jdt.internal.compiler.parser.Scanner.getCurrentTokenSourceString())
-			// and we then disable the old quoting which is now incorrect (no quoting of \)
+			// Consequently, we fixed JDT it self (see char[]
+			// org.eclipse.jdt.internal.compiler.parser.Scanner.getCurrentTokenSourceString())
+			// and we then disable the old quoting which is now incorrect (no
+			// quoting of \)
 			// If we port Spoon to a newer version of JDT
 			// we have to forward port the JDT fix and keep this one
 			// write("\"" + quote((String) literal.getValue()) + "\"");
@@ -1375,7 +1374,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		writeModifiers(e);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
 
@@ -1603,7 +1602,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
-		if (!context.isInvocation && !ref.getBounds().isEmpty()
+		if (!context.isInvocation
+				&& !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
 						.getQualifiedName().equals("java.lang.Object"))) {
 			if (ref.isUpper()) {
@@ -1624,26 +1624,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 			return;
 		}
-		if (
-//				(importsContext.isImported(ref) && !context.ignoreImport && ref.getPackage()!=null)|| 
-				context.printShortName) {
+		if ((importsContext.isImported(ref) && !context.ignoreImport && ref
+				.getPackage() != null) || context.printShortName) {
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
-//				if (!context.ignoreEnclosingClass
-//						&& context.currentTopLevel != null) {
+				if (!context.ignoreEnclosingClass
+						&& context.currentTopLevel != null) {
 					boolean ign = context.ignoreGenerics;
 					context.ignoreGenerics = true;
 					scan(ref.getDeclaringType());
 					write(".");
 					context.ignoreGenerics = ign;
-//				}
+				}
 				write(ref.getSimpleName());
 			} else {
 				write(ref.getQualifiedName());
 			}
 		}
-		if(ref.isSuperReference())
+		if (ref.isSuperReference())
 			write(".super");
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
@@ -1777,25 +1776,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				for (Import i : sourceCompilationUnit.getManualImports()) {
 					write(i + ";").writeln();
 				}
-			} 
-			// no more imports :)
-//			else {
-//				for (CtTypeReference<?> ref : importsContext.imports.values()) {
-//					// ignore non-top-level type
-//					if (ref.getPackage() != null) {
-//						// ignore java.lang package
-//						if (!ref.getPackage().getSimpleName()
-//								.equals("java.lang")) {
-//							// ignore type in same package
-//							if (!ref.getPackage().getSimpleName()
-//									.equals(pack.getQualifiedName())) {
-//								write("import " + ref.getQualifiedName() + ";")
-//										.writeln();
-//							}
-//						}
-//					}
-//				}
-//			}
+			} else if (env.isAutoImports()) {
+				for (CtTypeReference<?> ref : importsContext.imports.values()) {
+					// ignore non-top-level type
+					if (ref.getPackage() != null) {
+						// ignore java.lang package
+						if (!ref.getPackage().getSimpleName()
+								.equals("java.lang")) {
+							// ignore type in same package
+							if (!ref.getPackage().getSimpleName()
+									.equals(pack.getQualifiedName())) {
+								write("import " + ref.getQualifiedName() + ";")
+										.writeln();
+							}
+						}
+					}
+				}
+			}
 			writeln();
 		}
 		return this;

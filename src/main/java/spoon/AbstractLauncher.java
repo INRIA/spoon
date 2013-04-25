@@ -169,6 +169,7 @@ public abstract class AbstractLauncher {
 		env.setVerbose(getArguments().getBoolean("verbose")
 				|| getArguments().getBoolean("debug"));
 		env.setDebug(getArguments().getBoolean("debug"));
+		env.setAutoImports(!getArguments().getBoolean("imports"));
 
 		env.setTabulationSize(getArguments().getInt("tabsize"));
 		env.useTabulations(getArguments().getBoolean("tabs"));
@@ -206,8 +207,7 @@ public abstract class AbstractLauncher {
 		sw1 = new Switch("tabs");
 		sw1.setLongFlag("tabs");
 		sw1.setDefault("false");
-		sw1
-				.setHelp("Use tabulations instead of spaces in the generated code (use spaces by default)");
+		sw1.setHelp("Use tabulations instead of spaces in the generated code (use spaces by default)");
 		jsap.registerParameter(sw1);
 
 		// Tabs
@@ -215,8 +215,7 @@ public abstract class AbstractLauncher {
 		sw1.setLongFlag("fragments");
 		sw1.setShortFlag('f');
 		sw1.setDefault("false");
-		sw1
-				.setHelp("Use source code fragments to generate source code (preserve formatting)");
+		sw1.setHelp("Use source code fragments to generate source code (preserve formatting)");
 		jsap.registerParameter(sw1);
 
 		// Tab size
@@ -232,6 +231,13 @@ public abstract class AbstractLauncher {
 		sw1.setLongFlag("vvv");
 		sw1.setDefault("false");
 		sw1.setHelp("Generate all debugging info");
+		jsap.registerParameter(sw1);
+
+		// Auto-import
+		sw1 = new Switch("imports");
+		sw1.setLongFlag("noimports");
+		sw1.setDefault("false");
+		sw1.setHelp("Disable imports in generated files");
 		jsap.registerParameter(sw1);
 
 		// java compliance
@@ -472,8 +478,8 @@ public abstract class AbstractLauncher {
 		JSAPResult arguments = jsapArgs.parse(args);
 		if (!arguments.success()) {
 			// print out specific error messages describing the problems
-			for (java.util.Iterator<?> errs = arguments.getErrorMessageIterator(); errs
-					.hasNext();) {
+			for (java.util.Iterator<?> errs = arguments
+					.getErrorMessageIterator(); errs.hasNext();) {
 				System.err.println("Error: " + errs.next());
 			}
 		}
