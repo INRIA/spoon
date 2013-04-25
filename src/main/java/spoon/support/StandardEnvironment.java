@@ -48,316 +48,326 @@ import spoon.support.processing.XmlProcessorProperties;
  */
 public class StandardEnvironment implements Serializable, Environment {
 
-    /**
-     * The processors' properties files extension (.xml)
-     */
-    public static final String PROPERTIES_EXT = ".xml";
+	/**
+	 * The processors' properties files extension (.xml)
+	 */
+	public static final String PROPERTIES_EXT = ".xml";
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private boolean debug = false;
+	private boolean debug = false;
 
-    private FileGenerator<? extends CtElement> defaultFileGenerator;
+	private FileGenerator<? extends CtElement> defaultFileGenerator;
 
-    private int errorCount = 0;
+	private int errorCount = 0;
 
-    private transient Factory factory;
+	private transient Factory factory;
 
-    ProcessingManager manager;
+	ProcessingManager manager;
 
-    private boolean processingStopped = false;
+	private boolean processingStopped = false;
 
-    private boolean verbose = false;
+	private boolean verbose = false;
 
-    private int warningCount = 0;
+	private boolean autoImports = true;
 
-    private File xmlRootFolder;
+	private int warningCount = 0;
 
-    /**
-     * Creates a new environment with a <code>null</code> default file
-     * generator.
-     */
-    public StandardEnvironment() {
-    }
+	private File xmlRootFolder;
 
-    /**
-     * Creates a new environment.
-     */
-    public StandardEnvironment(FileGenerator<? extends CtElement> defaultFileGenerator) {
-        this.defaultFileGenerator = defaultFileGenerator;
-    }
+	/**
+	 * Creates a new environment with a <code>null</code> default file
+	 * generator.
+	 */
+	public StandardEnvironment() {
+	}
 
-    public void debugMessage(String message) {
-        if (isDebug()) {
-            System.out.println(message);
-        }
-    }
+	/**
+	 * Creates a new environment.
+	 */
+	public StandardEnvironment(
+			FileGenerator<? extends CtElement> defaultFileGenerator) {
+		this.defaultFileGenerator = defaultFileGenerator;
+	}
 
-    public FileGenerator<? extends CtElement> getDefaultFileGenerator() {
-        return defaultFileGenerator;
-    }
+	public void debugMessage(String message) {
+		if (isDebug()) {
+			System.out.println(message);
+		}
+	}
 
-    public Factory getFactory() {
-        return factory;
-    }
+	public boolean isAutoImports() {
+		return autoImports;
+	}
 
-    public ProcessingManager getManager() {
-        return manager;
-    }
+	public void setAutoImports(boolean autoImports) {
+		this.autoImports = autoImports;
+	}
 
-    Map<String, ProcessorProperties> processorProperties = new TreeMap<String, ProcessorProperties>();
+	public FileGenerator<? extends CtElement> getDefaultFileGenerator() {
+		return defaultFileGenerator;
+	}
 
-    public ProcessorProperties getProcessorProperties(String processorName)
-            throws FileNotFoundException, IOException, SAXException {
-        if (processorProperties.containsKey(processorName)) {
-            return processorProperties.get(processorName);
-        }
+	public Factory getFactory() {
+		return factory;
+	}
 
-        InputStream in = getPropertyStream(processorName);
-        XmlProcessorProperties prop =null;
-        try {
-            prop = new XmlProcessorProperties(getFactory(),
-                    processorName, in);
-        } catch(SAXException e) {
-            throw new RuntimeException(e);
-        }
-        processorProperties.put(processorName, prop);
-        return prop;
-    }
+	public ProcessingManager getManager() {
+		return manager;
+	}
 
-    private InputStream getPropertyStream(String processorName)
-            throws FileNotFoundException {
-        for (File child : getXmlRootFolder().listFiles()) {
-            if (child.getName().equals(processorName + PROPERTIES_EXT)) {
-                return new FileInputStream(child);
-            }
-        }
-        throw new FileNotFoundException();
-    }
+	Map<String, ProcessorProperties> processorProperties = new TreeMap<String, ProcessorProperties>();
 
-    /**
-     * Gets the root folder where the processors' XML configuration files are
-     * located.
-     */
-    public File getXmlRootFolder() {
-        if (xmlRootFolder == null) {
-            xmlRootFolder = new File(".");
-        }
-        return xmlRootFolder;
-    }
+	public ProcessorProperties getProcessorProperties(String processorName)
+			throws FileNotFoundException, IOException, SAXException {
+		if (processorProperties.containsKey(processorName)) {
+			return processorProperties.get(processorName);
+		}
 
-    public boolean isDebug() {
-        return debug;
-    }
+		InputStream in = getPropertyStream(processorName);
+		XmlProcessorProperties prop = null;
+		try {
+			prop = new XmlProcessorProperties(getFactory(), processorName, in);
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
+		processorProperties.put(processorName, prop);
+		return prop;
+	}
 
-    /**
-     * Tells if the processing is stopped, generally because one of the
-     * processors called {@link #setProcessingStopped(boolean)} after reporting
-     * an error.
-     */
-    public boolean isProcessingStopped() {
-        return processingStopped;
-    }
+	private InputStream getPropertyStream(String processorName)
+			throws FileNotFoundException {
+		for (File child : getXmlRootFolder().listFiles()) {
+			if (child.getName().equals(processorName + PROPERTIES_EXT)) {
+				return new FileInputStream(child);
+			}
+		}
+		throw new FileNotFoundException();
+	}
 
-    /**
-     * Returns true if Spoon is in verbose mode.
-     */
-    public boolean isVerbose() {
-        return verbose;
-    }
+	/**
+	 * Gets the root folder where the processors' XML configuration files are
+	 * located.
+	 */
+	public File getXmlRootFolder() {
+		if (xmlRootFolder == null) {
+			xmlRootFolder = new File(".");
+		}
+		return xmlRootFolder;
+	}
 
-    private void prefix(StringBuffer buffer, Severity severity) {
-        // Prefix message
-        switch (severity) {
-        case ERROR:
-            buffer.append("error: ");
-            errorCount++;
-            break;
-        case WARNING:
-            buffer.append("warning: ");
-            warningCount++;
-            break;
-        case MESSAGE:
-            break;
-        }
-    }
+	public boolean isDebug() {
+		return debug;
+	}
 
-    private void print(StringBuffer buffer, Severity severity) {
-        switch (severity) {
-        case ERROR:
-        case WARNING:
-            System.out.println(buffer.toString());
-            break;
-        default:
-            if (isVerbose()) {
-                System.out.println(buffer.toString());
-            }
-        }
-    }
+	/**
+	 * Tells if the processing is stopped, generally because one of the
+	 * processors called {@link #setProcessingStopped(boolean)} after reporting
+	 * an error.
+	 */
+	public boolean isProcessingStopped() {
+		return processingStopped;
+	}
 
-    public void report(Processor<?> processor, Severity severity,
-            CtElement element, String message) {
-        StringBuffer buffer = new StringBuffer();
+	/**
+	 * Returns true if Spoon is in verbose mode.
+	 */
+	public boolean isVerbose() {
+		return verbose;
+	}
 
-        prefix(buffer, severity);
+	private void prefix(StringBuffer buffer, Severity severity) {
+		// Prefix message
+		switch (severity) {
+		case ERROR:
+			buffer.append("error: ");
+			errorCount++;
+			break;
+		case WARNING:
+			buffer.append("warning: ");
+			warningCount++;
+			break;
+		case MESSAGE:
+			break;
+		}
+	}
 
-        // Adding message
-        buffer.append(message);
+	private void print(StringBuffer buffer, Severity severity) {
+		switch (severity) {
+		case ERROR:
+		case WARNING:
+			System.out.println(buffer.toString());
+			break;
+		default:
+			if (isVerbose()) {
+				System.out.println(buffer.toString());
+			}
+		}
+	}
 
-        // Add sourceposition (javac format)
-        CtSimpleType<?> type = (element instanceof CtSimpleType) ? (CtSimpleType<?>) element
-                : element.getParent(CtSimpleType.class);
-        SourcePosition sp = element.getPosition();
+	public void report(Processor<?> processor, Severity severity,
+			CtElement element, String message) {
+		StringBuffer buffer = new StringBuffer();
 
-        if (sp == null) {
-            buffer.append(" (Unknown Source)");
-        } else {
-            buffer.append(" at " + type.getQualifiedName() + ".");
-            CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element
-                    : element.getParent(CtExecutable.class);
-            if (exe != null) {
-                buffer.append(exe.getSimpleName());
-            }
-            buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine()
-                    + ")");
-        }
+		prefix(buffer, severity);
 
-        print(buffer, severity);
-    }
+		// Adding message
+		buffer.append(message);
 
-    public void report(Processor<?> processor, Severity severity, String message) {
-        StringBuffer buffer = new StringBuffer();
+		// Add sourceposition (javac format)
+		CtSimpleType<?> type = (element instanceof CtSimpleType) ? (CtSimpleType<?>) element
+				: element.getParent(CtSimpleType.class);
+		SourcePosition sp = element.getPosition();
 
-        prefix(buffer, severity);
-        // Adding message
-        buffer.append(message);
-        print(buffer, severity);
-    }
+		if (sp == null) {
+			buffer.append(" (Unknown Source)");
+		} else {
+			buffer.append(" at " + type.getQualifiedName() + ".");
+			CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element
+					: element.getParent(CtExecutable.class);
+			if (exe != null) {
+				buffer.append(exe.getSimpleName());
+			}
+			buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine()
+					+ ")");
+		}
 
-    /**
-     * This method should be called to report the end of the processing.
-     */
-    public void reportEnd() {
-        if(!isVerbose()) {
-            return;
-        }
-        System.out.print("end of processing: ");
-        if (warningCount > 0) {
-            System.out.print(warningCount + " warning");
-            if (warningCount > 1) {
-                System.out.print("s");
-            }
-            if (errorCount > 0) {
-                System.out.print(", ");
-            }
-        }
-        if (errorCount > 0) {
-            System.out.print(errorCount + " error");
-            if (errorCount > 1) {
-                System.out.print("s");
-            }
-        }
-        if ((errorCount + warningCount) > 0) {
-            System.out.print("\n");
-        } else {
-            System.out.println("no errors, no warnings");
-        }
-    }
+		print(buffer, severity);
+	}
 
-    public void reportProgressMessage(String message) {
-        if(!isVerbose()) {
-            return;
-        }
-        System.out.println(message);
-    }
+	public void report(Processor<?> processor, Severity severity, String message) {
+		StringBuffer buffer = new StringBuffer();
 
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
+		prefix(buffer, severity);
+		// Adding message
+		buffer.append(message);
+		print(buffer, severity);
+	}
 
-    public void setDefaultFileGenerator(
-            FileGenerator<? extends CtElement> defaultFileGenerator) {
-        this.defaultFileGenerator = defaultFileGenerator;
-        defaultFileGenerator.setFactory(getFactory());
-    }
+	/**
+	 * This method should be called to report the end of the processing.
+	 */
+	public void reportEnd() {
+		if (!isVerbose()) {
+			return;
+		}
+		System.out.print("end of processing: ");
+		if (warningCount > 0) {
+			System.out.print(warningCount + " warning");
+			if (warningCount > 1) {
+				System.out.print("s");
+			}
+			if (errorCount > 0) {
+				System.out.print(", ");
+			}
+		}
+		if (errorCount > 0) {
+			System.out.print(errorCount + " error");
+			if (errorCount > 1) {
+				System.out.print("s");
+			}
+		}
+		if ((errorCount + warningCount) > 0) {
+			System.out.print("\n");
+		} else {
+			System.out.println("no errors, no warnings");
+		}
+	}
 
-    public void setFactory(Factory factory) {
-        this.factory = factory;
-    }
+	public void reportProgressMessage(String message) {
+		if (!isVerbose()) {
+			return;
+		}
+		System.out.println(message);
+	}
 
-    public void setManager(ProcessingManager manager) {
-        this.manager = manager;
-    }
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
 
-    public void setProcessingStopped(boolean processingStopped) {
-        this.processingStopped = processingStopped;
-    }
+	public void setDefaultFileGenerator(
+			FileGenerator<? extends CtElement> defaultFileGenerator) {
+		this.defaultFileGenerator = defaultFileGenerator;
+		defaultFileGenerator.setFactory(getFactory());
+	}
 
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
+	public void setFactory(Factory factory) {
+		this.factory = factory;
+	}
 
-    /**
-     * Sets the root folder where the processors' XML configuration files are
-     * located.
-     */
-    public void setXmlRootFolder(File xmlRootFolder) {
-        this.xmlRootFolder = xmlRootFolder;
-    }
+	public void setManager(ProcessingManager manager) {
+		this.manager = manager;
+	}
 
-    int complianceLevel = 6;
+	public void setProcessingStopped(boolean processingStopped) {
+		this.processingStopped = processingStopped;
+	}
 
-    public int getComplianceLevel() {
-        return complianceLevel;
-    }
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
 
-    public void setComplianceLevel(int level) {
-        complianceLevel = level;
-    }
+	/**
+	 * Sets the root folder where the processors' XML configuration files are
+	 * located.
+	 */
+	public void setXmlRootFolder(File xmlRootFolder) {
+		this.xmlRootFolder = xmlRootFolder;
+	}
 
-    public void setProcessorProperties(String processorName,
-            ProcessorProperties prop) {
-        processorProperties.put(processorName, prop);
-    }
+	int complianceLevel = 6;
 
-    public void report(Processor<?> processor, Severity severity,
-            CtElement element, String message, ProblemFixer<?>... fix) {
-        // Fix not (yet) used in command-line mode
-        report(processor, severity, element, message);
-    }
+	public int getComplianceLevel() {
+		return complianceLevel;
+	}
 
-    public boolean isUsingSourceCodeFragments() {
-        return useSourceCodeFragments;
-    }
+	public void setComplianceLevel(int level) {
+		complianceLevel = level;
+	}
 
-    boolean useSourceCodeFragments=false;
+	public void setProcessorProperties(String processorName,
+			ProcessorProperties prop) {
+		processorProperties.put(processorName, prop);
+	}
 
-    public void useSourceCodeFragments(boolean b) {
-        useSourceCodeFragments=b;
-    }
+	public void report(Processor<?> processor, Severity severity,
+			CtElement element, String message, ProblemFixer<?>... fix) {
+		// Fix not (yet) used in command-line mode
+		report(processor, severity, element, message);
+	}
 
-    boolean useTabulations=false;
+	public boolean isUsingSourceCodeFragments() {
+		return useSourceCodeFragments;
+	}
 
-    public boolean isUsingTabulations() {
-        return useTabulations;
-    }
+	boolean useSourceCodeFragments = false;
 
-    public void useTabulations(boolean tabulation) {
-        useTabulations = tabulation;
-    }
+	public void useSourceCodeFragments(boolean b) {
+		useSourceCodeFragments = b;
+	}
 
-    int tabulationSize=4;
+	boolean useTabulations = false;
 
-    public int getTabulationSize() {
-        return tabulationSize;
-    }
+	public boolean isUsingTabulations() {
+		return useTabulations;
+	}
 
-    public void setTabulationSize(int tabulationSize) {
-        this.tabulationSize = tabulationSize;
-    }
+	public void useTabulations(boolean tabulation) {
+		useTabulations = tabulation;
+	}
 
-    public String getSourcePath() {
-        return ".";
-    }
+	int tabulationSize = 4;
+
+	public int getTabulationSize() {
+		return tabulationSize;
+	}
+
+	public void setTabulationSize(int tabulationSize) {
+		this.tabulationSize = tabulationSize;
+	}
+
+	public String getSourcePath() {
+		return ".";
+	}
 
 }
