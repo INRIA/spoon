@@ -3,14 +3,14 @@
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
  * 
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
  * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ * 
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -24,7 +24,6 @@ import java.util.TreeMap;
 
 import spoon.eclipse.jdt.internal.compiler.ClassFile;
 import spoon.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-
 import spoon.processing.Builder;
 import spoon.processing.Environment;
 import spoon.processing.ProcessingManager;
@@ -42,6 +41,8 @@ import spoon.support.util.JDTCompiler;
  * before actually loading them.
  */
 public class SpoonClassLoader extends ClassLoader {
+
+	private final Map<String, Class<?>> classcache = new TreeMap<String, Class<?>>();
 
 	private CoreFactory coreFactory;
 
@@ -64,15 +65,15 @@ public class SpoonClassLoader extends ClassLoader {
 	 * Constructs a Spoon classloader within the context of a given parent
 	 * classloader.
 	 */
-	public SpoonClassLoader(ClassLoader parent) {
+	public SpoonClassLoader(final ClassLoader parent) {
 		super(parent);
 	}
 
-	private Class<?> createClass(String qualifiedName) {
+	private Class<?> createClass(final String qualifiedName) {
 		try {
 			// Process file
-			processJavaFile(qualifiedName);
-			return classcache.get(qualifiedName);
+			this.processJavaFile(qualifiedName);
+			return this.classcache.get(qualifiedName);
 		} catch (Exception e) {
 
 		}
@@ -83,87 +84,54 @@ public class SpoonClassLoader extends ClassLoader {
 	 * Gets the associated (default) core factory.
 	 */
 	public CoreFactory getCoreFactory() {
-		if (coreFactory == null) {
-			coreFactory = new DefaultCoreFactory();
+		if (this.coreFactory == null) {
+			this.coreFactory = new DefaultCoreFactory();
 		}
-		return coreFactory;
+		return this.coreFactory;
 	}
 
 	/**
 	 * Gets the associated (standard) environment.
 	 */
 	public Environment getEnvironment() {
-		if (environment == null) {
-			environment = new StandardEnvironment();
+		if (this.environment == null) {
+			this.environment = new StandardEnvironment();
 		}
-		return environment;
+		return this.environment;
 	}
 
 	/**
 	 * Gets the associated factory.
 	 */
 	public Factory getFactory() {
-		if (factory == null) {
-			factory = new Factory(getCoreFactory(), getEnvironment());
+		if (this.factory == null) {
+			this.factory = new Factory(this.getCoreFactory(), this.getEnvironment());
 		}
-		return factory;
+		return this.factory;
 	}
 
 	/**
 	 * Gets the processing manager.
 	 */
 	public ProcessingManager getProcessingManager() {
-		if (processing == null) {
-			processing = new RuntimeProcessingManager(getFactory());
+		if (this.processing == null) {
+			this.processing = new RuntimeProcessingManager(this.getFactory());
 		}
-		return processing;
+		return this.processing;
 	}
 
 	/**
 	 * Gets the source path.
 	 */
 	public File getSourcePath() {
-		if (sourcePath == null) {
-			sourcePath = new File("");
+		if (this.sourcePath == null) {
+			this.sourcePath = new File("");
 		}
-		return sourcePath;
+		return this.sourcePath;
 	}
 
-	private Map<String, Class<?>> classcache = new TreeMap<String, Class<?>>();
-
-	/**
-	 * Loads a given class from its name.
-	 */
-	@Override
-	public Class<?> loadClass(String name) throws ClassNotFoundException {
-
-		// Look in cache
-		if (classcache.containsKey(name)) {
-			return classcache.get(name);
-		}
-
-		// Try to gets from spoon factory
-		Class<?> clas = null;
-		clas = createClass(name);
-
-		// Try to get in system class
-		if (clas == null) {
-			clas = findSystemClass(name);
-		}
-
-		if (clas == null)
-			throw new ClassNotFoundException(name);
-
-		try {
-			injectMetaClass(clas);
-		} catch (Exception e) {
-		}
-
-		return clas;
-	}
-
-	private void injectMetaClass(Class<?> clas) throws NoSuchFieldException,
-			SecurityException, IllegalArgumentException, IllegalAccessException {
+	private void injectMetaClass(final Class<?> clas) throws NoSuchFieldException,
+	SecurityException, IllegalArgumentException, IllegalAccessException {
 		// try to inject metaclass
 		Field field = clas.getField("METACLASS");
 		if (field == null) {
@@ -171,35 +139,69 @@ public class SpoonClassLoader extends ClassLoader {
 		}
 		System.out.println("try to inject metaclass in" + clas.getName());
 
-		CtSimpleType<?> metaclass = factory.Type().get(clas);
+		CtSimpleType<?> metaclass = this.factory.Type().get(clas);
 		field.setAccessible(true);
 		field.set(null, metaclass);
 	}
 
-	private void processJavaFile(String qualifiedName) throws Exception {
+	/**
+	 * Loads a given class from its name.
+	 */
+	@Override
+	public Class<?> loadClass(final String name) throws ClassNotFoundException {
+
+		// Look in cache
+		if (this.classcache.containsKey(name)) {
+			return this.classcache.get(name);
+		}
+
+		// Try to gets from spoon factory
+		Class<?> clas = null;
+		clas = this.createClass(name);
+
+		// Try to get in system class
+		if (clas == null) {
+			clas = this.findSystemClass(name);
+		}
+
+		if (clas == null) {
+			throw new ClassNotFoundException(name);
+		}
+
+		try {
+			this.injectMetaClass(clas);
+		} catch (Exception e) {
+		}
+
+		return clas;
+	}
+
+	private void processJavaFile(final String qualifiedName) throws Exception {
 		// Try to resolve in model
-		CtSimpleType<?> c = getFactory().Type().get(qualifiedName);
+		CtSimpleType<?> c = this.getFactory().Type().get(qualifiedName);
 
 		// Try to resolve in source path
 		if (c == null) {
-			File f = resolve(qualifiedName);
-			if (f == null || !f.exists())
+			File f = this.resolve(qualifiedName);
+			if (f == null || !f.exists()) {
 				throw new ClassNotFoundException(qualifiedName);
-			Builder builder = getFactory().getBuilder();
+			}
+			Builder builder = this.getFactory().getBuilder();
 			builder.addInputSource(f);
 			builder.build();
-			c = getFactory().Type().get(qualifiedName);
+			c = this.getFactory().Type().get(qualifiedName);
 		}
 
 		// not resolved
-		if (c == null)
+		if (c == null) {
 			throw new ClassNotFoundException(qualifiedName);
+		}
 		// Processing it
-		getProcessingManager().process(c);
+		this.getProcessingManager().process(c);
 
 		// Printing it
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
-				getEnvironment());
+				this.getEnvironment());
 		printer.scan(c);
 
 		String[] tmp = c.getQualifiedName().split("[.]");
@@ -209,24 +211,28 @@ public class SpoonClassLoader extends ClassLoader {
 			pack[i] = tmp[i].toCharArray();
 		}
 
+		String classBody = printer.toString();
+		StringBuffer classBuffer = new StringBuffer(classBody.length() + 100);
+		classBuffer.append(c.getPackage()).append(classBody);
+
 		spoon.support.util.BasicCompilationUnit unit = new spoon.support.util.BasicCompilationUnit(
-				printer.toString().toCharArray(), pack, c.getSimpleName()
-						+ ".java");
+				classBuffer.toString().toCharArray(), pack, c.getSimpleName()
+				+ ".java");
 
 		JDTCompiler comp = new JDTCompiler();
 		comp.compile(new ICompilationUnit[] { unit });
 
 		for (ClassFile f : comp.getClassFiles()) {
 			String name = new String(f.fileName()).replace('/', '.');
-			Class<?> cl = defineClass(name, f.getBytes(), 0,
+			Class<?> cl = this.defineClass(name, f.getBytes(), 0,
 					f.getBytes().length);
-			classcache.put(name, cl);
+			this.classcache.put(name, cl);
 		}
 
 	}
 
-	private File resolve(String qualifiedName) {
-		File current = sourcePath;
+	private File resolve(final String qualifiedName) {
+		File current = this.sourcePath;
 		String[] path = qualifiedName.split("[.]");
 		for (String p : path) {
 			for (File f : current.listFiles()) {
@@ -236,43 +242,44 @@ public class SpoonClassLoader extends ClassLoader {
 				}
 			}
 		}
-		if (!current.isDirectory())
+		if (!current.isDirectory()) {
 			return current;
+		}
 		return null;
 	}
 
 	/**
 	 * Sets the core factory.
 	 */
-	public void setCoreFactory(CoreFactory coreFactory) {
+	public void setCoreFactory(final CoreFactory coreFactory) {
 		this.coreFactory = coreFactory;
 	}
 
 	/**
 	 * Sets the environment.
 	 */
-	public void setEnvironment(Environment environment) {
+	public void setEnvironment(final Environment environment) {
 		this.environment = environment;
 	}
 
 	/**
 	 * Sets the factory.
 	 */
-	public void setFactory(Factory factory) {
+	public void setFactory(final Factory factory) {
 		this.factory = factory;
 	}
 
 	/**
 	 * Sets the used processing manager.
 	 */
-	public void setProcessingManager(ProcessingManager processing) {
+	public void setProcessingManager(final ProcessingManager processing) {
 		this.processing = processing;
 	}
 
 	/**
 	 * Sets the source path.
 	 */
-	public void setSourcePath(File sourcePath) {
+	public void setSourcePath(final File sourcePath) {
 		this.sourcePath = sourcePath;
 	}
 
