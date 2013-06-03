@@ -16,10 +16,7 @@
  */
 package spoon;
 
-import spoon.processing.FileGenerator;
 import spoon.reflect.Factory;
-import spoon.support.ByteCodeOutputProcessor;
-import spoon.support.JavaOutputProcessor;
 import spoon.support.gui.SpoonModelTree;
 
 import com.martiansoftware.jsap.FlaggedOption;
@@ -111,14 +108,14 @@ public class Launcher extends AbstractLauncher {
 	protected Factory createFactory() {
 		Factory f = super.createFactory();
 
-		if (getArguments().getBoolean("compile")) {
-			FileGenerator<?> printer = f.getEnvironment()
-					.getDefaultFileGenerator();
-			ByteCodeOutputProcessor p = new ByteCodeOutputProcessor(
-					(JavaOutputProcessor) printer, getArguments().getFile(
-							"build"));
-			f.getEnvironment().setDefaultFileGenerator(p);
-		}
+//		if (getArguments().getBoolean("compile")) {
+//			FileGenerator<?> printer = f.getEnvironment()
+//					.getDefaultFileGenerator();
+//			ByteCodeOutputProcessor p = new ByteCodeOutputProcessor(
+//					(JavaOutputProcessor) printer, getArguments().getFile(
+//							"build"));
+//			f.getEnvironment().setDefaultFileGenerator(p);
+//		}
 
 		return f;
 	}
