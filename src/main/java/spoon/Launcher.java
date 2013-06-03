@@ -48,15 +48,11 @@ public class Launcher extends AbstractLauncher {
 	 * arguments and calls {@link #run()}).
 	 */
 	public static void main(String[] args) throws Exception {
-        try {
-        	if(args.length!=0)
-        		new Launcher(args).run();
-        	else
-        		new Launcher(new String[]{"--help"}).run();
-        } catch(Exception exc) {
-            exc.printStackTrace();
-            throw exc;
-        }
+    	if(args.length!=0) {
+			new Launcher(args).run();
+		} else {
+			new Launcher(new String[]{"--help"}).run();
+		}
 	}
 
 	/**
@@ -132,8 +128,9 @@ public class Launcher extends AbstractLauncher {
 	 */
 	@Override
 	protected void print() {
-		if (!getArguments().getBoolean("nooutput"))
+		if (!getArguments().getBoolean("nooutput")) {
 			super.print();
+		}
 	}
 
 	/**
@@ -144,8 +141,9 @@ public class Launcher extends AbstractLauncher {
 		super.run();
 
 		// display GUI
-		if (getArguments().getBoolean("gui"))
+		if (getArguments().getBoolean("gui")) {
 			new SpoonModelTree(getFactory());
+		}
 
 	}
 
