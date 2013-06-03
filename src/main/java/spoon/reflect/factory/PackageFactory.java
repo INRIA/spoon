@@ -88,7 +88,9 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * @param name
 	 *            full name of the package to reference
 	 */
-	public CtPackageReference createReference(String name) {	  
+	public CtPackageReference createReference(String name) {
+		if (name.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME))
+			return null;
 		CtPackageReference ref = factory.Core().createPackageReference();
 		ref.setSimpleName(name);
 		return ref;
@@ -121,9 +123,8 @@ public class PackageFactory extends SubFactory implements Serializable {
 
 		if (token.hasMoreElements()) {
 			String name = token.nextToken();
-			if (name.length() < 0) {
+			if (name.length() < 0)
 				name = CtPackage.TOP_LEVEL_PACKAGE_NAME;
-			}
 			if (packages.containsKey(name)) {
 				last = packages.get(name);
 			} else {
@@ -164,9 +165,8 @@ public class PackageFactory extends SubFactory implements Serializable {
 		CtPackage current = null;
 		if (token.hasMoreElements()) {
 			current = packages.get(token.nextElement());
-			while (token.hasMoreElements() && current != null) {
+			while (token.hasMoreElements() && current != null)
 				current = current.getPackage(token.nextToken());
-			}
 		}
 		return current;
 	}
