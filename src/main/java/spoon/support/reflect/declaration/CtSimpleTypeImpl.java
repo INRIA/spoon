@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
@@ -98,6 +99,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 				}
 			}
 
+			@Override
 			public <U> void visitCtClass(
 					spoon.reflect.declaration.CtClass<U> ctClass) {
 				scan(ctClass.getNestedTypes());
@@ -107,6 +109,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 				checkType(ctClass);
 			}
 
+			@Override
 			public <U> void visitCtInterface(
 					spoon.reflect.declaration.CtInterface<U> intrface) {
 				scan(intrface.getNestedTypes());
@@ -115,6 +118,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 				checkType(intrface);
 			}
 
+			@Override
 			public <U extends java.lang.Enum<?>> void visitCtEnum(
 					spoon.reflect.declaration.CtEnum<U> ctEnum) {
 				scan(ctEnum.getNestedTypes());
@@ -124,6 +128,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 				checkType(ctEnum);
 			}
 
+			@Override
 			public <A extends Annotation> void visitCtAnnotationType(
 					CtAnnotationType<A> annotationType) {
 				scan(annotationType.getNestedTypes()); 
@@ -182,7 +187,18 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 
 	public void compileAndReplaceSnippets() {
 		SnippetCompiler.compileAndReplaceSnippetsIn(this);
-
 	}
+	
+	@Override
+	public void setParent(CtElement parentElement) {
+	    super.setParent(parentElement);
+	    if (parentElement instanceof CtPackage) {
+	    	CtPackage pack = (CtPackage)parentElement;
+	    	Set<CtSimpleType<?>> types = pack.getTypes();
+	    	types.add(this);
+			pack.setTypes(types);
+	    }
+    }
+
 
 }
