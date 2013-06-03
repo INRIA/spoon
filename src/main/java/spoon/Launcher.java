@@ -77,11 +77,11 @@ public class Launcher extends AbstractLauncher {
 		jsap.registerParameter(sw1);
 
 		// Compile Output files
-		sw1 = new Switch("compile");
-		sw1.setShortFlag('c');
-		sw1.setLongFlag("compile");
-		sw1.setHelp("compile generated sources");
-		jsap.registerParameter(sw1);
+//		sw1 = new Switch("compile");
+//		sw1.setShortFlag('c');
+//		sw1.setLongFlag("compile");
+//		sw1.setHelp("compile generated sources");
+//		jsap.registerParameter(sw1);
 
 		// build output directory
 		FlaggedOption opt2 = new FlaggedOption("build");
