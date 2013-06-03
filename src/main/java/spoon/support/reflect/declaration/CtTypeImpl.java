@@ -104,8 +104,17 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 			return super.getQualifiedName();
 		}
 		if (getDeclaringType() != null) {
+			// FIXME MArtin bug in qualified name
+//			if (getParent(CtNewClass.class) != null) {
+//				
+//				Query.getElements(getDeclaringType(), new TypeFilter<?>(CtNewClass<?>.class));
+//				return getDeclaringType().getQualifiedName() + INNERTTYPE_SEPARATOR
+//						+ getParent(CtType.class).getSimpleName()+"$$";				
+//			} else 
+			{
 			return getDeclaringType().getQualifiedName() + INNERTTYPE_SEPARATOR
 					+ getSimpleName();
+			}
 		}
 		return getSimpleName();
 	}
