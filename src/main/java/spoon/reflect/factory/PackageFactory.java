@@ -169,10 +169,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 			}
 		}
 		
-		if (current==null) {
-			throw new IllegalStateException("no such package in the model");
-		}
-		
+
 		return current;
 	}
 
