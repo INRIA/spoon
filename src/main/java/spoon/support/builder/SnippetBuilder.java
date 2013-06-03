@@ -1,7 +1,6 @@
 package spoon.support.builder;
 
 import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
-
 import spoon.reflect.Factory;
 
 public class SnippetBuilder extends SpoonBuildingManager {
@@ -28,8 +27,9 @@ public class SnippetBuilder extends SpoonBuildingManager {
 			for (CategorizedProblem[] cps : compiler.probs) {
 				for (int i = 0; i < cps.length; i++) {
 					CategorizedProblem problem = cps[i];
-					if (problem != null)
+					if (problem != null) {
 						getProblems().add(problem.getMessage());
+					}
 				}
 			}
 		}

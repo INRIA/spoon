@@ -34,6 +34,7 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
+//import spoon.reflect.cu.CompilationUnit;
 
 /**
  * A processor that generates compilable Java source files from the meta-model.
@@ -74,24 +75,26 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 
 	/**
 	 * Creates the Java file associated to the given element.
+	 * Splits top-level classes in different files (even if they are in the same file in the original sources).
 	 */
 	public void createJavaFile(CtSimpleType<?> element) {
 
+		// we only create a file for top-level classes
+		if (!element.isTopLevel()) {
+			throw new IllegalArgumentException();
+		};
+		
 		CompilationUnit cu = null;
-		if (element.getPosition() != null)
+		if (element.getPosition() != null) {
 			cu = element.getPosition().getCompilationUnit();
-
-		// skip non-main types
-		if (cu != null && cu.getMainType() != element)
-			return;
-
-		List<CtSimpleType<?>> toBePrinted = new ArrayList<CtSimpleType<?>>();
-
-		if (cu == null) {
-			toBePrinted.add(element);
-		} else {
-			toBePrinted.addAll(cu.getDeclaredTypes());
+			// this is a top level type (see check above)
+			// the compilation unit must be correctly set
+			if (cu == null ) {
+				throw new IllegalStateException();
+			}
 		}
+		List<CtSimpleType<?>> toBePrinted = new ArrayList<CtSimpleType<?>>();
+		toBePrinted.add(element);
 
 		PrettyPrinter printer = null;
 
@@ -113,15 +116,18 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		PrintStream stream = null;
 
 		// Check output directory
-		if (directory == null)
+		if (directory == null) {
 			throw new RuntimeException(
 					"You should set output directory before printing");
+		}
 		// Create spooned dir
-		if (directory.isFile())
+		if (directory.isFile()) {
 			throw new RuntimeException("Output must be a directory");
+		}
 		if (!directory.exists()) {
-			if (!directory.mkdirs())
+			if (!directory.mkdirs()) {
 				throw new RuntimeException("Error creating output directory");
+			}
 		}
 
 		// create package directory
@@ -135,8 +141,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 					+ pack.getQualifiedName().replace('.', File.separatorChar));
 		}
 		if (!packageDir.exists()) {
-			if (!packageDir.mkdirs())
+			if (!packageDir.mkdirs()) {
 				throw new RuntimeException("Error creating output directory");
+			}
 		}
 
 		// Create package annotation file
@@ -145,8 +152,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			File packageAnnot = new File(packageDir.getAbsolutePath()
 					+ File.separatorChar
 					+ DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
-			if (!printedFiles.contains(packageAnnot))
+			if (!printedFiles.contains(packageAnnot)) {
 				printedFiles.add(packageAnnot);
+			}
 			try {
 				stream = new PrintStream(packageAnnot);
 				stream.println(printer.getPackageDeclaration());
@@ -154,8 +162,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} finally {
-				if (stream != null)
+				if (stream != null) {
 					stream.close();
+				}
 			}
 		}
 
@@ -180,8 +189,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (stream != null)
+			if (stream != null) {
 				stream.close();
+			}
 		}
 
 	}
@@ -191,8 +201,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	 * its contents.
 	 */
 	public void process(CtSimpleType<?> type) {
-		if (type.isTopLevel())
+		if (type.isTopLevel()) {
 			createJavaFile(type);
+		}
 	}
 
 	public void setOutputDirectory(File directory) {

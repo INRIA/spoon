@@ -819,10 +819,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write("(");
 				boolean first = true;
 				for (CtExpression<?> ctexpr : nc.getArguments()) {
-					if (first)
+					if (first) {
 						first = false;
-					else
+					} else {
 						write(",");
+					}
 					write(ctexpr.toString());
 				}
 				write(")");
@@ -947,8 +948,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					&& tmp.getPackage()
 							.getSimpleName()
 							.equals(reference.getType().getPackage()
-									.getSimpleName()))
+									.getSimpleName())) {
 				sameTopLevel = true;
+			}
 			if (reference.getType().getDeclaringType() == null
 					&& !(context.currentThis.isEmpty() && sameTopLevel)
 					&& (context.currentThis.isEmpty() || (!reference.getType()
@@ -975,10 +977,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					CtTypeReference<?> ref = reference.getDeclaringType();
 					CtTypeReference<?> ref2;
 					if (context.currentThis != null
-							&& context.currentThis.size() > 0)
+							&& context.currentThis.size() > 0) {
 						ref2 = context.currentThis.lastElement();
-					else
+					} else {
 						ref2 = context.currentTopLevel.getReference();
+					}
 					// print type if not annonymous class ref and not within the
 					// current scope
 					printType = !ref.getSimpleName().equals("")
@@ -1155,8 +1158,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					write(",");
 					removeLastChar = true;
 				}
-				if (removeLastChar)
+				if (removeLastChar) {
 					removeLastChar();
+				}
 				write(">");
 			}
 			write(invocation.getExecutable().getSimpleName());
@@ -1440,8 +1444,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(")");
 			scan(newClass.getAnonymousClass());
 		} else {
-			if (newClass.getTarget() != null)
+			if (newClass.getTarget() != null) {
 				context.ignoreEnclosingClass = true;
+			}
 
 			write("new ").scan(newClass.getType());
 			context.ignoreEnclosingClass = false;
@@ -1488,6 +1493,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 			write("package " + ctPackage.getQualifiedName() + ";");
+		} else {
+			write("// default package (CtPackage.TOP_LEVEL_PACKAGE_NAME in Spoon= unnamed package)\n");			
 		}
 	}
 
@@ -1642,8 +1649,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(ref.getQualifiedName());
 			}
 		}
-		if (ref.isSuperReference())
+		if (ref.isSuperReference()) {
 			write(".super");
+		}
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
