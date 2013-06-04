@@ -34,6 +34,7 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
+//import spoon.reflect.cu.CompilationUnit;
 
 /**
  * A processor that generates compilable Java source files from the meta-model.
@@ -74,24 +75,26 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 
 	/**
 	 * Creates the Java file associated to the given element.
+	 * Splits top-level classes in different files (even if they are in the same file in the original sources).
 	 */
 	public void createJavaFile(CtSimpleType<?> element) {
 
+		// we only create a file for top-level classes
+		if (!element.isTopLevel()) {
+			throw new IllegalArgumentException();
+		};
+		
 		CompilationUnit cu = null;
-		if (element.getPosition() != null)
+		if (element.getPosition() != null) {
 			cu = element.getPosition().getCompilationUnit();
-
-		// skip non-main types
-		if (cu != null && cu.getMainType() != element)
-			return;
-
-		List<CtSimpleType<?>> toBePrinted = new ArrayList<CtSimpleType<?>>();
-
-		if (cu == null) {
-			toBePrinted.add(element);
-		} else {
-			toBePrinted.addAll(cu.getDeclaredTypes());
+			// this is a top level type (see check above)
+			// the compilation unit must be correctly set
+			if (cu == null) {
+				throw new IllegalStateException();
+			}
 		}
+		List<CtSimpleType<?>> toBePrinted = new ArrayList<CtSimpleType<?>>();
+		toBePrinted.add(element);
 
 		PrettyPrinter printer = null;
 
