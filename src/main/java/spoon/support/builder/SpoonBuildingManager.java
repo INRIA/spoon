@@ -72,7 +72,7 @@ public class SpoonBuildingManager implements Builder {
 			this.templates.addFolder(FileFactory.createFolder(source));
 	}
 
-	JDTCompiler compiler = null;
+	TreeBuilderRequestor compiler = null;
 
 	public boolean build() throws Exception {
 		if (factory == null) {
@@ -82,13 +82,13 @@ public class SpoonBuildingManager implements Builder {
 			throw new Exception("Model already built");
 		}
 		build = true;
-		JDTCompiler.JAVA_COMPLIANCE = factory.getEnvironment()
+		TreeBuilderRequestor.JAVA_COMPLIANCE = factory.getEnvironment()
 				.getComplianceLevel();
 		boolean srcSuccess, templateSuccess;
 		factory.getEnvironment().debugMessage(
 				"compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
-		compiler = new JDTCompiler();
+		compiler = new TreeBuilderRequestor();
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
 		if (!srcSuccess) {
@@ -156,7 +156,7 @@ public class SpoonBuildingManager implements Builder {
 		this.factory = factory;
 	}
 
-	public JDTCompiler getCompiler() {
+	public TreeBuilderRequestor getCompiler() {
 		return compiler;
 	}
 
