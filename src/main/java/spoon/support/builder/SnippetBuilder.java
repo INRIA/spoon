@@ -15,13 +15,13 @@ public class SnippetBuilder extends SpoonBuildingManager {
 		if (factory == null) {
 			throw new Exception("Factory not initialized");
 		}
-		JDTCompiler.JAVA_COMPLIANCE = factory.getEnvironment()
+		TreeBuilderRequestor.JAVA_COMPLIANCE = factory.getEnvironment()
 				.getComplianceLevel();
 		boolean srcSuccess;
 		factory.getEnvironment().debugMessage(
 				"compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
-		compiler = new JDTCompiler();
+		compiler = new TreeBuilderRequestor();
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
 		if (!srcSuccess) {

@@ -39,7 +39,7 @@ import spoon.eclipse.jdt.internal.compiler.util.Util;
 
 import spoon.reflect.Factory;
 
-public class JDTCompiler extends Main implements ICompilerRequestor {
+public class TreeBuilderRequestor extends Main implements ICompilerRequestor {
 
 	class Compiler extends spoon.eclipse.jdt.internal.compiler.Compiler {
 
@@ -167,11 +167,11 @@ public class JDTCompiler extends Main implements ICompilerRequestor {
 
 	PrintWriter out;
 
-	public JDTCompiler(PrintWriter outWriter, PrintWriter errWriter) {
+	public TreeBuilderRequestor(PrintWriter outWriter, PrintWriter errWriter) {
 		super(outWriter, errWriter, false);
 	}
 
-	public JDTCompiler() {
+	public TreeBuilderRequestor() {
 		super(new PrintWriter(System.out), new PrintWriter(System.err), false);
 	}
 
