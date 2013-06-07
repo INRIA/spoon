@@ -32,7 +32,7 @@
 	<scm>
 		<connection>scm:svn:svn://scm.gforge.inria.fr/svnroot/spoon/trunk</connection>
 		<url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/?cvsroot=spoon</url>
-		<developerConnection>scm:svn:svn+ssh://petitpre@scm.gforge.inria.fr/svnroot/spoon/trunk</developerConnection>
+		<developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svnroot/spoon/trunk</developerConnection>
 	</scm>
 	<developers>
 		<developer>
@@ -115,7 +115,7 @@
 		<dependency>
 			<groupId>spoon.eclipse.jdt</groupId>
 			<artifactId>core</artifactId>
-			<version>1.0</version>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.martiansoftware</groupId>
@@ -292,8 +292,8 @@
 	<repositories>
 		<repository>
 			<id>gforge.inria.fr</id>
-			<name>Maven Repository for Inria Projects</name>
-			<url>http://maven-repo.gforge.inria.fr/releases</url>
+			<name>Maven Repository for Spoon Projects</name>
+			<url>http://spoon.gforge.inria.fr/repositories/releases</url>
 			<releases />
 		</repository>
 	</repositories>
@@ -354,9 +354,9 @@
 			</build>
 			<distributionManagement>
 				<repository>
-					<id>scm.gforge.inria.fr</id>
+					<id>gforge.inria.fr-release</id>
 					<name>inria</name>
-					<url>scp://scm.gforge.inria.fr/home/groups/maven-repo/htdocs/releases</url>
+					<url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/releases</url>
 				</repository>
 				<site>
 					<id>local</id>
@@ -370,7 +370,7 @@
 		<snapshotRepository>
 			<id>gforge.inria.fr-snapshot</id>
 			<name>inria-snapshots</name>
-			<url>scp://scm.gforge.inria.fr/home/groups/maven-repo/htdocs/snapshots</url>
+			<url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<organization>
