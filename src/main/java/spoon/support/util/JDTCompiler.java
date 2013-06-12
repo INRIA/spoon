@@ -20,8 +20,12 @@ package spoon.support.util;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import spoon.eclipse.jdt.internal.compiler.ClassFile;
 import spoon.eclipse.jdt.internal.compiler.CompilationResult;
@@ -106,21 +110,43 @@ public class JDTCompiler implements ICompilerRequestor {
 	}
 
 	FileSystem getLibraryAccess() {
+		
+		// strategy 1
 		String bootpath = System.getProperty("sun.boot.class.path");
-		String classpath = System.getProperty("java.class.path");
-		List<String> lst = new ArrayList<String>();
+		Set<String> lst = new HashSet<String>();
 		for (String s : bootpath.split(File.pathSeparator)) {
 			File f = new File(s);
 			if (f.exists()) {
 				lst.add(f.getAbsolutePath());
 			}
 		}
+		
+		
+		// strategy 2
+		ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();//ClassLoader.getSystemClassLoader();		
+		if(currentClassLoader instanceof URLClassLoader){
+			URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
+			if(urls!=null && urls.length>0){
+				
+				for (URL url : urls) {
+				//	classpath+=File.pathSeparator+url.getFile();
+					lst.add(url.getFile());
+				}
+			
+			}
+		}
+		
+		// strategy 3
+		String classpath = System.getProperty("java.class.path");
 		for (String s : classpath.split(File.pathSeparator)) {
 			File f = new File(s);
 			if (f.exists()) {
 				lst.add(f.getAbsolutePath());
 			}
 		}
+		
+			
+		//	
 		return new FileSystem(lst.toArray(new String[0]), new String[0], System
 				.getProperty("file.encoding"));
 	}
