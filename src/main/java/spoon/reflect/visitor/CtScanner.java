@@ -20,6 +20,7 @@ package spoon.reflect.visitor;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -361,6 +362,17 @@ public class CtScanner implements CtVisitor {
 		scan(fieldAccess.getTarget());
 		scan(fieldAccess.getVariable());
 		exit(fieldAccess);
+	}
+	
+	public <T> void visitCtAnnotationFieldAccess(
+			CtAnnotationFieldAccess<T> annotationFieldAccess) {
+		enter(annotationFieldAccess);
+		scan(annotationFieldAccess.getAnnotations());
+		scan(annotationFieldAccess.getType());
+		scanReferences(annotationFieldAccess.getTypeCasts());
+		scan(annotationFieldAccess.getTarget());
+		scan(annotationFieldAccess.getVariable());
+		exit(annotationFieldAccess);
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {

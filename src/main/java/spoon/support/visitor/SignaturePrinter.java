@@ -20,6 +20,7 @@ package spoon.support.visitor;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -264,6 +265,11 @@ public class SignaturePrinter implements CtVisitor {
 		scan(fieldAccess.getTarget());
 	}
 
+	public <T> void visitCtAnnotationFieldAccess(
+			CtAnnotationFieldAccess<T> annotationFieldAccess) {
+		scan(annotationFieldAccess.getTarget());
+	}
+
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		// TODO: Fix this null pointer catch
 		try {
@@ -272,7 +278,8 @@ public class SignaturePrinter implements CtVisitor {
 			write(CtField.FIELD_SEPARATOR);
 			write(reference.getSimpleName());
 		} catch (NullPointerException npe) {
-			System.err.println("Null Pointer Exception in SingnaturePrinter.visitCtFieldReference()");
+			System.err
+					.println("Null Pointer Exception in SingnaturePrinter.visitCtFieldReference()");
 		}
 	}
 
@@ -365,15 +372,15 @@ public class SignaturePrinter implements CtVisitor {
 			clearLast();
 		write(")");
 	}
-	
+
 	public void scan(List<CtTypeReference<?>> formalTypeParameters) {
-		if(formalTypeParameters!=null && formalTypeParameters.size()>0){
+		if (formalTypeParameters != null && formalTypeParameters.size() > 0) {
 			write("<");
 			for (CtTypeReference<?> type : formalTypeParameters) {
 				write(type.getQualifiedName());
-				if(type instanceof CtTypeParameterReference){
-					CtTypeParameterReference tmp = (CtTypeParameterReference)type;
-					if(tmp.getBounds()!=null && tmp.getBounds().size()>0){
+				if (type instanceof CtTypeParameterReference) {
+					CtTypeParameterReference tmp = (CtTypeParameterReference) type;
+					if (tmp.getBounds() != null && tmp.getBounds().size() > 0) {
 						write(" extends ");
 						for (CtTypeReference<?> tmp2 : tmp.getBounds()) {
 							write(tmp2.getQualifiedName());
@@ -412,14 +419,15 @@ public class SignaturePrinter implements CtVisitor {
 		scan(newClass.getAnonymousClass());
 	}
 
-	public <T> void visitCtCodeSnippetExpression(CtCodeSnippetExpression<T> expression) {
+	public <T> void visitCtCodeSnippetExpression(
+			CtCodeSnippetExpression<T> expression) {
 		write(expression.getValue());
 	}
 
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
 		write(statement.getValue());
 	}
-	
+
 	public <T, A extends T> void visitCtOperatorAssignement(
 			CtOperatorAssignment<T, A> assignment) {
 		scan(assignment.getAssigned());

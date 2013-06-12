@@ -28,6 +28,7 @@ import java.util.Stack;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -114,7 +115,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 
 	/**
 	 * The default constructor.
-	 *
+	 * 
 	 * @param observers
 	 *            observers to be notified of the progress of the evaluation
 	 */
@@ -448,35 +449,41 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 					if ((target != null) && isGetter(executable)) {
 						// System.out.println(m);
 						SymbolicInstance r = null;
-						fref = executable.getFactory().Field().createReference(
-								target.getConcreteType(), executable.getType(),
-								executable.getSimpleName().substring(3));
+						fref = executable
+								.getFactory()
+								.Field()
+								.createReference(target.getConcreteType(),
+										executable.getType(),
+										executable.getSimpleName().substring(3));
 						r = heap.get(target.getFieldValue(fref));
 						if (r != null) {
 							result = r;
 						} else {
-							result = new SymbolicInstance(this, executable
-									.getType(), false);
+							result = new SymbolicInstance(this,
+									executable.getType(), false);
 						}
 					} else if ((target != null) && isSetter(executable)) {
 						// System.out.println(m.toString()+"
 						// "+caller.getPosition());
-						fref = executable.getFactory().Field().createReference(
-								target.getConcreteType(), executable.getType(),
-								executable.getSimpleName().substring(3));
+						fref = executable
+								.getFactory()
+								.Field()
+								.createReference(target.getConcreteType(),
+										executable.getType(),
+										executable.getSimpleName().substring(3));
 						target.setFieldValue(heap, fref, args.get(0));
-						result = new SymbolicInstance(this, executable
-								.getType(), false);
+						result = new SymbolicInstance(this,
+								executable.getType(), false);
 						// heap.dump();
 						// stack.dump();
 					} else {
-						result = new SymbolicInstance(this, executable
-								.getType(), false);
+						result = new SymbolicInstance(this,
+								executable.getType(), false);
 					}
 				} else {
 					if (!executable.isConstructor()) {
-						result = new SymbolicInstance(this, executable
-								.getType(), false);
+						result = new SymbolicInstance(this,
+								executable.getType(), false);
 					} else {
 						// TODO: JJ - verify this
 						result = target;
@@ -492,8 +499,10 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	private void skip(CtElement e) {
-		e.getFactory().getEnvironment().report(null, Severity.WARNING, e,
-				"symbolic evaluator: ignoring unsupported element");
+		e.getFactory()
+				.getEnvironment()
+				.report(null, Severity.WARNING, e,
+						"symbolic evaluator: ignoring unsupported element");
 	}
 
 	public <A extends Annotation> void visitCtAnnotation(
@@ -581,16 +590,16 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		case LT:
 		case INSTANCEOF:
 			SymbolicInstance<Boolean> bool = new SymbolicInstance<Boolean>(
-					this, operator.getFactory().Type().createReference(
-							boolean.class), false);
+					this, operator.getFactory().Type()
+							.createReference(boolean.class), false);
 			result = bool;
 			return;
 		case MINUS:
 		case MUL:
 		case DIV:
 			SymbolicInstance<Number> number = new SymbolicInstance<Number>(
-					this, operator.getFactory().Type().createReference(
-							Number.class), false);
+					this, operator.getFactory().Type()
+							.createReference(Number.class), false);
 			result = number;
 			return;
 		case PLUS:
@@ -598,8 +607,8 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 					&& ((left.getConcreteType().getActualClass() == String.class) || (right
 							.getConcreteType().getActualClass() == String.class))) {
 				SymbolicInstance<String> string = new SymbolicInstance<String>(
-						this, operator.getFactory().Type().createReference(
-								String.class), false);
+						this, operator.getFactory().Type()
+								.createReference(String.class), false);
 				result = string;
 				return;
 			}
@@ -686,8 +695,29 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			result = heap.get(target.getFieldValue(fieldAccess.getVariable()));
 		} else {
 			// set the type to the declared one
-			SymbolicInstance<T> i = new SymbolicInstance<T>(this, fieldAccess
-					.getType(), false);
+			SymbolicInstance<T> i = new SymbolicInstance<T>(this,
+					fieldAccess.getType(), false);
+			// this instance is not put on the heap because it will be put if
+			// assigned to an object's field
+			result = i;
+		}
+	}
+
+	public <T> void visitCtAnnotationFieldAccess(
+			CtAnnotationFieldAccess<T> annotationFieldAccess) {
+		SymbolicInstance<?> target = evaluate(annotationFieldAccess.getTarget());
+		if (target == null) {
+			if (isAccessible(annotationFieldAccess.getVariable())) {
+				target = stack.getThis();
+			}
+		}
+		if ((target != null) && !target.isExternal()) {
+			result = heap.get(target.getFieldValue(annotationFieldAccess
+					.getVariable()));
+		} else {
+			// set the type to the declared one
+			SymbolicInstance<T> i = new SymbolicInstance<T>(this,
+					annotationFieldAccess.getType(), false);
 			// this instance is not put on the heap because it will be put if
 			// assigned to an object's field
 			result = i;
@@ -723,8 +753,8 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			evaluate(ifElement.getElseStatement());
 			return;
 		}
-		evaluateBranches(ifElement.getThenStatement(), ifElement
-				.getElseStatement());
+		evaluateBranches(ifElement.getThenStatement(),
+				ifElement.getElseStatement());
 	}
 
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
@@ -771,12 +801,12 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
 		if (literal.getValue() == null) {
 			result = SymbolicInstance.NULL;
-		} else if(literal.getValue().equals(true)) {
+		} else if (literal.getValue().equals(true)) {
 			result = SymbolicInstance.TRUE;
-		} else if(literal.getValue().equals(false)) {
+		} else if (literal.getValue().equals(false)) {
 			result = SymbolicInstance.FALSE;
-		} else if((literal.getValue() instanceof Number)) {
-			if(((Number)literal.getValue()).intValue()==0) {
+		} else if ((literal.getValue() instanceof Number)) {
+			if (((Number) literal.getValue()).intValue() == 0) {
 				result = SymbolicInstance.ZERO;
 			}
 		} else {
@@ -809,8 +839,8 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			SymbolicInstance<?> o = evaluate(expr);
 			arguments.add(o);
 		}
-		SymbolicInstance<T> i = new SymbolicInstance<T>(this, newClass
-				.getType(), false);
+		SymbolicInstance<T> i = new SymbolicInstance<T>(this,
+				newClass.getType(), false);
 		heap.store(i);
 		// evaluate the constructor
 		invoke(newClass, newClass.getExecutable(), i, arguments);
@@ -858,8 +888,9 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 
 	@SuppressWarnings("unchecked")
 	public void visitCtThrow(CtThrow throwStatement) {
-		throw new SymbolicWrappedException(evaluate(throwStatement
-				.getThrownExpression()), throwStatement, getStack());
+		throw new SymbolicWrappedException(
+				evaluate(throwStatement.getThrownExpression()), throwStatement,
+				getStack());
 	}
 
 	public void visitCtTry(CtTry tryBlock) {
@@ -869,8 +900,10 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			// normal return
 		} catch (SymbolicWrappedException e) {
 			for (CtCatch c : tryBlock.getCatchers()) {
-				if (c.getParameter().getType().isAssignableFrom(
-						e.getAbstractCause().getConcreteType())) {
+				if (c.getParameter()
+						.getType()
+						.isAssignableFrom(
+								e.getAbstractCause().getConcreteType())) {
 					getStack().setVariableValue(
 							c.getParameter().getReference(),
 							e.getAbstractCause());

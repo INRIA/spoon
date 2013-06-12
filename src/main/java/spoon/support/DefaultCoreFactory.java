@@ -23,11 +23,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Stack;
 import java.util.Map.Entry;
+import java.util.Stack;
 
 import spoon.reflect.CoreFactory;
 import spoon.reflect.Factory;
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -85,6 +86,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.code.CtAnnotationFieldAccesImpl;
 import spoon.support.reflect.code.CtArrayAccessImpl;
 import spoon.support.reflect.code.CtAssertImpl;
 import spoon.support.reflect.code.CtAssignmentImpl;
@@ -205,10 +207,11 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 									.getMethod("clone").invoke(fieldValue);
 							c.clear();
 							f.set(result, c);
-							
+
 							if (fieldValue instanceof ChildList)
-								((ChildList)c).setParent(cloningContext.peek());
-							
+								((ChildList) c)
+										.setParent(cloningContext.peek());
+
 							for (Object o : (Collection) fieldValue) {
 								c.add(clone(o));
 							}
@@ -371,6 +374,12 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtFieldAccess<T> createFieldAccess() {
 		CtFieldAccess<T> e = new CtFieldAccessImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public CtAnnotationFieldAccess<?> createAnnotationFieldAccess() {
+		CtAnnotationFieldAccess<?> e = new CtAnnotationFieldAccesImpl();
 		e.setFactory(getMainFactory());
 		return e;
 	}

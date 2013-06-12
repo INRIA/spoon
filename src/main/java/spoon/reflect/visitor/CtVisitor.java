@@ -19,6 +19,7 @@ package spoon.reflect.visitor;
 
 import java.lang.annotation.Annotation;
 
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -341,5 +342,8 @@ public interface CtVisitor {
 	 * Visits a <code>while</code> loop.
 	 */
 	void visitCtWhile(CtWhile whileLoop);
+
+	<T> void visitCtAnnotationFieldAccess(
+			CtAnnotationFieldAccess<T> annotationFieldAccess);
 
 }
