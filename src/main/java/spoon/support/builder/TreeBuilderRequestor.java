@@ -96,7 +96,8 @@ public class TreeBuilderRequestor extends Main implements ICompilerRequestor {
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
-		ClassLoader currentClassLoader = ClassLoader.getSystemClassLoader();
+		ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();//ClassLoader.getSystemClassLoader();
+		
 		
 		if(currentClassLoader instanceof URLClassLoader){
 			URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
