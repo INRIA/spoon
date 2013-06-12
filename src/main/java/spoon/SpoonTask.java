@@ -73,8 +73,6 @@ public class SpoonTask extends Java {
 
 	String classname;
 
-	boolean compile = false;
-
 	File input;
 
 	int javaCompliance = 5;
@@ -82,8 +80,6 @@ public class SpoonTask extends Java {
 	boolean nooutput = false;
 
 	File output;
-
-	File build;
 
 	File spoonlet;
 
@@ -170,16 +166,7 @@ public class SpoonTask extends Java {
 
 		if (nooutput) {
 			createArg().setValue("--no");
-		} else {
-			if (compile) {
-				createArg().setValue("--compile");
-
-				createArg().setValue("--build");
-
-				createArg().setFile(build);
-
-			}
-		}
+		} 
 
 		createArg().setValue("--compliance");
 		createArg().setValue("" + javaCompliance);
@@ -294,13 +281,6 @@ public class SpoonTask extends Java {
 	}
 
 	/**
-	 * Sets Spoon to be in verbose mode.
-	 */
-	public void setCompile(boolean compile) {
-		this.compile = compile;
-	}
-
-	/**
 	 * Sets a file or a directory to be processed (no templates, see
 	 * {@link #setTemplate(File)}).
 	 */
@@ -339,13 +319,6 @@ public class SpoonTask extends Java {
 	@Override
 	public void setOutput(File output) {
 		this.output = output;
-	}
-
-	/**
-	 * Sets the output directory for generated sources.
-	 */
-	public void setBuild(File build) {
-		this.build = build;
 	}
 
 	/**

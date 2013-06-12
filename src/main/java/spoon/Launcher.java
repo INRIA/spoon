@@ -29,8 +29,8 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
  * This class implements an integrated command-line launcher for processing
  * programs at compile-time using the JDT-based builder (Eclipse). It takes
  * arguments that allow building, processing, printing, and compiling Java
- * programs. Launch with no arguments (see {@link #main(String[])}) for
- * detailed usage.
+ * programs. Launch with no arguments (see {@link #main(String[])}) for detailed
+ * usage.
  * 
  * 
  * @see spoon.processing.Environment
@@ -45,10 +45,10 @@ public class Launcher extends AbstractLauncher {
 	 * arguments and calls {@link #run()}).
 	 */
 	public static void main(String[] args) throws Exception {
-    	if(args.length!=0) {
+		if (args.length != 0) {
 			new Launcher(args).run();
 		} else {
-			new Launcher(new String[]{"--help"}).run();
+			new Launcher(new String[] { "--help" }).run();
 		}
 	}
 
@@ -74,21 +74,21 @@ public class Launcher extends AbstractLauncher {
 		jsap.registerParameter(sw1);
 
 		// Compile Output files
-//		sw1 = new Switch("compile");
-//		sw1.setShortFlag('c');
-//		sw1.setLongFlag("compile");
-//		sw1.setHelp("compile generated sources");
-//		jsap.registerParameter(sw1);
+		// sw1 = new Switch("compile");
+		// sw1.setShortFlag('c');
+		// sw1.setLongFlag("compile");
+		// sw1.setHelp("compile generated sources");
+		// jsap.registerParameter(sw1);
 
 		// build output directory
-		FlaggedOption opt2 = new FlaggedOption("build");
-		opt2.setShortFlag('b');
-		opt2.setLongFlag("build");
-		opt2.setDefault("spoonBuild");
-		opt2.setHelp("specify where to place generated class files");
-		opt2.setStringParser(FileStringParser.getParser());
-		opt2.setRequired(false);
-		jsap.registerParameter(opt2);
+		// FlaggedOption opt2 = new FlaggedOption("build");
+		// opt2.setShortFlag('b');
+		// opt2.setLongFlag("build");
+		// opt2.setDefault("spoonBuild");
+		// opt2.setHelp("specify where to place generated class files");
+		// opt2.setStringParser(FileStringParser.getParser());
+		// opt2.setRequired(false);
+		// jsap.registerParameter(opt2);
 
 		// show GUI
 		sw1 = new Switch("gui");
@@ -108,14 +108,14 @@ public class Launcher extends AbstractLauncher {
 	protected Factory createFactory() {
 		Factory f = super.createFactory();
 
-//		if (getArguments().getBoolean("compile")) {
-//			FileGenerator<?> printer = f.getEnvironment()
-//					.getDefaultFileGenerator();
-//			ByteCodeOutputProcessor p = new ByteCodeOutputProcessor(
-//					(JavaOutputProcessor) printer, getArguments().getFile(
-//							"build"));
-//			f.getEnvironment().setDefaultFileGenerator(p);
-//		}
+		// if (getArguments().getBoolean("compile")) {
+		// FileGenerator<?> printer = f.getEnvironment()
+		// .getDefaultFileGenerator();
+		// ByteCodeOutputProcessor p = new ByteCodeOutputProcessor(
+		// (JavaOutputProcessor) printer, getArguments().getFile(
+		// "build"));
+		// f.getEnvironment().setDefaultFileGenerator(p);
+		// }
 
 		return f;
 	}
