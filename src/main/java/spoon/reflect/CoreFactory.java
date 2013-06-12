@@ -19,6 +19,7 @@ package spoon.reflect;
 
 import java.lang.annotation.Annotation;
 
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -378,10 +379,17 @@ public interface CoreFactory {
 	 * Creates a compilation unit.
 	 */
 	CompilationUnit createCompilationUnit();
-	
+
 	/**
 	 * Creates a virtual compilation unit.
 	 */
 	CompilationUnit createVirtualCompilationUnit();
+
+	/**
+	 * Create an access to annotation value
+	 * 
+	 * @return
+	 */
+	CtAnnotationFieldAccess<?> createAnnotationFieldAccess();
 
 }

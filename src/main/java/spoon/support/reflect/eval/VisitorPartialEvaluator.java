@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -178,8 +179,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	@SuppressWarnings("unchecked")
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		CtExpression<?> left = evaluate(operator, operator.getLeftHandOperand());
-		CtExpression<?> right = evaluate(operator, operator
-				.getRightHandOperand());
+		CtExpression<?> right = evaluate(operator,
+				operator.getRightHandOperand());
 		if ((left instanceof CtLiteral) && (right instanceof CtLiteral)) {
 			Object leftObject = ((CtLiteral<?>) left).getValue();
 			Object rightObject = ((CtLiteral<?>) right).getValue();
@@ -207,39 +208,35 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				}
 				break;
 			case GE:
-				res
-						.setValue(((Number) leftObject).doubleValue() >= ((Number) rightObject)
-								.doubleValue());
+				res.setValue(((Number) leftObject).doubleValue() >= ((Number) rightObject)
+						.doubleValue());
 				break;
 			case LE:
-				res
-						.setValue(((Number) leftObject).doubleValue() <= ((Number) rightObject)
-								.doubleValue());
+				res.setValue(((Number) leftObject).doubleValue() <= ((Number) rightObject)
+						.doubleValue());
 				break;
 			case GT:
-				res
-						.setValue(((Number) leftObject).doubleValue() > ((Number) rightObject)
-								.doubleValue());
+				res.setValue(((Number) leftObject).doubleValue() > ((Number) rightObject)
+						.doubleValue());
 				break;
 			case LT:
-				res
-						.setValue(((Number) leftObject).doubleValue() < ((Number) rightObject)
-								.doubleValue());
+				res.setValue(((Number) leftObject).doubleValue() < ((Number) rightObject)
+						.doubleValue());
 				break;
 			case MINUS:
-				res.setValue(convert(operator.getType(), ((Number) leftObject)
-						.doubleValue()
-						- ((Number) rightObject).doubleValue()));
+				res.setValue(convert(operator.getType(),
+						((Number) leftObject).doubleValue()
+								- ((Number) rightObject).doubleValue()));
 				break;
 			case MUL:
-				res.setValue(convert(operator.getType(), ((Number) leftObject)
-						.doubleValue()
-						* ((Number) rightObject).doubleValue()));
+				res.setValue(convert(operator.getType(),
+						((Number) leftObject).doubleValue()
+								* ((Number) rightObject).doubleValue()));
 				break;
 			case DIV:
-				res.setValue(convert(operator.getType(), ((Number) leftObject)
-						.doubleValue()
-						/ ((Number) rightObject).doubleValue()));
+				res.setValue(convert(operator.getType(),
+						((Number) leftObject).doubleValue()
+								/ ((Number) rightObject).doubleValue()));
 				break;
 			case PLUS:
 				if ((leftObject instanceof String)
@@ -442,6 +439,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(fieldAccess.getFactory().Core().clone(fieldAccess));
 	}
 
+	public <T> void visitCtAnnotationFieldAccess(
+			CtAnnotationFieldAccess<T> annotationFieldAccess) {
+		CtField<?> f = annotationFieldAccess.getVariable().getDeclaration();
+		setResult(evaluate(f, f.getDefaultExpression()));
+	}
+
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		throw new RuntimeException("Unknow Element");
 	}
@@ -499,16 +502,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			ifRes.setCondition(r);
 			r.setParent(ifRes);
 			boolean thenEnded = false, elseEnded = false;
-			ifRes
-					.setThenStatement(evaluate(ifRes, ifElement
-							.getThenStatement()));
+			ifRes.setThenStatement(evaluate(ifRes, ifElement.getThenStatement()));
 			if (flowEnded) {
 				thenEnded = true;
 				flowEnded = false;
 			}
-			ifRes
-					.setElseStatement(evaluate(ifRes, ifElement
-							.getElseStatement()));
+			ifRes.setElseStatement(evaluate(ifRes, ifElement.getElseStatement()));
 			if (flowEnded) {
 				elseEnded = true;
 				flowEnded = false;
@@ -552,13 +551,15 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			// (including to superclasses)
 			if ((executable != null)
 					&& (invocation.getType() != null)
-					&& invocation.getExecutable().getDeclaringType()
+					&& invocation
+							.getExecutable()
+							.getDeclaringType()
 							.isAssignableFrom(
 									((CtSimpleType<?>) invocation
 											.getParent(CtSimpleType.class))
 											.getReference())) {
-				CtBlock<?> b = evaluate(invocation.getParent(), executable
-						.getBody());
+				CtBlock<?> b = evaluate(invocation.getParent(),
+						executable.getBody());
 				flowEnded = false;
 				CtStatement last = b.getStatements().get(
 						b.getStatements().size() - 1);
@@ -607,11 +608,9 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		// }
 		// });
 		// if (res.size() != 0)
-		CtLocalVariable<T> r = localVariable.getFactory().Core().clone(
-				localVariable);
-		r
-				.setDefaultExpression(evaluate(r, localVariable
-						.getDefaultExpression()));
+		CtLocalVariable<T> r = localVariable.getFactory().Core()
+				.clone(localVariable);
+		r.setDefaultExpression(evaluate(r, localVariable.getDefaultExpression()));
 		setResult(r);
 	}
 
@@ -663,8 +662,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		CtReturn<R> r = returnStatement.getFactory().Core().createReturn();
-		r.setReturnedExpression(evaluate(r, returnStatement
-				.getReturnedExpression()));
+		r.setReturnedExpression(evaluate(r,
+				returnStatement.getReturnedExpression()));
 		setResult(r);
 		flowEnded = true;
 	}
@@ -686,9 +685,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public void visitCtThrow(CtThrow throwStatement) {
 		CtThrow r = throwStatement.getFactory().Core().createThrow();
-		r
-				.setThrownExpression(evaluate(r, throwStatement
-						.getThrownExpression()));
+		r.setThrownExpression(evaluate(r, throwStatement.getThrownExpression()));
 		setResult(r);
 		flowEnded = true;
 	}
@@ -726,8 +723,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <T, A extends T> void visitCtAssignment(
 			CtAssignment<T, A> variableAssignment) {
-		CtAssignment<T, A> a = variableAssignment.getFactory().Core().clone(
-				variableAssignment);
+		CtAssignment<T, A> a = variableAssignment.getFactory().Core()
+				.clone(variableAssignment);
 		a.setAssignment(evaluate(a, a.getAssignment()));
 		setResult(a);
 	}
@@ -751,8 +748,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <T> void visitCtConditional(CtConditional<T> conditional) {
-		CtExpression<Boolean> r = evaluate(conditional, conditional
-				.getCondition());
+		CtExpression<Boolean> r = evaluate(conditional,
+				conditional.getCondition());
 		if (r instanceof CtLiteral) {
 			CtLiteral<Boolean> l = (CtLiteral<Boolean>) r;
 			if (l.getValue()) {
@@ -765,10 +762,10 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 					.createConditional();
 			ifRes.setCondition(r);
 			r.setParent(ifRes);
-			ifRes.setThenExpression(evaluate(ifRes, conditional
-					.getThenExpression()));
-			ifRes.setElseExpression(evaluate(ifRes, conditional
-					.getElseExpression()));
+			ifRes.setThenExpression(evaluate(ifRes,
+					conditional.getThenExpression()));
+			ifRes.setElseExpression(evaluate(ifRes,
+					conditional.getElseExpression()));
 			setResult(ifRes);
 		}
 	}

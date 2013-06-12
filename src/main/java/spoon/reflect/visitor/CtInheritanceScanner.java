@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -106,12 +107,13 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public CtInheritanceScanner() {
 	}
 
-	public <T> void visitCtCodeSnippetExpression(CtCodeSnippetExpression<T> expression) {
+	public <T> void visitCtCodeSnippetExpression(
+			CtCodeSnippetExpression<T> expression) {
 	}
 
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
 	}
-	
+
 	/**
 	 * Generically scans a collection of meta-model elements.
 	 */
@@ -508,6 +510,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 		scanCtExpression(variableAccess);
+	}
+
+	public <T> void visitCtAnnotationFieldAccess(
+			CtAnnotationFieldAccess<T> annotationFieldAccess) {
+		scanCtTargetedExpression(annotationFieldAccess);
+		visitCtVariableAccess(annotationFieldAccess);
 	}
 
 	public void visitCtWhile(CtWhile whileLoop) {

@@ -29,6 +29,7 @@ import java.util.TreeMap;
 
 import spoon.processing.Environment;
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -931,9 +932,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		context.ignoreGenerics = true;
 		scan(fieldAccess.getVariable());
+
 		context.ignoreGenerics = false;
 		context.ignoreStaticAccess = false;
 		exitCtExpression(fieldAccess);
+	}
+
+	public <T> void visitCtAnnotationFieldAccess(
+			CtAnnotationFieldAccess<T> annotationFieldAccess) {
+		enterCtExpression(annotationFieldAccess);
+		if (annotationFieldAccess.getTarget() != null) {
+			scan(annotationFieldAccess.getTarget());
+			write(".");
+			context.ignoreStaticAccess = true;
+		}
+		context.ignoreGenerics = true;
+		scan(annotationFieldAccess.getVariable());
+		write("()");
+		context.ignoreGenerics = false;
+		context.ignoreStaticAccess = false;
+		exitCtExpression(annotationFieldAccess);
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
@@ -1494,7 +1512,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			write("package " + ctPackage.getQualifiedName() + ";");
 		} else {
-			write("// default package (CtPackage.TOP_LEVEL_PACKAGE_NAME in Spoon= unnamed package)\n");			
+			write("// default package (CtPackage.TOP_LEVEL_PACKAGE_NAME in Spoon= unnamed package)\n");
 		}
 	}
 
