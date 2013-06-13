@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -36,16 +35,6 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtPackageReference(this);
-	}
-
-	Factory factory;
-
-	public Factory getFactory() {
-		return factory;
-	}
-
-	public void setFactory(Factory factory) {
-		this.factory = factory;
 	}
 
 }
