@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +50,6 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
-import com.martiansoftware.jsap.UnflaggedOption;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
 
 /**
@@ -117,10 +115,8 @@ public abstract class AbstractLauncher {
 	/**
 	 * Do the model building.
 	 * 
-	 * @return true if the Java sources was succesfully compiled by the core
-	 *         Java compiler, false if some errors were encountered
 	 */
-	protected boolean build() {
+	protected void build() throws Exception {
 		// building
 		Builder builder = getFactory().getBuilder();
 
@@ -138,17 +134,7 @@ public abstract class AbstractLauncher {
 				e.printStackTrace();
 			}
 		}
-		boolean success = false;
-		try {
-			success = builder.build();
-		} catch (Exception e) {
-			getFactory().getEnvironment().report(null, Severity.ERROR,
-					"Error while loading resource : " + e.getMessage());
-			if (getFactory().getEnvironment().isDebug()) {
-				e.printStackTrace();
-			}
-		}
-		return success;
+		builder.build();
 	}
 
 	/**
