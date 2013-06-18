@@ -74,7 +74,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		if ((getSuperclass() != null)
 				&& (getSuperclass().getDeclaration() != null)) {
 			CtType<?> t = (CtType<?>) getSuperclass().getDeclaration();
-			ret.addAll(t.getMethods());
+			ret.addAll(t.getAllMethods());
 		}
 		return ret;
 	}
