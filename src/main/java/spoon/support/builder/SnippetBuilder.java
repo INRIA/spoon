@@ -1,7 +1,5 @@
 package spoon.support.builder;
 
-import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
-
 import spoon.reflect.Factory;
 
 public class SnippetBuilder extends SpoonBuildingManager {
@@ -15,24 +13,15 @@ public class SnippetBuilder extends SpoonBuildingManager {
 		if (factory == null) {
 			throw new Exception("Factory not initialized");
 		}
-		TreeBuilderRequestor.JAVA_COMPLIANCE = factory.getEnvironment()
-				.getComplianceLevel();
+				
 		boolean srcSuccess;
 		factory.getEnvironment().debugMessage(
 				"compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
-		compiler = new TreeBuilderRequestor();
+		compiler = new SpoonCompiler();
+		compiler.JAVA_COMPLIANCE = factory.getEnvironment().getComplianceLevel();
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
-		if (!srcSuccess) {
-			for (CategorizedProblem[] cps : compiler.probs) {
-				for (int i = 0; i < cps.length; i++) {
-					CategorizedProblem problem = cps[i];
-					if (problem != null)
-						getProblems().add(problem.getMessage());
-				}
-			}
-		}
 		factory.getEnvironment().debugMessage(
 				"compiled in " + (System.currentTimeMillis() - t) + " ms");
 		factory.getEnvironment().debugMessage(
