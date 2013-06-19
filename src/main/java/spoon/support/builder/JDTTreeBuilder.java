@@ -124,6 +124,7 @@ import spoon.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import spoon.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import spoon.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import spoon.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import spoon.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import spoon.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import spoon.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import spoon.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -961,8 +962,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 				arrayref.setComponentType(getTypeReference(binding
 						.leafComponentType()));
+			}  else if (binding instanceof ProblemReferenceBinding) {
+				// Spoon is able to analyze also without the classpath
+				ref = factory.Core().createTypeReference();
+				ref.setSimpleName(new String(binding.readableName()));
 			} else {
-				throw new RuntimeException("Unkown TypeBinding");
+				throw new RuntimeException("Unknown TypeBinding: "+binding.getClass()+" "+binding);
 			}
 			return ref;
 		}
@@ -1141,7 +1146,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	CtSimpleType<?> createType(TypeDeclaration typeDeclaration) {
 		CtSimpleType<?> type = null;
 		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
-			type = (CtSimpleType<?>) factory.Core().createAnnotationType();
+			type = factory.Core().createAnnotationType();
 		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
 			CtEnum<?> e = factory.Core().createEnum();
 			if (typeDeclaration.superInterfaces != null) {
@@ -1209,6 +1214,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(annotationTypeDeclaration);
 	}
 
+	@Override
 	public void endVisit(Argument argument, BlockScope scope) {
 		context.exit(argument);
 	}
@@ -1289,6 +1295,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(conditionalExpression);
 	}
 
+	@Override
 	public void endVisit(ConstructorDeclaration constructorDeclaration,
 			ClassScope scope) {
 		context.exit(constructorDeclaration);
@@ -1322,6 +1329,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(explicitConstructor);
 	}
 
+	@Override
 	public void endVisit(ExtendedStringLiteral extendedStringLiteral,
 			BlockScope scope) {
 		context.exit(extendedStringLiteral);
@@ -1332,10 +1340,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(falseLiteral);
 	}
 
+	@Override
 	public void endVisit(FieldDeclaration fieldDeclaration, MethodScope scope) {
 		context.exit(fieldDeclaration);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void endVisit(FieldReference fieldReference, BlockScope scope) {
 		context.exit(fieldReference);
@@ -1346,6 +1356,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(floatLiteral);
 	}
 
+	@Override
 	public void endVisit(ForeachStatement forStatement, BlockScope scope) {
 		context.exit(forStatement);
 	}
@@ -1381,6 +1392,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(localDeclaration);
 	}
 
+	@Override
 	public void endVisit(LongLiteral longLiteral, BlockScope scope) {
 		context.exit(longLiteral);
 	}
@@ -1403,6 +1415,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(messageSend);
 	}
 
+	@Override
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		// Exit from method and Block
 		context.exit(methodDeclaration);
@@ -1410,6 +1423,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.exit(methodDeclaration);
 	}
 
+	@Override
 	public void endVisit(NormalAnnotation annotation, BlockScope scope) {
 		context.exit(annotation);
 		skipTypeInAnnotation = false;
@@ -1475,6 +1489,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		endVisit((AllocationExpression) qualifiedAllocationExpression, scope);
 	}
 
+	@Override
 	public void endVisit(QualifiedNameReference qualifiedNameReference,
 			BlockScope scope) {
 		if (context.stack.peek().node == qualifiedNameReference)
@@ -1570,6 +1585,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(thisReference);
 	}
 
+	@Override
 	public void endVisit(ThrowStatement throwStatement, BlockScope scope) {
 		context.exit(throwStatement);
 	}
@@ -1792,6 +1808,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return false;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(Argument argument, BlockScope scope) {
 		CtParameter<?> p = factory.Core().createParameter();
@@ -1975,6 +1992,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return super.visit(conditionalExpression, scope);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(ConstructorDeclaration constructorDeclaration,
 			ClassScope scope) {
@@ -2096,6 +2114,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return false;
 	}
 
+	@Override
 	public boolean visit(ExtendedStringLiteral extendedStringLiteral,
 			BlockScope scope) {
 		CtLiteral<String> l = factory.Core().createLiteral();
@@ -2138,6 +2157,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return false;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(FieldReference fieldReference, BlockScope scope) {
 		CtFieldAccess<?> acc = factory.Core().createFieldAccess();
@@ -2359,9 +2379,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 				m.getThrownTypes().add(
 						references.getTypeReference(r.resolvedType));
 		}
-		for (TypeBinding b : methodDeclaration.binding.typeVariables) {
-			m.getFormalTypeParameters().add(
-					references.getBoundedTypeReference(b));
+		
+		if (methodDeclaration.binding!=null) {// this may happen when working with incomplete classpath
+			for (TypeBinding b : methodDeclaration.binding.typeVariables) {
+				m.getFormalTypeParameters().add(
+						references.getBoundedTypeReference(b));
+			}
 		}
 
 		m.setDocComment(getJavaDoc(methodDeclaration.javadoc,
@@ -2736,6 +2759,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return true;
 	}
 
+	@Override
 	public boolean visit(ThrowStatement throwStatement, BlockScope scope) {
 		CtThrow t = factory.Core().createThrow();
 		context.enter(t, throwStatement);
@@ -2750,6 +2774,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return true;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean visit(TryStatement tryStatement, BlockScope scope) {
 		CtTry t = factory.Core().createTry();
