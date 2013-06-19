@@ -24,67 +24,28 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
 import spoon.eclipse.jdt.internal.compiler.CompilationResult;
 import spoon.eclipse.jdt.internal.compiler.ICompilerRequestor;
-import spoon.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
-import spoon.eclipse.jdt.internal.compiler.IProblemFactory;
 import spoon.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import spoon.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import spoon.eclipse.jdt.internal.compiler.batch.Main;
 import spoon.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import spoon.eclipse.jdt.internal.compiler.util.Util;
-
 import spoon.reflect.Factory;
 
-public class TreeBuilderRequestor extends Main implements ICompilerRequestor {
+public class SpoonCompiler  extends Main {
+	
+	public int JAVA_COMPLIANCE = 6;
 
-	class Compiler extends spoon.eclipse.jdt.internal.compiler.Compiler {
-
-		@SuppressWarnings("deprecation")
-		public Compiler(INameEnvironment environment,
-				IErrorHandlingPolicy policy, Map<?,?> settings,
-				ICompilerRequestor requestor, IProblemFactory problemFactory,
-				PrintWriter out, boolean statementsRecovery) {
-			super(environment, policy, settings, requestor, problemFactory,
-					statementsRecovery);
-		}
-		
-		public CompilationUnitDeclaration[] compileUnits(
-				CompilationUnit[] sourceUnits) {
-			CompilationUnitDeclaration unit = null;
-			int i = 0;
-			// build and record parsed units
-			beginToCompile(sourceUnits);
-			// process all units (some more could be injected in the loop by
-			// the lookup environment)
-			for (; i < this.totalUnits; i++) {
-				unit = unitsToProcess[i];
-				this.parser.getMethodBodies(unit);
-
-				// fault in fields & methods
-				if (unit.scope != null)
-					unit.scope.faultInTypes();
-				// verify inherited methods
-				if (unit.scope != null)
-					unit.scope
-							.verifyMethods(lookupEnvironment.methodVerifier());
-				// type checking
-				unit.resolve();
-				// flow analysis
-				unit.analyseCode();
-
-				requestor.acceptResult(unit.compilationResult.tagAsAccepted());
-			}
-			return this.unitsToProcess;
-		}
+	public SpoonCompiler(PrintWriter outWriter, PrintWriter errWriter) {
+		super(outWriter, errWriter, false);
 	}
 
-	public static int JAVA_COMPLIANCE = 6;
-
-	boolean success=true;
+	public SpoonCompiler() {
+		super(new PrintWriter(System.out), new PrintWriter(System.err), false);
+	}
 	
 	public boolean compileSrc(Factory f, List<CtFile> files)
 			throws Exception {
@@ -126,16 +87,18 @@ public class TreeBuilderRequestor extends Main implements ICompilerRequestor {
 		
 		JDTTreeBuilder builder = new JDTTreeBuilder(f);
 
+		// here we build the model
 		for (CompilationUnitDeclaration unit : units) {
-			try {
-//				t=System.currentTimeMillis();
-				unit.traverse(builder, unit.scope);
-//				f.getEnvironment().debugMessage("built unit "+new String(unit.getMainTypeName())+" in "+(System.currentTimeMillis()-t)+" ms");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+//		  try {
+			unit.traverse(builder, unit.scope);
+//		 // for debug
+//		  } catch (Exception e) {
+//			// bad things sometimes happen, for instance when methodDeclaration.binding in JDTTreeBuilder
+//			System.err.println(new String(unit.getFileName())+" "+e.getMessage()+e.getStackTrace()[0]);
+//		  }
 		}
-		return success;
+		
+		return probs.size()==0;
 	}
 
 	public boolean compileTemplate(Factory f, List<CtFile> streams)
@@ -161,20 +124,12 @@ public class TreeBuilderRequestor extends Main implements ICompilerRequestor {
 		for (CompilationUnitDeclaration unit : units) {
 			unit.traverse(builder, unit.scope);
 		}
-		return success;
+		return probs.size()==0;
 	}
-
-	Compiler batchCompiler;
 
 	PrintWriter out;
 
-	public TreeBuilderRequestor(PrintWriter outWriter, PrintWriter errWriter) {
-		super(outWriter, errWriter, false);
-	}
 
-	public TreeBuilderRequestor() {
-		super(new PrintWriter(System.out), new PrintWriter(System.err), false);
-	}
 
 	/*
 	 * Build the set of compilation source units
@@ -205,26 +160,24 @@ public class TreeBuilderRequestor extends Main implements ICompilerRequestor {
 		INameEnvironment environment = this.environment;
 		if(environment == null)
 			environment = getLibraryAccess();
-		this.batchCompiler = new Compiler(environment, getHandlingPolicy(),
-				this.options, this, getProblemFactory(), this.out, false);
-		return batchCompiler.compileUnits(getCompilationUnits(streams));
+		TreeBuilderCompiler  batchCompiler = new TreeBuilderCompiler(environment, getHandlingPolicy(),
+				this.options, this.requestor, getProblemFactory(), this.out, false);
+		CompilationUnitDeclaration[] units = batchCompiler.compileUnits(getCompilationUnits(streams));
+		return units;
 	}
 	
-	List<CategorizedProblem[]> probs;
+	final List<CategorizedProblem[]> probs = new ArrayList<CategorizedProblem[]>();
 	
-	public List<CategorizedProblem[]> getProbs() {
-		if (probs == null) {
-			probs = new ArrayList<CategorizedProblem[]>();
-			
-		}
-		return probs;
-	}
+	public final TreeBuilderRequestor requestor = new TreeBuilderRequestor();
 	
-	public void acceptResult(CompilationResult result) {
-		if (result.hasErrors()) {
-			System.err.println(result);
-			getProbs().add(result.problems);
-			success=false;
+	// this class can not be static because it uses the fiel probs
+	public class TreeBuilderRequestor implements ICompilerRequestor {
+
+		public void acceptResult(CompilationResult result) {
+			if (result.hasErrors()) {
+				probs.add(result.problems);
+			}
 		}
+	
 	}
 }

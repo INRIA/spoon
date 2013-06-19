@@ -137,7 +137,7 @@ public class SnippetCompiler {
 		}
 
 		if (!success) {
-			throw new CtSnippetCompilationError(builder.getProblems());
+			throw new CtSnippetCompilationError("snippet could not be compiled");
 		}
 	}
 

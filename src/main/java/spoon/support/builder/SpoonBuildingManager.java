@@ -19,14 +19,12 @@ package spoon.support.builder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
-
 import spoon.processing.Builder;
+import spoon.processing.Severity;
 import spoon.reflect.Factory;
 import spoon.support.builder.support.CtVirtualFolder;
 
@@ -72,7 +70,7 @@ public class SpoonBuildingManager implements Builder {
 			this.templates.addFolder(FileFactory.createFolder(source));
 	}
 
-	TreeBuilderRequestor compiler = null;
+	SpoonCompiler compiler = null;
 
 	public boolean build() throws Exception {
 		if (factory == null) {
@@ -82,21 +80,21 @@ public class SpoonBuildingManager implements Builder {
 			throw new Exception("Model already built");
 		}
 		build = true;
-		TreeBuilderRequestor.JAVA_COMPLIANCE = factory.getEnvironment()
-				.getComplianceLevel();
+				
 		boolean srcSuccess, templateSuccess;
 		factory.getEnvironment().debugMessage(
 				"compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
-		compiler = new TreeBuilderRequestor();
+		compiler = new SpoonCompiler();
+		compiler.JAVA_COMPLIANCE = factory.getEnvironment().getComplianceLevel();
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
-		if (!srcSuccess) {
+		if (compiler.probs.size()>0) {
 			for (CategorizedProblem[] cps : compiler.probs) {
 				for (int i = 0; i < cps.length; i++) {
 					CategorizedProblem problem = cps[i];
 					if (problem != null)
-						getProblems().add(problem.getMessage());
+						factory.getEnvironment().report(null, Severity.ERROR, ""+new String(problem.getOriginatingFileName())+"\n"+problem.getMessage());
 				}
 			}
 		}
@@ -118,14 +116,6 @@ public class SpoonBuildingManager implements Builder {
 		// does nothing by default
 	}
 
-	public List<String> problems;
-
-	public List<String> getProblems() {
-		if (problems == null) {
-			problems = new ArrayList<String>();
-		}
-		return problems;
-	}
 
 	public Set<File> getInputSources() {
 		Set<File> files = new HashSet<File>();
@@ -156,7 +146,7 @@ public class SpoonBuildingManager implements Builder {
 		this.factory = factory;
 	}
 
-	public TreeBuilderRequestor getCompiler() {
+	public SpoonCompiler getCompiler() {
 		return compiler;
 	}
 
