@@ -19,7 +19,6 @@ package spoon.processing;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 import spoon.support.builder.CtResource;
@@ -109,10 +108,5 @@ public interface Builder extends FactoryAccessor {
 	 */
 	void initCompiler();
 
-	/**
-	 * Gets the list of problems that may have been reported by the compiler
-	 * when building the model.
-	 */
-	List<String> getProblems();
 
 }
