@@ -52,7 +52,8 @@ class TreeBuilderCompiler extends spoon.eclipse.jdt.internal.compiler.Compiler {
 			unit.resolve();
 			// flow analysis
 			unit.analyseCode();
-
+			
+			unit.ignoreFurtherInvestigation = false;
 			requestor.acceptResult(unit.compilationResult);
 		}
 		
