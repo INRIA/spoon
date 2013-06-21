@@ -351,7 +351,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	protected void exitCtExpression(CtExpression<?> e) {
 		while ((context.parenthesedExpression.size() > 0)
-				&& e.equals(context.parenthesedExpression.peek())) {
+				&& e == context.parenthesedExpression.peek()) {
 			context.parenthesedExpression.pop();
 			write(")");
 		}
