@@ -81,6 +81,15 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return current.compareTo(other);
 	}
 
+	public boolean equals(Object o) {
+		if(!(o instanceof CtElement))return false;
+		String current = getSignature();
+		String other = ((CtElement)o).getSignature();
+		if (current.length() <= 0 || other.length() <= 0)
+			throw new ClassCastException("Unable to compare elements");
+		return current.equals(other);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {

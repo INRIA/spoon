@@ -123,6 +123,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			}
 		}
 		try {
+			if(getPackage().getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME))
+				return (Class<T>) Thread.currentThread().getContextClassLoader()
+						.loadClass(getSimpleName());
 			return (Class<T>) Thread.currentThread().getContextClassLoader()
 					.loadClass(getQualifiedName());
 		} catch (Exception e) {
