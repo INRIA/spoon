@@ -23,9 +23,11 @@ import java.util.Set;
 
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.Root;
 
 /**
@@ -189,5 +191,17 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 * element (and sub-elements in the AST).
 	 */
 	Set<CtTypeReference<?>> getReferencedTypes();
+
+	/**
+	 * @param filter
+	 * @return
+	 */
+	<E extends CtElement> List<E> getElements(Filter<E> filter);
+
+	/**
+	 * @param filter
+	 * @return
+	 */
+	<T extends CtReference> List<T> getReferences(ReferenceFilter<T> filter);
 
 }
