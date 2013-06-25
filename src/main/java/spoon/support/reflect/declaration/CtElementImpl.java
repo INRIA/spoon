@@ -27,11 +27,13 @@ import spoon.reflect.Factory;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.visitor.ElementReplacer;
 import spoon.support.visitor.SignaturePrinter;
@@ -82,19 +84,20 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public boolean equals(Object o) {
-		if(!(o instanceof CtElement))return false;
+		if (!(o instanceof CtElement))
+			return false;
 		String current = getSignature();
-		String other = ((CtElement)o).getSignature();
+		String other = ((CtElement) o).getSignature();
 		if (current.length() <= 0 || other.length() <= 0)
 			throw new ClassCastException("Unable to compare elements");
 		return current.equals(other);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
-			if (a.getAnnotationType().toString().equals(
-					annotationType.getName())) {
+			if (a.getAnnotationType().toString()
+					.equals(annotationType.getName())) {
 				return ((CtAnnotation<A>) a).getActualAnnotation();
 			}
 		}
@@ -184,15 +187,14 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public void setPosition(SourcePosition position) {
 		this.position = position;
 	}
-	
+
 	public void setPositions(final SourcePosition position) {
 		accept(new CtScanner() {
 			public void enter(CtElement e) {
-			    e.setPosition(position);
+				e.setPosition(position);
 			}
 		});
 	}
-	
 
 	@Override
 	public String toString() {
@@ -220,9 +222,18 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public Set<CtTypeReference<?>> getReferencedTypes() {
-		TypeReferenceScanner s=new TypeReferenceScanner();
+		TypeReferenceScanner s = new TypeReferenceScanner();
 		s.scan(this);
 		return s.getReferences();
 	}
-	
+
+	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
+		return Query.getElements(this, filter);
+	}
+
+	public <T extends CtReference> List<T> getReferences(
+			ReferenceFilter<T> filter) {
+		return Query.getReferences(this, filter);
+	}
+
 }
