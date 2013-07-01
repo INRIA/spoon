@@ -2,7 +2,6 @@ package spoon.reflect.cu;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtSimpleType;
@@ -84,41 +83,5 @@ public interface CompilationUnit extends FactoryAccessor {
 	 */
 	int getTabCount(int index);
 
-	/**
-	 * Sets this compilation unit auto-import feature on or off (default is on).
-	 * Note that setting off auto-import is not recommended as it can lead to
-	 * unresolved references in the generated code.
-	 * 
-	 * @see #getManualImports()
-	 * @see #setManualImports(Set)
-	 */
-	void setAutoImport(boolean autoImport);
-
-	/**
-	 * Tells if this compilation unit auto-import feature is on or off (default
-	 * is on).
-	 * 
-	 * @see #getManualImports()
-	 * @see #setManualImports(Set)
-	 */
-	boolean isAutoImport();
-
-	/**
-	 * Gets the imports to be forced by this compilation unit when the
-	 * auto-import is off. This set can be modified and will impact the imports.
-	 * 
-	 * @see #isAutoImport()
-	 * @see #setAutoImport(boolean)
-	 */
-	Set<Import> getManualImports();
-
-	/**
-	 * Sets the imports to be forced by this compilation unit when the
-	 * auto-import is off.
-	 * 
-	 * @see #isAutoImport()
-	 * @see #setAutoImport(boolean)
-	 */
-	void setManualImports(Set<Import> manualImports);
 
 }

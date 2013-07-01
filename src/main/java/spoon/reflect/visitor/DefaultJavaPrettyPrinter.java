@@ -68,7 +68,6 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.Import;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -1797,12 +1796,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!types.isEmpty()) {
 			CtPackage pack = types.get(0).getPackage();
 			scan(pack).writeln().writeln();
-			if ((sourceCompilationUnit != null)
-					&& !sourceCompilationUnit.isAutoImport()) {
-				for (Import i : sourceCompilationUnit.getManualImports()) {
-					write(i + ";").writeln();
-				}
-			} else if (env.isAutoImports()) {
+			if (env.isAutoImports()) {
 				for (CtTypeReference<?> ref : importsContext.imports.values()) {
 					// ignore non-top-level type
 					if (ref.getPackage() != null) {
