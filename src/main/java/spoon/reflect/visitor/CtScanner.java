@@ -80,7 +80,7 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * This visitor implements a deep-search scan on the metamodel.
  */
-public class CtScanner implements CtVisitor {
+public abstract class CtScanner implements CtVisitor {
 	/**
 	 * Default constructor.
 	 */
