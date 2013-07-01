@@ -157,7 +157,7 @@ public abstract class AbstractLauncher {
 		env.setVerbose(getArguments().getBoolean("verbose")
 				|| getArguments().getBoolean("debug"));
 		env.setDebug(getArguments().getBoolean("debug"));
-		env.setAutoImports(!getArguments().getBoolean("imports"));
+		env.setAutoImports(getArguments().getBoolean("imports"));
 
 		env.setTabulationSize(getArguments().getInt("tabsize"));
 		env.useTabulations(getArguments().getBoolean("tabs"));
@@ -223,9 +223,9 @@ public abstract class AbstractLauncher {
 
 		// Auto-import
 		sw1 = new Switch("imports");
-		sw1.setLongFlag("noimports");
+		sw1.setLongFlag("with-imports");
 		sw1.setDefault("false");
-		sw1.setHelp("Disable imports in generated files");
+		sw1.setHelp("Enable imports in generated files");
 		jsap.registerParameter(sw1);
 
 		// java compliance
