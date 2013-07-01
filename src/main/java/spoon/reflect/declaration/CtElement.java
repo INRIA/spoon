@@ -117,12 +117,6 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	void replace(CtElement element);
 
 	/**
-	 * Replaces the elements that match the filter by the given element.
-	 */
-	void replace(Filter<? extends CtElement> replacementPoints,
-			CtElement element);
-
-	/**
 	 * Sets the annotations for this element.
 	 */
 	void setAnnotations(Set<CtAnnotation<? extends Annotation>> annotation);
