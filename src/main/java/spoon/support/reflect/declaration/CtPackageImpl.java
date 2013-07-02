@@ -40,6 +40,14 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	public CtPackageImpl() {
 		super();
 	}
+	
+	public boolean addPackage(CtPackage pack) {
+		return packs.add(pack);
+	}
+	
+	public boolean removePackage(CtPackage pack) {
+		return packs.remove(pack);
+	}
 
 	public void accept(CtVisitor v) {
 		v.visitCtPackage(this);

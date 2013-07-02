@@ -36,11 +36,18 @@ public class CtTypeParameterImpl extends CtElementImpl implements
 	List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>();
 
 	String name;
-
+	
 	public CtTypeParameterImpl() {
 		super();
 	}
 
+	public boolean addBound(CtTypeReference<?> bound) {
+		return this.bounds.add(bound);
+	}
+	public boolean removeBound(CtTypeReference<?> bound) {
+		return this.bounds.remove(bound);
+	}
+	
 	public void accept(CtVisitor v) {
 		v.visitCtTypeParameter(this);
 	}

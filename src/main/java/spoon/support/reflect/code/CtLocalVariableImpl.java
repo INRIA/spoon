@@ -28,92 +28,100 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements
-        CtLocalVariable<T> {
-    private static final long serialVersionUID = 1L;
+		CtLocalVariable<T> {
+	private static final long serialVersionUID = 1L;
 
-    CtExpression<T> defaultExpression;
+	CtExpression<T> defaultExpression;
 
-    String docComment;
+	String docComment;
 
-    Set<ModifierKind> modifiers = new TreeSet<ModifierKind>();
+	Set<ModifierKind> modifiers = new TreeSet<ModifierKind>();
 
-    String name;
+	String name;
 
-    CtTypeReference<T> type;
+	CtTypeReference<T> type;
 
-    public void accept(CtVisitor visitor) {
-        visitor.visitCtLocalVariable(this);
-    }
+	public boolean addModifier(ModifierKind modifier) {
+		return modifiers.add(modifier);
+	}
 
-    public CtExpression<T> getDefaultExpression() {
-        return defaultExpression;
-    }
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiers.remove(modifier);
+	}
 
-    @Override
-    public String getDocComment() {
-        return docComment;
-    }
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtLocalVariable(this);
+	}
 
-    public Set<ModifierKind> getModifiers() {
-        return modifiers;
-    }
+	public CtExpression<T> getDefaultExpression() {
+		return defaultExpression;
+	}
 
-    public CtLocalVariableReference<T> getReference() {
-        return getFactory().Code().createLocalVariableReference(this);
-    }
+	@Override
+	public String getDocComment() {
+		return docComment;
+	}
 
-    public String getSimpleName() {
-        return name;
-    }
+	public Set<ModifierKind> getModifiers() {
+		return modifiers;
+	}
 
-    public CtTypeReference<T> getType() {
-        return type;
-    }
+	public CtLocalVariableReference<T> getReference() {
+		return getFactory().Code().createLocalVariableReference(this);
+	}
 
-    public ModifierKind getVisibility() {
-        if (getModifiers().contains(ModifierKind.PUBLIC)) {
-            return ModifierKind.PUBLIC;
-        }
-        if (getModifiers().contains(ModifierKind.PROTECTED)) {
-            return ModifierKind.PROTECTED;
-        }
-        if (getModifiers().contains(ModifierKind.PRIVATE)) {
-            return ModifierKind.PRIVATE;
-        }
-        return null;
-    }
+	public String getSimpleName() {
+		return name;
+	}
 
-    public boolean hasModifier(ModifierKind modifier) {
-        return modifiers.contains(modifier);
-    }
+	public CtTypeReference<T> getType() {
+		return type;
+	}
 
-    public void setDefaultExpression(CtExpression<T> defaultExpression) {
-        this.defaultExpression = defaultExpression;
+	public ModifierKind getVisibility() {
+		if (getModifiers().contains(ModifierKind.PUBLIC)) {
+			return ModifierKind.PUBLIC;
+		}
+		if (getModifiers().contains(ModifierKind.PROTECTED)) {
+			return ModifierKind.PROTECTED;
+		}
+		if (getModifiers().contains(ModifierKind.PRIVATE)) {
+			return ModifierKind.PRIVATE;
+		}
+		return null;
+	}
+
+	public boolean hasModifier(ModifierKind modifier) {
+		return modifiers.contains(modifier);
+	}
+
+	public void setDefaultExpression(CtExpression<T> defaultExpression) {
+		this.defaultExpression = defaultExpression;
 		defaultExpression.setParent(this);
-    }
+	}
 
-    @Override
-    public void setDocComment(String docComment) {
-        this.docComment = docComment;
-    }
+	@Override
+	public void setDocComment(String docComment) {
+		this.docComment = docComment;
+	}
 
-    public void setModifiers(Set<ModifierKind> modifiers) {
-        this.modifiers = modifiers;
-    }
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		this.modifiers = modifiers;
+	}
 
-    public void setSimpleName(String simpleName) {
-        this.name = simpleName;
-    }
+	public void setSimpleName(String simpleName) {
+		this.name = simpleName;
+	}
 
-    public void setType(CtTypeReference<T> type) {
-        this.type = type;
-    }
+	public void setType(CtTypeReference<T> type) {
+		this.type = type;
+	}
 
-    public void setVisibility(ModifierKind visibility) {
-        getModifiers().remove(ModifierKind.PUBLIC);
-        getModifiers().remove(ModifierKind.PROTECTED);
-        getModifiers().remove(ModifierKind.PRIVATE);
-        getModifiers().add(visibility);
-    }
+	public void setVisibility(ModifierKind visibility) {
+		getModifiers().remove(ModifierKind.PUBLIC);
+		getModifiers().remove(ModifierKind.PROTECTED);
+		getModifiers().remove(ModifierKind.PRIVATE);
+		getModifiers().add(visibility);
+	}
 
 }

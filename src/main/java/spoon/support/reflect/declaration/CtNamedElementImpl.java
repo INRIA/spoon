@@ -26,13 +26,21 @@ import spoon.reflect.reference.CtReference;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements
 		CtNamedElement {
-
+	
 	Set<ModifierKind> modifiers = new TreeSet<ModifierKind>();
 
 	String simpleName;
-
+	
 	public Set<ModifierKind> getModifiers() {
 		return modifiers;
+	}
+
+	public boolean addModifier(ModifierKind modifier) {
+		return modifiers.add(modifier);
+	}
+
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiers.remove(modifier);
 	}
 
 	public CtReference getReference() {

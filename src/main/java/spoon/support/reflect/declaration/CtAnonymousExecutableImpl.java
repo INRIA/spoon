@@ -37,6 +37,14 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAnonymousExecutable(this);
 	}
+	
+	public boolean addModifier(ModifierKind modifier) {
+		return modifiers.add(modifier);
+	}
+
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiers.remove(modifier);
+	}
 
 	public CtBlock<?> getBody() {
 		return body;

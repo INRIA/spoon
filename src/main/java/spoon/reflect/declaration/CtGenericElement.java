@@ -34,5 +34,23 @@ public interface CtGenericElement extends CtElement {
 	/**
 	 * Sets the type parameters of this generic element.
 	 */
+	@Deprecated
 	void setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters);
+
+	/**
+	 * add a type parameters of this generic element.
+	 * 
+	 * @param formalTypeParameter
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean addFormalTypeParameters(CtTypeReference<?> formalTypeParameter);
+
+	/**
+	 * remove a type parameters of this generic element.
+	 * 
+	 * @param formalTypeParameter
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean removeFormalTypeParameters(CtTypeReference<?> formalTypeParameter);
+
 }

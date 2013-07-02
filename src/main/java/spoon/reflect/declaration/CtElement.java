@@ -118,8 +118,29 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 
 	/**
 	 * Sets the annotations for this element.
+	 * 
+	 * @deprecated use {@link #addAnnotation(CtAnnotation)} and
+	 *             {@link #removeAnnotation(CtAnnotation)} to manipulate
+	 *             annotations
 	 */
+	@Deprecated
 	void setAnnotations(Set<CtAnnotation<? extends Annotation>> annotation);
+
+	/**
+	 * Add an anntation for this element
+	 * 
+	 * @param annotation
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean addAnnotation(CtAnnotation<? extends Annotation> annotation);
+
+	/**
+	 * Remove an anntation for this element
+	 * 
+	 * @param annotation
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean removeAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
 	 * Sets the text of the documentation ("javadoc") comment of this

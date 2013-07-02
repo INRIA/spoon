@@ -42,6 +42,30 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 		super();
 	}
 
+	public <M> boolean addMethod(CtMethod<M> method) {
+		return methods.add(method);
+	}
+	public <S> boolean addSuperInterface(CtTypeReference<S> interfac) {
+		return interfaces.add(interfac);
+	}
+	
+	public <M> boolean removeMethod(CtMethod<M> method) {
+		return methods.remove(method);
+	}
+	public <S> boolean removeSuperInterface(CtTypeReference<S> interfac) {
+		return interfaces.remove(interfac);
+	}
+	
+	public boolean addFormalTypeParameters(
+			CtTypeReference<?> formalTypeParameter) {
+		return formalTypeParameters.add(formalTypeParameter);
+	}
+	
+	public boolean removeFormalTypeParameters(
+			CtTypeReference<?> formalTypeParameter) {
+		return formalTypeParameters.remove(formalTypeParameter);
+	}
+	
 	public List<CtTypeReference<?>> getFormalTypeParameters() {
 		return formalTypeParameters;
 	}

@@ -89,8 +89,27 @@ public interface CtPackage extends CtNamedElement {
 	 * 
 	 * @param pack
 	 *            new set of child packages
+	 * @deprecated use {@link #addPackage(CtPackage)} and
+	 *             {@link #removePackage(CtPackage)} instead
 	 */
+	@Deprecated
 	void setPackages(Set<CtPackage> pack);
+
+	/**
+	 * add a subpackage
+	 * 
+	 * @param pack
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean addPackage(CtPackage pack);
+
+	/**
+	 * remove a subpackage
+	 * 
+	 * @param pack
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean removePackage(CtPackage pack);
 
 	/**
 	 * Sets the types defined in the package.

@@ -75,8 +75,45 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 	void setParameters(List<CtParameter<?>> parameters);
 
 	/**
-	 * Sets the thrown types.
+	 * Add a parameter for this executable
+	 * 
+	 * @param parameter
+	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	boolean addParameter(CtParameter<?> parameter);
+
+	/**
+	 * Remove a parameter for this executable
+	 * 
+	 * @param parameter
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean removeParameter(CtParameter<?> parameter);
+
+	/**
+	 * Sets the thrown types.
+	 * 
+	 * @deprecated use {@link #addThrownType(CtTypeReference)} and
+	 *             {@link #removeThrownType(CtTypeReference)} to manipulate
+	 *             throw types
+	 */
+	@Deprecated
 	void setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+
+	/**
+	 * add a thrown type.
+	 * 
+	 * @param throwType
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean addThrownType(CtTypeReference<? extends Throwable> throwType);
+
+	/**
+	 * remove a thrown type.
+	 * 
+	 * @param throwType
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean removeThrownType(CtTypeReference<? extends Throwable> throwType);
 
 }
