@@ -39,6 +39,22 @@ import spoon.support.builder.SnippetCompiler;
 public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		CtSimpleType<T> {
 
+	public <F> boolean addField(CtField<F> field) {
+		return this.fields.add(field);
+	}
+
+	public <F> boolean removeField(CtField<F> field) {
+		return this.fields.remove(field);
+	}
+
+	public <N> boolean addNestedType(CtSimpleType<N> nestedType) {
+		return this.nestedTypes.add(nestedType);
+	}
+
+	public <N> boolean removeNestedType(CtSimpleType<N> nestedType) {
+		return this.nestedTypes.remove(nestedType);
+	}
+
 	public Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage) {
 		Set<CtTypeReference<?>> typeRefs = new HashSet<CtTypeReference<?>>();
 		for (CtTypeReference<?> typeRef : Query.getReferences(this,
@@ -131,7 +147,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 			@Override
 			public <A extends Annotation> void visitCtAnnotationType(
 					CtAnnotationType<A> annotationType) {
-				scan(annotationType.getNestedTypes()); 
+				scan(annotationType.getNestedTypes());
 
 				checkType(annotationType);
 			};
@@ -188,17 +204,16 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 	public void compileAndReplaceSnippets() {
 		SnippetCompiler.compileAndReplaceSnippetsIn(this);
 	}
-	
+
 	@Override
 	public void setParent(CtElement parentElement) {
-	    super.setParent(parentElement);
-	    if (parentElement instanceof CtPackage) {
-	    	CtPackage pack = (CtPackage)parentElement;
-	    	Set<CtSimpleType<?>> types = pack.getTypes();
-	    	types.add(this);
+		super.setParent(parentElement);
+		if (parentElement instanceof CtPackage) {
+			CtPackage pack = (CtPackage) parentElement;
+			Set<CtSimpleType<?>> types = pack.getTypes();
+			types.add(this);
 			pack.setTypes(types);
-	    }
-    }
-
+		}
+	}
 
 }

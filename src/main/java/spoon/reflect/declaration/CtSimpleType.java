@@ -111,13 +111,53 @@ public interface CtSimpleType<T> extends CtNamedElement {
 
 	/**
 	 * Sets the type's fields.
+	 * 
+	 * @deprecated use {@link #addField(CtField)} and
+	 *             {@link #removeField(CtField)} instead
 	 */
+	@Deprecated
 	void setFields(List<CtField<?>> fields);
 
 	/**
-	 * Sets some nested types.
+	 * add a Field
+	 * 
+	 * @param field
+	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	<F> boolean addField(CtField<F> field);
+
+	/**
+	 * remove a Field
+	 * 
+	 * @param field
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	<F> boolean removeField(CtField<F> field);
+
+	/**
+	 * Sets some nested types.
+	 * 
+	 * @deprecated use {@link #addNestedType(CtSimpleType)} and
+	 *             {@link #removeNestedType(CtSimpleType)} instead
+	 */
+	@Deprecated
 	void setNestedTypes(Set<CtSimpleType<?>> nestedTypes);
+
+	/**
+	 * remove a nested type
+	 * 
+	 * @param nestedType
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	<N> boolean addNestedType(CtSimpleType<N> nestedType);
+
+	/**
+	 * add a nested type
+	 * 
+	 * @param nestedType
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	<N> boolean removeNestedType(CtSimpleType<N> nestedType);
 
 	/**
 	 * Compiles and replace all the code snippets that are found in this type.

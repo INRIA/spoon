@@ -48,10 +48,35 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements
 	public CtExecutableImpl() {
 		super();
 	}
+	
+	public boolean addParameter(CtParameter<?> parameter) {
+		return parameters.add(parameter);
+	}
+	public boolean removeParameter(CtParameter<?> parameter) {
+		return parameters.remove(parameter);
+	}
+	
+	public boolean addThrownType(CtTypeReference<? extends Throwable> throwType) {
+		return thrownTypes.add(throwType);
+	}
+	public boolean removeThrownType(
+			CtTypeReference<? extends Throwable> throwType) {
+		return thrownTypes.remove(throwType);
+	}
+
+	public boolean addFormalTypeParameters(
+			CtTypeReference<?> formalTypeParameter) {
+		return formalTypeParameters.add(formalTypeParameter);
+	}
+
+	public boolean removeFormalTypeParameters(
+			CtTypeReference<?> formalTypeParameter) {
+		return formalTypeParameters.remove(formalTypeParameter);
+	}
 
 	@SuppressWarnings("unchecked")
 	public <B extends R> CtBlock<B> getBody() {
-		return (CtBlock<B>)body;
+		return (CtBlock<B>) body;
 	}
 
 	public List<CtTypeReference<?>> getFormalTypeParameters() {

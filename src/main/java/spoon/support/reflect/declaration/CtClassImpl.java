@@ -55,18 +55,6 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		v.visitCtClass(this);
 	}
 
-	// @Override
-	// public List<CtField<?>> getAllFields() {
-	// if (getSuperclass() != null && getSuperclass().getDeclaration() != null)
-	// {
-	// List<CtField<?>> fields = new ArrayList<CtField<?>>();
-	// fields.addAll(getSuperclass().getDeclaration().getAllFields());
-	// fields.addAll(getFields());
-	// return fields;
-	// }
-	// return super.getAllFields();
-	// }
-
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> ret = new TreeSet<CtMethod<?>>();
 		ret.addAll(getMethods());
@@ -104,12 +92,13 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		return constructors;
 	}
 
-	// TODO : remove useless
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// public List<CtField<?>> getFields() {
-	// return super.getFields();
-	// }
+	public boolean addAnonymousExecutable(CtAnonymousExecutable e) {
+		return anonymousExecutable.add(e);
+	}
+
+	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
+		return anonymousExecutable.remove(e);
+	}
 
 	public CtTypeReference<?> getSuperclass() {
 		return superClass;

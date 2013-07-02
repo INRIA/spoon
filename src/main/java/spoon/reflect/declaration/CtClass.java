@@ -65,6 +65,22 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	void setAnonymousExecutables(List<CtAnonymousExecutable> e);
 
 	/**
+	 * Add an anonymous block to this class.
+	 * 
+	 * @param e
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean addAnonymousExecutable(CtAnonymousExecutable e);
+
+	/**
+	 * Remove an anonymous block to this class.
+	 * 
+	 * @param e
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean removeAnonymousExecutable(CtAnonymousExecutable e);
+
+	/**
 	 * Sets the constructors for this class.
 	 */
 	void setConstructors(Set<CtConstructor<T>> constructors);

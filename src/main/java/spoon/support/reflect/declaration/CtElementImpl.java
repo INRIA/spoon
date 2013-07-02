@@ -176,6 +176,15 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		this.annotations = annotations;
 	}
 
+	public boolean addAnnotation(CtAnnotation<? extends Annotation> annotation) {
+		return this.annotations.add(annotation);
+	}
+	
+	public boolean removeAnnotation(
+			CtAnnotation<? extends Annotation> annotation) {
+		return this.annotations.remove(annotation);
+	}
+	
 	public void setDocComment(String docComment) {
 		this.docComment = docComment;
 	}
