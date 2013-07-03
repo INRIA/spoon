@@ -262,7 +262,7 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-		scan(fieldAccess.getTarget());
+		scan(fieldAccess.getVariable());
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(
