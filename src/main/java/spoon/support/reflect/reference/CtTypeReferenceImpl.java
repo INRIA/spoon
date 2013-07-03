@@ -514,7 +514,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public boolean isAnonymous() {
-		return getSimpleName().isEmpty();
+		return getSimpleName().length() == 0;
 	}
 
 	public boolean isSuperReference() {
