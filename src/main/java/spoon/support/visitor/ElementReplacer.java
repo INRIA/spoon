@@ -25,6 +25,7 @@ import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.reflect.declaration.CtUncomparableException;
 import spoon.support.util.RtHelper;
 
 /**
@@ -52,11 +53,11 @@ public class ElementReplacer<T extends FactoryAccessor> extends CtScanner {
 	}
 
 	private T getReplacement(Object parent) {
-		T ret = replacement.getFactory().Core().clone(replacement);
-		if (ret instanceof CtElement && parent instanceof CtElement) {
-			((CtElement) ret).setParent((CtElement) parent);
+		// T ret = replacement.getFactory().Core().clone(replacement);
+		if (replacement instanceof CtElement && parent instanceof CtElement) {
+			((CtElement) replacement).setParent((CtElement) parent);
 		}
-		return ret;
+		return replacement;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -114,6 +115,8 @@ public class ElementReplacer<T extends FactoryAccessor> extends CtScanner {
 	public void enter(CtElement e) {
 		try {
 			replaceIn(e);
+		} catch (CtUncomparableException e1) {
+			// do nothing
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -127,6 +130,8 @@ public class ElementReplacer<T extends FactoryAccessor> extends CtScanner {
 	public void enterReference(CtReference e) {
 		try {
 			replaceIn(e);
+		} catch (CtUncomparableException e1) {
+			// do nothing
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
