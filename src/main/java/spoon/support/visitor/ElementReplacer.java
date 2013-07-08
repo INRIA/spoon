@@ -25,7 +25,6 @@ import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.support.reflect.declaration.CtUncomparableException;
 import spoon.support.util.RtHelper;
 
 /**
@@ -61,50 +60,55 @@ public class ElementReplacer<T extends FactoryAccessor> extends CtScanner {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void replaceIn(Object parent) throws Exception {
+	private void replaceIn(Object parent)  {
 
-		// List<Field> fields =
-		// Arrays.asList(RtHelper.getAllFields(parent.getClass()));
+		try {
+			// List<Field> fields =
+			// Arrays.asList(RtHelper.getAllFields(parent.getClass()));
 
-		// Class current = parent.getClass();
-		// for (Field f : current.getDeclaredFields())
-		// fields.add(f);
-		//
-		// while (current.getSuperclass() != null) {
-		// current = current.getSuperclass();
-		// for (Field f : current.getDeclaredFields())
-		// fields.add(f);
-		// }
+			// Class current = parent.getClass();
+			// for (Field f : current.getDeclaredFields())
+			// fields.add(f);
+			//
+			// while (current.getSuperclass() != null) {
+			// current = current.getSuperclass();
+			// for (Field f : current.getDeclaredFields())
+			// fields.add(f);
+			// }
 
-		// Field[] fields = parent.getClass().getFields();
-		for (Field f : RtHelper.getAllFields(parent.getClass())) {
-			f.setAccessible(true);
-			Object tmp = f.get(parent);
+			// Field[] fields = parent.getClass().getFields();
+			for (Field f : RtHelper.getAllFields(parent.getClass())) {
+				f.setAccessible(true);
+				Object tmp = f.get(parent);
 
-			if (tmp != null) {
-				if (tmp instanceof List) {
-					List<T> lst = (List<T>) tmp;
+				if (tmp != null) {
+					if (tmp instanceof List) {
+						List<T> lst = (List<T>) tmp;
 
-					for (int i = 0; i < lst.size(); i++) {
-						if (lst.get(i) != null && lst.get(i).equals(toReplace)) {
-							lst.remove(i);
-							if (replacement != null)
-								lst.add(i, getReplacement(parent));
+						for (int i = 0; i < lst.size(); i++) {
+							if (lst.get(i) != null
+									&& lst.get(i).equals(toReplace)) {
+								lst.remove(i);
+								if (replacement != null)
+									lst.add(i, getReplacement(parent));
+							}
 						}
-					}
-				} else if (tmp instanceof Collection) {
-					Collection<T> collect = (Collection<T>) tmp;
-					Object[] array = collect.toArray();
-					for (Object obj : array) {
-						if (obj.equals(toReplace)) {
-							collect.remove(obj);
-							collect.add(getReplacement(parent));
+					} else if (tmp instanceof Collection) {
+						Collection<T> collect = (Collection<T>) tmp;
+						Object[] array = collect.toArray();
+						for (Object obj : array) {
+							if (obj.equals(toReplace)) {
+								collect.remove(obj);
+								collect.add(getReplacement(parent));
+							}
 						}
+					} else if (tmp.equals(toReplace)) {
+						f.set(parent, getReplacement(parent));
 					}
-				} else if (tmp.equals(toReplace)) {
-					f.set(parent, getReplacement(parent));
 				}
 			}
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -113,13 +117,7 @@ public class ElementReplacer<T extends FactoryAccessor> extends CtScanner {
 	 */
 	@Override
 	public void enter(CtElement e) {
-		try {
-			replaceIn(e);
-		} catch (CtUncomparableException e1) {
-			// do nothing
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
+		replaceIn(e);
 		super.enter(e);
 	}
 
@@ -128,13 +126,7 @@ public class ElementReplacer<T extends FactoryAccessor> extends CtScanner {
 	 */
 	@Override
 	public void enterReference(CtReference e) {
-		try {
-			replaceIn(e);
-		} catch (CtUncomparableException e1) {
-			// do nothing
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
+		replaceIn(e);
 		super.enterReference(e);
 	}
 
