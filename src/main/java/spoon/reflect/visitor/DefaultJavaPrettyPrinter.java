@@ -17,6 +17,7 @@
 
 package spoon.reflect.visitor;
 
+import java.io.ObjectInputStream.GetField;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -749,7 +750,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctClass.getFields());
 		lst.addAll(ctClass.getMethods());
 
-		context.currentThis.push(ctClass.getReference());
+//		if((ctClass.getSimpleName()==null || ctClass.getSimpleName().isEmpty()) && ctClass.getParent()!=null && ctClass.getParent() instanceof CtNewClass){
+//			context.currentThis.push(((CtNewClass)ctClass.getParent()).getType());
+//		}else{
+			context.currentThis.push(ctClass.getReference());
+//		}
 		write(" {").incTab();
 		for (CtElement el : lst) {
 			writeln().scan(el).writeln();
@@ -764,7 +769,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(" ? ");
 		scan(conditional.getThenExpression());
 		write(" : ");
+		boolean isAssign=false;
+		if((isAssign = conditional.getElseExpression() instanceof CtAssignment)){
+			write("(");
+		}
 		scan(conditional.getElseExpression());
+		if(isAssign){
+			write(")");
+		}
 		exitCtExpression(conditional);
 	}
 
@@ -843,6 +855,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			removeLastChar();
 		}
+		context.currentThis.push(ctEnum.getReference());
 		write(" {").incTab().writeln();
 		List<CtField<?>> l1 = new ArrayList<CtField<?>>();
 		List<CtField<?>> l2 = new ArrayList<CtField<?>>();
@@ -877,7 +890,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctEnum.getNestedTypes());
 		lst.addAll(ctEnum.getMethods());
 
-		context.currentThis.push(ctEnum.getReference());
 		for (CtElement el : lst) {
 			writeln().scan(el).writeln();
 		}
@@ -968,16 +980,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 									.getSimpleName())) {
 				sameTopLevel = true;
 			}
-			if (reference.getType().getDeclaringType() == null
-					&& !(context.currentThis.isEmpty() && sameTopLevel)
-					&& (context.currentThis.isEmpty() || (!reference.getType()
-							.equals(context.currentThis.peek()) && !reference
-							.getDeclaringType().isAnonymous()))) {
+			if (!(context.currentThis.isEmpty() && sameTopLevel)
+					&& (context.currentThis.isEmpty() 
+							|| (!reference.getType().equals(context.currentThis.peek()) 
+									&& !reference.getDeclaringType().isAnonymous()))) {
 				context.ignoreGenerics = true;
 				scan(reference.getDeclaringType());
 				write(".");
 				context.ignoreGenerics = false;
 			}
+			
 		} else {
 			boolean isStatic = false;
 			if (reference.getSimpleName().equals("class")) {
@@ -1163,6 +1175,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				scan(invocation.getTarget());
 				context.exitTarget();
 				write(".");
+			}else if(invocation.getGenericTypes() != null
+					&& invocation.getGenericTypes().size() > 0){
+				write("this.");
 			}
 			boolean removeLastChar = false;
 			if (invocation.getGenericTypes() != null
@@ -1627,6 +1642,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
 		if (!context.isInvocation
+				&& !(ref.getBounds() ==null)
 				&& !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
 						.getQualifiedName().equals("java.lang.Object"))) {
@@ -1656,7 +1672,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (!context.ignoreEnclosingClass
 						&& context.currentTopLevel != null) {
 					boolean ign = context.ignoreGenerics;
-					context.ignoreGenerics = true;
+					context.ignoreGenerics = false;
 					scan(ref.getDeclaringType());
 					write(".");
 					context.ignoreGenerics = ign;

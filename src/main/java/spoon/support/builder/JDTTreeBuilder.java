@@ -18,6 +18,7 @@
 package spoon.support.builder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -188,6 +189,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtAnnonTypeParameterReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -851,9 +853,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ref.setSimpleName(name);
 			return ref;
 		}
+		
+		Map<TypeBinding, CtTypeReference> bindingCache = new HashMap<TypeBinding, CtTypeReference>();
 
 		@SuppressWarnings("unchecked")
 		public CtTypeReference getTypeReference(TypeBinding binding) {
+			if(bindingCache.containsKey(binding)){
+				CtAnnonTypeParameterReference local = factory.Core().createAnnonTypeParameterReference();
+				local.setRealRef(bindingCache.get(binding));
+				return local;
+			}
 			CtTypeReference ref = null;
 			if (binding == null)
 				return null;
@@ -861,8 +870,19 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref = getTypeReference(((ParameterizedTypeBinding) binding)
 						.genericType());
 			} else if (binding instanceof ParameterizedTypeBinding) {
-				ref = getTypeReference(((ParameterizedTypeBinding) binding)
-						.genericType());
+				ref = factory.Core().createTypeReference();
+				if (binding.isAnonymousType()) {
+					ref.setSimpleName("");
+				} else {
+					ref.setSimpleName(new String(((ParameterizedTypeBinding) binding).sourceName));
+					if (binding.enclosingType() != null) {
+						ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+					} else {
+						ref.setPackage(getPackageReference(binding.getPackage()));
+					}
+				}
+					
+				bindingCache.put(binding, ref);
 				if (((ParameterizedTypeBinding) binding).arguments != null)
 					for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
 						ref.getActualTypeArguments().add(getTypeReference(b));
@@ -878,6 +898,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setSimpleName(new String(binding.sourceName()));
 
 			} else if (binding instanceof TypeVariableBinding) {
+				boolean oldBounds = bounds;
 				ref = factory.Core().createTypeParameterReference();
 				if (binding instanceof CaptureBinding) {
 					ref.setSimpleName("?");
@@ -886,17 +907,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 					ref.setSimpleName(new String(binding.sourceName()));
 				}
 				TypeVariableBinding b = (TypeVariableBinding) binding;
-				if (bounds && b.superclass != null
+				if (bounds){
+					if(b instanceof CaptureBinding && ((CaptureBinding)b).wildcard != null){
+						bounds = oldBounds;
+						return getTypeReference(((CaptureBinding)b).wildcard);
+					}else if(b.superclass != null
 						&& b.firstBound == b.superclass) {
-					boolean oldBounds = bounds;
-					bounds = false;
-					((CtTypeParameterReference) ref).getBounds().add(
-							getTypeReference(b.superclass));
-					bounds = oldBounds;
+						bounds = false;
+						((CtTypeParameterReference) ref).getBounds().add(
+								getTypeReference(b.superclass));
+						bounds = oldBounds;
+					}
 				}
 				if (bounds && b.superInterfaces != null
 						&& b.superInterfaces != Binding.NO_SUPERINTERFACES) {
 					bounds = false;
+					bindingCache.put(binding, ref);
 					for (int i = 0, length = b.superInterfaces.length; i < length; i++) {
 						TypeBinding tb = b.superInterfaces[i];
 						((CtTypeParameterReference) ref).getBounds().add(
@@ -949,6 +975,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 								.enclosingType()));
 					else
 						ref.setPackage(getPackageReference(binding.getPackage()));
+//					if(((SourceTypeBinding) binding).typeVariables!=null && ((SourceTypeBinding) binding).typeVariables.length>0){
+//						for (TypeBinding b : ((SourceTypeBinding) binding).typeVariables) {
+//							ref.getActualTypeArguments().add(getTypeReference(b));
+//						}
+//					}
 				}
 			} else if (binding instanceof ArrayBinding) {
 				CtArrayTypeReference arrayref = factory.Core()
@@ -969,6 +1000,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				throw new RuntimeException("Unknown TypeBinding: "+binding.getClass()+" "+binding);
 			}
+			bindingCache.remove(binding);
 			return ref;
 		}
 
@@ -1752,9 +1784,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(AllocationExpression allocationExpression,
 			BlockScope scope) {
 		CtNewClass<?> c = factory.Core().createNewClass();
-		if (allocationExpression.type != null)
-			c.setType(references
-					.getTypeReference(allocationExpression.type.resolvedType));
+		if (allocationExpression.type != null){
+			if(allocationExpression.type.resolvedType instanceof ParameterizedTypeBinding){
+				CtTypeReference res = references.getTypeReference(((ParameterizedTypeBinding)allocationExpression.type.resolvedType).genericType());
+				if (((ParameterizedTypeBinding)allocationExpression.type.resolvedType).arguments != null)
+					for (TypeBinding b : ((ParameterizedTypeBinding)allocationExpression.type.resolvedType).arguments) {
+						res.getActualTypeArguments().add(references.getTypeReference(b));
+					}
+				c.setType(res);
+			}else
+				c.setType(references
+						.getTypeReference(allocationExpression.type.resolvedType));
+		}
 		c.setExecutable(references
 				.getExecutableReference(allocationExpression.binding));
 		c.getExecutable().setType(
