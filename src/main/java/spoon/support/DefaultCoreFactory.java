@@ -77,6 +77,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.reference.CtAnnonTypeParameterReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -134,6 +135,7 @@ import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
+import spoon.support.reflect.reference.CtAnnonTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
@@ -594,6 +596,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		CompilationUnit cu = new CompilationUnitVirtualImpl();
 		cu.setFactory(getMainFactory());
 		return cu;
+	}
+
+	@Override
+	public CtAnnonTypeParameterReference createAnnonTypeParameterReference() {
+		CtAnnonTypeParameterReference e = new CtAnnonTypeParameterReferenceImpl();
+		e.setFactory(getMainFactory());
+		return e;
 	}
 
 }
