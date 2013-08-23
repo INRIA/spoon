@@ -21,11 +21,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
 import spoon.processing.Builder;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
+import spoon.support.builder.support.CtFileFile;
+import spoon.support.builder.support.CtFolderFile;
+import spoon.support.builder.support.CtVirtualFile;
 import spoon.support.builder.support.CtVirtualFolder;
 
 public class SpoonBuildingManager implements Builder {
@@ -80,21 +84,33 @@ public class SpoonBuildingManager implements Builder {
 			throw new Exception("Model already built");
 		}
 		build = true;
-				
+
 		boolean srcSuccess, templateSuccess;
 		factory.getEnvironment().debugMessage(
 				"compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		compiler = new SpoonCompiler();
-		compiler.JAVA_COMPLIANCE = factory.getEnvironment().getComplianceLevel();
+		compiler.JAVA_COMPLIANCE = factory.getEnvironment()
+				.getComplianceLevel();
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
-		if (compiler.probs.size()>0) {
+		if (compiler.probs.size() > 0) {
 			for (CategorizedProblem[] cps : compiler.probs) {
 				for (int i = 0; i < cps.length; i++) {
 					CategorizedProblem problem = cps[i];
-					if (problem != null)
-						factory.getEnvironment().report(null, Severity.ERROR, ""+new String(problem.getOriginatingFileName())+"\n"+problem.getMessage());
+					if (problem != null) {
+						File file = new File(new String(
+								problem.getOriginatingFileName()));
+						String filename = file.getAbsolutePath();
+						factory.getEnvironment().report(
+								null,
+								problem.isError() ? Severity.ERROR : problem
+										.isWarning() ? Severity.WARNING
+										: Severity.MESSAGE,
+
+								problem.getMessage() + " at " + filename + ":"
+										+ problem.getSourceLineNumber());
+					}
 				}
 			}
 		}
@@ -115,7 +131,6 @@ public class SpoonBuildingManager implements Builder {
 		// compiler.setEnvironment(compiler.batchCompiler.);
 		// does nothing by default
 	}
-
 
 	public Set<File> getInputSources() {
 		Set<File> files = new HashSet<File>();
