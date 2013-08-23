@@ -598,7 +598,6 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return cu;
 	}
 
-	@Override
 	public CtAnnonTypeParameterReference createAnnonTypeParameterReference() {
 		CtAnnonTypeParameterReference e = new CtAnnonTypeParameterReferenceImpl();
 		e.setFactory(getMainFactory());

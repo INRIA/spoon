@@ -180,7 +180,6 @@ public class CtAnnonTypeParameterReferenceImpl extends CtTypeParameterReferenceI
     	return ref.unbox();
     }
     
-	@Override
 	public void setRealRef(CtTypeReference ctTypeReference) {
 		ref = ctTypeReference;
 	}
