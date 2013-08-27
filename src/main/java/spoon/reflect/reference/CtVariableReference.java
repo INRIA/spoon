@@ -25,7 +25,7 @@ import spoon.template.TemplateParameter;
  * {@link spoon.reflect.declaration.CtVariable} or sub-type.
  */
 public interface CtVariableReference<T> extends CtReference,
-		CtModifiableReference, TemplateParameter<T> {
+		CtModifiableReference {
 
 	/**
 	 * Gets the type of the variable.

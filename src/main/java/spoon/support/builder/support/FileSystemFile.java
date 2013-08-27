@@ -22,15 +22,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import spoon.support.builder.CtFile;
-import spoon.support.builder.CtFolder;
+import spoon.support.builder.SpoonFile;
+import spoon.support.builder.SpoonFolder;
 import spoon.support.builder.FileFactory;
 
-public class CtFileFile implements CtFile {
+public class FileSystemFile implements SpoonFile {
 
 	File file;
 
-	public CtFileFile(File file) {
+	public FileSystemFile(File file) {
 		super();
 		this.file = file;
 	}
@@ -48,7 +48,7 @@ public class CtFileFile implements CtFile {
 		return file.getName();
 	}
 
-	public CtFolder getParent() {
+	public SpoonFolder getParent() {
 		try {
 			return FileFactory.createFolder(file.getParentFile());
 		} catch (FileNotFoundException e) {

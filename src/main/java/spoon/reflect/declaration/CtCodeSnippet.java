@@ -1,6 +1,6 @@
 package spoon.reflect.declaration;
 
-import spoon.support.builder.CtSnippetCompilationError;
+import spoon.support.builder.SnippetCompilationError;
 
 /**
  * This interface represents snippets of source code that can be used in the AST
@@ -28,8 +28,8 @@ public interface CtCodeSnippet {
 	 * Compiles this code snippet to produce the corresponding AST expression.
 	 * 
 	 * @return an AST Node ({@link CtElement})
-	 * @throws CtSnippetCompilationError
+	 * @throws SnippetCompilationError
 	 *             when the current snippet is not valid Java code
 	 */
-	CtElement compile() throws CtSnippetCompilationError;
+	CtElement compile() throws SnippetCompilationError;
 }

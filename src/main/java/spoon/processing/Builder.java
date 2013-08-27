@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-import spoon.support.builder.CtResource;
+import spoon.support.builder.SpoonRessource;
 
 /**
  * This interface defines the API to build a Spoon meta-model from input sources
@@ -49,7 +49,7 @@ public interface Builder extends FactoryAccessor {
 	 * @param source
 	 *            file or directory to add
 	 */
-	void addInputSource(CtResource source) throws IOException;
+	void addInputSource(SpoonRessource source) throws IOException;
 
 	/**
 	 * Gets all the files/directories given as input sources to this builder
@@ -80,7 +80,7 @@ public interface Builder extends FactoryAccessor {
 	 * @param source
 	 *            file or directory to add
 	 */
-	void addTemplateSource(CtResource source) throws IOException;
+	void addTemplateSource(SpoonRessource source) throws IOException;
 
 	/**
 	 * Gets all the files/directories given as template sources to this builder

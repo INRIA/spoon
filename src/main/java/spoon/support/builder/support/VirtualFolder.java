@@ -20,43 +20,43 @@ package spoon.support.builder.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import spoon.support.builder.CtFile;
-import spoon.support.builder.CtFolder;
+import spoon.support.builder.SpoonFile;
+import spoon.support.builder.SpoonFolder;
 
-public class CtVirtualFolder implements CtFolder {
-	List<CtFile> files = new ArrayList<CtFile>();
+public class VirtualFolder implements SpoonFolder {
+	List<SpoonFile> files = new ArrayList<SpoonFile>();
 
-	List<CtFolder> folders = new ArrayList<CtFolder>();
+	List<SpoonFolder> folders = new ArrayList<SpoonFolder>();
 
-	public boolean addFile(CtFile o) {
+	public boolean addFile(SpoonFile o) {
 		return files.add(o);
 	}
 
-	public boolean addFolder(CtFolder o) {
+	public boolean addFolder(SpoonFolder o) {
 		return folders.add(o);
 	}
 
-	public List<CtFile> getAllFiles() {
-		List<CtFile> files = new ArrayList<CtFile>(getFiles());
+	public List<SpoonFile> getAllFiles() {
+		List<SpoonFile> files = new ArrayList<SpoonFile>(getFiles());
 
-		for (CtFolder f : folders)
+		for (SpoonFolder f : folders)
 			files.addAll(f.getAllJavaFiles());
 		return files;
 	}
 
-	public List<CtFile> getAllJavaFiles() {
-		List<CtFile> files = new ArrayList<CtFile>();
+	public List<SpoonFile> getAllJavaFiles() {
+		List<SpoonFile> files = new ArrayList<SpoonFile>();
 
-		for (CtFile f : getFiles())
+		for (SpoonFile f : getFiles())
 			if (f.isJava())
 				files.add(f);
 
-		for (CtFolder fol : folders)
+		for (SpoonFolder fol : folders)
 			files.addAll(fol.getAllJavaFiles());
 		return files;
 	}
 
-	public List<CtFile> getFiles() {
+	public List<SpoonFile> getFiles() {
 		return files;
 	}
 
@@ -64,11 +64,11 @@ public class CtVirtualFolder implements CtFolder {
 		return "Virtual directory";
 	}
 
-	public CtFolder getParent() {
+	public SpoonFolder getParent() {
 		return null;
 	}
 
-	public List<CtFolder> getSubFolder() {
+	public List<SpoonFolder> getSubFolder() {
 		return folders;
 	}
 

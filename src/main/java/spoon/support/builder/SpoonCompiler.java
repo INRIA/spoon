@@ -47,7 +47,7 @@ public class SpoonCompiler  extends Main {
 		super(new PrintWriter(System.out), new PrintWriter(System.err), false);
 	}
 	
-	public boolean compileSrc(Factory f, List<CtFile> files)
+	public boolean compileSrc(Factory f, List<SpoonFile> files)
 			throws Exception {
 		if(files.isEmpty()) return true;
 //		long t=System.currentTimeMillis();
@@ -101,7 +101,7 @@ public class SpoonCompiler  extends Main {
 		return probs.size()==0;
 	}
 
-	public boolean compileTemplate(Factory f, List<CtFile> streams)
+	public boolean compileTemplate(Factory f, List<SpoonFile> streams)
 			throws Exception {
 		if(streams.isEmpty()) return true;
 		// Build input
@@ -134,11 +134,11 @@ public class SpoonCompiler  extends Main {
 	/*
 	 * Build the set of compilation source units
 	 */
-	public CompilationUnit[] getCompilationUnits(List<CtFile> streams)
+	public CompilationUnit[] getCompilationUnits(List<SpoonFile> streams)
 			throws Exception {
 		CompilationUnit[] units = new CompilationUnit[streams.size()];
 		int i = 0;
-		for (CtFile stream : streams) {
+		for (SpoonFile stream : streams) {
 			InputStream in = stream.getContent();
 			units[i] = new CompilationUnit(Util.getInputStreamAsCharArray(in,
 					-1, null), stream.getPath(), null);
@@ -154,7 +154,7 @@ public class SpoonCompiler  extends Main {
 		this.environment=environment;
 	}
 	
-	public CompilationUnitDeclaration[] getUnits(List<CtFile> streams,Factory f)
+	public CompilationUnitDeclaration[] getUnits(List<SpoonFile> streams,Factory f)
 			throws Exception {
 		this.startTime = System.currentTimeMillis();
 		INameEnvironment environment = this.environment;

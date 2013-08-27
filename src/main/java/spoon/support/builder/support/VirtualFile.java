@@ -3,22 +3,22 @@ package spoon.support.builder.support;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import spoon.support.builder.CtFile;
-import spoon.support.builder.CtFolder;
+import spoon.support.builder.SpoonFile;
+import spoon.support.builder.SpoonFolder;
 
-public class CtVirtualFile implements CtFile{
+public class VirtualFile implements SpoonFile{
 
 	InputStream contents;
 	
 	String name = "";
 	
-	public CtVirtualFile(String _contents) {
+	public VirtualFile(String _contents) {
 		byte[] contentsBA = _contents.getBytes();
 		contents = new ByteArrayInputStream(contentsBA);
 		
 	}
 	
-	public CtVirtualFile(String _contents, String _name){
+	public VirtualFile(String _contents, String _name){
 		this(_contents);
 		name = _name;
 	}
@@ -35,8 +35,8 @@ public class CtVirtualFile implements CtFile{
 		return name;
 	}
 
-	public CtFolder getParent() {
-		return new CtVirtualFolder();
+	public SpoonFolder getParent() {
+		return new VirtualFolder();
 	}
 
 	public String getPath() {

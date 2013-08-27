@@ -23,18 +23,18 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.support.builder.support.CtVirtualFile;
+import spoon.support.builder.support.VirtualFile;
 
 public class SnippetCompiler {
 
 	@SuppressWarnings("unchecked")
 	static public <T> T compileStatement(CtCodeSnippetStatement st,
-			Class<T> expectedType) throws CtSnippetCompilationError {
+			Class<T> expectedType) throws SnippetCompilationError {
 		CtStatement s = compileStatement(st);
 		if (expectedType.isAssignableFrom(s.getClass())) {
 			return (T) s;
 		}
-		throw new CtSnippetCompilationError("Incorrect Type for snippet "
+		throw new SnippetCompilationError("Incorrect Type for snippet "
 				+ st.toString());
 	}
 
@@ -56,7 +56,7 @@ public class SnippetCompiler {
 	}
 
 	static public CtStatement compileStatement(CtCodeSnippetStatement st)
-			throws CtSnippetCompilationError {
+			throws SnippetCompilationError {
 
 		return internalCompileStatement(st);
 	}
@@ -117,7 +117,7 @@ public class SnippetCompiler {
 	}
 
 	private static void compile(Factory f, CtType<?> w)
-			throws CtSnippetCompilationError {
+			throws SnippetCompilationError {
 
 		String contents = w.toString();
 
@@ -130,19 +130,19 @@ public class SnippetCompiler {
 		boolean success;
 		Builder builder = new SnippetBuilder(f);
 		try {
-			builder.addInputSource(new CtVirtualFile(contents, name));
+			builder.addInputSource(new VirtualFile(contents, name));
 			success = builder.build();
 		} catch (Exception e) {
 			success = debugCompilationError(f, e);
 		}
 
 		if (!success) {
-			throw new CtSnippetCompilationError("snippet could not be compiled");
+			throw new SnippetCompilationError("snippet could not be compiled");
 		}
 	}
 
 	private static void build(Factory f, String contents)
-			throws CtSnippetCompilationError {
+			throws SnippetCompilationError {
 		build(f, contents, "");
 	}
 
@@ -160,7 +160,7 @@ public class SnippetCompiler {
 
 	@SuppressWarnings("unchecked")
 	static public <T> CtExpression<T> compileExpression(
-			CtCodeSnippetExpression<T> expr) throws CtSnippetCompilationError {
+			CtCodeSnippetExpression<T> expr) throws SnippetCompilationError {
 		// create wrapping template
 
 		Factory f = expr.getFactory();

@@ -31,8 +31,7 @@ import spoon.template.TemplateParameter;
  * {@link spoon.reflect.declaration.CtConstructor}.
  */
 public interface CtExecutableReference<T> extends CtReference,
-		CtGenericElementReference, CtModifiableReference,
-		TemplateParameter<T> {
+		CtGenericElementReference, CtModifiableReference {
 
 	String CONSTRUCTOR_NAME = "<init>";
 

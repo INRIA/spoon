@@ -3,7 +3,7 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.builder.CtSnippetCompilationError;
+import spoon.support.builder.SnippetCompilationError;
 import spoon.support.builder.SnippetCompiler;
 
 public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implements
@@ -25,7 +25,7 @@ public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implemen
 		this.value = value;
 	}
 	
-	public CtExpression<T> compile() throws CtSnippetCompilationError {
+	public CtExpression<T> compile() throws SnippetCompilationError {
 		return SnippetCompiler.compileExpression(this);
 	}
 	
