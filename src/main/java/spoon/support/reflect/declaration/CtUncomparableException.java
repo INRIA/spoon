@@ -6,11 +6,6 @@ public class CtUncomparableException extends RuntimeException {
 		super();
 	}
 
-	public CtUncomparableException(String message, Throwable cause,
-			boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-
 	public CtUncomparableException(String message, Throwable cause) {
 		super(message, cause);
 	}
