@@ -17,9 +17,9 @@
 
 package spoon.support.builder;
 
-public interface CtResource {
+public interface SpoonRessource {
 
-	CtFolder getParent();
+	SpoonFolder getParent();
 
 	String getName();
 

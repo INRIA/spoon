@@ -28,17 +28,17 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import spoon.support.builder.CtFile;
-import spoon.support.builder.CtFolder;
+import spoon.support.builder.SpoonFile;
+import spoon.support.builder.SpoonFolder;
 import spoon.support.builder.FileFactory;
 
-public class CtFolderZip implements CtFolder {
+public class ZipFolder implements SpoonFolder {
 
 	File f;
 
-	List<CtFile> files;
+	List<SpoonFile> files;
 
-	public CtFolderZip(File f) throws IOException {
+	public ZipFolder(File f) throws IOException {
 		super();
 		if (!f.isFile()) {
 			throw new IOException(f.getName() + " is not a valid zip file");
@@ -46,14 +46,14 @@ public class CtFolderZip implements CtFolder {
 		this.f = f;
 	}
 
-	public List<CtFile> getAllFiles() {
+	public List<SpoonFile> getAllFiles() {
 		return getFiles();
 	}
 
-	public List<CtFile> getAllJavaFiles() {
-		List<CtFile> files = new ArrayList<CtFile>();
+	public List<SpoonFile> getAllJavaFiles() {
+		List<SpoonFile> files = new ArrayList<SpoonFile>();
 
-		for (CtFile f : getFiles())
+		for (SpoonFile f : getFiles())
 			if (f.isJava())
 				files.add(f);
 
@@ -63,10 +63,10 @@ public class CtFolderZip implements CtFolder {
 		return files;
 	}
 
-	public List<CtFile> getFiles() {
+	public List<SpoonFile> getFiles() {
 		// Indexing content
 		if (files == null) {
-			files = new ArrayList<CtFile>();
+			files = new ArrayList<SpoonFile>();
 			try {
 				ZipInputStream zipInput = new ZipInputStream(
 						new BufferedInputStream(new FileInputStream(f)));
@@ -85,7 +85,7 @@ public class CtFolderZip implements CtFolder {
 					output.flush();
 					output.close();
 
-					files.add(new CtFileZip(this, entry.getName(), output
+					files.add(new ZipFile(this, entry.getName(), output
 							.toByteArray()));
 				}
 
@@ -100,7 +100,7 @@ public class CtFolderZip implements CtFolder {
 		return f.getName();
 	}
 
-	public CtFolder getParent() {
+	public SpoonFolder getParent() {
 		try {
 			return FileFactory.createFolder(f.getParentFile());
 		} catch (FileNotFoundException e) {
@@ -109,8 +109,8 @@ public class CtFolderZip implements CtFolder {
 		return null;
 	}
 
-	public List<CtFolder> getSubFolder() {
-		return new ArrayList<CtFolder>(0);
+	public List<SpoonFolder> getSubFolder() {
+		return new ArrayList<SpoonFolder>(0);
 	}
 
 	public boolean isFile() {

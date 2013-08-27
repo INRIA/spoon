@@ -27,10 +27,10 @@ import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
 import spoon.processing.Builder;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
-import spoon.support.builder.support.CtFileFile;
+import spoon.support.builder.support.FileSystemFile;
 import spoon.support.builder.support.FileSystemFolder;
-import spoon.support.builder.support.CtVirtualFile;
-import spoon.support.builder.support.CtVirtualFolder;
+import spoon.support.builder.support.VirtualFile;
+import spoon.support.builder.support.VirtualFolder;
 
 public class SpoonBuildingManager implements Builder {
 
@@ -38,19 +38,19 @@ public class SpoonBuildingManager implements Builder {
 
 	private boolean build = false;
 
-	CtVirtualFolder sources = new CtVirtualFolder();
+	VirtualFolder sources = new VirtualFolder();
 
-	CtVirtualFolder templates = new CtVirtualFolder();
+	VirtualFolder templates = new VirtualFolder();
 
 	public SpoonBuildingManager(Factory factory) {
 		this.factory = factory;
 	}
 
-	public void addInputSource(CtResource source) throws IOException {
+	public void addInputSource(SpoonRessource source) throws IOException {
 		if (source.isFile())
-			this.sources.addFile((CtFile) source);
+			this.sources.addFile((SpoonFile) source);
 		else
-			this.sources.addFolder((CtFolder) source);
+			this.sources.addFolder((SpoonFolder) source);
 	}
 
 	public void addInputSource(File source) throws IOException {
@@ -60,11 +60,11 @@ public class SpoonBuildingManager implements Builder {
 			this.sources.addFolder(FileFactory.createFolder(source));
 	}
 
-	public void addTemplateSource(CtResource source) throws IOException {
+	public void addTemplateSource(SpoonRessource source) throws IOException {
 		if (source.isFile())
-			this.templates.addFile((CtFile) source);
+			this.templates.addFile((SpoonFile) source);
 		else
-			this.templates.addFolder((CtFolder) source);
+			this.templates.addFolder((SpoonFolder) source);
 	}
 
 	public void addTemplateSource(File source) throws IOException {
@@ -134,17 +134,17 @@ public class SpoonBuildingManager implements Builder {
 
 	public Set<File> getInputSources() {
 		Set<File> files = new HashSet<File>();
-		for (CtFolder file : getSource().getSubFolder()) {
+		for (SpoonFolder file : getSource().getSubFolder()) {
 			files.add(new File(file.getPath()));
 		}
 		return files;
 	}
 
-	public CtVirtualFolder getSource() {
+	public VirtualFolder getSource() {
 		return sources;
 	}
 
-	public CtVirtualFolder getTemplates() {
+	public VirtualFolder getTemplates() {
 		return templates;
 	}
 

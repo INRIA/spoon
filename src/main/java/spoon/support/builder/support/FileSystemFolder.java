@@ -23,17 +23,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import spoon.support.builder.CtFile;
-import spoon.support.builder.CtFolder;
+import spoon.support.builder.SpoonFile;
+import spoon.support.builder.SpoonFolder;
 import spoon.support.builder.FileFactory;
 
-public class FileSystemFolder implements CtFolder {
+public class FileSystemFolder implements SpoonFolder {
 
 	File file;
 
-	List<CtFile> files;
+	List<SpoonFile> files;
 
-	List<CtFolder> subFolders;
+	List<SpoonFolder> subFolders;
 
 	public FileSystemFolder(File file) throws IOException {
 		super();
@@ -42,20 +42,20 @@ public class FileSystemFolder implements CtFolder {
 		this.file = file;
 	}
 
-	public List<CtFile> getAllFiles() {
-		List<CtFile> all = new ArrayList<CtFile>(getFiles());
-		for (CtFolder f : getSubFolder()) {
+	public List<SpoonFile> getAllFiles() {
+		List<SpoonFile> all = new ArrayList<SpoonFile>(getFiles());
+		for (SpoonFolder f : getSubFolder()) {
 			all.addAll(f.getAllFiles());
 		}
 		return all;
 	}
 
-	public List<CtFile> getFiles() {
+	public List<SpoonFile> getFiles() {
 		if (files == null) {
-			files = new ArrayList<CtFile>();
+			files = new ArrayList<SpoonFile>();
 			for (File f : file.listFiles()) {
 				if (FileFactory.isFile(f))
-					files.add(new CtFileFile(f));
+					files.add(new FileSystemFile(f));
 			}
 		}
 		return files;
@@ -65,7 +65,7 @@ public class FileSystemFolder implements CtFolder {
 		return file.getName();
 	}
 
-	public CtFolder getParent() {
+	public SpoonFolder getParent() {
 		try {
 			return FileFactory.createFolder(file.getParentFile());
 		} catch (FileNotFoundException e) {
@@ -74,9 +74,9 @@ public class FileSystemFolder implements CtFolder {
 		return null;
 	}
 
-	public List<CtFolder> getSubFolder() {
+	public List<SpoonFolder> getSubFolder() {
 		if (subFolders == null) {
-			subFolders = new ArrayList<CtFolder>();
+			subFolders = new ArrayList<SpoonFolder>();
 			for (File f : file.listFiles()) {
 				if (!FileFactory.isFile(f))
 					try {
@@ -98,12 +98,12 @@ public class FileSystemFolder implements CtFolder {
 		return file.toString();
 	}
 
-	public List<CtFile> getAllJavaFiles() {
-		List<CtFile> files = new ArrayList<CtFile>();
-		for (CtFile f : getFiles())
+	public List<SpoonFile> getAllJavaFiles() {
+		List<SpoonFile> files = new ArrayList<SpoonFile>();
+		for (SpoonFile f : getFiles())
 			if (f.isJava())
 				files.add(f);
-		for (CtFolder fol : getSubFolder())
+		for (SpoonFolder fol : getSubFolder())
 			files.addAll(fol.getAllJavaFiles());
 		return files;
 	}

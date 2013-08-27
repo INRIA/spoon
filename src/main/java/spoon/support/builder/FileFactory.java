@@ -21,9 +21,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import spoon.support.builder.support.CtFileFile;
+import spoon.support.builder.support.FileSystemFile;
 import spoon.support.builder.support.FileSystemFolder;
-import spoon.support.builder.support.CtFolderZip;
+import spoon.support.builder.support.ZipFolder;
 
 public class FileFactory {
 	public static boolean isArchive(File f) {
@@ -34,14 +34,14 @@ public class FileFactory {
 		return f.isFile() && !isArchive(f);
 	}
 
-	public static CtFile createFile(File f) throws FileNotFoundException {
+	public static SpoonFile createFile(File f) throws FileNotFoundException {
 		if (!f.exists()) {
 			throw new FileNotFoundException(f.toString());
 		}
-		return new CtFileFile(f);
+		return new FileSystemFile(f);
 	}
 
-	public static CtResource createResource(File f)
+	public static SpoonRessource createResource(File f)
 			throws FileNotFoundException {
 		if (f.isFile()) {
 			return createFile(f);
@@ -49,7 +49,7 @@ public class FileFactory {
 		return createFolder(f);
 	}
 
-	public static CtFolder createFolder(File f) throws FileNotFoundException {
+	public static SpoonFolder createFolder(File f) throws FileNotFoundException {
 		if (!f.exists()) {
 			throw new FileNotFoundException(f.toString() + " does not exist");
 		}
@@ -58,7 +58,7 @@ public class FileFactory {
 				return new FileSystemFolder(f);
 			}
 			if (isArchive(f)) {
-				return new CtFolderZip(f);
+				return new ZipFolder(f);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

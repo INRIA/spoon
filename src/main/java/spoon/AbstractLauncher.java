@@ -38,11 +38,11 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
-import spoon.support.builder.CtFile;
-import spoon.support.builder.CtFolder;
-import spoon.support.builder.CtResource;
+import spoon.support.builder.SpoonFile;
+import spoon.support.builder.SpoonFolder;
+import spoon.support.builder.SpoonRessource;
 import spoon.support.builder.FileFactory;
-import spoon.support.builder.support.CtFolderZip;
+import spoon.support.builder.support.ZipFolder;
 import spoon.support.processing.SpoonletXmlHandler;
 
 import com.martiansoftware.jsap.FlaggedOption;
@@ -64,7 +64,7 @@ public abstract class AbstractLauncher {
 
 	protected Factory factory;
 
-	private List<CtResource> inputResources = new ArrayList<CtResource>();
+	private List<SpoonRessource> inputResources = new ArrayList<SpoonRessource>();
 
 	/**
 	 * Contains the arguments accepted by this launcher (available after
@@ -74,7 +74,7 @@ public abstract class AbstractLauncher {
 
 	private List<String> processors = new ArrayList<String>();
 
-	private List<CtResource> templateResources = new ArrayList<CtResource>();
+	private List<SpoonRessource> templateResources = new ArrayList<SpoonRessource>();
 
 	/**
 	 * Constructor with no arguments.
@@ -94,7 +94,7 @@ public abstract class AbstractLauncher {
 	/**
 	 * Adds an input resource to be processed by Spoon.
 	 */
-	public void addInputResource(CtResource resource) {
+	public void addInputResource(SpoonRessource resource) {
 		inputResources.add(resource);
 	}
 
@@ -108,7 +108,7 @@ public abstract class AbstractLauncher {
 	/**
 	 * Adds a resource that contains a template (usually a source File).
 	 */
-	public void addTemplateResource(CtResource resource) {
+	public void addTemplateResource(SpoonRessource resource) {
 		templateResources.add(resource);
 	}
 
@@ -121,10 +121,10 @@ public abstract class AbstractLauncher {
 		Builder builder = getFactory().getBuilder();
 
 		try {
-			for (CtResource f : getInputSources()) {
+			for (SpoonRessource f : getInputSources()) {
 				builder.addInputSource(f);
 			}
-			for (CtResource f : getTemplateSources()) {
+			for (SpoonRessource f : getTemplateSources()) {
 				builder.addTemplateSource(f);
 			}
 		} catch (IOException e) {
@@ -373,7 +373,7 @@ public abstract class AbstractLauncher {
 	 * Gets the list of input sources as files. This method can be overriden to
 	 * customize this list.
 	 */
-	protected java.util.List<CtResource> getInputSources() {
+	protected java.util.List<SpoonRessource> getInputSources() {
 		return inputResources;
 	}
 
@@ -388,7 +388,7 @@ public abstract class AbstractLauncher {
 	/**
 	 * Gets the list of template sources as files.
 	 */
-	protected List<CtResource> getTemplateSources() {
+	protected List<SpoonRessource> getTemplateSources() {
 		return templateResources;
 	}
 
@@ -396,9 +396,9 @@ public abstract class AbstractLauncher {
 	 * Load content of spoonlet file (template and processor list).
 	 */
 	protected void loadSpoonlet(File spoonletFile) {
-		CtFolder folder;
+		SpoonFolder folder;
 		try {
-			folder = new CtFolderZip(spoonletFile);
+			folder = new ZipFolder(spoonletFile);
 		} catch (IOException e) {
 			getFactory().getEnvironment().report(null, Severity.ERROR,
 					"Unable to load spoonlet: " + e.getMessage());
@@ -407,9 +407,9 @@ public abstract class AbstractLauncher {
 			}
 			return;
 		}
-		List<CtResource> spoonletIndex = new ArrayList<CtResource>();
-		CtFile configFile = null;
-		for (CtFile file : folder.getAllFiles()) {
+		List<SpoonRessource> spoonletIndex = new ArrayList<SpoonRessource>();
+		SpoonFile configFile = null;
+		for (SpoonFile file : folder.getAllFiles()) {
 			if (file.isJava()) {
 				spoonletIndex.add(file);
 			} else if (file.getName().endsWith("spoon.xml")) {

@@ -17,10 +17,15 @@
 
 package spoon.support.builder;
 
-import java.io.InputStream;
+import java.util.List;
 
-public interface CtFile extends CtResource {
-	InputStream getContent();
+public interface SpoonFolder extends SpoonRessource {
+	List<SpoonFile> getFiles();
 
-	boolean isJava();
+	List<SpoonFile> getAllFiles();
+
+	List<SpoonFile> getAllJavaFiles();
+
+	List<SpoonFolder> getSubFolder();
+
 }

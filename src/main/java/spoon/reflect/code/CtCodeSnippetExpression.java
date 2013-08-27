@@ -1,7 +1,7 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtCodeSnippet;
-import spoon.support.builder.CtSnippetCompilationError;
+import spoon.support.builder.SnippetCompilationError;
 
 /**
  * This element is a code snippet that must represent an expression and can thus
@@ -14,9 +14,9 @@ public interface CtCodeSnippetExpression<T> extends CtCodeSnippet,
 	/**
 	 * Compiles this expression snippet to produce the corresponding AST expression.
 	 * 
-	 * @throws CtSnippetCompilationError
+	 * @throws SnippetCompilationError
 	 *             when the current snippet is not valid Java code expression
 	 */
-	CtExpression<T> compile() throws CtSnippetCompilationError;
+	CtExpression<T> compile() throws SnippetCompilationError;
 
 }

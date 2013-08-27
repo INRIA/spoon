@@ -20,18 +20,18 @@ package spoon.support.builder.support;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import spoon.support.builder.CtFile;
-import spoon.support.builder.CtFolder;
+import spoon.support.builder.SpoonFile;
+import spoon.support.builder.SpoonFolder;
 
-public class CtFileZip implements CtFile {
+public class ZipFile implements SpoonFile {
 
 	byte[] buffer;
 
 	String name;
 
-	CtFolderZip parent;
+	ZipFolder parent;
 
-	public CtFileZip(CtFolderZip parent, String name, byte[] buffer) {
+	public ZipFile(ZipFolder parent, String name, byte[] buffer) {
 		super();
 		this.buffer = buffer;
 		this.name = name;
@@ -46,7 +46,7 @@ public class CtFileZip implements CtFile {
 		return name;
 	}
 
-	public CtFolder getParent() {
+	public SpoonFolder getParent() {
 		return parent;
 	}
 
