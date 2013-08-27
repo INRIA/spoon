@@ -22,7 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import spoon.support.builder.support.CtFileFile;
-import spoon.support.builder.support.CtFolderFile;
+import spoon.support.builder.support.FileSystemFolder;
 import spoon.support.builder.support.CtFolderZip;
 
 public class FileFactory {
@@ -55,7 +55,7 @@ public class FileFactory {
 		}
 		try {
 			if (f.isDirectory()) {
-				return new CtFolderFile(f);
+				return new FileSystemFolder(f);
 			}
 			if (isArchive(f)) {
 				return new CtFolderZip(f);

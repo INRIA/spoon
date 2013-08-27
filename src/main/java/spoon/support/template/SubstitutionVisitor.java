@@ -616,9 +616,10 @@ public class SubstitutionVisitor extends CtScanner {
 		templateType = f.Template().get(templateRef.getQualifiedName());
 		parameterNames = Parameters.getNames(templateType);
 		targetRef = f.Type().createReference(targetType);
+		templateTypeRef = f.Type().createReference(Template.class);
 		// substitute target ref
 		targetRef.accept(this);
-		templateTypeRef = f.Type().createReference(Template.class);
+	
 	}
 
 	/**

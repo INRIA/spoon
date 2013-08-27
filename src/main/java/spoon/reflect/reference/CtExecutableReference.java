@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import spoon.reflect.declaration.CtExecutable;
+import spoon.template.TemplateParameter;
 
 /**
  * This interface defines a reference to a
@@ -30,15 +31,16 @@ import spoon.reflect.declaration.CtExecutable;
  * {@link spoon.reflect.declaration.CtConstructor}.
  */
 public interface CtExecutableReference<T> extends CtReference,
-		CtGenericElementReference, CtModifiableReference {
+		CtGenericElementReference, CtModifiableReference,
+		TemplateParameter<T> {
 
 	String CONSTRUCTOR_NAME = "<init>";
-	
+
 	/**
 	 * Tells if this is a reference to a constructor.
 	 */
 	boolean isConstructor();
-	
+
 	/**
 	 * Gets the runtime method that corresponds to an executable reference if
 	 * any.
@@ -79,8 +81,7 @@ public interface CtExecutableReference<T> extends CtReference,
 	boolean isOverriding(CtExecutableReference<?> executable);
 
 	/**
-	 * Returns the executable overriden by this one, if exists (null
-	 * otherwise).
+	 * Returns the executable overriden by this one, if exists (null otherwise).
 	 */
 	CtExecutableReference<?> getOverridingExecutable();
 

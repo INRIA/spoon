@@ -28,8 +28,7 @@ import spoon.reflect.cu.SourcePosition;
  * file.
  */
 
-public class SourcePositionImpl implements SourcePosition, Cloneable,
-		Serializable {
+public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -102,11 +101,6 @@ public class SourcePositionImpl implements SourcePosition, Cloneable,
 		this.sourceStart = sourceStart;
 		this.sourceEnd = sourceEnd;
 		this.lineSeparatorPositions = lineSeparatorPositions;
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
 	}
 
 	public int getColumn() {

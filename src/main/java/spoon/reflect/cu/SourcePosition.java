@@ -24,7 +24,7 @@ import spoon.processing.Environment;
 /**
  * This interface represents the position of a program element in a source file.
  */
-public interface SourcePosition extends Cloneable {
+public interface SourcePosition {
 
 	/**
 	 * Returns a string representation of this position in the form
@@ -69,11 +69,6 @@ public interface SourcePosition extends Cloneable {
 	 * {@link CompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceEnd()}.
 	 */
 	int getEndColumn();
-
-	/**
-	 * Clones this position.
-	 */
-	Object clone() throws CloneNotSupportedException;
 
 	/**
 	 * Gets the index at which the position ends in the source file.

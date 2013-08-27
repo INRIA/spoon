@@ -62,7 +62,7 @@ public abstract class AbstractLauncher {
 
 	private JSAPResult arguments;
 
-	private Factory factory;
+	protected Factory factory;
 
 	private List<CtResource> inputResources = new ArrayList<CtResource>();
 

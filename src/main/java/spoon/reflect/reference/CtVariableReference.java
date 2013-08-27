@@ -18,13 +18,14 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtVariable;
+import spoon.template.TemplateParameter;
 
 /**
  * This interface defines a reference to a
  * {@link spoon.reflect.declaration.CtVariable} or sub-type.
  */
 public interface CtVariableReference<T> extends CtReference,
-		CtModifiableReference {
+		CtModifiableReference, TemplateParameter<T> {
 
 	/**
 	 * Gets the type of the variable.

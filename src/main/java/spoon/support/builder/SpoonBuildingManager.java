@@ -28,7 +28,7 @@ import spoon.processing.Builder;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
 import spoon.support.builder.support.CtFileFile;
-import spoon.support.builder.support.CtFolderFile;
+import spoon.support.builder.support.FileSystemFolder;
 import spoon.support.builder.support.CtVirtualFile;
 import spoon.support.builder.support.CtVirtualFolder;
 

@@ -27,7 +27,7 @@ import spoon.support.builder.CtFile;
 import spoon.support.builder.CtFolder;
 import spoon.support.builder.FileFactory;
 
-public class CtFolderFile implements CtFolder {
+public class FileSystemFolder implements CtFolder {
 
 	File file;
 
@@ -35,7 +35,7 @@ public class CtFolderFile implements CtFolder {
 
 	List<CtFolder> subFolders;
 
-	public CtFolderFile(File file) throws IOException {
+	public FileSystemFolder(File file) throws IOException {
 		super();
 		if (!file.isDirectory())
 			throw new IOException("Not a directory");
