@@ -17,9 +17,11 @@
 
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -80,4 +82,5 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements
 	public void setVarArgs(boolean varArgs) {
 		this.varArgs = varArgs;
 	}
+
 }
