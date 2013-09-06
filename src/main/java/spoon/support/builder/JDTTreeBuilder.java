@@ -1078,9 +1078,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	public static String cleanJavadoc(String doc) {
 		StringBuffer ret = new StringBuffer();
-		String[] docs = doc.split("\n");
-		for (int i = 1; i < docs.length - 1; i++) {
-			ret.append(docs[i].substring(docs[i].indexOf('*') + 1));
+		String[] lines = doc.split("\n");
+		
+		// limit case
+		if (lines.length == 1) {
+		  return lines[0].replaceAll("^/\\*+","").replaceAll("\\*+/$","");
+		}
+		
+		for (String s: lines) {
+		  if (s.startsWith("/**")) {
+		    ret.append(s.replaceAll("/\\*+",""));
+		  } else if (s.endsWith("*/")){
+		    ret.append(s.replaceAll("\\*+/$","").replaceAll("^ *\\*+",""));
+		  } else {
+			ret.append(s.replaceAll("^ *\\*+",""));
+		  }
 			ret.append("\n");
 		}
 		// clean '\r'
@@ -1185,7 +1197,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	CtSimpleType<?> createType(TypeDeclaration typeDeclaration) {
 		CtSimpleType<?> type = null;
 		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
-			type = (CtSimpleType) factory.Core().createAnnotationType();
+			type = factory.Core().createAnnotationType();
 		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
 			CtEnum<?> e = factory.Core().createEnum();
 			if (typeDeclaration.superInterfaces != null) {
