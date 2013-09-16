@@ -75,8 +75,9 @@ public class SpoonCompiler  extends Main {
 		}
 		
 		// args.add("-nowarn");
-		String srcPath = f.getEnvironment().getSourcePath();
-		args.add(srcPath);
+		for (SpoonFile file : files) {
+			args.add(file.getPath());
+		}
 
 //		JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
 //				new PrintWriter(System.err));
