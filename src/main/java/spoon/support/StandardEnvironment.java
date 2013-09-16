@@ -366,6 +366,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.tabulationSize = tabulationSize;
 	}
 
+	@Deprecated
 	public String getSourcePath() {
 		return ".";
 	}
