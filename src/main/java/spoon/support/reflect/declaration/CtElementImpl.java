@@ -19,10 +19,13 @@ package spoon.support.reflect.declaration;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.processing.FactoryAccessor;
 import spoon.reflect.Factory;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -35,7 +38,7 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.support.visitor.ElementReplacer;
+import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 
@@ -157,11 +160,61 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public void replace(CtElement element) {
-		ElementReplacer<CtElement> translator = new ElementReplacer<CtElement>(
-				this, element);
-		getParent().accept(translator);
+//		ElementReplacer<CtElement> translator = new ElementReplacer<CtElement>(
+//				this, element);	
+//		getParent().accept(translator);
+		try {
+			replaceIn(this, element, getParent());
+		} catch (CtUncomparableException e1) {
+			// do nothing
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+	private <T extends FactoryAccessor> void replaceIn(Object toReplace,T replacement, Object parent) throws IllegalArgumentException, IllegalAccessException {
+
+		for (Field f : RtHelper.getAllFields(parent.getClass())) {
+			f.setAccessible(true);
+			Object tmp = f.get(parent);
+
+			if (tmp != null) {
+				if (tmp instanceof List) {
+					List<T> lst = (List<T>) tmp;
+
+					for (int i = 0; i < lst.size(); i++) {
+						if (lst.get(i) != null && compare(lst.get(i), toReplace)) {
+							lst.remove(i);
+							if (replacement != null)
+								lst.add(i, getReplacement(replacement, parent));
+						}
+					}
+				} else if (tmp instanceof Collection) {
+					Collection<T> collect = (Collection<T>) tmp;
+					Object[] array = collect.toArray();
+					for (Object obj : array) {
+						if (compare(obj, toReplace)) {
+							collect.remove(obj);
+							collect.add(getReplacement(replacement, parent));
+						}
+					}
+				} else if (compare(tmp, toReplace)) {
+					f.set(parent, getReplacement(replacement, parent));
+				}
+			}
+		}
 	}
 
+	private <T extends FactoryAccessor> T getReplacement(T replacement, Object parent) {
+		// T ret = replacement.getFactory().Core().clone(replacement);
+		if (replacement instanceof CtElement && parent instanceof CtElement) {
+			((CtElement) replacement).setParent((CtElement) parent);
+		}
+		return replacement;
+	}
+	private boolean compare(Object o1, Object o2) {
+		return o1 == o2;
+	}
+	
 	public void replace(Filter<? extends CtElement> replacementPoints,
 			CtElement element) {
 		List<? extends CtElement> l = Query
