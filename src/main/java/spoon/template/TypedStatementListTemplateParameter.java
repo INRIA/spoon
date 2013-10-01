@@ -34,7 +34,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * {@link spoon.reflect.code.CtStatementList}.
  */
 public abstract class TypedStatementListTemplateParameter<R> implements
-		TemplateParameterList<R> {
+		TemplateParameter<R> {
 
 	/**
 	 * Creates a new statement list template parameter.

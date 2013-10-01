@@ -30,14 +30,14 @@ import spoon.reflect.declaration.CtSimpleType;
  * implement the {@link #block()} method, which actually defines the Java block.
  * It corresponds to a {@link spoon.reflect.code.CtBlock}.
  */
-public abstract class BlockTemplateParameter implements TemplateParameter<Void> {
+public abstract class BlockTemplate implements TemplateParameter<Void> {
 
 	/**
 	 * Returns the block.
 	 */
 	@SuppressWarnings("unchecked")
 	public static CtBlock<?> getBlock(
-			CtClass<? extends BlockTemplateParameter> p) {
+			CtClass<? extends BlockTemplate> p) {
 		CtBlock b = p.getMethod("block").getBody();
 		return b;
 	}
@@ -45,11 +45,11 @@ public abstract class BlockTemplateParameter implements TemplateParameter<Void> 
 	/**
 	 * Creates a new block template parameter.
 	 */
-	public BlockTemplateParameter() {
+	public BlockTemplate() {
 	}
 
 	public CtBlock<?> getSubstitution(CtSimpleType<?> targetType) {
-		CtClass<? extends BlockTemplateParameter> c;
+		CtClass<? extends BlockTemplate> c;
 		c = targetType.getFactory().Template().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
