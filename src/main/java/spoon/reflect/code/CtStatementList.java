@@ -19,8 +19,6 @@ package spoon.reflect.code;
 
 import java.util.List;
 
-import spoon.template.TemplateParameterList;
-
 /**
  * This code element represents a list of statements. It is not a valid Java
  * program element and is never used directly in the meta-model, on contrary to
@@ -36,8 +34,7 @@ import spoon.template.TemplateParameterList;
  * @see spoon.reflect.code.CtBlock#insertAfter(Filter, CtStatementList)
  * @see spoon.reflect.code.CtBlock#insertBefore(Filter, CtStatementList)
  */
-public interface CtStatementList<R> extends CtCodeElement,
-		TemplateParameterList<R> {
+public interface CtStatementList<R> extends CtCodeElement {
 
 	/**
 	 * Returns the statement list.

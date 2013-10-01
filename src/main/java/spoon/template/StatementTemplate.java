@@ -32,13 +32,13 @@ import spoon.reflect.declaration.CtSimpleType;
  * the Java statements. It corresponds to a
  * {@link spoon.reflect.code.CtStatementList}.
  */
-public abstract class StatementListTemplateParameter implements
-		TemplateParameterList<Void> {
+public abstract class StatementTemplate implements
+		TemplateParameter<Void> {
 
 	/**
 	 * Creates a new statement list template parameter.
 	 */
-	public StatementListTemplateParameter() {
+	public StatementTemplate() {
 	}
 
 	@SuppressWarnings("unchecked")
