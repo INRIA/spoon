@@ -34,7 +34,19 @@ import spoon.eclipse.jdt.internal.compiler.batch.Main;
 import spoon.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import spoon.eclipse.jdt.internal.compiler.util.Util;
 import spoon.reflect.Factory;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
+import spoon.support.builder.support.FileSystemFile;
 
+/** Builds the Spoon model from a set of Java Files.
+ * The model is accessible with:
+ * <pre>
+ * factory.Package().get("spoon.support.builder")
+ * factory.Package().getAllRoots()
+ * </pre>
+ * 
+ * See method main.
+ */
 public class SpoonCompiler  extends Main {
 	
 	public int JAVA_COMPLIANCE = 6;
@@ -45,6 +57,22 @@ public class SpoonCompiler  extends Main {
 
 	public SpoonCompiler() {
 		super(new PrintWriter(System.out), new PrintWriter(System.err), false);
+	}
+		
+	// example usage
+	public static void main(String[] args) {
+		SpoonCompiler comp = new SpoonCompiler();
+		List<SpoonFile> files = new ArrayList();
+		SpoonFile file = new FileSystemFile(new File("./src/main/java/spoon/support/builder/SpoonCompiler.java"));
+		files.add(file);
+		System.out.println(file.getPath());
+		try {
+			Factory factory = new Factory(new DefaultCoreFactory(), new StandardEnvironment());
+			comp.compileSrc(factory, files);
+			System.out.println(factory.Package().get("spoon.support.builder").getTypes());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public boolean compileSrc(Factory f, List<SpoonFile> files)
