@@ -32,7 +32,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * Java expression. It corresponds to a {@link spoon.reflect.code.CtExpression}.
  */
 public abstract class ExpressionTemplate<T> implements
-		TemplateParameter<T> {
+		TemplateParameter<T>, Template {
 
 	/**
 	 * Returns the expression.
@@ -73,7 +73,7 @@ public abstract class ExpressionTemplate<T> implements
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
 		if (this instanceof Template) {
-			b = Substitution.substitute(targetType, (Template) this,
+			b = Substitution.substitute(targetType, this,
 					getExpressionBlock(c));
 		} else {
 			b = targetType.getFactory().Core().clone(getExpressionBlock(c));
