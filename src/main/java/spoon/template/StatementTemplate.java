@@ -33,7 +33,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * {@link spoon.reflect.code.CtStatementList}.
  */
 public abstract class StatementTemplate implements
-		TemplateParameter<Void> {
+		TemplateParameter<Void>, Template {
 
 	/**
 	 * Creates a new statement list template parameter.
@@ -52,7 +52,7 @@ public abstract class StatementTemplate implements
 		CtStatementList<Void> l = targetType.getFactory().Core()
 				.createStatementList();
 		if (this instanceof Template) {
-			b = Substitution.substitute(targetType, (Template) this, c
+			b = Substitution.substitute(targetType, this, c
 					.getMethod("statements").getBody());
 		} else {
 			b = targetType.getFactory().Core().clone(
