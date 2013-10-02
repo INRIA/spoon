@@ -18,6 +18,7 @@
 package spoon.template;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtSimpleType;
@@ -42,7 +43,7 @@ public abstract class StatementTemplate implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public CtStatementList<Void> getSubstitution(CtSimpleType<?> targetType) {
+	public CtStatement getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<?> c;
 		CtBlock<?> b;
 		c = targetType.getFactory().Template().get(this.getClass());
@@ -52,14 +53,12 @@ public abstract class StatementTemplate implements
 		CtStatementList<Void> l = targetType.getFactory().Core()
 				.createStatementList();
 		if (this instanceof Template) {
-			b = Substitution.substitute(targetType, this, c
-					.getMethod("statements").getBody());
+			return Substitution.substitute(targetType, this, c
+					.getMethod("statement").getBody()).getStatements().get(0);
 		} else {
-			b = targetType.getFactory().Core().clone(
-					c.getMethod("statements").getBody());
+			return  targetType.getFactory().Core().clone(
+					c.getMethod("statement").getBody()).getStatements().get(0);
 		}
-		l.setStatements(b.getStatements());
-		return l;
 	}
 
 	public Void S() {
@@ -69,5 +68,5 @@ public abstract class StatementTemplate implements
 	/**
 	 * This method must be implemented to define the template statement list.
 	 */
-	public abstract void statements() throws Throwable;
+	public abstract void statement() throws Throwable;
 }
