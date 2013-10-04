@@ -10,7 +10,7 @@ public class VirtualFile implements SpoonFile{
 
 	InputStream contents;
 	
-	String name = "";
+	String name = "virtual_file";
 	
 	public VirtualFile(String _contents) {
 		byte[] contentsBA = _contents.getBytes();
@@ -40,7 +40,7 @@ public class VirtualFile implements SpoonFile{
 	}
 
 	public String getPath() {
-		return "";
+		return name;
 	}
 
 	public boolean isFile() {
