@@ -127,17 +127,12 @@ public class SnippetCompiler {
 
 	private static void build(Factory f, String contents, String name) {
 		// Build contents
-		boolean success;
 		Builder builder = new SnippetBuilder(f);
 		try {
 			builder.addInputSource(new VirtualFile(contents, name));
-			success = builder.build();
+			builder.build();
 		} catch (Exception e) {
-			success = debugCompilationError(f, e);
-		}
-
-		if (!success) {
-			throw new SnippetCompilationError("snippet could not be compiled");
+			throw new RuntimeException(e);
 		}
 	}
 
