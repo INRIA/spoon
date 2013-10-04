@@ -52,5 +52,4 @@ public class Tests {
 		assertEquals("V", generic.getSimpleName());
 		assertEquals("[java.io.Serializable, java.lang.Comparable]", generic.getBounds().toString());
 	}
-
 }
