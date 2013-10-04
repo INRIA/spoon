@@ -21,15 +21,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
 import spoon.processing.Builder;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
-import spoon.support.builder.support.FileSystemFile;
-import spoon.support.builder.support.FileSystemFolder;
-import spoon.support.builder.support.VirtualFile;
 import spoon.support.builder.support.VirtualFolder;
 
 public class SpoonBuildingManager implements Builder {
@@ -94,26 +90,7 @@ public class SpoonBuildingManager implements Builder {
 				.getComplianceLevel();
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
-		if (compiler.probs.size() > 0) {
-			for (CategorizedProblem[] cps : compiler.probs) {
-				for (int i = 0; i < cps.length; i++) {
-					CategorizedProblem problem = cps[i];
-					if (problem != null) {
-						File file = new File(new String(
-								problem.getOriginatingFileName()));
-						String filename = file.getAbsolutePath();
-						factory.getEnvironment().report(
-								null,
-								problem.isError() ? Severity.ERROR : problem
-										.isWarning() ? Severity.WARNING
-										: Severity.MESSAGE,
-
-								problem.getMessage() + " at " + filename + ":"
-										+ problem.getSourceLineNumber());
-					}
-				}
-			}
-		}
+		reportProblems();
 		factory.getEnvironment().debugMessage(
 				"compiled in " + (System.currentTimeMillis() - t) + " ms");
 		factory.getEnvironment().debugMessage(
@@ -125,6 +102,31 @@ public class SpoonBuildingManager implements Builder {
 		factory.getEnvironment().debugMessage(
 				"compiled in " + (System.currentTimeMillis() - t) + " ms");
 		return srcSuccess && templateSuccess;
+	}
+	
+	protected void report(CategorizedProblem problem) {
+		File file = new File(new String(
+				problem.getOriginatingFileName()));
+		String filename = file.getAbsolutePath();
+		factory.getEnvironment().report(
+				null,
+				problem.isError() ? Severity.ERROR : problem
+						.isWarning() ? Severity.WARNING
+						: Severity.MESSAGE,
+
+				problem.getMessage() + " at " + filename + ":"
+						+ problem.getSourceLineNumber());
+	}
+		
+	public void reportProblems() {
+		if (compiler.probs.size() > 0) {
+			for (CategorizedProblem[] cps : compiler.probs) {
+				for (int i = 0; i < cps.length; i++) {
+					CategorizedProblem problem = cps[i];
+					report(problem);
+				}
+			}
+		}
 	}
 
 	public void initCompiler() {
