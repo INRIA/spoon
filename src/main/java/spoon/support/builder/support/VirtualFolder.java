@@ -77,7 +77,8 @@ public class VirtualFolder implements SpoonFolder {
 	}
 
 	public String getPath() {
-		return "Virtual folder";
+		// it has to be real path for snippet building 
+		return ".";
 	}
 	
 

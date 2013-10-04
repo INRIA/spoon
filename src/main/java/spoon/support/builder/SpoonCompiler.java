@@ -23,7 +23,9 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
 import spoon.eclipse.jdt.internal.compiler.CompilationResult;
@@ -103,9 +105,17 @@ public class SpoonCompiler  extends Main {
 		}
 		
 		// args.add("-nowarn");
+		// method configure JDT of JDT requires at least one file or one directory
+		Set<String> paths = new HashSet<String>();
 		for (SpoonFile file : files) {
-			args.add(file.getPath());
+		  // We can not use file.getPath() because when using in-memory code (e.g. snippets)
+		  // there is no real file on the disk
+		  // In this case, the virtual parent of the virtual file is "." (by convention)
+		  // and we are sure it exists
+		  // However, if . contains a lot of subfolders and Java files, it will take a lot of time
+			paths.add(file.getParent().getPath());
 		}
+		args.addAll(paths);
 
 //		JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
 //				new PrintWriter(System.err));
