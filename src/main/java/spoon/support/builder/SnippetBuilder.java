@@ -1,5 +1,6 @@
 package spoon.support.builder;
 
+import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
 import spoon.reflect.Factory;
 
 public class SnippetBuilder extends SpoonBuildingManager {
@@ -22,6 +23,7 @@ public class SnippetBuilder extends SpoonBuildingManager {
 		compiler.JAVA_COMPLIANCE = factory.getEnvironment().getComplianceLevel();
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
+		reportProblems();
 		factory.getEnvironment().debugMessage(
 				"compiled in " + (System.currentTimeMillis() - t) + " ms");
 		factory.getEnvironment().debugMessage(
@@ -30,4 +32,11 @@ public class SnippetBuilder extends SpoonBuildingManager {
 		return srcSuccess;
 	}
 
+	@Override
+	protected void report(CategorizedProblem problem) {
+		throw new SnippetCompilationError(problem.getMessage() + "at line "
+				+ problem.getSourceLineNumber());
+
+	}
+	
 }
