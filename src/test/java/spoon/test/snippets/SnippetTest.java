@@ -43,7 +43,7 @@ public class SnippetTest {
 			fail();
 		}
 		catch (Exception e) {
-			// we excpect an exception the code is incorrect
+			// we expect an exception the code is incorrect
 		}
 	}
 	
