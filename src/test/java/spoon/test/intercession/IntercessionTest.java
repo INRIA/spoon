@@ -8,8 +8,10 @@ import org.junit.Test;
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.support.DefaultCoreFactory;
@@ -40,7 +42,30 @@ public class IntercessionTest {
 		assertSame(returnStmt, body.getStatements().get(0));
 	}
 
+	@Test
+	public void testInsertEnd() {
+		CtClass clazz = (CtClass) factory.Code().createCodeSnippetStatement(
+				""
+				+ "class X {"
+				+ "public void foo() {"
+				+ " int x=0;"
+				+ " String foo=\"toto\";"
+				+ "}"
+				+ "};"
+		).compile();
+		CtMethod foo = (CtMethod) clazz.getMethods().toArray()[0];
 
+		CtBlock body = foo.getBody();
+		assertEquals(2, body.getStatements().size());
+		
+		// adding a new statement;
+		CtReturn<Object> returnStmt = factory.Core().createReturn();
+		body.insertEnd(returnStmt);
+		assertEquals(3, body.getStatements().size());
+		assertSame(returnStmt, body.getStatements().get(2));
+	}
+
+	
 	@Test
 	public void testInsertBefore() {
 		CtClass clazz = (CtClass) factory.Code().createCodeSnippetStatement(
@@ -67,6 +92,14 @@ public class IntercessionTest {
 		s.insertBefore(stmt);
 		assertEquals(4, body.getStatements().size());
 		assertSame(stmt, body.getStatements().get(2));
+	}
+	
+	@Test
+	public void test_setThrownExpression(){
+		CtThrow throwStmt = factory.Core().createThrow();
+		CtExpression<Exception> exp =  factory.Code().createCodeSnippetExpression("e");
+		throwStmt.setThrownExpression(exp);
+		assertEquals("throw e", throwStmt.toString());
 	}
 
 	@Test
