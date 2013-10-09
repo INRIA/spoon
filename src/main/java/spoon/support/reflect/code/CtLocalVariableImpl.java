@@ -33,8 +33,6 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 
 	CtExpression<T> defaultExpression;
 
-	String docComment;
-
 	Set<ModifierKind> modifiers = new TreeSet<ModifierKind>();
 
 	String name;
@@ -55,11 +53,6 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 
 	public CtExpression<T> getDefaultExpression() {
 		return defaultExpression;
-	}
-
-	@Override
-	public String getDocComment() {
-		return docComment;
 	}
 
 	public Set<ModifierKind> getModifiers() {
@@ -98,11 +91,6 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
 		this.defaultExpression = defaultExpression;
 		defaultExpression.setParent(this);
-	}
-
-	@Override
-	public void setDocComment(String docComment) {
-		this.docComment = docComment;
 	}
 
 	public void setModifiers(Set<ModifierKind> modifiers) {
