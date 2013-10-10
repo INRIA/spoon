@@ -9,6 +9,7 @@ import spoon.reflect.Factory;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
@@ -103,6 +104,39 @@ public class IntercessionTest {
 	}
 
 	@Test
+	public void testInsertIfIntercession() {
+		String ifCode = "if (1 == 0)\n"
+						+ "    return 1;\n"
+						+ "else\n"
+						+ "    return 0;\n"
+						+ "";
+		CtClass clazz = (CtClass) factory.Code().createCodeSnippetStatement(
+				"" + "class X {" + "public int bar() {" + ifCode + "}"+"};"
+		).compile();
+		CtMethod foo = (CtMethod) clazz.getMethods().toArray()[0];
+
+		CtBlock body = foo.getBody();
+		assertEquals(1, body.getStatements().size());
+		
+		CtIf ifStmt = (CtIf)foo.getBody().getStatements().get(0);
+		assertEquals(ifCode, ifStmt.toString());
+		CtReturn r1 = (CtReturn)ifStmt.getThenStatement();
+		CtReturn r2 = (CtReturn)ifStmt.getElseStatement();
+
+		ifStmt.setThenStatement(r2);
+		assertSame(r2, ifStmt.getThenStatement());
+		ifStmt.setElseStatement(r1);
+		assertSame(r1, ifStmt.getElseStatement());
+		
+		String ifCodeNew = "if (1 == 0)\n"
+				+ "    return 0;\n"
+				+ "else\n"
+				+ "    return 1;\n"
+				+ "";
+		assertEquals(ifCodeNew, ifStmt.toString());
+	}
+
+	@Test
 	public void testInsertAfter() {
 		CtClass clazz = (CtClass) factory.Code().createCodeSnippetStatement(
 				""
@@ -128,6 +162,7 @@ public class IntercessionTest {
 		s.insertAfter(stmt);
 		assertEquals(4, body.getStatements().size());
 		assertSame(stmt, body.getStatements().get(3));
-	}
+}
 
+	
 }
