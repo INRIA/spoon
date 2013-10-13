@@ -2,47 +2,12 @@ package spoon.test.control;
 
 public class Fors {
 
-	
+  void normalFor() {
+    for (int i = 0; i < 2; i++) {
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    }
+    
+  }
 	void multipleInit() {
 		for (int i = 0, j = 0; i < 2; j++) {
 
@@ -61,18 +26,4 @@ public class Fors {
 		}
 	}
 
-	public static void main(String[] args) {
-		System.out.println("test");
-		m();
-		if(args.length==0) {
-			System.out.println("no args");
-		} else {
-			System.out.println("args");
-		}
-		System.out.println("end");
-	}
-	
-	static void m() {
-		
-	}
 }
