@@ -16,8 +16,8 @@ public class EnumsTest {
 		assertEquals("Regular", type.getSimpleName());
 		CtEnum<Regular> enumeration = (CtEnum) type;
 		assertEquals(3, Regular.values().length);
-		assertEquals(3, enumeration.getConstants().size());
-		assertEquals("A", enumeration.getConstants().get(0).getSimpleName());
+		assertEquals(3, enumeration.getValues().size());
+		assertEquals("A", enumeration.getValues().get(0).getSimpleName());
 		assertEquals(5, enumeration.getFields().size());
 	}
 }
