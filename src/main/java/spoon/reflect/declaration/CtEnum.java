@@ -17,9 +17,15 @@
 
 package spoon.reflect.declaration;
 
+import java.util.List;
+
+
 /**
  * This element represents an enumeration declaration.
  */
 public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 
+	/** Returns the set of predefined constants of this enum */
+	public List<CtField<T>> getConstants();
+	
 }
