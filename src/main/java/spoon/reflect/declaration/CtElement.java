@@ -116,18 +116,9 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 */
 	void replace(CtElement element);
 
-	/**
-	 * Sets the annotations for this element.
-	 * 
-	 * @deprecated use {@link #addAnnotation(CtAnnotation)} and
-	 *             {@link #removeAnnotation(CtAnnotation)} to manipulate
-	 *             annotations
-	 */
-	@Deprecated
-	void setAnnotations(Set<CtAnnotation<? extends Annotation>> annotation);
 
 	/**
-	 * Add an anntation for this element
+	 * Add an annotation for this element
 	 * 
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
@@ -165,16 +156,6 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 *            of this element in the input source files
 	 */
 	void setPosition(SourcePosition position);
-
-	/**
-	 * Sets the position of this element and all its children element. Note that
-	 * this information is used to feed the line numbers in the generated
-	 * bytecode if any (which is useful for debugging).
-	 * 
-	 * @param position
-	 *            of this element and all children in the input source file
-	 */
-	void setPositions(SourcePosition position);
 
 	/**
 	 * Gets the child elements annotated with the given annotation type's
@@ -218,5 +199,29 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 * @return
 	 */
 	<T extends CtReference> List<T> getReferences(ReferenceFilter<T> filter);
+
+	
+	// DEPRECATED METHODS
+	/**
+	 * Sets the position of this element and all its children element. Note that
+	 * this information is used to feed the line numbers in the generated
+	 * bytecode if any (which is useful for debugging).
+	 * 
+	 * @param position
+	 *            of this element and all children in the input source file
+	 */
+	@Deprecated
+	void setPositions(SourcePosition position);
+
+	/**
+	 * Sets the annotations for this element.
+	 * 
+	 * @deprecated use {@link #addAnnotation(CtAnnotation)} and
+	 *             {@link #removeAnnotation(CtAnnotation)} to manipulate
+	 *             annotations
+	 */
+	@Deprecated
+	void setAnnotations(Set<CtAnnotation<? extends Annotation>> annotation);
+
 
 }
