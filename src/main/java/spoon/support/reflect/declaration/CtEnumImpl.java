@@ -51,7 +51,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements
 		return false;
 	}
 
-	public List<CtField<T>> getConstants() {
+	public List<CtField<T>> getValues() {
 		List<CtField<T>> result = new ArrayList<CtField<T>>();
 		for (CtField field : getFields()) {
 			if (
