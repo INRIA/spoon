@@ -86,6 +86,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return current.compareTo(other);
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof CtElement))
 			return false;
@@ -149,7 +150,13 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public SourcePosition getPosition() {
-		return position;
+		if (position!=null) {
+		  return position;
+		}
+		if (getParent()!=null) {
+			return getParent().getPosition();
+		}
+		return null;
 	}
 
 	@Override
@@ -252,6 +259,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	public void setPositions(final SourcePosition position) {
 		accept(new CtScanner() {
+			@Override
 			public void enter(CtElement e) {
 				e.setPosition(position);
 			}
