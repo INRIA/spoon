@@ -18,7 +18,6 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -32,6 +31,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -182,7 +182,7 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	}
 
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
+	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
 
 	}
 

@@ -38,7 +38,6 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -54,6 +53,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -385,9 +385,9 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVariable(f);
 	}
 
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-		scanCtTargetedExpression(fieldAccess);
-		visitCtVariableAccess(fieldAccess);
+	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
+		scanCtTargetedExpression(targetedAccess);
+		visitCtVariableAccess(targetedAccess);
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {

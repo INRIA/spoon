@@ -35,5 +35,14 @@ public class FieldAccessTest {
 		assertEquals(1, meth4.getElements(new TypeFilter(CtFieldAccess.class)).size());
 
 	}
+	
+	@Test 
+	public void testModelBuildingOuterThisAccesses() throws Exception {
+		CtSimpleType type = build ("spoon.test.fieldaccesses",  "InnerClassThisAccess");
+		assertEquals("InnerClassThisAccess", type.getSimpleName());
+
+		CtMethod meth1 = (CtMethod) type.getElements(new NameFilter("methode")).get(0);
+		assertEquals("spoon.test.fieldaccesses.InnerClassThisAccess.this.method()", meth1.getBody().getStatements().get(0).toString());
+	}
 
 }

@@ -55,8 +55,10 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -113,8 +115,10 @@ import spoon.support.reflect.code.CtNewClassImpl;
 import spoon.support.reflect.code.CtOperatorAssignmentImpl;
 import spoon.support.reflect.code.CtReturnImpl;
 import spoon.support.reflect.code.CtStatementListImpl;
+import spoon.support.reflect.code.CtSuperAccessImpl;
 import spoon.support.reflect.code.CtSwitchImpl;
 import spoon.support.reflect.code.CtSynchronizedImpl;
+import spoon.support.reflect.code.CtThisAccessImpl;
 import spoon.support.reflect.code.CtThrowImpl;
 import spoon.support.reflect.code.CtTryImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
@@ -600,6 +604,18 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public CtAnnonTypeParameterReference createAnnonTypeParameterReference() {
 		CtAnnonTypeParameterReference e = new CtAnnonTypeParameterReferenceImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public <T> CtThisAccess<T> createThisAccess() {
+		CtThisAccess<T> e = new CtThisAccessImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public <T> CtSuperAccess<T> createSuperAccess() {
+		CtSuperAccess<T> e = new CtSuperAccessImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

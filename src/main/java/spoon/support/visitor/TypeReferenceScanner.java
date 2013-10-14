@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
@@ -52,15 +52,15 @@ public class TypeReferenceScanner extends CtScanner {
 		return references.add(ref);
 	}
 
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-		enter(fieldAccess);
-		scan(fieldAccess.getVariable());
+	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
+		enter(targetedAccess);
+		scan(targetedAccess.getVariable());
 		// scan(fieldAccess.getType());
-		scan(fieldAccess.getAnnotations());
-		scanReferences(fieldAccess.getTypeCasts());
-		scan(fieldAccess.getVariable());
-		scan(fieldAccess.getTarget());
-		exit(fieldAccess);
+		scan(targetedAccess.getAnnotations());
+		scanReferences(targetedAccess.getTypeCasts());
+		scan(targetedAccess.getVariable());
+		scan(targetedAccess.getTarget());
+		exit(targetedAccess);
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {

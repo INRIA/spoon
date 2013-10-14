@@ -15,17 +15,22 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.reflect.code;
+package spoon.reflect.code;
 
-import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.reference.CtFieldReference;
 
-public class CtFieldAccessImpl<T> extends CtTargetedAccessImpl<T> implements
-		CtFieldAccess<T> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	
+/**
+ * 
+ * This code element defines an access to a target.
+ * 
+ * see {@link CtFieldAccess},
+ * {@link CtSuperAccess}
+ * or {@link CtThisAccess}
+ * 
+ * @param <T>
+ *            Corresponding type
+ */
+public interface CtTargetedAccess<T> extends CtVariableAccess<T>,
+		CtTargetedExpression<T, CtExpression<?>> {
+	CtFieldReference<T> getVariable();
 }

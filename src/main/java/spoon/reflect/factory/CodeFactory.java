@@ -37,6 +37,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtVariable;
@@ -262,8 +263,8 @@ public class CodeFactory extends SubFactory {
 	 *            variable
 	 * @return a <code>type.this</code> expression
 	 */
-	public <T> CtFieldAccess<T> createThisAccess(CtTypeReference<T> type) {
-		CtFieldAccess<T> fa = factory.Core().createFieldAccess();
+	public <T> CtThisAccess<T> createThisAccess(CtTypeReference<T> type) {
+		CtThisAccess<T> fa = factory.Core().createThisAccess();
 		fa.setType(type);
 		CtFieldReference<T> field = factory.Core().createFieldReference();
 		field.setDeclaringType(type);

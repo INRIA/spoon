@@ -161,9 +161,11 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -2764,7 +2766,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		fr.setDeclaringType(ref);
 		fr.setType(ref);
 
-		CtVariableAccess fa = factory.Core().createVariableAccess();
+		CtSuperAccess fa = factory.Core().createSuperAccess();
 		fa.setVariable(fr);
 		context.enter(fa, superReference);
 		return super.visit(superReference, scope);
@@ -2817,7 +2819,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		fr.setType(typeref);
 		fr.setSimpleName("this");
 
-		CtVariableAccess fa = factory.Core().createVariableAccess();
+		CtThisAccess fa = factory.Core().createThisAccess();
 		fa.setVariable(fr);
 		fa.setType(typeref);
 
