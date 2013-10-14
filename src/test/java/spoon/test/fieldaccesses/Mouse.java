@@ -11,6 +11,7 @@ public class Mouse {
 	public void meth1() {
 		age = 3;
 		son= new Mouse();
+		int l = age;
 	}
 
 	public void meth1b() {
