@@ -4,6 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InstanceInitializers {
+
+	{
+		// static initializer
+		x=3;
+	}
+	
+	int x;
+	
+	int y = 3;
+	
+	// with autoboxing
+	Integer z = 5;
+	
+	List<Double> k = new ArrayList<Double>();
 	
 	List<Double> l = new ArrayList<Double>() {
 		private static final long serialVersionUID = 1L;
