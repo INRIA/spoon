@@ -8,10 +8,27 @@ public class Mouse {
 
 	Mouse son;
 
-	public void method() {
-		son.age = 2;
+	public void meth1() {
+		age = 3;
+		son= new Mouse();
+	}
+
+	public void meth1b() {
+		this.age = 3;
+		son= new Mouse();
+	}
+
+	public void meth2() {
+		// three accesses, first to this, then to this.son, then to this.son.age
 		this.son.age = 3;
+	}
+
+	public void meth3() {
 		age = is.length;
+	}
+
+	public void meth4() {
+		is[2] = 4;
 	}
 
 }
