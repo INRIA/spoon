@@ -15,17 +15,14 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.reflect.code;
+package spoon.reflect.code;
 
-import spoon.reflect.code.CtFieldAccess;
 
-public class CtFieldAccessImpl<T> extends CtTargetedAccessImpl<T> implements
-		CtFieldAccess<T> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	
+/**
+ * This code element defines an access to super.
+ * 
+ * @param <T>
+ *            Type of super
+ */
+public interface CtSuperAccess<T> extends CtTargetedAccess<T> {
 }

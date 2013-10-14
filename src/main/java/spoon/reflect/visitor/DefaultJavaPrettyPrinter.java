@@ -61,6 +61,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -139,15 +140,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		 * Calculates needed imports for the given field access.
 		 */
 		@Override
-		public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-			enter(fieldAccess);
-			scan(fieldAccess.getVariable());
+		public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
+			enter(targetedAccess);
+			scan(targetedAccess.getVariable());
 			// scan(fieldAccess.getType());
-			scan(fieldAccess.getAnnotations());
-			scanReferences(fieldAccess.getTypeCasts());
-			scan(fieldAccess.getVariable());
-			scan(fieldAccess.getTarget());
-			exit(fieldAccess);
+			scan(targetedAccess.getAnnotations());
+			scanReferences(targetedAccess.getTypeCasts());
+			scan(targetedAccess.getVariable());
+			scan(targetedAccess.getTarget());
+			exit(targetedAccess);
 		}
 
 		@Override
@@ -934,19 +935,19 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(";");
 	}
 
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-		enterCtExpression(fieldAccess);
-		if (fieldAccess.getTarget() != null) {
-			scan(fieldAccess.getTarget());
+	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
+		enterCtExpression(targetedAccess);
+		if (targetedAccess.getTarget() != null) {
+			scan(targetedAccess.getTarget());
 			write(".");
 			context.ignoreStaticAccess = true;
 		}
 		context.ignoreGenerics = true;
-		scan(fieldAccess.getVariable());
+		scan(targetedAccess.getVariable());
 
 		context.ignoreGenerics = false;
 		context.ignoreStaticAccess = false;
-		exitCtExpression(fieldAccess);
+		exitCtExpression(targetedAccess);
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(
@@ -1703,6 +1704,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 		enterCtExpression(variableAccess);
+//		if (variableAccess.getTarget() != null) {
+//		}
 		write(variableAccess.getVariable().getSimpleName());
 		exitCtExpression(variableAccess);
 	}

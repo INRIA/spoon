@@ -46,8 +46,10 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -204,6 +206,17 @@ public interface CoreFactory {
 	 * Creates a field access expression.
 	 */
 	<T> CtFieldAccess<T> createFieldAccess();
+	
+
+	/**
+	 * Creates an access expression to this.
+	 */
+	<T> CtThisAccess<T> createThisAccess();
+	
+	/**
+	 * Creates an access expression to super.
+	 */
+	<T> CtSuperAccess<T> createSuperAccess();
 
 	/**
 	 * Creates a field reference.

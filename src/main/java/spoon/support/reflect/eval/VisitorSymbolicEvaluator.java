@@ -58,6 +58,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -674,29 +675,29 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 				stack.getThis().getConcreteType());
 	}
 
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-		if (fieldAccess.getVariable().getSimpleName().equals("this")) {
+	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
+		if (targetedAccess.getVariable().getSimpleName().equals("this")) {
 			result = stack.getThis();
 			return;
 		}
-		if (fieldAccess.getVariable().getSimpleName().equals("class")) {
+		if (targetedAccess.getVariable().getSimpleName().equals("class")) {
 			SymbolicInstance<?> type = heap
-					.getType(this, fieldAccess.getType());
+					.getType(this, targetedAccess.getType());
 			result = type;
 			return;
 		}
-		SymbolicInstance<?> target = evaluate(fieldAccess.getTarget());
+		SymbolicInstance<?> target = evaluate(targetedAccess.getTarget());
 		if (target == null) {
-			if (isAccessible(fieldAccess.getVariable())) {
+			if (isAccessible(targetedAccess.getVariable())) {
 				target = stack.getThis();
 			}
 		}
 		if ((target != null) && !target.isExternal()) {
-			result = heap.get(target.getFieldValue(fieldAccess.getVariable()));
+			result = heap.get(target.getFieldValue(targetedAccess.getVariable()));
 		} else {
 			// set the type to the declared one
 			SymbolicInstance<T> i = new SymbolicInstance<T>(this,
-					fieldAccess.getType(), false);
+					targetedAccess.getType(), false);
 			// this instance is not put on the heap because it will be put if
 			// assigned to an object's field
 			result = i;

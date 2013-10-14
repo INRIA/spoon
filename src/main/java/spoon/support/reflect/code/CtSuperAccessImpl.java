@@ -17,10 +17,10 @@
 
 package spoon.support.reflect.code;
 
-import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtSuperAccess;
 
-public class CtFieldAccessImpl<T> extends CtTargetedAccessImpl<T> implements
-		CtFieldAccess<T> {
+public class CtSuperAccessImpl<T> extends CtTargetedAccessImpl<T> implements
+		CtSuperAccess<T> {
 
 	/**
 	 * 

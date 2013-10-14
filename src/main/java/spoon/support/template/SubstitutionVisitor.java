@@ -35,6 +35,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -259,28 +260,28 @@ public class SubstitutionVisitor extends CtScanner {
 		 */
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-			CtFieldReference<?> ref = fieldAccess.getVariable();
+		public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
+			CtFieldReference<?> ref = targetedAccess.getVariable();
 			if ("length".equals(ref.getSimpleName())) {
-				if (fieldAccess.getTarget() instanceof CtFieldAccess) {
-					ref = ((CtFieldAccess) fieldAccess.getTarget())
+				if (targetedAccess.getTarget() instanceof CtFieldAccess) {
+					ref = ((CtFieldAccess) targetedAccess.getTarget())
 							.getVariable();
 					if (Parameters.isParameterSource(ref)) {
 						Object[] value = (Object[]) Parameters.getValue(
 								template, ref.getSimpleName(), null);
-						fieldAccess.replace(fieldAccess.getFactory().Code()
+						targetedAccess.replace(targetedAccess.getFactory().Code()
 								.createLiteral(value.length));
-						throw new SkipException(fieldAccess);
+						throw new SkipException(targetedAccess);
 					}
 				}
 			}
 			if (Parameters.isParameterSource(ref)) {
 				// replace direct field parameter accesses
 				Object value = Parameters.getValue(template, ref
-						.getSimpleName(), Parameters.getIndex(fieldAccess));
-				CtElement toReplace = fieldAccess;
-				if (fieldAccess.getParent() instanceof CtArrayAccess) {
-					toReplace = fieldAccess.getParent();
+						.getSimpleName(), Parameters.getIndex(targetedAccess));
+				CtElement toReplace = targetedAccess;
+				if (targetedAccess.getParent() instanceof CtArrayAccess) {
+					toReplace = targetedAccess.getParent();
 				}
 				if (!(value instanceof TemplateParameter)) {
 					if (value instanceof Class) {
@@ -299,13 +300,13 @@ public class SubstitutionVisitor extends CtScanner {
 						List<CtParameter<?>> l = (List<CtParameter<?>>) value;
 						List<CtExpression<?>> vas = f.Code()
 								.createVariableAccesses(l);
-						CtAbstractInvocation<?> inv = (CtAbstractInvocation<?>) fieldAccess
+						CtAbstractInvocation<?> inv = (CtAbstractInvocation<?>) targetedAccess
 								.getParent();
-						int i = inv.getArguments().indexOf(fieldAccess);
+						int i = inv.getArguments().indexOf(targetedAccess);
 						inv.getArguments().remove(i);
 						inv.getExecutable().getParameterTypes().remove(i);
 						for (CtExpression<?> va : vas) {
-							va.setParent(fieldAccess.getParent());
+							va.setParent(targetedAccess.getParent());
 							inv.getArguments().add(i, va);
 							inv.getExecutable().getParameterTypes().add(i,
 									va.getType());
@@ -322,9 +323,9 @@ public class SubstitutionVisitor extends CtScanner {
 							.getSubstitution(targetType));
 				}
 				// do not visit if replaced
-				throw new SkipException(fieldAccess);
+				throw new SkipException(targetedAccess);
 			}
-			super.visitCtFieldAccess(fieldAccess);
+			super.visitCtTargetedAccess(targetedAccess);
 		}
 
 		/**
