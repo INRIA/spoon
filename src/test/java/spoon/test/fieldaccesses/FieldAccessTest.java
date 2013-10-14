@@ -45,4 +45,13 @@ public class FieldAccessTest {
 		assertEquals("spoon.test.fieldaccesses.InnerClassThisAccess.this.method()", meth1.getBody().getStatements().get(0).toString());
 	}
 
+	@Test 
+	public void testModelBuildingOuterSuperAccesses() throws Exception {
+		CtSimpleType type = build ("spoon.test.fieldaccesses",  "InternalSuperCall");
+		assertEquals("InternalSuperCall", type.getSimpleName());
+
+		CtMethod meth0 = (CtMethod) type.getElements(new NameFilter("methode")).get(0);
+		assertEquals("spoon.test.fieldaccesses.InternalSuperCall.super.toString()", meth0.getBody().getStatements().get(0).toString());
+	}
+	
 }
