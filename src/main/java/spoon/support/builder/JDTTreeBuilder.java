@@ -2764,7 +2764,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		fr.setDeclaringType(ref);
 		fr.setType(ref);
 
-		CtFieldAccess fa = factory.Core().createFieldAccess();
+		CtVariableAccess fa = factory.Core().createVariableAccess();
 		fa.setVariable(fr);
 		context.enter(fa, superReference);
 		return super.visit(superReference, scope);
@@ -2817,7 +2817,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		fr.setType(typeref);
 		fr.setSimpleName("this");
 
-		CtFieldAccess fa = factory.Core().createFieldAccess();
+		CtVariableAccess fa = factory.Core().createVariableAccess();
 		fa.setVariable(fr);
 		fa.setType(typeref);
 
