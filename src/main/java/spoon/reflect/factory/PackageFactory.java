@@ -55,6 +55,9 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * Creates a reference to an existing package.
 	 */
 	public CtPackageReference createReference(CtPackage pack) {
+		if (pack==null) { 
+			throw new IllegalArgumentException();
+		}
 		return createReference(pack.getQualifiedName());
 	}
 

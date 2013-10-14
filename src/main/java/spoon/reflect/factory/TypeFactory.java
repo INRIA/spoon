@@ -131,15 +131,15 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtTypeReference<T> createReference(CtSimpleType<T> type) {
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
-		if (type.isTopLevel()) {
-			ref
-					.setPackage(factory.Package().createReference(
-							type.getPackage()));
-		} else {
-			if (type.getDeclaringType() != null) {
-				ref.setDeclaringType(createReference(type.getDeclaringType()));
-			}
+		
+		if (type.getPackage()!=null) {
+		  ref.setPackage(factory.Package().createReference(type.getPackage()));
+		} 
+		
+		if (type.getDeclaringType() != null) {
+			ref.setDeclaringType(createReference(type.getDeclaringType()));
 		}
+
 		ref.setSimpleName(type.getSimpleName());
 		return ref;
 	}
