@@ -86,7 +86,7 @@ public class TemplateTest {
 		Substitution.insertAll(c1, new TemplateWithConstructor(factory.Type()
 				.createReference(Date.class)));
 
-		// before template: 3 constructors
+		// after template: 3 constructors
 		assertEquals(3,
 				c1.getConstructors().size());
 
