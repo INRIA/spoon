@@ -1,8 +1,8 @@
-package spoon.test.limits;
+package spoon.test.generics;
 
 public class GenericConstructor {
 	public <E> GenericConstructor() {
-			Object tmp = (E) "";
+			Object tmp = "";
 		}
 }
 
