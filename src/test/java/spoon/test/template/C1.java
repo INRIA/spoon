@@ -1,4 +1,4 @@
-package spoon.test.src;
+package spoon.test.template;
 
 public class C1 {
 

@@ -19,12 +19,12 @@ public class TemplateWithConstructor implements Template {
 		_Interf_ = interf;
 	}
 
-	public TemplateWithConstructor() {
+	public TemplateWithConstructor(String arg) {
 		super();
 		System.out.println("new");
 	}
 
-	public TemplateWithConstructor(String arg) {
+	public TemplateWithConstructor(int arg) {
 		super();
 		System.out.println("new");
 	}
