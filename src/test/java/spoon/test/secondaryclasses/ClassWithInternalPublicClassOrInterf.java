@@ -1,4 +1,4 @@
-package spoon.test.limits;
+package spoon.test.secondaryclasses;
 
 public class ClassWithInternalPublicClassOrInterf {
 
