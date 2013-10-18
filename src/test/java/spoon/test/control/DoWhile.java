@@ -1,4 +1,4 @@
-package spoon.test.limits;
+package spoon.test.control;
 
 public class DoWhile {
 
