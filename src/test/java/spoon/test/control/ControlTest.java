@@ -2,13 +2,16 @@ package spoon.test.control;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
 import java.util.List;
 
 import org.junit.Test;
 
+import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.filter.NameFilter;
@@ -42,4 +45,14 @@ public class ControlTest {
 
 	}
 
+	@Test 
+	public void testModelBuildingDoWhile() throws Exception {
+		CtSimpleType type = build ("spoon.test.control",  "DoWhile");
+		assertEquals("DoWhile", type.getSimpleName());		
+		CtMethod meth = (CtMethod) type.getElements(new NameFilter("methode")).get(0);
+		List<CtStatement> stmts = meth.getBody().getStatements();		
+		assertEquals(2, stmts.size());
+		assertTrue(stmts.get(1) instanceof CtDo);		
+		assertEquals("i++", ((CtDo)stmts.get(1)).getBody().toString());
+	}
 }
