@@ -13,5 +13,5 @@ class Tree<V extends Serializable & Comparable<V>> {
 		if(l==null);
 		return null; }
 	<T extends Tree<V> & Comparable<T>> T node4() { return null; }
-	
+	<T,R extends java.lang.Comparable<? super T>> T node5() { return null; }
 }
