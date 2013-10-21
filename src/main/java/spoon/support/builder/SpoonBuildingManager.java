@@ -82,48 +82,39 @@ public class SpoonBuildingManager implements Builder {
 		build = true;
 
 		boolean srcSuccess, templateSuccess;
-		factory.getEnvironment().debugMessage(
-				"compiling sources: " + sources.getAllJavaFiles());
+		factory.getEnvironment().debugMessage("compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		compiler = new SpoonCompiler();
-		compiler.JAVA_COMPLIANCE = factory.getEnvironment()
-				.getComplianceLevel();
+		compiler.JAVA_COMPLIANCE = factory.getEnvironment().getComplianceLevel();
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
 		reportProblems();
-		factory.getEnvironment().debugMessage(
-				"compiled in " + (System.currentTimeMillis() - t) + " ms");
-		factory.getEnvironment().debugMessage(
-				"compiling templates: " + templates.getAllJavaFiles());
+		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
+		factory.getEnvironment().debugMessage("compiling templates: " + templates.getAllJavaFiles());
 		t = System.currentTimeMillis();
-		templateSuccess = compiler.compileTemplate(factory,
-				templates.getAllJavaFiles());
+		templateSuccess = compiler.compileTemplate(factory, templates.getAllJavaFiles());
 		factory.Template().parseTypes();
-		factory.getEnvironment().debugMessage(
-				"compiled in " + (System.currentTimeMillis() - t) + " ms");
+		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
 		return srcSuccess && templateSuccess;
 	}
-	
-	protected void report(CategorizedProblem problem) {
-		File file = new File(new String(
-				problem.getOriginatingFileName()));
-		String filename = file.getAbsolutePath();
-		factory.getEnvironment().report(
-				null,
-				problem.isError() ? Severity.ERROR : problem
-						.isWarning() ? Severity.WARNING
-						: Severity.MESSAGE,
 
-				problem.getMessage() + " at " + filename + ":"
-						+ problem.getSourceLineNumber());
+	protected void report(CategorizedProblem problem) {
+		File file = new File(new String(problem.getOriginatingFileName()));
+		String filename = file.getAbsolutePath();
+		factory.getEnvironment().report(null,
+				problem.isError() ? Severity.ERROR : problem.isWarning() ? Severity.WARNING : Severity.MESSAGE,
+
+				problem.getMessage() + " at " + filename + ":" + problem.getSourceLineNumber());
 	}
-		
+
 	public void reportProblems() {
 		if (compiler.probs.size() > 0) {
 			for (CategorizedProblem[] cps : compiler.probs) {
 				for (int i = 0; i < cps.length; i++) {
 					CategorizedProblem problem = cps[i];
-					report(problem);
+					if (problem != null) {
+						report(problem);
+					}
 				}
 			}
 		}
