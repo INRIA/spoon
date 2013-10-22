@@ -68,7 +68,7 @@ public interface Environment extends FactoryAccessor {
 	 * Returns true if Spoon is in debug mode.
 	 */
 	public boolean isDebug();
-	
+
 	/**
 	 * Returns true is we let Spoon handle imports
 	 */
@@ -205,10 +205,20 @@ public interface Environment extends FactoryAccessor {
 	 * Sets Spoon to use tabulations in the source code.
 	 */
 	void useTabulations(boolean b);
-	
+
 	/**
 	 * Gets the current input path
 	 */
 	String getSourcePath();
-	
+
+	/**
+	 * Gets the current classpath.
+	 */
+	String getClasspath();
+
+	/**
+	 * Sets the current classpath.
+	 */
+	void setClasspath(String classpath);
+
 }

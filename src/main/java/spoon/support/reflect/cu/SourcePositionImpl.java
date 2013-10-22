@@ -139,8 +139,10 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	 */
 	public String toString() {
 		int ln = getLine();
-		return (ln >= 1) ? getFile().getAbsolutePath() + ":" + ln : getFile()
-				.getAbsolutePath();
+		return (ln >= 1) ? "("
+				+ getFile().getAbsolutePath().replace('\\', '/')
+						.replace("C:/", "/") + ":" + ln + ")" : getFile()
+				.getAbsolutePath().replace('\\', '/').replace("C:/", "/");
 	}
 
 	@Override

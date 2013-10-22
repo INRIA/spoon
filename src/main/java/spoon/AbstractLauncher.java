@@ -198,7 +198,7 @@ public abstract class AbstractLauncher {
 		sw1.setHelp("Use tabulations instead of spaces in the generated code (use spaces by default)");
 		jsap.registerParameter(sw1);
 
-		// Tabs
+		// fragments
 		sw1 = new Switch("fragments");
 		sw1.setLongFlag("fragments");
 		sw1.setShortFlag('f');
@@ -231,9 +231,9 @@ public abstract class AbstractLauncher {
 		// java compliance
 		opt2 = new FlaggedOption("compliance");
 		opt2.setLongFlag("compliance");
-		opt2.setHelp("set java compliance level (1,2,3,4,5 or 6)");
+		opt2.setHelp("set java compliance level (1,2,3,4,5, 6 or 7)");
 		opt2.setStringParser(JSAP.INTEGER_PARSER);
-		opt2.setDefault("6");
+		opt2.setDefault("7");
 		jsap.registerParameter(opt2);
 
 		// setting Input files & Directory
@@ -289,6 +289,15 @@ public abstract class AbstractLauncher {
 		opt2.setStringParser(FileStringParser.getParser());
 		opt2.setRequired(false);
 		opt2.setHelp("Directory to search for spoon properties files");
+		jsap.registerParameter(opt2);
+
+		// classpath
+		opt2 = new FlaggedOption("classpath");
+		opt2.setShortFlag('c');
+		opt2.setLongFlag("classpath");
+		opt2.setHelp("An optional classpath to be passed to the internal Java compiler");
+		opt2.setStringParser(JSAP.STRING_PARSER);
+		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
 
 		return jsap;
@@ -367,6 +376,12 @@ public abstract class AbstractLauncher {
 				addProcessor(processorName);
 			}
 		}
+
+		if (getArguments().getString("classpath") != null) {
+			getFactory().getEnvironment().setClasspath(
+					getArguments().getString("classpath"));
+		}
+
 	}
 
 	/**

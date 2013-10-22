@@ -26,112 +26,114 @@ import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import spoon.eclipse.jdt.internal.compiler.ASTVisitor;
-import spoon.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
-import spoon.eclipse.jdt.internal.compiler.ast.ASTNode;
-import spoon.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import spoon.eclipse.jdt.internal.compiler.ast.AllocationExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.Annotation;
-import spoon.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
-import spoon.eclipse.jdt.internal.compiler.ast.Argument;
-import spoon.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
-import spoon.eclipse.jdt.internal.compiler.ast.ArrayReference;
-import spoon.eclipse.jdt.internal.compiler.ast.ArrayTypeReference;
-import spoon.eclipse.jdt.internal.compiler.ast.AssertStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.Assignment;
-import spoon.eclipse.jdt.internal.compiler.ast.BinaryExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.Block;
-import spoon.eclipse.jdt.internal.compiler.ast.BreakStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.CaseStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.CastExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.CharLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
-import spoon.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import spoon.eclipse.jdt.internal.compiler.ast.CompoundAssignment;
-import spoon.eclipse.jdt.internal.compiler.ast.ConditionalExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
-import spoon.eclipse.jdt.internal.compiler.ast.ContinueStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.DoStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.DoubleLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.EqualExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
-import spoon.eclipse.jdt.internal.compiler.ast.Expression;
-import spoon.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.FalseLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
-import spoon.eclipse.jdt.internal.compiler.ast.FieldReference;
-import spoon.eclipse.jdt.internal.compiler.ast.FloatLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.ForStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.ForeachStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.IfStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.Initializer;
-import spoon.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.IntLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.Javadoc;
-import spoon.eclipse.jdt.internal.compiler.ast.LabeledStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
-import spoon.eclipse.jdt.internal.compiler.ast.LongLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
-import spoon.eclipse.jdt.internal.compiler.ast.MemberValuePair;
-import spoon.eclipse.jdt.internal.compiler.ast.MessageSend;
-import spoon.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
-import spoon.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
-import spoon.eclipse.jdt.internal.compiler.ast.NullLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.OR_OR_Expression;
-import spoon.eclipse.jdt.internal.compiler.ast.OperatorIds;
-import spoon.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
-import spoon.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
-import spoon.eclipse.jdt.internal.compiler.ast.PostfixExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.PrefixExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
-import spoon.eclipse.jdt.internal.compiler.ast.QualifiedSuperReference;
-import spoon.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
-import spoon.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
-import spoon.eclipse.jdt.internal.compiler.ast.ReturnStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
-import spoon.eclipse.jdt.internal.compiler.ast.SingleNameReference;
-import spoon.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
-import spoon.eclipse.jdt.internal.compiler.ast.Statement;
-import spoon.eclipse.jdt.internal.compiler.ast.StringLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
-import spoon.eclipse.jdt.internal.compiler.ast.SuperReference;
-import spoon.eclipse.jdt.internal.compiler.ast.SwitchStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.SynchronizedStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.ThisReference;
-import spoon.eclipse.jdt.internal.compiler.ast.ThrowStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.TrueLiteral;
-import spoon.eclipse.jdt.internal.compiler.ast.TryStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import spoon.eclipse.jdt.internal.compiler.ast.TypeParameter;
-import spoon.eclipse.jdt.internal.compiler.ast.TypeReference;
-import spoon.eclipse.jdt.internal.compiler.ast.UnaryExpression;
-import spoon.eclipse.jdt.internal.compiler.ast.WhileStatement;
-import spoon.eclipse.jdt.internal.compiler.ast.Wildcard;
-import spoon.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
-import spoon.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.BaseTypeBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.Binding;
-import spoon.eclipse.jdt.internal.compiler.lookup.BlockScope;
-import spoon.eclipse.jdt.internal.compiler.lookup.CaptureBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import spoon.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
-import spoon.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.MethodScope;
-import spoon.eclipse.jdt.internal.compiler.lookup.PackageBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.VariableBinding;
-import spoon.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import org.apache.log4j.Logger;
+import org.eclipse.jdt.internal.compiler.ASTVisitor;
+import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
+import org.eclipse.jdt.internal.compiler.ast.ArrayReference;
+import org.eclipse.jdt.internal.compiler.ast.ArrayTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.AssertStatement;
+import org.eclipse.jdt.internal.compiler.ast.Assignment;
+import org.eclipse.jdt.internal.compiler.ast.BinaryExpression;
+import org.eclipse.jdt.internal.compiler.ast.Block;
+import org.eclipse.jdt.internal.compiler.ast.BreakStatement;
+import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
+import org.eclipse.jdt.internal.compiler.ast.CastExpression;
+import org.eclipse.jdt.internal.compiler.ast.CharLiteral;
+import org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.CompoundAssignment;
+import org.eclipse.jdt.internal.compiler.ast.ConditionalExpression;
+import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ContinueStatement;
+import org.eclipse.jdt.internal.compiler.ast.DoStatement;
+import org.eclipse.jdt.internal.compiler.ast.DoubleLiteral;
+import org.eclipse.jdt.internal.compiler.ast.EqualExpression;
+import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
+import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
+import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.FloatLiteral;
+import org.eclipse.jdt.internal.compiler.ast.ForStatement;
+import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
+import org.eclipse.jdt.internal.compiler.ast.IfStatement;
+import org.eclipse.jdt.internal.compiler.ast.Initializer;
+import org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
+import org.eclipse.jdt.internal.compiler.ast.IntLiteral;
+import org.eclipse.jdt.internal.compiler.ast.Javadoc;
+import org.eclipse.jdt.internal.compiler.ast.LabeledStatement;
+import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.LongLiteral;
+import org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
+import org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
+import org.eclipse.jdt.internal.compiler.ast.NullLiteral;
+import org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression;
+import org.eclipse.jdt.internal.compiler.ast.OperatorIds;
+import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.PostfixExpression;
+import org.eclipse.jdt.internal.compiler.ast.PrefixExpression;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedSuperReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
+import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
+import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
+import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.Statement;
+import org.eclipse.jdt.internal.compiler.ast.StringLiteral;
+import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
+import org.eclipse.jdt.internal.compiler.ast.SuperReference;
+import org.eclipse.jdt.internal.compiler.ast.SwitchStatement;
+import org.eclipse.jdt.internal.compiler.ast.SynchronizedStatement;
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+import org.eclipse.jdt.internal.compiler.ast.ThrowStatement;
+import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
+import org.eclipse.jdt.internal.compiler.ast.TryStatement;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.ast.UnaryExpression;
+import org.eclipse.jdt.internal.compiler.ast.WhileStatement;
+import org.eclipse.jdt.internal.compiler.ast.Wildcard;
+import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
+import org.eclipse.jdt.internal.compiler.lookup.BaseTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.Binding;
+import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
+import org.eclipse.jdt.internal.compiler.lookup.CaptureBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+
 import spoon.reflect.CoreFactory;
 import spoon.reflect.Factory;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -173,6 +175,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -210,6 +213,8 @@ import spoon.template.Template;
  * A visitor for iterating through the parse tree.
  */
 public class JDTTreeBuilder extends ASTVisitor {
+
+	private static final Logger logger = Logger.getLogger(JDTTreeBuilder.class);
 
 	public class ASTPair {
 		public CtElement element;
@@ -255,6 +260,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		public void addCreatedType(CtSimpleType<?> type) {
 			createdTypes.add(type);
+		}
+
+		private SourcePosition createSourcePosition(ASTNode node) {
+			CoreFactory cf = factory.Core();
+			int sourceStart = node.sourceStart;
+			int sourceEnd = node.sourceEnd;
+			CompilationUnit cu = factory.CompilationUnit().create(
+					new String(compilationunitdeclaration.getFileName()));
+			return cf
+					.createSourcePosition(
+							cu,
+							sourceStart,
+							sourceEnd,
+							compilationunitdeclaration.compilationResult.lineSeparatorPositions);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -829,6 +848,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		@SuppressWarnings("unchecked")
 		public CtExecutableReference getExecutableReference(MethodBinding exec) {
+			if (exec == null) {
+				logger.error("null method binding");
+				return null;
+			}
 			CtExecutableReference ref = factory.Core()
 					.createExecutableReference();
 			ref.setDeclaringType(getTypeReference(exec.declaringClass));
@@ -1064,7 +1087,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					return ref;
 				}
 			} else {
-				throw new RuntimeException("Unknow VariableBinding");
+				logger.error("unknow VariableBinding " + varbin);
+				return null;
 			}
 		}
 
@@ -1081,20 +1105,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public static String cleanJavadoc(String doc) {
 		StringBuffer ret = new StringBuffer();
 		String[] lines = doc.split("\n");
-		
+
 		// limit case
 		if (lines.length == 1) {
-		  return lines[0].replaceAll("^/\\*+","").replaceAll("\\*+/$","");
+			return lines[0].replaceAll("^/\\*+", "").replaceAll("\\*+/$", "");
 		}
-		
-		for (String s: lines) {
-		  if (s.startsWith("/**")) {
-		    ret.append(s.replaceAll("/\\*+",""));
-		  } else if (s.endsWith("*/")){
-		    ret.append(s.replaceAll("\\*+/$","").replaceAll("^ *\\*+",""));
-		  } else {
-			ret.append(s.replaceAll("^ *\\*+",""));
-		  }
+
+		for (String s : lines) {
+			if (s.startsWith("/**")) {
+				ret.append(s.replaceAll("/\\*+", ""));
+			} else if (s.endsWith("*/")) {
+				ret.append(s.replaceAll("\\*+/$", "").replaceAll("^ *\\*+", ""));
+			} else {
+				ret.append(s.replaceAll("^ *\\*+", ""));
+			}
 			ret.append("\n");
 		}
 		// clean '\r'
@@ -1199,7 +1223,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	CtSimpleType<?> createType(TypeDeclaration typeDeclaration) {
 		CtSimpleType<?> type = null;
 		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
-			CtSimpleType<?> annotationType = factory.Core().<java.lang.annotation.Annotation>createAnnotationType();
+			CtSimpleType<?> annotationType = factory.Core()
+					.<java.lang.annotation.Annotation> createAnnotationType();
 			type = annotationType;
 		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
 			CtEnum<?> e = factory.Core().createEnum();
@@ -1783,8 +1808,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 				return var.get(0);
 			}
 		}
-		throw new IllegalStateException(
-				"Could not find declaration for local variable " + name);
+		// note: this happens when using the new try(vardelc) structure
+		logger.error("could not find declaration for local variable " + name
+				+ " at " + context.stack.peek().element.getPosition());
+		
+		return null;
 	}
 
 	UnaryOperatorKind getUnaryOperator(int op) {
@@ -1823,8 +1851,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		c.setExecutable(references
 				.getExecutableReference(allocationExpression.binding));
-		c.getExecutable().setType(
-				(CtTypeReference) c.getExecutable().getDeclaringType());
+		if (c.getExecutable() == null) {
+			logger.error("null executable ref at "
+					+ context.createSourcePosition(allocationExpression));
+		} else {
+			c.getExecutable().setType(
+					(CtTypeReference) c.getExecutable().getDeclaringType());
+		}
 		context.enter(c, allocationExpression);
 
 		if (allocationExpression.enclosingInstance() != null) {
@@ -2330,7 +2363,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(IntLiteral intLiteral, BlockScope scope) {
 		CtLiteral<Integer> l = factory.Core().createLiteral();
 		l.setType(references.getTypeReference(intLiteral.resolvedType));
-		l.setValue(intLiteral.value);
+		l.setValue(intLiteral.constant.intValue());
 		context.enter(l, intLiteral);
 		return true;
 	}
@@ -2394,7 +2427,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MessageSend messageSend, BlockScope scope) {
-		if (!messageSend.actualReceiverType.isAnnotationType()) {
+		if (messageSend.actualReceiverType == null) {
+			logger.error("unconsistent message send at "
+					+ context.createSourcePosition(messageSend));
+		}
+		if (messageSend.actualReceiverType == null
+				|| !messageSend.actualReceiverType.isAnnotationType()) {
 			CtInvocation<?> inv = factory.Core().createInvocation();
 			if (messageSend.binding != null)
 				inv.setExecutable(references
@@ -2455,8 +2493,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 
-		m.setDocComment(getJavaDoc(methodDeclaration.javadoc,
-				scope.referenceCompilationUnit()));
+		if (scope != null) {
+			m.setDocComment(getJavaDoc(methodDeclaration.javadoc,
+					scope.referenceCompilationUnit()));
+		} else if (methodDeclaration.scope != null) {
+			m.setDocComment(getJavaDoc(methodDeclaration.javadoc,
+					methodDeclaration.scope.referenceCompilationUnit()));
+		} else {
+			logger.error("null scope", new Exception());
+		}
 
 		context.enter(m, methodDeclaration);
 
@@ -2623,7 +2668,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 				for (FieldBinding b : qualifiedNameReference.otherBindings) {
 					CtFieldAccess fa = factory.Core().createFieldAccess();
 					fa.setTarget(va);
-					fa.setVariable(references.getVariableReference(b));
+					CtVariableReference<?> varRef = references
+							.getVariableReference(b);
+					if (varRef != null) {
+						fa.setVariable(varRef);
+					}
 					fa.setType(references
 							.getTypeReference(qualifiedNameReference.resolvedType));
 					va.setParent(fa);
@@ -2855,8 +2904,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 				CtLocalVariable var = factory.Core().createLocalVariable();
 				var.setSimpleName(new String(
 						tryStatement.catchArguments[i].name));
-				var.setType(references
-						.getTypeReference(tryStatement.catchArguments[i].binding.type));
+				if (tryStatement.catchArguments[i].binding != null) {
+					var.setType(references
+							.getTypeReference(tryStatement.catchArguments[i].binding.type));
+				}
 				var.setModifiers(getModifier(tryStatement.catchArguments[i].modifiers));
 				context.enter(var, tryStatement.catchArguments[i]);
 				context.exit(tryStatement.catchArguments[i]);

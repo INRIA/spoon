@@ -27,21 +27,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
-import spoon.eclipse.jdt.internal.compiler.CompilationResult;
-import spoon.eclipse.jdt.internal.compiler.ICompilerRequestor;
-import spoon.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import spoon.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-import spoon.eclipse.jdt.internal.compiler.batch.Main;
-import spoon.eclipse.jdt.internal.compiler.env.INameEnvironment;
-import spoon.eclipse.jdt.internal.compiler.util.Util;
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+import org.eclipse.jdt.internal.compiler.batch.Main;
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import org.eclipse.jdt.internal.compiler.util.Util;
+
 import spoon.reflect.Factory;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.builder.support.FileSystemFile;
 
-/** Builds the Spoon model from a set of Java Files.
- * The model is accessible with:
+/**
+ * Builds the Spoon model from a set of Java Files. The model is accessible
+ * with:
+ * 
  * <pre>
  * factory.Package().get("spoon.support.builder")
  * factory.Package().getAllRoots()
@@ -49,126 +52,144 @@ import spoon.support.builder.support.FileSystemFile;
  * 
  * See method main.
  */
-public class SpoonCompiler  extends Main {
-	
-	public int JAVA_COMPLIANCE = 6;
+public class SpoonCompiler extends Main {
+
+	public int javaCompliance = 7;
+
+	String classpath = null;
 
 	public SpoonCompiler(PrintWriter outWriter, PrintWriter errWriter) {
-		super(outWriter, errWriter, false);
+		super(outWriter, errWriter, false, null, null);
 	}
 
 	public SpoonCompiler() {
-		super(new PrintWriter(System.out), new PrintWriter(System.err), false);
+		super(new PrintWriter(System.out), new PrintWriter(System.err), false,
+				null, null);
 	}
-		
+
 	// example usage
 	public static void main(String[] args) {
 		SpoonCompiler comp = new SpoonCompiler();
-		List<SpoonFile> files = new ArrayList();
-		SpoonFile file = new FileSystemFile(new File("./src/main/java/spoon/support/builder/SpoonCompiler.java"));
+		List<SpoonFile> files = new ArrayList<SpoonFile>();
+		SpoonFile file = new FileSystemFile(new File(
+				"./src/main/java/spoon/support/builder/SpoonCompiler.java"));
 		files.add(file);
 		System.out.println(file.getPath());
 		try {
-			Factory factory = new Factory(new DefaultCoreFactory(), new StandardEnvironment());
+			Factory factory = new Factory(new DefaultCoreFactory(),
+					new StandardEnvironment());
 			comp.compileSrc(factory, files);
-			System.out.println(factory.Package().get("spoon.support.builder").getTypes());
+			System.out.println(factory.Package().get("spoon.support.builder")
+					.getTypes());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public boolean compileSrc(Factory f, List<SpoonFile> files)
 			throws Exception {
-		if(files.isEmpty()) return true;
-//		long t=System.currentTimeMillis();
+		if (files.isEmpty())
+			return true;
+		// long t=System.currentTimeMillis();
 		// Build input
 		List<String> args = new ArrayList<String>();
-		args.add("-1." + JAVA_COMPLIANCE);
+		args.add("-1." + javaCompliance);
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
-		ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();//ClassLoader.getSystemClassLoader();
-		
-		
-		if(currentClassLoader instanceof URLClassLoader){
-			URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
-			if(urls!=null && urls.length>0){
-				String classpath = ".";
-				for (URL url : urls) {
-					classpath+=File.pathSeparator+url.getFile();
-				}
-				if(classpath!=null){
-					args.add("-cp");
-					args.add(classpath);
+		ClassLoader currentClassLoader = Thread.currentThread()
+				.getContextClassLoader();// ClassLoader.getSystemClassLoader();
+
+		if (classpath != null) {
+			args.add("-cp");
+			args.add(classpath);
+		} else {
+			if (currentClassLoader instanceof URLClassLoader) {
+				URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
+				if (urls != null && urls.length > 0) {
+					String classpath = ".";
+					for (URL url : urls) {
+						classpath += File.pathSeparator + url.getFile();
+					}
+					if (classpath != null) {
+						args.add("-cp");
+						args.add(classpath);
+					}
 				}
 			}
 		}
-		
 		// args.add("-nowarn");
-		// method configure JDT of JDT requires at least one file or one directory
+		// method configure JDT of JDT requires at least one file or one
+		// directory
 		Set<String> paths = new HashSet<String>();
 		for (SpoonFile file : files) {
-		  // We can not use file.getPath() because when using in-memory code (e.g. snippets)
-		  // there is no real file on the disk
-		  // In this case, the virtual parent of the virtual file is "." (by convention)
-		  // and we are sure it exists
-		  // However, if . contains a lot of subfolders and Java files, it will take a lot of time
+			// We can not use file.getPath() because when using in-memory code
+			// (e.g. snippets)
+			// there is no real file on the disk
+			// In this case, the virtual parent of the virtual file is "." (by
+			// convention)
+			// and we are sure it exists
+			// However, if . contains a lot of subfolders and Java files, it
+			// will take a lot of time
 			paths.add(file.getParent().getPath());
 		}
 		args.addAll(paths);
 
-//		JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
-//				new PrintWriter(System.err));
+		// JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
+		// new PrintWriter(System.err));
+		System.out.println(args);
 		configure(args.toArray(new String[0]));
-//		f.getEnvironment().debugMessage("compiling src: "+files);
-		CompilationUnitDeclaration[] units = getUnits(files,f);
-//		f.getEnvironment().debugMessage("got units in "+(System.currentTimeMillis()-t)+" ms");
-		
+		// configure(new String[0]);
+		// f.getEnvironment().debugMessage("compiling src: "+files);
+		CompilationUnitDeclaration[] units = getUnits(files, f);
+		// f.getEnvironment().debugMessage("got units in "+(System.currentTimeMillis()-t)+" ms");
+
 		JDTTreeBuilder builder = new JDTTreeBuilder(f);
 
 		// here we build the model
 		for (CompilationUnitDeclaration unit : units) {
-//		  try {
+			// try {
 			unit.traverse(builder, unit.scope);
-//		 // for debug
-//		  } catch (Exception e) {
-//			// bad things sometimes happen, for instance when methodDeclaration.binding in JDTTreeBuilder
-//			System.err.println(new String(unit.getFileName())+" "+e.getMessage()+e.getStackTrace()[0]);
-//		  }
+			// // for debug
+			// } catch (Exception e) {
+			// // bad things sometimes happen, for instance when
+			// methodDeclaration.binding in JDTTreeBuilder
+			// System.err.println(new
+			// String(unit.getFileName())+" "+e.getMessage()+e.getStackTrace()[0]);
+			// }
 		}
-		
-		return probs.size()==0;
+
+		return probs.size() == 0;
 	}
 
 	public boolean compileTemplate(Factory f, List<SpoonFile> streams)
 			throws Exception {
-		if(streams.isEmpty()) return true;
+		if (streams.isEmpty())
+			return true;
 		// Build input
 		List<String> args = new ArrayList<String>();
-		args.add("-1." + JAVA_COMPLIANCE);
+		args.add("-1." + javaCompliance);
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
 		args.add("-nowarn");
 		args.add(".");
 
-//		JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
-//				new PrintWriter(System.err));
+		// JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
+		// new PrintWriter(System.err));
 		configure(args.toArray(new String[0]));
 
-		CompilationUnitDeclaration[] units = getUnits(streams,f);
+		CompilationUnitDeclaration[] units = getUnits(streams, f);
 
 		JDTTreeBuilder builder = new JDTTreeBuilder(f);
 		builder.template = true;
 		for (CompilationUnitDeclaration unit : units) {
 			unit.traverse(builder, unit.scope);
 		}
-		return probs.size()==0;
+		return probs.size() == 0;
 	}
 
 	PrintWriter out;
-
-
 
 	/*
 	 * Build the set of compilation source units
@@ -187,28 +208,30 @@ public class SpoonCompiler  extends Main {
 		return units;
 	}
 
-	INameEnvironment environment=null;
-	
+	INameEnvironment environment = null;
+
 	public void setEnvironment(INameEnvironment environment) {
-		this.environment=environment;
+		this.environment = environment;
 	}
-	
-	public CompilationUnitDeclaration[] getUnits(List<SpoonFile> streams,Factory f)
-			throws Exception {
+
+	public CompilationUnitDeclaration[] getUnits(List<SpoonFile> streams,
+			Factory f) throws Exception {
 		this.startTime = System.currentTimeMillis();
 		INameEnvironment environment = this.environment;
-		if(environment == null)
+		if (environment == null)
 			environment = getLibraryAccess();
-		TreeBuilderCompiler  batchCompiler = new TreeBuilderCompiler(environment, getHandlingPolicy(),
-				this.options, this.requestor, getProblemFactory(), this.out, false);
-		CompilationUnitDeclaration[] units = batchCompiler.compileUnits(getCompilationUnits(streams));
+		TreeBuilderCompiler batchCompiler = new TreeBuilderCompiler(
+				environment, getHandlingPolicy(), this.options, this.requestor,
+				getProblemFactory(), this.out, false);
+		CompilationUnitDeclaration[] units = batchCompiler
+				.compileUnits(getCompilationUnits(streams));
 		return units;
 	}
-	
+
 	final List<CategorizedProblem[]> probs = new ArrayList<CategorizedProblem[]>();
-	
+
 	public final TreeBuilderRequestor requestor = new TreeBuilderRequestor();
-	
+
 	// this class can not be static because it uses the fiel probs
 	public class TreeBuilderRequestor implements ICompilerRequestor {
 
@@ -217,6 +240,14 @@ public class SpoonCompiler  extends Main {
 				probs.add(result.problems);
 			}
 		}
-	
+
+	}
+
+	public String getClasspath() {
+		return classpath;
+	}
+
+	public void setClasspath(String classpath) {
+		this.classpath = classpath;
 	}
 }
