@@ -17,9 +17,7 @@
 
 package spoon.template;
 
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtSimpleType;
 
@@ -42,16 +40,12 @@ public abstract class StatementTemplate implements
 	public StatementTemplate() {
 	}
 
-	@SuppressWarnings("unchecked")
 	public CtStatement getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<?> c;
-		CtBlock<?> b;
 		c = targetType.getFactory().Template().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
-		CtStatementList<Void> l = targetType.getFactory().Core()
-				.createStatementList();
 		if (this instanceof Template) {
 			return Substitution.substitute(targetType, this, c
 					.getMethod("statement").getBody()).getStatements().get(0);

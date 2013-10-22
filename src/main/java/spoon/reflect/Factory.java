@@ -317,8 +317,8 @@ public class Factory implements Serializable {
 	}
 
 	/**
-	 * Converts an object <code>o</code> into an object or a
-	 * {@link CtReference} of type </code>type<code>.
+	 * Converts an object <code>o</code> into an object or a {@link CtReference}
+	 * of type </code>type<code>.
 	 * 
 	 * @param <T>
 	 *            the actual type of the object
@@ -328,7 +328,7 @@ public class Factory implements Serializable {
 	 *            the object to be converted
 	 * @return a primitive object of type T, or a reference
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T convert(Class<T> type, Object o) {
 		if (o == null)
 			return null;
@@ -441,21 +441,22 @@ public class Factory implements Serializable {
 			}
 			return (T) ret;
 		} else if (CtTypeReference.class.isAssignableFrom(type)) {
-			CtTypeReference[] ret = new CtTypeReference[val.size()];
+			CtTypeReference<?>[] ret = new CtTypeReference[val.size()];
 			int i = 0;
 			for (Object o : val) {
 				ret[i++] = convert(CtTypeReference.class, o);
 			}
 			return (T) ret;
 		} else if (CtFieldReference.class.isAssignableFrom(type)) {
-			CtFieldReference[] ret = new CtFieldReference[val.size()];
+			CtFieldReference<?>[] ret = new CtFieldReference[val.size()];
 			int i = 0;
 			for (Object o : val) {
 				ret[i++] = convert(CtFieldReference.class, o);
 			}
 			return (T) ret;
 		} else if (CtExecutableReference.class.isAssignableFrom(type)) {
-			CtExecutableReference[] ret = new CtExecutableReference[val.size()];
+			CtExecutableReference<?>[] ret = new CtExecutableReference[val
+					.size()];
 			int i = 0;
 			for (Object o : val) {
 				ret[i++] = convert(CtExecutableReference.class, o);
@@ -464,7 +465,7 @@ public class Factory implements Serializable {
 		} else if (type.isEnum()) {
 			Collection<Enum<?>> ret = new ArrayList<Enum<?>>();
 			for (Object o : val) {
-				ret.add((Enum) convert(type, o));
+				ret.add((Enum<?>) convert(type, o));
 			}
 			return (T) ret.toArray((Enum[]) Array.newInstance(type, 0));
 		}

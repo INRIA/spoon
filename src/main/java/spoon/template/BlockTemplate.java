@@ -35,10 +35,9 @@ public abstract class BlockTemplate implements TemplateParameter<Void>, Template
 	/**
 	 * Returns the block.
 	 */
-	@SuppressWarnings("unchecked")
 	public static CtBlock<?> getBlock(
 			CtClass<? extends BlockTemplate> p) {
-		CtBlock b = p.getMethod("block").getBody();
+		CtBlock<?> b = p.getMethod("block").getBody();
 		return b;
 	}
 

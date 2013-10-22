@@ -96,13 +96,15 @@ public class CodeFactory extends SubFactory {
 	 *            a type reference to the accessed class
 	 * @return the class access expression.
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> CtFieldAccess<Class<T>> createClassAccess(CtTypeReference<T> type) {
 		CtFieldAccess<Class<T>> ca = factory.Core().createFieldAccess();
-		CtTypeReference classType = factory.Type().createReference(Class.class);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		CtTypeReference<Class<T>> classType = (CtTypeReference) factory.Type()
+				.createReference(Class.class);
 
 		ca.setType(classType);
-		CtFieldReference field = factory.Core().createFieldReference();
+		CtFieldReference<Class<T>> field = factory.Core()
+				.createFieldReference();
 		field.setDeclaringType(type);
 		field.setType(classType);
 		field.setSimpleName("class");
@@ -243,9 +245,8 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a new statement list from an existing block.
 	 */
-	@SuppressWarnings("unchecked")
-	public CtStatementList createStatementList(CtBlock<?> block) {
-		CtStatementList l = factory.Core().createStatementList();
+	public CtStatementList<?> createStatementList(CtBlock<?> block) {
+		CtStatementList<?> l = factory.Core().createStatementList();
 		for (CtStatement s : block.getStatements()) {
 			l.getStatements().add(factory.Core().clone(s));
 		}
@@ -326,7 +327,7 @@ public class CodeFactory extends SubFactory {
 	 *            the assigned expression
 	 * @return a variable assignment
 	 */
-	public <A,T extends A> CtAssignment<A,T> createVariableAssignment(
+	public <A, T extends A> CtAssignment<A, T> createVariableAssignment(
 			CtVariableReference<A> variable, boolean isStatic,
 			CtExpression<T> expression) {
 		CtAssignment<A, T> va = factory.Core().createAssignment();
@@ -348,16 +349,17 @@ public class CodeFactory extends SubFactory {
 	 *            the assigned expressions
 	 * @return a list of variable assignments
 	 */
-	@SuppressWarnings("unchecked")
-	public CtStatementList createVariableAssignments(
-			List<? extends CtVariable> variables,
-			List<? extends CtExpression> expressions) {
+	public <T> CtStatementList<?> createVariableAssignments(
+			List<? extends CtVariable<T>> variables,
+			List<? extends CtExpression<T>> expressions) {
 		CtStatementList<?> result = factory.Core().createStatementList();
 		for (int i = 0; i < variables.size(); i++) {
 			result.getStatements().add(
-					createVariableAssignment(variables.get(i).getReference(),
-							variables.get(i).getModifiers().contains(
-									ModifierKind.STATIC), expressions.get(i)));
+					createVariableAssignment(
+							variables.get(i).getReference(),
+							variables.get(i).getModifiers()
+									.contains(ModifierKind.STATIC),
+							expressions.get(i)));
 		}
 		return result;
 	}
@@ -400,26 +402,31 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a Code Snippet expression.
 	 * 
-	 * @param <T> The type of the expression represented by the CodeSnippet
-	 * @param expression The string that contains the expression.
+	 * @param <T>
+	 *            The type of the expression represented by the CodeSnippet
+	 * @param expression
+	 *            The string that contains the expression.
 	 * @return a new CtCodeSnippetExpression.
 	 */
-	public <T> CtCodeSnippetExpression<T> createCodeSnippetExpression(String expression) {
-		CtCodeSnippetExpression<T> e = factory.Core().createCodeSnippetExpression();
+	public <T> CtCodeSnippetExpression<T> createCodeSnippetExpression(
+			String expression) {
+		CtCodeSnippetExpression<T> e = factory.Core()
+				.createCodeSnippetExpression();
 		e.setValue(expression);
 		return e;
-	}	
+	}
 
 	/**
 	 * Creates a Code Snippet statement.
 	 * 
-	 * @param statement The String containing the statement.
+	 * @param statement
+	 *            The String containing the statement.
 	 * @return a new CtCodeSnippetStatement
 	 */
 	public CtCodeSnippetStatement createCodeSnippetStatement(String statement) {
 		CtCodeSnippetStatement e = factory.Core().createCodeSnippetStatement();
 		e.setValue(statement);
 		return e;
-	}	
-	
+	}
+
 }

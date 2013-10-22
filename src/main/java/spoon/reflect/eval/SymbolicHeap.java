@@ -42,8 +42,10 @@ public class SymbolicHeap {
 		statelessAbstractInstances.putAll(heap.statelessAbstractInstances);
 		for (Entry<String, SymbolicInstance<?>> e : heap.statefullAbstractInstances
 				.entrySet()) {
-			statefullAbstractInstances.put(e.getKey(), new SymbolicInstance(e
-					.getValue()));
+			statefullAbstractInstances.put(
+					e.getKey(),
+					new SymbolicInstance<Object>((SymbolicInstance<Object>) e
+							.getValue()));
 		}
 	}
 

@@ -34,7 +34,6 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	/**
 	 * Empty constructor only for all processors (invoked by Spoon).
 	 */
-	@SuppressWarnings("unchecked")
 	public AbstractManualProcessor() {
 	}
 
@@ -67,7 +66,8 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 		return TraversalStrategy.PRE_ORDER;
 	}
 
-	public void init() {}
+	public void init() {
+	}
 
 	/**
 	 * Invalid method in this context.
@@ -98,7 +98,7 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	}
 
 	public final void initProperties(ProcessorProperties properties) {
-		AbstractProcessor.initProperties(this,properties);
+		AbstractProcessor.initProperties(this, properties);
 	}
 
 }

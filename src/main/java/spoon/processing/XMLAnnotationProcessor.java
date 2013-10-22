@@ -123,8 +123,8 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @see CtElement#getSignature()
 	 */
 	protected boolean isTypeMatching(CtSimpleType<?> type, String typeExpression) {
-		return java.util.regex.Pattern.matches(typeExpression, type
-				.getQualifiedName());
+		return java.util.regex.Pattern.matches(typeExpression,
+				type.getQualifiedName());
 	}
 
 	/**
@@ -277,7 +277,6 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	// return null;
 	// }
 
-	@SuppressWarnings("unchecked")
 	private void annotateElement(CtElement javaElt, Element xmlNode)
 			throws Exception {
 		NodeList annNodeList = xmlNode.getElementsByTagName("annotation");
@@ -295,7 +294,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 				Element fieldNode = (Element) fieldNodeList.item(f);
 				String fieldName = fieldNode.getAttribute("name");
 				String fieldValue = fieldNode.getAttribute("value");
-				Class type = aref.getActualClass().getMethod(fieldName)
+				Class<?> type = aref.getActualClass().getMethod(fieldName)
 						.getReturnType();
 				Object v = getFactory().convert(type, fieldValue);
 				getFactory().Annotation().annotate(javaElt, aref, fieldName, v);
