@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -82,9 +83,9 @@ public class AnnotationFactory extends TypeFactory {
 	 * Gets a annotation type from its name.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Annotation> CtAnnotationType<T> getAnnotationType(
+	public <T extends Annotation> CtSimpleType<T> getAnnotationType(
 			String qualifiedName) {
-		return (CtAnnotationType<T>) super.get(qualifiedName);
+		return get(qualifiedName);
 	}
 
 	/**
