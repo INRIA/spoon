@@ -50,13 +50,13 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 		for (Method m : getClass().getMethods()) {
 			if (m.getName().equals("process")
 					&& (m.getParameterTypes().length == 2)) {
-				Class c = m.getParameterTypes()[0];
+				Class<?> c = m.getParameterTypes()[0];
 				if (inferConsumedAnnotationType() && (Annotation.class != c)) {
-					addConsumedAnnotationType(c);
+					addConsumedAnnotationType((Class<A>) c);
 				}
 				c = m.getParameterTypes()[1];
 				if (CtElement.class != c) {
-					addProcessedElementType(c);
+					addProcessedElementType((Class<E>) c);
 				}
 			}
 		}
@@ -122,8 +122,8 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	}
 
 	final public Set<Class<? extends A>> getProcessedAnnotationTypes() {
-		return new TreeSet<Class<? extends A>>(processedAnnotationTypes
-				.values());
+		return new TreeSet<Class<? extends A>>(
+				processedAnnotationTypes.values());
 	}
 
 	public boolean inferConsumedAnnotationType() {
@@ -149,7 +149,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 
 	@SuppressWarnings("unchecked")
 	final public void process(E element) {
-		for (CtAnnotation<? extends Annotation> annotation : new ArrayList<CtAnnotation>(
+		for (CtAnnotation<? extends Annotation> annotation : new ArrayList<CtAnnotation<?>>(
 				element.getAnnotations())) {
 			if (shoudBeProcessed(annotation)) {
 				try {

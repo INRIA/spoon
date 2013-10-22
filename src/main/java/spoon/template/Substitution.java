@@ -58,7 +58,6 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	@SuppressWarnings("unchecked")
 	public static void insertAll(CtType<?> targetType, Template template) {
 
 		CtClass<? extends Template> sourceClass = targetType.getFactory()
@@ -74,17 +73,17 @@ public abstract class Substitution {
 					Object o = Parameters.getValue(template, t.getSimpleName(),
 							null);
 					if (o instanceof CtTypeReference) {
-						t1 = (CtTypeReference) o;
+						t1 = (CtTypeReference<?>) o;
 					} else if (o instanceof Class) {
 						t1 = targetType.getFactory().Type().createReference(
-								(Class) o);
+								(Class<?>) o);
 					} else if (o instanceof String) {
 						t1 = targetType.getFactory().Type().createReference(
 								(String) o);
 					}
 				}
 				if (!t1.equals(targetType.getReference())) {
-					Class c=null;
+					Class<?> c=null;
 					try {
 						c = t1.getActualClass();
 					} catch(Exception e) {
@@ -109,7 +108,7 @@ public abstract class Substitution {
 		}
 		// insert all the constructors
 		if (targetType instanceof CtClass) {
-			for (CtConstructor c : sourceClass.getConstructors()) {
+			for (CtConstructor<?> c : sourceClass.getConstructors()) {
 				if (c.isImplicit())
 					continue;
 				if (c.getAnnotation(Local.class) != null)
@@ -154,7 +153,6 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	@SuppressWarnings("unchecked")
 	public static void insertAllSuperInterfaces(CtType<?> targetType,
 			Template template) {
 
@@ -171,17 +169,17 @@ public abstract class Substitution {
 					Object o = Parameters.getValue(template, t.getSimpleName(),
 							null);
 					if (o instanceof CtTypeReference) {
-						t1 = (CtTypeReference) o;
+						t1 = (CtTypeReference<?>) o;
 					} else if (o instanceof Class) {
 						t1 = targetType.getFactory().Type().createReference(
-								(Class) o);
+								(Class<?>) o);
 					} else if (o instanceof String) {
 						t1 = targetType.getFactory().Type().createReference(
 								(String) o);
 					}
 				}
 				if (!t1.equals(targetType.getReference())) {
-					Class c = t1.getActualClass();
+					Class<?> c = t1.getActualClass();
 					if (c != null && c.isInterface()) {
 						targetType.getSuperInterfaces().add(t1);
 					}
@@ -203,7 +201,6 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	@SuppressWarnings("unchecked")
 	public static void insertAllMethods(CtType<?> targetType, Template template) {
 
 		CtClass<?> sourceClass = targetType.getFactory().Template().get(
@@ -228,7 +225,6 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	@SuppressWarnings("unchecked")
 	public static void insertAllFields(CtType<?> targetType, Template template) {
 
 		CtClass<?> sourceClass = targetType.getFactory().Template().get(
@@ -255,7 +251,6 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	@SuppressWarnings("unchecked")
 	public static void insertAllConstructors(CtType<?> targetType,
 			Template template) {
 
@@ -263,7 +258,7 @@ public abstract class Substitution {
 				template.getClass());
 		// insert all the constructors
 		if (targetType instanceof CtClass) {
-			for (CtConstructor c : sourceClass.getConstructors()) {
+			for (CtConstructor<?> c : sourceClass.getConstructors()) {
 				if (c.isImplicit())
 					continue;
 				if (c.getAnnotation(Local.class) != null)

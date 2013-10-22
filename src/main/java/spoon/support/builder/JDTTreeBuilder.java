@@ -361,7 +361,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		public void scanCtElement(CtElement e) {
 			if (child instanceof CtAnnotation
 					&& context.annotationValueName.isEmpty()) {
-				e.getAnnotations().add((CtAnnotation) child);
+				e.getAnnotations().add((CtAnnotation<?>) child);
 				return;
 			}
 		}
@@ -461,11 +461,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			Object value = child;
 
 			if (value instanceof CtVariableAccess)
-				value = ((CtVariableAccess) value).getVariable();
+				value = ((CtVariableAccess<?>) value).getVariable();
 			if (value instanceof CtFieldReference
-					&& ((CtFieldReference) value).getSimpleName().equals(
+					&& ((CtFieldReference<?>) value).getSimpleName().equals(
 							"class")) {
-				value = ((CtFieldReference) value).getType();
+				value = ((CtFieldReference<?>) value).getType();
 			}
 
 			if (!context.arrayInitializer.isEmpty()
@@ -473,16 +473,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 				// Array
 				if (annotation.getElementValues().containsKey(name)) {
 					if (annotation.getElementValues().get(name) instanceof ArrayList) {
-						ArrayList list = (ArrayList) annotation
+						ArrayList<Object> list = (ArrayList<Object>) annotation
 								.getElementValues().get(name);
 						list.add(value);
 					} else {
-						ArrayList lst = new ArrayList();
+						ArrayList<Object> lst = new ArrayList<Object>();
 						lst.add(value);
 						annotation.getElementValues().put(name, lst);
 					}
 				} else {
-					ArrayList lst = new ArrayList();
+					ArrayList<Object> lst = new ArrayList<Object>();
 					lst.add(value);
 					annotation.getElementValues().put(name, lst);
 				}
@@ -495,7 +495,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		@Override
 		public void visitCtAnonymousExecutable(CtAnonymousExecutable e) {
 			if (child instanceof CtBlock) {
-				e.setBody((CtBlock) child);
+				e.setBody((CtBlock<?>) child);
 				return;
 			}
 			super.visitCtAnonymousExecutable(e);
@@ -580,7 +580,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		@Override
 		public void visitCtCatch(CtCatch catchBlock) {
 			if (child instanceof CtBlock) {
-				catchBlock.setBody((CtBlock) child);
+				catchBlock.setBody((CtBlock<?>) child);
 				return;
 			} else if (child instanceof CtLocalVariable) {
 				catchBlock
@@ -593,7 +593,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		@Override
 		public <T> void visitCtClass(CtClass<T> ctClass) {
 			if (child instanceof CtConstructor) {
-				CtConstructor c = (CtConstructor) child;
+				CtConstructor<T> c = (CtConstructor<T>) child;
 				ctClass.getConstructors().add(c);
 				if (c.getPosition() != null
 						&& c.getPosition().equals(ctClass.getPosition())) {
@@ -741,7 +741,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (child.getPosition() != null
 						&& child.getPosition().getCompilationUnit() != null) {
 					child.getPosition().getCompilationUnit().getDeclaredTypes()
-							.add((CtSimpleType) child);
+							.add((CtSimpleType<?>) child);
 				}
 				return;
 			}
@@ -765,7 +765,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				return;
 			}
 			if (child instanceof CtCase) {
-				switchStatement.getCases().add((CtCase) child);
+				switchStatement.getCases().add((CtCase<E>) child);
 				return;
 			}
 			super.visitCtSwitch(switchStatement);
@@ -779,7 +779,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				return;
 			}
 			if (synchro.getBlock() == null && child instanceof CtBlock) {
-				synchro.setBlock((CtBlock) child);
+				synchro.setBlock((CtBlock<?>) child);
 				return;
 			}
 			super.visitCtSynchronized(synchro);
@@ -800,9 +800,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (child instanceof CtBlock) {
 				if (!context.finallyzer.isEmpty()
 						&& context.finallyzer.peek() == tryBlock)
-					tryBlock.setFinalizer((CtBlock) child);
+					tryBlock.setFinalizer((CtBlock<?>) child);
 				else
-					tryBlock.setBody((CtBlock) child);
+					tryBlock.setBody((CtBlock<?>) child);
 				return;
 			} else if (child instanceof CtCatch) {
 				tryBlock.getCatchers().add((CtCatch) child);
@@ -1784,7 +1784,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected <T> CtLocalVariable<T> getLocalVariableDeclaration(
 			final String name) {
 		List<CtElement> reversedElements = new ArrayList<CtElement>();
@@ -1795,10 +1794,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 		for (CtElement element : reversedElements) {
 			// TODO check if the variable is visible from here
 
-			List<CtLocalVariable> var = Query.getElements(element,
-					new TypeFilter<CtLocalVariable>(CtLocalVariable.class) {
+			List<CtLocalVariable<T>> var = Query.getElements(element,
+					new TypeFilter<CtLocalVariable<T>>(CtLocalVariable.class) {
 						@Override
-						public boolean matches(CtLocalVariable element) {
+						public boolean matches(CtLocalVariable<T> element) {
 							return name.equals(element.getSimpleName())
 									&& super.matches(element);
 						}

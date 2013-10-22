@@ -59,7 +59,7 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	 *            name of searched value
 	 * @return the value or null if not found
 	 */
-	Object getElementValue(String key);
+	<T> T getElementValue(String key);
 
 	/**
 	 * Returns this annotation's elements and their values. This is returned in

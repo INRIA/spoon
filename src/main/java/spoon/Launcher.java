@@ -19,11 +19,9 @@ package spoon;
 import spoon.reflect.Factory;
 import spoon.support.gui.SpoonModelTree;
 
-import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.Switch;
-import com.martiansoftware.jsap.stringparsers.FileStringParser;
 
 /**
  * This class implements an integrated command-line launcher for processing

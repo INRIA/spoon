@@ -67,9 +67,10 @@ public class ZipFolder implements SpoonFolder {
 		// Indexing content
 		if (files == null) {
 			files = new ArrayList<SpoonFile>();
+			ZipInputStream zipInput = null;
 			try {
-				ZipInputStream zipInput = new ZipInputStream(
-						new BufferedInputStream(new FileInputStream(f)));
+				zipInput = new ZipInputStream(new BufferedInputStream(
+						new FileInputStream(f)));
 
 				ZipEntry entry;
 				while ((entry = zipInput.getNextEntry()) != null) {
@@ -88,6 +89,7 @@ public class ZipFolder implements SpoonFolder {
 					files.add(new ZipFile(this, entry.getName(), output
 							.toByteArray()));
 				}
+				zipInput.close();
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -121,9 +123,9 @@ public class ZipFolder implements SpoonFolder {
 	public String toString() {
 		return getName();
 	}
-	
+
 	public String getPath() {
 		return toString();
-	}	
+	}
 
 }

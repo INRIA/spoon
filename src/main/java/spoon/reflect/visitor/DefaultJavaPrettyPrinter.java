@@ -17,7 +17,6 @@
 
 package spoon.reflect.visitor;
 
-import java.io.ObjectInputStream.GetField;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.TreeMap;
+
+import org.apache.log4j.Logger;
 
 import spoon.processing.Environment;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -466,6 +467,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		case POSTDEC:
 			write("--");
 			break;
+		default:
+			// do nothing (this does not feel right to ignore invalid ops)
 		}
 	}
 
@@ -492,6 +495,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		case PREDEC:
 			write("--");
 			break;
+		default:
+			// do nothing (this does not feel right to ignore invalid ops)
 		}
 	}
 
@@ -751,11 +756,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctClass.getFields());
 		lst.addAll(ctClass.getMethods());
 
-//		if((ctClass.getSimpleName()==null || ctClass.getSimpleName().isEmpty()) && ctClass.getParent()!=null && ctClass.getParent() instanceof CtNewClass){
-//			context.currentThis.push(((CtNewClass)ctClass.getParent()).getType());
-//		}else{
-			context.currentThis.push(ctClass.getReference());
-//		}
+		// if((ctClass.getSimpleName()==null ||
+		// ctClass.getSimpleName().isEmpty()) && ctClass.getParent()!=null &&
+		// ctClass.getParent() instanceof CtNewClass){
+		// context.currentThis.push(((CtNewClass)ctClass.getParent()).getType());
+		// }else{
+		context.currentThis.push(ctClass.getReference());
+		// }
 		write(" {").incTab();
 		for (CtElement el : lst) {
 			writeln().scan(el).writeln();
@@ -770,12 +777,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(" ? ");
 		scan(conditional.getThenExpression());
 		write(" : ");
-		boolean isAssign=false;
-		if((isAssign = conditional.getElseExpression() instanceof CtAssignment)){
+		boolean isAssign = false;
+		if ((isAssign = conditional.getElseExpression() instanceof CtAssignment)) {
 			write("(");
 		}
 		scan(conditional.getElseExpression());
-		if(isAssign){
+		if (isAssign) {
 			write(")");
 		}
 		exitCtExpression(conditional);
@@ -982,15 +989,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				sameTopLevel = true;
 			}
 			if (!(context.currentThis.isEmpty() && sameTopLevel)
-					&& (context.currentThis.isEmpty() 
-							|| (!reference.getType().equals(context.currentThis.peek()) 
-									&& !reference.getDeclaringType().isAnonymous()))) {
+					&& (context.currentThis.isEmpty() || (!reference.getType()
+							.equals(context.currentThis.peek()) && !reference
+							.getDeclaringType().isAnonymous()))) {
 				context.ignoreGenerics = true;
 				scan(reference.getDeclaringType());
 				write(".");
 				context.ignoreGenerics = false;
 			}
-			
+
 		} else {
 			boolean isStatic = false;
 			if (reference.getSimpleName().equals("class")) {
@@ -1163,7 +1170,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (invocation.getExecutable().isStatic()) {
 				CtTypeReference<?> type = invocation.getExecutable()
 						.getDeclaringType();
-				CtType typeTmp = invocation.getParent(CtType.class);
 				if (isHiddenByField(invocation.getParent(CtType.class), type)) {
 					importsContext.imports.remove(type.getSimpleName());
 				}
@@ -1176,8 +1182,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				scan(invocation.getTarget());
 				context.exitTarget();
 				write(".");
-			}else if(invocation.getGenericTypes() != null
-					&& invocation.getGenericTypes().size() > 0){
+			} else if (invocation.getGenericTypes() != null
+					&& invocation.getGenericTypes().size() > 0) {
 				write("this.");
 			}
 			boolean removeLastChar = false;
@@ -1643,7 +1649,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
 		if (!context.isInvocation
-				&& !(ref.getBounds() ==null)
+				&& !(ref.getBounds() == null)
 				&& !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
 						.getQualifiedName().equals("java.lang.Object"))) {
@@ -1704,8 +1710,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 		enterCtExpression(variableAccess);
-//		if (variableAccess.getTarget() != null) {
-//		}
+		// if (variableAccess.getTarget() != null) {
+		// }
 		write(variableAccess.getVariable().getSimpleName());
 		exitCtExpression(variableAccess);
 	}
@@ -1776,7 +1782,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else if (value instanceof Enum) {
 			context.ignoreGenerics = true;
 			scan(env.getFactory().Type()
-					.createReference(((Enum) value).getDeclaringClass()));
+					.createReference(((Enum<?>) value).getDeclaringClass()));
 			context.ignoreGenerics = false;
 			write(".");
 			write(value.toString());

@@ -73,16 +73,18 @@ public class AnnotationFactory extends TypeFactory {
 	 *            the fully qualified name of the annotation type.
 	 */
 	public CtAnnotationType<?> create(String qualifiedName) {
-		return create(factory.Package().getOrCreate(
-				getPackageName(qualifiedName)), getSimpleName(qualifiedName));
+		return create(
+				factory.Package().getOrCreate(getPackageName(qualifiedName)),
+				getSimpleName(qualifiedName));
 	}
 
 	/**
 	 * Gets a annotation type from its name.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Annotation> CtAnnotationType<T> getAnnotationType(String qualifiedName) {
-		return (CtAnnotationType) super.get(qualifiedName);
+	public <T extends Annotation> CtAnnotationType<T> getAnnotationType(
+			String qualifiedName) {
+		return (CtAnnotationType<T>) super.get(qualifiedName);
 	}
 
 	/**
@@ -98,13 +100,13 @@ public class AnnotationFactory extends TypeFactory {
 	 *            the value of the annotation element
 	 * @return the created/updated annotation
 	 */
-	@SuppressWarnings("unchecked")
 	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element,
-			CtTypeReference<A> annotationType,
-			String annotationElementName, Object value) {
-		return annotate(element,annotationType.getActualClass(),annotationElementName,value);
+			CtTypeReference<A> annotationType, String annotationElementName,
+			Object value) {
+		return annotate(element, annotationType.getActualClass(),
+				annotationElementName, value);
 	}
-	
+
 	/**
 	 * Creates/updates an element's annotation value.
 	 * 
@@ -118,11 +120,9 @@ public class AnnotationFactory extends TypeFactory {
 	 *            the value of the annotation element
 	 * @return the created/updated annotation
 	 */
-	@SuppressWarnings("unchecked")
 	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element,
-			Class<A> annotationType,
-			String annotationElementName, Object value) {
-		CtAnnotation annotation = element.getAnnotation(factory.Type()
+			Class<A> annotationType, String annotationElementName, Object value) {
+		CtAnnotation<A> annotation = element.getAnnotation(factory.Type()
 				.createReference(annotationType));
 		if (annotation == null) {
 			annotation = factory.Core().createAnnotation();
@@ -134,16 +134,16 @@ public class AnnotationFactory extends TypeFactory {
 		boolean isArray;
 
 		// try with CT reflexion
-		CtAnnotationType annotationtype = ((CtAnnotationType) annotation
+		CtAnnotationType<A> annotationtype = ((CtAnnotationType<A>) annotation
 				.getAnnotationType().getDeclaration());
 		if (annotationtype != null) {
-			CtField e = annotationtype.getField(annotationElementName);
+			CtField<?> e = annotationtype.getField(annotationElementName);
 			isArray = (e.getType() instanceof CtArrayTypeReference);
 		} else {
 			Method m = null;
 			try {
-				m = annotation.getAnnotationType().getActualClass().getMethod(
-						annotationElementName, new Class[0]);
+				m = annotation.getAnnotationType().getActualClass()
+						.getMethod(annotationElementName, new Class[0]);
 			} catch (Exception ex) {
 				throw new RuntimeException("undefined element '"
 						+ annotationElementName + "' for annotation '"
@@ -159,8 +159,9 @@ public class AnnotationFactory extends TypeFactory {
 			annotation.getElementValues().put(annotationElementName, value);
 		} else {
 			if (isArray) {
-				((List) annotation.getElementValue(annotationElementName))
-						.add(value);
+				List<Object> l = annotation
+						.getElementValue(annotationElementName);
+				l.add(value);
 			} else {
 				throw new RuntimeException(
 						"cannot assing an array to a non-array annotation element");
@@ -181,9 +182,9 @@ public class AnnotationFactory extends TypeFactory {
 	 */
 	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element,
 			CtTypeReference<A> annotationType) {
-		return annotate(element,annotationType.getActualClass());
+		return annotate(element, annotationType.getActualClass());
 	}
-	
+
 	/**
 	 * Adds an annotation to an element.
 	 * 
