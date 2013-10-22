@@ -143,7 +143,7 @@ public class SnippetCompiler {
 
 	private static boolean debugCompilationError(Factory f, Exception e) {
 		boolean success;
-		f.getEnvironment().debugMessage("BORKED SnippetCompilation");
+		f.getEnvironment().debugMessage("error in snippet compilation");
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		PrintWriter pw = new PrintWriter(byteArrayOutputStream);
 		e.printStackTrace(pw);

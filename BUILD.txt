@@ -1,4 +1,4 @@
-The project need [Maven 2.0.x][1] and JDK 1.5 to be builded.
+This project requires [Maven 2.0.x][1] and JDK 1.5 to be built.
 Main build command :
 * generate the jar :
   <code>
@@ -51,7 +51,7 @@ Main build command :
       mvn clean site-deploy -Prelease
     </code>
 
-To generate the javadoc with uml graph, you need to have [graphviz][2] available int the path.
+To generate the javadoc with uml graph, you need to have [graphviz][2] available in the path.
 
 [1]: http://maven.apache.org/
 [2]: http://graphviz.org/

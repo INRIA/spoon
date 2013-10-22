@@ -75,6 +75,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private File xmlRootFolder;
 
+	private String classpath = null;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -315,7 +317,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.xmlRootFolder = xmlRootFolder;
 	}
 
-	int complianceLevel = 6;
+	int complianceLevel = 7;
 
 	public int getComplianceLevel() {
 		return complianceLevel;
@@ -369,6 +371,14 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Deprecated
 	public String getSourcePath() {
 		return ".";
+	}
+
+	public String getClasspath() {
+		return classpath;
+	}
+
+	public void setClasspath(String classpath) {
+		this.classpath = classpath;
 	}
 
 }

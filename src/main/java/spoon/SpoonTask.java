@@ -47,7 +47,7 @@ public class SpoonTask extends Java {
 
 		/**
 		 * Constructs a new processor type.
-		 *
+		 * 
 		 * @param type
 		 *            the type's fully qualified name
 		 */
@@ -75,7 +75,7 @@ public class SpoonTask extends Java {
 
 	File input;
 
-	int javaCompliance = 5;
+	int javaCompliance = 7;
 
 	boolean nooutput = false;
 
@@ -141,7 +141,7 @@ public class SpoonTask extends Java {
 	@Override
 	public void execute() throws BuildException {
 
-		setFork(true);
+		setFork(false);
 
 		// Verbose
 		if (verbose) {
@@ -166,7 +166,7 @@ public class SpoonTask extends Java {
 
 		if (nooutput) {
 			createArg().setValue("--no");
-		} 
+		}
 
 		createArg().setValue("--compliance");
 		createArg().setValue("" + javaCompliance);
@@ -269,6 +269,11 @@ public class SpoonTask extends Java {
 			createArg().setValue(classname);
 		}
 
+		if (getCommandLine().getClasspath() != null) {
+			createArg().setValue("--classpath");
+			createArg().setValue(getCommandLine().getClasspath().toString());
+		}
+
 		super.execute();
 
 	}
@@ -291,7 +296,7 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Sets a Spoolet to be deployed.
-	 *
+	 * 
 	 * @param spoonlet
 	 *            the deployment descriptor file (usually spoon.xml)
 	 */

@@ -3,14 +3,14 @@ package spoon.support.builder;
 import java.io.PrintWriter;
 import java.util.Map;
 
-import spoon.eclipse.jdt.internal.compiler.ICompilerRequestor;
-import spoon.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
-import spoon.eclipse.jdt.internal.compiler.IProblemFactory;
-import spoon.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import spoon.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-import spoon.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
+import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
+import org.eclipse.jdt.internal.compiler.IProblemFactory;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 
-class TreeBuilderCompiler extends spoon.eclipse.jdt.internal.compiler.Compiler {
+class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 	@SuppressWarnings("deprecation")
 	public TreeBuilderCompiler(INameEnvironment environment,

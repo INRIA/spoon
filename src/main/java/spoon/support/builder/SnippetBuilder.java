@@ -1,6 +1,7 @@
 package spoon.support.builder;
 
-import spoon.eclipse.jdt.core.compiler.CategorizedProblem;
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
+
 import spoon.reflect.Factory;
 
 public class SnippetBuilder extends SpoonBuildingManager {
@@ -14,13 +15,14 @@ public class SnippetBuilder extends SpoonBuildingManager {
 		if (factory == null) {
 			throw new Exception("Factory not initialized");
 		}
-				
+
 		boolean srcSuccess;
 		factory.getEnvironment().debugMessage(
 				"compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		compiler = new SpoonCompiler();
-		compiler.JAVA_COMPLIANCE = factory.getEnvironment().getComplianceLevel();
+		compiler.javaCompliance = factory.getEnvironment().getComplianceLevel();
+		compiler.setClasspath(factory.getEnvironment().getClasspath());
 		initCompiler();
 		srcSuccess = compiler.compileSrc(factory, sources.getAllJavaFiles());
 		reportProblems();
@@ -38,5 +40,5 @@ public class SnippetBuilder extends SpoonBuildingManager {
 				+ problem.getSourceLineNumber());
 
 	}
-	
+
 }

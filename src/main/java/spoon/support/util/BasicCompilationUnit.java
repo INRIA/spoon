@@ -20,10 +20,9 @@ package spoon.support.util;
 import java.io.File;
 import java.io.IOException;
 
-import spoon.eclipse.jdt.core.IJavaElement;
-import spoon.eclipse.jdt.core.compiler.CharOperation;
-import spoon.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import spoon.eclipse.jdt.internal.compiler.util.Util;
+import org.eclipse.jdt.core.compiler.CharOperation;
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.eclipse.jdt.internal.compiler.util.Util;
 
 /**
  * A basic implementation of <code>ICompilationUnit</code> for use in the
@@ -62,9 +61,13 @@ public class BasicCompilationUnit implements ICompilationUnit {
 		this.encoding = encoding;
 	}
 
-	public BasicCompilationUnit(char[] contents, char[][] packageName,
-			String fileName, IJavaElement javaElement) {
-		this(contents, packageName, fileName);
+	// public BasicCompilationUnit(char[] contents, char[][] packageName,
+	// String fileName, IJavaElement javaElement) {
+	// this(contents, packageName, fileName);
+	// }
+
+	public boolean ignoreOptionalProblems() {
+		return true;
 	}
 
 	public char[] getContents() {

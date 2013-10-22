@@ -150,9 +150,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 				// correctly, or the class is generated
 				// // since I don't know how to tell one from the other, I'll
 				// ignore the exception and return null.
-				// return null;
+				return null;
 				// }
-				throw e;
+				//throw e;
 			}
 		}
 		return a;
