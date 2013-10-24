@@ -1283,16 +1283,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(quote(String.valueOf(literal.getValue())));
 			write("'");
 		} else if (literal.getValue() instanceof String) {
-			// JDT removes unicode values, as a result, it may change
-			// the semantics of spooned programs.
-			// Consequently, we fixed JDT it self (see char[]
-			// org.eclipse.jdt.internal.compiler.parser.Scanner.getCurrentTokenSourceString())
-			// and we then disable the old quoting which is now incorrect (no
-			// quoting of \)
-			// If we port Spoon to a newer version of JDT
-			// we have to forward port the JDT fix and keep this one
-			// write("\"" + quote((String) literal.getValue()) + "\"");
-			write("\"" + ((String) literal.getValue()) + "\"");
+            // JDTTreeBuilder is responsible for adding the double quotes 
+			write(((String) literal.getValue()));
 		} else if (literal.getValue() instanceof Class) {
 			write(((Class<?>) literal.getValue()).getName());
 		} else if (literal.getValue() instanceof CtReference) {

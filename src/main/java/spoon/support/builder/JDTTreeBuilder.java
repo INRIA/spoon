@@ -400,7 +400,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				t.getNestedTypes().add((CtSimpleType<?>) child);
 				return;
 			} else if (child instanceof CtField) {
-				t.getFields().add((CtField<?>) child);
+				t.addField((CtField<?>) child);
 				return;
 			} else if (child instanceof CtConstructor) {
 				return;
@@ -2791,7 +2791,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtLiteral<String> s = factory.Core().createLiteral();
 		// references.getTypeReference(stringLiteral.resolvedType) can be null
 		s.setType(factory.Type().createReference(String.class));
-		s.setValue(new String(stringLiteral.source()));
+		
+		// there are two methods in JDT: source() and toString()
+		// source() seems better but actually does not return the real source (for instance \n are not \n but newline)
+		// toString seems better (see StringLiteralTest)
+		// here there is a contract between JDTTreeBuilder and DefaultJavaPrettyPrinter:
+		// JDTTreeBuilder si responsible for adding the double quotes
+		s.setValue(new String(stringLiteral.toString()));
+		
 		context.enter(s, stringLiteral);
 		return true;
 	}
