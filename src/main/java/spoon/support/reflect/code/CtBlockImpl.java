@@ -45,7 +45,6 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public <T extends CtStatement> T getStatement(int i) {
 		return (T) statements.get(i);
 	}
