@@ -1810,7 +1810,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			context.ignoreImport = false;
 			removeLastChar();
-			write("> ");
+			write(">");
 		}
 		return this;
 	}
