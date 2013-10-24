@@ -96,7 +96,7 @@ public class TemplateTest {
 				toBeInserted.getType().getActualTypeArguments().get(0)
 						.getActualClass());
 		assertEquals(
-				"java.util.List<java.util.Date>  toBeInserted = new java.util.ArrayList<java.util.Date> ();",
+				"java.util.List<java.util.Date> toBeInserted = new java.util.ArrayList<java.util.Date>();",
 				toBeInserted.toString());
 
 	}
