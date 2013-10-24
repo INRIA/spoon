@@ -28,7 +28,5 @@ public class TryCatchTest {
 		assertNull(t1.getResources());
 		CtTry t2 = m.getBody().getStatement(1);
 		assertNotNull(t2.getResources());
-		System.out.println(type);
-		
 	}
 }
