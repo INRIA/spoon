@@ -28,7 +28,7 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T> {
 	/**
 	 * Gets the expression assigned to the variable, when declared.
 	 */
-	CtExpression<T> getDefaultExpression();
+	<E extends CtExpression<T>> E getDefaultExpression();
 
 	/*
 	 * (non-Javadoc)
