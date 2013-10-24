@@ -14,9 +14,9 @@ import spoon.support.builder.support.FileSystemFile;
 
 public class TestUtils {
 
-	public static CtSimpleType build(String packageName, String className ) throws Exception {
+	public static <T extends CtSimpleType<?>> T build(String packageName, String className ) throws Exception {
 		SpoonCompiler comp = new SpoonCompiler();
-		List<SpoonFile> files = new ArrayList();
+		List<SpoonFile> files = new ArrayList<SpoonFile>();
 		SpoonFile file = new FileSystemFile(new File("./src/test/java/"+packageName.replace('.', '/')+"/"+className+".java"));
 		files.add(file);
 		Factory factory = new Factory(new DefaultCoreFactory(), new StandardEnvironment());

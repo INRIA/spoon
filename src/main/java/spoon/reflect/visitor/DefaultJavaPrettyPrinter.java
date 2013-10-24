@@ -1610,6 +1610,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtTry(CtTry tryBlock) {
 		enterCtStatement(tryBlock);
 		write("try ");
+		if (tryBlock.getResources() != null
+				&& !tryBlock.getResources().isEmpty()) {
+			write("(");
+			for (CtLocalVariable<? extends AutoCloseable> r : tryBlock
+					.getResources()) {
+				scan(r);
+				write(";");
+			}
+			removeLastChar();
+			write(") ");
+		}
 		scan(tryBlock.getBody());
 		for (CtCatch c : tryBlock.getCatchers()) {
 			scan(c);

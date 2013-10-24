@@ -95,7 +95,8 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 		return null;
 	}
 
-	public CtMethod<?> getMethod(String name,
+	@SuppressWarnings("unchecked")
+	public <R> CtMethod<R> getMethod(String name,
 			CtTypeReference<?>... parameterTypes) {
 		for (CtMethod<?> m : methods) {
 			if (m.getSimpleName().equals(name)) {
@@ -111,7 +112,7 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 					}
 				}
 				if (cont) {
-					return m;
+					return (CtMethod<R>)m;
 				}
 			}
 		}

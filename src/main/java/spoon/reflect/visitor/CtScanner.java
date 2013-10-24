@@ -566,6 +566,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtTry(CtTry tryBlock) {
 		enter(tryBlock);
 		scan(tryBlock.getAnnotations());
+		scan(tryBlock.getResources());
 		scan(tryBlock.getBody());
 		scan(tryBlock.getCatchers());
 		scan(tryBlock.getFinalizer());

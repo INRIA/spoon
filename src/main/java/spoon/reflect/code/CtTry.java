@@ -27,6 +27,18 @@ import spoon.template.TemplateParameter;
 public interface CtTry extends CtStatement, TemplateParameter<Void> {
 
 	/**
+	 * Gets the auto-closeable resources of this <code>try</code>. Available
+	 * from Java 7 with the <i>try-with-resource</i> statement.
+	 */
+	List<CtLocalVariable<? extends AutoCloseable>> getResources();
+
+	/**
+	 * Sets the auto-closeable resources of this <code>try</code>. Available
+	 * from Java 7 with the <i>try-with-resource</i> statement.
+	 */
+	void setResources(List<CtLocalVariable<? extends AutoCloseable>> resources);
+
+	/**
 	 * Gets the <i>catchers</i> of this <code>try</code>.
 	 */
 	List<CtCatch> getCatchers();
@@ -47,14 +59,14 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	void setBody(CtBlock<?> body);
 
 	/**
-	 * Gets the <i>finalizer</i> block of this <code>try</code> (<code>finally</code>
-	 * part).
+	 * Gets the <i>finalizer</i> block of this <code>try</code> (
+	 * <code>finally</code> part).
 	 */
 	CtBlock<?> getFinalizer();
 
 	/**
-	 * Sets the <i>finalizer</i> block of this <code>try</code> (<code>finally</code>
-	 * part).
+	 * Sets the <i>finalizer</i> block of this <code>try</code> (
+	 * <code>finally</code> part).
 	 */
 	void setFinalizer(CtBlock<?> finalizer);
 }

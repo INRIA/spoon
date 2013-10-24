@@ -21,6 +21,9 @@ import spoon.reflect.visitor.CtVisitor;
 
 public class CtAnnotationFieldAccesImpl<T> extends CtFieldAccessImpl<T>
 		implements CtAnnotationFieldAccess<T> {
+
+	private static final long serialVersionUID = 1L;
+
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAnnotationFieldAccess(this);
 	}

@@ -44,6 +44,12 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		return statements;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends CtStatement> T getStatement(int i) {
+		return (T) statements.get(i);
+	}
+
 	public void insertBegin(CtStatementList<?> statements) {
 		List<CtInvocation<?>> invocations = Query.getElements(this,
 				new TypeFilter<CtInvocation<?>>(CtInvocation.class));
@@ -114,7 +120,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void setStatements(List<CtStatement> statements) {
-		this.statements = new ChildList<CtStatement>(statements,this);
+		this.statements = new ChildList<CtStatement>(statements, this);
 	}
 
 	public R S() {

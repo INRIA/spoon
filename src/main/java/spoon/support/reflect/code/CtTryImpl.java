@@ -22,6 +22,7 @@ import java.util.List;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.CtVisitor;
@@ -30,6 +31,17 @@ import spoon.support.util.ChildList;
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
 
+	List<CtLocalVariable<? extends AutoCloseable>> resources;
+
+	public List<CtLocalVariable<? extends AutoCloseable>> getResources() {
+		return resources;
+	}
+
+	public void setResources(
+			List<CtLocalVariable<? extends AutoCloseable>> resources) {
+		this.resources = resources;
+	}
+
 	List<CtCatch> catchers = new ChildList<CtCatch>(this);
 
 	public List<CtCatch> getCatchers() {
@@ -37,7 +49,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	}
 
 	public void setCatchers(List<CtCatch> catchers) {
-		this.catchers = new ChildList<CtCatch>(catchers,this);
+		this.catchers = new ChildList<CtCatch>(catchers, this);
 	}
 
 	public void accept(CtVisitor visitor) {
