@@ -137,7 +137,10 @@ public class SpoonCompiler extends Main {
 
 		// JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
 		// new PrintWriter(System.err));
-		System.out.println(args);
+		
+		// Thanks Renaud for this wonderful System.out
+		//System.out.println(args);
+		
 		configure(args.toArray(new String[0]));
 		// configure(new String[0]);
 		// f.getEnvironment().debugMessage("compiling src: "+files);
