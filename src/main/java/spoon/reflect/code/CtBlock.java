@@ -88,4 +88,9 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 */
 	void setStatements(List<CtStatement> statements);
 
+	/**
+	 * Gets the ith statement of this block.
+	 */
+	<T extends CtStatement> T getStatement(int i);
+
 }

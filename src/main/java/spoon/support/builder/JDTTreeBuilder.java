@@ -804,6 +804,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 				else
 					tryBlock.setBody((CtBlock<?>) child);
 				return;
+			} else if (child instanceof CtLocalVariable) {
+				if (tryBlock.getResources() == null) {
+					tryBlock.setResources(new ArrayList<CtLocalVariable<? extends AutoCloseable>>());
+				}
+				tryBlock.getResources().add(
+						(CtLocalVariable<? extends AutoCloseable>) child);
 			} else if (child instanceof CtCatch) {
 				tryBlock.getCatchers().add((CtCatch) child);
 				return;
@@ -1130,7 +1136,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return ret2.toString();
 	}
 
-	public static Set<ModifierKind> getModifier(int mod) {
+	public static Set<ModifierKind> getModifiers(int mod) {
 		Set<ModifierKind> ret = new TreeSet<ModifierKind>();
 		if ((mod & ClassFileConstants.AccPublic) != 0)
 			ret.add(ModifierKind.PUBLIC);
@@ -1270,7 +1276,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		type.setSimpleName(new String(typeDeclaration.name));
 		// Setting modifiers
-		type.setModifiers(getModifier(typeDeclaration.modifiers));
+		type.setModifiers(getModifiers(typeDeclaration.modifiers));
 		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
 
 		return type;
@@ -1810,7 +1816,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// note: this happens when using the new try(vardelc) structure
 		logger.error("could not find declaration for local variable " + name
 				+ " at " + context.stack.peek().element.getPosition());
-		
+
 		return null;
 	}
 
@@ -1912,7 +1918,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtParameter<?> p = factory.Core().createParameter();
 		p.setSimpleName(new String(argument.name));
 		p.setVarArgs(argument.isVarArgs());
-		p.setModifiers(getModifier(argument.modifiers));
+		p.setModifiers(getModifiers(argument.modifiers));
 		if (argument.type != null)
 			p.setType(references.getTypeReference(argument.type.resolvedType));
 		context.enter(p, argument);
@@ -2095,7 +2101,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(ConstructorDeclaration constructorDeclaration,
 			ClassScope scope) {
 		CtConstructor c = factory.Core().createConstructor();
-		c.setModifiers(getModifier(constructorDeclaration.modifiers));
+		c.setModifiers(getModifiers(constructorDeclaration.modifiers));
 
 		c.setDocComment(getJavaDoc(constructorDeclaration.javadoc,
 				scope.referenceCompilationUnit()));
@@ -2238,7 +2244,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (fieldDeclaration.type != null)
 			field.setType(references
 					.getTypeReference(fieldDeclaration.type.resolvedType));
-		field.setModifiers(getModifier(fieldDeclaration.modifiers));
+		field.setModifiers(getModifiers(fieldDeclaration.modifiers));
 
 		field.setDocComment(getJavaDoc(fieldDeclaration.javadoc,
 				scope.referenceCompilationUnit()));
@@ -2380,7 +2386,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		v.setSimpleName(new String(localDeclaration.name));
 		v.setType(references
 				.getTypeReference(localDeclaration.type.resolvedType));
-		v.setModifiers(getModifier(localDeclaration.modifiers));
+		v.setModifiers(getModifiers(localDeclaration.modifiers));
 		context.enter(v, localDeclaration);
 
 		if (localDeclaration.initialization != null) {
@@ -2477,7 +2483,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		m.setSimpleName(new String(methodDeclaration.selector));
 		m.setType(references
 				.getTypeReference(methodDeclaration.returnType.resolvedType));
-		m.setModifiers(getModifier(methodDeclaration.modifiers));
+		m.setModifiers(getModifiers(methodDeclaration.modifiers));
 		if (methodDeclaration.thrownExceptions != null) {
 			for (TypeReference r : methodDeclaration.thrownExceptions)
 				m.getThrownTypes().add(
@@ -2895,19 +2901,25 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(TryStatement tryStatement, BlockScope scope) {
 		CtTry t = factory.Core().createTry();
 		context.enter(t, tryStatement);
+		for (LocalDeclaration localDeclaration : tryStatement.resources) {
+			localDeclaration.traverse(this, scope);
+		}
 		tryStatement.tryBlock.traverse(this, scope);
 		if (tryStatement.catchArguments != null) {
 			for (int i = 0; i < tryStatement.catchArguments.length; i++) {
 				CtCatch c = factory.Core().createCatch();
 				context.enter(c, tryStatement.catchBlocks[i]);
-				CtLocalVariable var = factory.Core().createLocalVariable();
+				CtLocalVariable<? extends Throwable> var = factory.Core()
+						.createLocalVariable();
 				var.setSimpleName(new String(
 						tryStatement.catchArguments[i].name));
 				if (tryStatement.catchArguments[i].binding != null) {
 					var.setType(references
 							.getTypeReference(tryStatement.catchArguments[i].binding.type));
 				}
-				var.setModifiers(getModifier(tryStatement.catchArguments[i].modifiers));
+				for (ModifierKind modifier : getModifiers(tryStatement.catchArguments[i].modifiers)) {
+					var.addModifier(modifier);
+				}
 				context.enter(var, tryStatement.catchArguments[i]);
 				context.exit(tryStatement.catchArguments[i]);
 				tryStatement.catchBlocks[i].traverse(this, scope);

@@ -77,7 +77,7 @@ public interface CtPackage extends CtNamedElement {
 	 * 
 	 * @return the found type or null
 	 */
-	CtSimpleType<?> getType(String simpleName);
+	<T extends CtSimpleType<?>> T getType(String simpleName);
 
 	/**
 	 * Returns the set of the top-level types in this package.

@@ -46,7 +46,7 @@ public interface CtType<T> extends CtSimpleType<T>, CtGenericElement {
 	 * 
 	 * @return null if does not exit
 	 */
-	CtMethod<?> getMethod(String name, CtTypeReference<?>... parameterTypes);
+	<R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes);
 
 	/**
 	 * Returns the methods that are directly declared by this class or

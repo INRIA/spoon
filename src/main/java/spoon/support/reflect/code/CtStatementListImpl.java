@@ -19,7 +19,6 @@ package spoon.support.reflect.code;
 
 import java.util.List;
 
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.SourcePosition;
