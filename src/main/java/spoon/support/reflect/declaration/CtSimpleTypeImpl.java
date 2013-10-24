@@ -40,7 +40,12 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		CtSimpleType<T> {
 
 	public <F> boolean addField(CtField<F> field) {
-		return this.fields.add(field);
+		if (!this.fields.contains(field)) {
+			return this.fields.add(field);
+		}
+		
+		// field already exists
+		return false;
 	}
 
 	public <F> boolean removeField(CtField<F> field) {
@@ -74,16 +79,12 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		return typeRefs;
 	}
 
-	List<CtField<?>> fields = new ArrayList<CtField<?>>();
+	private List<CtField<?>> fields = new ArrayList<CtField<?>>();
 
 	Set<CtSimpleType<?>> nestedTypes = new TreeSet<CtSimpleType<?>>();
 
 	public Class<T> getActualClass() {
 		return getFactory().Type().createReference(this).getActualClass();
-	}
-
-	public List<CtField<?>> getAllFields() {
-		return getFields();
 	}
 
 	public CtSimpleType<?> getDeclaringType() {
