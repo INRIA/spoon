@@ -11,11 +11,26 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class InitializerTest {
-
+	@Test 
+	public void testModelBuildingStaticInitializer() throws Exception {
+		CtClass type = (CtClass)build ("spoon.test.initializers",  "InternalClassStaticFieldInit");
+		assertEquals("InternalClassStaticFieldInit", type.getSimpleName());
+		
+		CtClass InternalClass =  (CtClass) type.getNestedType("InternalClass");
+		assertTrue(InternalClass.getModifiers().contains(ModifierKind.STATIC));
+		CtAnonymousExecutable staticBlock = type.getElements(new TypeFilter<CtAnonymousExecutable>(CtAnonymousExecutable.class)).get(0);
+		assertTrue(staticBlock.getModifiers().contains(ModifierKind.STATIC));
+		assertEquals(1, staticBlock.getBody().getStatements().size());
+		
+		// this fails: regression or known bug?
+		assertEquals("tmp = \"nop\"", staticBlock.getBody().getStatements().get(0).toString());		
+	}
+	
 	@Test 
 	public void testModelBuildingInitializer() throws Exception {
 		CtClass type = (CtClass)build ("spoon.test.initializers",  "InstanceInitializers");
