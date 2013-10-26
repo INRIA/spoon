@@ -46,11 +46,7 @@ public interface CtModifiable extends CtElement, FactoryAccessor {
 
 	/**
 	 * Sets the modifiers.
-	 * 
-	 * @deprecated use {@link #addModifier(ModifierKind)} and
-	 *             {@link #removeModifier(ModifierKind)} instead
 	 */
-	@Deprecated
 	void setModifiers(Set<ModifierKind> modifiers);
 
 	/**

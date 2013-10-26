@@ -55,6 +55,12 @@ public interface CtType<T> extends CtSimpleType<T>, CtGenericElement {
 	Set<CtMethod<?>> getMethods();
 
 	/**
+	 * Returns the methods that are directly declared by this class or
+	 * interface and annotated with one of the given annotations.
+	 */
+	Set<CtMethod<?>> getMethodsAnnotatedWith(CtTypeReference<?>... annotationTypes);
+
+	/**
 	 * Returns the interface types directly implemented by this class or
 	 * extended by this interface.
 	 */

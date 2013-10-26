@@ -12,12 +12,13 @@ import spoon.support.builder.SnippetCompilationError;
 public interface CtCodeSnippetStatement extends CtCodeSnippet, CtStatement {
 
 	/**
-	 * Compiles this statement code snippet to produce the corresponding AST statement.
+	 * Compiles this statement code snippet to produce the corresponding AST
+	 * statement.
 	 * 
 	 * @return a statement
 	 * @throws SnippetCompilationError
 	 *             when the current snippet is not valid Java code
 	 */
-	CtStatement compile() throws SnippetCompilationError;
+	<S extends CtStatement> S compile() throws SnippetCompilationError;
 
 }

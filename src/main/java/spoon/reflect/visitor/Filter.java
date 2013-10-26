@@ -39,5 +39,5 @@ public interface Filter<T extends CtElement> {
 	 * {@link #matches(CtElement)} method, while other elements are never a
 	 * match.
 	 */
-	Class<T> getType();
+	Class<?> getType();
 }

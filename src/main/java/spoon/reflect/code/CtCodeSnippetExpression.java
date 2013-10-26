@@ -17,6 +17,6 @@ public interface CtCodeSnippetExpression<T> extends CtCodeSnippet,
 	 * @throws SnippetCompilationError
 	 *             when the current snippet is not valid Java code expression
 	 */
-	CtExpression<T> compile() throws SnippetCompilationError;
+	<E extends CtExpression<T>> E compile() throws SnippetCompilationError;
 
 }

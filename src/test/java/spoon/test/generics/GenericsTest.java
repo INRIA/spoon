@@ -56,7 +56,7 @@ public class GenericsTest {
 		CtLocalVariable<?> var = c.getBody().getStatement(1);
 		assertEquals("java.lang.Integer", var.getType()
 				.getActualTypeArguments().get(0).getQualifiedName());
-		CtNewClass<?> newClass = var.getDefaultExpression();
+		CtNewClass<?> newClass = (CtNewClass<?>) var.getDefaultExpression();
 		System.out.println(newClass.getExecutable().getActualTypeArguments());
 		// diamond operator should have empty type arguments???
 		assertTrue(newClass.getExecutable().getActualTypeArguments().isEmpty());
@@ -66,14 +66,14 @@ public class GenericsTest {
 	public void testDiamond1() {
 		Factory factory = new Factory(new DefaultCoreFactory(),
 				new StandardEnvironment());
-		CtClass<?> clazz = (CtClass<?>) factory
+		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
 						"class Diamond {\n"
 								+ "	java.util.List<String> f = new java.util.ArrayList<>();\n"
 								+ "}").compile();
 		CtField<?> f = clazz.getFields().get(0);
-		CtNewClass<?> val = f.getDefaultExpression();
+		CtNewClass<?> val = (CtNewClass<?>) f.getDefaultExpression();
 
 		// the diamond is resolved to String
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments()

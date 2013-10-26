@@ -93,4 +93,9 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 */
 	<T extends CtStatement> T getStatement(int i);
 
+	/**
+	 * Gets the last statement of this block.
+	 */
+	<T extends CtStatement> T getLastStatement();
+	
 }

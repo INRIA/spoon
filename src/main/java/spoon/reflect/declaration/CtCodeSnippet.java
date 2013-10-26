@@ -24,12 +24,12 @@ public interface CtCodeSnippet {
 	 */
 	String getValue();
 
-	/**
-	 * Compiles this code snippet to produce the corresponding AST expression.
-	 * 
-	 * @return an AST Node ({@link CtElement})
-	 * @throws SnippetCompilationError
-	 *             when the current snippet is not valid Java code
-	 */
-	CtElement compile() throws SnippetCompilationError;
+//	/**
+//	 * Compiles this code snippet to produce the corresponding AST expression.
+//	 * 
+//	 * @return an AST Node ({@link CtElement})
+//	 * @throws SnippetCompilationError
+//	 *             when the current snippet is not valid Java code
+//	 */
+//	CtElement compile() throws SnippetCompilationError;
 }

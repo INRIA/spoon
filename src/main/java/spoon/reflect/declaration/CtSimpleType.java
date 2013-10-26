@@ -83,7 +83,7 @@ public interface CtSimpleType<T> extends CtNamedElement {
 	/**
 	 * Gets a nested type from its name.
 	 */
-	CtSimpleType<?> getNestedType(String name);
+	<N extends CtSimpleType<?>> N getNestedType(String name);
 
 	/**
 	 * Returns the declarations of the nested classes and interfaces that are
