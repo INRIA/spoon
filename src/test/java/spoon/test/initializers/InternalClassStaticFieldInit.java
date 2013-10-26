@@ -1,4 +1,4 @@
-package spoon.test.limits;
+package spoon.test.initializers;
 
 public class InternalClassStaticFieldInit {
 	static class InternalClass{
