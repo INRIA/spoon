@@ -1,7 +1,5 @@
 package spoon.support.builder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,22 +25,11 @@ import spoon.support.builder.support.VirtualFile;
 
 public class SnippetCompiler {
 
-	@SuppressWarnings("unchecked")
-	static public <T> T compileStatement(CtCodeSnippetStatement st,
-			Class<T> expectedType) throws SnippetCompilationError {
-		CtStatement s = compileStatement(st);
-		if (expectedType.isAssignableFrom(s.getClass())) {
-			return (T) s;
-		}
-		throw new SnippetCompilationError("Incorrect Type for snippet "
-				+ st.toString());
-	}
-
 	static public void compileAndReplaceSnippetsIn(CtSimpleType<?> c) {
 		Factory f = c.getFactory();
 		CtSimpleType<?> workCopy = c;
-		Set<ModifierKind> backup = new TreeSet<ModifierKind>(workCopy
-				.getModifiers());
+		Set<ModifierKind> backup = new TreeSet<ModifierKind>(
+				workCopy.getModifiers());
 
 		workCopy.getModifiers().remove(ModifierKind.PUBLIC);
 
@@ -132,25 +119,14 @@ public class SnippetCompiler {
 			builder.addInputSource(new VirtualFile(contents, name));
 			builder.build();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(
+					"snippet compilation error while compiling: " + contents, e);
 		}
 	}
 
 	private static void build(Factory f, String contents)
 			throws SnippetCompilationError {
 		build(f, contents, "");
-	}
-
-	private static boolean debugCompilationError(Factory f, Exception e) {
-		boolean success;
-		f.getEnvironment().debugMessage("error in snippet compilation");
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		PrintWriter pw = new PrintWriter(byteArrayOutputStream);
-		e.printStackTrace(pw);
-		String s = new String(byteArrayOutputStream.toByteArray());
-		f.getEnvironment().debugMessage(s);
-		success = false;
-		return success;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -165,17 +141,17 @@ public class SnippetCompiler {
 
 		build(f, contents);
 
-		CtSimpleType c = f.Type().get("Wrapper");
+		CtSimpleType<?> c = f.Type().get("Wrapper");
 
 		// Get the part we want
 
-		CtMethod wrapper = Query.getElements(c, new Filter<CtMethod>() {
+		CtMethod<T> wrapper = Query.getElements(c, new Filter<CtMethod<T>>() {
 
-			public Class<CtMethod> getType() {
+			public Class<?> getType() {
 				return CtMethod.class;
 			}
 
-			public boolean matches(CtMethod element) {
+			public boolean matches(CtMethod<T> element) {
 				return element.getSimpleName().equals("wrap");
 			}
 

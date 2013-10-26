@@ -18,10 +18,13 @@
 package spoon.support.reflect.declaration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
@@ -45,27 +48,29 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 	public <M> boolean addMethod(CtMethod<M> method) {
 		return methods.add(method);
 	}
+
 	public <S> boolean addSuperInterface(CtTypeReference<S> interfac) {
 		return interfaces.add(interfac);
 	}
-	
+
 	public <M> boolean removeMethod(CtMethod<M> method) {
 		return methods.remove(method);
 	}
+
 	public <S> boolean removeSuperInterface(CtTypeReference<S> interfac) {
 		return interfaces.remove(interfac);
 	}
-	
+
 	public boolean addFormalTypeParameters(
 			CtTypeReference<?> formalTypeParameter) {
 		return formalTypeParameters.add(formalTypeParameter);
 	}
-	
+
 	public boolean removeFormalTypeParameters(
 			CtTypeReference<?> formalTypeParameter) {
 		return formalTypeParameters.remove(formalTypeParameter);
 	}
-	
+
 	public List<CtTypeReference<?>> getFormalTypeParameters() {
 		return formalTypeParameters;
 	}
@@ -106,13 +111,13 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 					// String
 					// s1=m.getParameters().get(i).getType().getQualifiedName();
 					// String s2=parameterTypes[i].getQualifiedName();
-					if (!m.getParameters().get(i).getType().equals(
-							parameterTypes[i])) {
+					if (!m.getParameters().get(i).getType()
+							.equals(parameterTypes[i])) {
 						cont = false;
 					}
 				}
 				if (cont) {
-					return (CtMethod<R>)m;
+					return (CtMethod<R>) m;
 				}
 			}
 		}
@@ -121,6 +126,21 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 
 	public Set<CtMethod<?>> getMethods() {
 		return methods;
+	}
+
+	@Override
+	public Set<CtMethod<?>> getMethodsAnnotatedWith(
+			CtTypeReference<?>... annotationTypes) {
+		Set<CtMethod<?>> result = new HashSet<>();
+		for (CtMethod<?> m : methods) {
+			for (CtAnnotation<?> a : m.getAnnotations()) {
+				if (Arrays.asList(annotationTypes).contains(
+						a.getAnnotationType())) {
+					result.add(m);
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override

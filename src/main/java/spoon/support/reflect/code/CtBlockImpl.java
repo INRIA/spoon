@@ -49,6 +49,12 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		return (T) statements.get(i);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends CtStatement> T getLastStatement() {
+		return (T) statements.get(statements.size() - 1);
+	}
+
 	public void insertBegin(CtStatementList<?> statements) {
 		List<CtInvocation<?>> invocations = Query.getElements(this,
 				new TypeFilter<CtInvocation<?>>(CtInvocation.class));
