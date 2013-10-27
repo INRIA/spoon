@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import spoon.reflect.declaration.CtExecutable;
-import spoon.template.TemplateParameter;
 
 /**
  * This interface defines a reference to a

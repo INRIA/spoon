@@ -223,5 +223,4 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	@Deprecated
 	void setAnnotations(Set<CtAnnotation<? extends Annotation>> annotation);
 
-
 }

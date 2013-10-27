@@ -44,6 +44,11 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		return statements;
 	}
 
+	@Override
+	public CtStatementList<R> toStatementList() {
+		return getFactory().Code().createStatementList(this);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T extends CtStatement> T getStatement(int i) {
 		return (T) statements.get(i);
