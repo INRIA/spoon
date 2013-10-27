@@ -105,7 +105,6 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Creates a reference to an array of given type.
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> CtArrayTypeReference<T> createArrayReference(String qualifiedName) {
 		CtArrayTypeReference<T> array = factory.Core()
 				.createArrayTypeReference();
@@ -147,13 +146,12 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Create a reference to a simple type
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> CtTypeReference<T> createReference(String qualifiedName) {
 		if (qualifiedName.endsWith("[]")) {
 			return createArrayReference(qualifiedName.substring(0,
 					qualifiedName.length() - 2));
 		}
-		CtTypeReference ref = factory.Core().createTypeReference();
+		CtTypeReference<T> ref = factory.Core().createTypeReference();
 		if (hasInnerType(qualifiedName) > 0) {
 			ref
 					.setDeclaringType(createReference(getDeclaringTypeName(qualifiedName)));
@@ -176,7 +174,7 @@ public class TypeFactory extends SubFactory {
 				.lastIndexOf(CtSimpleType.INNERTTYPE_SEPARATOR);
 		if (inertTypeIndex > 0) {
 			String s = qualifiedName.substring(0, inertTypeIndex);
-			CtSimpleType t = get(s);
+			CtSimpleType<T> t = get(s);
 			if (t == null) {
 				return null;
 			}
