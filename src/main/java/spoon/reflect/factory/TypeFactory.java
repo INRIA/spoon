@@ -18,6 +18,7 @@
 package spoon.reflect.factory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import spoon.reflect.Factory;
@@ -39,6 +40,23 @@ public class TypeFactory extends SubFactory {
 
 	CtTypeReference<?> nullType;
 
+	public final CtTypeReference<String> STRING = createReference(String.class);
+	public final CtTypeReference<Boolean> BOOLEAN = createReference(Boolean.class);
+	public final CtTypeReference<Byte> BYTE = createReference(Byte.class);
+	public final CtTypeReference<Character> CHARACTER = createReference(Character.class);
+	public final CtTypeReference<Integer> INTEGER = createReference(Integer.class);
+	public final CtTypeReference<Long> LONG = createReference(Long.class);
+	public final CtTypeReference<Float> FLOAT = createReference(Float.class);
+	public final CtTypeReference<Double> DOUBLE = createReference(Double.class);
+	public final CtTypeReference<Boolean> BOOLEAN_PRIMITIVE = createReference(boolean.class);
+	public final CtTypeReference<Byte> BYTE_PRIMITIVE = createReference(byte.class);
+	public final CtTypeReference<Character> CHARACTER_PRIMITIVE = createReference(char.class);
+	public final CtTypeReference<Integer> INTEGER_PRIMITIVE = createReference(int.class);
+	public final CtTypeReference<Long> LONG_PRIMITIVE = createReference(long.class);
+	public final CtTypeReference<Float> FLOAT_PRIMITIVE = createReference(float.class);
+	public final CtTypeReference<Double> DOUBLE_PRIMITIVE = createReference(double.class);
+	public final CtTypeReference<Date> DATE = createReference(Date.class);
+
 	/**
 	 * Returns a reference on the null type (type of null).
 	 */
@@ -51,7 +69,7 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a new type sub-factory.
-	 *
+	 * 
 	 * @param factory
 	 *            the parent factory
 	 */
@@ -61,7 +79,7 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a reference to an array of given type.
-	 *
+	 * 
 	 * @param <T>
 	 *            type of array
 	 * @param type
@@ -130,11 +148,11 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtTypeReference<T> createReference(CtSimpleType<T> type) {
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
-		
-		if (type.getPackage()!=null) {
-		  ref.setPackage(factory.Package().createReference(type.getPackage()));
-		} 
-		
+
+		if (type.getPackage() != null) {
+			ref.setPackage(factory.Package().createReference(type.getPackage()));
+		}
+
 		if (type.getDeclaringType() != null) {
 			ref.setDeclaringType(createReference(type.getDeclaringType()));
 		}
@@ -153,8 +171,7 @@ public class TypeFactory extends SubFactory {
 		}
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
 		if (hasInnerType(qualifiedName) > 0) {
-			ref
-					.setDeclaringType(createReference(getDeclaringTypeName(qualifiedName)));
+			ref.setDeclaringType(createReference(getDeclaringTypeName(qualifiedName)));
 		} else if (hasPackage(qualifiedName) > 0) {
 			ref.setPackage(factory.Package().createReference(
 					getPackageName(qualifiedName)));
@@ -165,7 +182,7 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets a created type from its qualified name.
-	 *
+	 * 
 	 * @return a found type or null if does not exist
 	 */
 	@SuppressWarnings("unchecked")
@@ -235,12 +252,12 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets a type from its runtime Java class.
-	 *
+	 * 
 	 * @param <T>
 	 *            actual type of the class
 	 * @param cl
-	 *            the java class: note that this class should be Class<T> but
-	 *            it then poses problem when T is a generic type itself
+	 *            the java class: note that this class should be Class<T> but it
+	 *            then poses problem when T is a generic type itself
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtSimpleType<T> get(Class<?> cl) {
@@ -315,7 +332,7 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a type parameter with no bounds.
-	 *
+	 * 
 	 * @param owner
 	 *            the owning declaration
 	 * @param name
@@ -330,7 +347,7 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a type parameter.
-	 *
+	 * 
 	 * @param owner
 	 *            the owning declaration
 	 * @param name
@@ -349,7 +366,7 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a type parameter reference with no bounds.
-	 *
+	 * 
 	 * @param name
 	 *            the name of the formal parameter
 	 */
@@ -362,7 +379,7 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a type parameter reference.
-	 *
+	 * 
 	 * @param name
 	 *            the name of the formal parameter
 	 * @param bounds

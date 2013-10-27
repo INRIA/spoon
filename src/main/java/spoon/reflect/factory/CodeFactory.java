@@ -245,8 +245,8 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a new statement list from an existing block.
 	 */
-	public CtStatementList<?> createStatementList(CtBlock<?> block) {
-		CtStatementList<?> l = factory.Core().createStatementList();
+	public <R> CtStatementList<R> createStatementList(CtBlock<R> block) {
+		CtStatementList<R> l = factory.Core().createStatementList();
 		for (CtStatement s : block.getStatements()) {
 			l.getStatements().add(factory.Core().clone(s));
 		}

@@ -84,6 +84,11 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	List<CtStatement> getStatements();
 
 	/**
+	 * Converts this block to a statement list.
+	 */
+	CtStatementList<R> toStatementList();
+	
+	/**
 	 * Sets the statements enclosed by this block.
 	 */
 	void setStatements(List<CtStatement> statements);

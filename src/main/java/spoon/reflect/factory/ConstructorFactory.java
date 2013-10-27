@@ -36,12 +36,12 @@ import spoon.reflect.reference.CtTypeReference;
  * The {@link CtConstructor} sub-factory.
  */
 public class ConstructorFactory extends ExecutableFactory {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates a new constructor sub-factory.
-	 *
+	 * 
 	 * @param factory
 	 *            the parent factory
 	 */
@@ -51,7 +51,7 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Copies a constructor into a target class.
-	 *
+	 * 
 	 * @param target
 	 *            the target class
 	 * @param source
@@ -71,7 +71,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	/**
 	 * Creates a constructor into a target class by copying it from a source
 	 * method.
-	 *
+	 * 
 	 * @param target
 	 *            the target class
 	 * @param source
@@ -98,7 +98,7 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Creates an empty constructor.
-	 *
+	 * 
 	 * @param modifiers
 	 *            the modifiers
 	 * @param parameters
@@ -120,8 +120,23 @@ public class ConstructorFactory extends ExecutableFactory {
 	}
 
 	/**
+	 * Create the default empty constructor.
+	 * 
+	 * @param target
+	 *            the class to insert the constructor into
+	 * @return the created constructor
+	 */
+	public <T> CtConstructor<T> createDefault(CtClass<T> target) {
+		CtConstructor<T> constructor = factory.Core().createConstructor();
+		constructor.addModifier(ModifierKind.PUBLIC);
+		constructor.setParent(target);
+		target.getConstructors().add(constructor);
+		return constructor;
+	}
+
+	/**
 	 * Creates a constructor.
-	 *
+	 * 
 	 * @param modifiers
 	 *            the modifiers
 	 * @param parameters
@@ -152,11 +167,17 @@ public class ConstructorFactory extends ExecutableFactory {
 	/**
 	 * Creates a constructor reference from an actual constructor.
 	 */
-	public <T> CtExecutableReference<T> createReference(Constructor<T> constructor) {
-		CtTypeReference<T> type=factory.Type().createReference(constructor.getDeclaringClass());
-		return createReference(type, type, CtExecutableReference.CONSTRUCTOR_NAME,
+	public <T> CtExecutableReference<T> createReference(
+			Constructor<T> constructor) {
+		CtTypeReference<T> type = factory.Type().createReference(
+				constructor.getDeclaringClass());
+		return createReference(
+				type,
+				type,
+				CtExecutableReference.CONSTRUCTOR_NAME,
 				factory.Type().createReferences(
-						(List<Class<?>>) Arrays.asList(constructor.getParameterTypes())));
+						(List<Class<?>>) Arrays.asList(constructor
+								.getParameterTypes())));
 	}
 
 }

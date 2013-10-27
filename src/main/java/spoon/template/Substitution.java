@@ -17,10 +17,14 @@
 
 package spoon.template;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -33,6 +37,7 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
@@ -64,8 +69,8 @@ public abstract class Substitution {
 				.Template().get(template.getClass());
 		// insert all the interfaces
 		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
-			if (!t.equals(targetType.getFactory().Type().createReference(
-					Template.class))) {
+			if (!t.equals(targetType.getFactory().Type()
+					.createReference(Template.class))) {
 				CtTypeReference<?> t1 = t;
 				// substitute ref if needed
 				if (Parameters.getNames(sourceClass)
@@ -75,18 +80,18 @@ public abstract class Substitution {
 					if (o instanceof CtTypeReference) {
 						t1 = (CtTypeReference<?>) o;
 					} else if (o instanceof Class) {
-						t1 = targetType.getFactory().Type().createReference(
-								(Class<?>) o);
+						t1 = targetType.getFactory().Type()
+								.createReference((Class<?>) o);
 					} else if (o instanceof String) {
-						t1 = targetType.getFactory().Type().createReference(
-								(String) o);
+						t1 = targetType.getFactory().Type()
+								.createReference((String) o);
 					}
 				}
 				if (!t1.equals(targetType.getReference())) {
-					Class<?> c=null;
+					Class<?> c = null;
 					try {
 						c = t1.getActualClass();
-					} catch(Exception e) {
+					} catch (Exception e) {
 						// swallow it
 					}
 					if (c != null && c.isInterface()) {
@@ -160,8 +165,8 @@ public abstract class Substitution {
 				.Template().get(template.getClass());
 		// insert all the interfaces
 		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
-			if (!t.equals(targetType.getFactory().Type().createReference(
-					Template.class))) {
+			if (!t.equals(targetType.getFactory().Type()
+					.createReference(Template.class))) {
 				CtTypeReference<?> t1 = t;
 				// substitute ref if needed
 				if (Parameters.getNames(sourceClass)
@@ -171,11 +176,11 @@ public abstract class Substitution {
 					if (o instanceof CtTypeReference) {
 						t1 = (CtTypeReference<?>) o;
 					} else if (o instanceof Class) {
-						t1 = targetType.getFactory().Type().createReference(
-								(Class<?>) o);
+						t1 = targetType.getFactory().Type()
+								.createReference((Class<?>) o);
 					} else if (o instanceof String) {
-						t1 = targetType.getFactory().Type().createReference(
-								(String) o);
+						t1 = targetType.getFactory().Type()
+								.createReference((String) o);
 					}
 				}
 				if (!t1.equals(targetType.getReference())) {
@@ -203,8 +208,8 @@ public abstract class Substitution {
 	 */
 	public static void insertAllMethods(CtType<?> targetType, Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template().get(
-				template.getClass());
+		CtClass<?> sourceClass = targetType.getFactory().Template()
+				.get(template.getClass());
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
 			if (m.getAnnotation(Local.class) != null)
@@ -227,8 +232,8 @@ public abstract class Substitution {
 	 */
 	public static void insertAllFields(CtType<?> targetType, Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template().get(
-				template.getClass());
+		CtClass<?> sourceClass = targetType.getFactory().Template()
+				.get(template.getClass());
 		// insert all the fields
 		for (CtField<?> f : sourceClass.getFields()) {
 			if (f.getAnnotation(Local.class) != null)
@@ -254,8 +259,8 @@ public abstract class Substitution {
 	public static void insertAllConstructors(CtType<?> targetType,
 			Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template().get(
-				template.getClass());
+		CtClass<?> sourceClass = targetType.getFactory().Template()
+				.get(template.getClass());
 		// insert all the constructors
 		if (targetType instanceof CtClass) {
 			for (CtConstructor<?> c : sourceClass.getConstructors()) {
@@ -289,13 +294,13 @@ public abstract class Substitution {
 	 *            the source template method
 	 * @return the generated method
 	 */
-	public static <T> CtConstructor<T> insertConstructor(CtClass<T> targetClass,
-			Template template, CtMethod<?> sourceMethod) {
+	public static <T> CtConstructor<T> insertConstructor(
+			CtClass<T> targetClass, Template template, CtMethod<?> sourceMethod) {
 
 		if (targetClass instanceof CtInterface)
 			return null;
-		CtConstructor<T> newConstructor = targetClass.getFactory().Constructor()
-				.create(targetClass, sourceMethod);
+		CtConstructor<T> newConstructor = targetClass.getFactory()
+				.Constructor().create(targetClass, sourceMethod);
 		newConstructor = substitute(targetClass, template, newConstructor);
 		targetClass.getConstructors().add(newConstructor);
 		newConstructor.setParent(targetClass);
@@ -340,16 +345,18 @@ public abstract class Substitution {
 	 * @return the generated constructor
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> CtConstructor<T> insertConstructor(CtClass<T> targetClass,
-			Template template, CtConstructor<?> sourceConstructor) {
+	public static <T> CtConstructor<T> insertConstructor(
+			CtClass<T> targetClass, Template template,
+			CtConstructor<?> sourceConstructor) {
 
 		CtConstructor<T> newConstrutor = substitute(targetClass, template,
-				(CtConstructor<T>)sourceConstructor);
+				(CtConstructor<T>) sourceConstructor);
 		newConstrutor.setParent(targetClass);
 		// remove the implicit constructor if clashing
-		if(newConstrutor.getParameters().isEmpty()) {
-			CtConstructor<?> c=targetClass.getConstructor();
-			if(c!=null && c.isImplicit()) targetClass.getConstructors().remove(c);
+		if (newConstrutor.getParameters().isEmpty()) {
+			CtConstructor<?> c = targetClass.getConstructor();
+			if (c != null && c.isImplicit())
+				targetClass.getConstructors().remove(c);
 		}
 		targetClass.getConstructors().add(newConstrutor);
 		return newConstrutor;
@@ -374,8 +381,8 @@ public abstract class Substitution {
 	public static CtBlock<?> substituteMethodBody(CtClass<?> targetClass,
 			Template template, String executableName,
 			CtTypeReference<?>... parameterTypes) {
-		CtClass<?> sourceClass = targetClass.getFactory().Template().get(
-				template.getClass());
+		CtClass<?> sourceClass = targetClass.getFactory().Template()
+				.get(template.getClass());
 		CtExecutable<?> sourceExecutable = executableName.equals(template
 				.getClass().getSimpleName()) ? sourceClass
 				.getConstructor(parameterTypes) : sourceClass.getMethod(
@@ -399,11 +406,11 @@ public abstract class Substitution {
 
 	public static CtExpression<?> substituteFieldDefaultExpression(
 			CtSimpleType<?> targetType, Template template, String fieldName) {
-		CtClass<?> sourceClass = targetType.getFactory().Template().get(
-				template.getClass());
+		CtClass<?> sourceClass = targetType.getFactory().Template()
+				.get(template.getClass());
 		CtField<?> sourceField = sourceClass.getField(fieldName);
-		return substitute(targetType, template, sourceField
-				.getDefaultExpression());
+		return substitute(targetType, template,
+				sourceField.getDefaultExpression());
 	}
 
 	/**
@@ -415,8 +422,8 @@ public abstract class Substitution {
 	 *            the template instance
 	 * @param code
 	 *            the code
-	 * @return the code where all the template parameters has be substituted by
-	 *         their values
+	 * @return the code where all the template parameters has been substituted
+	 *         by their values
 	 */
 	public static <E extends CtElement> E substitute(
 			CtSimpleType<?> targetType, Template template, E code) {
@@ -508,10 +515,9 @@ public abstract class Substitution {
 	public static void redirectTypeReferences(CtElement element,
 			CtTypeReference<?> source, CtTypeReference<?> target) {
 
-		List<CtTypeReference<?>> refs = Query
-				.getReferences(element,
-						new ReferenceTypeFilter<CtTypeReference<?>>(
-								CtTypeReference.class));
+		List<CtTypeReference<?>> refs = Query.getReferences(element,
+				new ReferenceTypeFilter<CtTypeReference<?>>(
+						CtTypeReference.class));
 
 		String srcName = source.getQualifiedName();
 		String targetName = target.getSimpleName();
@@ -524,4 +530,74 @@ public abstract class Substitution {
 			}
 		}
 	}
+
+	/**
+	 * Substitute the parameters localized with
+	 * {@link SimpleTemplate#S(String, Class)} invocations. All the invocations
+	 * of the form <code>S("parameter-name")</code> will be replaced by the
+	 * given element.
+	 * 
+	 * @param target
+	 *            the target element
+	 * @param parameterName
+	 *            the parameter name to be substituted
+	 * @param element
+	 *            the element to substitute with
+	 * @return a copy of the target element, with all the found parameters
+	 *         substituted
+	 * @throws Exception
+	 *             if an error occurs
+	 */
+	public static <E extends CtElement> E substitute(E target,
+			String parameterName, CtElement element) throws Exception {
+		Map<String, CtElement> parameters = new HashMap<String, CtElement>();
+		parameters.put(parameterName, element);
+		return substitute(target, parameters);
+	}
+
+	/**
+	 * Substitute the parameters localized with
+	 * {@link SimpleTemplate#S(String, Class)} invocations. All the invocations
+	 * of the form <code>S("parameter-name")</code> will be replaced using the
+	 * given parameters.
+	 * 
+	 * @param target
+	 *            the target element
+	 * @param parameters
+	 *            a name-element parameter map
+	 * @return a copy of the target element, with all the found parameters
+	 *         substituted
+	 * @throws Exception
+	 *             if an error occurs
+	 */
+	public static <E extends CtElement> E substitute(E target,
+			Map<String, CtElement> parameters) throws Exception {
+		target = target.getFactory().Core().clone(target);
+		List<CtInvocation<?>> sInvocations = Query.getElements(target,
+				new Filter<CtInvocation<?>>() {
+					@Override
+					public Class<?> getType() {
+						return CtInvocation.class;
+					}
+
+					@Override
+					public boolean matches(CtInvocation<?> element) {
+						return element.getExecutable().getDeclaringType()
+								.getActualClass() == SimpleTemplate.class
+								&& (element.getExecutable().getSimpleName()
+										.equals("S") || element.getExecutable()
+										.getSimpleName().equals("S_throws"));
+					}
+				});
+		for (CtInvocation<?> i : sInvocations) {
+			for (Entry<String, CtElement> parameter : parameters.entrySet()) {
+				if (i.getArguments().get(0).toString()
+						.equals("\"" + parameter.getKey() + "\"")) {
+					i.replace(parameter.getValue());
+				}
+			}
+		}
+		return target;
+	}
+
 }
