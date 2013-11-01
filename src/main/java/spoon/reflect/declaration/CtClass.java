@@ -86,6 +86,16 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	void setConstructors(Set<CtConstructor<T>> constructors);
 
 	/**
+	 * Adds a constructor to this class.
+	 */
+	void addConstructor(CtConstructor<T> constructor);
+
+	/**
+	 * Removes a constructor from this class.
+	 */
+	void removeConstructor(CtConstructor<T> constructor);
+
+	/**
 	 * Sets the superclass type.
 	 */
 	void setSuperclass(CtTypeReference<?> classType);

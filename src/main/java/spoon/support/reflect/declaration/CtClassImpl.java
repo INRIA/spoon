@@ -45,9 +45,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		CtClass<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtAnonymousExecutable> anonymousExecutable = new ArrayList<CtAnonymousExecutable>();
+	List<CtAnonymousExecutable> anonymousExecutables = EMPTY_LIST();
 
-	Set<CtConstructor<T>> constructors = new TreeSet<CtConstructor<T>>();
+	Set<CtConstructor<T>> constructors = EMPTY_SET();
 
 	CtTypeReference<?> superClass;
 
@@ -68,7 +68,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	}
 
 	public List<CtAnonymousExecutable> getAnonymousExecutables() {
-		return anonymousExecutable;
+		return anonymousExecutables;
 	}
 
 	public CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes) {
@@ -93,11 +93,19 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	}
 
 	public boolean addAnonymousExecutable(CtAnonymousExecutable e) {
-		return anonymousExecutable.add(e);
+		if (anonymousExecutables == CtElementImpl
+				.<CtAnonymousExecutable> EMPTY_LIST()) {
+			anonymousExecutables = new ArrayList<CtAnonymousExecutable>();
+		}
+		return anonymousExecutables.add(e);
 	}
 
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
-		return anonymousExecutable.remove(e);
+		if (anonymousExecutables == CtElementImpl
+				.<CtAnonymousExecutable> EMPTY_LIST()) {
+			anonymousExecutables = new ArrayList<CtAnonymousExecutable>();
+		}
+		return anonymousExecutables.remove(e);
 	}
 
 	public CtTypeReference<?> getSuperclass() {
@@ -105,12 +113,30 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	}
 
 	public void setAnonymousExecutables(List<CtAnonymousExecutable> e) {
-		anonymousExecutable.clear();
-		anonymousExecutable.addAll(e);
+		anonymousExecutables = e;
 	}
 
 	public void setConstructors(Set<CtConstructor<T>> constructors) {
 		this.constructors = constructors;
+	}
+
+	@Override
+	public void addConstructor(CtConstructor<T> constructor) {
+		if (constructors == CtElementImpl.<CtConstructor<T>> EMPTY_SET()) {
+			constructors = new TreeSet<CtConstructor<T>>();
+		}
+		// this needs to be done because of the set that needs the constructor's signature : we should use lists!!!
+		// TODO: CHANGE SETS TO LIST TO AVOID HAVING TO DO THIS
+		constructor.setParent(this);
+		constructors.add(constructor);
+	}
+
+	@Override
+	public void removeConstructor(CtConstructor<T> constructor) {
+		if (constructors == CtElementImpl.<CtConstructor<T>> EMPTY_SET()) {
+			constructors = new TreeSet<CtConstructor<T>>();
+		}
+		constructors.remove(constructor);
 	}
 
 	public void setSuperclass(CtTypeReference<?> superClass) {

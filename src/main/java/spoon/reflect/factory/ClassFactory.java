@@ -49,7 +49,6 @@ public class ClassFactory extends TypeFactory {
 	public <T> CtClass<T> create(CtClass<?> declaringClass, String simpleName) {
 		CtClass<T> c = factory.Core().createClass();
 		c.setSimpleName(simpleName);
-		c.setParent(declaringClass);
 		return c;
 	}
 
@@ -68,7 +67,6 @@ public class ClassFactory extends TypeFactory {
 			owner.getTypes().remove(c);
 		}
 		owner.getTypes().add(c);
-		c.setParent(owner);
 		return c;
 	}
 

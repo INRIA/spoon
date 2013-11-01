@@ -17,20 +17,21 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 		CtNewArray<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtExpression<Integer>> dimensionExpressions = new ChildList<CtExpression<Integer>>(this);
+	List<CtExpression<Integer>> dimensionExpressions = EMPTY_LIST();
 
-	List<CtExpression<?>> expression = new ChildList<CtExpression<?>>(this);
+	List<CtExpression<?>> expressions = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtNewArray(this);
@@ -41,15 +42,50 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 	}
 
 	public List<CtExpression<?>> getElements() {
-		return expression;
+		return expressions;
 	}
 
 	public void setDimensionExpressions(
 			List<CtExpression<Integer>> dimensionExpressions) {
-		this.dimensionExpressions = new ChildList<CtExpression<Integer>>(dimensionExpressions,this);
+		this.dimensionExpressions = dimensionExpressions;
+	}
+
+	@Override
+	public boolean addDimensionExpression(CtExpression<Integer> dimension) {
+		if (dimensionExpressions == CtElementImpl
+				.<CtExpression<Integer>> EMPTY_LIST()) {
+			dimensionExpressions = new ArrayList<CtExpression<Integer>>();
+		}
+		return dimensionExpressions.add(dimension);
+	}
+
+	@Override
+	public boolean removeDimensionExpression(CtExpression<Integer> dimension) {
+		if (dimensionExpressions == CtElementImpl
+				.<CtExpression<Integer>> EMPTY_LIST()) {
+			dimensionExpressions = new ArrayList<CtExpression<Integer>>();
+		}
+		return dimensionExpressions.remove(dimension);
 	}
 
 	public void setElements(List<CtExpression<?>> expression) {
-		this.expression = new ChildList<CtExpression<?>>(expression,this);
+		this.expressions = expression;
 	}
+
+	@Override
+	public boolean addElement(CtExpression<?> expression) {
+		if (expressions == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+			this.expressions = new ArrayList<CtExpression<?>>();
+		}
+		return expressions.add(expression);
+	}
+
+	@Override
+	public boolean removeElement(CtExpression<?> expression) {
+		if (expressions == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+			return false;
+		}
+		return expressions.remove(expression);
+	}
+
 }

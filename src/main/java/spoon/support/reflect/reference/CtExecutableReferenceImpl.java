@@ -35,6 +35,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
@@ -43,11 +44,11 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 
 	boolean stat = false;
 
-	List<CtTypeReference<?>> actualTypeArguments = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.EMPTY_LIST();
 
 	CtTypeReference<?> declaringType;
 
-	List<CtTypeReference<?>> parametersTypes = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> parametersTypes = CtElementImpl.EMPTY_LIST();
 
 	CtTypeReference<T> type;
 
@@ -63,7 +64,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return actualTypeArguments;
 	}
 
-	public boolean isConstructor() {		
+	public boolean isConstructor() {
 		return getSimpleName().equals(CONSTRUCTOR_NAME);
 	}
 
@@ -372,4 +373,40 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		}
 		return getOverloadedExecutable(t.getSuperclass(), objectType);
 	}
+
+	@Override
+	public boolean addParameterType(CtTypeReference<?> type) {
+		if (parametersTypes == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			parametersTypes = new ArrayList<>();
+		}
+		return parametersTypes.add(type);
+	}
+
+	@Override
+	public boolean removeParameterType(CtTypeReference<?> type) {
+		if (parametersTypes == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			return false;
+		}
+		return parametersTypes.remove(type);
+	}
+
+	@Override
+	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			actualTypeArguments = new ArrayList<>();
+		}
+		return actualTypeArguments.add(type);
+	}
+
+	@Override
+	public boolean removeActualTypeArgument(
+			CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			return false;
+		}
+		return actualTypeArguments.remove(type);
+	}
+
 }

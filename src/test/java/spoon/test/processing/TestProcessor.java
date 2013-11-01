@@ -17,15 +17,15 @@ public class TestProcessor extends AbstractProcessor<CtElement> {
 	@Override
 	public void init() {
 		super.init();
-		System.out.println("MAIN METHODS: "+getFactory().Method().getMainMethods());
+		System.out.println("MAIN METHODS: "
+				+ getFactory().Method().getMainMethods());
 	}
-	
-	
+
 	public void process(CtElement element) {
-		if ((!(element instanceof CtPackage)) && element.getParent() == null) {
+		if ((!(element instanceof CtPackage)) && !element.isParentInitialized()) {
 			getEnvironment().report(this, Severity.ERROR, element,
 					"Element's parent is null (" + element + ")");
-			throw new RuntimeException("null parent detected");
+			throw new RuntimeException("uninitialized parent detected");
 		}
 		if (element instanceof CtTypedElement) {
 			if (((CtTypedElement<?>) element).getType() == null) {
@@ -33,13 +33,15 @@ public class TestProcessor extends AbstractProcessor<CtElement> {
 						"Element's type is null (" + element + ")");
 			}
 		}
-		if(element instanceof CtClass) {
-			CtClass<?> c=(CtClass<?>)element;
-			if(c.getSimpleName().equals("Secondary")) {
-				CompilationUnit cu=c.getPosition().getCompilationUnit();
+		if (element instanceof CtClass) {
+			CtClass<?> c = (CtClass<?>) element;
+			if (c.getSimpleName().equals("Secondary")) {
+				@SuppressWarnings("unused")
+				CompilationUnit cu = c.getPosition().getCompilationUnit();
 			}
-			if(c.getSimpleName().equals("C1")) {
-				Substitution.insertAll(c, new TemplateWithConstructor(getFactory().Type().createReference(Date.class)));
+			if (c.getSimpleName().equals("C1")) {
+				Substitution.insertAll(c, new TemplateWithConstructor(
+						getFactory().Type().createReference(Date.class)));
 			}
 		}
 	}

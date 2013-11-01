@@ -33,4 +33,15 @@ public interface CtGenericElementReference {
 	 * Sets the type arguments.
 	 */
 	void setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+
+	/**
+	 * Adds a type argument.
+	 */
+	boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+
+	/**
+	 * Removes a type argument.
+	 */
+	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+
 }

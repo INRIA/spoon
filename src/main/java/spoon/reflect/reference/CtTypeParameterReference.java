@@ -38,11 +38,21 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Sets the bounds (aka generics) of the referenced parameter.
 	 */
-	void setBounds(List<CtTypeReference<?>> Bounds);
+	void setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * Set to {@code true} if the bounds are upper bounds.
 	 */
 	void setUpper(boolean upper);
+
+	/**
+	 * Adds a bound.
+	 */
+	boolean addBound(CtTypeReference<?> bound);
+
+	/**
+	 * Removes a bound.
+	 */
+	boolean removeBound(CtTypeReference<?> bound);
 
 }

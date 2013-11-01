@@ -6,15 +6,13 @@ import static spoon.test.TestUtils.build;
 import org.junit.Test;
 
 import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtSimpleType;
 
 public class EnumsTest {
 
 	@Test 
 	public void testModelBuildingEnum() throws Exception {
-		CtSimpleType type = build ("spoon.test.enums",  "Regular");
-		assertEquals("Regular", type.getSimpleName());
-		CtEnum<Regular> enumeration = (CtEnum) type;
+		CtEnum<Regular> enumeration = build ("spoon.test.enums",  "Regular");
+		assertEquals("Regular", enumeration.getSimpleName());
 		assertEquals(3, Regular.values().length);
 		assertEquals(3, enumeration.getValues().size());
 		assertEquals("A", enumeration.getValues().get(0).getSimpleName());

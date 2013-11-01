@@ -27,7 +27,6 @@ public class SymbolicWrappedException extends RuntimeException {
 
 	private SymbolicInstance<? extends Throwable> cause;
 
-	@SuppressWarnings("unchecked")
 	public SymbolicWrappedException(
 			SymbolicInstance<? extends Throwable> cause, CtElement element,
 			SymbolicEvaluationStack stack) {

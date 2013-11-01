@@ -39,6 +39,16 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	void setResources(List<CtLocalVariable<? extends AutoCloseable>> resources);
 
 	/**
+	 * Adds a resource.
+	 */
+	boolean addResource(CtLocalVariable<? extends AutoCloseable> resource);
+
+	/**
+	 * Removes a resource.
+	 */
+	boolean removeResource(CtLocalVariable<? extends AutoCloseable> resource);
+
+	/**
 	 * Gets the <i>catchers</i> of this <code>try</code>.
 	 */
 	List<CtCatch> getCatchers();
@@ -47,6 +57,16 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	 * Sets the <i>catchers</i> of this <code>try</code>.
 	 */
 	void setCatchers(List<CtCatch> catchers);
+
+	/**
+	 * Adds a catch block.
+	 */
+	boolean addCatcher(CtCatch catcher);
+
+	/**
+	 * Removes a catch block.
+	 */
+	boolean removeCatcher(CtCatch catcher);
 
 	/**
 	 * Sets the tried body.

@@ -26,11 +26,13 @@ import spoon.reflect.reference.CtReference;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements
 		CtNamedElement {
-	
-	Set<ModifierKind> modifiers = new TreeSet<ModifierKind>();
+
+	private static final long serialVersionUID = 1L;
+
+	Set<ModifierKind> modifiers = EMPTY_SET();
 
 	String simpleName;
-	
+
 	public Set<ModifierKind> getModifiers() {
 		return modifiers;
 	}
@@ -74,6 +76,9 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements
 	}
 
 	public void setVisibility(ModifierKind visibility) {
+		if (getModifiers() == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
 		getModifiers().remove(ModifierKind.PUBLIC);
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);

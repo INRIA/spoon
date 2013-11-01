@@ -11,6 +11,8 @@ public class ContainInternalClass {
 	Runnable toto = new Runnable() {
 		public void run() {
 		}
+
+		@SuppressWarnings("unused")
 		static final long serialVersionUID = 1L;
 	};
 

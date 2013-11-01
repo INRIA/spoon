@@ -3,20 +3,21 @@ package spoon.test.fieldaccesses;
 public class Mouse {
 
 	int[] is;
-	
+
 	int age;
 
 	Mouse son;
 
+	@SuppressWarnings("unused")
 	public void meth1() {
 		age = 3;
-		son= new Mouse();
+		son = new Mouse();
 		int l = age;
 	}
 
 	public void meth1b() {
 		this.age = 3;
-		son= new Mouse();
+		son = new Mouse();
 	}
 
 	public void meth2() {

@@ -89,7 +89,6 @@ public class EvalFactory extends SubFactory {
 	 *            the entry point methods
 	 * @return a map containing the paths for each entry point
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<CtMethod<?>, Collection<SymbolicEvaluationPath>> createSymbolicEvaluationPaths(
 			Collection<CtMethod<?>> entryPoints) {
 		Map<CtMethod<?>, Collection<SymbolicEvaluationPath>> results = new HashMap<CtMethod<?>, Collection<SymbolicEvaluationPath>>();

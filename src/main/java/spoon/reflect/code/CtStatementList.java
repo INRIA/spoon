@@ -45,4 +45,15 @@ public interface CtStatementList<R> extends CtCodeElement {
 	 * Sets the statement list.
 	 */
 	void setStatements(List<CtStatement> statements);
+
+	/**
+	 * Adds a statement.
+	 */
+	void addStatement(CtStatement statement);
+
+	/**
+	 * Removes a statement.
+	 */
+	void removeStatement(CtStatement statement);
+
 }

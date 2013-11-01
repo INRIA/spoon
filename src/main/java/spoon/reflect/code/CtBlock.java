@@ -87,7 +87,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 * Converts this block to a statement list.
 	 */
 	CtStatementList<R> toStatementList();
-	
+
 	/**
 	 * Sets the statements enclosed by this block.
 	 */
@@ -102,5 +102,15 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 * Gets the last statement of this block.
 	 */
 	<T extends CtStatement> T getLastStatement();
-	
+
+	/**
+	 * Adds a statement to this block.
+	 */
+	void addStatement(CtStatement statement);
+
+	/**
+	 * Removes a statement from this block.
+	 */
+	void removeStatement(CtStatement statement);
+
 }

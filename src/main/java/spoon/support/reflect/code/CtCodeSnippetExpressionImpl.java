@@ -25,8 +25,9 @@ public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implemen
 		this.value = value;
 	}
 	
-	public CtExpression<T> compile() throws SnippetCompilationError {
-		return SnippetCompiler.compileExpression(this);
+	@SuppressWarnings("unchecked")
+	public <E extends CtExpression<T>> E compile() throws SnippetCompilationError {
+		return (E)SnippetCompiler.compileExpression(this);
 	}
 	
 }

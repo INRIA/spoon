@@ -548,7 +548,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					|| (e instanceof CtAssignment)
 					|| (e instanceof CtConditional);
 		}
-
 		return false;
 	}
 
@@ -922,7 +921,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(" ");
 		write(f.getSimpleName());
 
-		if ((f.getParent() == null)
+		if ((!f.isParentInitialized())
 				|| !CtAnnotationType.class.isAssignableFrom(f.getParent()
 						.getClass())
 				|| f.getModifiers().contains(ModifierKind.STATIC)) {
@@ -1153,28 +1152,37 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtExpression(invocation);
 		if (invocation.getExecutable().getSimpleName().equals("<init>")) {
 			// It's a constructor (super or this)
-			CtType<?> parentType = invocation.getParent(CtType.class);
-			if ((parentType != null)
-					&& (parentType.getQualifiedName() != null)
-					&& parentType.getQualifiedName().equals(
-							invocation.getExecutable().getDeclaringType()
-									.getQualifiedName())) {
-				write("this");
-			} else {
-				write("super");
+			try {
+				CtType<?> parentType = invocation.getParent(CtType.class);
+				if ((parentType != null)
+						&& (parentType.getQualifiedName() != null)
+						&& parentType.getQualifiedName().equals(
+								invocation.getExecutable().getDeclaringType()
+										.getQualifiedName())) {
+					write("this");
+				} else {
+					write("super");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		} else {
 			// It's a method invocation
 			if (invocation.getExecutable().isStatic()) {
-				CtTypeReference<?> type = invocation.getExecutable()
-						.getDeclaringType();
-				if (isHiddenByField(invocation.getParent(CtType.class), type)) {
-					importsContext.imports.remove(type.getSimpleName());
+				try {
+					CtTypeReference<?> type = invocation.getExecutable()
+							.getDeclaringType();
+					if (isHiddenByField(invocation.getParent(CtType.class),
+							type)) {
+						importsContext.imports.remove(type.getSimpleName());
+					}
+					context.ignoreGenerics = true;
+					scan(type);
+					context.ignoreGenerics = false;
+					write(".");
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				context.ignoreGenerics = true;
-				scan(type);
-				context.ignoreGenerics = false;
-				write(".");
 			} else if (invocation.getTarget() != null) {
 				context.enterTarget();
 				scan(invocation.getTarget());
@@ -1283,7 +1291,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(quote(String.valueOf(literal.getValue())));
 			write("'");
 		} else if (literal.getValue() instanceof String) {
-            // JDTTreeBuilder is responsible for adding the double quotes 
+			// JDTTreeBuilder is responsible for adding the double quotes
 			write(((String) literal.getValue()));
 		} else if (literal.getValue() instanceof Class) {
 			write(((Class<?>) literal.getValue()).getName());

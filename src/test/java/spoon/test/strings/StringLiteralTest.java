@@ -11,10 +11,11 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 
 public class StringLiteralTest {
+	@SuppressWarnings("unused")
 	@Test
 	public void testSnippetFullClass() {
 		Factory factory = new Factory(new DefaultCoreFactory(), new StandardEnvironment());		
-		CtClass clazz = (CtClass) factory.Code().createCodeSnippetStatement(
+		CtClass<?> clazz = factory.Code().createCodeSnippetStatement(
 				"class StringValueUTF {\n" + 
 				"	String f0 = \"toto\";\n" + 
 				"	String f1 = \"\\n\";\n" + 
@@ -24,12 +25,12 @@ public class StringLiteralTest {
 				"	String f5 = \"	\";\n" + 
 				"}"
 		).compile();
-		CtField f0 = (CtField) clazz.getFields().toArray()[0];
-		CtField f1 = (CtField) clazz.getFields().toArray()[1];
-		CtField f2 = (CtField) clazz.getFields().toArray()[2];
-		CtField f3 = (CtField) clazz.getFields().toArray()[3];
-		CtField f4 = (CtField) clazz.getFields().toArray()[4];
-		CtField f5 = (CtField) clazz.getFields().toArray()[5];
+		CtField<?> f0 = (CtField<?>) clazz.getFields().toArray()[0];
+		CtField<?> f1 = (CtField<?>) clazz.getFields().toArray()[1];
+		CtField<?> f2 = (CtField<?>) clazz.getFields().toArray()[2];
+		CtField<?> f3 = (CtField<?>) clazz.getFields().toArray()[3];
+		CtField<?> f4 = (CtField<?>) clazz.getFields().toArray()[4];
+		CtField<?> f5 = (CtField<?>) clazz.getFields().toArray()[5];
 
 		assertEquals("java.lang.String f0 = \"toto\";", f0.toString());
 		assertEquals("java.lang.String f1 = \"\\n\";", f1.toString());

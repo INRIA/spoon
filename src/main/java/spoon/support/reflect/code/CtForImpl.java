@@ -17,22 +17,23 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<Boolean> expression;
 
-	List<CtStatement> forInit = new ChildList<CtStatement>(this);
+	List<CtStatement> forInit = EMPTY_LIST();
 
-	List<CtStatement> forUpdate = new ChildList<CtStatement>(this);
+	List<CtStatement> forUpdate = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtFor(this);
@@ -52,15 +53,46 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	public void setExpression(CtExpression<Boolean> expression) {
 		this.expression = expression;
-		expression.setParent(this);
 	}
 
 	public void setForInit(List<CtStatement> forInit) {
-		this.forInit = new ChildList<CtStatement>(forInit,this);
+		this.forInit = forInit;
 	}
 
 	public void setForUpdate(List<CtStatement> forUpdate) {
-		this.forUpdate = new ChildList<CtStatement>(forUpdate,this);
+		this.forUpdate = forUpdate;
 	}
 
+	@Override
+	public boolean addForInit(CtStatement statement) {
+		if (forInit == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			forInit = new ArrayList<CtStatement>();
+		}
+		return forInit.add(statement);
+	}
+
+	@Override
+	public boolean removeForInit(CtStatement statement) {
+		if (forInit == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			forInit = new ArrayList<CtStatement>();
+		}
+		return forInit.remove(statement);
+	}
+
+	@Override
+	public boolean addForUpdate(CtStatement statement) {
+		if (forUpdate == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			forUpdate = new ArrayList<CtStatement>();
+		}
+		return forUpdate.add(statement);
+	}
+
+	@Override
+	public boolean removeForUpdate(CtStatement statement) {
+		if (forUpdate == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			forUpdate = new ArrayList<CtStatement>();
+		}
+		return forUpdate.remove(statement);
+	}
+	
 }

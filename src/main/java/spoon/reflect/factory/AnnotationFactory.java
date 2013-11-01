@@ -63,7 +63,6 @@ public class AnnotationFactory extends TypeFactory {
 		CtAnnotationType<T> t = factory.Core().createAnnotationType();
 		t.setSimpleName(simpleName);
 		owner.getTypes().add(t);
-		t.setParent(owner);
 		return t;
 	}
 
@@ -82,7 +81,6 @@ public class AnnotationFactory extends TypeFactory {
 	/**
 	 * Gets a annotation type from its name.
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends Annotation> CtSimpleType<T> getAnnotationType(
 			String qualifiedName) {
 		return get(qualifiedName);
@@ -130,7 +128,6 @@ public class AnnotationFactory extends TypeFactory {
 			annotation.setAnnotationType(factory.Type().createReference(
 					annotationType));
 			element.getAnnotations().add(annotation);
-			annotation.setParent(element);
 		}
 		boolean isArray;
 
@@ -204,7 +201,6 @@ public class AnnotationFactory extends TypeFactory {
 			annotation.setAnnotationType(factory.Type().createReference(
 					annotationType));
 			element.getAnnotations().add(annotation);
-			annotation.setParent(element);
 		}
 		return annotation;
 	}

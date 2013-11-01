@@ -14,7 +14,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCodeSnippetStatement(this);
 	}
-	
+
 	String value;
 
 	public String getValue() {
@@ -24,9 +24,10 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
-	public CtStatement compile() throws SnippetCompilationError{
-		return SnippetCompiler.compileStatement(this);
+
+	@SuppressWarnings("unchecked")
+	public <S extends CtStatement> S compile() throws SnippetCompilationError {
+		return (S) SnippetCompiler.compileStatement(this);
 	}
 
 }

@@ -40,11 +40,7 @@ public interface CtTypeParameter extends CtElement {
 
 	/**
 	 * Sets the bounds of this type parameter.
-	 * 
-	 * @deprecated use {@link #addBound(CtTypeReference)} and
-	 *             {@link #removeBound(CtTypeReference)} instead
 	 */
-	@Deprecated
 	void setBounds(List<CtTypeReference<?>> bounds);
 
 	/**

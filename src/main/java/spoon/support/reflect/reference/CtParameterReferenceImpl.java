@@ -37,7 +37,7 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
 
 	@SuppressWarnings("unchecked")
 	public CtParameter<T> getDeclaration() {
-		CtExecutable exec = executable.getDeclaration();
+		CtExecutable<?> exec = executable.getDeclaration();
 		if (exec == null)
 			return null;
 		List<CtParameter<?>> params = exec.getParameters();

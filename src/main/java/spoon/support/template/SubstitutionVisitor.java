@@ -94,26 +94,26 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <R> void scanCtExecutable(CtExecutable<R> e) {
 			// replace method parameters
-			for (CtParameter<?> parameter : new ArrayList<CtParameter<?>>(e
-					.getParameters())) {
+			for (CtParameter<?> parameter : new ArrayList<CtParameter<?>>(
+					e.getParameters())) {
 				String name = parameter.getSimpleName();
 				for (String pname : parameterNames) {
 					if (name.equals(pname)) {
 						Object value = Parameters.getValue(template, pname,
 								null);
-						int i = parameter.getParent().getParameters().indexOf(
-								parameter);
+						int i = parameter.getParent().getParameters()
+								.indexOf(parameter);
 						if (value instanceof List) {
 							List<?> l = (List<?>) value;
 							for (Object p : l) {
 								CtParameter<?> p2 = e.getFactory().Core()
 										.clone((CtParameter<?>) p);
 								p2.setParent(parameter.getParent());
-								parameter.getParent().getParameters().add(i++,
-										p2);
+								parameter.getParent().getParameters()
+										.add(i++, p2);
 							}
-							parameter.getParent().getParameters().remove(
-									parameter);
+							parameter.getParent().getParameters()
+									.remove(parameter);
 						}
 					}
 				}
@@ -156,8 +156,8 @@ public class SubstitutionVisitor extends CtScanner {
 					} else if ((value instanceof CtTypeReference)
 							&& (element instanceof CtSimpleType)) {
 						// replace with the type reference's name
-						name = name.replace(pname, ((CtTypeReference<?>) value)
-								.getSimpleName());
+						name = name.replace(pname,
+								((CtTypeReference<?>) value).getSimpleName());
 						element.setSimpleName(name);
 					}
 				}
@@ -178,7 +178,7 @@ public class SubstitutionVisitor extends CtScanner {
 
 		/**
 		 * Removes all the elements that are part of the template definitions.
-		 *
+		 * 
 		 * @see Template
 		 * @see TemplateParameter
 		 * @see Local
@@ -193,8 +193,8 @@ public class SubstitutionVisitor extends CtScanner {
 					ctClass.getMethods().remove(m);
 				}
 			}
-			for (CtConstructor<?> c : new TreeSet<CtConstructor<?>>(ctClass
-					.getConstructors())) {
+			for (CtConstructor<?> c : new TreeSet<CtConstructor<?>>(
+					ctClass.getConstructors())) {
 				if (c.getAnnotation(Local.class) != null) {
 					ctClass.getConstructors().remove(c);
 				}
@@ -246,7 +246,7 @@ public class SubstitutionVisitor extends CtScanner {
 										.getReference()))) {
 							va.replace((CtElement) element);
 						}
-						l.getStatements().add(b);
+						l.addStatement(b);
 					}
 					foreach.replace(l);
 					throw new SkipException(foreach);
@@ -264,21 +264,22 @@ public class SubstitutionVisitor extends CtScanner {
 			CtFieldReference<?> ref = targetedAccess.getVariable();
 			if ("length".equals(ref.getSimpleName())) {
 				if (targetedAccess.getTarget() instanceof CtFieldAccess) {
-					ref = ((CtFieldAccess) targetedAccess.getTarget())
+					ref = ((CtFieldAccess<?>) targetedAccess.getTarget())
 							.getVariable();
 					if (Parameters.isParameterSource(ref)) {
 						Object[] value = (Object[]) Parameters.getValue(
 								template, ref.getSimpleName(), null);
-						targetedAccess.replace(targetedAccess.getFactory().Code()
-								.createLiteral(value.length));
+						targetedAccess.replace(targetedAccess.getFactory()
+								.Code().createLiteral(value.length));
 						throw new SkipException(targetedAccess);
 					}
 				}
 			}
 			if (Parameters.isParameterSource(ref)) {
 				// replace direct field parameter accesses
-				Object value = Parameters.getValue(template, ref
-						.getSimpleName(), Parameters.getIndex(targetedAccess));
+				Object value = Parameters.getValue(template,
+						ref.getSimpleName(),
+						Parameters.getIndex(targetedAccess));
 				CtElement toReplace = targetedAccess;
 				if (targetedAccess.getParent() instanceof CtArrayAccess) {
 					toReplace = targetedAccess.getParent();
@@ -287,13 +288,13 @@ public class SubstitutionVisitor extends CtScanner {
 					if (value instanceof Class) {
 						toReplace.replace(f.Code().createClassAccess(
 								f.Type().createReference(
-										((Class) value).getName())));
+										((Class<?>) value).getName())));
 					} else if (value instanceof Enum) {
 						CtTypeReference<?> enumType = f.Type().createReference(
 								value.getClass());
 						toReplace.replace(f.Code().createVariableAccess(
 								f.Field().createReference(enumType, enumType,
-										((Enum) value).name()), true));
+										((Enum<?>) value).name()), true));
 					} else if (value instanceof List) {
 						// replace list of CtParameter for generic access to the
 						// parameters
@@ -308,8 +309,8 @@ public class SubstitutionVisitor extends CtScanner {
 						for (CtExpression<?> va : vas) {
 							va.setParent(targetedAccess.getParent());
 							inv.getArguments().add(i, va);
-							inv.getExecutable().getParameterTypes().add(i,
-									va.getType());
+							inv.getExecutable().getParameterTypes()
+									.add(i, va.getType());
 							i++;
 						}
 					} else if ((value != null) && value.getClass().isArray()) {
@@ -331,6 +332,7 @@ public class SubstitutionVisitor extends CtScanner {
 		/**
 		 * Replaces _xx_.S().
 		 */
+		@SuppressWarnings("unchecked")
 		@Override
 		public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 			if (invocation.getExecutable().isOverriding(S)) {
@@ -395,15 +397,15 @@ public class SubstitutionVisitor extends CtScanner {
 				}
 			}
 			if (expression instanceof CtLiteral) {
-				CtLiteral lit = (CtLiteral) expression;
+				CtLiteral<Object> lit = (CtLiteral<Object>) expression;
 				if (lit.getValue() instanceof CtTypeReference) {
-					CtTypeReference t = (CtTypeReference) lit.getValue();
+					CtTypeReference<T> t = (CtTypeReference<T>) lit.getValue();
 					if (parameterNames.contains(t.getSimpleName())) {
 						// replace type parameters
 						// TODO: this would probably not work with inner
 						// classes!!!
-						Object o = Parameters.getValue(template, t
-								.getSimpleName(), null);
+						Object o = Parameters.getValue(template,
+								t.getSimpleName(), null);
 						if (o instanceof Class) {
 							t = f.Type().createReference(((Class<T>) o));
 						} else if (o instanceof CtTypeReference) {
@@ -436,7 +438,9 @@ public class SubstitutionVisitor extends CtScanner {
 				if (o instanceof CtTypeReference) {
 					if ((e.getType() instanceof CtArrayTypeReference)
 							&& !(o instanceof CtArrayTypeReference)) {
-						t = (CtArrayTypeReference<T>) e.getFactory().Type()
+						t = (CtArrayTypeReference<T>) e
+								.getFactory()
+								.Type()
 								.createArrayReference(
 										(CtTypeReference<?>) o,
 										((CtArrayTypeReference<?>) e.getType())
@@ -484,8 +488,8 @@ public class SubstitutionVisitor extends CtScanner {
 				// replace type parameters
 				// TODO: this would probably not work with inner classes!!!
 				CtTypeReference<?> t;
-				Object o = Parameters.getValue(template, reference
-						.getSimpleName(), null);
+				Object o = Parameters.getValue(template,
+						reference.getSimpleName(), null);
 				if (o instanceof Class) {
 					t = f.Type().createReference(((Class<?>) o));
 				} else if (o instanceof CtTypeReference) {
@@ -537,8 +541,8 @@ public class SubstitutionVisitor extends CtScanner {
 						for (CtExpression<?> va : vas) {
 							va.setParent(variableAccess.getParent());
 							inv.getArguments().add(i, va);
-							inv.getExecutable().getParameterTypes().add(i,
-									va.getType());
+							inv.getExecutable().getParameterTypes()
+									.add(i, va.getType());
 							i++;
 						}
 						// inv.getArguments().remove(variableAccess);
@@ -555,8 +559,8 @@ public class SubstitutionVisitor extends CtScanner {
 			if ((parameterNames != null) && (reference != null)
 					&& parameterNames.contains(reference.getSimpleName())) {
 				CtTypeReference<T> t;
-				Object o = Parameters.getValue(template, reference
-						.getSimpleName(), null);
+				Object o = Parameters.getValue(template,
+						reference.getSimpleName(), null);
 				if (o instanceof Class) {
 					t = f.Type().createReference(((Class<T>) o));
 				} else if (o instanceof CtTypeReference) {
@@ -596,7 +600,7 @@ public class SubstitutionVisitor extends CtScanner {
 
 	/**
 	 * Creates a new substitution visitor.
-	 *
+	 * 
 	 * @param f
 	 *            the factory
 	 * @param targetType
@@ -620,7 +624,7 @@ public class SubstitutionVisitor extends CtScanner {
 		templateTypeRef = f.Type().createReference(Template.class);
 		// substitute target ref
 		targetRef.accept(this);
-	
+
 	}
 
 	/**
@@ -666,8 +670,9 @@ public class SubstitutionVisitor extends CtScanner {
 			String name = reference.getSimpleName();
 			for (String pname : parameterNames) {
 				if (name.contains(pname)) {
-					name = name.replace(pname, Parameters.getValue(
-							template, pname, null).toString());
+					name = name.replace(pname,
+							Parameters.getValue(template, pname, null)
+									.toString());
 					reference.setSimpleName(name);
 				}
 			}

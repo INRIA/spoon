@@ -23,7 +23,7 @@ package spoon.reflect.reference;
  */
 public interface CtAnnonTypeParameterReference extends CtTypeParameterReference {
 
-	void setRealRef(CtTypeReference ctTypeReference);
+	void setRealRef(CtTypeReference<?> ctTypeReference);
 
 
 }

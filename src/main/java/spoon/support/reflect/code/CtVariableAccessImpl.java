@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtCodeElement;
@@ -31,7 +30,7 @@ public class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements
 		CtVariableAccess<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> casts = EMPTY_LIST();
 
 	CtTypeReference<T> type;
 

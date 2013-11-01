@@ -46,7 +46,6 @@ public class InterfaceFactory extends TypeFactory {
 		CtInterface<T> i = factory.Core().createInterface();
 		i.setSimpleName(simpleName);
 		owner.getTypes().add(i);
-		i.setParent(owner);
 		return i;
 	}
 
@@ -57,7 +56,6 @@ public class InterfaceFactory extends TypeFactory {
 		CtInterface<T> i = factory.Core().createInterface();
 		i.setSimpleName(simpleName);
 		owner.getNestedTypes().add(i);
-		i.setParent(owner);
 		return i;
 	}
 

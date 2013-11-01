@@ -132,6 +132,7 @@ import spoon.support.reflect.declaration.CtAnnotationTypeImpl;
 import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
 import spoon.support.reflect.declaration.CtClassImpl;
 import spoon.support.reflect.declaration.CtConstructorImpl;
+import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtEnumImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtInterfaceImpl;
@@ -148,7 +149,6 @@ import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
-import spoon.support.util.ChildList;
 import spoon.support.util.RtHelper;
 
 /**
@@ -184,12 +184,12 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 			if (object.getClass().isEnum()) {
 				return object;
 			}
-			// System.err.println("cloning " + object + "["
+			// System.out.println("cloning " + object + "["
 			// + object.getClass().getSimpleName() + "]");
 			result = (T) object.getClass().newInstance();
 			if (result instanceof CtElement) {
 				if (cloningContext.isEmpty()) {
-					cloningContext.push(((CtElement) result).getParent());
+					cloningContext.push(null);
 				}
 				cloningContext.push((CtElement) result);
 			}
@@ -207,28 +207,31 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 					if (!Modifier.isFinal(f.getModifiers())
 							&& !Modifier.isStatic(f.getModifiers())) {
 						if (fieldValue instanceof Collection) {
-							// System.err.println(" cloning collection " + f+" :
-							// "+cloningContext.peek().getClass().getSimpleName());
-							Collection c = (Collection) fieldValue.getClass()
-									.getMethod("clone").invoke(fieldValue);
-							c.clear();
+							Collection<Object> c;
+							if (fieldValue == CtElementImpl.EMPTY_COLLECTION()
+									|| fieldValue == CtElementImpl.EMPTY_SET()) {
+								c = (Collection<Object>) fieldValue;
+							} else {
+								c = (Collection<Object>) fieldValue.getClass()
+										.getMethod("clone").invoke(fieldValue);
+								c.clear();
+								for (Object o : (Collection<Object>) fieldValue) {
+									c.add(clone(o));
+								}
+							}
 							f.set(result, c);
 
-							if (fieldValue instanceof ChildList)
-								((ChildList) c)
-										.setParent(cloningContext.peek());
-
-							for (Object o : (Collection) fieldValue) {
-								c.add(clone(o));
-							}
 						} else if (fieldValue instanceof Map) {
+							// TODO: ARE THERE REALLY MAP FIELDS IN THE MODEL?
 							// System.err.println(" cloning collection " + f+" :
 							// "+cloningContext.peek().getClass().getSimpleName());
-							Map m = (Map) fieldValue.getClass()
-									.getMethod("clone").invoke(fieldValue);
+							Map<Object, Object> m = (Map<Object, Object>) fieldValue
+									.getClass().getMethod("clone")
+									.invoke(fieldValue);
 							// m.clear();
 							f.set(result, m);
-							for (Entry e : ((Map<?, ?>) fieldValue).entrySet()) {
+							for (Entry<?, ?> e : ((Map<?, ?>) fieldValue)
+									.entrySet()) {
 								m.put(e.getKey(), clone(e.getValue()));
 							}
 						} else if ((object instanceof CtReference)
@@ -257,9 +260,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public <A extends Annotation> CtAnnotation<A> createAnnotation() {
-		CtAnnotation e = new CtAnnotationImpl<A>();
+		CtAnnotation<A> e = new CtAnnotationImpl<A>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -384,8 +386,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
-	public CtAnnotationFieldAccess<?> createAnnotationFieldAccess() {
-		CtAnnotationFieldAccess<?> e = new CtAnnotationFieldAccesImpl();
+	public <T> CtAnnotationFieldAccess<T> createAnnotationFieldAccess() {
+		CtAnnotationFieldAccess<T> e = new CtAnnotationFieldAccesImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

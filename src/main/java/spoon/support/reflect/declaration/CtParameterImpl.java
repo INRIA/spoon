@@ -17,11 +17,9 @@
 
 package spoon.support.reflect.declaration;
 
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -49,13 +47,14 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements
 		v.visitCtParameter(this);
 	}
 
-	public CtExpression<T> getDefaultExpression() {
-		return defaultExpression;
+	@SuppressWarnings("unchecked")
+	public <E extends CtExpression<T>> E getDefaultExpression() {
+		return (E) defaultExpression;
 	}
 
 	@Override
 	public CtExecutable<?> getParent() {
-		return (CtExecutable<?>) super.getParent();
+		return (CtExecutable<?>) super.getParentNoExceptions();
 	}
 
 	@Override

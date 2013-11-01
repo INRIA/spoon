@@ -50,17 +50,14 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements
 
 	public void setElseExpression(CtExpression<T> elseExpression) {
 		this.elseExpression = elseExpression;
-		elseExpression.setParent(this);
 	}
 
 	public void setCondition(CtExpression<Boolean> condition) {
 		this.condition = condition;
-		condition.setParent(this);
 	}
 
 	public void setThenExpression(CtExpression<T> thenExpression) {
 		this.thenExpression = thenExpression;
-		thenExpression.setParent(this);
 	}
 
 }

@@ -17,6 +17,7 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtExpression;
@@ -27,7 +28,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtNewClassImpl<T> extends
 		CtTargetedExpressionImpl<T, CtExpression<?>> implements CtNewClass<T> {
@@ -35,24 +36,28 @@ public class CtNewClassImpl<T> extends
 
 	CtClass<?> annonymousClass;
 
-	List<CtExpression<?>> arguments = new ChildList<CtExpression<?>>(this);
+	List<CtExpression<?>> arguments = EMPTY_LIST();
 
 	CtExecutableReference<T> executable;
 
 	String label;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtNewClass(this);
 	}
 
+	@Override
 	public CtClass<?> getAnonymousClass() {
 		return annonymousClass;
 	}
 
+	@Override
 	public List<CtExpression<?>> getArguments() {
 		return arguments;
 	}
 
+	@Override
 	public CtExecutableReference<T> getExecutable() {
 		return executable;
 	}
@@ -61,22 +66,27 @@ public class CtNewClassImpl<T> extends
 		return label;
 	}
 
+	@Override
 	public void insertAfter(CtStatement statement) {
 		CtStatementImpl.insertAfter(this, statement);
 	}
 
+	@Override
 	public void insertBefore(CtStatement statement) {
 		CtStatementImpl.insertBefore(this, statement);
 	}
 
+	@Override
 	public void insertAfter(CtStatementList<?> statements) {
 		CtStatementImpl.insertAfter(this, statements);
 	}
 
+	@Override
 	public void insertBefore(CtStatementList<?> statements) {
 		CtStatementImpl.insertBefore(this, statements);
 	}
 
+	@Override
 	public void replace(CtElement element) {
 		if (element instanceof CtStatementList) {
 			CtStatementImpl.replace(this, (CtStatementList<?>) element);
@@ -85,19 +95,38 @@ public class CtNewClassImpl<T> extends
 		}
 	}
 
+	@Override
 	public void setAnonymousClass(CtClass<?> annonymousClass) {
 		this.annonymousClass = annonymousClass;
-		annonymousClass.setParent(this);
 	}
 
+	@Override
 	public void setArguments(List<CtExpression<?>> arguments) {
-		this.arguments = new ChildList<CtExpression<?>>(arguments,this);
+		this.arguments = arguments;
+	}
+	
+	@Override
+	public void addArgument(CtExpression<?> argument) {
+		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+			arguments = new ArrayList<CtExpression<?>>();
+		}
+		arguments.add(argument);
 	}
 
+	@Override
+	public void removeArgument(CtExpression<?> argument) {
+		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+			arguments = new ArrayList<CtExpression<?>>();
+		}
+		arguments.remove(argument);
+	}
+
+	@Override
 	public void setExecutable(CtExecutableReference<T> executable) {
 		this.executable = executable;
 	}
 
+	@Override
 	public void setLabel(String label) {
 		this.label = label;
 	}

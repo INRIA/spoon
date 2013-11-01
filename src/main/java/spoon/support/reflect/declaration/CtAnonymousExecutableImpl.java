@@ -32,17 +32,23 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 
 	CtBlock<?> body;
 
-	Set<ModifierKind> modifiers = new TreeSet<ModifierKind>();
+	Set<ModifierKind> modifiers = EMPTY_SET();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAnonymousExecutable(this);
 	}
-	
+
 	public boolean addModifier(ModifierKind modifier) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			modifiers = new TreeSet<ModifierKind>();
+		}
 		return modifiers.add(modifier);
 	}
 
 	public boolean removeModifier(ModifierKind modifier) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			modifiers = new TreeSet<ModifierKind>();
+		}
 		return modifiers.remove(modifier);
 	}
 
@@ -81,6 +87,9 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 	}
 
 	public void setVisibility(ModifierKind visibility) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			modifiers = new TreeSet<ModifierKind>();
+		}
 		getModifiers().remove(ModifierKind.PUBLIC);
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);

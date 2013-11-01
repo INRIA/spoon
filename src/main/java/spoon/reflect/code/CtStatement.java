@@ -17,6 +17,8 @@
 
 package spoon.reflect.code;
 
+import spoon.reflect.declaration.ParentNotInitializedException;
+
 /**
  * This abstract code element represents all the statements, which can be part
  * of a block.
@@ -28,22 +30,27 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Inserts a statement after the current statement.
 	 */
-	void insertAfter(CtStatement statement);
+	void insertAfter(CtStatement statement)
+			throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	void insertAfter(CtStatementList<?> statements);
+	void insertAfter(CtStatementList<?> statements)
+			throws ParentNotInitializedException;
 
 	/**
-	 * Inserts a statement given as parameter before the current statement (this).
+	 * Inserts a statement given as parameter before the current statement
+	 * (this).
 	 */
-	void insertBefore(CtStatement statement);
+	void insertBefore(CtStatement statement)
+			throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	void insertBefore(CtStatementList<?> statements);
+	void insertBefore(CtStatementList<?> statements)
+			throws ParentNotInitializedException;
 
 	/**
 	 * Gets the label of this statement if defined.

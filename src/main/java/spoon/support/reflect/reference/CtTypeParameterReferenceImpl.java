@@ -24,75 +24,111 @@ import java.util.List;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
-        implements CtTypeParameterReference {
-    private static final long serialVersionUID = 1L;
+		implements CtTypeParameterReference {
+	private static final long serialVersionUID = 1L;
 
-    List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> bounds = CtElementImpl.EMPTY_LIST();
 
-    boolean upper = true;
+	boolean upper = true;
 
-    public CtTypeParameterReferenceImpl() {
-        super();
-    }
+	public CtTypeParameterReferenceImpl() {
+		super();
+	}
 
-    @Override
-    public void accept(CtVisitor visitor) {
-        visitor.visitCtTypeParameterReference(this);
-    }
+	@Override
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtTypeParameterReference(this);
+	}
 
-    @Override
-    public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-        return null;
-    }
+	@Override
+	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+		return null;
+	}
 
-    public List<CtTypeReference<?>> getBounds() {
-        return bounds;
-    }
+	public List<CtTypeReference<?>> getBounds() {
+		return bounds;
+	}
 
-    public boolean isUpper() {
-        return upper;
-    }
+	public boolean isUpper() {
+		return upper;
+	}
 
-    public void setBounds(List<CtTypeReference<?>> bounds) {
-        this.bounds = bounds;
-    }
+	public void setBounds(List<CtTypeReference<?>> bounds) {
+		this.bounds = bounds;
+	}
 
-    public void setUpper(boolean upper) {
-        this.upper = upper;
-    }
+	public void setUpper(boolean upper) {
+		this.upper = upper;
+	}
 
-    @Override
-    public boolean isAssignableFrom(CtTypeReference<?> type) {
-        return false;
-    }
+	@Override
+	public boolean isAssignableFrom(CtTypeReference<?> type) {
+		return false;
+	}
 
-    @Override
-    public boolean isSubtypeOf(CtTypeReference<?> type) {
-        return false;
-    }
+	@Override
+	public boolean isSubtypeOf(CtTypeReference<?> type) {
+		return false;
+	}
 
-    @Override
-    public boolean isPrimitive() {
-        return false;
-    }
+	@Override
+	public boolean isPrimitive() {
+		return false;
+	}
 
-    @Override
-    public void setSimpleName(String simplename) {
-        this.simplename = simplename;
-    }
+	@Override
+	public void setSimpleName(String simplename) {
+		this.simplename = simplename;
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<Object> getActualClass() {
-        if (isUpper()) {
-            if (getBounds().isEmpty()) {
-                return Object.class;
-            }
-            return (Class) getBounds().get(0).getActualClass();
-        }
-        return null;
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public Class<Object> getActualClass() {
+		if (isUpper()) {
+			if (getBounds().isEmpty()) {
+				return Object.class;
+			}
+			return (Class<Object>) getBounds().get(0).getActualClass();
+		}
+		return null;
+	}
+
+	@Override
+	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			actualTypeArguments = new ArrayList<>();
+		}
+		return actualTypeArguments.add(actualTypeArgument);
+	}
+
+	@Override
+	public boolean removeActualTypeArgument(
+			CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			return false;
+		}
+		return actualTypeArguments.remove(actualTypeArgument);
+	}
+
+	@Override
+	public boolean addBound(CtTypeReference<?> bound) {
+		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			bounds = new ArrayList<>();
+		}
+		return bounds.add(bound);
+	}
+
+	@Override
+	public boolean removeBound(CtTypeReference<?> bound) {
+		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			return false;
+		}
+		return bounds.remove(bound);
+	}
 
 }

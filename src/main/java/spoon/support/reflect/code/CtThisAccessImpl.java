@@ -22,10 +22,6 @@ import spoon.reflect.code.CtThisAccess;
 public class CtThisAccessImpl<T> extends CtTargetedAccessImpl<T> implements
 		CtThisAccess<T> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
 	
 }

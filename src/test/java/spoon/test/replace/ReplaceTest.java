@@ -31,7 +31,7 @@ public class ReplaceTest {
 	public void setup() throws Exception {
 		factory = new Factory(new DefaultCoreFactory(), new StandardEnvironment());
 		SpoonCompiler comp = new SpoonCompiler();
-		List<SpoonFile> files = new ArrayList();
+		List<SpoonFile> files = new ArrayList<>();
 		SpoonFile file = new FileSystemFile(new File("./src/test/java/spoon/test/replace/Foo.java"));
 		files.add(file);
 		comp.compileSrc(factory, files);		
@@ -39,13 +39,13 @@ public class ReplaceTest {
 	@Test 
 	public void testReplaceSet() throws Exception {		
 		
-		CtClass foo = (CtClass) factory.Package().get("spoon.test.replace").getType("Foo");
+		CtClass<?> foo = factory.Package().get("spoon.test.replace").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
-		CtClass bar = (CtClass) factory.Package().get("spoon.test.replace").getType("Bar");
+		CtClass<?> bar = factory.Package().get("spoon.test.replace").getType("Bar");
 		assertEquals("Bar", bar.getSimpleName());
 		
-		CtField i1 = foo.getField("i");
-		CtField i2 = bar.getField("i");
+		CtField<?> i1 = foo.getField("i");
+		CtField<?> i2 = bar.getField("i");
 		
 		assertEquals("int",foo.getField("i").getType().getSimpleName());
 
@@ -62,14 +62,14 @@ public class ReplaceTest {
 
 	@Test 
 	public void testReplaceBlock() throws Exception {		
-		CtClass foo = (CtClass) factory.Package().get("spoon.test.replace").getType("Foo");
-		CtMethod m = foo.getElements(new TypeFilter<CtMethod>(CtMethod.class)).get(0);
+		CtClass<?> foo = factory.Package().get("spoon.test.replace").getType("Foo");
+		CtMethod<?> m = foo.getElements(new TypeFilter<CtMethod<?>>(CtMethod.class)).get(0);
 		assertEquals("foo", m.getSimpleName());
 		
-		CtAssignment assignment = (CtAssignment)m.getBody().getStatements().get(2);
+		CtAssignment<?,?> assignment = (CtAssignment<?,?>)m.getBody().getStatements().get(2);
 
-		CtExpression s1 = assignment.getAssignment();		
-		CtExpression s2 = factory.Code().createLiteral(3);
+		CtExpression<?> s1 = assignment.getAssignment();		
+		CtExpression<?> s2 = factory.Code().createLiteral(3);
 		
 		assertEquals("z = x + 1",assignment.toString());
 		assertEquals("x + 1",s1.toString());

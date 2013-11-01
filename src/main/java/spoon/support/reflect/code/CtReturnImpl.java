@@ -34,7 +34,6 @@ public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 
 	public void setReturnedExpression(CtExpression<R> expression) {
 		this.returnedExpression = expression;
-		returnedExpression.setParent(this);
 	}
 
 	public void accept(CtVisitor visitor) {

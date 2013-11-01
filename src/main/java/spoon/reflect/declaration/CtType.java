@@ -68,22 +68,22 @@ public interface CtType<T> extends CtSimpleType<T>, CtGenericElement {
 
 	/**
 	 * Sets the methods of this type.
-	 * 
-	 * @deprecated use {@link #addMethod(CtMethod)} and
-	 *             {@link #removeMethod(CtMethod)} instead
 	 */
-	@Deprecated
 	void setMethods(Set<CtMethod<?>> methods);
 
+	/**
+	 * Adds a method to this type.
+	 */
 	<M> boolean addMethod(CtMethod<M> method);
 
+	/**
+	 * Removes a method from this type.
+	 */
 	<M> boolean removeMethod(CtMethod<M> method);
 
 	/**
 	 * Sets the super interfaces of this type.
-	 * @deprecated
 	 */
-	@Deprecated
 	void setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
 
 	/**

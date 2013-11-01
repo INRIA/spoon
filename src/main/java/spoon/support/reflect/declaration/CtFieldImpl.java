@@ -26,7 +26,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtField}.
- *
+ * 
  * @author Renaud Pawlak
  */
 public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
@@ -48,8 +48,9 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		return (CtSimpleType<?>) parent;
 	}
 
-	public CtExpression<T> getDefaultExpression() {
-		return defaultExpression;
+	@SuppressWarnings("unchecked")
+	public <E extends CtExpression<T>> E getDefaultExpression() {
+		return (E) defaultExpression;
 	}
 
 	@Override

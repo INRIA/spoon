@@ -22,35 +22,56 @@ import java.util.List;
 /**
  * This code element defines a <code>for</code> loop.
  */
-public interface CtFor extends CtLoop{
+public interface CtFor extends CtLoop {
 
-    /**
-     * Gets the end-loop test expression.
-     */
-    CtExpression<Boolean> getExpression();
+	/**
+	 * Gets the end-loop test expression.
+	 */
+	CtExpression<Boolean> getExpression();
 
-    /**
-     * Gets the <i>init</i> statements.
-     */
+	/**
+	 * Gets the <i>init</i> statements.
+	 */
 	List<CtStatement> getForInit();
 
-    /**
-     * Gets the <i>update</i> statements.
-     */
+	/**
+	 * Adds an <i>init</i> statement.
+	 */
+	boolean addForInit(CtStatement statement);
+
+	/**
+	 * Removes an <i>init</i> statement.
+	 */
+	boolean removeForInit(CtStatement statement);
+
+	/**
+	 * Gets the <i>update</i> statements.
+	 */
 	List<CtStatement> getForUpdate();
 
-    /**
-     * Sets the end-loop test expression.
-     */
+	/**
+	 * Sets the end-loop test expression.
+	 */
 	void setExpression(CtExpression<Boolean> expression);
 
-    /**
-     * Sets the <i>init</i> statements.
-     */
+	/**
+	 * Sets the <i>init</i> statements.
+	 */
 	void setForInit(List<CtStatement> forInit);
 
-    /**
-     * Sets the <i>update</i> statements.
-     */
+	/**
+	 * Sets the <i>update</i> statements.
+	 */
 	void setForUpdate(List<CtStatement> forUpdate);
+
+	/**
+	 * Adds an <i>update</i> statement.
+	 */
+	boolean addForUpdate(CtStatement statement);
+
+	/**
+	 * Removes an <i>update</i> statement.
+	 */
+	boolean removeForUpdate(CtStatement statement);
+
 }

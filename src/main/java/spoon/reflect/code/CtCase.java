@@ -43,6 +43,26 @@ public interface CtCase<S> extends CtStatement {
 	List<CtStatement> getStatements();
 
 	/**
+	 * Adds a statement to the case.
+	 */
+	boolean addStatement(CtStatement statement);
+
+	/**
+	 * Adds a statement to the case at the ith position.
+	 */
+	void addStatement(int i, CtStatement statement);
+
+	/**
+	 * Removes a statement from the case.
+	 */
+	boolean removeStatement(CtStatement statement);
+
+	/**
+	 * Removes the ith statement from the case.
+	 */
+	void removeStatement(int i);
+
+	/**
 	 * Sets the list of statements that defines the case body.
 	 */
 	void setStatements(List<CtStatement> statements);

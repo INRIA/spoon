@@ -121,6 +121,7 @@ public abstract class Parameters {
 	/**
 	 * Sets a template field parameter value.
 	 */
+	@SuppressWarnings("null")
 	public static void setValue(Template template, String parameterName,
 			Integer index, Object value) {
 		Object tparamValue = null;
@@ -148,6 +149,8 @@ public abstract class Parameters {
 			rtField.setAccessible(true);
 			rtField.set(template, value);
 			if (rtField.getType().isArray()) {
+				// TODO: RP: THIS IS WRONG!!!! tparamValue is never used or
+				// set!!
 				tparamValue = ((Object[]) tparamValue)[index];
 			}
 		} catch (Exception e) {
@@ -203,7 +206,7 @@ public abstract class Parameters {
 							.getSimpleName().equals("this")) && TemplateParameter.class
 							.isAssignableFrom(ref.getType().getActualClass()));
 		} catch (RuntimeException e) {
-			if(e.getCause() instanceof ClassNotFoundException)
+			if (e.getCause() instanceof ClassNotFoundException)
 				return false;
 			else
 				throw e;
@@ -227,7 +230,7 @@ public abstract class Parameters {
 	public static <T> TemplateParameter<T> NIL(Class<? extends T> type) {
 		if (Number.class.isAssignableFrom(type)) {
 			return (TemplateParameter<T>) new TemplateParameter<Number>() {
-				public CtCodeElement getSubstitution(CtSimpleType targetType) {
+				public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 					return null;
 				}
 
@@ -237,7 +240,7 @@ public abstract class Parameters {
 			};
 		}
 		return new TemplateParameter<T>() {
-			public CtCodeElement getSubstitution(CtSimpleType targetType) {
+			public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 				return null;
 			}
 

@@ -17,6 +17,7 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtStatement;
@@ -24,13 +25,13 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		CtStatementList<R> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtStatement> statements = new ChildList<CtStatement>(this);
+	List<CtStatement> statements = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtStatementList(this);
@@ -41,7 +42,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 	}
 
 	public void setStatements(List<CtStatement> statements) {
-		this.statements = new ChildList<CtStatement>(statements,this);
+		this.statements = statements;
 	}
 
 	public R S() {
@@ -54,9 +55,25 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 
 	@Override
 	public void setPosition(SourcePosition position) {
-		for(CtStatement s:statements) {
+		for (CtStatement s : statements) {
 			s.setPosition(position);
 		}
 	}
-	
+
+	@Override
+	public void addStatement(CtStatement statement) {
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>();
+		}
+		this.statements.add(statement);
+	}
+
+	@Override
+	public void removeStatement(CtStatement statement) {
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>();
+		}
+		this.statements.remove(statement);
+	}
+
 }

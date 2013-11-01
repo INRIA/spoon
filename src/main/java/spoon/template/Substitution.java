@@ -95,10 +95,10 @@ public abstract class Substitution {
 						// swallow it
 					}
 					if (c != null && c.isInterface()) {
-						targetType.getSuperInterfaces().add(t1);
+						targetType.addSuperInterface(t1);
 					}
 					if (c == null) {
-						targetType.getSuperInterfaces().add(t1);
+						targetType.addSuperInterface(t1);
 					}
 				}
 			}
@@ -125,7 +125,7 @@ public abstract class Substitution {
 		if (targetType instanceof CtClass) {
 			for (CtAnonymousExecutable e : sourceClass
 					.getAnonymousExecutables()) {
-				((CtClass<?>) targetType).getAnonymousExecutables().add(
+				((CtClass<?>) targetType).addAnonymousExecutable(
 						substitute(targetType, template, e));
 			}
 		}
@@ -143,8 +143,7 @@ public abstract class Substitution {
 			if (t.getAnnotation(Local.class) != null)
 				continue;
 			CtSimpleType<?> result = substitute(sourceClass, template, t);
-			targetType.getNestedTypes().add(result);
-			result.setParent(targetType);
+			targetType.addNestedType(result);
 		}
 
 	}
@@ -186,10 +185,10 @@ public abstract class Substitution {
 				if (!t1.equals(targetType.getReference())) {
 					Class<?> c = t1.getActualClass();
 					if (c != null && c.isInterface()) {
-						targetType.getSuperInterfaces().add(t1);
+						targetType.addSuperInterface(t1);
 					}
 					if (c == null) {
-						targetType.getSuperInterfaces().add(t1);
+						targetType.addSuperInterface(t1);
 					}
 				}
 			}
@@ -275,7 +274,7 @@ public abstract class Substitution {
 		if (targetType instanceof CtClass) {
 			for (CtAnonymousExecutable e : sourceClass
 					.getAnonymousExecutables()) {
-				((CtClass<?>) targetType).getAnonymousExecutables().add(
+				((CtClass<?>) targetType).addAnonymousExecutable(
 						substitute(targetType, template, e));
 			}
 		}
@@ -302,8 +301,7 @@ public abstract class Substitution {
 		CtConstructor<T> newConstructor = targetClass.getFactory()
 				.Constructor().create(targetClass, sourceMethod);
 		newConstructor = substitute(targetClass, template, newConstructor);
-		targetClass.getConstructors().add(newConstructor);
-		newConstructor.setParent(targetClass);
+		targetClass.addConstructor(newConstructor);
 		return newConstructor;
 	}
 
@@ -326,8 +324,7 @@ public abstract class Substitution {
 		CtMethod<T> newMethod = substitute(targetType, template, sourceMethod);
 		if (targetType instanceof CtInterface)
 			newMethod.setBody(null);
-		targetType.getMethods().add(newMethod);
-		newMethod.setParent(targetType);
+		targetType.addMethod(newMethod);
 		return newMethod;
 	}
 
@@ -351,14 +348,13 @@ public abstract class Substitution {
 
 		CtConstructor<T> newConstrutor = substitute(targetClass, template,
 				(CtConstructor<T>) sourceConstructor);
-		newConstrutor.setParent(targetClass);
 		// remove the implicit constructor if clashing
 		if (newConstrutor.getParameters().isEmpty()) {
 			CtConstructor<?> c = targetClass.getConstructor();
 			if (c != null && c.isImplicit())
 				targetClass.getConstructors().remove(c);
 		}
-		targetClass.getConstructors().add(newConstrutor);
+		targetClass.addConstructor(newConstrutor);
 		return newConstrutor;
 	}
 
@@ -480,7 +476,7 @@ public abstract class Substitution {
 			T templateType) {
 		T result = templateType.getFactory().Core().clone(templateType);
 		result.setPositions(null);
-		result.setParent(templateType.getParent());
+		//result.setParent(templateType.getParent());
 		new SubstitutionVisitor(templateType.getFactory(), result, template)
 				.scan(result);
 		return result;
@@ -503,8 +499,7 @@ public abstract class Substitution {
 	public static <T> CtField<T> insertField(CtType<?> targetType,
 			Template template, CtField<T> sourceField) {
 		CtField<T> field = substitute(targetType, template, sourceField);
-		targetType.getFields().add(field);
-		field.setParent(targetType);
+		targetType.addField(field);
 		return field;
 	}
 

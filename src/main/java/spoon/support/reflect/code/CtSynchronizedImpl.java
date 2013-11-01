@@ -44,12 +44,10 @@ public class CtSynchronizedImpl extends CtStatementImpl implements
 
 	public void setBlock(CtBlock<?> block) {
 		this.block = block;
-		this.block.setParent(this);
 	}
 
 	public void setExpression(CtExpression<?> expression) {
 		this.expression = expression;
-		expression.setParent(this);
 	}
 
 }
