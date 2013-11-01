@@ -33,7 +33,7 @@ public class CtTypeParameterImpl extends CtElementImpl implements
 		CtTypeParameter {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> bounds = EMPTY_LIST();
 
 	String name;
 	
@@ -42,9 +42,15 @@ public class CtTypeParameterImpl extends CtElementImpl implements
 	}
 
 	public boolean addBound(CtTypeReference<?> bound) {
+		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			bounds = new ArrayList<CtTypeReference<?>>();
+		}
 		return this.bounds.add(bound);
 	}
 	public boolean removeBound(CtTypeReference<?> bound) {
+		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			bounds = new ArrayList<CtTypeReference<?>>();
+		}
 		return this.bounds.remove(bound);
 	}
 	

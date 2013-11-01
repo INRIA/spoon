@@ -26,6 +26,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		CtAssignment<T, A> {
@@ -37,7 +38,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 
 	CtTypeReference<T> type;
 
-	List<CtTypeReference<?>> typeCasts = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> typeCasts = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAssignment(this);
@@ -69,12 +70,10 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 
 	public void setAssigned(CtExpression<T> assigned) {
 		this.assigned = assigned;
-		assigned.setParent(this);
 	}
 
 	public void setAssignment(CtExpression<A> assignment) {
 		this.assignment = assignment;
-		assignment.setParent(this);
 	}
 
 	public void setType(CtTypeReference<T> type) {
@@ -83,6 +82,14 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 
 	public void setTypeCasts(List<CtTypeReference<?>> casts) {
 		this.typeCasts = casts;
+	}
+
+	@Override
+	public void addTypeCast(CtTypeReference<?> type) {
+		if (typeCasts == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			typeCasts = new ArrayList<CtTypeReference<?>>();
+		}
+		typeCasts.add(type);
 	}
 
 }

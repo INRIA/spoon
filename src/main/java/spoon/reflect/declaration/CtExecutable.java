@@ -92,12 +92,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 
 	/**
 	 * Sets the thrown types.
-	 * 
-	 * @deprecated use {@link #addThrownType(CtTypeReference)} and
-	 *             {@link #removeThrownType(CtTypeReference)} to manipulate
-	 *             throw types
 	 */
-	@Deprecated
 	void setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	/**

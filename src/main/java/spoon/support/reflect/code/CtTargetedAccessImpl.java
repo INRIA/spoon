@@ -49,7 +49,6 @@ public class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T> implements
 
 	public void setTarget(CtExpression<?> target) {
 		this.target = target;
-		target.setParent(this);
 	}
 
 }

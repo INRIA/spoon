@@ -38,6 +38,16 @@ public interface CtNewArray<T> extends CtExpression<T> {
 	void setDimensionExpressions(List<CtExpression<Integer>> dimensions);
 
 	/**
+	 * Adds a dimension expression.
+	 */
+	boolean addDimensionExpression(CtExpression<Integer> dimension);
+
+	/**
+	 * Removes a dimension expression.
+	 */
+	boolean removeDimensionExpression(CtExpression<Integer> dimension);
+
+	/**
 	 * Gets the initialization expressions.
 	 */
 	List<CtExpression<?>> getElements();
@@ -46,5 +56,15 @@ public interface CtNewArray<T> extends CtExpression<T> {
 	 * Sets the initialization expressions.
 	 */
 	void setElements(List<CtExpression<?>> expression);
+
+	/**
+	 * Adds an element.
+	 */
+	boolean addElement(CtExpression<?> expression);
+
+	/**
+	 * Removes an element.
+	 */
+	boolean removeElement(CtExpression<?> expression);
 
 }

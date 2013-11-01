@@ -40,11 +40,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	public CtPackageImpl() {
 		super();
 	}
-	
+
 	public boolean addPackage(CtPackage pack) {
 		return packs.add(pack);
 	}
-	
+
 	public boolean removePackage(CtPackage pack) {
 		return packs.remove(pack);
 	}
@@ -54,8 +54,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	public CtPackage getDeclaringPackage() {
-		if (parent == null)
-			return null;
+		if(parent == null) {
+			setRootElement(true);
+		}
 		return getParent(CtPackage.class);
 	}
 
@@ -77,10 +78,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getDeclaringPackage().getQualifiedName() + "." + getSimpleName();
 	}
 
-	public CtSimpleType<?> getType(String simpleName) {
+	@SuppressWarnings("unchecked")
+	public <T extends CtSimpleType<?>> T getType(String simpleName) {
 		for (CtSimpleType<?> t : types) {
 			if (t.getSimpleName().equals(simpleName)) {
-				return t;
+				return (T) t;
 			}
 		}
 		return null;

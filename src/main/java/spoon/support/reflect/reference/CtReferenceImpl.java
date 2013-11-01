@@ -28,6 +28,8 @@ import spoon.support.visitor.SignaturePrinter;
 
 public abstract class CtReferenceImpl implements CtReference, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	String simplename;
 
 	transient Factory factory;

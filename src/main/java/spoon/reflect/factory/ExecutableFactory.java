@@ -42,7 +42,7 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates a new executable sub-factory.
-	 *
+	 * 
 	 * @param factory
 	 *            the parent factory
 	 */
@@ -57,9 +57,7 @@ public class ExecutableFactory extends SubFactory {
 			CtBlock<?> body) {
 		CtAnonymousExecutable a = factory.Core().createAnonymousExecutable();
 		target.getAnonymousExecutables().add(a);
-		a.setParent(target);
 		a.setBody(body);
-		body.setParent(a);
 		return a;
 	}
 
@@ -72,27 +70,25 @@ public class ExecutableFactory extends SubFactory {
 		parameter.setType(type);
 		parameter.setSimpleName(name);
 		if (parent != null) {
-			parent.getParameters().add(parameter);
-			parameter.setParent(parent);
+			parent.addParameter(parameter);
 		}
 		return parameter;
 	}
 
 	/**
 	 * Creates a parameter reference from an existing parameter.
-	 *
+	 * 
 	 * @param <T>
 	 *            the parameter's type
 	 * @param parameter
 	 *            the parameter
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> CtParameterReference<T> createParameterReference(
 			CtParameter<T> parameter) {
 		CtParameterReference<T> ref = factory.Core().createParameterReference();
 		if (parameter.getParent() != null) {
 			ref.setDeclaringExecutable(factory.Executable().createReference(
-					(CtExecutable) parameter.getParent()));
+					(CtExecutable<?>) parameter.getParent()));
 		}
 		ref.setSimpleName(parameter.getSimpleName());
 		ref.setType(parameter.getType());
@@ -114,12 +110,13 @@ public class ExecutableFactory extends SubFactory {
 					((CtMethod<T>) e).getType(), e.getSimpleName(), refs);
 		}
 		return createReference(e.getDeclaringType().getReference(),
-				((CtConstructor<T>) e).getType(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
+				((CtConstructor<T>) e).getType(),
+				CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
 
 	/**
 	 * Creates an executable reference.
-	 *
+	 * 
 	 * @param declaringType
 	 *            reference to the declaring type
 	 * @param type
@@ -147,7 +144,7 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an executable reference.
-	 *
+	 * 
 	 * @param declaringType
 	 *            reference to the declaring type
 	 * @param isStatic
@@ -179,7 +176,7 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an executable reference.
-	 *
+	 * 
 	 * @param declaringType
 	 *            reference to the declaring type
 	 * @param isStatic
@@ -211,7 +208,7 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an executable reference.
-	 *
+	 * 
 	 * @param declaringType
 	 *            reference to the declaring type
 	 * @param type
@@ -247,9 +244,9 @@ public class ExecutableFactory extends SubFactory {
 		String type = signature.substring(0, signature.indexOf(" "));
 		String declaringType = signature.substring(signature.indexOf(" ") + 1,
 				signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR));
-		String executableName = signature.substring(signature
-				.indexOf(CtExecutable.EXECUTABLE_SEPARATOR) + 1, signature
-				.indexOf("("));
+		String executableName = signature.substring(
+				signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR) + 1,
+				signature.indexOf("("));
 		executableRef.setSimpleName(executableName);
 		executableRef.setDeclaringType(factory.Type().createReference(
 				declaringType));

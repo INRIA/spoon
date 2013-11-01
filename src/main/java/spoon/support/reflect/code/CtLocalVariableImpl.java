@@ -26,6 +26,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 		CtLocalVariable<T> {
@@ -33,7 +34,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 
 	CtExpression<T> defaultExpression;
 
-	Set<ModifierKind> modifiers = new TreeSet<ModifierKind>();
+	Set<ModifierKind> modifiers = EMPTY_SET();
 
 	String name;
 
@@ -51,8 +52,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 		visitor.visitCtLocalVariable(this);
 	}
 
-	public CtExpression<T> getDefaultExpression() {
-		return defaultExpression;
+	@SuppressWarnings("unchecked")
+	public <E extends CtExpression<T>> E getDefaultExpression() {
+		return (E) defaultExpression;
 	}
 
 	public Set<ModifierKind> getModifiers() {
@@ -90,7 +92,6 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
 		this.defaultExpression = defaultExpression;
-		defaultExpression.setParent(this);
 	}
 
 	public void setModifiers(Set<ModifierKind> modifiers) {
@@ -106,6 +107,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 	}
 
 	public void setVisibility(ModifierKind visibility) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			modifiers = new TreeSet<ModifierKind>();
+		}
 		getModifiers().remove(ModifierKind.PUBLIC);
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);

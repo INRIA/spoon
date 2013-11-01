@@ -24,13 +24,14 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 		CtExpression<T> {
 	private static final long serialVersionUID = 1L;
 	CtTypeReference<T> type;
 
-	List<CtTypeReference<?>> typeCasts = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> typeCasts = EMPTY_LIST();
 
 	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
@@ -54,5 +55,13 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 
 	public void setTypeCasts(List<CtTypeReference<?>> casts) {
 		this.typeCasts = casts;
+	}
+
+	@Override
+	public void addTypeCast(CtTypeReference<?> type) {
+		if (typeCasts == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			typeCasts = new ArrayList<CtTypeReference<?>>();
+		}
+		typeCasts.add(type);
 	}
 }

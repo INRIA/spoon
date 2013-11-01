@@ -33,6 +33,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
+import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.PrettyPrinter;
 //import spoon.reflect.cu.CompilationUnit;
 
@@ -79,6 +80,8 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	 */
 	public void createJavaFile(CtSimpleType<?> element) {
 
+		new ModelConsistencyChecker(getEnvironment(), false).scan(element);
+		
 		// we only create a file for top-level classes
 		if (!element.isTopLevel()) {
 			throw new IllegalArgumentException();

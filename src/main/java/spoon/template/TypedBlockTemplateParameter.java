@@ -46,7 +46,7 @@ public abstract class TypedBlockTemplateParameter<R> implements
 	public abstract R block() throws Throwable;
 
 	@SuppressWarnings("unchecked")
-	public CtBlock<R> getSubstitution(CtSimpleType targetType) {
+	public CtBlock<R> getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<?> c;
 		c = targetType.getFactory().Template().get(this.getClass());
 		if (c == null) {

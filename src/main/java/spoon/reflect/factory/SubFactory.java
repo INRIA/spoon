@@ -18,11 +18,9 @@
 package spoon.reflect.factory;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.Factory;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * This class is the superclass for all the sub-factories of
@@ -61,16 +59,16 @@ public abstract class SubFactory implements Serializable, FactoryAccessor {
 	 * @param elements
 	 *            some {@link CtElement} or lists of {@link CtElement}
 	 */
-	protected void setParent(CtElement parent, Object... elements) {
-		for (Object o : elements) {
-			if (o instanceof CtElement) {
-				((CtElement) o).setParent(parent);
-			} else if (o instanceof Collection) {
-				for (Object o2 : (Collection<?>) o) {
-					((CtElement) o2).setParent(parent);
-				}
-			}
-		}
-	}
+//	protected void setParent(CtElement parent, Object... elements) {
+//		for (Object o : elements) {
+//			if (o instanceof CtElement) {
+//				((CtElement) o).setParent(parent);
+//			} else if (o instanceof Collection) {
+//				for (Object o2 : (Collection<?>) o) {
+//					((CtElement) o2).setParent(parent);
+//				}
+//			}
+//		}
+//	}
 
 }

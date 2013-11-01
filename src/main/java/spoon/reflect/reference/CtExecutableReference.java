@@ -68,6 +68,16 @@ public interface CtExecutableReference<T> extends CtReference,
 	List<CtTypeReference<?>> getParameterTypes();
 
 	/**
+	 * Adds a parameter type.
+	 */
+	boolean addParameterType(CtTypeReference<?> type);
+
+	/**
+	 * Removes a parameter type.
+	 */
+	boolean removeParameterType(CtTypeReference<?> type);
+
+	/**
 	 * Gets the type of the executable.
 	 */
 	CtTypeReference<T> getType();

@@ -51,13 +51,12 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements
 		return false;
 	}
 
-	public List<CtField<T>> getValues() {
-		List<CtField<T>> result = new ArrayList<CtField<T>>();
-		for (CtField field : getFields()) {
-			if (
-				field.getType() == null  // this is null for enum values
+	public List<CtField<?>> getValues() {
+		List<CtField<?>> result = new ArrayList<CtField<?>>();
+		for (CtField<?> field : getFields()) {
+			if (field.getType() == null // this is null for enum values
 			)
-			result.add(field);
+				result.add(field);
 		}
 		return Collections.unmodifiableList(result);
 	}

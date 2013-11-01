@@ -17,6 +17,7 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtBlock;
@@ -29,12 +30,12 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtStatement> statements = new ChildList<CtStatement>(this);
+	List<CtStatement> statements = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtBlock(this);
@@ -48,7 +49,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	public CtStatementList<R> toStatementList() {
 		return getFactory().Code().createStatementList(this);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T extends CtStatement> T getStatement(int i) {
 		return (T) statements.get(i);
@@ -70,10 +71,10 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 				return;
 			}
 		}
-		for (CtStatement s : statements.getStatements()) {
-			s.setParent(this);
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>();
 		}
-		getStatements().addAll(0, statements.getStatements());
+		this.statements.addAll(0, statements.getStatements());
 	}
 
 	public void insertBegin(CtStatement statement) {
@@ -86,13 +87,17 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 				return;
 			}
 		}
-		statement.setParent(this);
-		getStatements().add(0, statement);
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>();
+		}
+		this.statements.add(0, statement);
 	}
 
 	public void insertEnd(CtStatement statement) {
-		getStatements().add(statement);
-		statement.setParent(this);
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>();
+		}
+		addStatement(statement);
 	}
 
 	public void insertEnd(CtStatementList<?> statements) {
@@ -130,7 +135,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void setStatements(List<CtStatement> statements) {
-		this.statements = new ChildList<CtStatement>(statements, this);
+		this.statements = statements;
 	}
 
 	public R S() {
@@ -143,6 +148,22 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
+	}
+
+	@Override
+	public void addStatement(CtStatement statement) {
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>();
+		}
+		this.statements.add(statement);
+	}
+
+	@Override
+	public void removeStatement(CtStatement statement) {
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>();
+		}
+		this.statements.remove(statement);
 	}
 
 }

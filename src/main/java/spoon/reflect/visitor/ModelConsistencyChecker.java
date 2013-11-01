@@ -58,12 +58,20 @@ public class ModelConsistencyChecker extends CtScanner {
 	@Override
 	public void enter(CtElement element) {
 		if (!stack.isEmpty()) {
-			if (element.getParent() != stack.peek()) {
+			if (!element.isParentInitialized()
+					|| element.getParent() != stack.peek()) {
 				if (fixInconsistencies) {
+					// System.out.println("fixing inconsistent parent: "
+					// + element.getClass() + " - "
+					// + element.getPosition() + " - "
+					// + stack.peek().getPosition());
 					element.setParent(stack.peek());
 				} else {
 					environment.report(null, Severity.WARNING,
-							"inconsistent parent for " + element);
+							"inconsistent parent for " + element.getClass()
+									+ " - " + element.getPosition() + " - "
+									+ stack.peek().getPosition());
+					dumpStack();
 				}
 			}
 		}
@@ -76,6 +84,14 @@ public class ModelConsistencyChecker extends CtScanner {
 	@Override
 	protected void exit(CtElement e) {
 		stack.pop();
+	}
+
+	private void dumpStack() {
+		System.out.println("model consistency checker stack:");
+		for (CtElement e : stack) {
+			System.out.println("    " + e.getClass().getSimpleName() + " "
+					+ (e.getPosition() == null ? "(?)" : "" + e.getPosition()));
+		}
 	}
 
 }

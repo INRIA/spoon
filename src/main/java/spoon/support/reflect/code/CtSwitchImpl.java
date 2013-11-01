@@ -17,18 +17,19 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtCase<? super S>> cases = new ChildList<CtCase<? super S>>(this);
+	List<CtCase<? super S>> cases = EMPTY_LIST();
 
 	CtExpression<S> expression;
 
@@ -45,12 +46,27 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	}
 
 	public void setCases(List<CtCase<? super S>> cases) {
-		this.cases = new ChildList<CtCase<? super S>>(cases,this);
+		this.cases = cases;
 	}
 
 	public void setSelector(CtExpression<S> selector) {
 		this.expression = selector;
-		expression.setParent(this);
+	}
+
+	@Override
+	public boolean addCase(CtCase<? super S> c) {
+		if (cases == CtElementImpl.<CtCase<? super S>> EMPTY_LIST()) {
+			cases = new ArrayList<>();
+		}
+		return cases.add(c);
+	}
+
+	@Override
+	public boolean removeCase(CtCase<? super S> c) {
+		if (cases == CtElementImpl.<CtCase<? super S>> EMPTY_LIST()) {
+			return false;
+		}
+		return cases.remove(c);
 	}
 
 }

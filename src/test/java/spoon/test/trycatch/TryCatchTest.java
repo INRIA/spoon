@@ -2,7 +2,6 @@ package spoon.test.trycatch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
@@ -25,7 +24,7 @@ public class TryCatchTest {
 		assertTrue(m.getBody().getStatements().get(0) instanceof CtTry);
 		assertTrue(m.getBody().getStatements().get(1) instanceof CtTry);
 		CtTry t1 = m.getBody().getStatement(0);
-		assertNull(t1.getResources());
+		assertTrue(t1.getResources().isEmpty());
 		CtTry t2 = m.getBody().getStatement(1);
 		assertNotNull(t2.getResources());
 	}

@@ -25,7 +25,6 @@ import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
@@ -118,7 +117,7 @@ public class TemplateFactory extends SubFactory implements Serializable {
 	public void parseTypes() {
 		for (CtSimpleType<?> t : factory.Type().getAll()) {
 			if (t instanceof CtClass) {
-				for (CtSimpleType nested : ((CtType<?>) t).getNestedTypes()) {
+				for (CtSimpleType<?> nested : t.getNestedTypes()) {
 					if (nested instanceof CtClass)
 						scanType((CtClass<? extends Template>) nested);
 				}

@@ -404,7 +404,7 @@ public interface CoreFactory {
 	 * 
 	 * @return
 	 */
-	CtAnnotationFieldAccess<?> createAnnotationFieldAccess();
+	<T> CtAnnotationFieldAccess<T> createAnnotationFieldAccess();
 
 	CtAnnonTypeParameterReference createAnnonTypeParameterReference();
 

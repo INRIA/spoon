@@ -340,7 +340,6 @@ public class TypeFactory extends SubFactory {
 	 */
 	public CtTypeParameter createTypeParameter(CtElement owner, String name) {
 		CtTypeParameter typeParam = factory.Core().createTypeParameter();
-		typeParam.setParent(owner);
 		typeParam.setName(name);
 		return typeParam;
 	}
@@ -358,7 +357,6 @@ public class TypeFactory extends SubFactory {
 	public CtTypeParameter createTypeParameter(CtElement owner, String name,
 			List<CtTypeReference<?>> bounds) {
 		CtTypeParameter typeParam = factory.Core().createTypeParameter();
-		typeParam.setParent(owner);
 		typeParam.setName(name);
 		typeParam.setBounds(bounds);
 		return typeParam;

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtExecutable;
@@ -37,39 +36,54 @@ import spoon.reflect.reference.CtTypeReference;
 public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements
 		CtExecutable<R> {
 
+	private static final long serialVersionUID = 1L;
+
 	CtBlock<?> body;
 
-	List<CtTypeReference<?>> formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> formalTypeParameters = EMPTY_LIST();
 
-	List<CtParameter<?>> parameters = new Vector<CtParameter<?>>();
+	List<CtParameter<?>> parameters = EMPTY_LIST();
 
-	Set<CtTypeReference<? extends Throwable>> thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
+	Set<CtTypeReference<? extends Throwable>> thrownTypes = EMPTY_SET();
 
 	public CtExecutableImpl() {
 		super();
 	}
-	
+
 	public boolean addParameter(CtParameter<?> parameter) {
+		if (parameters == CtElementImpl.<CtParameter<?>> EMPTY_LIST()) {
+			parameters = new ArrayList<CtParameter<?>>();
+		}
 		return parameters.add(parameter);
 	}
+
 	public boolean removeParameter(CtParameter<?> parameter) {
 		return parameters.remove(parameter);
 	}
-	
+
 	public boolean addThrownType(CtTypeReference<? extends Throwable> throwType) {
+		if (thrownTypes == CtElementImpl
+				.<CtTypeReference<? extends Throwable>> EMPTY_SET()) {
+			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
+		}
 		return thrownTypes.add(throwType);
 	}
+
 	public boolean removeThrownType(
 			CtTypeReference<? extends Throwable> throwType) {
 		return thrownTypes.remove(throwType);
 	}
 
-	public boolean addFormalTypeParameters(
+	public boolean addFormalTypeParameter(
 			CtTypeReference<?> formalTypeParameter) {
+		if (formalTypeParameters == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+		}
 		return formalTypeParameters.add(formalTypeParameter);
 	}
 
-	public boolean removeFormalTypeParameters(
+	public boolean removeFormalTypeParameter(
 			CtTypeReference<?> formalTypeParameter) {
 		return formalTypeParameters.remove(formalTypeParameter);
 	}
@@ -91,7 +105,6 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements
 		return thrownTypes;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <B extends R> void setBody(CtBlock<B> body) {
 		this.body = body;
 	}

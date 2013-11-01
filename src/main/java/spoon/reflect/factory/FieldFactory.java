@@ -64,7 +64,6 @@ public class FieldFactory extends SubFactory {
 		field.setModifiers(modifiers);
 		field.setType(type);
 		field.setSimpleName(name);
-		field.setParent(target);
 		if (target != null)
 			target.getFields().add(field);
 		return field;
@@ -107,7 +106,6 @@ public class FieldFactory extends SubFactory {
 		CtField<T> newField = factory.Core().clone(source);
 		if (target != null)
 			target.getFields().add(newField);
-		newField.setParent(target);
 		return newField;
 	}
 
@@ -115,9 +113,9 @@ public class FieldFactory extends SubFactory {
 	 * Creates a field reference from an existing field.
 	 */
 	public <T> CtFieldReference<T> createReference(CtField<T> field) {
-		return createReference(factory.Type().createReference(
-				field.getDeclaringType()), field.getType(), field
-				.getSimpleName());
+		return createReference(
+				factory.Type().createReference(field.getDeclaringType()),
+				field.getType(), field.getSimpleName());
 	}
 
 	/**
@@ -138,11 +136,13 @@ public class FieldFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtFieldReference<T> createReference(Field field) {
-		CtFieldReference fieldRef = factory.Core().createFieldReference();
+		CtFieldReference<T> fieldRef = factory.Core().createFieldReference();
 		fieldRef.setSimpleName(field.getName());
 		fieldRef.setDeclaringType(factory.Type().createReference(
 				field.getDeclaringClass()));
-		fieldRef.setType(factory.Type().createReference(field.getType()));
+		CtTypeReference<T> t = factory.Type().createReference(
+				(Class<T>) field.getType());
+		fieldRef.setType(t);
 		return fieldRef;
 	}
 
@@ -158,8 +158,7 @@ public class FieldFactory extends SubFactory {
 		String fieldName = signature.substring(signature
 				.indexOf(CtField.FIELD_SEPARATOR) + 1);
 		fieldRef.setSimpleName(fieldName);
-		fieldRef
-				.setDeclaringType(factory.Type().createReference(declaringType));
+		fieldRef.setDeclaringType(factory.Type().createReference(declaringType));
 		CtTypeReference<T> typeRef = factory.Type().createReference(type);
 		fieldRef.setType(typeRef);
 		return fieldRef;

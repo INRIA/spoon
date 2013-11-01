@@ -17,20 +17,21 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<E> caseExpression;
 
-	List<CtStatement> statements = new ChildList<CtStatement>(this);
+	List<CtStatement> statements = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCase(this);
@@ -46,11 +47,42 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	public void setCaseExpression(CtExpression<E> caseExpression) {
 		this.caseExpression = caseExpression;
-		caseExpression.setParent(this);
 	}
 
 	public void setStatements(List<CtStatement> statements) {
-		this.statements = new ChildList<CtStatement>(statements,this);
+		this.statements = statements;
+	}
+
+	@Override
+	public boolean addStatement(CtStatement statement) {
+		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			statements = new ArrayList<CtStatement>();
+		}
+		return statements.add(statement);
+	}
+
+	@Override
+	public void addStatement(int i, CtStatement statement) {
+		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			statements = new ArrayList<CtStatement>();
+		}
+		statements.add(i, statement);
+	}
+
+	@Override
+	public boolean removeStatement(CtStatement statement) {
+		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			return false;
+		}
+		return statements.remove(statement);
+	}
+
+	@Override
+	public void removeStatement(int i) {
+		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			return;
+		}
+		statements.remove(i);
 	}
 
 }

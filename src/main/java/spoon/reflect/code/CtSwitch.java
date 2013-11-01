@@ -54,4 +54,15 @@ public interface CtSwitch<S> extends CtStatement {
 	 * Sets the list of cases defined for this switch.
 	 */
 	void setCases(List<CtCase<? super S>> cases);
+
+	/**
+	 * Adds a case;
+	 */
+	boolean addCase(CtCase<? super S> c);
+
+	/**
+	 * Removes a case;
+	 */
+	boolean removeCase(CtCase<? super S> c);
+
 }

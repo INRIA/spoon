@@ -295,7 +295,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			return;
 		} else if ((left instanceof CtLiteral) || (right instanceof CtLiteral)) {
 			CtLiteral<?> literal;
-			CtExpression expr;
+			CtExpression<?> expr;
 			if (left instanceof CtLiteral) {
 				literal = (CtLiteral<?>) left;
 				expr = right;
@@ -329,15 +329,15 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 					setResult(res);
 				}
 				return;
+			default:
+				// TODO: other cases?
 			}
 		}
 		CtBinaryOperator<T> op = operator.getFactory().Core()
 				.createBinaryOperator();
 		op.setKind(operator.getKind());
 		op.setLeftHandOperand(left);
-		left.setParent(op);
 		op.setRightHandOperand(right);
-		right.setParent(op);
 		op.setType(operator.getType());
 		setResult(op);
 	}
@@ -423,10 +423,14 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				return;
 			}
 		}
-		if (targetedAccess.getFactory().Type().createReference(Enum.class)
-				.isAssignableFrom(targetedAccess.getVariable().getDeclaringType())) {
-			CtLiteral<CtFieldReference<?>> l = targetedAccess.getFactory().Core()
-					.createLiteral();
+		if (targetedAccess
+				.getFactory()
+				.Type()
+				.createReference(Enum.class)
+				.isAssignableFrom(
+						targetedAccess.getVariable().getDeclaringType())) {
+			CtLiteral<CtFieldReference<?>> l = targetedAccess.getFactory()
+					.Core().createLiteral();
 			l.setValue(targetedAccess.getVariable());
 			setResult(l);
 			return;
@@ -500,7 +504,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		} else {
 			CtIf ifRes = ifElement.getFactory().Core().createIf();
 			ifRes.setCondition(r);
-			r.setParent(ifRes);
 			boolean thenEnded = false, elseEnded = false;
 			ifRes.setThenStatement(evaluate(ifRes, ifElement.getThenStatement()));
 			if (flowEnded) {
@@ -761,7 +764,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			CtConditional<T> ifRes = conditional.getFactory().Core()
 					.createConditional();
 			ifRes.setCondition(r);
-			r.setParent(ifRes);
 			ifRes.setThenExpression(evaluate(ifRes,
 					conditional.getThenExpression()));
 			ifRes.setElseExpression(evaluate(ifRes,

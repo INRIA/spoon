@@ -17,6 +17,7 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.code.CtBlock;
@@ -26,12 +27,13 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
 
-	List<CtLocalVariable<? extends AutoCloseable>> resources;
+	List<CtLocalVariable<? extends AutoCloseable>> resources = EMPTY_LIST();
+	List<CtCatch> catchers = EMPTY_LIST();
 
 	public List<CtLocalVariable<? extends AutoCloseable>> getResources() {
 		return resources;
@@ -42,14 +44,47 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 		this.resources = resources;
 	}
 
-	List<CtCatch> catchers = new ChildList<CtCatch>(this);
+	@Override
+	public boolean addResource(CtLocalVariable<? extends AutoCloseable> resource) {
+		if (resources == CtElementImpl
+				.<CtLocalVariable<? extends AutoCloseable>> EMPTY_LIST()) {
+			resources = new ArrayList<>();
+		}
+		return resources.add(resource);
+	}
+
+	@Override
+	public boolean removeResource(
+			CtLocalVariable<? extends AutoCloseable> resource) {
+		if (resources == CtElementImpl
+				.<CtLocalVariable<? extends AutoCloseable>> EMPTY_LIST()) {
+			resources = new ArrayList<>();
+		}
+		return resources.remove(resource);
+	}
 
 	public List<CtCatch> getCatchers() {
 		return catchers;
 	}
 
 	public void setCatchers(List<CtCatch> catchers) {
-		this.catchers = new ChildList<CtCatch>(catchers, this);
+		this.catchers = catchers;
+	}
+
+	@Override
+	public boolean addCatcher(CtCatch catcher) {
+		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
+			catchers = new ArrayList<>();
+		}
+		return catchers.add(catcher);
+	}
+
+	@Override
+	public boolean removeCatcher(CtCatch catcher) {
+		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
+			catchers = new ArrayList<>();
+		}
+		return catchers.remove(catcher);
 	}
 
 	public void accept(CtVisitor visitor) {
@@ -64,7 +99,6 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	public void setFinalizer(CtBlock<?> finalizer) {
 		this.finalizer = finalizer;
-		finalizer.setParent(this);
 	}
 
 	CtBlock<?> body;
@@ -75,7 +109,6 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	public void setBody(CtBlock<?> body) {
 		this.body = body;
-		body.setParent(this);
 	}
 
 	public Void S() {

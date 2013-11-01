@@ -42,13 +42,14 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> actualTypeArguments = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.EMPTY_LIST();
 
 	CtTypeReference<?> declaringType;
 
@@ -525,4 +526,24 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		isSuperReference = b;
 	}
 
+	@Override
+	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			actualTypeArguments = new ArrayList<>();
+		}
+		return actualTypeArguments.add(actualTypeArgument);
+	}
+
+	@Override
+	public boolean removeActualTypeArgument(
+			CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			return false;
+		}
+		return actualTypeArguments.remove(actualTypeArgument);
+	}
+
+	
 }

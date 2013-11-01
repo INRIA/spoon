@@ -64,7 +64,6 @@ public class ConstructorFactory extends ExecutableFactory {
 		CtConstructor<T> newConstructor = factory.Core().clone(
 				(CtConstructor<T>) source);
 		target.getConstructors().add(newConstructor);
-		newConstructor.setParent(target);
 		return newConstructor;
 	}
 
@@ -89,10 +88,7 @@ public class ConstructorFactory extends ExecutableFactory {
 				.setFormalTypeParameters(method.getFormalTypeParameters());
 		newConstructor.setModifiers(method.getModifiers());
 		newConstructor.setParameters(method.getParameters());
-		setParent(newConstructor, method.getAnnotations(), method.getBody(),
-				method.getParameters(), method.getFormalTypeParameters());
 		target.getConstructors().add(newConstructor);
-		newConstructor.setParent(target);
 		return newConstructor;
 	}
 
@@ -111,10 +107,8 @@ public class ConstructorFactory extends ExecutableFactory {
 			Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		CtConstructor<T> constructor = factory.Core().createConstructor();
 		constructor.setModifiers(modifiers);
-		constructor.setParent(target);
 		constructor.setParameters(parameters);
 		constructor.setThrownTypes(thrownTypes);
-		setParent(constructor, parameters);
 		target.getConstructors().add(constructor);
 		return constructor;
 	}
@@ -129,7 +123,6 @@ public class ConstructorFactory extends ExecutableFactory {
 	public <T> CtConstructor<T> createDefault(CtClass<T> target) {
 		CtConstructor<T> constructor = factory.Core().createConstructor();
 		constructor.addModifier(ModifierKind.PUBLIC);
-		constructor.setParent(target);
 		target.getConstructors().add(constructor);
 		return constructor;
 	}
@@ -153,7 +146,6 @@ public class ConstructorFactory extends ExecutableFactory {
 		CtConstructor<T> constructor = create(target, modifiers, parameters,
 				thrownTypes);
 		constructor.setBody(body);
-		body.setParent(constructor);
 		return constructor;
 	}
 

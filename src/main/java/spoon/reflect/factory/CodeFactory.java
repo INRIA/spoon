@@ -82,7 +82,6 @@ public class CodeFactory extends SubFactory {
 		CtBinaryOperator<T> op = factory.Core().createBinaryOperator();
 		op.setLeftHandOperand(left);
 		op.setRightHandOperand(right);
-		setParent(op, left, right);
 		op.setKind(kind);
 		return op;
 	}
@@ -187,7 +186,6 @@ public class CodeFactory extends SubFactory {
 		for (T e : value) {
 			CtLiteral<T> l = factory.Core().createLiteral();
 			l.setValue(e);
-			l.setParent(array);
 			array.getElements().add(l);
 		}
 		return array;
@@ -248,7 +246,7 @@ public class CodeFactory extends SubFactory {
 	public <R> CtStatementList<R> createStatementList(CtBlock<R> block) {
 		CtStatementList<R> l = factory.Core().createStatementList();
 		for (CtStatement s : block.getStatements()) {
-			l.getStatements().add(factory.Core().clone(s));
+			l.addStatement(factory.Core().clone(s));
 		}
 		return l;
 	}
@@ -332,10 +330,8 @@ public class CodeFactory extends SubFactory {
 			CtExpression<T> expression) {
 		CtAssignment<A, T> va = factory.Core().createAssignment();
 		va.setAssignment(expression);
-		expression.setParent(va);
 		CtVariableAccess<A> vaccess = createVariableAccess(variable, isStatic);
 		va.setAssigned(vaccess);
-		vaccess.setParent(va);
 		return va;
 	}
 
@@ -354,12 +350,10 @@ public class CodeFactory extends SubFactory {
 			List<? extends CtExpression<T>> expressions) {
 		CtStatementList<?> result = factory.Core().createStatementList();
 		for (int i = 0; i < variables.size(); i++) {
-			result.getStatements().add(
-					createVariableAssignment(
-							variables.get(i).getReference(),
-							variables.get(i).getModifiers()
-									.contains(ModifierKind.STATIC),
-							expressions.get(i)));
+			result.addStatement(createVariableAssignment(
+					variables.get(i).getReference(),
+					variables.get(i).getModifiers()
+							.contains(ModifierKind.STATIC), expressions.get(i)));
 		}
 		return result;
 	}

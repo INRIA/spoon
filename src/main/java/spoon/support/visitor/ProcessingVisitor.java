@@ -44,12 +44,11 @@ public class ProcessingVisitor extends CtScanner {
 		this.factory = factory;
 	}
 
-	@SuppressWarnings("unchecked")
-	private boolean canBeProcessed(Processor p, CtElement e) {
+	private boolean canBeProcessed(Processor<?> p, CtElement e) {
 		if (!factory.getEnvironment().isProcessingStopped()
 				&& p.getProcessedElementTypes() != null) {
 			for (Object o : p.getProcessedElementTypes()) {
-				if (((Class) o).isAssignableFrom(e.getClass())) {
+				if (((Class<?>) o).isAssignableFrom(e.getClass())) {
 					return true;
 				}
 			}

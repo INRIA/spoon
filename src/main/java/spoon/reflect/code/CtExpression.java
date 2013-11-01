@@ -42,4 +42,9 @@ public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>,
 	 */
 	void setTypeCasts(List<CtTypeReference<?>> types);
 
+	/**
+	 * Adds a type cast.
+	 */
+	void addTypeCast(CtTypeReference<?> type);
+	
 }

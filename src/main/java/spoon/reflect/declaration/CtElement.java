@@ -85,9 +85,33 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	String getDocComment();
 
 	/**
-	 * Gets the parent of current element.
+	 * Gets the parent of current element, which can be null. Elements that are
+	 * manually added to the tree may have a null parent if not manually set.
+	 * Note that the parents of an entire tree of elements can be automatically
+	 * set by using the {@link #updateAllParentsBelow()}.
+	 * 
+	 * @throws ParentNotInitializedException
+	 *             when the parent of this element is not initialized
 	 */
-	CtElement getParent();
+	CtElement getParent() throws ParentNotInitializedException;
+
+	/**
+	 * Tells if this parent has been initialized.
+	 */
+	boolean isParentInitialized();
+
+	/**
+	 * Tells if this element is a root of the element tree (and thus has no
+	 * parent, which is different from being not initialized). When an element
+	 * is a root element, {@link #getParent()} will return null without throwing
+	 * an exception.
+	 */
+	boolean isRootElement();
+
+	/**
+	 * Sets the root element flag to this element.
+	 */
+	void setRootElement(boolean rootElement);
 
 	/**
 	 * Gets the signature of the element.
@@ -97,12 +121,13 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	/**
 	 * Gets the first parent that matches the given type.
 	 */
-	<P extends CtElement> P getParent(Class<P> parentType);
+	<P extends CtElement> P getParent(Class<P> parentType)
+			throws ParentNotInitializedException;
 
 	/**
 	 * Tells if the given element is a direct or indirect parent.
 	 */
-	boolean hasParent(CtElement candidate);
+	boolean hasParent(CtElement candidate) throws ParentNotInitializedException;
 
 	/**
 	 * Gets the position of this element in input source files
@@ -114,8 +139,7 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	/**
 	 * Replaces this element by another one.
 	 */
-	void replace(CtElement element);
-
+	void replace(CtElement element) throws ParentNotInitializedException;
 
 	/**
 	 * Add an annotation for this element
@@ -140,12 +164,20 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	void setDocComment(String docComment);
 
 	/**
-	 * Sets the parent element of the current element.
+	 * Manually sets the parent element of the current element. Note that the
+	 * parents of an entire tree of elements can be automatically set by using
+	 * the {@link #updateAllParentsBelow()}.
 	 * 
 	 * @param element
 	 *            parent
 	 */
 	void setParent(CtElement element);
+
+	/**
+	 * Calculates and sets all the parents below this element. This function can
+	 * be called to check and fix parents after manipulating the model.
+	 */
+	void updateAllParentsBelow();
 
 	/**
 	 * Sets the position in the Java source file. Note that this information is
@@ -200,8 +232,6 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 */
 	<T extends CtReference> List<T> getReferences(ReferenceFilter<T> filter);
 
-	
-	// DEPRECATED METHODS
 	/**
 	 * Sets the position of this element and all its children element. Note that
 	 * this information is used to feed the line numbers in the generated
@@ -210,17 +240,11 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 * @param position
 	 *            of this element and all children in the input source file
 	 */
-	@Deprecated
 	void setPositions(SourcePosition position);
 
 	/**
 	 * Sets the annotations for this element.
-	 * 
-	 * @deprecated use {@link #addAnnotation(CtAnnotation)} and
-	 *             {@link #removeAnnotation(CtAnnotation)} to manipulate
-	 *             annotations
 	 */
-	@Deprecated
 	void setAnnotations(Set<CtAnnotation<? extends Annotation>> annotation);
 
 }

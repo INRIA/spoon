@@ -12,39 +12,33 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 
 public class SnippetTest {
-	Factory factory = new Factory(new DefaultCoreFactory(), new StandardEnvironment());
-	
+	Factory factory = new Factory(new DefaultCoreFactory(),
+			new StandardEnvironment());
+
 	@Test
 	public void testSnippetFullClass() {
-		CtClass clazz = (CtClass) factory.Code().createCodeSnippetStatement(
-				""
-				+ "class X {"
-				+ "public void foo() {"
-				+ " int x=0;"
-				+ "}"
-				+ "};"
-		).compile();
-		CtMethod foo = (CtMethod) clazz.getMethods().toArray()[0];
+		CtClass<?> clazz = factory
+				.Code()
+				.createCodeSnippetStatement(
+						"" + "class X {" + "public void foo() {" + " int x=0;"
+								+ "}" + "};").compile();
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
 		assertEquals(1, foo.getBody().getStatements().size());
 	}
-	
+
 	@Test
 	public void testSnippetWihErrors() {
 		try {
-			CtClass clazz = (CtClass) factory.Code().createCodeSnippetStatement(
-					""
-					+ "class X {"
-					+ "public void foo() {"
-					+ " int x=0 sdfsdf;"
-					+ "}"
-					+ "};"
-			).compile();
+			factory.Code()
+					.createCodeSnippetStatement(
+							"" + "class X {" + "public void foo() {"
+									+ " int x=0 sdfsdf;" + "}" + "};")
+					.compile();
 			fail();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// we expect an exception the code is incorrect
 		}
 	}
-	
+
 }

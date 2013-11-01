@@ -2,6 +2,8 @@ package spoon.support.reflect.declaration;
 
 public class CtUncomparableException extends RuntimeException {
 
+	private static final long serialVersionUID = 1L;
+
 	public CtUncomparableException() {
 		super();
 	}

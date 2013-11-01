@@ -89,10 +89,7 @@ public interface CtPackage extends CtNamedElement {
 	 * 
 	 * @param pack
 	 *            new set of child packages
-	 * @deprecated use {@link #addPackage(CtPackage)} and
-	 *             {@link #removePackage(CtPackage)} instead
 	 */
-	@Deprecated
 	void setPackages(Set<CtPackage> pack);
 
 	/**

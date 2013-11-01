@@ -63,10 +63,8 @@ public class QueueProcessingManager implements ProcessingManager {
 			Processor<?> p = type.newInstance();
 			addProcessor(p);
 		} catch (Exception e) {
-			factory
-					.getEnvironment()
-					.report(
-							null,
+			factory.getEnvironment()
+					.report(null,
 							Severity.ERROR,
 							"Unable to instantiate processor \""
 									+ type.getName()
@@ -108,7 +106,6 @@ public class QueueProcessingManager implements ProcessingManager {
 		return processors;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected ProcessingVisitor getVisitor() {
 		if (visitor == null)
 			visitor = new ProcessingVisitor(getFactory());
@@ -133,8 +130,9 @@ public class QueueProcessingManager implements ProcessingManager {
 	public void process(Collection<? extends CtElement> elements) {
 		Processor<?> p;
 		while ((p = getProcessors().poll()) != null) {
-			if(getFactory().getEnvironment().isVerbose()) {
-				getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
+			if (getFactory().getEnvironment().isVerbose()) {
+				getFactory().getEnvironment().reportProgressMessage(
+						p.getClass().getName());
 			}
 			current = p;
 			p.initProperties(AbstractProcessor.loadProperties(p));
@@ -157,7 +155,6 @@ public class QueueProcessingManager implements ProcessingManager {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void process(CtElement element, Processor<?> processor) {
 		getVisitor().setProcessor(processor);
 		getVisitor().scan(element);

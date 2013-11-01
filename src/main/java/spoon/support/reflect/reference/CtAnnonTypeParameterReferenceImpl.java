@@ -33,13 +33,12 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-@SuppressWarnings("rawtypes")
 public class CtAnnonTypeParameterReferenceImpl extends CtTypeParameterReferenceImpl
         implements CtAnnonTypeParameterReference {
 	
     private static final long serialVersionUID = 1L;
     
-	private CtTypeReference ref;
+	private CtTypeReference<Object> ref;
 	
     public CtAnnonTypeParameterReferenceImpl() {
         super();
@@ -180,8 +179,9 @@ public class CtAnnonTypeParameterReferenceImpl extends CtTypeParameterReferenceI
     	return ref.unbox();
     }
     
-	public void setRealRef(CtTypeReference ctTypeReference) {
-		ref = ctTypeReference;
+	@SuppressWarnings("unchecked")
+	public void setRealRef(CtTypeReference<?> ctTypeReference) {
+		ref = (CtTypeReference<Object>)ctTypeReference;
 	}
 	
     @Override

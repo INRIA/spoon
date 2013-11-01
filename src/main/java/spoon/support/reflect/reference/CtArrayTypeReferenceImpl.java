@@ -69,11 +69,11 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<T> getActualClass() {
-		Class c = getComponentType().getActualClass();
+		Class<?> c = getComponentType().getActualClass();
 		if (c == null) {
 			return null;
 		}
-		return (Class) Array.newInstance(c, 0).getClass();
+		return (Class<T>) Array.newInstance(c, 0).getClass();
 	}
 
 	public int getDimensionCount() {

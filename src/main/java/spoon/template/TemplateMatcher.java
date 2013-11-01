@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -37,6 +38,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -58,12 +60,14 @@ public class TemplateMatcher {
 
 	private static List<CtInvocation<?>> getMethods(
 			CtClass<? extends Template> root) {
-		CtExecutableReference<?> methodRef = root.getFactory().Executable()
+		CtExecutableReference<?> methodRef = root
+				.getFactory()
+				.Executable()
 				.createReference(
-						root.getFactory().Type().createReference(
-								TemplateParameter.class),
-						root.getFactory().Type().createTypeParameterReference(
-								"T"), "S");
+						root.getFactory().Type()
+								.createReference(TemplateParameter.class),
+						root.getFactory().Type()
+								.createTypeParameterReference("T"), "S");
 		List<CtInvocation<?>> meths = Query.getElements(root,
 				new InvocationFilter(methodRef));
 
@@ -103,15 +107,14 @@ public class TemplateMatcher {
 		return ts;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static List<CtFieldReference<?>> getVarargs(
 			CtClass<? extends Template> root, List<CtInvocation<?>> variables) {
 		List<CtFieldReference<?>> fields = new ArrayList<CtFieldReference<?>>();
-		for (CtFieldReference field : root.getReference().getAllFields()) {
+		for (CtFieldReference<?> field : root.getReference().getAllFields()) {
 			if (field.getType().getActualClass() == CtStatementList.class) {
 				boolean alreadyAdded = false;
 				for (CtInvocation<?> invocation : variables) {
-					alreadyAdded |= ((CtFieldAccess) invocation.getTarget())
+					alreadyAdded |= ((CtFieldAccess<?>) invocation.getTarget())
 							.getVariable().getDeclaration().equals(field);
 				}
 				if (!alreadyAdded) {
@@ -140,7 +143,7 @@ public class TemplateMatcher {
 
 	/**
 	 * Constructs a matcher for a given template.
-	 *
+	 * 
 	 * @param templateType
 	 *            the type of the template
 	 */
@@ -166,9 +169,9 @@ public class TemplateMatcher {
 		for (Object tem : teList) {
 			if (variables.contains(tem) && (tem instanceof CtInvocation)) {
 				CtInvocation<?> listCand = (CtInvocation<?>) tem;
-				boolean ok = listCand.getFactory().Type().createReference(
-						TemplateParameter.class).isAssignableFrom(
-						listCand.getTarget().getType());
+				boolean ok = listCand.getFactory().Type()
+						.createReference(TemplateParameter.class)
+						.isAssignableFrom(listCand.getTarget().getType());
 				return ok ? listCand : null;
 			}
 			if (tem instanceof CtVariable) {
@@ -189,13 +192,13 @@ public class TemplateMatcher {
 	 * Finds all target program sub-trees that correspond to a template. Once
 	 * this method has been called, {@link #getFinds()} will give the mathing
 	 * CtElements if any.
-	 *
+	 * 
 	 * @param targetRoot
 	 *            the target to be tested for match
 	 * @param templateRoot
 	 *            the template to match against
 	 * @return true if there is one or more matches
-	 *
+	 * 
 	 * @see #getFinds()
 	 */
 	public boolean find(CtElement targetRoot, final CtElement templateRoot) {
@@ -220,7 +223,12 @@ public class TemplateMatcher {
 		if (declaration == null) {
 			return new DefaultParameterMatcher();
 		}
-		CtClass<?> clazz = declaration.getParent(CtClass.class);
+		CtClass<?> clazz = null;
+		try {
+			clazz = declaration.getParent(CtClass.class);
+		} catch (ParentNotInitializedException e) {
+			e.printStackTrace();
+		}
 		if (clazz == null) {
 			return new DefaultParameterMatcher();
 		}
@@ -308,7 +316,6 @@ public class TemplateMatcher {
 	/*
 	 * Made private to hide the Objects.
 	 */
-	@SuppressWarnings("unchecked")
 	private boolean helperMatch(Object target, Object template) {
 		if ((target == null) && (template == null)) {
 			return true;
@@ -363,7 +370,8 @@ public class TemplateMatcher {
 		}
 
 		if (template instanceof Collection) {
-			return matchCollections((Collection) target, (Collection) template);
+			return matchCollections((Collection<?>) target,
+					(Collection<?>) template);
 		}
 
 		if (template instanceof Map) {
@@ -371,8 +379,8 @@ public class TemplateMatcher {
 				return true;
 			}
 
-			Map temMap = (Map) template;
-			Map tarMap = (Map) target;
+			Map<?, ?> temMap = (Map<?, ?>) template;
+			Map<?, ?> tarMap = (Map<?, ?>) target;
 
 			if (!temMap.keySet().equals(tarMap.keySet())) {
 				return false;
@@ -416,15 +424,14 @@ public class TemplateMatcher {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private boolean invokeCallBack(Object target, Object template) {
 		try {
 			if (template instanceof CtInvocation) {
-				CtFieldAccess<?> param = (CtFieldAccess) ((CtInvocation<?>) template)
+				CtFieldAccess<?> param = (CtFieldAccess<?>) ((CtInvocation<?>) template)
 						.getTarget();
 				ParameterMatcher instance = getParameterInstance(param
 						.getVariable());
-				return instance.match(this, (CtInvocation) template,
+				return instance.match(this, (CtInvocation<?>) template,
 						(CtElement) target);
 			} else if (template instanceof CtReference) {
 				// Get parameter
@@ -440,8 +447,8 @@ public class TemplateMatcher {
 						(CtReference) target);
 			} else if (template instanceof CtNamedElement) {
 				CtNamedElement named = (CtNamedElement) template;
-				ParameterMatcher instance = findParameterMatcher(named, named
-						.getSimpleName());
+				ParameterMatcher instance = findParameterMatcher(named,
+						named.getSimpleName());
 				return instance.match(this, (CtElement) template,
 						(CtElement) target);
 			}
@@ -479,13 +486,13 @@ public class TemplateMatcher {
 	 * Matches a target program sub-tree against a template. Once this method
 	 * has been called, {@link #getMatches()} will give the mathing parts if
 	 * any.
-	 *
+	 * 
 	 * @param targetRoot
 	 *            the target to be tested for match
 	 * @param templateRoot
 	 *            the template to match against
 	 * @return true if matches
-	 *
+	 * 
 	 * @see #getMatches()
 	 */
 	public boolean match(CtElement targetRoot, CtElement templateRoot) {
@@ -493,17 +500,16 @@ public class TemplateMatcher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean matchCollections(Collection target, Collection template) {
-		List teList = new ArrayList(template);
-		List taList = new ArrayList(target);
-
-		int numOfNonParamsinTeList = teList.size();
+	private boolean matchCollections(Collection<?> target,
+			Collection<?> template) {
+		List<Object> teList = new ArrayList<Object>(template);
+		List<Object> taList = new ArrayList<Object>(target);
 
 		// inMulti keeps the multiElement templateVariable we are at
 		CtElement inMulti = nextListStatement(teList, null);
 
 		// multi keeps the values to assign to inMulti
-		List<CtElement> multi = new ArrayList();
+		List<Object> multi = new ArrayList<Object>();
 
 		if (null == inMulti) {
 			// If we are not looking at template with multiElements
@@ -523,12 +529,11 @@ public class TemplateMatcher {
 		for (int te = 0, ta = 0; (te < teList.size()) && (ta < taList.size()); te++, ta++) {
 
 			if (isCurrentTemplate(teList.get(te), inMulti)) {
-				numOfNonParamsinTeList--;
 				if (te + 1 >= teList.size()) {
 					multi.addAll(taList.subList(te, taList.size()));
-					CtStatementList tpl = templateType.getFactory().Core()
+					CtStatementList<?> tpl = templateType.getFactory().Core()
 							.createStatementList();
-					tpl.setStatements(multi);
+					tpl.setStatements((List<CtStatement>) (List<?>) multi);
 					if (!invokeCallBack(tpl, inMulti)) {
 						return false;
 					}
@@ -538,36 +543,34 @@ public class TemplateMatcher {
 				te++;
 				while ((te < teList.size()) && (ta < taList.size())
 						&& !helperMatch(taList.get(ta), teList.get(te))) {
-					multi.add((CtElement) taList.get(ta));
+					multi.add(taList.get(ta));
 					ta++;
 				}
-				CtStatementList tpl = templateType.getFactory().Core()
+				CtStatementList<Object> tpl = templateType.getFactory().Core()
 						.createStatementList();
-				tpl.setStatements(multi);
+				tpl.setStatements((List<CtStatement>) (List<?>) multi);
 				if (!invokeCallBack(tpl, inMulti)) {
 					return false;
 				}
 				addMatch(inMulti, tpl);
 				// update inMulti
 				inMulti = nextListStatement(teList, inMulti);
-				multi = new ArrayList();
-				numOfNonParamsinTeList--;
+				multi = new ArrayList<Object>();
 			} else {
 				if (!helperMatch(taList.get(ta), teList.get(te))) {
 					return false;
 				}
 				if (!(ta + 1 < taList.size()) && (inMulti != null)) {
-					CtStatementList tpl = templateType.getFactory().Core()
-							.createStatementList();
-					tpl.setStatements(multi);
+					CtStatementList<CtStatement> tpl = templateType
+							.getFactory().Core().createStatementList();
+					tpl.setStatements((List<CtStatement>) (List<?>) multi);
 					if (!invokeCallBack(tpl, inMulti)) {
 						return false;
 					}
 					addMatch(inMulti, tpl);
 					// update inMulti
 					inMulti = nextListStatement(teList, inMulti);
-					multi = new ArrayList();
-					numOfNonParamsinTeList--;
+					multi = new ArrayList<Object>();
 				}
 			}
 		}

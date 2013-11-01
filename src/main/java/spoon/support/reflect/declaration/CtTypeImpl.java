@@ -35,39 +35,61 @@ import spoon.reflect.reference.CtTypeReference;
 public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 		CtType<T> {
 
-	List<CtTypeReference<?>> formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+	private static final long serialVersionUID = 1L;
 
-	Set<CtTypeReference<?>> interfaces = new TreeSet<CtTypeReference<?>>();
+	List<CtTypeReference<?>> formalTypeParameters = EMPTY_LIST();
 
-	Set<CtMethod<?>> methods = new TreeSet<CtMethod<?>>();
+	Set<CtTypeReference<?>> interfaces = EMPTY_SET();
+
+	Set<CtMethod<?>> methods = EMPTY_SET();
 
 	public CtTypeImpl() {
 		super();
 	}
 
 	public <M> boolean addMethod(CtMethod<M> method) {
+		if (methods == CtElementImpl.<CtMethod<?>> EMPTY_SET()) {
+			methods = new TreeSet<CtMethod<?>>();
+		}
 		return methods.add(method);
 	}
 
 	public <S> boolean addSuperInterface(CtTypeReference<S> interfac) {
+		if (interfaces == CtElementImpl.<CtTypeReference<?>> EMPTY_SET()) {
+			interfaces = new TreeSet<CtTypeReference<?>>();
+		}
 		return interfaces.add(interfac);
 	}
 
 	public <M> boolean removeMethod(CtMethod<M> method) {
+		if (methods == CtElementImpl.<CtMethod<?>> EMPTY_SET()) {
+			methods = new TreeSet<CtMethod<?>>();
+		}
 		return methods.remove(method);
 	}
 
 	public <S> boolean removeSuperInterface(CtTypeReference<S> interfac) {
+		if (methods == CtElementImpl.<CtMethod<?>> EMPTY_SET()) {
+			methods = new TreeSet<CtMethod<?>>();
+		}
 		return interfaces.remove(interfac);
 	}
 
-	public boolean addFormalTypeParameters(
+	public boolean addFormalTypeParameter(
 			CtTypeReference<?> formalTypeParameter) {
+		if (formalTypeParameters == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+		}
 		return formalTypeParameters.add(formalTypeParameter);
 	}
 
-	public boolean removeFormalTypeParameters(
+	public boolean removeFormalTypeParameter(
 			CtTypeReference<?> formalTypeParameter) {
+		if (formalTypeParameters == CtElementImpl
+				.<CtTypeReference<?>> EMPTY_LIST()) {
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+		}
 		return formalTypeParameters.remove(formalTypeParameter);
 	}
 
@@ -78,8 +100,8 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 	@SuppressWarnings("unchecked")
 	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType,
 			String name, CtTypeReference<?>... parameterTypes) {
-		for (CtMethod mm : methods) {
-			CtMethod<R> m = mm;
+		for (CtMethod<?> mm : methods) {
+			CtMethod<R> m = (CtMethod<R>) mm;
 			if (m.getSimpleName().equals(name)) {
 				if (!m.getType().equals(returnType)) {
 					continue;

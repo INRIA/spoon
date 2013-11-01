@@ -95,7 +95,7 @@ public abstract class RtHelper {
 		Object target = i.getTarget() == null ? null : ((CtLiteral<?>) i
 				.getTarget()).getValue();
 		List<Object> args = new ArrayList<Object>();
-		for (CtExpression e : i.getArguments()) {
+		for (CtExpression<?> e : i.getArguments()) {
 			args.add(((CtLiteral<?>) e).getValue());
 		}
 		Class<?> c = i.getExecutable().getDeclaringType().getActualClass();

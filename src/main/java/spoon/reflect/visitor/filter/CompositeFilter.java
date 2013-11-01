@@ -29,7 +29,8 @@ import spoon.reflect.visitor.Filter;
 public class CompositeFilter<T extends CtElement> implements Filter<T> {
 
 	/**
-	 * Defines the matching using {@link spoon.reflect.visitor.filter.FilteringOperator}.
+	 * Defines the matching using
+	 * {@link spoon.reflect.visitor.filter.FilteringOperator}.
 	 */
 	public boolean matches(T element) {
 		switch (operator) {
@@ -72,6 +73,7 @@ public class CompositeFilter<T extends CtElement> implements Filter<T> {
 	 * @param filters
 	 *            the filters to be composed
 	 */
+	@SafeVarargs
 	public CompositeFilter(FilteringOperator operator, Filter<T>... filters) {
 		this.filters = filters;
 		this.operator = operator;

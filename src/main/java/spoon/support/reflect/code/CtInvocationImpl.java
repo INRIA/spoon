@@ -29,41 +29,57 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ChildList;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtInvocationImpl<T> extends
 		CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtExpression<?>> arguments = new ChildList<CtExpression<?>>(this);
+	List<CtExpression<?>> arguments = EMPTY_LIST();
 
 	CtBlock<?> block;
 
 	CtExecutableReference<T> executable;
 
-	List<CtExpression<Integer>> indexExpressions = new ChildList<CtExpression<Integer>>(this);
+	List<CtExpression<Integer>> indexExpressions = EMPTY_LIST();
 
-	List<CtTypeReference<?>> genericTypes = new ArrayList<CtTypeReference<?>>();
+	List<CtTypeReference<?>> genericTypes = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtInvocation(this);
 	}
 
 	public void setGenericTypes(List<CtTypeReference<?>> genericTypes) {
-		this.genericTypes =genericTypes;
+		this.genericTypes = genericTypes;
 	}
-	
-	public List<CtTypeReference<?>> getGenericTypes(){
+
+	public List<CtTypeReference<?>> getGenericTypes() {
 		return this.genericTypes;
 	}
+
 	@Override
 	public void setTarget(CtExpression<?> target) {
 		super.setTarget(target);
-		target.setParent(this);
 	}
 
 	public List<CtExpression<?>> getArguments() {
 		return arguments;
+	}
+
+	@Override
+	public void addArgument(CtExpression<?> argument) {
+		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+			arguments = new ArrayList<CtExpression<?>>();
+		}
+		arguments.add(argument);
+	}
+
+	@Override
+	public void removeArgument(CtExpression<?> argument) {
+		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+			arguments = new ArrayList<CtExpression<?>>();
+		}
+		arguments.remove(argument);
 	}
 
 	public CtExecutableReference<T> getExecutable() {
@@ -103,7 +119,7 @@ public class CtInvocationImpl<T> extends
 	};
 
 	public void setArguments(List<CtExpression<?>> arguments) {
-		this.arguments = new ChildList<CtExpression<?>>(arguments,this);
+		this.arguments = arguments;
 	}
 
 	public void setExecutable(CtExecutableReference<T> executable) {
@@ -111,7 +127,7 @@ public class CtInvocationImpl<T> extends
 	}
 
 	public void setIndexExpressions(List<CtExpression<Integer>> indexExpressions) {
-		this.indexExpressions = new ChildList<CtExpression<Integer>>(indexExpressions,this);
+		this.indexExpressions = indexExpressions;
 	}
 
 	String label;

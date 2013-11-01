@@ -45,7 +45,7 @@ public class MethodFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a new method sub-factory.
-	 *
+	 * 
 	 * @param factory
 	 *            the parent factory
 	 */
@@ -55,7 +55,7 @@ public class MethodFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a method.
-	 *
+	 * 
 	 * @param target
 	 *            the class where the method is inserted
 	 * @param modifiers
@@ -79,13 +79,12 @@ public class MethodFactory extends ExecutableFactory {
 		CtMethod<R> method = create(target, modifiers, returnType, name,
 				parameters, thrownTypes);
 		method.setBody(body);
-		body.setParent(method);
 		return method;
 	}
 
 	/**
 	 * Creates a method by copying an existing method.
-	 *
+	 * 
 	 * @param <T>
 	 *            the type of the method
 	 * @param target
@@ -106,13 +105,12 @@ public class MethodFactory extends ExecutableFactory {
 					.getDeclaringType().getReference(), target.getReference());
 		}
 		target.getMethods().add(newMethod);
-		newMethod.setParent(target);
 		return newMethod;
 	}
 
 	/**
 	 * Creates an empty method.
-	 *
+	 * 
 	 * @param target
 	 *            the class where the method is inserted
 	 * @param modifiers
@@ -131,8 +129,7 @@ public class MethodFactory extends ExecutableFactory {
 			String name, List<CtParameter<?>> parameters,
 			Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		CtMethod<T> method = factory.Core().createMethod();
-		target.getMethods().add(method);
-		method.setParent(target);
+		target.addMethod(method);
 		if (modifiers != null) {
 			method.setModifiers(modifiers);
 		}
@@ -141,7 +138,6 @@ public class MethodFactory extends ExecutableFactory {
 		if (parameters != null) {
 			method.setParameters(parameters);
 		}
-		setParent(method, parameters);
 		if (thrownTypes != null) {
 			method.setThrownTypes(thrownTypes);
 		}
@@ -160,12 +156,15 @@ public class MethodFactory extends ExecutableFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtExecutableReference<T> createReference(Method method) {
-		return createReference(factory.Type().createReference(
-				method.getDeclaringClass()), (CtTypeReference<T>) factory
-				.Type().createReference(method.getReturnType()), method
-				.getName(), factory.Type().createReferences(
-				Arrays.asList(method.getParameterTypes())).toArray(
-				new CtTypeReference<?>[0]));
+		return createReference(
+				factory.Type().createReference(method.getDeclaringClass()),
+				(CtTypeReference<T>) factory.Type().createReference(
+						method.getReturnType()),
+				method.getName(),
+				factory.Type()
+						.createReferences(
+								Arrays.asList(method.getParameterTypes()))
+						.toArray(new CtTypeReference<?>[0]));
 	}
 
 	/**
@@ -175,9 +174,10 @@ public class MethodFactory extends ExecutableFactory {
 		Collection<CtMethod<Void>> methods = new ArrayList<CtMethod<Void>>();
 		for (CtSimpleType<?> t : factory.Type().getAll()) {
 			if (t instanceof CtClass) {
-				CtMethod<Void> m = ((CtClass<?>) t).getMethod(factory.Type()
-						.createReference(void.class), "main", factory.Type()
-						.createArrayReference(
+				CtMethod<Void> m = ((CtClass<?>) t).getMethod(
+						factory.Type().createReference(void.class),
+						"main",
+						factory.Type().createArrayReference(
 								factory.Type().createReference(String.class)));
 				if ((m != null)
 						&& m.getModifiers().contains(ModifierKind.STATIC)) {

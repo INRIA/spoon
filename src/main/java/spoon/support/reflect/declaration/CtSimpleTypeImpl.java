@@ -39,11 +39,13 @@ import spoon.support.builder.SnippetCompiler;
 public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		CtSimpleType<T> {
 
+	private static final long serialVersionUID = 1L;
+
 	public <F> boolean addField(CtField<F> field) {
 		if (!this.fields.contains(field)) {
 			return this.fields.add(field);
 		}
-		
+
 		// field already exists
 		return false;
 	}
@@ -88,6 +90,9 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 	}
 
 	public CtSimpleType<?> getDeclaringType() {
+		if(parent == null) {
+			setRootElement(true);
+		}
 		return getParent(CtSimpleType.class);
 	}
 
@@ -104,7 +109,8 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		return fields;
 	}
 
-	public CtSimpleType<?> getNestedType(final String name) {
+	@SuppressWarnings("unchecked")
+	public <N extends CtSimpleType<?>> N getNestedType(final String name) {
 		class NestedTypeScanner extends CtScanner {
 			CtSimpleType<?> type;
 
@@ -159,7 +165,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		}
 		NestedTypeScanner scanner = new NestedTypeScanner();
 		scanner.scan(this);
-		return scanner.getType();
+		return (N) scanner.getType();
 	}
 
 	public Set<CtSimpleType<?>> getNestedTypes() {
@@ -212,8 +218,9 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		if (parentElement instanceof CtPackage) {
 			CtPackage pack = (CtPackage) parentElement;
 			Set<CtSimpleType<?>> types = pack.getTypes();
+			// TODO: define addType()
 			types.add(this);
-			pack.setTypes(types);
+			//pack.setTypes(types);
 		}
 	}
 

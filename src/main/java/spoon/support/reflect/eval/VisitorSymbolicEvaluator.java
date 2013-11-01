@@ -300,8 +300,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		return bp;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected SymbolicInstance evaluateBranches(CtElement... branches) {
+	protected SymbolicInstance<?> evaluateBranches(CtElement... branches) {
 		// System.out.println("branches: "+Arrays.asList(branches));
 		BranchingPoint bp = getBranchingPoint(branches);
 		// System.out.println("bp: "+bp);
@@ -439,17 +438,17 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 						result = null;
 					}
 				} else {
-					result = new SymbolicInstance(this, executable.getType(),
-							false);
+					result = new SymbolicInstance<T>(this,
+							executable.getType(), false);
 				}
 			} else {
 				// not accessible (set the result to the return type or to the
 				// field value if a getter)
-				CtFieldReference fref = null;
+				CtFieldReference<?> fref = null;
 				if (isStateFullExternal(executable.getDeclaringType())) {
 					if ((target != null) && isGetter(executable)) {
 						// System.out.println(m);
-						SymbolicInstance r = null;
+						SymbolicInstance<T> r = null;
 						fref = executable
 								.getFactory()
 								.Field()
@@ -460,7 +459,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 						if (r != null) {
 							result = r;
 						} else {
-							result = new SymbolicInstance(this,
+							result = new SymbolicInstance<T>(this,
 									executable.getType(), false);
 						}
 					} else if ((target != null) && isSetter(executable)) {
@@ -473,17 +472,17 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 										executable.getType(),
 										executable.getSimpleName().substring(3));
 						target.setFieldValue(heap, fref, args.get(0));
-						result = new SymbolicInstance(this,
+						result = new SymbolicInstance<T>(this,
 								executable.getType(), false);
 						// heap.dump();
 						// stack.dump();
 					} else {
-						result = new SymbolicInstance(this,
+						result = new SymbolicInstance<T>(this,
 								executable.getType(), false);
 					}
 				} else {
 					if (!executable.isConstructor()) {
-						result = new SymbolicInstance(this,
+						result = new SymbolicInstance<T>(this,
 								executable.getType(), false);
 					} else {
 						// TODO: JJ - verify this
@@ -564,10 +563,9 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
-		SymbolicInstance left = evaluate(operator.getLeftHandOperand());
-		SymbolicInstance right = evaluate(operator.getRightHandOperand());
+		SymbolicInstance<?> left = evaluate(operator.getLeftHandOperand());
+		SymbolicInstance<?> right = evaluate(operator.getRightHandOperand());
 		switch (operator.getKind()) {
 		case AND:
 		case OR:
@@ -681,8 +679,8 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			return;
 		}
 		if (targetedAccess.getVariable().getSimpleName().equals("class")) {
-			SymbolicInstance<?> type = heap
-					.getType(this, targetedAccess.getType());
+			SymbolicInstance<?> type = heap.getType(this,
+					targetedAccess.getType());
 			result = type;
 			return;
 		}
@@ -693,7 +691,8 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			}
 		}
 		if ((target != null) && !target.isExternal()) {
-			result = heap.get(target.getFieldValue(targetedAccess.getVariable()));
+			result = heap
+					.get(target.getFieldValue(targetedAccess.getVariable()));
 		} else {
 			// set the type to the declared one
 			SymbolicInstance<T> i = new SymbolicInstance<T>(this,
@@ -887,7 +886,6 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		skip(synchro);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void visitCtThrow(CtThrow throwStatement) {
 		throw new SymbolicWrappedException(
 				evaluate(throwStatement.getThrownExpression()), throwStatement,

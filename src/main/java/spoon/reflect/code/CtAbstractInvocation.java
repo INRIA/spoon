@@ -38,6 +38,16 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	List<CtExpression<?>> getArguments();
 
 	/**
+	 * Adds an argument expression to the invocation.
+	 */
+	void addArgument(CtExpression<?> argument);
+
+	/**
+	 * Removes an argument expression from the invocation.
+	 */
+	void removeArgument(CtExpression<?> argument);
+
+	/**
 	 * Returns the invoked executable.
 	 */
 	CtExecutableReference<T> getExecutable();

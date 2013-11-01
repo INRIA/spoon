@@ -24,14 +24,14 @@ public class IntercessionTest {
 
 	@Test
 	public void testInsertBegin() {
-		CtClass clazz = (CtClass) factory
+		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
 						"" + "class X {" + "public void foo() {" + " int x=0;"
 								+ "}" + "};").compile();
-		CtMethod foo = (CtMethod) clazz.getMethods().toArray()[0];
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock body = foo.getBody();
+		CtBlock<?> body = foo.getBody();
 		assertEquals(1, body.getStatements().size());
 
 		// adding a new statement;
@@ -43,15 +43,15 @@ public class IntercessionTest {
 
 	@Test
 	public void testInsertEnd() {
-		CtClass clazz = (CtClass) factory
+		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
 						"" + "class X {" + "public void foo() {" + " int x=0;"
 								+ " String foo=\"toto\";" + "}" + "};")
 				.compile();
-		CtMethod foo = (CtMethod) clazz.getMethods().toArray()[0];
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock body = foo.getBody();
+		CtBlock<?> body = foo.getBody();
 		assertEquals(2, body.getStatements().size());
 
 		// adding a new statement;
@@ -63,15 +63,15 @@ public class IntercessionTest {
 
 	@Test
 	public void testInsertBefore() {
-		CtClass clazz = (CtClass) factory
+		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
 						"" + "class X {" + "public void foo() {" + " int x=0;"
 								+ " int y=0;" + " int z=x+y;" + "}" + "};")
 				.compile();
-		CtMethod foo = (CtMethod) clazz.getMethods().toArray()[0];
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock body = foo.getBody();
+		CtBlock<?> body = foo.getBody();
 		assertEquals(3, body.getStatements().size());
 
 		CtStatement s = (CtStatement) body.getStatements().get(2);
@@ -99,21 +99,21 @@ public class IntercessionTest {
 	public void testInsertIfIntercession() {
 		String ifCode = "if (1 == 0)\n" + "    return 1;\n" + "else\n"
 				+ "    return 0;\n" + "";
-		CtClass clazz = (CtClass) factory
+		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
 						"" + "class X {" + "public int bar() {" + ifCode + "}"
 								+ "};").compile();
-		CtMethod foo = (CtMethod) clazz.getMethods().toArray()[0];
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock body = foo.getBody();
+		CtBlock<?> body = foo.getBody();
 		assertEquals(1, body.getStatements().size());
 
 		CtIf ifStmt = (CtIf) foo.getBody().getStatements().get(0);
 		String s = ifStmt.toString().replace("\r", "");
 		assertEquals(ifCode, s);
-		CtReturn r1 = (CtReturn) ifStmt.getThenStatement();
-		CtReturn r2 = (CtReturn) ifStmt.getElseStatement();
+		CtReturn<?> r1 = (CtReturn<?>) ifStmt.getThenStatement();
+		CtReturn<?> r2 = (CtReturn<?>) ifStmt.getElseStatement();
 
 		ifStmt.setThenStatement(r2);
 		assertSame(r2, ifStmt.getThenStatement());
@@ -128,15 +128,15 @@ public class IntercessionTest {
 
 	@Test
 	public void testInsertAfter() {
-		CtClass clazz = (CtClass) factory
+		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
 						"" + "class X {" + "public void foo() {" + " int x=0;"
 								+ " int y=0;" + " int z=x+y;" + "}" + "};")
 				.compile();
-		CtMethod foo = (CtMethod) clazz.getMethods().toArray()[0];
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock body = foo.getBody();
+		CtBlock<?> body = foo.getBody();
 		assertEquals(3, body.getStatements().size());
 
 		CtStatement s = (CtStatement) body.getStatements().get(2);

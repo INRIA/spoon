@@ -40,6 +40,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.processing.XmlProcessorProperties;
 
 /**
@@ -217,21 +218,25 @@ public class StandardEnvironment implements Serializable, Environment {
 		buffer.append(message);
 
 		// Add sourceposition (javac format)
-		CtSimpleType<?> type = (element instanceof CtSimpleType) ? (CtSimpleType<?>) element
-				: element.getParent(CtSimpleType.class);
-		SourcePosition sp = element.getPosition();
+		try {
+			CtSimpleType<?> type = (element instanceof CtSimpleType) ? (CtSimpleType<?>) element
+					: element.getParent(CtSimpleType.class);
+			SourcePosition sp = element.getPosition();
 
-		if (sp == null) {
-			buffer.append(" (Unknown Source)");
-		} else {
-			buffer.append(" at " + type.getQualifiedName() + ".");
-			CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element
-					: element.getParent(CtExecutable.class);
-			if (exe != null) {
-				buffer.append(exe.getSimpleName());
+			if (sp == null) {
+				buffer.append(" (Unknown Source)");
+			} else {
+				buffer.append(" at " + type.getQualifiedName() + ".");
+				CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element
+						: element.getParent(CtExecutable.class);
+				if (exe != null) {
+					buffer.append(exe.getSimpleName());
+				}
+				buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine()
+						+ ")");
 			}
-			buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine()
-					+ ")");
+		} catch (ParentNotInitializedException e) {
+			buffer.append(" (invalid parent)");
 		}
 
 		print(buffer, severity);

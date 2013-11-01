@@ -1,6 +1,5 @@
 package spoon.support.builder;
 
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -22,6 +21,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.support.builder.support.VirtualFile;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 public class SnippetCompiler {
 
@@ -92,13 +92,19 @@ public class SnippetCompiler {
 
 		CtBlock<Void> body = f.Core().createBlock();
 
-		body.getStatements().add(st);
+		body.addStatement(st);
 
 		Set<ModifierKind> x = new TreeSet<ModifierKind>();
 
-		f.Method().create(w, x, f.Type().createReference(void.class), "wrap",
-				new ArrayList<CtParameter<?>>(),
-				new TreeSet<CtTypeReference<? extends Throwable>>(), body);
+		f.Method().create(
+				w,
+				x,
+				f.Type().createReference(void.class),
+				"wrap",
+				CtElementImpl.<CtParameter<?>> EMPTY_LIST(),
+				CtElementImpl
+						.<CtTypeReference<? extends Throwable>> EMPTY_SET(),
+				body);
 
 		return w;
 	}
@@ -173,13 +179,19 @@ public class SnippetCompiler {
 		CtBlock<B> body = f.Core().createBlock();
 		CtReturn<B> ret = f.Core().createReturn();
 		ret.setReturnedExpression(st);
-		body.getStatements().add(ret);
+		body.addStatement(ret);
 
 		Set<ModifierKind> x = new TreeSet<ModifierKind>();
 
-		f.Method().create(w, x, f.Type().createReference(Object.class), "wrap",
-				new ArrayList<CtParameter<?>>(),
-				new TreeSet<CtTypeReference<? extends Throwable>>(), body);
+		f.Method().create(
+				w,
+				x,
+				f.Type().createReference(Object.class),
+				"wrap",
+				CtElementImpl.<CtParameter<?>> EMPTY_LIST(),
+				CtElementImpl
+						.<CtTypeReference<? extends Throwable>> EMPTY_SET(),
+				body);
 
 		return w;
 	}

@@ -32,7 +32,6 @@ public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>>
 
 	public void setTarget(T target) {
 		this.target = target;
-		target.setParent(this);
 	}
 
 }

@@ -68,14 +68,14 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 				return annotation.getAnnotationType().getActualClass();
 			}
 			Object ret = getElementValue(fieldname);
-			
-			//This is done here because return types should not be CT types; CtLiteral<String> vs String.
+
+			// This is done here because return types should not be CT types;
+			// CtLiteral<String> vs String.
 			if (ret instanceof CtLiteral<?>) {
 				CtLiteral<?> l = (CtLiteral<?>) ret;
 				return l.getValue();
 			}
-			
-			
+
 			return ret;
 		}
 	}
@@ -102,8 +102,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 				return super.put(key, ret);
 			}
 			if (value instanceof Class) {
-				return super.put(key, getFactory().Type().createReference(
-						(Class<?>) value));
+				return super.put(key,
+						getFactory().Type().createReference((Class<?>) value));
 			}
 			return super.put(key, value);
 
@@ -153,26 +153,26 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object convertValue(Object value) {
+	private <E extends Enum<E>> Object convertValue(Object value) {
 		if (value instanceof CtFieldReference) {
-			Class c = ((CtFieldReference) value).getDeclaringType()
+			Class<?> c = ((CtFieldReference<?>) value).getDeclaringType()
 					.getActualClass();
-			if (((CtFieldReference) value).getSimpleName().equals("class")) {
+			if (((CtFieldReference<?>) value).getSimpleName().equals("class")) {
 				return c;
 			}
-			CtField field = ((CtFieldReference) value).getDeclaration();
+			CtField<?> field = ((CtFieldReference<?>) value).getDeclaration();
 			if (Enum.class.isAssignableFrom(c)) {
 				// Value references a Enum field
-				return Enum.valueOf(c, ((CtFieldReference) value)
-						.getSimpleName());
+				return Enum.valueOf((Class<E>) c,
+						((CtFieldReference<?>) value).getSimpleName());
 			}
 			// Value is a static final
 			if (field != null) {
 				return convertValue(field.getDefaultExpression());
 			} else {
 				try {
-					return ((Field) ((CtFieldReference) value).getActualField())
-							.get(null);
+					return ((Field) ((CtFieldReference<?>) value)
+							.getActualField()).get(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -180,27 +180,26 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 			}
 		} else if (value instanceof CtFieldAccess) {
 			// Get variable
-			return convertValue(((CtFieldAccess) value).getVariable());
+			return convertValue(((CtFieldAccess<?>) value).getVariable());
 		} else if (value instanceof CtAnnotation) {
 			// Get proxy
-			return ((CtAnnotation) value).getActualAnnotation();
+			return ((CtAnnotation<?>) value).getActualAnnotation();
 		} else if (value instanceof CtLiteral) {
 			// Replace literal by his value
-			return ((CtLiteral) value).getValue();
+			return ((CtLiteral<?>) value).getValue();
 		} else if (value instanceof CtCodeElement) {
 			// Evaluate code elements
 			PartialEvaluator eval = getFactory().Eval()
 					.createPartialEvaluator();
-			Object ret = eval.evaluate(((CtCodeElement) value).getParent(),
-					(CtCodeElement) value);
+			Object ret = eval.evaluate(null, (CtCodeElement) value);
 			if (!(ret instanceof CtCodeElement)) {
 				return convertValue(ret);
 			}
-			
+
 			return ret;
 		} else if (value instanceof CtTypeReference) {
 			// Get RT class for References
-			return ((CtTypeReference) value).getActualClass();
+			return ((CtTypeReference<?>) value).getActualClass();
 		}
 		return value;
 	}
@@ -237,7 +236,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 		return ret;
 	}
 
-	public Object getElementValue(String key) {
+	@SuppressWarnings("unchecked")
+	public <T> T getElementValue(String key) {
 		Object ret = null;
 		ret = elementValues.get(key);
 		if (ret == null) {
@@ -263,8 +263,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 
 			}
 			Collection<?> col = (Collection<?>) ret;
-			Object[] array = (Object[]) Array.newInstance(type
-					.getComponentType(), col.size());
+			Object[] array = (Object[]) Array.newInstance(
+					type.getComponentType(), col.size());
 			int i = 0;
 			for (Object obj : col) {
 				array[i++] = convertValue(obj);
@@ -292,7 +292,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 				ret = Long.parseLong(ret.toString());
 			}
 		}
-		return ret;
+		return (T) ret;
 	}
 
 	public Map<String, Object> getElementValues() {

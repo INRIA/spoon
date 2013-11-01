@@ -51,7 +51,6 @@ public class EnumFactory extends TypeFactory {
 		CtEnum<?> e = factory.Core().createEnum();
 		e.setSimpleName(simpleName);
 		owner.getTypes().add(e);
-		e.setParent(owner);
 		return e;
 	}
 
@@ -59,8 +58,9 @@ public class EnumFactory extends TypeFactory {
 	 * Creates an enum from its qualified name.
 	 */
 	public CtEnum<?> create(String qualifiedName) {
-		return create(factory.Package().getOrCreate(
-				getPackageName(qualifiedName)), getSimpleName(qualifiedName));
+		return create(
+				factory.Package().getOrCreate(getPackageName(qualifiedName)),
+				getSimpleName(qualifiedName));
 	}
 
 	/**
@@ -69,9 +69,9 @@ public class EnumFactory extends TypeFactory {
 	 * @return the enumeration or null if does not exist
 	 */
 	@SuppressWarnings("unchecked")
-	public CtEnum get(String qualifiedName) {
+	public CtEnum<?> get(String qualifiedName) {
 		try {
-			return (CtEnum) super.get(qualifiedName);
+			return (CtEnum<?>) super.get(qualifiedName);
 		} catch (Exception e) {
 			return null;
 		}
@@ -83,17 +83,16 @@ public class EnumFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param cl
-	 *            the java class: note that this class should be Class<T> but
-	 *            it then poses problem when T is a generic type itself
+	 *            the java class: note that this class should be Class<T> but it
+	 *            then poses problem when T is a generic type itself
 	 */
-	@SuppressWarnings("unchecked")
-	public <T extends Enum<?>> CtEnum<T> getEnum(Class<?> cl) {
+	public <T extends Enum<?>> CtEnum<T> getEnum(Class<T> cl) {
 		try {
-			CtSimpleType t=super.get(cl);
+			CtSimpleType<T> t = super.get(cl);
 			return (CtEnum<T>) t;
 		} catch (Exception e) {
 			return null;
 		}
-	} 
+	}
 
 }

@@ -33,7 +33,6 @@ public class CtArrayAccessImpl<T, V extends CtExpression<?>> extends
 
 	public void setIndexExpression(CtExpression<Integer> expression) {
 		this.expression = expression;
-		expression.setParent(this);
 	}
 
 	public void accept(CtVisitor visitor) {
