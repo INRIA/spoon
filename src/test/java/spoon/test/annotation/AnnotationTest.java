@@ -3,24 +3,18 @@ package spoon.test.annotation;
 import static org.junit.Assert.assertEquals;
 import static spoon.test.TestUtils.build;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 
+import spoon.Spoon;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
-import spoon.support.builder.SpoonCompiler;
-import spoon.support.builder.SpoonFile;
-import spoon.support.builder.support.FileSystemFile;
 
 public class AnnotationTest {
 
@@ -35,15 +29,13 @@ public class AnnotationTest {
 	public void testModelBuildingAnnotationBoundUsage() throws Exception {
 		// we can not use TestUtils.build because we need to compile two classes
 		// at the same time
-		SpoonCompiler comp = new SpoonCompiler();
-		List<SpoonFile> files = new ArrayList<>();
-		files.add(new FileSystemFile(new File(
-				"./src/test/java/spoon/test/annotation/Bound.java")));
-		files.add(new FileSystemFile(new File(
-				"./src/test/java/spoon/test/annotation/Main.java")));
-		Factory factory = new Factory(new DefaultCoreFactory(),
-				new StandardEnvironment());
-		comp.compileSrc(factory, files);
+		Factory factory = Spoon.createFactory();
+		Spoon.createCompiler().build(
+				factory,
+				SpoonResourceHelper.files(
+						"./src/test/java/spoon/test/annotation/Bound.java",
+						"./src/test/java/spoon/test/annotation/Main.java"));
+
 		CtSimpleType<?> type = factory.Package().get("spoon.test.annotation")
 				.getType("Main");
 

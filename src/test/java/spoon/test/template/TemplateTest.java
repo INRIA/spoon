@@ -2,44 +2,32 @@ package spoon.test.template;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
+import spoon.Spoon;
+import spoon.compiler.SpoonCompiler;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
-import spoon.support.builder.SpoonCompiler;
-import spoon.support.builder.SpoonFile;
-import spoon.support.builder.support.FileSystemFile;
 import spoon.template.Substitution;
 
 public class TemplateTest {
 
 	@Test
 	public void testTemplateInheritance() throws Exception {
-		SpoonCompiler comp = new SpoonCompiler();
-		List<SpoonFile> files = new ArrayList<>();
-		files.add(new FileSystemFile(new File(
-				"./src/test/java/spoon/test/template/SubClass.java")));
-		files.add(new FileSystemFile(new File(
-				"./src/test/java/spoon/test/template/SuperClass.java")));
-		List<SpoonFile> templates = new ArrayList<>();
-		templates.add(new FileSystemFile(new File(
-				"./src/test/java/spoon/test/template/SubTemplate.java")));
-		templates.add(new FileSystemFile(new File(
-				"./src/test/java/spoon/test/template/SuperTemplate.java")));
-		Factory factory = new Factory(new DefaultCoreFactory(),
-				new StandardEnvironment());
-		comp.compileSrc(factory, files);
-		comp.compileTemplate(factory, templates);
+		SpoonCompiler compiler = Spoon.createCompiler();
+		Factory factory = Spoon.createFactory();
+		compiler.build(factory, SpoonResourceHelper.files(
+				"./src/test/java/spoon/test/template/SubClass.java",
+				"./src/test/java/spoon/test/template/SuperClass.java"));
+		compiler.buildTemplates(factory, SpoonResourceHelper.files(
+				"./src/test/java/spoon/test/template/SubTemplate.java",
+				"./src/test/java/spoon/test/template/SuperTemplate.java"));
 
 		CtClass<?> superc = factory.Class().get(SuperClass.class);
 		// superc.updateAllParentsBelow();
@@ -61,19 +49,14 @@ public class TemplateTest {
 
 	@Test
 	public void testTemplateC1() throws Exception {
-		SpoonCompiler comp = new SpoonCompiler();
-		List<SpoonFile> files = new ArrayList<>();
-		files.add(new FileSystemFile(new File(
-				"./src/test/java/spoon/test/template/C1.java")));
-		List<SpoonFile> templates = new ArrayList<>();
-		templates
-				.add(new FileSystemFile(
-						new File(
-								"./src/test/java/spoon/test/template/TemplateWithConstructor.java")));
-		Factory factory = new Factory(new DefaultCoreFactory(),
-				new StandardEnvironment());
-		comp.compileSrc(factory, files);
-		comp.compileTemplate(factory, templates);
+		SpoonCompiler compiler = Spoon.createCompiler();
+		Factory factory = Spoon.createFactory();
+		compiler.build(factory, SpoonResourceHelper
+				.files("./src/test/java/spoon/test/template/C1.java"));
+		compiler.buildTemplates(
+				factory,
+				SpoonResourceHelper
+						.files("./src/test/java/spoon/test/template/TemplateWithConstructor.java"));
 
 		CtClass<?> c1 = factory.Class().get(C1.class);
 
