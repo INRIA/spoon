@@ -28,7 +28,7 @@ import java.util.TreeMap;
 
 import org.xml.sax.SAXException;
 
-import spoon.processing.Environment;
+import spoon.compiler.Environment;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -103,6 +103,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		return autoImports;
 	}
 
+	@Override
 	public void setAutoImports(boolean autoImports) {
 		this.autoImports = autoImports;
 	}
@@ -298,10 +299,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		defaultFileGenerator.setFactory(getFactory());
 	}
 
-	public void setFactory(Factory factory) {
-		this.factory = factory;
-	}
-
 	public void setManager(ProcessingManager manager) {
 		this.manager = manager;
 	}
@@ -314,10 +311,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.verbose = verbose;
 	}
 
-	/**
-	 * Sets the root folder where the processors' XML configuration files are
-	 * located.
-	 */
 	public void setXmlRootFolder(File xmlRootFolder) {
 		this.xmlRootFolder = xmlRootFolder;
 	}

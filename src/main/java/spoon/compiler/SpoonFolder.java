@@ -15,15 +15,33 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.builder;
+package spoon.compiler;
 
-public interface SpoonRessource {
+import java.util.List;
 
-	SpoonFolder getParent();
+/**
+ * A Spoon resource that represents a folder.
+ */
+public interface SpoonFolder extends SpoonResource {
 
-	String getName();
+	/**
+	 * Gets all the files (excluding folders) in the folder.
+	 */
+	List<SpoonFile> getFiles();
 
-	boolean isFile();
+	/**
+	 * Gets all the files (including folders) in the folder.
+	 */
+	List<SpoonFile> getAllFiles();
 
-	String getPath();
+	/**
+	 * Gets all the Java source files in the folder.
+	 */
+	List<SpoonFile> getAllJavaFiles();
+
+	/**
+	 * Gets the subfolders in this folder.
+	 */
+	List<SpoonFolder> getSubFolders();
+
 }

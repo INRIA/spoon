@@ -19,7 +19,7 @@ package spoon.reflect.cu;
 
 import java.io.File;
 
-import spoon.processing.Environment;
+import spoon.compiler.Environment;
 
 /**
  * This interface represents the position of a program element in a source file.

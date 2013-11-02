@@ -15,8 +15,16 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.processing;
+package spoon.compiler;
 
+import java.io.File;
+
+import spoon.processing.FileGenerator;
+import spoon.processing.ProblemFixer;
+import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
+import spoon.processing.ProcessorProperties;
+import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -24,7 +32,7 @@ import spoon.reflect.declaration.CtElement;
  * accessible through {@link spoon.reflect.Factory#getEnvironment()}. Its
  * primary use is to report messages, warnings, and errors.
  */
-public interface Environment extends FactoryAccessor {
+public interface Environment {
 
 	/**
 	 * Gets the Java version compliance level.
@@ -220,5 +228,13 @@ public interface Environment extends FactoryAccessor {
 	 * Sets the current classpath.
 	 */
 	void setClasspath(String classpath);
+
+	void setAutoImports(boolean autoImports);
+
+	/**
+	 * Sets the root folder where the processors' XML configuration files are
+	 * located.
+	 */
+	void setXmlRootFolder(File xmlRootFolder);
 
 }

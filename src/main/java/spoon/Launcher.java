@@ -16,7 +16,6 @@
  */
 package spoon;
 
-import spoon.reflect.Factory;
 import spoon.support.gui.SpoonModelTree;
 
 import com.martiansoftware.jsap.JSAP;
@@ -31,23 +30,36 @@ import com.martiansoftware.jsap.Switch;
  * usage.
  * 
  * 
- * @see spoon.processing.Environment
+ * @see spoon.compiler.Environment
  * @see spoon.reflect.Factory
- * @see spoon.processing.Builder
+ * @see spoon.compiler.SpoonCompiler
  * @see spoon.processing.ProcessingManager
  * @see spoon.processing.Processor
  */
 public class Launcher extends AbstractLauncher {
+
+	private static Launcher instance;
+
+	/**
+	 * Gets the launcher instance.
+	 */
+	public static Launcher getInstance() {
+		return instance;
+	}
+
 	/**
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
 	 */
 	public static void main(String[] args) throws Exception {
+		// Main.compile(new String[] { "-help" }, new PrintWriter(System.out),
+		// new PrintWriter(System.err), null);
 		if (args.length != 0) {
-			new Launcher(args).run();
+			instance = new Launcher(args);
 		} else {
-			new Launcher(new String[] { "--help" }).run();
+			instance = new Launcher(new String[] { "--help" });
 		}
+		instance.run();
 	}
 
 	/**
@@ -96,26 +108,6 @@ public class Launcher extends AbstractLauncher {
 		jsap.registerParameter(sw1);
 
 		return jsap;
-	}
-
-	/**
-	 * Creates the factory and associated environment for constructing the
-	 * model, initialized with the launcher's arguments.
-	 */
-	@Override
-	protected Factory createFactory() {
-		Factory f = super.createFactory();
-
-		// if (getArguments().getBoolean("compile")) {
-		// FileGenerator<?> printer = f.getEnvironment()
-		// .getDefaultFileGenerator();
-		// ByteCodeOutputProcessor p = new ByteCodeOutputProcessor(
-		// (JavaOutputProcessor) printer, getArguments().getFile(
-		// "build"));
-		// f.getEnvironment().setDefaultFileGenerator(p);
-		// }
-
-		return f;
 	}
 
 	/**

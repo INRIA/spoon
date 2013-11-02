@@ -34,7 +34,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
-import spoon.support.builder.SnippetCompiler;
+import spoon.support.compiler.SnippetCompilationHelper;
 
 public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		CtSimpleType<T> {
@@ -209,7 +209,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 	}
 
 	public void compileAndReplaceSnippets() {
-		SnippetCompiler.compileAndReplaceSnippetsIn(this);
+		SnippetCompilationHelper.compileAndReplaceSnippetsIn(this);
 	}
 
 	@Override

@@ -15,56 +15,23 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.builder.support;
+package spoon.compiler;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import spoon.support.builder.SpoonFile;
-import spoon.support.builder.SpoonFolder;
+/**
+ * This interface represents files that can be uses as resources for the Spoon
+ * compiler.
+ */
+public interface SpoonFile extends SpoonResource {
 
-public class ZipFile implements SpoonFile {
+	/**
+	 * Gets the file content as a stream.
+	 */
+	InputStream getContent();
 
-	byte[] buffer;
-
-	String name;
-
-	ZipFolder parent;
-
-	public ZipFile(ZipFolder parent, String name, byte[] buffer) {
-		super();
-		this.buffer = buffer;
-		this.name = name;
-		this.parent = parent;
-	}
-
-	public InputStream getContent() {
-		return new ByteArrayInputStream(buffer);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public SpoonFolder getParent() {
-		return parent;
-	}
-
-	public boolean isFile() {
-		return true;
-	}
-
-	public boolean isJava() {
-		return getName().endsWith(".java");
-	}
-
-	public String getPath() {
-		return toString();
-	}
-	
-	@Override
-	public String toString() {
-		return getName();
-	}
-
+	/**
+	 * True if a Java source code file.
+	 */
+	boolean isJava();
 }

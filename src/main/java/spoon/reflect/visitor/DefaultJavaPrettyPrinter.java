@@ -27,7 +27,8 @@ import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.TreeMap;
 
-import spoon.processing.Environment;
+import spoon.compiler.Environment;
+import spoon.reflect.Factory;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -569,7 +570,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			for (Entry<String, Object> e : annotation.getElementValues()
 					.entrySet()) {
 				write(e.getKey() + " = ");
-				writeAnnotationElement(e.getValue());
+				writeAnnotationElement(annotation.getFactory(), e.getValue());
 				write(", ");
 			}
 			removeLastChar();
@@ -1764,7 +1765,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Writes an annotation element.
 	 */
-	public DefaultJavaPrettyPrinter writeAnnotationElement(Object value) {
+	public DefaultJavaPrettyPrinter writeAnnotationElement(Factory factory,
+			Object value) {
 		if (value instanceof CtTypeReference) {
 			context.ignoreGenerics = true;
 			scan((CtTypeReference<?>) value).write(".class");
@@ -1782,7 +1784,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("{");
 			if (!((Collection<?>) value).isEmpty()) {
 				for (Object obj : (Collection<?>) value) {
-					writeAnnotationElement(obj);
+					writeAnnotationElement(factory, obj);
 					write(" ,");
 				}
 				removeLastChar();
@@ -1790,8 +1792,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("}");
 		} else if (value instanceof Enum) {
 			context.ignoreGenerics = true;
-			scan(env.getFactory().Type()
-					.createReference(((Enum<?>) value).getDeclaringClass()));
+			scan(factory.Type().createReference(
+					((Enum<?>) value).getDeclaringClass()));
 			context.ignoreGenerics = false;
 			write(".");
 			write(value.toString());

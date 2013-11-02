@@ -28,7 +28,7 @@ import spoon.reflect.declaration.CtElement;
  * processors that generate files during processing. For a given processing
  * environment, the default file generator is set to the default ouput directory
  * that is retrieved by using
- * {@link spoon.processing.Environment#getDefaultFileGenerator()}.
+ * {@link spoon.compiler.Environment#getDefaultFileGenerator()}.
  */
 public interface FileGenerator<T extends CtElement> extends Processor<T> {
 

@@ -17,6 +17,8 @@
 
 package spoon.processing;
 
+import spoon.compiler.Environment;
+
 /**
  * Enumeration that specifies the severity of the message reported by processors
  * 

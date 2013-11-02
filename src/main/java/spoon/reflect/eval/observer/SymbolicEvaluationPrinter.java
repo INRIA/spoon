@@ -1,6 +1,6 @@
 package spoon.reflect.eval.observer;
 
-import spoon.processing.Environment;
+import spoon.compiler.Environment;
 import spoon.reflect.eval.SymbolicEvaluationStep;
 import spoon.reflect.eval.SymbolicEvaluator;
 import spoon.reflect.eval.SymbolicEvaluatorObserver;

@@ -19,7 +19,7 @@ package spoon.reflect.visitor;
 
 import java.util.Stack;
 
-import spoon.processing.Environment;
+import spoon.compiler.Environment;
 import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
 

@@ -17,6 +17,7 @@
 
 package spoon.processing;
 
+import spoon.compiler.Environment;
 import spoon.reflect.Changes;
 import spoon.reflect.declaration.CtElement;
 

@@ -3,8 +3,8 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.builder.SnippetCompilationError;
-import spoon.support.builder.SnippetCompiler;
+import spoon.support.compiler.SnippetCompilationError;
+import spoon.support.compiler.SnippetCompilationHelper;
 
 public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
 		CtCodeSnippetStatement {
@@ -27,7 +27,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
 
 	@SuppressWarnings("unchecked")
 	public <S extends CtStatement> S compile() throws SnippetCompilationError {
-		return (S) SnippetCompiler.compileStatement(this);
+		return (S) SnippetCompilationHelper.compileStatement(this);
 	}
 
 }
