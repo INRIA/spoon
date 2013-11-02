@@ -29,7 +29,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import spoon.processing.Builder;
+import spoon.compiler.SpoonCompiler;
+import spoon.compiler.Environment;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
+import spoon.compiler.SpoonResource;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Severity;
@@ -38,11 +43,8 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
-import spoon.support.builder.SpoonFile;
-import spoon.support.builder.SpoonFolder;
-import spoon.support.builder.SpoonRessource;
-import spoon.support.builder.FileFactory;
-import spoon.support.builder.support.ZipFolder;
+import spoon.support.compiler.JDTCompiler;
+import spoon.support.compiler.ZipFolder;
 import spoon.support.processing.SpoonletXmlHandler;
 
 import com.martiansoftware.jsap.FlaggedOption;
@@ -64,7 +66,7 @@ public abstract class AbstractLauncher {
 
 	protected Factory factory;
 
-	private List<SpoonRessource> inputResources = new ArrayList<SpoonRessource>();
+	private List<SpoonResource> inputResources = new ArrayList<SpoonResource>();
 
 	/**
 	 * Contains the arguments accepted by this launcher (available after
@@ -74,7 +76,9 @@ public abstract class AbstractLauncher {
 
 	private List<String> processors = new ArrayList<String>();
 
-	private List<SpoonRessource> templateResources = new ArrayList<SpoonRessource>();
+	private List<SpoonResource> templateResources = new ArrayList<SpoonResource>();
+
+	private Environment environment;
 
 	/**
 	 * Constructor with no arguments.
@@ -94,7 +98,7 @@ public abstract class AbstractLauncher {
 	/**
 	 * Adds an input resource to be processed by Spoon.
 	 */
-	public void addInputResource(SpoonRessource resource) {
+	public void addInputResource(SpoonResource resource) {
 		inputResources.add(resource);
 	}
 
@@ -108,7 +112,7 @@ public abstract class AbstractLauncher {
 	/**
 	 * Adds a resource that contains a template (usually a source File).
 	 */
-	public void addTemplateResource(SpoonRessource resource) {
+	public void addTemplateResource(SpoonResource resource) {
 		templateResources.add(resource);
 	}
 
@@ -118,51 +122,51 @@ public abstract class AbstractLauncher {
 	 */
 	protected void build() throws Exception {
 		// building
-		Builder builder = getFactory().getBuilder();
+		SpoonCompiler compiler = new JDTCompiler();
 
 		try {
-			for (SpoonRessource f : getInputSources()) {
-				builder.addInputSource(f);
+			for (SpoonResource f : getInputSources()) {
+				compiler.addInputSource(f);
 			}
-			for (SpoonRessource f : getTemplateSources()) {
-				builder.addTemplateSource(f);
+			for (SpoonResource f : getTemplateSources()) {
+				compiler.addTemplateSource(f);
 			}
 		} catch (IOException e) {
-			getFactory().getEnvironment().report(null, Severity.ERROR,
+			getEnvironment().report(null, Severity.ERROR,
 					"Error while loading resource : " + e.getMessage());
-			if (getFactory().getEnvironment().isDebug()) {
+			if (getEnvironment().isDebug()) {
 				e.printStackTrace();
 			}
 		}
-		builder.build();
+		compiler.build(getFactory());
 	}
 
 	/**
-	 * Creates the factory and associated environment for constructing the
-	 * model, initialized with the launcher's arguments.
+	 * Creates the environment initialized with the launcher's arguments. This
+	 * method can be overridden to tune the environment initialization.
 	 */
-	protected Factory createFactory() {
-		StandardEnvironment env = new StandardEnvironment();
-		Factory factory = new Factory(new DefaultCoreFactory(), env);
+	protected Environment createEnvironment() {
+		Environment environment = new StandardEnvironment();
 
 		// environment initialization
-		env.setComplianceLevel(getArguments().getInt("compliance"));
-		env.setVerbose(true);
-		env.setXmlRootFolder(getArguments().getFile("properties"));
+		environment.setComplianceLevel(getArguments().getInt("compliance"));
+		environment.setVerbose(true);
+		environment.setXmlRootFolder(getArguments().getFile("properties"));
 
 		JavaOutputProcessor printer = new JavaOutputProcessor(getArguments()
 				.getFile("output"));
-		env.setDefaultFileGenerator(printer);
+		environment.setDefaultFileGenerator(printer);
 
-		env.setVerbose(getArguments().getBoolean("verbose")
+		environment.setVerbose(getArguments().getBoolean("verbose")
 				|| getArguments().getBoolean("debug"));
-		env.setDebug(getArguments().getBoolean("debug"));
-		env.setAutoImports(getArguments().getBoolean("imports"));
+		environment.setDebug(getArguments().getBoolean("debug"));
+		environment.setAutoImports(getArguments().getBoolean("imports"));
 
-		env.setTabulationSize(getArguments().getInt("tabsize"));
-		env.useTabulations(getArguments().getBoolean("tabs"));
-		env.useSourceCodeFragments(getArguments().getBoolean("fragments"));
-		return factory;
+		environment.setTabulationSize(getArguments().getInt("tabsize"));
+		environment.useTabulations(getArguments().getBoolean("tabs"));
+		environment.useSourceCodeFragments(getArguments().getBoolean(
+				"fragments"));
+		return environment;
 	}
 
 	/**
@@ -318,16 +322,6 @@ public abstract class AbstractLauncher {
 	}
 
 	/**
-	 * Gets the factory which contains the built model.
-	 */
-	public final Factory getFactory() {
-		if (factory == null) {
-			factory = createFactory();
-		}
-		return factory;
-	}
-
-	/**
 	 * Processes the arguments.
 	 */
 	protected void processArguments() {
@@ -336,11 +330,11 @@ public abstract class AbstractLauncher {
 			for (String s : getArguments().getString("input").split(
 					"[" + File.pathSeparatorChar + "]")) {
 				try {
-					inputResources.add(FileFactory.createResource(new File(s)));
+					inputResources.add(SpoonResourceHelper.createResource(new File(s)));
 				} catch (FileNotFoundException e) {
-					getFactory().getEnvironment().report(null, Severity.ERROR,
+					getEnvironment().report(null, Severity.ERROR,
 							"Unable to add source file : " + e.getMessage());
-					if (getFactory().getEnvironment().isDebug()) {
+					if (getEnvironment().isDebug()) {
 						e.printStackTrace();
 					}
 				}
@@ -359,11 +353,11 @@ public abstract class AbstractLauncher {
 			for (String s : getArguments().getString("template").split(
 					"[" + File.pathSeparatorChar + "]")) {
 				try {
-					addTemplateResource(FileFactory.createResource(new File(s)));
+					addTemplateResource(SpoonResourceHelper.createResource(new File(s)));
 				} catch (FileNotFoundException e) {
-					getFactory().getEnvironment().report(null, Severity.ERROR,
+					getEnvironment().report(null, Severity.ERROR,
 							"Unable to add template file: " + e.getMessage());
-					if (getFactory().getEnvironment().isDebug()) {
+					if (getEnvironment().isDebug()) {
 						e.printStackTrace();
 					}
 				}
@@ -378,8 +372,8 @@ public abstract class AbstractLauncher {
 		}
 
 		if (getArguments().getString("classpath") != null) {
-			getFactory().getEnvironment().setClasspath(
-					getArguments().getString("classpath"));
+			getEnvironment()
+					.setClasspath(getArguments().getString("classpath"));
 		}
 
 	}
@@ -388,7 +382,7 @@ public abstract class AbstractLauncher {
 	 * Gets the list of input sources as files. This method can be overriden to
 	 * customize this list.
 	 */
-	protected java.util.List<SpoonRessource> getInputSources() {
+	protected java.util.List<SpoonResource> getInputSources() {
 		return inputResources;
 	}
 
@@ -403,7 +397,7 @@ public abstract class AbstractLauncher {
 	/**
 	 * Gets the list of template sources as files.
 	 */
-	protected List<SpoonRessource> getTemplateSources() {
+	protected List<SpoonResource> getTemplateSources() {
 		return templateResources;
 	}
 
@@ -415,14 +409,14 @@ public abstract class AbstractLauncher {
 		try {
 			folder = new ZipFolder(spoonletFile);
 		} catch (IOException e) {
-			getFactory().getEnvironment().report(null, Severity.ERROR,
+			getEnvironment().report(null, Severity.ERROR,
 					"Unable to load spoonlet: " + e.getMessage());
-			if (getFactory().getEnvironment().isDebug()) {
+			if (getEnvironment().isDebug()) {
 				e.printStackTrace();
 			}
 			return;
 		}
-		List<SpoonRessource> spoonletIndex = new ArrayList<SpoonRessource>();
+		List<SpoonResource> spoonletIndex = new ArrayList<SpoonResource>();
 		SpoonFile configFile = null;
 		for (SpoonFile file : folder.getAllFiles()) {
 			if (file.isJava()) {
@@ -434,7 +428,7 @@ public abstract class AbstractLauncher {
 		}
 
 		if (configFile == null) {
-			getFactory().getEnvironment().report(
+			getEnvironment().report(
 					null,
 					Severity.ERROR,
 					"No configuration file in spoonlet "
@@ -492,11 +486,10 @@ public abstract class AbstractLauncher {
 	 * Prints out the built model into files.
 	 */
 	protected void print() {
-		if (getFactory().getEnvironment().getDefaultFileGenerator() != null) {
+		if (getEnvironment().getDefaultFileGenerator() != null) {
 			ProcessingManager processing = new QueueProcessingManager(
 					getFactory());
-			processing.addProcessor(getFactory().getEnvironment()
-					.getDefaultFileGenerator());
+			processing.addProcessor(getEnvironment().getDefaultFileGenerator());
 			processing.process();
 		}
 	}
@@ -509,7 +502,7 @@ public abstract class AbstractLauncher {
 		ProcessingManager processing = new QueueProcessingManager(getFactory());
 		for (String processorName : getProcessorTypes()) {
 			processing.addProcessor(processorName);
-			getFactory().getEnvironment().debugMessage(
+			getEnvironment().debugMessage(
 					"Loaded processor " + processorName + ".");
 		}
 
@@ -521,34 +514,31 @@ public abstract class AbstractLauncher {
 	 */
 	public void run() throws Exception {
 
-		getFactory().getEnvironment()
-				.reportProgressMessage("Spoon version 2.0");
+		getEnvironment().reportProgressMessage("Spoon version 2.0");
 
-		getFactory().getEnvironment().debugMessage(
-				"loading command-line arguments...");
+		getEnvironment().debugMessage("loading command-line arguments...");
 		processArguments();
 
 		if (arguments.getBoolean("fragments")) {
-			getFactory().getEnvironment().reportProgressMessage(
+			getEnvironment().reportProgressMessage(
 					"running in 'fragments' mode: AST changes will be ignored");
 		}
-		getFactory().getEnvironment().reportProgressMessage(
-				"start processing...");
+		getEnvironment().reportProgressMessage("start processing...");
 
 		long t = System.currentTimeMillis();
 		long tstart = t;
+		
 		build();
-		getFactory().getEnvironment().debugMessage(
+		getEnvironment().debugMessage(
 				"model built in " + (System.currentTimeMillis() - t) + " ms");
 		t = System.currentTimeMillis();
 		process();
-		getFactory().getEnvironment().debugMessage(
+		getEnvironment().debugMessage(
 				"model processed in " + (System.currentTimeMillis() - t)
 						+ " ms");
 		t = System.currentTimeMillis();
 		print();
-		FileGenerator<?> fg = getFactory().getEnvironment()
-				.getDefaultFileGenerator();
+		FileGenerator<?> fg = getEnvironment().getDefaultFileGenerator();
 		if (fg != null) {
 			// if (arguments.getBoolean("compile")) {
 			// getFactory().getEnvironment().debugMessage(
@@ -556,18 +546,45 @@ public abstract class AbstractLauncher {
 			// + (System.currentTimeMillis() - t) + " ms");
 			// } else
 			{
-				getFactory().getEnvironment().debugMessage(
+				getEnvironment().debugMessage(
 						"generated source in "
 								+ (System.currentTimeMillis() - t) + " ms");
 			}
-			getFactory().getEnvironment().debugMessage(
+			getEnvironment().debugMessage(
 					"output directory: " + fg.getOutputDirectory());
 		}
 		t = System.currentTimeMillis();
 
-		getFactory().getEnvironment().debugMessage(
+		getEnvironment().debugMessage(
 				"program spooning done in " + (t - tstart) + " ms");
-		getFactory().getEnvironment().reportEnd();
+		getEnvironment().reportEnd();
 
+	}
+
+	/**
+	 * Gets the launcher's environment (to be used by default).
+	 */
+	public final Environment getEnvironment() {
+		if (environment == null) {
+			environment = createEnvironment();
+		}
+		return environment;
+	}
+
+	/**
+	 * This method can be overridden to tune the factory's initialization.
+	 */
+	protected Factory createFactory() {
+		return new Factory(new DefaultCoreFactory(), getEnvironment());
+	}
+
+	/**
+	 * Gets the launcher's factory (to be used by default).
+	 */
+	public final Factory getFactory() {
+		if (factory == null) {
+			factory = createFactory();
+		}
+		return factory;
 	}
 }

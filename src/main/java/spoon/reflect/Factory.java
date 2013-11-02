@@ -22,8 +22,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import spoon.processing.Builder;
-import spoon.processing.Environment;
+import spoon.compiler.Environment;
+import spoon.compiler.SpoonCompiler;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -56,18 +56,20 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import spoon.support.builder.SpoonBuildingManager;
 
 /**
- * This class defines the entry point API to create and access the program's
- * model. Element-specific methods are defined in the sub-factories. An instance
- * of the current factory can be retrieved at any place where a
- * {@link spoon.processing.FactoryAccessor} instance is available (that is to
- * say, any processor or model element). Factory methods ensure the model's
- * consistency and should be always used when creating model elements. The
- * {@link spoon.reflect.CoreFactory} is used to create raw elements, but model
- * consistency has to be maintained manually.
+ * This class defines the entry point to create and access the program's model
+ * created by {@link SpoonCompiler}.
  * 
+ * <p>
+ * Element-specific methods are defined in the sub-factories. An instance of the
+ * current factory can be retrieved at any place where a
+ * {@link spoon.processing.FactoryAccessor} instance is available (that is to
+ * say, any processor or model element). The {@link spoon.reflect.CoreFactory}
+ * is used to create raw elements, but more advanced element should be created
+ * using the subfactories..
+ * 
+ * @see spoon.Spoon#createFactory()
  * @see spoon.processing.Processor
  * @see spoon.reflect.declaration.CtElement
  * @see spoon.reflect.CoreFactory
@@ -297,23 +299,8 @@ public class Factory implements Serializable {
 	public Factory(CoreFactory coreFactory, Environment environment) {
 		this();
 		this.Environment = environment;
-		environment.setFactory(this);
 		this.Core = coreFactory;
 		this.Core.setMainFactory(this);
-	}
-
-	/**
-	 * The builder associated to this factory.
-	 */
-	protected transient Builder builder;
-
-	/**
-	 * Returns a builder for this factory (creates it if not existing yet).
-	 */
-	public Builder getBuilder() {
-		if (builder == null)
-			builder = new SpoonBuildingManager(this);
-		return builder;
 	}
 
 	/**

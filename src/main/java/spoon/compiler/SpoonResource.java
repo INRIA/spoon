@@ -15,12 +15,31 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.builder;
+package spoon.compiler;
 
-import java.io.InputStream;
+/**
+ * This interface defines generic resources that are used by
+ * {@link SpoonCompiler} in the Java compilation process.
+ */
+public interface SpoonResource {
 
-public interface SpoonFile extends SpoonRessource {
-	InputStream getContent();
+	/**
+	 * Gets the folder that contains this resource.
+	 */
+	SpoonFolder getParent();
 
-	boolean isJava();
+	/**
+	 * Gets the name of this resource.
+	 */
+	String getName();
+
+	/**
+	 * Tells if this resource is a file.
+	 */
+	boolean isFile();
+
+	/**
+	 * Gets this resource path.
+	 */
+	String getPath();
 }

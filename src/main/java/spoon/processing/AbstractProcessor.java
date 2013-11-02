@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import spoon.compiler.Environment;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;

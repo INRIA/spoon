@@ -19,6 +19,7 @@ package spoon.processing;
 
 import java.util.Set;
 
+import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 
 /**

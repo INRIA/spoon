@@ -1,4 +1,4 @@
-package spoon.support.builder;
+package spoon.support.compiler;
 
 import java.io.PrintWriter;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 
-class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
+public class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 	@SuppressWarnings("deprecation")
 	public TreeBuilderCompiler(INameEnvironment environment,

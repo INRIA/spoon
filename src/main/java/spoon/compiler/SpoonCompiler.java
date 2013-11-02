@@ -15,23 +15,41 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.processing;
+package spoon.compiler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
-import spoon.support.builder.SpoonRessource;
+import spoon.Spoon;
+import spoon.reflect.Factory;
 
 /**
- * This interface defines the API to build a Spoon meta-model from input sources
- * given as files. You should add your sources, and use {@link #build()}
- * to create the Spoon meta-model. Once the meta-model is built and stored in
- * the factory, it can be processed by using a
- * {@link spoon.processing.ProcessingManager}. As an example of use, take a
- * look at the {@link spoon.Launcher} implementation.
+ * This interface defines the Spoon Java compiler and code processor.
+ * 
+ * <p>
+ * The Spoon model (see {@link Factory} is built from input sources given as
+ * files. Use {@link #build(Factory))} and {@link #build(Factory, List)))} to
+ * create the Spoon model. Once the model is built and stored in the factory, it
+ * can be processed by using a {@link spoon.processing.ProcessingManager}.
+ * </p>
+ * 
+ * <p>
+ * Create an instance of the default implementation of the Spoon compiler by
+ * using {@link Spoon#createCompiler()}. For example:
+ * </p>
+ * 
+ * <pre>
+ * SpoonCompiler compiler = Spoon.createCompiler();
+ * Factory factory = Spoon.createFactory();
+ * List&lt;SpoonFile&gt; files = SpoonResourceHelper.files(&quot;myFile.java&quot;);
+ * compiler.build(factory, files);
+ * </pre>
+ * 
+ * @see Spoon#createCompiler()
  */
-public interface Builder extends FactoryAccessor {
+public interface SpoonCompiler {
 	/**
 	 * Adds a file/directory to be built. By default, the files could be Java
 	 * source files or Jar files. Directories are processed recursively.
@@ -49,7 +67,7 @@ public interface Builder extends FactoryAccessor {
 	 * @param source
 	 *            file or directory to add
 	 */
-	void addInputSource(SpoonRessource source) throws IOException;
+	void addInputSource(SpoonResource source) throws IOException;
 
 	/**
 	 * Gets all the files/directories given as input sources to this builder
@@ -80,7 +98,7 @@ public interface Builder extends FactoryAccessor {
 	 * @param source
 	 *            file or directory to add
 	 */
-	void addTemplateSource(SpoonRessource source) throws IOException;
+	void addTemplateSource(SpoonResource source) throws IOException;
 
 	/**
 	 * Gets all the files/directories given as template sources to this builder
@@ -89,24 +107,38 @@ public interface Builder extends FactoryAccessor {
 	Set<File> getTemplateSources();
 
 	/**
-	 * Builds the program's model with the current factory and stores the result
-	 * into this factory. Note that this method can only be used once on a given
-	 * factory. If more attempts are made, it throws an exception.
+	 * Builds the program's model with the given factory and stores the result
+	 * into this factory. Note that this method should only be used once on a
+	 * given factory.
 	 * 
+	 * @param factory
+	 *            the factory to be used to create the model elements and to
+	 *            store the resulting model
 	 * @return true if the Java was successfully compiled with the core Java
 	 *         compiler, false if some errors were encountered while compiling
 	 * 
 	 * @exception Exception
 	 *                when a building problem occurs
 	 */
-	boolean build() throws Exception;
+	boolean build(Factory factory) throws Exception;
 
 	/**
-	 * This method should be called before starting the compilation in order to
-	 * perform plateform specific initializations. Override the method in
-	 * subclasses do add new initializations.
+	 * Builds the program's model corresponding to the given files with the
+	 * given factory and stores the result into this factory. Note that this
+	 * method should only be used once on a given factory.
+	 * 
+	 * @param factory
+	 *            the factory to be used to create the model elements and to
+	 *            store the resulting model
+	 * @return true if the Java was successfully compiled with the core Java
+	 *         compiler, false if some errors were encountered while compiling
+	 * 
+	 * @exception Exception
+	 *                when a building problem occurs
 	 */
-	void initCompiler();
+	boolean build(Factory factory, List<SpoonFile> files) throws Exception;
 
+	boolean buildTemplates(Factory factory, List<SpoonFile> files)
+			throws Exception;
 
 }

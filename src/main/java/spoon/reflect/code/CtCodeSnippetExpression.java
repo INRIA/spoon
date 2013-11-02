@@ -1,7 +1,7 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtCodeSnippet;
-import spoon.support.builder.SnippetCompilationError;
+import spoon.support.compiler.SnippetCompilationError;
 
 /**
  * This element is a code snippet that must represent an expression and can thus

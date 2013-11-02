@@ -15,25 +15,55 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.builder;
+package spoon.compiler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import spoon.support.builder.support.FileSystemFile;
-import spoon.support.builder.support.FileSystemFolder;
-import spoon.support.builder.support.ZipFolder;
+import spoon.support.compiler.FileSystemFile;
+import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.ZipFolder;
 
-public class FileFactory {
+/**
+ * This class defines a helper for manipulating resources.
+ */
+public abstract class SpoonResourceHelper {
+
+	private SpoonResourceHelper() {
+	}
+
+	/**
+	 * Tells if the given file is an archive file.
+	 */
 	public static boolean isArchive(File f) {
 		return f.getName().endsWith(".jar") || f.getName().endsWith(".zip");
 	}
 
+	/**
+	 * Tells if the given file is file (files are not archives).
+	 */
 	public static boolean isFile(File f) {
 		return f.isFile() && !isArchive(f);
 	}
 
+	/**
+	 * Creates the list of {@link SpoonFile} corresponding to the given paths.
+	 */
+	public static List<SpoonFile> files(String... paths)
+			throws FileNotFoundException {
+		List<SpoonFile> files = new ArrayList<SpoonFile>();
+		for (String path : paths) {
+			files.add(createFile(new File(path)));
+		}
+		return files;
+	}
+
+	/**
+	 * Creates the {@link SpoonFile} corresponding to the given file.
+	 */
 	public static SpoonFile createFile(File f) throws FileNotFoundException {
 		if (!f.exists()) {
 			throw new FileNotFoundException(f.toString());
@@ -41,7 +71,10 @@ public class FileFactory {
 		return new FileSystemFile(f);
 	}
 
-	public static SpoonRessource createResource(File f)
+	/**
+	 * Creates the {@link SpoonResource} corresponding to the given file.
+	 */
+	public static SpoonResource createResource(File f)
 			throws FileNotFoundException {
 		if (f.isFile()) {
 			return createFile(f);
@@ -49,6 +82,9 @@ public class FileFactory {
 		return createFolder(f);
 	}
 
+	/**
+	 * Creates the {@link SpoonFolder} corresponding to the given file.
+	 */
 	public static SpoonFolder createFolder(File f) throws FileNotFoundException {
 		if (!f.exists()) {
 			throw new FileNotFoundException(f.toString() + " does not exist");
