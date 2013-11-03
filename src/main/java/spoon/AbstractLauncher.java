@@ -534,7 +534,7 @@ public abstract class AbstractLauncher {
 		long tstart = t;
 
 		// building
-		SpoonCompiler compiler = new JDTCompiler(createFactory());
+		SpoonCompiler compiler = new JDTCompiler(factory = createFactory());
 		compiler.setDestinationDirectory(arguments.getFile("destination"));
 		compiler.setOutputDirectory(arguments.getFile("output"));
 
