@@ -7,11 +7,12 @@ import spoon.reflect.Factory;
 
 public class JDTSnippetCompiler extends JDTCompiler {
 
-	public JDTSnippetCompiler() {
+	public JDTSnippetCompiler(Factory factory) {
+		super(factory);
 	}
 
 	@Override
-	public boolean build(Factory factory) throws Exception {
+	public boolean build() throws Exception {
 		if (factory == null) {
 			throw new Exception("Factory not initialized");
 		}
@@ -22,8 +23,7 @@ public class JDTSnippetCompiler extends JDTCompiler {
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
 		setClasspath(factory.getEnvironment().getClasspath());
-		initCompiler();
-		srcSuccess = build(factory, sources.getAllJavaFiles());
+		srcSuccess = build(sources.getAllJavaFiles());
 		reportProblems(factory.getEnvironment());
 		factory.getEnvironment().debugMessage(
 				"compiled in " + (System.currentTimeMillis() - t) + " ms");

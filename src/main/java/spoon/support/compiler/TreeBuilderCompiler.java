@@ -21,7 +21,7 @@ public class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compi
 				statementsRecovery);
 	}
 	
-	public CompilationUnitDeclaration[] compileUnits(
+	public CompilationUnitDeclaration[] buildUnits(
 			CompilationUnit[] sourceUnits) {
 	  
 	  // //////////////////////////////////////////////////////////////////////////

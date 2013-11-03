@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import spoon.Spoon;
+import spoon.processing.FactoryAccessor;
 import spoon.reflect.Factory;
 
 /**
@@ -49,7 +50,8 @@ import spoon.reflect.Factory;
  * 
  * @see Spoon#createCompiler()
  */
-public interface SpoonCompiler {
+public interface SpoonCompiler extends FactoryAccessor {
+
 	/**
 	 * Adds a file/directory to be built. By default, the files could be Java
 	 * source files or Jar files. Directories are processed recursively.
@@ -58,6 +60,32 @@ public interface SpoonCompiler {
 	 *            file or directory to add
 	 */
 	void addInputSource(File source) throws IOException;
+
+	/**
+	 * Sets the destination directory for the class files.
+	 * 
+	 * @param destinationDirectory
+	 *            destination directory
+	 */
+	void setDestinationDirectory(File destinationDirectory) throws IOException;
+
+	/**
+	 * Gets the output directory of this compiler.
+	 */
+	File getDestinationDirectory();
+
+	/**
+	 * Sets the output directory for the source files.
+	 * 
+	 * @param outputDirectory
+	 *            output directory
+	 */
+	void setOutputDirectory(File outputDirectory) throws IOException;
+
+	/**
+	 * Gets the output directory of this compiler.
+	 */
+	File getOutputDirectory();
 
 	/**
 	 * Adds a file/directory (as a CtResource) to be built. By default, the
@@ -111,34 +139,41 @@ public interface SpoonCompiler {
 	 * into this factory. Note that this method should only be used once on a
 	 * given factory.
 	 * 
-	 * @param factory
-	 *            the factory to be used to create the model elements and to
-	 *            store the resulting model
 	 * @return true if the Java was successfully compiled with the core Java
 	 *         compiler, false if some errors were encountered while compiling
 	 * 
 	 * @exception Exception
 	 *                when a building problem occurs
 	 */
-	boolean build(Factory factory) throws Exception;
+	boolean build() throws Exception;
 
 	/**
 	 * Builds the program's model corresponding to the given files with the
 	 * given factory and stores the result into this factory. Note that this
 	 * method should only be used once on a given factory.
 	 * 
-	 * @param factory
-	 *            the factory to be used to create the model elements and to
-	 *            store the resulting model
 	 * @return true if the Java was successfully compiled with the core Java
 	 *         compiler, false if some errors were encountered while compiling
 	 * 
 	 * @exception Exception
 	 *                when a building problem occurs
 	 */
-	boolean build(Factory factory, List<SpoonFile> files) throws Exception;
+	boolean build(List<SpoonFile> files) throws Exception;
 
-	boolean buildTemplates(Factory factory, List<SpoonFile> files)
-			throws Exception;
+	boolean buildTemplates(List<SpoonFile> files) throws Exception;
+
+	/**
+	 * Generates the source code associated to the classes stored in the given
+	 * factory. The source code is generated in the directory given by
+	 * {@link #getOutputDirectory()}.
+	 */
+	void generateProcessedSourceFiles();
+
+	/**
+	 * Generates the bytecode associated to the classes stored in the given
+	 * factory. The bytecode is generated in the directory given by
+	 * {@link #getDestinationDirectory()}.
+	 */
+	boolean compile();
 
 }

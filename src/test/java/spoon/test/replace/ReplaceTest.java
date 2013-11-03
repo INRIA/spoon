@@ -23,8 +23,7 @@ public class ReplaceTest {
 	@Before
 	public void setup() throws Exception {
 		factory = Spoon.createFactory();
-		Spoon.createCompiler().build(
-				factory,
+		Spoon.createCompiler(factory).build(
 				SpoonResourceHelper
 						.files("./src/test/java/spoon/test/replace/Foo.java"));
 	}
