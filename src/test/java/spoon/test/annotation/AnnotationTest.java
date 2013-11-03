@@ -30,8 +30,7 @@ public class AnnotationTest {
 		// we can not use TestUtils.build because we need to compile two classes
 		// at the same time
 		Factory factory = Spoon.createFactory();
-		Spoon.createCompiler().build(
-				factory,
+		Spoon.createCompiler(factory).build(
 				SpoonResourceHelper.files(
 						"./src/test/java/spoon/test/annotation/Bound.java",
 						"./src/test/java/spoon/test/annotation/Main.java"));

@@ -79,7 +79,11 @@ public class SpoonTask extends Java {
 
 	boolean nooutput = false;
 
+	boolean nocompilation = false;
+
 	File output;
+
+	File destination;
 
 	File spoonlet;
 
@@ -199,6 +203,14 @@ public class SpoonTask extends Java {
 			createArg().setValue("-o");
 			createArg().setValue(output.getAbsolutePath());
 		}
+		// destination directory
+		if (destination != null) {
+			if (destination.exists() && !destination.isDirectory()) {
+				throw new BuildException("Destination must be a directory");
+			}
+			createArg().setValue("-d");
+			createArg().setValue(destination.getAbsolutePath());
+		}
 		// Input directories
 		if ((input != null) || (sourcefilesets.size() > 0)) {
 			createArg().setValue("-i");
@@ -312,10 +324,17 @@ public class SpoonTask extends Java {
 	}
 
 	/**
-	 * Tells Spoon not to generate any files.
+	 * Tells Spoon not to generate any source files.
 	 */
 	public void setNoOutput(boolean nooutput) {
 		this.nooutput = nooutput;
+	}
+
+	/**
+	 * Tells Spoon not to generate any class files (bytecode).
+	 */
+	public void setNoCompilation(boolean nocompilation) {
+		this.nocompilation = nocompilation;
 	}
 
 	/**
@@ -324,6 +343,13 @@ public class SpoonTask extends Java {
 	@Override
 	public void setOutput(File output) {
 		this.output = output;
+	}
+
+	/**
+	 * Sets the destination directory for compiled classes (bytecode).
+	 */
+	public void setDestination(File destination) {
+		this.destination = destination;
 	}
 
 	/**

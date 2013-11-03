@@ -29,13 +29,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonResourceHelper;
+import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
-import spoon.processing.FileGenerator;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
@@ -64,8 +63,6 @@ public abstract class AbstractLauncher {
 
 	private JSAPResult arguments;
 
-	protected Factory factory;
-
 	private List<SpoonResource> inputResources = new ArrayList<SpoonResource>();
 
 	/**
@@ -79,6 +76,12 @@ public abstract class AbstractLauncher {
 	private List<SpoonResource> templateResources = new ArrayList<SpoonResource>();
 
 	private Environment environment;
+
+	private Factory factory;
+
+	protected boolean nooutput;
+
+	protected boolean nocompilation;
 
 	/**
 	 * Constructor with no arguments.
@@ -117,31 +120,6 @@ public abstract class AbstractLauncher {
 	}
 
 	/**
-	 * Do the model building.
-	 * 
-	 */
-	protected void build() throws Exception {
-		// building
-		SpoonCompiler compiler = new JDTCompiler();
-
-		try {
-			for (SpoonResource f : getInputSources()) {
-				compiler.addInputSource(f);
-			}
-			for (SpoonResource f : getTemplateSources()) {
-				compiler.addTemplateSource(f);
-			}
-		} catch (IOException e) {
-			getEnvironment().report(null, Severity.ERROR,
-					"Error while loading resource : " + e.getMessage());
-			if (getEnvironment().isDebug()) {
-				e.printStackTrace();
-			}
-		}
-		compiler.build(getFactory());
-	}
-
-	/**
 	 * Creates the environment initialized with the launcher's arguments. This
 	 * method can be overridden to tune the environment initialization.
 	 */
@@ -157,6 +135,8 @@ public abstract class AbstractLauncher {
 				.getFile("output"));
 		environment.setDefaultFileGenerator(printer);
 
+		nooutput = getArguments().getBoolean("nooutput");
+		nocompilation = getArguments().getBoolean("nocompilation");
 		environment.setVerbose(getArguments().getBoolean("verbose")
 				|| getArguments().getBoolean("debug"));
 		environment.setDebug(getArguments().getBoolean("debug"));
@@ -235,7 +215,7 @@ public abstract class AbstractLauncher {
 		// java compliance
 		opt2 = new FlaggedOption("compliance");
 		opt2.setLongFlag("compliance");
-		opt2.setHelp("set java compliance level (1,2,3,4,5, 6 or 7)");
+		opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6 or 7)");
 		opt2.setStringParser(JSAP.INTEGER_PARSER);
 		opt2.setDefault("7");
 		jsap.registerParameter(opt2);
@@ -304,6 +284,30 @@ public abstract class AbstractLauncher {
 		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
 
+		// classpath
+		opt2 = new FlaggedOption("destination");
+		opt2.setShortFlag('d');
+		opt2.setLongFlag("destination");
+		opt2.setDefault("spooned-classes");
+		opt2.setHelp("An optional destination directory for the generated class files");
+		opt2.setStringParser(FileStringParser.getParser());
+		opt2.setRequired(false);
+		jsap.registerParameter(opt2);
+
+		// Disable output generation
+		sw1 = new Switch("nooutput");
+		sw1.setLongFlag("no");
+		sw1.setHelp("Disable output printing");
+		sw1.setDefault("false");
+		jsap.registerParameter(sw1);
+
+		// Disable compilation
+		sw1 = new Switch("nocompilation");
+		sw1.setLongFlag("nc");
+		sw1.setHelp("Disable compilation and output no class files");
+		sw1.setDefault("false");
+		jsap.registerParameter(sw1);
+
 		return jsap;
 	}
 
@@ -330,7 +334,8 @@ public abstract class AbstractLauncher {
 			for (String s : getArguments().getString("input").split(
 					"[" + File.pathSeparatorChar + "]")) {
 				try {
-					inputResources.add(SpoonResourceHelper.createResource(new File(s)));
+					inputResources.add(SpoonResourceHelper
+							.createResource(new File(s)));
 				} catch (FileNotFoundException e) {
 					getEnvironment().report(null, Severity.ERROR,
 							"Unable to add source file : " + e.getMessage());
@@ -353,7 +358,8 @@ public abstract class AbstractLauncher {
 			for (String s : getArguments().getString("template").split(
 					"[" + File.pathSeparatorChar + "]")) {
 				try {
-					addTemplateResource(SpoonResourceHelper.createResource(new File(s)));
+					addTemplateResource(SpoonResourceHelper
+							.createResource(new File(s)));
 				} catch (FileNotFoundException e) {
 					getEnvironment().report(null, Severity.ERROR,
 							"Unable to add template file: " + e.getMessage());
@@ -485,10 +491,9 @@ public abstract class AbstractLauncher {
 	/**
 	 * Prints out the built model into files.
 	 */
-	protected void print() {
+	protected void print(Factory factory) {
 		if (getEnvironment().getDefaultFileGenerator() != null) {
-			ProcessingManager processing = new QueueProcessingManager(
-					getFactory());
+			ProcessingManager processing = new QueueProcessingManager(factory);
 			processing.addProcessor(getEnvironment().getDefaultFileGenerator());
 			processing.process();
 		}
@@ -497,9 +502,9 @@ public abstract class AbstractLauncher {
 	/**
 	 * Processes the built model with the processors.
 	 */
-	protected void process() {
+	protected void process(Factory factory) {
 		// processing (consume all the processors)
-		ProcessingManager processing = new QueueProcessingManager(getFactory());
+		ProcessingManager processing = new QueueProcessingManager(factory);
 		for (String processorName : getProcessorTypes()) {
 			processing.addProcessor(processorName);
 			getEnvironment().debugMessage(
@@ -527,32 +532,82 @@ public abstract class AbstractLauncher {
 
 		long t = System.currentTimeMillis();
 		long tstart = t;
-		
-		build();
+
+		// building
+		SpoonCompiler compiler = new JDTCompiler(createFactory());
+		compiler.setDestinationDirectory(arguments.getFile("destination"));
+		compiler.setOutputDirectory(arguments.getFile("output"));
+
+		try {
+			for (SpoonResource f : getInputSources()) {
+				compiler.addInputSource(f);
+			}
+			for (SpoonResource f : getTemplateSources()) {
+				compiler.addTemplateSource(f);
+			}
+		} catch (IOException e) {
+			getEnvironment().report(null, Severity.ERROR,
+					"Error while loading resource : " + e.getMessage());
+			if (getEnvironment().isDebug()) {
+				e.printStackTrace();
+			}
+		}
+		compiler.build();
 		getEnvironment().debugMessage(
 				"model built in " + (System.currentTimeMillis() - t) + " ms");
+
+		// System.out.println("============> " + factory.Type().getAll());
+		//
+		// System.out.println("============> "
+		// + factory.CompilationUnit().getMap());
+		//
+		// for (CompilationUnit cu :
+		// factory.CompilationUnit().getMap().values()) {
+		// System.out.println("## " + cu.getFile());
+		// for (CtSimpleType<?> type : cu.getDeclaredTypes()) {
+		// System.out.println("- " + type.getQualifiedName());
+		// }
+		// // getEnvironment().getDefaultFileGenerator().
+		// }
+
 		t = System.currentTimeMillis();
-		process();
+		process(factory);
 		getEnvironment().debugMessage(
 				"model processed in " + (System.currentTimeMillis() - t)
 						+ " ms");
+
 		t = System.currentTimeMillis();
-		print();
-		FileGenerator<?> fg = getEnvironment().getDefaultFileGenerator();
-		if (fg != null) {
-			// if (arguments.getBoolean("compile")) {
-			// getFactory().getEnvironment().debugMessage(
-			// "generated bytecode in "
-			// + (System.currentTimeMillis() - t) + " ms");
-			// } else
-			{
-				getEnvironment().debugMessage(
-						"generated source in "
-								+ (System.currentTimeMillis() - t) + " ms");
-			}
+		if (!nooutput) {
+			compiler.generateProcessedSourceFiles();
+			// print(factory);
 			getEnvironment().debugMessage(
-					"output directory: " + fg.getOutputDirectory());
+					"generated source in " + (System.currentTimeMillis() - t)
+							+ " ms");
 		}
+
+		t = System.currentTimeMillis();
+		if (!nocompilation) {
+			compiler.compile();
+			getEnvironment().debugMessage(
+					"generated bytecode in " + (System.currentTimeMillis() - t)
+							+ " ms");
+		}
+
+		// FileGenerator<?> fg = getEnvironment().getDefaultFileGenerator();
+		// if (fg != null) {
+		// // if (arguments.getBoolean("compile")) {
+		// // getFactory().getEnvironment().debugMessage(
+		// // "generated bytecode in "
+		// // + (System.currentTimeMillis() - t) + " ms");
+		// // } else
+		// {
+		// getEnvironment().debugMessage(
+		// "generated source in "
+		// + (System.currentTimeMillis() - t) + " ms");
+		// }
+		// getEnvironment().debugMessage(
+		// "output directory: " + fg.getOutputDirectory());
+		// }
 		t = System.currentTimeMillis();
 
 		getEnvironment().debugMessage(
@@ -587,4 +642,5 @@ public abstract class AbstractLauncher {
 		}
 		return factory;
 	}
+
 }

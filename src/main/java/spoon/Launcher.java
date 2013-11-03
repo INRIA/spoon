@@ -76,13 +76,6 @@ public class Launcher extends AbstractLauncher {
 	protected JSAP defineArgs() throws JSAPException {
 		JSAP jsap = super.defineArgs();
 
-		// Disable output generation
-		Switch sw1 = new Switch("nooutput");
-		sw1.setLongFlag("no");
-		sw1.setHelp("disable output printing");
-		sw1.setDefault("false");
-		jsap.registerParameter(sw1);
-
 		// Compile Output files
 		// sw1 = new Switch("compile");
 		// sw1.setShortFlag('c');
@@ -101,23 +94,13 @@ public class Launcher extends AbstractLauncher {
 		// jsap.registerParameter(opt2);
 
 		// show GUI
-		sw1 = new Switch("gui");
+		Switch sw1 = new Switch("gui");
 		sw1.setShortFlag('g');
 		sw1.setLongFlag("gui");
-		sw1.setHelp("show spoon model after processing");
+		sw1.setHelp("Show spoon model after processing");
 		jsap.registerParameter(sw1);
 
 		return jsap;
-	}
-
-	/**
-	 * Prints out the built model into files.
-	 */
-	@Override
-	protected void print() {
-		if (!getArguments().getBoolean("nooutput")) {
-			super.print();
-		}
 	}
 
 	/**
@@ -125,7 +108,12 @@ public class Launcher extends AbstractLauncher {
 	 */
 	@Override
 	public void run() throws Exception {
-		super.run();
+		try {
+			super.run();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 
 		// display GUI
 		if (getArguments().getBoolean("gui")) {

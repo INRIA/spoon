@@ -119,10 +119,10 @@ public class SnippetCompilationHelper {
 
 	private static void build(Factory f, String contents, String name) {
 		// Build contents
-		SpoonCompiler builder = new JDTSnippetCompiler();
+		SpoonCompiler builder = new JDTSnippetCompiler(f);
 		try {
 			builder.addInputSource(new VirtualFile(contents, name));
-			builder.build(f);
+			builder.build();
 		} catch (Exception e) {
 			throw new RuntimeException(
 					"snippet compilation error while compiling: " + contents, e);

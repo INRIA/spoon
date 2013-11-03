@@ -46,6 +46,15 @@ public class CompilationUnitFactory extends SubFactory {
 	Map<String, CompilationUnit> compilationUnits = new TreeMap<String, CompilationUnit>();
 
 	/**
+	 * Gets the compilation unit map.
+	 * 
+	 * @return a map (path -> {@link CompilationUnit})
+	 */
+	public Map<String, CompilationUnit> getMap() {
+		return compilationUnits;
+	}
+
+	/**
 	 * Creates a compilation unit with no associated files.
 	 */
 	public CompilationUnit create() {

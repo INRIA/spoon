@@ -20,12 +20,12 @@ public class TemplateTest {
 
 	@Test
 	public void testTemplateInheritance() throws Exception {
-		SpoonCompiler compiler = Spoon.createCompiler();
 		Factory factory = Spoon.createFactory();
-		compiler.build(factory, SpoonResourceHelper.files(
+		SpoonCompiler compiler = Spoon.createCompiler(factory);
+		compiler.build(SpoonResourceHelper.files(
 				"./src/test/java/spoon/test/template/SubClass.java",
 				"./src/test/java/spoon/test/template/SuperClass.java"));
-		compiler.buildTemplates(factory, SpoonResourceHelper.files(
+		compiler.buildTemplates(SpoonResourceHelper.files(
 				"./src/test/java/spoon/test/template/SubTemplate.java",
 				"./src/test/java/spoon/test/template/SuperTemplate.java"));
 
@@ -49,14 +49,12 @@ public class TemplateTest {
 
 	@Test
 	public void testTemplateC1() throws Exception {
-		SpoonCompiler compiler = Spoon.createCompiler();
 		Factory factory = Spoon.createFactory();
-		compiler.build(factory, SpoonResourceHelper
+		SpoonCompiler compiler = Spoon.createCompiler(factory);
+		compiler.build(SpoonResourceHelper
 				.files("./src/test/java/spoon/test/template/C1.java"));
-		compiler.buildTemplates(
-				factory,
-				SpoonResourceHelper
-						.files("./src/test/java/spoon/test/template/TemplateWithConstructor.java"));
+		compiler.buildTemplates(SpoonResourceHelper
+				.files("./src/test/java/spoon/test/template/TemplateWithConstructor.java"));
 
 		CtClass<?> c1 = factory.Class().get(C1.class);
 
