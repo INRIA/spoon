@@ -80,14 +80,15 @@ public class QueueProcessingManager implements ProcessingManager {
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
-			addProcessor((Class<? extends Processor<?>>) Class
-					.forName(qualifiedName));
+			addProcessor((Class<? extends Processor<?>>) Thread.currentThread()
+					.getContextClassLoader().loadClass(qualifiedName));
 		} catch (ClassNotFoundException e) {
-			factory.getEnvironment().report(
-					null,
-					Severity.ERROR,
-					"Unable to load processor \"" + qualifiedName
-							+ "\" - Check your classpath");
+			factory.getEnvironment()
+					.report(null,
+							Severity.ERROR,
+							"Unable to load processor \""
+									+ qualifiedName
+									+ "\" - Check your classpath. Did you use the --precompile option?");
 		}
 	}
 
