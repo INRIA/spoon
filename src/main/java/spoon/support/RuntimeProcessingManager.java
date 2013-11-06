@@ -64,10 +64,8 @@ public class RuntimeProcessingManager implements ProcessingManager {
 			p.init();
 			addProcessor(p);
 		} catch (Exception e) {
-			factory
-					.getEnvironment()
-					.report(
-							null,
+			factory.getEnvironment()
+					.report(null,
 							Severity.ERROR,
 							"Unable to instantiate processor \""
 									+ type.getName()
@@ -83,14 +81,15 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
-			addProcessor((Class<? extends Processor<?>>) Class
-					.forName(qualifiedName));
+			addProcessor((Class<? extends Processor<?>>) Thread.currentThread()
+					.getContextClassLoader().loadClass(qualifiedName));
 		} catch (ClassNotFoundException e) {
-			factory.getEnvironment().report(
-					null,
-					Severity.ERROR,
-					"Unable to load processor \"" + qualifiedName
-							+ "\" - Check your classpath");
+			factory.getEnvironment()
+					.report(null,
+							Severity.ERROR,
+							"Unable to load processor \""
+									+ qualifiedName
+									+ "\" - Check your classpath. Did you use the --precompile option?");
 		}
 	}
 
@@ -143,7 +142,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	public void process(Collection<? extends CtElement> elements,
 			Processor<?> processor) {
 		getFactory().getEnvironment().debugMessage(
-				"processing with '" + processor.getClass().getName()+"'...");
+				"processing with '" + processor.getClass().getName() + "'...");
 		current = processor;
 		Timer.start(processor.getClass().getName());
 		for (CtElement e : elements)
@@ -167,9 +166,9 @@ public class RuntimeProcessingManager implements ProcessingManager {
 				.debugMessage(
 						"processing '"
 								+ ((element instanceof CtNamedElement) ? ((CtNamedElement) element)
-										.getSimpleName()
-										: element.toString()) + "' with '"
-								+ processor.getClass().getName()+"'...");
+										.getSimpleName() : element.toString())
+								+ "' with '" + processor.getClass().getName()
+								+ "'...");
 		processor.init();
 		getVisitor().setProcessor(processor);
 		getVisitor().scan(element);

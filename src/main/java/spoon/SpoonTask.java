@@ -105,6 +105,8 @@ public class SpoonTask extends Java {
 
 	boolean debug = false;
 
+	boolean precompile = false;
+
 	/**
 	 * Constructor.
 	 */
@@ -155,6 +157,10 @@ public class SpoonTask extends Java {
 		// debug
 		if (debug) {
 			createArg().setValue("--vvv");
+		}
+
+		if (precompile) {
+			createArg().setValue("--precompile");
 		}
 
 		if (fragments) {
@@ -415,6 +421,13 @@ public class SpoonTask extends Java {
 	 */
 	public void setTabSize(int tabSize) {
 		this.tabSize = tabSize;
+	}
+
+	/**
+	 * Tells if Spoon should precompile the input files before processing.
+	 */
+	public void setPrecompile(boolean precompile) {
+		this.precompile = precompile;
 	}
 
 }

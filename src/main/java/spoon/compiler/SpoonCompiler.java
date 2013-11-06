@@ -135,9 +135,9 @@ public interface SpoonCompiler extends FactoryAccessor {
 	Set<File> getTemplateSources();
 
 	/**
-	 * Builds the program's model with the given factory and stores the result
-	 * into this factory. Note that this method should only be used once on a
-	 * given factory.
+	 * Builds the program's model with this compiler's factory and stores the
+	 * result into this factory. Note that this method should only be used once
+	 * on a given factory.
 	 * 
 	 * @return true if the Java was successfully compiled with the core Java
 	 *         compiler, false if some errors were encountered while compiling
@@ -148,9 +148,9 @@ public interface SpoonCompiler extends FactoryAccessor {
 	boolean build() throws Exception;
 
 	/**
-	 * Builds the program's model corresponding to the given files with the
-	 * given factory and stores the result into this factory. Note that this
-	 * method should only be used once on a given factory.
+	 * Builds the program's model corresponding to the given files with this
+	 * compiler's factory and stores the result into this factory. Note that
+	 * this method should only be used once on a given factory.
 	 * 
 	 * @return true if the Java was successfully compiled with the core Java
 	 *         compiler, false if some errors were encountered while compiling
@@ -163,17 +163,27 @@ public interface SpoonCompiler extends FactoryAccessor {
 	boolean buildTemplates(List<SpoonFile> files) throws Exception;
 
 	/**
-	 * Generates the source code associated to the classes stored in the given
-	 * factory. The source code is generated in the directory given by
-	 * {@link #getOutputDirectory()}.
+	 * Generates the source code associated to the classes stored in this
+	 * compiler's factory. The source code is generated in the directory given
+	 * by {@link #getOutputDirectory()}.
 	 */
 	void generateProcessedSourceFiles();
 
 	/**
-	 * Generates the bytecode associated to the classes stored in the given
-	 * factory. The bytecode is generated in the directory given by
+	 * Generates the bytecode associated to the classes stored in this
+	 * compiler's factory. The bytecode is generated in the directory given by
 	 * {@link #getDestinationDirectory()}.
 	 */
 	boolean compile();
+
+	/**
+	 * Generates the bytecode by compiling the input sources. The bytecode is
+	 * generated in the directory given by {@link #getDestinationDirectory()}.
+	 * 
+	 * @param addDestinationDirectoryToClasspath
+	 *            set this flag to true to automatically add the bytecode
+	 *            destination directory to the classpath
+	 */
+	boolean compileInputSources() throws Exception;
 
 }

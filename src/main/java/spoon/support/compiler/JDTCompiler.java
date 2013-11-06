@@ -424,9 +424,9 @@ public class JDTCompiler extends Main implements SpoonCompiler {
 		ClassLoader currentClassLoader = Thread.currentThread()
 				.getContextClassLoader();// ClassLoader.getSystemClassLoader();
 
+		String finalClassPath = null;
 		if (classpath != null) {
-			args.add("-cp");
-			args.add(classpath);
+			finalClassPath = classpath;
 		} else {
 			if (currentClassLoader instanceof URLClassLoader) {
 				URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
@@ -436,12 +436,15 @@ public class JDTCompiler extends Main implements SpoonCompiler {
 						classpath += File.pathSeparator + url.getFile();
 					}
 					if (classpath != null) {
-						args.add("-cp");
-						args.add(classpath);
+						finalClassPath = classpath;
 					}
 				}
 			}
 		}
+
+		args.add("-cp");
+		args.add(finalClassPath);
+		
 		args.addAll(factory.CompilationUnit().getMap().keySet());
 		// configure(args.toArray(new String[0]));
 		// CompilationUnitDeclaration[] units = getUnits(files, f);
@@ -616,6 +619,60 @@ public class JDTCompiler extends Main implements SpoonCompiler {
 	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
+	}
+
+	@Override
+	public boolean compileInputSources() throws Exception {
+		factory.getEnvironment().debugMessage(
+				"compiling input sources: " + sources.getAllJavaFiles());
+		long t = System.currentTimeMillis();
+		javaCompliance = factory.getEnvironment().getComplianceLevel();
+		destinationPath = getDestinationDirectory().getAbsolutePath();
+		setClasspath(factory.getEnvironment().getClasspath());
+
+		List<String> args = new ArrayList<String>();
+		args.add("-1." + javaCompliance);
+		args.add("-preserveAllLocals");
+		args.add("-enableJavadoc");
+		args.add("-noExit");
+		ClassLoader currentClassLoader = Thread.currentThread()
+				.getContextClassLoader();// ClassLoader.getSystemClassLoader();
+
+		String finalClassPath = null;
+		if (classpath != null) {
+			finalClassPath = classpath;
+		} else {
+			if (currentClassLoader instanceof URLClassLoader) {
+				URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
+				if (urls != null && urls.length > 0) {
+					String classpath = ".";
+					for (URL url : urls) {
+						classpath += File.pathSeparator + url.getFile();
+					}
+					if (classpath != null) {
+						finalClassPath = classpath;
+					}
+				}
+			}
+		}
+
+		args.add("-cp");
+		args.add(finalClassPath);
+
+		Set<String> paths = new HashSet<String>();
+		for (SpoonFile file : sources.getAllJavaFiles()) {
+			paths.add(file.getParent().getPath());
+		}
+		args.addAll(paths);
+
+		// configure(args.toArray(new String[0]));
+
+		compile(args.toArray(new String[0]));
+
+		factory.getEnvironment().debugMessage(
+				"compiled in " + (System.currentTimeMillis() - t) + " ms");
+		return probs.size() == 0;
+
 	}
 
 }

@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,14 +174,14 @@ public abstract class AbstractLauncher {
 		sw1.setShortFlag('v');
 		sw1.setLongFlag("verbose");
 		sw1.setDefault("false");
-		sw1.setHelp("Output messages about what the compiler is doing");
+		sw1.setHelp("Output messages about what the compiler is doing.");
 		jsap.registerParameter(sw1);
 
 		// Tabs
 		sw1 = new Switch("tabs");
 		sw1.setLongFlag("tabs");
 		sw1.setDefault("false");
-		sw1.setHelp("Use tabulations instead of spaces in the generated code (use spaces by default)");
+		sw1.setHelp("Use tabulations instead of spaces in the generated code (use spaces by default).");
 		jsap.registerParameter(sw1);
 
 		// fragments
@@ -187,7 +189,7 @@ public abstract class AbstractLauncher {
 		sw1.setLongFlag("fragments");
 		sw1.setShortFlag('f');
 		sw1.setDefault("false");
-		sw1.setHelp("Use source code fragments to generate source code (preserve formatting)");
+		sw1.setHelp("Use source code fragments to generate source code (preserve formatting).");
 		jsap.registerParameter(sw1);
 
 		// Tab size
@@ -195,27 +197,27 @@ public abstract class AbstractLauncher {
 		opt2.setLongFlag("tabsize");
 		opt2.setStringParser(JSAP.INTEGER_PARSER);
 		opt2.setDefault("4");
-		opt2.setHelp("Define tabulation size");
+		opt2.setHelp("Define tabulation size.");
 		jsap.registerParameter(opt2);
 
 		// Super Verbose
 		sw1 = new Switch("debug");
 		sw1.setLongFlag("vvv");
 		sw1.setDefault("false");
-		sw1.setHelp("Generate all debugging info");
+		sw1.setHelp("Generate all debugging info.");
 		jsap.registerParameter(sw1);
 
 		// Auto-import
 		sw1 = new Switch("imports");
 		sw1.setLongFlag("with-imports");
 		sw1.setDefault("false");
-		sw1.setHelp("Enable imports in generated files");
+		sw1.setHelp("Enable imports in generated files.");
 		jsap.registerParameter(sw1);
 
 		// java compliance
 		opt2 = new FlaggedOption("compliance");
 		opt2.setLongFlag("compliance");
-		opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6 or 7)");
+		opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6 or 7).");
 		opt2.setStringParser(JSAP.INTEGER_PARSER);
 		opt2.setDefault("7");
 		jsap.registerParameter(opt2);
@@ -226,7 +228,7 @@ public abstract class AbstractLauncher {
 		opt2.setLongFlag("spoonlet");
 		opt2.setStringParser(JSAP.STRING_PARSER);
 		opt2.setRequired(false);
-		opt2.setHelp("List of spoonlet files to load");
+		opt2.setHelp("List of spoonlet files to load.");
 		jsap.registerParameter(opt2);
 
 		// setting Input files & Directory
@@ -235,14 +237,14 @@ public abstract class AbstractLauncher {
 		opt2.setLongFlag("input");
 		opt2.setStringParser(JSAP.STRING_PARSER);
 		opt2.setRequired(false);
-		opt2.setHelp("List of path to sources files");
+		opt2.setHelp("List of path to sources files.");
 		jsap.registerParameter(opt2);
 
 		// Processor qualified name
 		opt2 = new FlaggedOption("processors");
 		opt2.setShortFlag('p');
 		opt2.setLongFlag("processors");
-		opt2.setHelp("List of processor's qualified name to be used");
+		opt2.setHelp("List of processor's qualified name to be used.");
 		opt2.setStringParser(JSAP.STRING_PARSER);
 		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
@@ -251,10 +253,10 @@ public abstract class AbstractLauncher {
 		opt2 = new FlaggedOption("template");
 		opt2.setShortFlag('t');
 		opt2.setLongFlag("template");
-		opt2.setHelp("list of source templates");
+		opt2.setHelp("List of source templates.");
 		opt2.setStringParser(JSAP.STRING_PARSER);
 		opt2.setRequired(false);
-		opt2.setHelp("list of path to templates java files");
+		opt2.setHelp("List of path to templates java files.");
 		jsap.registerParameter(opt2);
 
 		// Spooned output directory
@@ -262,7 +264,7 @@ public abstract class AbstractLauncher {
 		opt2.setShortFlag('o');
 		opt2.setLongFlag("output");
 		opt2.setDefault("spooned");
-		opt2.setHelp("specify where to place generated java files");
+		opt2.setHelp("Specify where to place generated java files.");
 		opt2.setStringParser(FileStringParser.getParser());
 		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
@@ -272,14 +274,14 @@ public abstract class AbstractLauncher {
 		opt2.setLongFlag("properties");
 		opt2.setStringParser(FileStringParser.getParser());
 		opt2.setRequired(false);
-		opt2.setHelp("Directory to search for spoon properties files");
+		opt2.setHelp("Directory to search for spoon properties files.");
 		jsap.registerParameter(opt2);
 
 		// classpath
 		opt2 = new FlaggedOption("classpath");
 		opt2.setShortFlag('c');
 		opt2.setLongFlag("classpath");
-		opt2.setHelp("An optional classpath to be passed to the internal Java compiler");
+		opt2.setHelp("An optional classpath to be passed to the internal Java compiler.");
 		opt2.setStringParser(JSAP.STRING_PARSER);
 		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
@@ -289,7 +291,7 @@ public abstract class AbstractLauncher {
 		opt2.setShortFlag('d');
 		opt2.setLongFlag("destination");
 		opt2.setDefault("spooned-classes");
-		opt2.setHelp("An optional destination directory for the generated class files");
+		opt2.setHelp("An optional destination directory for the generated class files.");
 		opt2.setStringParser(FileStringParser.getParser());
 		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
@@ -297,14 +299,21 @@ public abstract class AbstractLauncher {
 		// Disable output generation
 		sw1 = new Switch("nooutput");
 		sw1.setLongFlag("no");
-		sw1.setHelp("Disable output printing");
+		sw1.setHelp("Disable output printing of processed source code.");
 		sw1.setDefault("false");
 		jsap.registerParameter(sw1);
 
 		// Disable compilation
 		sw1 = new Switch("nocompilation");
 		sw1.setLongFlag("nc");
-		sw1.setHelp("Disable compilation and output no class files");
+		sw1.setHelp("Disable compilation and output no class files.");
+		sw1.setDefault("false");
+		jsap.registerParameter(sw1);
+
+		// Disable compilation
+		sw1 = new Switch("precompile");
+		sw1.setLongFlag("precompile");
+		sw1.setHelp("Enable pre-compilation of input source files before processing. Compiled classes will be added to the classpath so that they are accessible to the processing manager (typically, processors, annotations, and templates should be pre-compiled most of the time).");
 		sw1.setDefault("false");
 		jsap.registerParameter(sw1);
 
@@ -524,6 +533,17 @@ public abstract class AbstractLauncher {
 		getEnvironment().debugMessage("loading command-line arguments...");
 		processArguments();
 
+		if (arguments.getBoolean("precompile")) {
+			ClassLoader currentThreadClassLoader = Thread.currentThread()
+					.getContextClassLoader();
+
+			URLClassLoader urlClassLoader = new URLClassLoader(
+					new URL[] { arguments.getFile("destination").toURI()
+							.toURL() }, currentThreadClassLoader);
+
+			Thread.currentThread().setContextClassLoader(urlClassLoader);
+		}
+
 		if (arguments.getBoolean("fragments")) {
 			getEnvironment().reportProgressMessage(
 					"running in 'fragments' mode: AST changes will be ignored");
@@ -551,6 +571,14 @@ public abstract class AbstractLauncher {
 			if (getEnvironment().isDebug()) {
 				e.printStackTrace();
 			}
+		}
+
+		if (arguments.getBoolean("precompile")) {
+			t = System.currentTimeMillis();
+			compiler.compileInputSources();
+			getEnvironment().debugMessage(
+					"pre-compiled input sources in "
+							+ (System.currentTimeMillis() - t) + " ms");
 		}
 		compiler.build();
 		getEnvironment().debugMessage(
