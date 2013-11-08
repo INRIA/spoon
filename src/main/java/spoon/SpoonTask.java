@@ -79,7 +79,7 @@ public class SpoonTask extends Java {
 
 	boolean nooutput = false;
 
-	boolean nocompilation = false;
+	boolean compile = false;
 
 	File output;
 
@@ -337,10 +337,10 @@ public class SpoonTask extends Java {
 	}
 
 	/**
-	 * Tells Spoon not to generate any class files (bytecode).
+	 * Tells Spoon to generate class files (bytecode).
 	 */
-	public void setNoCompilation(boolean nocompilation) {
-		this.nocompilation = nocompilation;
+	public void setCompile(boolean compile) {
+		this.compile = compile;
 	}
 
 	/**
