@@ -178,6 +178,10 @@ public class SpoonTask extends Java {
 			createArg().setValue("--no");
 		}
 
+		if (compile) {
+			createArg().setValue("--compile");
+		}
+		
 		createArg().setValue("--compliance");
 		createArg().setValue("" + javaCompliance);
 
