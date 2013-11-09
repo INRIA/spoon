@@ -155,6 +155,7 @@ public class JDTCompiler extends Main implements SpoonCompiler {
 		// method configure JDT of JDT requires at least one file or one
 		// directory
 		Set<String> paths = new HashSet<String>();
+		String sourcePaths = "";
 		for (SpoonFile file : files) {
 			// We can not use file.getPath() because when using in-memory code
 			// (e.g. snippets)
@@ -164,17 +165,27 @@ public class JDTCompiler extends Main implements SpoonCompiler {
 			// and we are sure it exists
 			// However, if . contains a lot of subfolders and Java files, it
 			// will take a lot of time
-			paths.add(file.getParent().getPath());
+			if (!paths.contains(file.getParent().getPath())) {
+				sourcePaths += file.getParent().getPath() + File.pathSeparator;
+			}
+			paths.add(file.getFileSystemParent().getPath());
 		}
+		args.add("-sourcepath");
+		args.add(sourcePaths.substring(0, sourcePaths.length() - 1));
 		args.addAll(paths);
+
+		getFactory().getEnvironment().debugMessage(
+				"build args: " + args);
 
 		// JDTCompiler compiler = new JDTCompiler(new PrintWriter(System.out),
 		// new PrintWriter(System.err));
 
-		// Thanks Renaud for this wonderful System.out
-		// System.out.println(args);
-
+		// try {
 		configure(args.toArray(new String[0]));
+		// } catch(Exception e) {
+		// printUsage();
+		// throw e;
+		// }
 		// configure(new String[0]);
 		// f.getEnvironment().debugMessage("compiling src: "+files);
 		CompilationUnitDeclaration[] units = getUnits(files);
@@ -444,17 +455,31 @@ public class JDTCompiler extends Main implements SpoonCompiler {
 
 		args.add("-cp");
 		args.add(finalClassPath);
+
+		//args.addAll(factory.CompilationUnit().getMap().keySet());
 		
-		args.addAll(factory.CompilationUnit().getMap().keySet());
-		// configure(args.toArray(new String[0]));
-		// CompilationUnitDeclaration[] units = getUnits(files, f);
+		Set<String> paths = new HashSet<String>();
+		String sourcePaths = "";
+		for (SpoonFile file : sources.getAllJavaFiles()) {
+			// We can not use file.getPath() because when using in-memory code
+			// (e.g. snippets)
+			// there is no real file on the disk
+			// In this case, the virtual parent of the virtual file is "." (by
+			// convention)
+			// and we are sure it exists
+			// However, if . contains a lot of subfolders and Java files, it
+			// will take a lot of time
+			if (!paths.contains(file.getParent().getPath())) {
+				sourcePaths += file.getParent().getPath() + File.pathSeparator;
+			}
+			paths.add(file.getFileSystemParent().getPath());
+		}
+		args.add("-sourcepath");
+		args.add(sourcePaths.substring(0, sourcePaths.length() - 1));
+		args.addAll(paths);
 
-		// JDTTreeBuilder builder = new JDTTreeBuilder(f);
-
-		// here we build the model
-		// for (CompilationUnitDeclaration unit : units) {
-		// unit.traverse(builder, unit.scope);
-		// }
+		getFactory().getEnvironment().debugMessage(
+				"compile args: " + args);
 
 		compile(args.toArray(new String[0]));
 

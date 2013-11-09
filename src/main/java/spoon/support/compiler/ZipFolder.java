@@ -121,11 +121,11 @@ public class ZipFolder implements SpoonFolder {
 
 	@Override
 	public String toString() {
-		return getName();
+		return getPath();
 	}
 
 	public String getPath() {
-		return toString();
+		return f.getAbsolutePath();
 	}
 
 }

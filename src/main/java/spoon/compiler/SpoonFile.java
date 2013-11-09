@@ -34,4 +34,9 @@ public interface SpoonFile extends SpoonResource {
 	 * True if a Java source code file.
 	 */
 	boolean isJava();
+
+	/**
+	 * Gets the first physically existing folder that contains this file.
+	 */
+	SpoonFolder getFileSystemParent();
 }

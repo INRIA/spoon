@@ -6,23 +6,23 @@ import java.io.InputStream;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 
-public class VirtualFile implements SpoonFile{
+public class VirtualFile implements SpoonFile {
 
 	InputStream contents;
-	
+
 	String name = "virtual_file";
-	
+
 	public VirtualFile(String _contents) {
 		byte[] contentsBA = _contents.getBytes();
 		contents = new ByteArrayInputStream(contentsBA);
-		
+
 	}
-	
-	public VirtualFile(String _contents, String _name){
+
+	public VirtualFile(String _contents, String _name) {
 		this(_contents);
 		name = _name;
 	}
-	
+
 	public InputStream getContent() {
 		return contents;
 	}
@@ -39,6 +39,11 @@ public class VirtualFile implements SpoonFile{
 		return new VirtualFolder();
 	}
 
+	@Override
+	public SpoonFolder getFileSystemParent() {
+		return getParent();
+	}
+
 	public String getPath() {
 		return name;
 	}
@@ -46,6 +51,5 @@ public class VirtualFile implements SpoonFile{
 	public boolean isFile() {
 		return true;
 	}
-	
-}
 
+}

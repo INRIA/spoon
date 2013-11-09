@@ -57,6 +57,11 @@ public class FileSystemFile implements SpoonFile {
 		return null;
 	}
 
+	@Override
+	public SpoonFolder getFileSystemParent() {
+		return getParent();
+	}
+	
 	public boolean isFile() {
 		return true;
 	}
