@@ -76,7 +76,7 @@ public abstract class SpoonResourceHelper {
 	 */
 	public static SpoonResource createResource(File f)
 			throws FileNotFoundException {
-		if (f.isFile()) {
+		if (isFile(f)) {
 			return createFile(f);
 		}
 		return createFolder(f);

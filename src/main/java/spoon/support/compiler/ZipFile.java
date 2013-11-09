@@ -50,6 +50,11 @@ public class ZipFile implements SpoonFile {
 		return parent;
 	}
 
+	@Override
+	public SpoonFolder getFileSystemParent() {
+		return getParent().getParent();
+	}
+
 	public boolean isFile() {
 		return true;
 	}
@@ -61,10 +66,10 @@ public class ZipFile implements SpoonFile {
 	public String getPath() {
 		return toString();
 	}
-	
+
 	@Override
 	public String toString() {
-		return getName();
+		return parent + "!" + getName();
 	}
 
 }
