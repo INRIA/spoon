@@ -75,8 +75,7 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 		return interfaces.remove(interfac);
 	}
 
-	public boolean addFormalTypeParameter(
-			CtTypeReference<?> formalTypeParameter) {
+	public boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
 		if (formalTypeParameters == CtElementImpl
 				.<CtTypeReference<?>> EMPTY_LIST()) {
 			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
@@ -160,6 +159,17 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 						a.getAnnotationType())) {
 					result.add(m);
 				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<CtMethod<?>> getMethodsByName(String name) {
+		List<CtMethod<?>> result = new ArrayList<>();
+		for (CtMethod<?> m : methods) {
+			if (name.equals(m.getSimpleName())) {
+				result.add(m);
 			}
 		}
 		return result;
