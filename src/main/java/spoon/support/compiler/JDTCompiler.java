@@ -165,7 +165,7 @@ public class JDTCompiler extends Main implements SpoonCompiler {
 			// and we are sure it exists
 			// However, if . contains a lot of subfolders and Java files, it
 			// will take a lot of time
-			if (!paths.contains(file.getParent().getPath())) {
+			if (!paths.contains(file.getFileSystemParent().getPath())) {
 				sourcePaths += file.getParent().getPath() + File.pathSeparator;
 			}
 			paths.add(file.getFileSystemParent().getPath());
@@ -469,7 +469,7 @@ public class JDTCompiler extends Main implements SpoonCompiler {
 			// and we are sure it exists
 			// However, if . contains a lot of subfolders and Java files, it
 			// will take a lot of time
-			if (!paths.contains(file.getParent().getPath())) {
+			if (!paths.contains(file.getFileSystemParent().getPath())) {
 				sourcePaths += file.getParent().getPath() + File.pathSeparator;
 			}
 			paths.add(file.getFileSystemParent().getPath());
