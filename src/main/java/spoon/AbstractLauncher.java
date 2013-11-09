@@ -555,11 +555,20 @@ public abstract class AbstractLauncher {
 		compiler.setDestinationDirectory(arguments.getFile("destination"));
 		compiler.setOutputDirectory(arguments.getFile("output"));
 
+		getEnvironment().debugMessage(
+				"output: " + compiler.getOutputDirectory());
+		getEnvironment().debugMessage(
+				"destination: " + compiler.getDestinationDirectory());
+		getEnvironment().debugMessage(
+				"classpath: " + environment.getClasspath());
+
 		try {
 			for (SpoonResource f : getInputSources()) {
+				getEnvironment().debugMessage("add input source: " + f);
 				compiler.addInputSource(f);
 			}
 			for (SpoonResource f : getTemplateSources()) {
+				getEnvironment().debugMessage("add template source: " + f);
 				compiler.addTemplateSource(f);
 			}
 		} catch (IOException e) {
