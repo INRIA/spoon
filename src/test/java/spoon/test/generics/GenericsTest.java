@@ -57,7 +57,6 @@ public class GenericsTest {
 		assertEquals("java.lang.Integer", var.getType()
 				.getActualTypeArguments().get(0).getQualifiedName());
 		CtNewClass<?> newClass = (CtNewClass<?>) var.getDefaultExpression();
-		System.out.println(newClass.getExecutable().getActualTypeArguments());
 		// diamond operator should have empty type arguments???
 		assertTrue(newClass.getExecutable().getActualTypeArguments().isEmpty());
 	}

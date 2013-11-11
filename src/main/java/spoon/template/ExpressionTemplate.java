@@ -67,7 +67,7 @@ public abstract class ExpressionTemplate<T> implements TemplateParameter<T>,
 	public CtExpression<T> getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<? extends ExpressionTemplate<?>> c;
 		CtBlock<?> b;
-		c = targetType.getFactory().Template().get(this.getClass());
+		c = targetType.getFactory().Template().Class().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}

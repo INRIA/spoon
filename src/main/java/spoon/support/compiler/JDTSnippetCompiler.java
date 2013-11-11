@@ -22,7 +22,6 @@ public class JDTSnippetCompiler extends JDTCompiler {
 				"compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
-		setClasspath(factory.getEnvironment().getClasspath());
 		srcSuccess = build(sources.getAllJavaFiles());
 		reportProblems(factory.getEnvironment());
 		factory.getEnvironment().debugMessage(

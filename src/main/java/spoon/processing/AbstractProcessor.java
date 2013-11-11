@@ -26,7 +26,6 @@ import java.util.Set;
 
 import spoon.compiler.Environment;
 import spoon.reflect.Factory;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.util.RtHelper;
 
@@ -138,12 +137,6 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	}
 
 	public boolean isToBeProcessed(E candidate) {
-		if (candidate instanceof CtClass) {
-			if (factory.Template().getAll()
-					.containsKey(((CtClass<?>) candidate).getQualifiedName())) {
-				return false;
-			}
-		}
 		return true;
 	}
 

@@ -24,8 +24,9 @@ import spoon.reflect.declaration.CtSimpleType;
 
 /**
  * This class represents a template parameter that defines a block statement
- * directly expressed in Java (must return an expression of type <code>R</code>).
- *
+ * directly expressed in Java (must return an expression of type <code>R</code>
+ * ).
+ * 
  * <p>
  * To define a new block template parameter, you must subclass this class and
  * implement the {@link #block()} method, which actually defines the Java block.
@@ -48,14 +49,14 @@ public abstract class TypedBlockTemplateParameter<R> implements
 	@SuppressWarnings("unchecked")
 	public CtBlock<R> getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<?> c;
-		c = targetType.getFactory().Template().get(this.getClass());
+		c = targetType.getFactory().Template().Class().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
 		CtMethod<R> m = (CtMethod<R>) c.getMethod("block");
 		if (this instanceof Template) {
-			return Substitution.substitute(targetType, (Template) this, m
-					.getBody());
+			return Substitution.substitute(targetType, (Template) this,
+					m.getBody());
 		}
 		return targetType.getFactory().Core().clone(m.getBody());
 	}

@@ -47,7 +47,6 @@ import spoon.reflect.factory.FieldFactory;
 import spoon.reflect.factory.InterfaceFactory;
 import spoon.reflect.factory.MethodFactory;
 import spoon.reflect.factory.PackageFactory;
-import spoon.reflect.factory.TemplateFactory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -250,14 +249,16 @@ public class Factory implements Serializable {
 		return CompilationUnit;
 	}
 
-	private TemplateFactory Template;
+	private Factory Template;
 
 	/**
-	 * The {@link CtPackage} sub-factory.
+	 * The template factory (used by the compiler when building templates).
+	 * 
+	 * @see SpoonCompiler#buildTemplates(java.util.List)
 	 */
-	public TemplateFactory Template() {
+	public Factory Template() {
 		if (Template == null) {
-			Template = new TemplateFactory(this);
+			Template = new Factory(new DefaultCoreFactory(), getEnvironment());
 		}
 		return Template;
 	}

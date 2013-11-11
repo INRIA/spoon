@@ -207,7 +207,6 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.template.Template;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -318,7 +317,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		}
 
-		@SuppressWarnings("unchecked")
 		void exit(ASTNode node) {
 			ASTPair pair = stack.pop();
 			if (pair.node != node)
@@ -328,9 +326,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 				current.setParent(stack.peek().element);
 				exiter.child = current;
 				exiter.scan(stack.peek().element);
-			}
-			if (template && (current instanceof CtClass)) {
-				factory.Template().add((CtClass<? extends Template>) current);
 			}
 		}
 

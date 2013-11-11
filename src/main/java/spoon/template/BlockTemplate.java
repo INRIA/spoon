@@ -49,7 +49,7 @@ public abstract class BlockTemplate implements TemplateParameter<Void>, Template
 
 	public CtBlock<?> getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<? extends BlockTemplate> c;
-		c = targetType.getFactory().Template().get(this.getClass());
+		c = targetType.getFactory().Template().Class().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}

@@ -219,16 +219,6 @@ public interface Environment {
 	 */
 	String getSourcePath();
 
-	/**
-	 * Gets the current classpath.
-	 */
-	String getClasspath();
-
-	/**
-	 * Sets the current classpath.
-	 */
-	void setClasspath(String classpath);
-
 	void setAutoImports(boolean autoImports);
 
 	/**
