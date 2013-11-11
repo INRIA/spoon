@@ -45,7 +45,7 @@ public abstract class TypedStatementListTemplateParameter<R> implements
 	public CtStatementList<R> getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<?> c;
 		CtBlock<?> b;
-		c = targetType.getFactory().Template().get(this.getClass());
+		c = targetType.getFactory().Template().Class().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
@@ -55,8 +55,8 @@ public abstract class TypedStatementListTemplateParameter<R> implements
 			b = Substitution.substitute(targetType, (Template) this, c
 					.getMethod("statements").getBody());
 		} else {
-			b = targetType.getFactory().Core().clone(
-					c.getMethod("statements").getBody());
+			b = targetType.getFactory().Core()
+					.clone(c.getMethod("statements").getBody());
 		}
 		l.setStatements(b.getStatements());
 		return l;

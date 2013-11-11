@@ -274,16 +274,23 @@ public abstract class AbstractLauncher {
 		opt2.setHelp("Directory to search for spoon properties files.");
 		jsap.registerParameter(opt2);
 
-		// classpath
-		opt2 = new FlaggedOption("classpath");
-		opt2.setShortFlag('c');
-		opt2.setLongFlag("classpath");
-		opt2.setHelp("An optional classpath to be passed to the internal Java compiler.");
+		// Source classpath
+		opt2 = new FlaggedOption("source-classpath");
+		opt2.setLongFlag("source-classpath");
+		opt2.setHelp("An optional classpath to be passed to the internal Java compiler when building or compiling the input sources.");
 		opt2.setStringParser(JSAP.STRING_PARSER);
 		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
 
-		// classpath
+		// Template classpath
+		opt2 = new FlaggedOption("template-classpath");
+		opt2.setLongFlag("template-classpath");
+		opt2.setHelp("An optional classpath to be passed to the internal Java compiler when building the template sources.");
+		opt2.setStringParser(JSAP.STRING_PARSER);
+		opt2.setRequired(false);
+		jsap.registerParameter(opt2);
+		
+		// Destination
 		opt2 = new FlaggedOption("destination");
 		opt2.setShortFlag('d');
 		opt2.setLongFlag("destination");
@@ -381,11 +388,6 @@ public abstract class AbstractLauncher {
 					.split(File.pathSeparator)) {
 				addProcessor(processorName);
 			}
-		}
-
-		if (getArguments().getString("classpath") != null) {
-			getEnvironment()
-					.setClasspath(getArguments().getString("classpath"));
 		}
 
 	}
@@ -554,13 +556,17 @@ public abstract class AbstractLauncher {
 		SpoonCompiler compiler = new JDTCompiler(factory = createFactory());
 		compiler.setDestinationDirectory(arguments.getFile("destination"));
 		compiler.setOutputDirectory(arguments.getFile("output"));
+		compiler.setSourceClasspath(getArguments().getString("source-classpath"));
+		compiler.setTemplateClasspath(getArguments().getString("template-classpath"));
 
 		getEnvironment().debugMessage(
 				"output: " + compiler.getOutputDirectory());
 		getEnvironment().debugMessage(
 				"destination: " + compiler.getDestinationDirectory());
 		getEnvironment().debugMessage(
-				"classpath: " + environment.getClasspath());
+				"source classpath: " + compiler.getSourceClasspath());
+		getEnvironment().debugMessage(
+				"template classpath: " + compiler.getTemplateClasspath());
 
 		try {
 			for (SpoonResource f : getInputSources()) {

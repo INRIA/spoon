@@ -67,6 +67,7 @@ public class TemplateTest {
 				.createReference(Date.class)));
 
 		// after template: 3 constructors
+		// System.out.println("==>"+c1.getConstructors());
 		assertEquals(3, c1.getConstructors().size());
 
 		CtField<?> toBeInserted = (CtField<?>) c1.getElements(

@@ -171,10 +171,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	@SuppressWarnings("unchecked")
 	public CtSimpleType<T> getDeclaration() {
 		if (!isPrimitive() && (getQualifiedName().length() > 0)) {
-			if (getFactory().Template().isTemplate(this)) {
-				return (CtSimpleType<T>) getFactory().Template().get(
-						getQualifiedName());
-			}
 			return (CtSimpleType<T>) getFactory().Type()
 					.get(getQualifiedName());
 		}

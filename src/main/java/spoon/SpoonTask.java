@@ -26,6 +26,8 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Reference;
 
 /**
  * This class implements an Ant task for Spoon that encapsulates
@@ -181,7 +183,7 @@ public class SpoonTask extends Java {
 		if (compile) {
 			createArg().setValue("--compile");
 		}
-		
+
 		createArg().setValue("--compliance");
 		createArg().setValue("" + javaCompliance);
 
@@ -291,9 +293,14 @@ public class SpoonTask extends Java {
 			createArg().setValue(classname);
 		}
 
-		if (getCommandLine().getClasspath() != null) {
-			createArg().setValue("--classpath");
-			createArg().setValue(getCommandLine().getClasspath().toString());
+		if (sourceClasspath != null) {
+			createArg().setValue("--source-classpath");
+			createArg().setValue(sourceClasspath.toString());
+		}
+
+		if (templateClasspath != null) {
+			createArg().setValue("--template-classpath");
+			createArg().setValue(templateClasspath.toString());
 		}
 
 		super.execute();
@@ -432,6 +439,65 @@ public class SpoonTask extends Java {
 	 */
 	public void setPrecompile(boolean precompile) {
 		this.precompile = precompile;
+	}
+
+	Path sourceClasspath;
+
+	/**
+	 * Set the classpath to be used when building, processing and compiling the
+	 * sources.
+	 * 
+	 * @param s
+	 *            an Ant Path object containing the classpath.
+	 */
+	public void setSourceClasspath(Path s) {
+		createSourceClasspath().append(s);
+	}
+
+	/**
+	 * Source classpath to use, by reference.
+	 * 
+	 * @param r
+	 *            a reference to an existing classpath
+	 */
+	public void setSourceClasspathRef(Reference r) {
+		createSourceClasspath().setRefid(r);
+	}
+
+	private Path createSourceClasspath() {
+		if (sourceClasspath == null) {
+			sourceClasspath = new Path(getProject());
+		}
+		return sourceClasspath;
+	}
+
+	Path templateClasspath;
+
+	/**
+	 * Set the classpath to be used when building the template sources.
+	 * 
+	 * @param s
+	 *            an Ant Path object containing the classpath.
+	 */
+	public void setTemplateClasspath(Path s) {
+		createTemplateClasspath().append(s);
+	}
+
+	/**
+	 * Template classpath to use, by reference.
+	 * 
+	 * @param r
+	 *            a reference to an existing classpath
+	 */
+	public void setTemplateClasspathRef(Reference r) {
+		createTemplateClasspath().setRefid(r);
+	}
+
+	private Path createTemplateClasspath() {
+		if (templateClasspath == null) {
+			templateClasspath = new Path(getProject());
+		}
+		return templateClasspath;
 	}
 
 }

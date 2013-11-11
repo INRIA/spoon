@@ -144,22 +144,38 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * @exception Exception
 	 *                when a building problem occurs
+	 * 
+	 * @see #getSourceClasspath()
 	 */
 	boolean build() throws Exception;
 
 	/**
-	 * Builds the program's model corresponding to the given files with this
-	 * compiler's factory and stores the result into this factory. Note that
-	 * this method should only be used once on a given factory.
+	 * Builds the program's model corresponding to the given files and stores
+	 * the result into its factory ({@link #getFactory()}). Note that this
+	 * method should only be used once on a given factory.
 	 * 
-	 * @return true if the Java was successfully compiled with the core Java
-	 *         compiler, false if some errors were encountered while compiling
+	 * @return true if the model was successfully built
 	 * 
 	 * @exception Exception
 	 *                when a building problem occurs
+	 * 
+	 * @see #getSourceClasspath()
 	 */
 	boolean build(List<SpoonFile> files) throws Exception;
 
+	/**
+	 * Builds the program's model corresponding to the given files stores the
+	 * result into the template factory (see {@link Factory#Template()}. Note
+	 * that this method should only be used once on a given factory.
+	 * 
+	 * @return true if the model was successfully built
+	 * 
+	 * @exception Exception
+	 *                when a building problem occurs
+	 * 
+	 * @see #getTemplateClasspath()
+	 * @see Factory#Template()
+	 */
 	boolean buildTemplates(List<SpoonFile> files) throws Exception;
 
 	/**
@@ -173,6 +189,8 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * Generates the bytecode associated to the classes stored in this
 	 * compiler's factory. The bytecode is generated in the directory given by
 	 * {@link #getDestinationDirectory()}.
+	 * 
+	 * @see #getSourceClasspath()
 	 */
 	boolean compile();
 
@@ -183,7 +201,37 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * @param addDestinationDirectoryToClasspath
 	 *            set this flag to true to automatically add the bytecode
 	 *            destination directory to the classpath
+	 * 
+	 * @see #getSourceClasspath()
 	 */
 	boolean compileInputSources() throws Exception;
+
+	/**
+	 * Gets the classpath that is used to build/compile the input sources.
+	 * 
+	 * @see #compileInputSources()
+	 * @see #build()
+	 * @see #build(List)
+	 * @see #compile()
+	 */
+	String getSourceClasspath();
+
+	/**
+	 * Sets the classpath that is used to build/compile the input sources.
+	 * 
+	 */
+	void setSourceClasspath(String classpath);
+
+	/**
+	 * Gets the classpath that is used to build the template sources.
+	 * 
+	 * @see #buildTemplates(List)
+	 */
+	String getTemplateClasspath();
+
+	/**
+	 * Sets the classpath that is used to build the template sources.
+	 */
+	void setTemplateClasspath(String classpath);
 
 }

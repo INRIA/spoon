@@ -66,7 +66,7 @@ public abstract class Substitution {
 	public static void insertAll(CtType<?> targetType, Template template) {
 
 		CtClass<? extends Template> sourceClass = targetType.getFactory()
-				.Template().get(template.getClass());
+				.Template().Class().get(template.getClass());
 		// insert all the interfaces
 		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
 			if (!t.equals(targetType.getFactory().Type()
@@ -125,8 +125,8 @@ public abstract class Substitution {
 		if (targetType instanceof CtClass) {
 			for (CtAnonymousExecutable e : sourceClass
 					.getAnonymousExecutables()) {
-				((CtClass<?>) targetType).addAnonymousExecutable(
-						substitute(targetType, template, e));
+				((CtClass<?>) targetType).addAnonymousExecutable(substitute(
+						targetType, template, e));
 			}
 		}
 		// insert all the fields
@@ -161,7 +161,7 @@ public abstract class Substitution {
 			Template template) {
 
 		CtClass<? extends Template> sourceClass = targetType.getFactory()
-				.Template().get(template.getClass());
+				.Template().Class().get(template.getClass());
 		// insert all the interfaces
 		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
 			if (!t.equals(targetType.getFactory().Type()
@@ -207,7 +207,7 @@ public abstract class Substitution {
 	 */
 	public static void insertAllMethods(CtType<?> targetType, Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template()
+		CtClass<?> sourceClass = targetType.getFactory().Template().Class()
 				.get(template.getClass());
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
@@ -231,7 +231,7 @@ public abstract class Substitution {
 	 */
 	public static void insertAllFields(CtType<?> targetType, Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template()
+		CtClass<?> sourceClass = targetType.getFactory().Template().Class()
 				.get(template.getClass());
 		// insert all the fields
 		for (CtField<?> f : sourceClass.getFields()) {
@@ -258,7 +258,7 @@ public abstract class Substitution {
 	public static void insertAllConstructors(CtType<?> targetType,
 			Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template()
+		CtClass<?> sourceClass = targetType.getFactory().Template().Class()
 				.get(template.getClass());
 		// insert all the constructors
 		if (targetType instanceof CtClass) {
@@ -274,8 +274,8 @@ public abstract class Substitution {
 		if (targetType instanceof CtClass) {
 			for (CtAnonymousExecutable e : sourceClass
 					.getAnonymousExecutables()) {
-				((CtClass<?>) targetType).addAnonymousExecutable(
-						substitute(targetType, template, e));
+				((CtClass<?>) targetType).addAnonymousExecutable(substitute(
+						targetType, template, e));
 			}
 		}
 	}
@@ -377,7 +377,7 @@ public abstract class Substitution {
 	public static CtBlock<?> substituteMethodBody(CtClass<?> targetClass,
 			Template template, String executableName,
 			CtTypeReference<?>... parameterTypes) {
-		CtClass<?> sourceClass = targetClass.getFactory().Template()
+		CtClass<?> sourceClass = targetClass.getFactory().Template().Class()
 				.get(template.getClass());
 		CtExecutable<?> sourceExecutable = executableName.equals(template
 				.getClass().getSimpleName()) ? sourceClass
@@ -402,7 +402,7 @@ public abstract class Substitution {
 
 	public static CtExpression<?> substituteFieldDefaultExpression(
 			CtSimpleType<?> targetType, Template template, String fieldName) {
-		CtClass<?> sourceClass = targetType.getFactory().Template()
+		CtClass<?> sourceClass = targetType.getFactory().Template().Class()
 				.get(template.getClass());
 		CtField<?> sourceField = sourceClass.getField(fieldName);
 		return substitute(targetType, template,
@@ -476,7 +476,7 @@ public abstract class Substitution {
 			T templateType) {
 		T result = templateType.getFactory().Core().clone(templateType);
 		result.setPositions(null);
-		//result.setParent(templateType.getParent());
+		// result.setParent(templateType.getParent());
 		new SubstitutionVisitor(templateType.getFactory(), result, template)
 				.scan(result);
 		return result;
