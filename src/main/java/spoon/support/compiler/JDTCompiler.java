@@ -604,8 +604,10 @@ public class JDTCompiler implements SpoonCompiler {
 						+ File.separatorChar + element.getSimpleName()
 						+ DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
 				file.createNewFile();
+
+                // the path must be given relatively to to the working directory
 				InputStream is = getCompilationUnitInputStream(cu.getFile()
-						.getAbsolutePath());
+						.getPath());
 
 				IOUtils.copy(is, new FileOutputStream(file));
 
