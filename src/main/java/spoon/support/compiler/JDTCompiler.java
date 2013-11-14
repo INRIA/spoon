@@ -133,13 +133,15 @@ public class JDTCompiler implements SpoonCompiler {
 				new DefaultCoreFactory(), new StandardEnvironment()));
 		List<SpoonFile> files = new ArrayList<SpoonFile>();
 		SpoonFile file = new FileSystemFile(new File(
-				"./src/main/java/spoon/support/builder/SpoonCompiler.java"));
+				"./src/main/java/spoon/support/compiler/JDTCompiler.java"));
 		files.add(file);
 		System.out.println(file.getPath());
 		try {
 			comp.build(files);
-			System.out.println(comp.getFactory().Package()
-					.get("spoon.support.builder").getTypes());
+            System.out.println(comp.getFactory()
+                    .Package()
+                    .get("spoon.support.compiler")
+                    .getTypes());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
