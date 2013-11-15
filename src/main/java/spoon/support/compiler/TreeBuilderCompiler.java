@@ -26,14 +26,19 @@ public class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compi
 	  
 	  // //////////////////////////////////////////////////////////////////////////
 	  // This code is largely inspired from JDT's CompilationUnitResolver.resolve
-	  
+
+        for (CompilationUnit cu: sourceUnits) {
+            if (cu==null) {
+                throw new IllegalArgumentException();
+            }
+        }
 	  
 		CompilationUnitDeclaration unit = null;
 		int i = 0;
 		// build and record parsed units
 		beginToCompile(sourceUnits);
-		
-		// process all units (some more could be injected in the loop by
+
+        // process all units (some more could be injected in the loop by
 		// the lookup environment)
 		for (; i < this.totalUnits; i++) {
 			unit = unitsToProcess[i];
