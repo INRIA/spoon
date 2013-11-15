@@ -17,8 +17,6 @@
 
 package spoon.support.reflect.code;
 
-import java.util.List;
-
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtSimpleType;
@@ -29,8 +27,6 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements
 		CtVariableAccess<T> {
 	private static final long serialVersionUID = 1L;
-
-	List<CtTypeReference<?>> casts = EMPTY_LIST();
 
 	CtTypeReference<T> type;
 
@@ -50,11 +46,6 @@ public class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements
 		return type;
 	}
 
-	@Override
-	public List<CtTypeReference<?>> getTypeCasts() {
-		return casts;
-	}
-
 	public CtVariableReference<T> getVariable() {
 		return variable;
 	}
@@ -67,11 +58,6 @@ public class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements
 	@Override
 	public void setType(CtTypeReference<T> type) {
 		this.type = type;
-	}
-
-	@Override
-	public void setTypeCasts(List<CtTypeReference<?>> casts) {
-		this.casts = casts;
 	}
 
 	public void setVariable(CtVariableReference<T> variable) {
