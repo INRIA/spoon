@@ -34,6 +34,10 @@ public class GenericsTest {
 		assertEquals("V", generic.getSimpleName());
 		assertEquals("[java.io.Serializable, java.lang.Comparable]", generic
 				.getBounds().toString());
+		
+		CtMethod<?> node5 = (CtMethod<?>) type.getElements(new NameFilter("node5")).get(0);
+		assertEquals("this.<java.lang.Class<? extends java.lang.Throwable>>foo()",node5.getBody().getStatement(0).toString()); 
+		
 	}
 
 	@Test
@@ -91,7 +95,7 @@ public class GenericsTest {
 		CtTypeParameterReference generic = (CtTypeParameterReference) ((CtMethod<?>) methods
 				.get(0)).getFormalTypeParameters().get(0);
 		assertEquals("E", generic.getSimpleName());
-		CtParameter<?> param = (CtParameter<?>) ((CtMethod<?>) methods.get(0))
+		CtParameter<?> param = ((CtMethod<?>) methods.get(0))
 				.getParameters().get(0);
 		assertEquals("E", param.getType().toString());
 	}

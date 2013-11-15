@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Tree<V extends Serializable & Comparable<V>> {
-
+	
 	V node() {
 		return null;
 	}
@@ -27,6 +27,11 @@ class Tree<V extends Serializable & Comparable<V>> {
 	}
 
 	<T, R extends java.lang.Comparable<? super T>> T node5() {
+		this.<Class<? extends Throwable>>foo();
 		return null;
+	}
+	
+	<T> void foo() {
+		
 	}
 }
