@@ -42,8 +42,6 @@ public class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T> implements
 	}
 
 	public void setVariable(CtVariableReference<T> variable) {
-		if (!(variable instanceof CtFieldReference))
-			throw new RuntimeException("invalid type");
 		super.setVariable(variable);
 	}
 
