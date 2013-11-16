@@ -36,7 +36,11 @@ public interface SpoonFile extends SpoonResource {
 	boolean isJava();
 
 	/**
-	 * Gets the first physically existing folder that contains this file.
+	 * Tells if this file is an actual file (not a virtual file that holds
+	 * in-memory contents).
+	 * 
+	 * @return
 	 */
-	SpoonFolder getFileSystemParent();
+	boolean isActualFile();
+
 }

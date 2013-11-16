@@ -17,6 +17,8 @@
 
 package spoon.compiler;
 
+import java.io.File;
+
 /**
  * This interface defines generic resources that are used by
  * {@link SpoonCompiler} in the Java compilation process.
@@ -39,7 +41,24 @@ public interface SpoonResource {
 	boolean isFile();
 
 	/**
+	 * Tells if this resource is an archive.
+	 */
+	boolean isArchive();
+
+	/**
 	 * Gets this resource path.
 	 */
 	String getPath();
+
+	/**
+	 * Gets the parent of this resource on the file system.
+	 */
+	File getFileSystemParent();
+
+	/**
+	 * Gets the corresponding file if possible (returns null if this resource
+	 * does not correspond to any file on the filesystem).
+	 */
+	File toFile();
+
 }

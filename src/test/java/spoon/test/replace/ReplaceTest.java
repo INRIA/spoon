@@ -23,9 +23,11 @@ public class ReplaceTest {
 	@Before
 	public void setup() throws Exception {
 		factory = Spoon.createFactory();
-		Spoon.createCompiler(factory).build(
+		Spoon.createCompiler(
+				factory,
 				SpoonResourceHelper
-						.files("./src/test/java/spoon/test/replace/Foo.java"));
+						.files("./src/test/java/spoon/test/replace/Foo.java"))
+				.build();
 	}
 
 	@Test

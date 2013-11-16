@@ -34,16 +34,16 @@ import spoon.compiler.SpoonFolder;
 
 public class ZipFolder implements SpoonFolder {
 
-	File f;
+	File file;
 
 	List<SpoonFile> files;
 
-	public ZipFolder(File f) throws IOException {
+	public ZipFolder(File file) throws IOException {
 		super();
-		if (!f.isFile()) {
-			throw new IOException(f.getName() + " is not a valid zip file");
+		if (!file.isFile()) {
+			throw new IOException(file.getName() + " is not a valid zip file");
 		}
-		this.f = f;
+		this.file = file;
 	}
 
 	public List<SpoonFile> getAllFiles() {
@@ -70,7 +70,7 @@ public class ZipFolder implements SpoonFolder {
 			ZipInputStream zipInput = null;
 			try {
 				zipInput = new ZipInputStream(new BufferedInputStream(
-						new FileInputStream(f)));
+						new FileInputStream(file)));
 
 				ZipEntry entry;
 				while ((entry = zipInput.getNextEntry()) != null) {
@@ -99,12 +99,12 @@ public class ZipFolder implements SpoonFolder {
 	}
 
 	public String getName() {
-		return f.getName();
+		return file.getName();
 	}
 
 	public SpoonFolder getParent() {
 		try {
-			return SpoonResourceHelper.createFolder(f.getParentFile());
+			return SpoonResourceHelper.createFolder(file.getParentFile());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -125,7 +125,26 @@ public class ZipFolder implements SpoonFolder {
 	}
 
 	public String getPath() {
-		return f.getAbsolutePath();
+		try {
+			return file.getCanonicalPath();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return file.getPath();
+		}
 	}
 
+	@Override
+	public boolean isArchive() {
+		return true;
+	}
+
+	@Override
+	public File getFileSystemParent() {
+		return file.getParentFile();
+	}
+
+	@Override
+	public File toFile() {
+		return file;
+	}
 }

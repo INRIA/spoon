@@ -18,6 +18,7 @@
 package spoon.support.compiler;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 
 import spoon.compiler.SpoonFile;
@@ -51,8 +52,8 @@ public class ZipFile implements SpoonFile {
 	}
 
 	@Override
-	public SpoonFolder getFileSystemParent() {
-		return getParent().getParent();
+	public File getFileSystemParent() {
+		return getParent().getFileSystemParent();
 	}
 
 	public boolean isFile() {
@@ -72,4 +73,18 @@ public class ZipFile implements SpoonFile {
 		return parent + "!" + getName();
 	}
 
+	@Override
+	public boolean isArchive() {
+		return true;
+	}
+	
+	@Override
+	public File toFile() {
+		return null;
+	}
+	
+	@Override
+	public boolean isActualFile() {
+		return false;
+	}
 }

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.xml.sax.InputSource;
@@ -289,7 +290,7 @@ public abstract class AbstractLauncher {
 		opt2.setStringParser(JSAP.STRING_PARSER);
 		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
-		
+
 		// Destination
 		opt2 = new FlaggedOption("destination");
 		opt2.setShortFlag('d');
@@ -529,7 +530,9 @@ public abstract class AbstractLauncher {
 
 		getEnvironment().reportProgressMessage("Spoon version 2.0");
 
-		getEnvironment().debugMessage("loading command-line arguments...");
+		getEnvironment().debugMessage(
+				"loading command-line arguments: " + Arrays.asList(args));
+
 		processArguments();
 
 		if (arguments.getBoolean("precompile")) {
@@ -556,8 +559,10 @@ public abstract class AbstractLauncher {
 		SpoonCompiler compiler = new JDTCompiler(factory = createFactory());
 		compiler.setDestinationDirectory(arguments.getFile("destination"));
 		compiler.setOutputDirectory(arguments.getFile("output"));
-		compiler.setSourceClasspath(getArguments().getString("source-classpath"));
-		compiler.setTemplateClasspath(getArguments().getString("template-classpath"));
+		compiler.setSourceClasspath(getArguments()
+				.getString("source-classpath"));
+		compiler.setTemplateClasspath(getArguments().getString(
+				"template-classpath"));
 
 		getEnvironment().debugMessage(
 				"output: " + compiler.getOutputDirectory());
@@ -577,7 +582,7 @@ public abstract class AbstractLauncher {
 				getEnvironment().debugMessage("add template source: " + f);
 				compiler.addTemplateSource(f);
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			getEnvironment().report(null, Severity.ERROR,
 					"Error while loading resource : " + e.getMessage());
 			if (getEnvironment().isDebug()) {

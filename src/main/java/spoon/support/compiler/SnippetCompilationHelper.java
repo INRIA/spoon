@@ -43,12 +43,12 @@ public class SnippetCompilationHelper {
 
 	static public CtStatement compileStatement(CtCodeSnippetStatement st)
 			throws SnippetCompilationError {
-
 		return internalCompileStatement(st);
 	}
 
 	private static CtStatement internalCompileStatement(CtStatement st) {
 		Factory f = st.getFactory();
+
 		CtClass<?> w = createWrapper(st, f);
 
 		compile(f, w);
@@ -77,8 +77,8 @@ public class SnippetCompilationHelper {
 		}).get(0);
 
 		CtStatement ret = wrapper.getBody().getStatements().get(0);
-		// Clean up
 
+		// Clean up
 		c.getPackage().getTypes().remove(c);
 
 		// check typing?
@@ -117,21 +117,15 @@ public class SnippetCompilationHelper {
 
 	}
 
-	private static void build(Factory f, String contents, String name) {
+	private static void build(Factory f, String contents) {
 		// Build contents
-		SpoonCompiler builder = new JDTSnippetCompiler(f);
+		SpoonCompiler builder = new JDTSnippetCompiler(f, contents);
 		try {
-			builder.addInputSource(new VirtualFile(contents, name));
 			builder.build();
 		} catch (Exception e) {
 			throw new RuntimeException(
 					"snippet compilation error while compiling: " + contents, e);
 		}
-	}
-
-	private static void build(Factory f, String contents)
-			throws SnippetCompilationError {
-		build(f, contents, "");
 	}
 
 	@SuppressWarnings("unchecked")

@@ -95,7 +95,7 @@ public class FileSystemFolder implements SpoonFolder {
 
 	@Override
 	public String toString() {
-		return file.toString();
+		return getPath();
 	}
 
 	public List<SpoonFile> getAllJavaFiles() {
@@ -109,9 +109,27 @@ public class FileSystemFolder implements SpoonFolder {
 	}
 
 	public String getPath() {
-		return toString();
+		try {
+			return file.getCanonicalPath();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return file.getPath();
+		}
 	}
-	
 
-	
+	@Override
+	public boolean isArchive() {
+		return false;
+	}
+
+	@Override
+	public File getFileSystemParent() {
+		return file.getParentFile();
+	}
+
+	@Override
+	public File toFile() {
+		return file;
+	}
+
 }

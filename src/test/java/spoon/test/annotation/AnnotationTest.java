@@ -30,10 +30,12 @@ public class AnnotationTest {
 		// we can not use TestUtils.build because we need to compile two classes
 		// at the same time
 		Factory factory = Spoon.createFactory();
-		Spoon.createCompiler(factory).build(
+		Spoon.createCompiler(
+				factory,
 				SpoonResourceHelper.files(
 						"./src/test/java/spoon/test/annotation/Bound.java",
-						"./src/test/java/spoon/test/annotation/Main.java"));
+						"./src/test/java/spoon/test/annotation/Main.java"))
+				.build();
 
 		CtSimpleType<?> type = factory.Package().get("spoon.test.annotation")
 				.getType("Main");
