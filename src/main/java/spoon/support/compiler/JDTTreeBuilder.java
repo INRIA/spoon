@@ -238,10 +238,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		Stack<CtElement> arguments = new Stack<CtElement>();
 
-		// TODO: this should be removed because it is not really used anymore
-		// (see new boolean CtNewArray.isInitializer())
-		Stack<CtElement> arrayInitializer = new Stack<CtElement>();
-
 		List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>();
 
 		CompilationUnitDeclaration compilationunitdeclaration;
@@ -469,27 +465,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 							"class")) {
 				value = ((CtFieldReference<?>) value).getType();
 			}
-			if (!context.arrayInitializer.isEmpty()
-					&& context.arrayInitializer.peek() == annotation) {
-				// Array
-				if (annotation.getElementValues().containsKey(name)) {
-					if (annotation.getElementValues().get(name) instanceof ArrayList) {
-						ArrayList<Object> list = (ArrayList<Object>) annotation
-								.getElementValues().get(name);
-						list.add(value);
-					} else {
-						ArrayList<Object> lst = new ArrayList<Object>();
-						lst.add(value);
-						annotation.getElementValues().put(name, lst);
-					}
-				} else {
-					ArrayList<Object> lst = new ArrayList<Object>();
-					lst.add(value);
-					annotation.getElementValues().put(name, lst);
-				}
-			} else {
-				annotation.getElementValues().put(name, value);
-			}
+			annotation.getElementValues().put(name, value);
 			super.visitCtAnnotation(annotation);
 		}
 
@@ -1312,9 +1288,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(ArrayInitializer arrayInitializer, BlockScope scope) {
-		if (!context.arrayInitializer.isEmpty()) {
-			context.arrayInitializer.pop();
-		}
 		context.exit(arrayInitializer);
 	}
 
@@ -1955,9 +1928,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayInitializer arrayInitializer, BlockScope scope) {
-		if (!context.annotationValueName.isEmpty()) {
-			context.arrayInitializer.push(context.stack.peek().element);
-		}
 		CtNewArray<?> array = factory.Core().createNewArray();
 		array.setInitializer(true);
 		context.enter(array, arrayInitializer);
