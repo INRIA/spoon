@@ -419,6 +419,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return this;
 	}
 
+	// RP: this function does NOT work well... it is used to remove imports and
+	// should stopped being used when imports will be dealt with conveniently.
+	// I don't even think we have a test so we are not even sure that it is
+	// actually useful...
 	private boolean isHiddenByField(CtType<?> container, CtTypeReference<?> type) {
 		if (container == null) {
 			return false;
@@ -432,6 +436,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (container.getQualifiedName().contains("$")) {
 			return false;
 		}
+		// TODO: this is really bad to need reflection to do this...
 		for (CtFieldReference<?> f : container.getReference().getAllFields()) {
 			if (f.getSimpleName().equals(type.getSimpleName())) {
 				return true;
@@ -1173,8 +1178,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				try {
 					CtTypeReference<?> type = invocation.getExecutable()
 							.getDeclaringType();
-					if (isHiddenByField(invocation.getParent(CtType.class),
-							type)) {
+					if (env.isAutoImports()
+							&& isHiddenByField(
+									invocation.getParent(CtType.class), type)) {
 						importsContext.imports.remove(type.getSimpleName());
 					}
 					context.ignoreGenerics = true;
@@ -1406,8 +1412,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		// Write comments
 		if (context.printDocs && (e.getDocComment() != null)) {
 			write("/** ").writeln();
-			for (String com : e.getDocComment().split("\n")) {
-				write(" *" + com).writeln();
+			String[] lines = e.getDocComment().split("\n");
+			for (int i = 0; i < lines.length; i++) {
+				String com = lines[i].trim();
+				if ("".equals(com) && (i == 0 || i == lines.length - 1)) {
+					continue;
+				}
+				if (com.startsWith("//")) {
+					write(com).writeln();
+				} else {
+					write(" * " + com).writeln();
+				}
 			}
 			write(" */").writeln();
 		}
@@ -1657,9 +1672,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
-		}		
-		if (/*!context.isInvocation
-				&&*/ !(ref.getBounds() == null)
+		}
+		if (/*
+			 * !context.isInvocation &&
+			 */!(ref.getBounds() == null)
 				&& !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
 						.getQualifiedName().equals("java.lang.Object"))) {

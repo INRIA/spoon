@@ -17,6 +17,7 @@
 
 package spoon.support.compiler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +29,27 @@ public class VirtualFolder implements SpoonFolder {
 
 	List<SpoonFolder> folders = new ArrayList<SpoonFolder>();
 
+	List<String> rootJavaPaths = new ArrayList<>();
+	
+	public List<String> getRootJavaPaths() {
+		return rootJavaPaths;
+	}
+
 	public boolean addFile(SpoonFile o) {
+		if(o.isJava()) {
+			rootJavaPaths.add(o.getPath());
+		} else {
+			rootJavaPaths.add(o.getFileSystemParent().getPath());
+		}
 		return files.add(o);
 	}
 
 	public boolean addFolder(SpoonFolder o) {
+		if(o.isArchive()) {
+			rootJavaPaths.add(o.getFileSystemParent().getPath());
+		} else {
+			rootJavaPaths.add(o.getPath());
+		}
 		return folders.add(o);
 	}
 
@@ -77,9 +94,23 @@ public class VirtualFolder implements SpoonFolder {
 	}
 
 	public String getPath() {
-		// it has to be real path for snippet building 
+		// it has to be real path for snippet building
 		return ".";
 	}
-	
 
+	@Override
+	public File getFileSystemParent() {
+		return null;
+	}
+
+	@Override
+	public boolean isArchive() {
+		return false;
+	}
+	
+	@Override
+	public File toFile() {
+		return null;
+	}
+	
 }

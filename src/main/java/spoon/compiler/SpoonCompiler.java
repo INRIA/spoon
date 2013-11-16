@@ -95,7 +95,7 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * @param source
 	 *            file or directory to add
 	 */
-	void addInputSource(SpoonResource source) throws IOException;
+	void addInputSource(SpoonResource source);
 
 	/**
 	 * Gets all the files/directories given as input sources to this builder
@@ -126,13 +126,17 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * @param source
 	 *            file or directory to add
 	 */
-	void addTemplateSource(SpoonResource source) throws IOException;
+	void addTemplateSource(SpoonResource source);
 
 	/**
 	 * Gets all the files/directories given as template sources to this builder
 	 * (see {@link #addTemplateSource(File)}).
 	 */
 	Set<File> getTemplateSources();
+
+	void addInputSources(List<SpoonResource> resources);
+
+	void addTemplateSources(List<SpoonResource> resources);
 
 	/**
 	 * Builds the program's model with this compiler's factory and stores the
@@ -146,44 +150,43 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 *                when a building problem occurs
 	 * 
 	 * @see #getSourceClasspath()
+	 * @see #getTemplateClasspath()
 	 */
 	boolean build() throws Exception;
 
-	/**
-	 * Builds the program's model corresponding to the given files and stores
-	 * the result into its factory ({@link #getFactory()}). Note that this
-	 * method should only be used once on a given factory.
-	 * 
-	 * @return true if the model was successfully built
-	 * 
-	 * @exception Exception
-	 *                when a building problem occurs
-	 * 
-	 * @see #getSourceClasspath()
-	 */
-	boolean build(List<SpoonFile> files) throws Exception;
-
-	/**
-	 * Builds the program's model corresponding to the given files stores the
-	 * result into the template factory (see {@link Factory#Template()}. Note
-	 * that this method should only be used once on a given factory.
-	 * 
-	 * @return true if the model was successfully built
-	 * 
-	 * @exception Exception
-	 *                when a building problem occurs
-	 * 
-	 * @see #getTemplateClasspath()
-	 * @see Factory#Template()
-	 */
-	boolean buildTemplates(List<SpoonFile> files) throws Exception;
+//	/**
+//	 * Builds the program's model corresponding to the given files and stores
+//	 * the result into its factory ({@link #getFactory()}).
+//	 * 
+//	 * @return true if the model was successfully built
+//	 * 
+//	 * @exception Exception
+//	 *                when a building problem occurs
+//	 * 
+//	 * @see #getSourceClasspath()
+//	 */
+//	boolean build(List<SpoonResource> resources) throws Exception;
+//
+//	/**
+//	 * Builds the program's model corresponding to the given files stores the
+//	 * result into the template factory (see {@link Factory#Template()}.
+//	 * 
+//	 * @return true if the model was successfully built
+//	 * 
+//	 * @exception Exception
+//	 *                when a building problem occurs
+//	 * 
+//	 * @see #getTemplateClasspath()
+//	 * @see Factory#Template()
+//	 */
+//	boolean buildTemplates(List<SpoonResource> resources) throws Exception;
 
 	/**
 	 * Generates the source code associated to the classes stored in this
 	 * compiler's factory. The source code is generated in the directory given
 	 * by {@link #getOutputDirectory()}.
 	 */
-	void generateProcessedSourceFiles();
+	void generateProcessedSourceFiles() throws Exception;
 
 	/**
 	 * Generates the bytecode associated to the classes stored in this

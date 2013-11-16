@@ -58,10 +58,10 @@ public class FileSystemFile implements SpoonFile {
 	}
 
 	@Override
-	public SpoonFolder getFileSystemParent() {
-		return getParent();
+	public File getFileSystemParent() {
+		return file.getParentFile();
 	}
-	
+
 	public boolean isFile() {
 		return true;
 	}
@@ -71,11 +71,31 @@ public class FileSystemFile implements SpoonFile {
 	}
 
 	public String getPath() {
-		return toString();
+		try {
+			return file.getCanonicalPath();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return file.getPath();
+		}
+	}
+
+	@Override
+	public String toString() {
+		return file.getPath();
+	}
+
+	@Override
+	public boolean isArchive() {
+		return SpoonResourceHelper.isArchive(file);
+	}
+
+	@Override
+	public File toFile() {
+		return file;
 	}
 	
 	@Override
-	public String toString() {
-		return file.toString();
+	public boolean isActualFile() {
+		return true;
 	}
 }

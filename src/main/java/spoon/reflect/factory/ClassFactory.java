@@ -67,6 +67,7 @@ public class ClassFactory extends TypeFactory {
 			owner.getTypes().remove(c);
 		}
 		owner.getTypes().add(c);
+		c.setParent(owner);
 		return c;
 	}
 

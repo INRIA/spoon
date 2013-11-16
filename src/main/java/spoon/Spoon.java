@@ -1,6 +1,9 @@
 package spoon;
 
+import java.util.List;
+
 import spoon.compiler.SpoonCompiler;
+import spoon.compiler.SpoonResource;
 import spoon.reflect.Factory;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -37,6 +40,22 @@ public abstract class Spoon {
 		return new JDTCompiler(factory);
 	}
 
+	public static SpoonCompiler createCompiler(Factory factory,
+			List<SpoonResource> inputSources) {
+		SpoonCompiler c = new JDTCompiler(factory);
+		c.addInputSources(inputSources);
+		return c;
+	}
+
+	public static SpoonCompiler createCompiler(Factory factory,
+			List<SpoonResource> inputSources,
+			List<SpoonResource> templateSources) {
+		SpoonCompiler c = new JDTCompiler(factory);
+		c.addInputSources(inputSources);
+		c.addTemplateSources(templateSources);
+		return c;
+	}
+
 	/**
 	 * Creates a new Spoon Java compiler with a default factory in order to
 	 * process and compile Java source code. The compiler's factory can be
@@ -44,6 +63,21 @@ public abstract class Spoon {
 	 */
 	public static SpoonCompiler createCompiler() {
 		return new JDTCompiler(createFactory());
+	}
+
+	public static SpoonCompiler createCompiler(List<SpoonResource> inputSources) {
+		SpoonCompiler c = new JDTCompiler(createFactory());
+		c.addInputSources(inputSources);
+		return c;
+	}
+
+	public static SpoonCompiler createCompiler(
+			List<SpoonResource> inputSources,
+			List<SpoonResource> templateSources) {
+		SpoonCompiler c = new JDTCompiler(createFactory());
+		c.addInputSources(inputSources);
+		c.addTemplateSources(templateSources);
+		return c;
 	}
 
 	/**

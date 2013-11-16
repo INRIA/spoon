@@ -35,6 +35,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.PrettyPrinter;
+
 //import spoon.reflect.cu.CompilationUnit;
 
 /**
@@ -70,23 +71,43 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	public void init() {
 		// Skip loading properties
 		// super.init();
+
+		// Check output directory
+		if (directory == null)
+			throw new RuntimeException(
+					"You should set output directory before printing");
+		// Create spooned dir
+		if (directory.isFile())
+			throw new RuntimeException("Output must be a directory");
+		if (!directory.exists()) {
+			if (!directory.mkdirs())
+				throw new RuntimeException("Error creating output directory");
+		}
+		try {
+			directory = directory.getCanonicalFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 	Map<String, Map<Integer, Integer>> lineNumberMappings = new HashMap<String, Map<Integer, Integer>>();
 
 	/**
-	 * Creates the Java file associated to the given element.
-	 * Splits top-level classes in different files (even if they are in the same file in the original sources).
+	 * Creates the Java file associated to the given element. Splits top-level
+	 * classes in different files (even if they are in the same file in the
+	 * original sources).
 	 */
 	public void createJavaFile(CtSimpleType<?> element) {
 
 		new ModelConsistencyChecker(getEnvironment(), false).scan(element);
-		
+
 		// we only create a file for top-level classes
 		if (!element.isTopLevel()) {
 			throw new IllegalArgumentException();
-		};
-		
+		}
+		;
+
 		CompilationUnit cu = null;
 		if (element.getPosition() != null) {
 			cu = element.getPosition().getCompilationUnit();
@@ -112,23 +133,11 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		}
 		if (printer == null) {
 			printer = new DefaultJavaPrettyPrinter(getEnvironment());
-			printer.calculate(cu,toBePrinted);
+			printer.calculate(cu, toBePrinted);
 		}
 
 		CtPackage pack = element.getPackage();
 		PrintStream stream = null;
-
-		// Check output directory
-		if (directory == null)
-			throw new RuntimeException(
-					"You should set output directory before printing");
-		// Create spooned dir
-		if (directory.isFile())
-			throw new RuntimeException("Output must be a directory");
-		if (!directory.exists()) {
-			if (!directory.mkdirs())
-				throw new RuntimeException("Error creating output directory");
-		}
 
 		// create package directory
 		File packageDir;
@@ -177,8 +186,8 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			stream = new PrintStream(file);
 			stream.print(printer.getResult());
 			for (CtSimpleType<?> t : toBePrinted) {
-				lineNumberMappings.put(t.getQualifiedName(), printer
-						.getLineNumberMapping());
+				lineNumberMappings.put(t.getQualifiedName(),
+						printer.getLineNumberMapping());
 			}
 			stream.close();
 		} catch (FileNotFoundException e) {

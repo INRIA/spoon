@@ -1,6 +1,7 @@
 package spoon.support.compiler;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 
 import spoon.compiler.SpoonFile;
@@ -40,8 +41,8 @@ public class VirtualFile implements SpoonFile {
 	}
 
 	@Override
-	public SpoonFolder getFileSystemParent() {
-		return getParent();
+	public File getFileSystemParent() {
+		return null;
 	}
 
 	public String getPath() {
@@ -52,4 +53,19 @@ public class VirtualFile implements SpoonFile {
 		return true;
 	}
 
+	@Override
+	public boolean isArchive() {
+		return false;
+	}
+	
+	@Override
+	public File toFile() {
+		return null;
+	}
+	
+	@Override
+	public boolean isActualFile() {
+		return false;
+	}
+	
 }
