@@ -225,6 +225,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 			this.element = element;
 			this.node = node;
 		}
+
+		@Override
+		public String toString() {
+			return element.getClass().getSimpleName() + "-"
+					+ node.getClass().getSimpleName();
+		}
 	}
 
 	public class BuilderContext {
@@ -232,6 +238,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		Stack<CtElement> arguments = new Stack<CtElement>();
 
+		// TODO: this should be removed because it is not really used anymore
+		// (see new boolean CtNewArray.isInitializer())
 		Stack<CtElement> arrayInitializer = new Stack<CtElement>();
 
 		List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>();
@@ -461,7 +469,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 							"class")) {
 				value = ((CtFieldReference<?>) value).getType();
 			}
-
 			if (!context.arrayInitializer.isEmpty()
 					&& context.arrayInitializer.peek() == annotation) {
 				// Array
@@ -1307,9 +1314,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public void endVisit(ArrayInitializer arrayInitializer, BlockScope scope) {
 		if (!context.arrayInitializer.isEmpty()) {
 			context.arrayInitializer.pop();
-		} else {
-			context.exit(arrayInitializer);
 		}
+		context.exit(arrayInitializer);
 	}
 
 	@Override
@@ -1569,8 +1575,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(QualifiedNameReference qualifiedNameReference,
 			BlockScope scope) {
-		if (context.stack.peek().node == qualifiedNameReference)
+		if (context.stack.peek().node == qualifiedNameReference) {
 			context.exit(qualifiedNameReference);
+		}
 	}
 
 	@Override
@@ -1948,13 +1955,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayInitializer arrayInitializer, BlockScope scope) {
-
-		if (context.annotationValueName.isEmpty()) {
-			CtNewArray<?> array = factory.Core().createNewArray();
-			context.enter(array, arrayInitializer);
-		} else {
+		if (!context.annotationValueName.isEmpty()) {
 			context.arrayInitializer.push(context.stack.peek().element);
 		}
+		CtNewArray<?> array = factory.Core().createNewArray();
+		array.setInitializer(true);
+		context.enter(array, arrayInitializer);
 		return super.visit(arrayInitializer, scope);
 	}
 

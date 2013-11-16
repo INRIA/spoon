@@ -1,9 +1,13 @@
 package spoon.test.annotation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.Set;
 
 import org.junit.Test;
@@ -50,6 +54,22 @@ public class AnnotationTest {
 		assertEquals(1, annotations.size());
 		Bound actualAnnotation = (Bound) a.getActualAnnotation();
 		assertEquals(8, actualAnnotation.max());
+	}
+
+	@Test
+	public void testPersistenceProperty() throws Exception {
+		CtSimpleType<?> type = build("spoon.test.annotation",
+				"PersistenceProperty");
+		assertEquals("PersistenceProperty", type.getSimpleName());
+		assertEquals(2, type.getAnnotations().size());
+		CtAnnotation<Target> a1 = type.getAnnotation(type.getFactory().Type()
+				.createReference(Target.class));
+		assertNotNull(a1);
+		CtAnnotation<Retention> a2 = type.getAnnotation(type.getFactory()
+				.Type().createReference(Retention.class));
+		assertNotNull(a2);
+		assertTrue(a1.getElementValues().containsKey("value"));
+		assertTrue(a2.getElementValues().containsKey("value"));
 	}
 
 }
