@@ -36,8 +36,7 @@ public class GenericsTest {
 				.getBounds().toString());
 		
 		CtMethod<?> node5 = (CtMethod<?>) type.getElements(new NameFilter("node5")).get(0);
-		assertEquals("this.<java.lang.Class<? extends java.lang.Throwable>>foo()",node5.getBody().getStatement(0).toString()); 
-		
+		assertEquals("this.<java.lang.Class<? extends java.lang.Throwable>>foo()",node5.getBody().getStatement(0).toString()); 		
 	}
 
 	@Test
@@ -100,4 +99,30 @@ public class GenericsTest {
 		assertEquals("E", param.getType().toString());
 	}
 
+	@Test
+	public void testBugCommonCollection() throws Exception {
+		try {
+		CtClass<?> type = build("spoon.test.generics",
+				"BugCollection");
+	
+		CtField INSTANCE = (CtField) type.getElements(new NameFilter(
+				"INSTANCE")).get(0);
+		//assertTrue(INSTANCE.getDefaultExpression().getType().getActualTypeArguments().get(0) instanceof CtAnnonTypeParameterReference);
+		assertEquals("public static final spoon.test.generics.ACLass<?> INSTANCE = new spoon.test.generics.ACLass();", INSTANCE.toString());
+		
+		CtField INSTANCE2 = (CtField) type.getElements(new NameFilter(
+				"INSTANCE2")).get(0);
+		INSTANCE2.getAnnotations().clear();
+		assertEquals("public static final spoon.test.generics.ACLass<?> INSTANCE2 = new spoon.test.generics.ACLass();", INSTANCE2.toString());
+
+		CtClass ComparableComparator = (CtClass) type.getPackage().getElements(new NameFilter(
+				"ComparableComparator")).get(0);
+		assertTrue(ComparableComparator.toString().startsWith("class ComparableComparator<E extends java.lang.Comparable<? super E>>"));
+
+		}
+		catch (Exception e) {
+			e.printStackTrace();throw e;
+		}
+	}
+	
 }

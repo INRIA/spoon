@@ -248,6 +248,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		boolean printDocs = true;
 
 		boolean printShortName = false;
+		boolean isInvocation = false;
 
 		boolean skipArray = false;
 
@@ -1196,7 +1197,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					&& invocation.getGenericTypes().size() > 0) {
 				write("<");
 				for (CtTypeReference<?> ref : invocation.getGenericTypes()) {
+					context.isInvocation = true;
 					scan(ref);
+					context.isInvocation = false;
 					write(",");
 					removeLastChar = true;
 				}
@@ -1495,11 +1498,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("new ").scan(newClass.getType());
 			context.ignoreEnclosingClass = false;
 
-			if ((newClass.getExecutable() != null)
-					&& (newClass.getExecutable().getActualTypeArguments() != null)) {
-				writeGenericsParameter(newClass.getExecutable()
-						.getActualTypeArguments());
-			}
+//			if ((newClass.getExecutable() != null)
+//					&& (newClass.getExecutable().getActualTypeArguments() != null)) {
+//				writeGenericsParameter(newClass.getExecutable()
+//						.getActualTypeArguments());
+//			}
 			write("(");
 			boolean remove = false;
 			for (CtCodeElement e : newClass.getArguments()) {
@@ -1654,17 +1657,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		// write(ref.getSimpleName());
-
 		if (importsContext.isImported(ref) || context.printShortName) {
 			write(ref.getSimpleName());
 		} else {
 			write(ref.getQualifiedName());
 		}
-		if (!context.ignoreGenerics) {
-			writeGenericsParameter(ref.getActualTypeArguments());
-		}
-		if (!(ref.getBounds() == null)
+		if (
+				(!context.isInvocation || "?".equals(ref.getSimpleName())) && 
+				!(ref.getBounds() == null)
 				&& !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
 						.getQualifiedName().equals("java.lang.Object"))) {
