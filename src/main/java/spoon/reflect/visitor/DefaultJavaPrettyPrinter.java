@@ -248,7 +248,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		boolean printDocs = true;
 
 		boolean printShortName = false;
-		boolean isInvocation = false;
 
 		boolean skipArray = false;
 
@@ -1197,9 +1196,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					&& invocation.getGenericTypes().size() > 0) {
 				write("<");
 				for (CtTypeReference<?> ref : invocation.getGenericTypes()) {
-					context.isInvocation = true;
 					scan(ref);
-					context.isInvocation = false;
 					write(",");
 					removeLastChar = true;
 				}
@@ -1667,9 +1664,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
-		if (/*
-			 * !context.isInvocation &&
-			 */!(ref.getBounds() == null)
+		if (!(ref.getBounds() == null)
 				&& !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
 						.getQualifiedName().equals("java.lang.Object"))) {
