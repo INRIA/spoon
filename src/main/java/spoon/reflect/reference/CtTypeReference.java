@@ -27,7 +27,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * {@link spoon.reflect.declaration.CtType} or sub-type.
  */
 public interface CtTypeReference<T> extends CtReference,
-		CtGenericElementReference, CtModifiableReference {
+		CtGenericElementReference {
 
 	/**
 	 * The name of the null type ("&lt;nulltype&gt;").
