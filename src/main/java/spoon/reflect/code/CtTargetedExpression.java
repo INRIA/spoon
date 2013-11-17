@@ -19,7 +19,8 @@ package spoon.reflect.code;
 
 /**
  * This abstract code element defines an expression which contains a target
- * expression.
+ * expression. In Java, it is generally of the form:
+ * <code>targetExpr.targetedExpr</code>.
  * 
  * @param <T>
  *            "Return" type of this expression

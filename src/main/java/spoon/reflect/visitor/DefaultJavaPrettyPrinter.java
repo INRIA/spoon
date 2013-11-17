@@ -63,6 +63,7 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -960,6 +961,24 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(targetedAccess);
 	}
 
+	@Override
+	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
+		enterCtExpression(thisAccess);
+		if (thisAccess.isQualified() && thisAccess.isImplicit()) {
+			throw new RuntimeException("unconsistent this definition");
+		}
+		if (thisAccess.isQualified()) {
+			context.ignoreGenerics = true;
+			scan(thisAccess.getType());
+			write(".");
+			context.ignoreGenerics = false;
+		}
+		if (!thisAccess.isImplicit()) {
+			write("this");
+		}
+		exitCtExpression(thisAccess);
+	}
+
 	public <T> void visitCtAnnotationFieldAccess(
 			CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		enterCtExpression(annotationFieldAccess);
@@ -977,66 +996,40 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		if (reference.getSimpleName().equals("this")) {
-			CtSimpleType<?> tmp = context.currentTopLevel;
-			boolean sameTopLevel = false;
-			if (tmp != null
-					&& tmp.getSimpleName() != null
-					&& tmp.getSimpleName().equals(
-							reference.getType().getSimpleName())
-					&& tmp.getPackage() != null
-					&& tmp.getPackage()
-							.getSimpleName()
-							.equals(reference.getType().getPackage()
-									.getSimpleName())) {
-				sameTopLevel = true;
-			}
-			if (!(context.currentThis.isEmpty() && sameTopLevel)
-					&& (context.currentThis.isEmpty() || (!reference.getType()
-							.equals(context.currentThis.peek()) && !reference
-							.getDeclaringType().isAnonymous()))) {
-				context.ignoreGenerics = true;
-				scan(reference.getDeclaringType());
-				write(".");
-				context.ignoreGenerics = false;
-			}
-
+		boolean isStatic = false;
+		if (reference.getSimpleName().equals("class")) {
+			isStatic = true;
+		} else if (reference.getSimpleName().equals("super")) {
+			isStatic = false;
 		} else {
-			boolean isStatic = false;
-			if (reference.getSimpleName().equals("class")) {
-				isStatic = true;
-			} else if (reference.getSimpleName().equals("super")) {
-				isStatic = false;
-			} else {
-				isStatic = reference.isStatic();
-			}
+			isStatic = reference.isStatic();
+		}
 
-			boolean printType = true;
-			if (reference.isFinal() && reference.isStatic()) {
-				if (context.currentTopLevel != null) {
-					CtTypeReference<?> ref = reference.getDeclaringType();
-					CtTypeReference<?> ref2;
-					if (context.currentThis != null
-							&& context.currentThis.size() > 0) {
-						ref2 = context.currentThis.lastElement();
-					} else {
-						ref2 = context.currentTopLevel.getReference();
-					}
-					// print type if not annonymous class ref and not within the
-					// current scope
-					printType = !ref.getSimpleName().equals("")
-							&& !(ref.equals(ref2));
+		boolean printType = true;
+		if (reference.isFinal() && reference.isStatic()) {
+			if (context.currentTopLevel != null) {
+				CtTypeReference<?> ref = reference.getDeclaringType();
+				CtTypeReference<?> ref2;
+				if (context.currentThis != null
+						&& context.currentThis.size() > 0) {
+					ref2 = context.currentThis.lastElement();
 				} else {
-					printType = true;
+					ref2 = context.currentTopLevel.getReference();
 				}
+				// print type if not annonymous class ref and not within the
+				// current scope
+				printType = !ref.getSimpleName().equals("")
+						&& !(ref.equals(ref2));
+			} else {
+				printType = true;
 			}
+		}
 
-			if (isStatic && printType && !context.ignoreStaticAccess) {
-				context.ignoreGenerics = true;
-				scan(reference.getDeclaringType());
-				context.ignoreGenerics = false;
-				write(".");
-			}
+		if (isStatic && printType && !context.ignoreStaticAccess) {
+			context.ignoreGenerics = true;
+			scan(reference.getDeclaringType());
+			context.ignoreGenerics = false;
+			write(".");
 		}
 		write(reference.getSimpleName());
 	}

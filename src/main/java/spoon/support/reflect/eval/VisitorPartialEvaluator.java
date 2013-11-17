@@ -54,6 +54,7 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -441,6 +442,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			return;
 		}
 		setResult(targetedAccess.getFactory().Core().clone(targetedAccess));
+	}
+
+	@Override
+	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
+		setResult(thisAccess.getFactory().Core().clone(thisAccess));
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(

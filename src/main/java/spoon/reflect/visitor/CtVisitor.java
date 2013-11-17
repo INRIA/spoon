@@ -48,6 +48,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -197,6 +198,11 @@ public interface CtVisitor {
 	 */
 	<T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess);
 
+	/**
+	 * Visits a this access.
+	 */
+	<T> void visitCtThisAccess(CtThisAccess<T> thisAccess);
+	
 	/**
 	 * Visits a reference to a field.
 	 */

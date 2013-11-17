@@ -17,12 +17,22 @@
 
 package spoon.reflect.code;
 
-
 /**
  * This code element defines an access to this.
  * 
  * @param <T>
  *            Type of this
  */
-public interface CtThisAccess<T> extends CtTargetedAccess<T> {
+public interface CtThisAccess<T> extends CtExpression<T> {
+
+	/**
+	 * Tells if this access must be qualified by the class it refers to.
+	 */
+	boolean isQualified();
+
+	/**
+	 * Sets this access to be qualified by the class it refers to.
+	 */
+	void setQualified(boolean qualified);
+
 }

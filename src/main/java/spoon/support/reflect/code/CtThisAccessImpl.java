@@ -18,10 +18,28 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.visitor.CtVisitor;
 
-public class CtThisAccessImpl<T> extends CtTargetedAccessImpl<T> implements
+public class CtThisAccessImpl<T> extends CtExpressionImpl<T> implements
 		CtThisAccess<T> {
 
 	private static final long serialVersionUID = 1L;
+
+	boolean qualified = false;
+
+	@Override
+	public boolean isQualified() {
+		return qualified;
+	}
+
+	@Override
+	public void setQualified(boolean qualified) {
+		this.qualified = qualified;
+	}
+
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtThisAccess(this);
+	}
+
 	
 }

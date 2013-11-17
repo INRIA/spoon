@@ -59,6 +59,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -674,10 +675,6 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	}
 
 	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-		if (targetedAccess.getVariable().getSimpleName().equals("this")) {
-			result = stack.getThis();
-			return;
-		}
 		if (targetedAccess.getVariable().getSimpleName().equals("class")) {
 			SymbolicInstance<?> type = heap.getType(this,
 					targetedAccess.getType());
@@ -701,6 +698,12 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			// assigned to an object's field
 			result = i;
 		}
+	}
+
+	@Override
+	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
+		result = stack.getThis();
+		return;
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(

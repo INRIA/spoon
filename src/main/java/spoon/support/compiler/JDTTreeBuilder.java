@@ -2855,17 +2855,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ThisReference thisReference, BlockScope scope) {
-		CtFieldReference<Object> fr = factory.Core().createFieldReference();
+		CtThisAccess<Object> fa = factory.Core().createThisAccess();
+		fa.setImplicit(thisReference.isImplicitThis());
+		if (thisReference instanceof QualifiedThisReference) {
+			fa.setQualified(true);
+		}
 		CtTypeReference<Object> typeref = references
 				.getTypeReference(thisReference.resolvedType);
-		fr.setDeclaringType(typeref);
-		fr.setType(typeref);
-		fr.setSimpleName("this");
-
-		CtThisAccess<Object> fa = factory.Core().createThisAccess();
-		fa.setVariable(fr);
 		fa.setType(typeref);
-
 		context.enter(fa, thisReference);
 		return true;
 	}
