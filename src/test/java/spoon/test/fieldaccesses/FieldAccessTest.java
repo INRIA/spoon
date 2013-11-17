@@ -6,6 +6,8 @@ import static spoon.test.TestUtils.build;
 import org.junit.Test;
 
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.filter.NameFilter;
@@ -68,10 +70,17 @@ public class FieldAccessTest {
 		assertEquals("InnerClassThisAccess", type.getSimpleName());
 
 		CtMethod<?> meth1 = (CtMethod<?>) type.getElements(
-				new NameFilter("methode")).get(0);
+				new NameFilter("method2")).get(0);
 		assertEquals(
 				"spoon.test.fieldaccesses.InnerClassThisAccess.this.method()",
 				meth1.getBody().getStatements().get(0).toString());
+
+		CtClass<?> c = (CtClass<?>) type.getElements(
+				new NameFilter("InnerClass")).get(0);
+		assertEquals("InnerClass", c.getSimpleName());
+		CtConstructor<?> ctr = c.getConstructor(type.getFactory().Type()
+				.createReference(boolean.class));
+		assertEquals("this.b = b", ctr.getBody().getLastStatement().toString());
 	}
 
 	@Test

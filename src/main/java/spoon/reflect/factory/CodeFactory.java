@@ -265,11 +265,6 @@ public class CodeFactory extends SubFactory {
 	public <T> CtThisAccess<T> createThisAccess(CtTypeReference<T> type) {
 		CtThisAccess<T> fa = factory.Core().createThisAccess();
 		fa.setType(type);
-		CtFieldReference<T> field = factory.Core().createFieldReference();
-		field.setDeclaringType(type);
-		field.setType(type);
-		field.setSimpleName("this");
-		fa.setVariable(field);
 		return fa;
 	}
 

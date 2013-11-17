@@ -52,6 +52,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -274,6 +275,10 @@ public class SignaturePrinter implements CtVisitor {
 
 	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
 		scan(targetedAccess.getVariable());
+	}
+
+	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
+		write(thisAccess.getType().getQualifiedName() + ".this");
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(

@@ -49,6 +49,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
@@ -362,6 +363,14 @@ public abstract class CtScanner implements CtVisitor {
 		scan(targetedAccess.getTarget());
 		scan(targetedAccess.getVariable());
 		exit(targetedAccess);
+	}
+
+	@Override
+	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
+		enter(thisAccess);
+		scan(thisAccess.getType());
+		scanReferences(thisAccess.getTypeCasts());
+		exit(thisAccess);
 	}
 	
 	public <T> void visitCtAnnotationFieldAccess(
