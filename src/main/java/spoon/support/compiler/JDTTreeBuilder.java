@@ -18,7 +18,6 @@
 package spoon.support.compiler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -840,8 +839,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ref.setSimpleName(new String(exec.selector));
 			ref.setStatic(exec.isStatic());
 			if (exec.parameters != null) {
-				for (TypeBinding b : exec.parameters)
+				for (TypeBinding b : exec.parameters) {
 					ref.addParameterType(getTypeReference(b));
+				}
 			}
 			if (exec.typeVariables != null) {
 				for (TypeVariableBinding b : exec.typeVariables)
@@ -860,23 +860,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return ref;
 		}
 
-		Map<TypeBinding, CtTypeReference<?>> bindingCache = new HashMap<TypeBinding, CtTypeReference<?>>();
+		//Map<TypeBinding, CtTypeReference<?>> bindingCache = new HashMap<TypeBinding, CtTypeReference<?>>();
 
 		@SuppressWarnings("unchecked")
 		public <T> CtTypeReference<T> getTypeReference(TypeBinding binding) {
-			if (bindingCache.containsKey(binding)) {
-				CtAnnonTypeParameterReference local = factory.Core()
-						.createAnnonTypeParameterReference();
-				local.setRealRef(bindingCache.get(binding));
-				return (CtTypeReference<T>) local;
-			}
-			CtTypeReference<?> ref = null;
 			if (binding == null)
 				return null;
+			
+			CtTypeReference<?> ref = null;
+			
 			if (binding instanceof RawTypeBinding) {
-				ref = getTypeReference(((ParameterizedTypeBinding) binding)
-						.genericType());
-			} else if (binding instanceof ParameterizedTypeBinding) {
+				ref = factory.Core()
+						.createAnnonTypeParameterReference();				
+				CtTypeReference<Object> tr = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
+				((CtAnnonTypeParameterReference)ref).setRealRef(tr);
+			}
+			else if (binding instanceof ParameterizedTypeBinding) {
 				ref = factory.Core().createTypeReference();
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName("");
@@ -891,7 +890,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 
-				bindingCache.put(binding, ref);
+//				bindingCache.put(binding, ref);
 				if (((ParameterizedTypeBinding) binding).arguments != null)
 					for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
 						ref.addActualTypeArgument(getTypeReference(b));
@@ -932,7 +931,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (bounds && b.superInterfaces != null
 						&& b.superInterfaces != Binding.NO_SUPERINTERFACES) {
 					bounds = false;
-					bindingCache.put(binding, ref);
+//					bindingCache.put(binding, ref);
 					for (int i = 0, length = b.superInterfaces.length; i < length; i++) {
 						TypeBinding tb = b.superInterfaces[i];
 						((CtTypeParameterReference) ref)
@@ -1012,7 +1011,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				throw new RuntimeException("Unknown TypeBinding: "
 						+ binding.getClass() + " " + binding);
 			}
-			bindingCache.remove(binding);
+//			bindingCache.remove(binding);
 			return (CtTypeReference<T>) ref;
 		}
 
