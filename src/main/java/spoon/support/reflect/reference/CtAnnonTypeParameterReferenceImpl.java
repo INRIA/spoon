@@ -24,7 +24,6 @@ import java.util.Set;
 
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtAnnonTypeParameterReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -139,10 +138,10 @@ public class CtAnnonTypeParameterReferenceImpl extends CtTypeParameterReferenceI
     	return factory;
     }
     
-    @Override
-    public Set<ModifierKind> getModifiers() {
-    	return ref.getModifiers();
-    }
+//    @Override
+//    public Set<ModifierKind> getModifiers() {
+//    	return ref.getModifiers();
+//    }
     
     @Override
     public CtPackageReference getPackage() {

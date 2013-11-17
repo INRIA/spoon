@@ -23,8 +23,7 @@ import spoon.reflect.declaration.CtVariable;
  * This interface defines a reference to a
  * {@link spoon.reflect.declaration.CtVariable} or sub-type.
  */
-public interface CtVariableReference<T> extends CtReference,
-		CtModifiableReference {
+public interface CtVariableReference<T> extends CtReference {
 
 	/**
 	 * Gets the type of the variable.

@@ -30,7 +30,7 @@ import spoon.reflect.declaration.CtExecutable;
  * {@link spoon.reflect.declaration.CtConstructor}.
  */
 public interface CtExecutableReference<T> extends CtReference,
-		CtGenericElementReference, CtModifiableReference {
+		CtGenericElementReference {
 
 	String CONSTRUCTOR_NAME = "<init>";
 
