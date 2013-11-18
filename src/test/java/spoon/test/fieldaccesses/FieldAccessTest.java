@@ -20,10 +20,10 @@ public class FieldAccessTest {
 		CtSimpleType<?> type = build("spoon.test.fieldaccesses", "Mouse");
 		assertEquals("Mouse", type.getSimpleName());
 
-		CtMethod<?> meth1 = (CtMethod<?>) type.getElements(
-				new NameFilter("meth1")).get(0);
-		CtMethod<?> meth1b = (CtMethod<?>) type.getElements(
-				new NameFilter("meth1b")).get(0);
+		CtMethod<?> meth1 = type.getElements(
+				new NameFilter<CtMethod<?>>("meth1")).get(0);
+		CtMethod<?> meth1b = type.getElements(
+				new NameFilter<CtMethod<?>>("meth1b")).get(0);
 
 		assertEquals(
 				3,
@@ -37,24 +37,24 @@ public class FieldAccessTest {
 						new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class))
 						.size());
 
-		CtMethod<?> meth2 = (CtMethod<?>) type.getElements(
-				new NameFilter("meth2")).get(0);
+		CtMethod<?> meth2 = type.getElements(
+				new NameFilter<CtMethod<?>>("meth2")).get(0);
 		assertEquals(
 				2,
 				meth2.getElements(
 						new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class))
 						.size());
 
-		CtMethod<?> meth3 = (CtMethod<?>) type.getElements(
-				new NameFilter("meth3")).get(0);
+		CtMethod<?> meth3 = type.getElements(
+				new NameFilter<CtMethod<?>>("meth3")).get(0);
 		assertEquals(
 				3,
 				meth3.getElements(
 						new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class))
 						.size());
 
-		CtMethod<?> meth4 = (CtMethod<?>) type.getElements(
-				new NameFilter("meth4")).get(0);
+		CtMethod<?> meth4 = type.getElements(
+				new NameFilter<CtMethod<?>>("meth4")).get(0);
 		assertEquals(
 				1,
 				meth4.getElements(
@@ -69,14 +69,14 @@ public class FieldAccessTest {
 				"InnerClassThisAccess");
 		assertEquals("InnerClassThisAccess", type.getSimpleName());
 
-		CtMethod<?> meth1 = (CtMethod<?>) type.getElements(
-				new NameFilter("method2")).get(0);
+		CtMethod<?> meth1 = type.getElements(
+				new NameFilter<CtMethod<?>>("method2")).get(0);
 		assertEquals(
 				"spoon.test.fieldaccesses.InnerClassThisAccess.this.method()",
 				meth1.getBody().getStatements().get(0).toString());
 
-		CtClass<?> c = (CtClass<?>) type.getElements(
-				new NameFilter("InnerClass")).get(0);
+		CtClass<?> c = type.getElements(
+				new NameFilter<CtClass<?>>("InnerClass")).get(0);
 		assertEquals("InnerClass", c.getSimpleName());
 		CtConstructor<?> ctr = c.getConstructor(type.getFactory().Type()
 				.createReference(boolean.class));
@@ -89,8 +89,8 @@ public class FieldAccessTest {
 				"InternalSuperCall");
 		assertEquals("InternalSuperCall", type.getSimpleName());
 
-		CtMethod<?> meth0 = (CtMethod<?>) type.getElements(
-				new NameFilter("methode")).get(0);
+		CtMethod<?> meth0 = type.getElements(
+				new NameFilter<CtMethod<?>>("methode")).get(0);
 		assertEquals(
 				"spoon.test.fieldaccesses.InternalSuperCall.super.toString()",
 				meth0.getBody().getStatements().get(0).toString());

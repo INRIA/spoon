@@ -37,9 +37,12 @@ public class GenericsTest {
 		assertEquals("V", generic.getSimpleName());
 		assertEquals("[java.io.Serializable, java.lang.Comparable]", generic
 				.getBounds().toString());
-		
-		CtMethod<?> node5 = (CtMethod<?>) type.getElements(new NameFilter("node5")).get(0);
-		assertEquals("this.<java.lang.Class<? extends java.lang.Throwable>>foo()",node5.getBody().getStatement(0).toString()); 		
+
+		CtMethod<?> node5 = type.getElements(
+				new NameFilter<CtMethod<?>>("node5")).get(0);
+		assertEquals(
+				"this.<java.lang.Class<? extends java.lang.Throwable>>foo()",
+				node5.getBody().getStatement(0).toString());
 	}
 
 	@Test
@@ -91,87 +94,102 @@ public class GenericsTest {
 	public void testModelBuildingSimilarSignatureMethods() throws Exception {
 		CtClass<?> type = build("spoon.test.generics",
 				"SimilarSignatureMethodes");
-		List<CtNamedElement> methods = type.getElements(new NameFilter(
-				"methode"));
+		List<CtNamedElement> methods = type
+				.getElements(new NameFilter<CtNamedElement>("methode"));
 		assertEquals(2, methods.size());
 		CtTypeParameterReference generic = (CtTypeParameterReference) ((CtMethod<?>) methods
 				.get(0)).getFormalTypeParameters().get(0);
 		assertEquals("E", generic.getSimpleName());
-		CtParameter<?> param = ((CtMethod<?>) methods.get(0))
-				.getParameters().get(0);
+		CtParameter<?> param = ((CtMethod<?>) methods.get(0)).getParameters()
+				.get(0);
 		assertEquals("E", param.getType().toString());
 	}
 
 	@Test
 	public void testBugCommonCollection() throws Exception {
 		try {
-		CtClass<?> type = build("spoon.test.generics",
-				"BugCollection");
-	
-		CtField INSTANCE = (CtField) type.getElements(new NameFilter(
-				"INSTANCE")).get(0);
-		//assertTrue(INSTANCE.getDefaultExpression().getType().getActualTypeArguments().get(0) instanceof CtAnnonTypeParameterReference);
-		assertEquals("public static final spoon.test.generics.ACLass<?> INSTANCE = new spoon.test.generics.ACLass();", INSTANCE.toString());
-		
-		CtField INSTANCE2 = (CtField) type.getElements(new NameFilter(
-				"INSTANCE2")).get(0);
-		INSTANCE2.getAnnotations().clear();
-		assertEquals("public static final spoon.test.generics.ACLass<?> INSTANCE2 = new spoon.test.generics.ACLass();", INSTANCE2.toString());
+			CtClass<?> type = build("spoon.test.generics", "BugCollection");
 
-		CtClass ComparableComparator = (CtClass) type.getPackage().getElements(new NameFilter(
-				"ComparableComparator")).get(0);
-		assertTrue(ComparableComparator.toString().startsWith("class ComparableComparator<E extends java.lang.Comparable<? super E>>"));
+			CtField<?> INSTANCE = type.getElements(
+					new NameFilter<CtField<?>>("INSTANCE")).get(0);
+			// assertTrue(INSTANCE.getDefaultExpression().getType().getActualTypeArguments().get(0)
+			// instanceof CtAnnonTypeParameterReference);
+			assertEquals(
+					"public static final spoon.test.generics.ACLass<?> INSTANCE = new spoon.test.generics.ACLass();",
+					INSTANCE.toString());
 
-		CtField x = (CtField) type.getElements(new NameFilter(
-				"x")).get(0);
-		CtTypeReference ref = x.getType();
-		DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(new StandardEnvironment());
-		assertFalse(pp.getContext().getIgnoreImport());
-		
-		// qualifed name
-		assertEquals("java.util.Map$Entry", ref.getQualifiedName());
-				
-		// toString uses SignaturePrinter which also calls getQualifiedName()
-		assertEquals("java.util.Map$Entry", ref.toString());
+			CtField<?> INSTANCE2 = type.getElements(
+					new NameFilter<CtField<?>>("INSTANCE2")).get(0);
+			INSTANCE2.getAnnotations().clear();
+			assertEquals(
+					"public static final spoon.test.generics.ACLass<?> INSTANCE2 = new spoon.test.generics.ACLass();",
+					INSTANCE2.toString());
 
-		// now visitCtTypeReference
-		assertEquals(java.util.Map.class, ref.getDeclaringType().getActualClass());
-		pp.visitCtTypeReference(ref);
+			CtClass<?> ComparableComparator = type
+					.getPackage()
+					.getElements(
+							new NameFilter<CtClass<?>>("ComparableComparator"))
+					.get(0);
+			assertTrue(ComparableComparator
+					.toString()
+					.startsWith(
+							"class ComparableComparator<E extends java.lang.Comparable<? super E>>"));
 
-		assertEquals("java.util.Map.Entry", pp.getResult().toString());
-		
-		CtField y = (CtField) type.getElements(new NameFilter(
-				"y")).get(0);
-		assertEquals("java.util.Map.Entry<?, ?> y;", y.toString());
+			CtField<?> x = type.getElements(new NameFilter<CtField<?>>("x"))
+					.get(0);
+			CtTypeReference<?> ref = x.getType();
+			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
+					new StandardEnvironment());
+			assertFalse(pp.getContext().getIgnoreImport());
 
-		CtField z = (CtField) type.getElements(new NameFilter(
-				"z")).get(0);
-		assertEquals("java.util.Map.Entry<java.lang.String, java.lang.Integer> z;", z.toString());
+			// qualifed name
+			assertEquals("java.util.Map$Entry", ref.getQualifiedName());
 
-		
-		// now as local variables
-		CtLocalVariable lx = (CtLocalVariable) type.getElements(new NameFilter(
-				"lx")).get(0);
-		assertEquals("java.util.Map.Entry lx", lx.toString());
-		
-		CtLocalVariable ly = (CtLocalVariable) type.getElements(new NameFilter(
-				"ly")).get(0);
-		assertEquals("java.util.Map.Entry<?, ?> ly", ly.toString());
+			// toString uses SignaturePrinter which also calls
+			// getQualifiedName()
+			assertEquals("java.util.Map$Entry", ref.toString());
 
-		CtLocalVariable lz = (CtLocalVariable) type.getElements(new NameFilter(
-				"lz")).get(0);
-		assertEquals("java.util.Map.Entry<java.lang.String, java.lang.Integer> lz", lz.toString());
+			// now visitCtTypeReference
+			assertEquals(java.util.Map.class, ref.getDeclaringType()
+					.getActualClass());
+			pp.visitCtTypeReference(ref);
 
-		CtLocalVariable it = (CtLocalVariable) type.getElements(new NameFilter(
-				"it")).get(0);
-		assertEquals("java.util.Iterator<java.util.Map.Entry<?, ?>> it", it.toString());
+			assertEquals("java.util.Map.Entry", pp.getResult().toString());
 
-		
-		
-		}
-		catch (Exception e) {
-			e.printStackTrace();throw e;
+			CtField<?> y = type.getElements(new NameFilter<CtField<?>>("y"))
+					.get(0);
+			assertEquals("java.util.Map.Entry<?, ?> y;", y.toString());
+
+			CtField<?> z = type.getElements(new NameFilter<CtField<?>>("z"))
+					.get(0);
+			assertEquals(
+					"java.util.Map.Entry<java.lang.String, java.lang.Integer> z;",
+					z.toString());
+
+			// now as local variables
+			CtLocalVariable<?> lx = type.getElements(
+					new NameFilter<CtLocalVariable<?>>("lx")).get(0);
+			assertEquals("java.util.Map.Entry lx", lx.toString());
+
+			CtLocalVariable<?> ly = type.getElements(
+					new NameFilter<CtLocalVariable<?>>("ly")).get(0);
+			assertEquals("java.util.Map.Entry<?, ?> ly", ly.toString());
+
+			CtLocalVariable<?> lz = type.getElements(
+					new NameFilter<CtLocalVariable<?>>("lz")).get(0);
+			assertEquals(
+					"java.util.Map.Entry<java.lang.String, java.lang.Integer> lz",
+					lz.toString());
+
+			CtLocalVariable<?> it = type.getElements(
+					new NameFilter<CtLocalVariable<?>>("it")).get(0);
+			assertEquals("java.util.Iterator<java.util.Map.Entry<?, ?>> it",
+					it.toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
-	
+
 }

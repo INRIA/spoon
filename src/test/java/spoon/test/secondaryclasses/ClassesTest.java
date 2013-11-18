@@ -13,6 +13,7 @@ import org.junit.Test;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -34,8 +35,11 @@ public class ClassesTest {
 				.contains(
 						(type.getFactory().Class()
 								.get(ClassWithInternalPublicClassOrInterf.InternalClass.class))));
-		assertEquals(1, type.getElements(new NameFilter("InternalInterf"))
-				.size());
+		assertEquals(
+				1,
+				type.getElements(
+						new NameFilter<CtNamedElement>("InternalInterf"))
+						.size());
 	}
 
 	@Test
@@ -58,8 +62,8 @@ public class ClassesTest {
 		CtClass<?> type = build("spoon.test.secondaryclasses", "TopLevel");
 		assertEquals("TopLevel", type.getSimpleName());
 
-		CtClass<?> x = (CtClass<?>) type.getElements(
-				new NameFilter("InnerClass")).get(0);
+		CtClass<?> x = type.getElements(
+				new NameFilter<CtClass<?>>("InnerClass")).get(0);
 		List<CtField<?>> fields = x.getFields();
 		assertEquals(1, fields.size());
 		assertEquals(1, fields.get(0).getType().getActualTypeArguments().size());
