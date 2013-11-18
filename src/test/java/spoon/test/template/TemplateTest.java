@@ -34,14 +34,14 @@ public class TemplateTest {
 		// superc.updateAllParentsBelow();
 		Substitution.insertAll(superc, new SuperTemplate());
 
-		CtMethod<?> addedMethod = (CtMethod<?>) superc.getElements(
-				new NameFilter("toBeOverriden")).get(0);
+		CtMethod<?> addedMethod = superc.getElements(
+				new NameFilter<CtMethod<?>>("toBeOverriden")).get(0);
 		assertEquals("toBeOverriden", addedMethod.getSimpleName());
 
 		CtClass<?> subc = factory.Class().get(SubClass.class);
 		Substitution.insertAll(subc, new SubTemplate());
-		CtMethod<?> addedMethod2 = (CtMethod<?>) subc.getElements(
-				new NameFilter("toBeOverriden")).get(0);
+		CtMethod<?> addedMethod2 = subc.getElements(
+				new NameFilter<CtMethod<?>>("toBeOverriden")).get(0);
 		assertEquals("toBeOverriden", addedMethod2.getSimpleName());
 		assertEquals("super.toBeOverriden()", addedMethod2.getBody()
 				.getStatements().get(0).toString());
@@ -73,8 +73,8 @@ public class TemplateTest {
 		// System.out.println("==>"+c1.getConstructors());
 		assertEquals(3, c1.getConstructors().size());
 
-		CtField<?> toBeInserted = (CtField<?>) c1.getElements(
-				new NameFilter("toBeInserted")).get(0);
+		CtField<?> toBeInserted = c1.getElements(
+				new NameFilter<CtField<?>>("toBeInserted")).get(0);
 		assertEquals(Date.class, toBeInserted.getType()
 				.getActualTypeArguments().get(0).getActualClass());
 		assertEquals(

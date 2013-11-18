@@ -32,7 +32,8 @@ public class InitializerTest {
 
 		// this fails: regression or known bug?
 		// RP: this look OK. Spoon adds the full path
-		//assertEquals("InternalClass.tmp = \"nop\"", staticBlock.getBody().getStatements().get(0).toString());
+		// assertEquals("InternalClass.tmp = \"nop\"",
+		// staticBlock.getBody().getStatements().get(0).toString());
 	}
 
 	@Test
@@ -41,24 +42,19 @@ public class InitializerTest {
 				"InstanceInitializers");
 		assertEquals("InstanceInitializers", type.getSimpleName());
 
-		CtField<?> k = (CtField<?>) type.getElements(new NameFilter("k"))
-				.get(0);
+		CtField<?> k = type.getElements(new NameFilter<CtField<?>>("k")).get(0);
 		assertTrue(k.getDefaultExpression() instanceof CtNewClass);
 
-		CtField<?> l = (CtField<?>) type.getElements(new NameFilter("l"))
-				.get(0);
+		CtField<?> l = type.getElements(new NameFilter<CtField<?>>("l")).get(0);
 		assertTrue(l.getDefaultExpression() instanceof CtNewClass);
 
-		CtField<?> x = (CtField<?>) type.getElements(new NameFilter("x"))
-				.get(0);
+		CtField<?> x = type.getElements(new NameFilter<CtField<?>>("x")).get(0);
 		assertTrue(x.getDefaultExpression() == null);
 
-		CtField<?> y = (CtField<?>) type.getElements(new NameFilter("y"))
-				.get(0);
+		CtField<?> y = type.getElements(new NameFilter<CtField<?>>("y")).get(0);
 		assertTrue(y.getDefaultExpression() instanceof CtLiteral);
 
-		CtField<?> z = (CtField<?>) type.getElements(new NameFilter("z"))
-				.get(0);
+		CtField<?> z = type.getElements(new NameFilter<CtField<?>>("z")).get(0);
 		assertTrue(z.getDefaultExpression().toString().equals("5"));
 
 		// static initializer

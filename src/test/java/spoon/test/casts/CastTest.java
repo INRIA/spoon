@@ -22,13 +22,14 @@ public class CastTest {
 		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
-						"" + "class X {" 
-				+ "public void foo() {" 
-								+ " String x=(String)new Object();"
-								+ "}" + "};").compile();
+						"" + "class X {" + "public void foo() {"
+								+ " String x=(String)new Object();" + "}"
+								+ "};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		assertEquals("java.lang.String x = ((java.lang.String)(new java.lang.Object()))", foo.getBody().getStatements().get(0).toString());
+		assertEquals(
+				"java.lang.String x = ((java.lang.String)(new java.lang.Object()))",
+				foo.getBody().getStatements().get(0).toString());
 	}
 
 	@Test
@@ -36,30 +37,35 @@ public class CastTest {
 		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
-						"" + "class X {" 
-				+ "public void foo() {" 
+						""
+								+ "class X {"
+								+ "public void foo() {"
 								+ " Class<String> x=(Class<String>)new Object();"
 								+ "}" + "};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
-		assertEquals("java.lang.Class<java.lang.String> x = ((java.lang.Class<java.lang.String>)(new java.lang.Object()))", foo.getBody().getStatements().get(0).toString());
+		assertEquals(
+				"java.lang.Class<java.lang.String> x = ((java.lang.Class<java.lang.String>)(new java.lang.Object()))",
+				foo.getBody().getStatements().get(0).toString());
 	}
-	
+
 	@Test
 	public void testCast3() {
 		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
 						""
-						+ "class X<A> {"
-						+ "void addConsumedAnnotationType(Class<? extends A> annotationType) {}\n"
-						+ "public void foo() {"
-						+ " Class<?> x = null;"
-						+ " addConsumedAnnotationType((Class<A>)x);"
-						+ "}" + "};").compile();
-		CtMethod<?> foo = (CtMethod<?>) clazz.getElements(new NameFilter("foo")).get(0);
-		CtVariableAccess<?> a = (CtVariableAccess<?>)clazz.getElements(new TypeFilter<>(CtVariableAccess.class)).get(0);
+								+ "class X<A> {"
+								+ "void addConsumedAnnotationType(Class<? extends A> annotationType) {}\n"
+								+ "public void foo() {" + " Class<?> x = null;"
+								+ " addConsumedAnnotationType((Class<A>)x);"
+								+ "}" + "};").compile();
+		CtMethod<?> foo = clazz.getElements(new NameFilter<CtMethod<?>>("foo"))
+				.get(0);
+		CtVariableAccess<?> a = (CtVariableAccess<?>) clazz.getElements(
+				new TypeFilter<>(CtVariableAccess.class)).get(0);
 		assertEquals(1, a.getTypeCasts().size());
-		assertEquals("addConsumedAnnotationType(((java.lang.Class<A>)(x)))", foo.getBody().getStatements().get(1).toString());
+		assertEquals("addConsumedAnnotationType(((java.lang.Class<A>)(x)))",
+				foo.getBody().getStatements().get(1).toString());
 	}
 
 }

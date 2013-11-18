@@ -51,8 +51,8 @@ public class InternalTest {
 		List<CtClass<?>> classes = type.getElements(new TypeFilter<CtClass<?>>(
 				CtClass.class));
 		CtClass<?> c3 = classes.get(3);
-		List<CtNamedElement> fields = c3.getElements(new NameFilter(
-				"serialVersionUID"));
+		List<CtNamedElement> fields = c3
+				.getElements(new NameFilter<CtNamedElement>("serialVersionUID"));
 		assertEquals(1, fields.size());
 
 	}

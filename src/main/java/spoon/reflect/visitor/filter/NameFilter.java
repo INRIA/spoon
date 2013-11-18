@@ -3,26 +3,30 @@ package spoon.reflect.visitor.filter;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.Filter;
 
-/** Filters elements by name (for instance to find a method.
- * Example:
+/**
+ * Filters elements by name (for instance to find a method). Example:
+ * 
  * <pre>
- * CtMethod normalFor = (CtMethod) type.getElements(new NameFilter("normalFor")).get(0);
+ * CtMethod&lt;?&gt; normalFor = type.getElements(
+ * 		new NameFilter&lt;CtMethod&lt;?&gt;&gt;(&quot;normalFor&quot;)).get(0);
  * </pre>
  */
-public class NameFilter implements Filter<CtNamedElement> {
+public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
+
 	public NameFilter(String name) {
-		if (name==null) {
+		if (name == null) {
 			throw new IllegalArgumentException();
 		}
 		this.name = name;
 	}
 
-	public boolean matches(CtNamedElement element) {
+	public boolean matches(T element) {
 		return name.equals(element.getSimpleName());
 	}
 
-	public Class<CtNamedElement> getType() {
-		return CtNamedElement.class;
-	}	
+	@SuppressWarnings("unchecked")
+	public Class<T> getType() {
+		return (Class<T>) CtNamedElement.class;
+	}
 }
