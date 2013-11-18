@@ -186,7 +186,7 @@ public class SubstitutionVisitor extends CtScanner {
 		 */
 		@Override
 		public <T> void visitCtClass(CtClass<T> ctClass) {
-			ctClass.getSuperInterfaces().remove(
+			ctClass.removeSuperInterface(
 					f.Type().createReference(Template.class));
 			for (CtMethod<?> m : new TreeSet<CtMethod<?>>(ctClass.getMethods())) {
 				if (m.getAnnotation(Local.class) != null) {

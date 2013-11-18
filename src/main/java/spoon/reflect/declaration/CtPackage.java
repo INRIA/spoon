@@ -85,6 +85,16 @@ public interface CtPackage extends CtNamedElement {
 	Set<CtSimpleType<?>> getTypes();
 
 	/**
+	 * Adds a type to this package.
+	 */
+	void addType(CtSimpleType<?> type);
+
+	/**
+	 * Removes a type from this package.
+	 */
+	void removeType(CtSimpleType<?> type);
+
+	/**
 	 * Sets the childs defined in this package
 	 * 
 	 * @param pack
