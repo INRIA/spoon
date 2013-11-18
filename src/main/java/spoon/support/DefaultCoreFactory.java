@@ -189,7 +189,12 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 			result = (T) object.getClass().newInstance();
 			if (result instanceof CtElement) {
 				if (cloningContext.isEmpty()) {
-					cloningContext.push(null);
+					CtElement e = (CtElement)object;
+					if(e.isParentInitialized()) {
+						cloningContext.push(e.getParent());
+					} else {
+						cloningContext.push(null);
+					}
 				}
 				cloningContext.push((CtElement) result);
 			}

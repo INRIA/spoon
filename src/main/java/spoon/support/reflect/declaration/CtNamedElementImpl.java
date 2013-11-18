@@ -38,6 +38,9 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements
 	}
 
 	public boolean addModifier(ModifierKind modifier) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
 		return modifiers.add(modifier);
 	}
 
@@ -76,7 +79,7 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements
 	}
 
 	public void setVisibility(ModifierKind visibility) {
-		if (getModifiers() == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = new TreeSet<ModifierKind>();
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);

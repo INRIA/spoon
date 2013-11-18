@@ -54,7 +54,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	public CtPackage getDeclaringPackage() {
-		if(parent == null) {
+		if (parent == null) {
 			setRootElement(true);
 		}
 		return getParent(CtPackage.class);
@@ -104,4 +104,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	public CtPackageReference getReference() {
 		return getFactory().Package().createReference(this);
 	}
+
+	@Override
+	public void addType(CtSimpleType<?> type) {
+		types.add(type);
+	}
+
+	@Override
+	public void removeType(CtSimpleType<?> type) {
+		types.remove(type);
+	}
+
 }

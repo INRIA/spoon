@@ -546,7 +546,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			if (!(re instanceof CtLiteral)) {
 				constant = false;
 			}
-			i.getArguments().add(re);
+			i.addArgument(re);
 		}
 		// do not partially evaluate super(...)
 		if (i.getExecutable().getSimpleName().equals("<init>")) {

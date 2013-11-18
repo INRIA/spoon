@@ -62,17 +62,19 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 	}
 
 	public <M> boolean removeMethod(CtMethod<M> method) {
-		if (methods == CtElementImpl.<CtMethod<?>> EMPTY_SET()) {
-			methods = new TreeSet<CtMethod<?>>();
+		if (methods.contains(method)) {
+			return methods.remove(method);
+		} else {
+			return false;
 		}
-		return methods.remove(method);
 	}
 
 	public <S> boolean removeSuperInterface(CtTypeReference<S> interfac) {
-		if (methods == CtElementImpl.<CtMethod<?>> EMPTY_SET()) {
-			methods = new TreeSet<CtMethod<?>>();
+		if (interfaces.contains(interfac)) {
+			return interfaces.remove(interfac);
+		} else {
+			return false;
 		}
-		return interfaces.remove(interfac);
 	}
 
 	public boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
@@ -85,11 +87,11 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 
 	public boolean removeFormalTypeParameter(
 			CtTypeReference<?> formalTypeParameter) {
-		if (formalTypeParameters == CtElementImpl
-				.<CtTypeReference<?>> EMPTY_LIST()) {
-			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+		if (formalTypeParameters.contains(formalTypeParameter)) {
+			return formalTypeParameters.remove(formalTypeParameter);
+		} else {
+			return false;
 		}
-		return formalTypeParameters.remove(formalTypeParameter);
 	}
 
 	public List<CtTypeReference<?>> getFormalTypeParameters() {

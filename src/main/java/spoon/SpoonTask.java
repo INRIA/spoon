@@ -296,11 +296,17 @@ public class SpoonTask extends Java {
 		if (sourceClasspath != null) {
 			createArg().setValue("--source-classpath");
 			createArg().setValue(sourceClasspath.toString());
+		} else if (getCommandLine().getClasspath() != null) {
+			createArg().setValue("--source-classpath");
+			createArg().setValue(getCommandLine().getClasspath().toString());
 		}
 
 		if (templateClasspath != null) {
 			createArg().setValue("--template-classpath");
 			createArg().setValue(templateClasspath.toString());
+		} else if (getCommandLine().getClasspath() != null) {
+			createArg().setValue("--template-classpath");
+			createArg().setValue(getCommandLine().getClasspath().toString());
 		}
 
 		super.execute();
