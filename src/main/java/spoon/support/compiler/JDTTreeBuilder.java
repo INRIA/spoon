@@ -126,6 +126,7 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
@@ -867,10 +868,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			
 			CtTypeReference<?> ref = null;
 			
-//			if (binding instanceof RawTypeBinding) {
-//				ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
-//			}
-//			else 
+			if (binding instanceof RawTypeBinding) {
+				ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
+			}
+			else 
 			if (binding instanceof ParameterizedTypeBinding) {
 				ref = factory.Core().createTypeReference();
 				if (binding.isAnonymousType()) {

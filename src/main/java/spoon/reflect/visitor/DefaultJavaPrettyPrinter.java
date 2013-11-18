@@ -977,14 +977,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (thisAccess.isQualified() && thisAccess.isImplicit()) {
 			throw new RuntimeException("unconsistent this definition");
 		}
-		if (thisAccess.isQualified()) {
-			
-			// there is a bug for internal classes
-			// because visitCtTypeReference will force  context.ignoreGenerics to false
-			context.ignoreGenerics = true;
-			scan(thisAccess.getType());
+		if (thisAccess.isQualified()) {			
+			visitCtTypeReferenceWithoutGenerics(thisAccess.getType());
 			write(".");
-			context.ignoreGenerics = false;
 		}
 		if (!thisAccess.isImplicit()) {
 			write("this");
@@ -1722,6 +1717,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
+		}
+	}
+
+	public void visitCtTypeReferenceWithoutGenerics(CtTypeReference<?> ref) {
+		if (ref.getDeclaringType() != null) {
+			if (!context.ignoreEnclosingClass) {
+				visitCtTypeReferenceWithoutGenerics(ref.getDeclaringType());
+				write(".");
+			}
+			write(ref.getSimpleName());
+		} else {
+			write(ref.getQualifiedName());
+		}
+		if (ref.isSuperReference()) {
+			write(".super");
 		}
 	}
 
