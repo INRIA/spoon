@@ -227,7 +227,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	private class Printingcontext {
+	public class Printingcontext {
 		boolean noTypeDecl = false;
 
 		Stack<CtTypeReference<?>> currentThis = new Stack<CtTypeReference<?>>();
@@ -236,7 +236,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		boolean ignoreGenerics = false;
 
+		public boolean getIgnoreGenerics() { return ignoreGenerics; }
+		
+		/** if false, no import are output */
 		boolean ignoreImport = false;
+		public boolean getIgnoreImport() { return ignoreImport; }
 
 		/** Layout variables */
 		int jumped = 0;
@@ -247,7 +251,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		boolean printDocs = true;
 
-		boolean printShortName = false;
 		boolean isInvocation = false;
 
 		boolean skipArray = false;
@@ -265,6 +268,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 
+		@Override
+		public String toString() {
+			return 
+					"context.ignoreImport: "+context.ignoreImport+"\n"+
+					"context.ignoreGenerics: "+context.ignoreGenerics+"\n"					
+					;
+		}
 	}
 
 	/**
@@ -968,6 +978,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			throw new RuntimeException("unconsistent this definition");
 		}
 		if (thisAccess.isQualified()) {
+			
+			// there is a bug for internal classes
+			// because visitCtTypeReference will force  context.ignoreGenerics to false
 			context.ignoreGenerics = true;
 			scan(thisAccess.getType());
 			write(".");
@@ -1006,9 +1019,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 
 		boolean printType = true;
+
 		if (reference.isFinal() && reference.isStatic()) {
 			if (context.currentTopLevel != null) {
-				CtTypeReference<?> ref = reference.getDeclaringType();
+				CtTypeReference<?> declTypeRef = reference.getDeclaringType();
 				CtTypeReference<?> ref2;
 				if (context.currentThis != null
 						&& context.currentThis.size() > 0) {
@@ -1018,8 +1032,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 				// print type if not annonymous class ref and not within the
 				// current scope
-				printType = !ref.getSimpleName().equals("")
-						&& !(ref.equals(ref2));
+				printType = !declTypeRef.getSimpleName().equals("")
+						&& !(declTypeRef.equals(ref2));
 			} else {
 				printType = true;
 			}
@@ -1657,7 +1671,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		if (importsContext.isImported(ref) || context.printShortName) {
+		if (importsContext.isImported(ref)) {
 			write(ref.getSimpleName());
 		} else {
 			write(ref.getQualifiedName());
@@ -1686,13 +1700,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 			return;
 		}
-		if ((importsContext.isImported(ref) && !context.ignoreImport && ref
-				.getPackage() != null) || context.printShortName) {
+		if (!context.ignoreImport && (importsContext.isImported(ref) && ref
+				.getPackage() != null)) {
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
-				if (!context.ignoreEnclosingClass
-						&& context.currentTopLevel != null) {
+				if (!context.ignoreEnclosingClass) {
 					boolean ign = context.ignoreGenerics;
 					context.ignoreGenerics = false;
 					scan(ref.getDeclaringType());
@@ -2009,5 +2022,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public Map<Integer, Integer> getLineNumberMapping() {
 		return lineNumberMapping;
+	}
+
+	public Printingcontext getContext() {
+		return context;
 	}
 }
