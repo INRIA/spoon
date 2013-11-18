@@ -12,7 +12,8 @@ public class MainTest {
 		spoon.Launcher.main(new String[] {
 				"-i", "src/main/java", 
 				"-o", "target/spooned",
-				"--source-classpath", System.getProperty("java.class.path")
+				"--source-classpath", System.getProperty("java.class.path"),
+				"--compile"
 		});
 		// we should have no exception
 	}
