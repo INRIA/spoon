@@ -1,6 +1,7 @@
 package spoon.test.generics;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
@@ -18,6 +19,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
@@ -119,6 +122,52 @@ public class GenericsTest {
 				"ComparableComparator")).get(0);
 		assertTrue(ComparableComparator.toString().startsWith("class ComparableComparator<E extends java.lang.Comparable<? super E>>"));
 
+		CtField x = (CtField) type.getElements(new NameFilter(
+				"x")).get(0);
+		CtTypeReference ref = x.getType();
+		DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(new StandardEnvironment());
+		assertFalse(pp.getContext().getIgnoreImport());
+		
+		// qualifed name
+		assertEquals("java.util.Map$Entry", ref.getQualifiedName());
+				
+		// toString uses SignaturePrinter which also calls getQualifiedName()
+		assertEquals("java.util.Map$Entry", ref.toString());
+
+		// now visitCtTypeReference
+		assertEquals(java.util.Map.class, ref.getDeclaringType().getActualClass());
+		pp.visitCtTypeReference(ref);
+
+		assertEquals("java.util.Map.Entry", pp.getResult().toString());
+		
+		CtField y = (CtField) type.getElements(new NameFilter(
+				"y")).get(0);
+		assertEquals("java.util.Map.Entry<?, ?> y;", y.toString());
+
+		CtField z = (CtField) type.getElements(new NameFilter(
+				"z")).get(0);
+		assertEquals("java.util.Map.Entry<java.lang.String, java.lang.Integer> z;", z.toString());
+
+		
+		// now as local variables
+		CtLocalVariable lx = (CtLocalVariable) type.getElements(new NameFilter(
+				"lx")).get(0);
+		assertEquals("java.util.Map.Entry lx", lx.toString());
+		
+		CtLocalVariable ly = (CtLocalVariable) type.getElements(new NameFilter(
+				"ly")).get(0);
+		assertEquals("java.util.Map.Entry<?, ?> ly", ly.toString());
+
+		CtLocalVariable lz = (CtLocalVariable) type.getElements(new NameFilter(
+				"lz")).get(0);
+		assertEquals("java.util.Map.Entry<java.lang.String, java.lang.Integer> lz", lz.toString());
+
+		CtLocalVariable it = (CtLocalVariable) type.getElements(new NameFilter(
+				"it")).get(0);
+		assertEquals("java.util.Iterator<java.util.Map.Entry<?, ?>> it", it.toString());
+
+		
+		
 		}
 		catch (Exception e) {
 			e.printStackTrace();throw e;
