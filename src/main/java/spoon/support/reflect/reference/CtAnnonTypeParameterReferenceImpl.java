@@ -47,12 +47,6 @@ public class CtAnnonTypeParameterReferenceImpl extends CtTypeParameterReferenceI
     public void accept(CtVisitor visitor) {
         visitor.visitCtTypeParameterReference(this);
     }
-
-    @Override
-    public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-        return ref.getAnnotation(annotationType);
-    }
-
     @Override
     public List<CtTypeReference<?>> getBounds() {
         return null;

@@ -169,7 +169,7 @@ public abstract class Parameters {
 
 	private static String getParameterName(CtFieldReference<?> f) {
 		String name = f.getSimpleName();
-		Parameter p = f.getAnnotation(Parameter.class);
+		Parameter p = f.getDeclaration().getAnnotation(Parameter.class);
 		if ((p != null) && !p.value().equals("")) {
 			name = p.value();
 		}
@@ -201,7 +201,8 @@ public abstract class Parameters {
 	 */
 	public static boolean isParameterSource(CtFieldReference<?> ref) {
 		try {
-			return (ref.getAnnotation(Parameter.class) != null)
+			return (ref.getDeclaration()!=null // we must have the source of this fieldref
+					&& ref.getDeclaration().getAnnotation(Parameter.class) != null)
 					|| (!((ref.getType() instanceof CtTypeParameterReference) || ref
 							.getSimpleName().equals("this")) && TemplateParameter.class
 							.isAssignableFrom(ref.getType().getActualClass()));
