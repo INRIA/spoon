@@ -17,8 +17,6 @@
 
 package spoon.reflect.reference;
 
-import java.lang.annotation.Annotation;
-
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitor;
@@ -34,22 +32,6 @@ import spoon.reflect.visitor.Root;
  */
 @Root
 public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
-
-	/**
-	 * Searches for an annotation defined on this element.
-	 * 
-	 * @param annotationType
-	 *            the annotation type to search for
-	 * @return a proxy to the annotation or null if not found
-	 */
-	<A extends Annotation> A getAnnotation(Class<A> annotationType);
-
-	/**
-	 * Gets all the annotations defined on this element.
-	 * 
-	 * @return an array of annotation proxies
-	 */
-	Annotation[] getAnnotations();
 
 	/**
 	 * Gets the simple name of referenced element.
