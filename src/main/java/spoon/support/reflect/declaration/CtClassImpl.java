@@ -152,7 +152,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 			if (sup != null) {
 				for (CtAnnotation<? extends Annotation> a : sup
 						.getAnnotations()) {
-					if (a.getAnnotationType().getAnnotation(Inherited.class) != null) {
+					if (!a.getAnnotationType().getActualClass().equals(Inherited.class)) {
 						annot.add(a);
 					}
 				}
