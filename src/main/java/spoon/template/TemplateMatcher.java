@@ -237,21 +237,21 @@ public class TemplateMatcher {
 				.getAllFields();
 
 		CtFieldReference<?> param = null;
-		for (CtFieldReference<?> field : fields) {
-			Parameter p = field.getAnnotation(Parameter.class);
+		for (CtFieldReference<?> fieldRef : fields) {
+			Parameter p = fieldRef.getDeclaration().getAnnotation(Parameter.class);
 			if (p == null) {
 				continue; // not a parameter.
 			}
 			String proxy = p.value();
 			if (proxy != "") {
 				if (name.contains(proxy)) {
-					param = field;
+					param = fieldRef;
 					break;
 				}
 			}
 
-			if (name.contains(field.getSimpleName())) {
-				param = field;
+			if (name.contains(fieldRef.getSimpleName())) {
+				param = fieldRef;
 				break;
 			}
 			// todo: check for field hack.
@@ -302,7 +302,7 @@ public class TemplateMatcher {
 
 	private ParameterMatcher getParameterInstance(CtFieldReference<?> param)
 			throws InstantiationException, IllegalAccessException {
-		Parameter anParam = param.getAnnotation(Parameter.class);
+		Parameter anParam = param.getDeclaration().getAnnotation(Parameter.class);
 		if (anParam == null) {
 			// Parameter not annotated. Probably is a TemplateParameter. Just
 			// return a default impl
@@ -436,7 +436,7 @@ public class TemplateMatcher {
 			} else if (template instanceof CtReference) {
 				// Get parameter
 				CtReference ref = (CtReference) template;
-				Parameter param = ref.getAnnotation(Parameter.class);
+				Parameter param = ref.getDeclaration().getAnnotation(Parameter.class);
 				ParameterMatcher instance;
 				if (param == null) {
 					instance = new DefaultParameterMatcher();
