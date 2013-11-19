@@ -221,7 +221,29 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+            <!-- descriptorRef>project</descriptorRef -->
+          </descriptorRefs>
+          <!-- descriptor>src/main/assembly/project.xml</descriptor -->
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id><!-- this is used for inheritance merges -->
+            <phase>package</phase><!-- append to the packaging phase. -->
+            <goals>
+              <goal>attached</goal><!-- goals == mojos -->
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
+
+    
     <pluginManagement>
       <plugins>
         <!--This plugin's configuration is used to store Eclipse m2e settings 
@@ -370,26 +392,6 @@
       <id>release</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-                <!-- descriptorRef>project</descriptorRef -->
-              </descriptorRefs>
-							<!-- descriptor>src/main/assembly/project.xml</descriptor -->
-            </configuration>
-						<executions>
-							<execution>
-								<id>make-assembly</id><!-- this is used for inheritance merges -->
-								<phase>package</phase><!-- append to the packaging phase. -->
-								<goals>
-									<goal>attached</goal><!-- goals == mojos -->
-								</goals>
-							</execution>
-						</executions>
-          </plugin>
           <plugin>
             <artifactId>maven-source-plugin</artifactId>
             <executions>
