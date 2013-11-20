@@ -106,6 +106,32 @@ public class GenericsTest {
 	}
 
 	@Test
+	public void testTypeParameterReference() throws Exception {
+		CtClass<?> classThatBindsAGenericType = build("spoon.test.generics", "ClassThatBindsAGenericType");
+		CtClass<?> classThatDefinesANewTypeArgument = (CtClass<?>) classThatBindsAGenericType.getPackage().getElements(new NameFilter("ClassThatDefinesANewTypeArgument")).get(0);
+
+		CtTypeReference tr1 = classThatBindsAGenericType.getSuperclass();
+        CtTypeReference trExtends = tr1.getActualTypeArguments().get(0);
+		CtTypeReference tr2 = classThatDefinesANewTypeArgument.getFormalTypeParameters().get(0);
+        CtTypeReference tr3 = classThatDefinesANewTypeArgument.getMethodsByName("foo").get(0).getParameters().get(0).getReference().getType();
+
+        // an bound type is not an TypeParameterRefernce
+        assertTrue(! (trExtends instanceof CtTypeParameterReference));
+
+        // a declared type parameter is a CtTypeParameterReference
+        assertTrue(tr2 instanceof CtTypeParameterReference);
+
+        // a used type parameter T is a CtTypeParameterReference
+        assertTrue(tr3 instanceof CtTypeParameterReference);
+
+		assertEquals("File", trExtends.getSimpleName());
+        assertEquals(java.io.File.class, trExtends.getActualClass());
+		assertEquals("T", tr2.getSimpleName());
+        assertEquals("T", tr3.getSimpleName());
+	}
+	
+	
+	@Test
 	public void testBugCommonCollection() throws Exception {
 		try {
 			CtClass<?> type = build("spoon.test.generics", "BugCollection");
