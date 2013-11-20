@@ -125,7 +125,8 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		if (constructors == CtElementImpl.<CtConstructor<T>> EMPTY_SET()) {
 			constructors = new TreeSet<CtConstructor<T>>();
 		}
-		// this needs to be done because of the set that needs the constructor's signature : we should use lists!!!
+		// this needs to be done because of the set that needs the constructor's
+		// signature : we should use lists!!!
 		// TODO: CHANGE SETS TO LIST TO AVOID HAVING TO DO THIS
 		constructor.setParent(this);
 		constructors.add(constructor);
@@ -152,7 +153,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 			if (sup != null) {
 				for (CtAnnotation<? extends Annotation> a : sup
 						.getAnnotations()) {
-					if (!a.getAnnotationType().getActualClass().equals(Inherited.class)) {
+					if (!a.getAnnotationType().equals(
+							getFactory().Annotation().createReference(
+									Inherited.class))) {
 						annot.add(a);
 					}
 				}
