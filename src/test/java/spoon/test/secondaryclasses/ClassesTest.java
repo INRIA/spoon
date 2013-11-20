@@ -1,6 +1,7 @@
 package spoon.test.secondaryclasses;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
@@ -70,6 +72,17 @@ public class ClassesTest {
 		assertEquals("?",
 				fields.get(0).getType().getActualTypeArguments().get(0)
 						.getSimpleName());
+	}
+
+	@Test
+	public void testInnerClassContruction() throws Exception {
+		SpoonCompiler compiler = build(PrivateInnerClasses.class);
+		compiler.compile();
+		CtClass<?> c = compiler.getFactory().Class()
+				.get(PrivateInnerClasses.class);
+		assertNotNull(c);
+		System.out.println(c);
+		assertEquals(0, compiler.getFactory().getEnvironment().getErrorCount());
 	}
 
 }

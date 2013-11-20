@@ -74,9 +74,21 @@ public class JDTCompiler implements SpoonCompiler {
 		}
 
 		public JDTBatchCompiler(boolean useFactory) {
-			super(new PrintWriter(System.out), new PrintWriter(System.err),
-					false, null, null);
+			super(new PrintWriter(System.out), new PrintWriter(
+			/* new NullOutputStream() */System.err), false, null, null);
 			this.useFactory = useFactory;
+		}
+
+		public ICompilerRequestor getBatchRequestor() {
+			final ICompilerRequestor r = super.getBatchRequestor();
+			return new ICompilerRequestor() {
+				public void acceptResult(CompilationResult compilationResult) {
+					if (compilationResult.hasErrors()) {
+						probs.add(compilationResult.problems);
+					}
+					r.acceptResult(compilationResult);
+				}
+			};
 		}
 
 		@Override
@@ -615,8 +627,13 @@ public class JDTCompiler implements SpoonCompiler {
 		args.add("-noExit");
 		// args.add("-verbose");
 		args.add("-proc:none");
-		args.add("-d");
-		args.add(getDestinationDirectory().getAbsolutePath());
+		if (getDestinationDirectory() != null) {
+			args.add("-d");
+			args.add(getDestinationDirectory().getAbsolutePath());
+		} else {
+			args.add("-d");
+			args.add("none");
+		}
 
 		// args.add("-d");
 		// args.add(getDestinationDirectory().toString());
@@ -675,6 +692,8 @@ public class JDTCompiler implements SpoonCompiler {
 		System.setProperty("jdt.compiler.useSingleThread", "true");
 
 		batchCompiler.compile(args.toArray(new String[0]));
+
+		reportProblems(factory.getEnvironment());
 
 		factory.getEnvironment().debugMessage(
 				"compiled in " + (System.currentTimeMillis() - t) + " ms");
@@ -861,8 +880,13 @@ public class JDTCompiler implements SpoonCompiler {
 		args.add("-enableJavadoc");
 		args.add("-noExit");
 		args.add("-proc:none");
-		args.add("-d");
-		args.add(getDestinationDirectory().getAbsolutePath());
+		if (getDestinationDirectory() != null) {
+			args.add("-d");
+			args.add(getDestinationDirectory().getAbsolutePath());
+		} else {
+			args.add("-d");
+			args.add("none");
+		}
 
 		String finalClassPath = null;
 		if (sourceClasspath != null) {

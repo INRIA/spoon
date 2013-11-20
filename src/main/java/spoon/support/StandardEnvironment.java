@@ -379,4 +379,12 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.classpath = classpath;
 	}
 
+	public int getErrorCount() {
+		return errorCount;
+	}
+
+	public int getWarningCount() {
+		return warningCount;
+	}
+
 }

@@ -15,4 +15,13 @@ public class TestUtils {
 		comp.build();
 		return comp.getFactory().Package().get(packageName).getType(className);
 	}
+
+	public static SpoonCompiler build(Class<?> classToBuild) throws Exception {
+		SpoonCompiler comp = Spoon.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.files("./src/test/java/"
+				+ classToBuild.getName().replace('.', '/') + ".java"));
+		comp.build();
+		return comp;
+	}
+
 }
