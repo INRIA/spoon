@@ -27,13 +27,4 @@ public abstract class CtCodeElementImpl extends CtElementImpl implements
 	public CtCodeElementImpl() {
 		super();
 	}
-
-	@Override
-	public String toString() {
-		DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(getFactory()
-				.getEnvironment());
-		this.accept(pp);
-		return pp.toString();
-	}
-
 }
