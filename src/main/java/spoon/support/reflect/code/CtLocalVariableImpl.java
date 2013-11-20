@@ -55,8 +55,8 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends CtExpression<T>> E getDefaultExpression() {
-		return (E) defaultExpression;
+	public CtExpression<T> getDefaultExpression() {
+		return defaultExpression;
 	}
 
 	public Set<ModifierKind> getModifiers() {

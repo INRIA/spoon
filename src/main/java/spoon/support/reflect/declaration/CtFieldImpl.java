@@ -49,8 +49,8 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends CtExpression<T>> E getDefaultExpression() {
-		return (E) defaultExpression;
+	public CtExpression<T> getDefaultExpression() {
+		return defaultExpression;
 	}
 
 	@Override
