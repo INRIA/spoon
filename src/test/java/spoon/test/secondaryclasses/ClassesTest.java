@@ -81,7 +81,6 @@ public class ClassesTest {
 		CtClass<?> c = compiler.getFactory().Class()
 				.get(PrivateInnerClasses.class);
 		assertNotNull(c);
-		System.out.println(c);
 		assertEquals(0, compiler.getFactory().getEnvironment().getErrorCount());
 	}
 
