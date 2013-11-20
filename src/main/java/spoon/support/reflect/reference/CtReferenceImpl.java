@@ -24,6 +24,7 @@ import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.visitor.SignaturePrinter;
 
 public abstract class CtReferenceImpl implements CtReference, Serializable {
@@ -92,9 +93,10 @@ public abstract class CtReferenceImpl implements CtReference, Serializable {
 
 	@Override
 	public String toString() {
-		SignaturePrinter pr = new SignaturePrinter();
-		pr.scan(this);
-		return pr.getSignature();
+        DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
+                getFactory().getEnvironment());
+        printer.scan(this);
+        return printer.toString();
 	}
 
 	public Factory getFactory() {
