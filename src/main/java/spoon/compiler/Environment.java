@@ -227,4 +227,16 @@ public interface Environment {
 	 */
 	void setXmlRootFolder(File xmlRootFolder);
 
+	/**
+	 * Gets the error count from building, processing, and compiling within this
+	 * environment.
+	 */
+	int getErrorCount();
+
+	/**
+	 * Gets the warning count from building, processing, and compiling within
+	 * this environment.
+	 */
+	int getWarningCount();
+
 }
