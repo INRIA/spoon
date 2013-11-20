@@ -35,7 +35,7 @@ public class GenericsTest {
 		CtTypeParameterReference generic = (CtTypeParameterReference) type
 				.getFormalTypeParameters().get(0);
 		assertEquals("V", generic.getSimpleName());
-		assertEquals("[java.io.Serializable, java.lang.Comparable]", generic
+		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic
 				.getBounds().toString());
 
 		CtMethod<?> node5 = type.getElements(
@@ -129,8 +129,17 @@ public class GenericsTest {
 		assertEquals("T", tr2.getSimpleName());
         assertEquals("T", tr3.getSimpleName());
 	}
-	
-	
+
+    @Test
+    public void testGenericMethodCallWithExtend() throws Exception {
+        CtClass<?> type = build("spoon.test.generics", "GenericMethodCallWithExtend");
+        CtMethod meth = type.getMethodsByName("methode").get(0);
+
+        // an bound type is not an TypeParameterRefernce
+        assertEquals("E extends java.lang.Enum<E>", meth.getFormalTypeParameters().get(0).toString());
+    }
+
+
 	@Test
 	public void testBugCommonCollection() throws Exception {
 		try {
@@ -171,9 +180,8 @@ public class GenericsTest {
 			// qualifed name
 			assertEquals("java.util.Map$Entry", ref.getQualifiedName());
 
-			// toString uses SignaturePrinter which also calls
-			// getQualifiedName()
-			assertEquals("java.util.Map$Entry", ref.toString());
+			// toString uses DefaultJavaPrettyPrinter
+			assertEquals("java.util.Map.Entry", ref.toString());
 
 			// now visitCtTypeReference
 			assertEquals(java.util.Map.class, ref.getDeclaringType()
