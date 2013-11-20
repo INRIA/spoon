@@ -103,7 +103,7 @@ import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
 /**
- * A visitor for generating Java code from the program compile-time metamodel.
+ * A visitor for generating Java code from the program compile-time model.
  */
 public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
@@ -236,11 +236,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		boolean ignoreGenerics = false;
 
-		public boolean getIgnoreGenerics() { return ignoreGenerics; }
-		
+		public boolean getIgnoreGenerics() {
+			return ignoreGenerics;
+		}
+
 		/** if false, no import are output */
 		boolean ignoreImport = false;
-		public boolean getIgnoreImport() { return ignoreImport; }
+
+		public boolean getIgnoreImport() {
+			return ignoreImport;
+		}
 
 		/** Layout variables */
 		int jumped = 0;
@@ -270,10 +275,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		@Override
 		public String toString() {
-			return 
-					"context.ignoreImport: "+context.ignoreImport+"\n"+
-					"context.ignoreGenerics: "+context.ignoreGenerics+"\n"					
-					;
+			return "context.ignoreImport: " + context.ignoreImport + "\n"
+					+ "context.ignoreGenerics: " + context.ignoreGenerics
+					+ "\n";
 		}
 	}
 
@@ -977,7 +981,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (thisAccess.isQualified() && thisAccess.isImplicit()) {
 			throw new RuntimeException("unconsistent this definition");
 		}
-		if (thisAccess.isQualified()) {			
+		if (thisAccess.isQualified()) {
 			visitCtTypeReferenceWithoutGenerics(thisAccess.getType());
 			write(".");
 		}
@@ -1507,11 +1511,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("new ").scan(newClass.getType());
 			context.ignoreEnclosingClass = false;
 
-//			if ((newClass.getExecutable() != null)
-//					&& (newClass.getExecutable().getActualTypeArguments() != null)) {
-//				writeGenericsParameter(newClass.getExecutable()
-//						.getActualTypeArguments());
-//			}
+			// if ((newClass.getExecutable() != null)
+			// && (newClass.getExecutable().getActualTypeArguments() != null)) {
+			// writeGenericsParameter(newClass.getExecutable()
+			// .getActualTypeArguments());
+			// }
 			write("(");
 			boolean remove = false;
 			for (CtCodeElement e : newClass.getArguments()) {
@@ -1671,9 +1675,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			write(ref.getQualifiedName());
 		}
-		if (
-				(!context.isInvocation || "?".equals(ref.getSimpleName())) && 
-				!(ref.getBounds() == null)
+		if ((!context.isInvocation || "?".equals(ref.getSimpleName()))
+				&& !(ref.getBounds() == null)
 				&& !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
 						.getQualifiedName().equals("java.lang.Object"))) {
@@ -1695,17 +1698,19 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 			return;
 		}
-		if (!context.ignoreImport && (importsContext.isImported(ref) && ref
-				.getPackage() != null)) {
+		if (!context.ignoreImport
+				&& (importsContext.isImported(ref) && ref.getPackage() != null)) {
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
-				if (!context.ignoreEnclosingClass) {
-					boolean ign = context.ignoreGenerics;
-					context.ignoreGenerics = false;
-					scan(ref.getDeclaringType());
-					write(".");
-					context.ignoreGenerics = ign;
+				if (!context.currentThis.contains(ref.getDeclaringType())) {
+					if (!context.ignoreEnclosingClass) {
+						boolean ign = context.ignoreGenerics;
+						context.ignoreGenerics = false;
+						scan(ref.getDeclaringType());
+						write(".");
+						context.ignoreGenerics = ign;
+					}
 				}
 				write(ref.getSimpleName());
 			} else {
