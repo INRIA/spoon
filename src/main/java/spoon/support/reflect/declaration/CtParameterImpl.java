@@ -47,9 +47,9 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements
 		v.visitCtParameter(this);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <E extends CtExpression<T>> E getDefaultExpression() {
-		return (E) defaultExpression;
+    @Override
+	public CtExpression<T> getDefaultExpression() {
+		return defaultExpression;
 	}
 
 	@Override
