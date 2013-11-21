@@ -1,11 +1,9 @@
-package spoon.test.limits;
+package spoon.test.generics;
 
 import java.util.Map;
 
 public class InstanceOfMapEntryGeneric {
 	public void methode(Object o) {
-		if (o instanceof Map.Entry<?, ?>) {
-			return;
-		}
+		boolean b = o instanceof Map.Entry<?, ?>;
 	}
 }
