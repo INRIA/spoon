@@ -10,8 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.reflect.Factory;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -225,5 +224,17 @@ public class GenericsTest {
 			throw e;
 		}
 	}
+
+
+    @Test
+    public void testInstanceOfMapEntryGeneric() throws Exception {
+        CtClass<?> type = build("spoon.test.generics", "InstanceOfMapEntryGeneric");
+        CtMethod meth = type.getMethodsByName("methode").get(0);
+
+        CtBinaryOperator<?> instOf = (CtBinaryOperator)((CtLocalVariable)meth.getBody().getStatement(0)).getDefaultExpression();
+        assertEquals(BinaryOperatorKind.INSTANCEOF, instOf.getKind());
+        assertEquals("o instanceof java.util.Map.Entry<?, ?>", instOf.toString());
+    }
+
 
 }
