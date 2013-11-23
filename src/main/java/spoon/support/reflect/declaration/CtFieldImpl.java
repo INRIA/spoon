@@ -48,7 +48,6 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		return (CtSimpleType<?>) parent;
 	}
 
-	@SuppressWarnings("unchecked")
 	public CtExpression<T> getDefaultExpression() {
 		return defaultExpression;
 	}

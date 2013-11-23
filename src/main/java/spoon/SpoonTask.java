@@ -109,6 +109,8 @@ public class SpoonTask extends Java {
 
 	boolean precompile = false;
 
+	boolean buildOnlyOutdatedFiles = false;
+
 	/**
 	 * Constructor.
 	 */
@@ -182,6 +184,10 @@ public class SpoonTask extends Java {
 
 		if (compile) {
 			createArg().setValue("--compile");
+		}
+
+		if (buildOnlyOutdatedFiles) {
+			createArg().setValue("--buildOnlyOutdatedFiles");
 		}
 
 		createArg().setValue("--compliance");
@@ -504,6 +510,14 @@ public class SpoonTask extends Java {
 			templateClasspath = new Path(getProject());
 		}
 		return templateClasspath;
+	}
+
+	/**
+	 * Sets Spoon to build only the outdated source files (gives better
+	 * performances). This option will be ignored if the noouput option is on.
+	 */
+	public void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles) {
+		this.buildOnlyOutdatedFiles = buildOnlyOutdatedFiles;
 	}
 
 }

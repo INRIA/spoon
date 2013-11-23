@@ -77,14 +77,25 @@ public class ZipFile implements SpoonFile {
 	public boolean isArchive() {
 		return true;
 	}
-	
+
 	@Override
 	public File toFile() {
 		return null;
 	}
-	
+
 	@Override
 	public boolean isActualFile() {
 		return false;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return toString().equals(obj.toString());
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
 }

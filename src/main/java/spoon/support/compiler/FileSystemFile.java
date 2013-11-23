@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
@@ -93,9 +94,19 @@ public class FileSystemFile implements SpoonFile {
 	public File toFile() {
 		return file;
 	}
-	
+
 	@Override
 	public boolean isActualFile() {
 		return true;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return toFile().equals(((SpoonResource) obj).toFile());
+	}
+
+	@Override
+	public int hashCode() {
+		return toFile().hashCode();
 	}
 }

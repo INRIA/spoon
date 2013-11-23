@@ -54,7 +54,6 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 		visitor.visitCtLocalVariable(this);
 	}
 
-	@SuppressWarnings("unchecked")
 	public CtExpression<T> getDefaultExpression() {
 		return defaultExpression;
 	}

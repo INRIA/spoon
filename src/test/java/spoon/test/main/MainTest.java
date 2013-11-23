@@ -6,9 +6,6 @@ public class MainTest {
 
 	@Test
 	public void testMain() throws Exception {
-//		for (Object p : System.getProperties().entrySet()) {
-//			System.out.println(p);
-//		}
 		spoon.Launcher.main(new String[] {
 				"-i", "src/main/java", 
 				"-o", "target/spooned",

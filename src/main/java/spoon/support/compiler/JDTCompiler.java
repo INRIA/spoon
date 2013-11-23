@@ -26,6 +26,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -91,9 +92,24 @@ public class JDTCompiler implements SpoonCompiler {
 			};
 		}
 
+		private Set<String> ignoredFiles = new HashSet<>();
+
+		public void ignoreFile(String filePath) {
+			ignoredFiles.add(filePath);
+		}
+
 		@Override
 		public CompilationUnit[] getCompilationUnits() {
 			CompilationUnit[] units = super.getCompilationUnits();
+			if (!ignoredFiles.isEmpty()) {
+				List<CompilationUnit> l = new ArrayList<>();
+				for (CompilationUnit unit : units) {
+					if (!ignoredFiles.contains(new String(unit.getFileName()))) {
+						l.add(unit);
+					}
+				}
+				units = l.toArray(new CompilationUnit[0]);
+			}
 			if (useFactory) {
 				for (int i = 0; i < units.length; i++) {
 					CompilationUnit unit = units[i];
@@ -215,6 +231,8 @@ public class JDTCompiler implements SpoonCompiler {
 
 	File outputDirectory;
 
+	boolean buildOnlyOutdatedFiles = false;
+
 	@Override
 	public File getOutputDirectory() {
 		return outputDirectory;
@@ -277,6 +295,29 @@ public class JDTCompiler implements SpoonCompiler {
 		return createBatchCompiler(false);
 	}
 
+	protected void keepOutdatedFiles(List<SpoonFile> files,
+			Collection<File> outputFiles) {
+		// System.out.println("outputfiles: " + outputFiles);
+
+		int offset = outputDirectory.getAbsolutePath().length() + 1;
+		Collection<String> relativeOutputPaths = new ArrayList<>();
+		for (File f : outputFiles) {
+			relativeOutputPaths.add(f.getAbsolutePath().substring(offset));
+		}
+		for (SpoonFile sf : new ArrayList<SpoonFile>(files)) {
+			File f = sf.toFile();
+			for (String s : relativeOutputPaths) {
+				if (f.getAbsolutePath().endsWith(s)) {
+					if (f.lastModified() <= new File(outputDirectory, s)
+							.lastModified()) {
+						files.remove(sf);
+					}
+				}
+			}
+		}
+		// System.out.println("filtered: " + files);
+	}
+
 	protected boolean buildSources() throws Exception {
 		if (sources.getRootJavaPaths().isEmpty())
 			return true;
@@ -291,6 +332,10 @@ public class JDTCompiler implements SpoonCompiler {
 		// args.add("-d");
 		// args.add("none");
 
+		if (destinationDirectory != null) {
+			sourceClasspath += File.pathSeparator
+					+ destinationDirectory.getAbsolutePath();
+		}
 		if (sourceClasspath != null) {
 			args.add("-cp");
 			args.add(sourceClasspath);
@@ -329,8 +374,19 @@ public class JDTCompiler implements SpoonCompiler {
 			System.err.println("sources: " + sources.rootJavaPaths);
 			throw e;
 		}
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources
-				.getAllJavaFiles());
+		List<SpoonFile> filesToBuild = sources.getAllJavaFiles();
+		if (buildOnlyOutdatedFiles) {
+			if (outputDirectory.exists()) {
+				@SuppressWarnings("unchecked")
+				Collection<File> outputFiles = FileUtils.listFiles(
+						outputDirectory, new String[] { "java" }, true);
+				keepOutdatedFiles(filesToBuild, outputFiles);
+			} else {
+				keepOutdatedFiles(filesToBuild, new ArrayList<File>());
+			}
+		}
+		CompilationUnitDeclaration[] units = batchCompiler
+				.getUnits(filesToBuild);
 
 		// here we build the model
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
@@ -619,7 +675,7 @@ public class JDTCompiler implements SpoonCompiler {
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
 
-		Main batchCompiler = createBatchCompiler(true);
+		JDTBatchCompiler batchCompiler = createBatchCompiler(true);
 		List<String> args = new ArrayList<String>();
 		args.add("-1." + javaCompliance);
 		args.add("-preserveAllLocals");
@@ -661,29 +717,43 @@ public class JDTCompiler implements SpoonCompiler {
 		args.add("-cp");
 		args.add(finalClassPath);
 
-		// args.addAll(factory.CompilationUnit().getMap().keySet());
+		if (buildOnlyOutdatedFiles) {
 
-		// Set<String> paths = new HashSet<String>();
-		// String sourcePaths = "";
-		// for (SpoonFile file : sources.getAllJavaFiles()) {
-		// // We can not use file.getPath() because when using in-memory code
-		// // (e.g. snippets)
-		// // there is no real file on the disk
-		// // In this case, the virtual parent of the virtual file is "." (by
-		// // convention)
-		// // and we are sure it exists
-		// // However, if . contains a lot of subfolders and Java files, it
-		// // will take a lot of time
-		// if (!paths.contains(file.getFileSystemParent().getPath())) {
-		// sourcePaths += file.getParent().getPath() + File.pathSeparator;
-		// }
-		// paths.add(file.getFileSystemParent().getPath());
-		// }
-		// args.add("-sourcepath");
-		// args.add(sourcePaths.substring(0, sourcePaths.length() - 1));
-		// args.addAll(paths);
+			// ignore the files that are not outdated
+			if (outputDirectory.exists()) {
+				@SuppressWarnings("unchecked")
+				Collection<File> outputFiles = FileUtils.listFiles(
+						outputDirectory, new String[] { "java" }, true);
+				int offset = outputDirectory.getAbsolutePath().length() + 1;
+				Collection<String> relativeOutputPaths = new ArrayList<>();
+				for (File f : outputFiles) {
+					relativeOutputPaths.add(f.getAbsolutePath().substring(
+							offset));
+				}
+				for (SpoonFile sf : sources.getAllJavaFiles()) {
+					if (factory.CompilationUnit().getMap()
+							.containsKey(sf.getPath())) {
+						continue;
+					}
+					File source = sf.toFile();
+					for (String out : relativeOutputPaths) {
+						if (source.getAbsolutePath().endsWith(out)) {
+							if (source.lastModified() <= new File(
+									outputDirectory, out).lastModified()) {
+								batchCompiler
+										.ignoreFile(new File(outputDirectory,
+												out).getAbsolutePath());
+							}
+						}
+					}
+				}
+			}
 
-		args.addAll(sources.getRootJavaPaths());
+			args.add(getOutputDirectory().getAbsolutePath());
+
+		} else {
+			args.addAll(sources.getRootJavaPaths());
+		}
 
 		getFactory().getEnvironment().debugMessage("compile args: " + args);
 
@@ -947,6 +1017,11 @@ public class JDTCompiler implements SpoonCompiler {
 	@Override
 	public void setTemplateClasspath(String classpath) {
 		this.templateClasspath = classpath;
+	}
+
+	@Override
+	public void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles) {
+		this.buildOnlyOutdatedFiles = buildOnlyOutdatedFiles;
 	}
 
 }
