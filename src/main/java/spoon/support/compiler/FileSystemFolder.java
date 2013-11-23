@@ -132,4 +132,14 @@ public class FileSystemFolder implements SpoonFolder {
 		return file;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return toString().equals(obj.toString());
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
 }

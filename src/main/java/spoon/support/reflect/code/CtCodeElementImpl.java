@@ -18,7 +18,6 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 public abstract class CtCodeElementImpl extends CtElementImpl implements

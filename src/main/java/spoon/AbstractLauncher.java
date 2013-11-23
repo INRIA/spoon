@@ -308,7 +308,7 @@ public abstract class AbstractLauncher {
 		sw1.setDefault("false");
 		jsap.registerParameter(sw1);
 
-		// Enables compilation
+		// Enable compilation
 		sw1 = new Switch("compile");
 		sw1.setLongFlag("compile");
 		sw1.setHelp("Enable compilation and output class files.");
@@ -319,6 +319,14 @@ public abstract class AbstractLauncher {
 		sw1 = new Switch("precompile");
 		sw1.setLongFlag("precompile");
 		sw1.setHelp("Enable pre-compilation of input source files before processing. Compiled classes will be added to the classpath so that they are accessible to the processing manager (typically, processors, annotations, and templates should be pre-compiled most of the time).");
+		sw1.setDefault("false");
+		jsap.registerParameter(sw1);
+
+		// Enable building only outdated files
+		sw1 = new Switch("buildOnlyOutdatedFiles");
+		sw1.setLongFlag("buildOnlyOutdatedFiles");
+		sw1.setHelp("Set Spoon to build only the source files that have been modified since the latest source code generation, for performance purpose. Note that this option requires to have the -noouput option set to true (which is the default)."
+				+ "This option is not appropriate to all kinds of processing. In particular processings that implement or rely on a global analysis should avoid this option because the processor will only have access to the outdated source code (the files modified since the latest processing).");
 		sw1.setDefault("false");
 		jsap.registerParameter(sw1);
 
@@ -557,6 +565,8 @@ public abstract class AbstractLauncher {
 
 		// building
 		SpoonCompiler compiler = new JDTCompiler(factory = createFactory());
+		compiler.setBuildOnlyOutdatedFiles(!nooutput
+				&& arguments.getBoolean("buildOnlyOutdatedFiles"));
 		compiler.setDestinationDirectory(arguments.getFile("destination"));
 		compiler.setOutputDirectory(arguments.getFile("output"));
 		compiler.setSourceClasspath(getArguments()
@@ -597,6 +607,7 @@ public abstract class AbstractLauncher {
 					"pre-compiled input sources in "
 							+ (System.currentTimeMillis() - t) + " ms");
 		}
+
 		compiler.build();
 		getEnvironment().debugMessage(
 				"model built in " + (System.currentTimeMillis() - t) + " ms");

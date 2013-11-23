@@ -154,33 +154,6 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 */
 	boolean build() throws Exception;
 
-//	/**
-//	 * Builds the program's model corresponding to the given files and stores
-//	 * the result into its factory ({@link #getFactory()}).
-//	 * 
-//	 * @return true if the model was successfully built
-//	 * 
-//	 * @exception Exception
-//	 *                when a building problem occurs
-//	 * 
-//	 * @see #getSourceClasspath()
-//	 */
-//	boolean build(List<SpoonResource> resources) throws Exception;
-//
-//	/**
-//	 * Builds the program's model corresponding to the given files stores the
-//	 * result into the template factory (see {@link Factory#Template()}.
-//	 * 
-//	 * @return true if the model was successfully built
-//	 * 
-//	 * @exception Exception
-//	 *                when a building problem occurs
-//	 * 
-//	 * @see #getTemplateClasspath()
-//	 * @see Factory#Template()
-//	 */
-//	boolean buildTemplates(List<SpoonResource> resources) throws Exception;
-
 	/**
 	 * Generates the source code associated to the classes stored in this
 	 * compiler's factory. The source code is generated in the directory given
@@ -236,5 +209,11 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * Sets the classpath that is used to build the template sources.
 	 */
 	void setTemplateClasspath(String classpath);
+
+	/**
+	 * Sets this compiler to optimize the model building process by ignoring
+	 * files that has not be modified since the latest source code generation.
+	 */
+	void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles);
 
 }
