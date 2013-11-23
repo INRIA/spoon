@@ -24,8 +24,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import spoon.AbstractLauncher;
+import spoon.Launcher;
 import spoon.compiler.SpoonResource;
+import spoon.reflect.Factory;
 
 /**
  * This class defines the SAX handler to parse a Spoonlet deployment descriptor
@@ -33,7 +34,9 @@ import spoon.compiler.SpoonResource;
  */
 public class SpoonletXmlHandler extends DefaultHandler {
 
-	private AbstractLauncher launcher;
+	private Factory factory;
+
+	private Launcher launcher;
 
 	private List<SpoonResource> spoonletIndex;
 
@@ -50,11 +53,13 @@ public class SpoonletXmlHandler extends DefaultHandler {
 	 * 
 	 * @param launcher
 	 *            the launcher
-	 * @param spoonletIndex ?
+	 * @param spoonletIndex
+	 *            ?
 	 */
-	public SpoonletXmlHandler(AbstractLauncher launcher,
+	public SpoonletXmlHandler(Factory factory, Launcher launcher,
 			List<SpoonResource> spoonletIndex) {
 		super();
+		this.factory = factory;
 		this.launcher = launcher;
 		this.spoonletIndex = spoonletIndex;
 	}
@@ -66,7 +71,7 @@ public class SpoonletXmlHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 		if (localName.equals("processor")) {
-			launcher.getFactory().getEnvironment().setProcessorProperties(
+			factory.getEnvironment().setProcessorProperties(
 					prop.getProcessorName(), prop);
 			prop = null;
 		} else if (localName.equals("property")) {
@@ -98,10 +103,10 @@ public class SpoonletXmlHandler extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 		if (localName.equals("processor")) {
 			launcher.addProcessor(attributes.getValue("class"));
-			prop = new XmlProcessorProperties(launcher.getFactory(), attributes
-					.getValue("class"));
+			prop = new XmlProcessorProperties(factory,
+					attributes.getValue("class"));
 		} else if (localName.equals("template")) {
-			if (attributes.getValue("path") != null){
+			if (attributes.getValue("path") != null) {
 				String foldername = attributes.getValue("path");
 				for (SpoonResource r : spoonletIndex) {
 					if (r.getName().startsWith(foldername)) {
@@ -109,15 +114,15 @@ public class SpoonletXmlHandler extends DefaultHandler {
 					}
 				}
 			}
-			if (attributes.getValue("folder") != null){
+			if (attributes.getValue("folder") != null) {
 				String foldername = attributes.getValue("folder");
 				for (SpoonResource r : spoonletIndex) {
 					if (r.getName().startsWith(foldername)) {
 						launcher.addTemplateResource(r);
 					}
 				}
-			}			
-			if (attributes.getValue("file") != null){
+			}
+			if (attributes.getValue("file") != null) {
 				String filename = attributes.getValue("file");
 				for (SpoonResource r : spoonletIndex) {
 					if (r.getName().startsWith(filename)) {
@@ -125,7 +130,7 @@ public class SpoonletXmlHandler extends DefaultHandler {
 					}
 				}
 			}
-			
+
 		} else if (localName.equals("property")) {
 			propName = attributes.getValue("name");
 			if (attributes.getValue("value") != null) {
