@@ -833,7 +833,7 @@ public class JDTCompiler implements SpoonCompiler {
 				.getMap().values()) {
 
 			factory.getEnvironment().debugMessage(
-					"Generating source for compulation unit: " + cu.getFile());
+					"Generating source for compilation unit: " + cu.getFile());
 
 			CtSimpleType<?> element = cu.getMainType();
 
