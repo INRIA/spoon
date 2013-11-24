@@ -240,7 +240,12 @@ public class SpoonTask extends Java {
 				FileSet fs = sourcefilesets.elementAt(i);
 				File dir = fs.getDir(getProject());
 				DirectoryScanner ds = fs.getDirectoryScanner(getProject());
-				String[] srcs = ds.getIncludedFiles();
+				String[] srcs = ds.getIncludedDirectories();
+				for (String element : srcs) {
+					f += dir.getAbsolutePath() + File.separatorChar + element
+							+ File.pathSeparator;
+				}
+				srcs = ds.getIncludedFiles();
 				for (String element : srcs) {
 					f += dir.getAbsolutePath() + File.separatorChar + element
 							+ File.pathSeparator;
@@ -265,7 +270,12 @@ public class SpoonTask extends Java {
 				FileSet fs = templatefilesets.elementAt(i);
 				File dir = fs.getDir(getProject());
 				DirectoryScanner ds = fs.getDirectoryScanner(getProject());
-				String[] srcs = ds.getIncludedFiles();
+				String[] srcs = ds.getIncludedDirectories();
+				for (String element : srcs) {
+					f += dir.getAbsolutePath() + File.separatorChar + element
+							+ File.pathSeparator;
+				}
+				srcs = ds.getIncludedFiles();
 				for (String element : srcs) {
 					f += dir.getAbsolutePath() + File.separatorChar + element
 							+ File.pathSeparator;
