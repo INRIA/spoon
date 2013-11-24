@@ -3,6 +3,7 @@ package spoon.test;
 import spoon.Spoon;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtSimpleType;
 
 public class TestUtils {
@@ -16,12 +17,14 @@ public class TestUtils {
 		return comp.getFactory().Package().get(packageName).getType(className);
 	}
 
-	public static SpoonCompiler build(Class<?> classToBuild) throws Exception {
+	public static Factory build(Class<?>... classesToBuild) throws Exception {
 		SpoonCompiler comp = Spoon.createCompiler();
+        for (Class classToBuild : classesToBuild) {
 		comp.addInputSources(SpoonResourceHelper.files("./src/test/java/"
 				+ classToBuild.getName().replace('.', '/') + ".java"));
+        }
 		comp.build();
-		return comp;
+		return comp.getFactory();
 	}
 
 }
