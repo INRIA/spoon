@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.compiler.SpoonCompiler;
+import spoon.reflect.Factory;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
@@ -76,12 +77,11 @@ public class ClassesTest {
 
 	@Test
 	public void testInnerClassContruction() throws Exception {
-		SpoonCompiler compiler = build(PrivateInnerClasses.class);
-		compiler.compile();
-		CtClass<?> c = compiler.getFactory().Class()
+		Factory f = build(PrivateInnerClasses.class);
+		CtClass<?> c = f.Class()
 				.get(PrivateInnerClasses.class);
 		assertNotNull(c);
-		assertEquals(0, compiler.getFactory().getEnvironment().getErrorCount());
+		assertEquals(0, f.getEnvironment().getErrorCount());
 	}
 
 }
