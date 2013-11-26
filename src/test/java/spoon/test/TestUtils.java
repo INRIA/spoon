@@ -11,7 +11,7 @@ public class TestUtils {
 	public static <T extends CtSimpleType<?>> T build(String packageName,
 			String className) throws Exception {
 		SpoonCompiler comp = Spoon.createCompiler();
-		comp.addInputSources(SpoonResourceHelper.files("./src/test/java/"
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/"
 				+ packageName.replace('.', '/') + "/" + className + ".java"));
 		comp.build();
 		return comp.getFactory().Package().get(packageName).getType(className);
@@ -20,7 +20,7 @@ public class TestUtils {
 	public static Factory build(Class<?>... classesToBuild) throws Exception {
 		SpoonCompiler comp = Spoon.createCompiler();
         for (Class classToBuild : classesToBuild) {
-		comp.addInputSources(SpoonResourceHelper.files("./src/test/java/"
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/"
 				+ classToBuild.getName().replace('.', '/') + ".java"));
         }
 		comp.build();

@@ -36,7 +36,7 @@ public class AnnotationTest {
 		Factory factory = Spoon.createFactory();
 		Spoon.createCompiler(
 				factory,
-				SpoonResourceHelper.files(
+				SpoonResourceHelper.resources(
 						"./src/test/java/spoon/test/annotation/Bound.java",
 						"./src/test/java/spoon/test/annotation/Main.java"))
 				.build();

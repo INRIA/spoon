@@ -24,7 +24,7 @@ public class FilterTest {
 		Spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.files("./src/test/java/spoon/test/filters/Foo.java"))
+						.resources("./src/test/java/spoon/test/filters/Foo.java"))
 				.build();
 	}
 

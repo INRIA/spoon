@@ -50,13 +50,14 @@ public abstract class SpoonResourceHelper {
 	}
 
 	/**
-	 * Creates the list of {@link SpoonFile} corresponding to the given paths.
+	 * Creates the list of {@link SpoonResource} corresponding to the given
+	 * paths (files, folders, archives).
 	 */
-	public static List<SpoonResource> files(String... paths)
+	public static List<SpoonResource> resources(String... paths)
 			throws FileNotFoundException {
 		List<SpoonResource> files = new ArrayList<SpoonResource>();
 		for (String path : paths) {
-			files.add(createFile(new File(path)));
+			files.add(createResource(new File(path)));
 		}
 		return files;
 	}

@@ -28,6 +28,7 @@ import java.util.Stack;
 import java.util.TreeMap;
 
 import spoon.compiler.Environment;
+import spoon.processing.Severity;
 import spoon.reflect.Factory;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
@@ -231,6 +232,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		boolean noTypeDecl = false;
 
 		Stack<CtTypeReference<?>> currentThis = new Stack<CtTypeReference<?>>();
+
+		Stack<CtElement> elementStack = new Stack<CtElement>();
 
 		CtSimpleType<?> currentTopLevel;
 
@@ -538,7 +541,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	public DefaultJavaPrettyPrinter scan(CtElement e) {
 		if (e != null) {
+			if (!context.elementStack.isEmpty()) {
+				CtElement parent = context.elementStack.peek();
+				if (e.isParentInitialized()) {
+					if (parent != e.getParent()) {
+						env.report(null, Severity.WARNING,
+								"ignoring unconsistent parent for "
+										+ e.getClass().getSimpleName()
+										+ " ("
+										+ parent.getClass().getSimpleName()
+										+ " != "
+										+ e.getParent().getClass()
+												.getSimpleName() + ")");
+					}
+				} else {
+					e.setParent(parent);
+				}
+			}
+			context.elementStack.push(e);
 			e.accept(this);
+			context.elementStack.pop();
 		}
 		return this;
 	}
@@ -619,7 +641,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable impl) {
 		writeAnnotations(impl);
 		writeModifiers(impl);
-		impl.getBody().accept(this);
+		scan(impl.getBody());
 	}
 
 	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
@@ -1349,7 +1371,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public DefaultJavaPrettyPrinter writeExecutableParameters(CtExecutable<?> e) {
 		if (e.getParameters().size() > 0) {
 			for (CtParameter<?> p : e.getParameters()) {
-				visitCtParameter(p);
+				scan(p);
 				write(", ");
 			}
 			removeLastChar();
@@ -1381,7 +1403,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		writeThrowsClause(m);
 		if (m.getBody() != null) {
 			write(" ");
-			visitCtBlock(m.getBody());
+			scan(m.getBody());
 			if (m.getBody().getPosition() != null) {
 				if (m.getBody().getPosition().getCompilationUnit() == sourceCompilationUnit) {
 					if (m.getBody().getStatements().isEmpty()
@@ -1790,7 +1812,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	public DefaultJavaPrettyPrinter writeAnnotations(CtElement e) {
 		for (CtAnnotation<?> a : e.getAnnotations()) {
-			a.accept(this);
+			scan(a);
 		}
 		return this;
 	}

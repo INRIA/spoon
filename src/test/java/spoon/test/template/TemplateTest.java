@@ -22,11 +22,11 @@ public class TemplateTest {
 		Factory factory = Spoon.createFactory();
 		Spoon.createCompiler(
 				factory,
-				SpoonResourceHelper.files(
+				SpoonResourceHelper.resources(
 						"./src/test/java/spoon/test/template/SubClass.java",
 						"./src/test/java/spoon/test/template/SuperClass.java"),
 				SpoonResourceHelper
-						.files("./src/test/java/spoon/test/template/SubTemplate.java",
+						.resources("./src/test/java/spoon/test/template/SubTemplate.java",
 								"./src/test/java/spoon/test/template/SuperTemplate.java"))
 				.build();
 
@@ -54,9 +54,9 @@ public class TemplateTest {
 		Spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.files("./src/test/java/spoon/test/template/C1.java"),
+						.resources("./src/test/java/spoon/test/template/C1.java"),
 				SpoonResourceHelper
-						.files("./src/test/java/spoon/test/template/TemplateWithConstructor.java"))
+						.resources("./src/test/java/spoon/test/template/TemplateWithConstructor.java"))
 				.build();
 
 		CtClass<?> c1 = factory.Class().get(C1.class);
