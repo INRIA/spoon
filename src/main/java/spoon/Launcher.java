@@ -70,7 +70,7 @@ public class Launcher {
 
 	private List<SpoonResource> inputResources = new ArrayList<SpoonResource>();
 
-	/**
+    /**
 	 * Contains the arguments accepted by this launcher (available after
 	 * construction and accessible by sub-classes).
 	 */
@@ -297,16 +297,20 @@ public class Launcher {
 		opt2.setRequired(false);
 		jsap.registerParameter(opt2);
 
-		// Disable output generation
-		sw1 = new Switch("nooutput");
-		sw1.setLongFlag("no");
-		sw1.setHelp("Disable output printing of processed source code.");
-		sw1.setDefault("false");
-		jsap.registerParameter(sw1);
+		// Sets output type generation
+        FlaggedOption opt3 = new FlaggedOption("output-type");
+        opt3.setLongFlag(opt3.getUsageName());
+        String msg = "states how to print the processed source code: ";
+        for (OutputType v: OutputType.values()) {
+            msg+=v.name()+"/";
+        }
+        opt3.setHelp(msg);
+        opt3.setDefault("classes");
+		jsap.registerParameter(opt3);
 
 		// Enable compilation
 		sw1 = new Switch("compile");
-		sw1.setLongFlag("compile");
+		sw1.setLongFlag(sw1.getUsageName());
 		sw1.setHelp("Enable compilation and output class files.");
 		sw1.setDefault("false");
 		jsap.registerParameter(sw1);
@@ -533,7 +537,8 @@ public class Launcher {
 
 		SpoonCompiler compiler = Spoon.run(factory,
 				arguments.getBoolean("precompile"),
-				args.getBoolean("nooutput"), args.getFile("output"),
+				OutputType.valueOf(args.getString("output-type")),
+                args.getFile("output"),
 				getProcessorTypes(), arguments.getBoolean("compile"),
 				args.getFile("destination"),
 				args.getBoolean("buildOnlyOutdatedFiles"),

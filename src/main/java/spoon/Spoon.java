@@ -65,14 +65,6 @@ public abstract class Spoon {
 	/**
 	 * Creates a new Spoon Java compiler in order to process and compile Java
 	 * source code.
-	 * 
-	 * @param factory
-	 *            the factory this compiler works on
-	 * @param inputSources
-	 *            the sources to be processed and/or compiled
-	 * @param inputTemplate
-	 *            the template sources to be used by the processors
-	 * @see Factory#Template()
 	 */
 	public static SpoonCompiler createCompiler(Factory factory,
 			List<SpoonResource> inputSources,
@@ -212,8 +204,8 @@ public abstract class Spoon {
 	 * @param precompile
 	 *            precompile the source code before processing to make sure that
 	 *            the input source classes will be available in the classpath
-	 * @param nooutput
-	 *            disables source code output
+	 * @param output
+	 *            sets type of source code output
 	 * @param outputDirectory
 	 *            the output directory of the generated source files
 	 * @param processorTypes
@@ -242,7 +234,7 @@ public abstract class Spoon {
 	 *             in case something bad happens
 	 */
 	public static SpoonCompiler run(Factory factory, boolean precompile,
-			boolean nooutput, File outputDirectory,
+                                    OutputType output, File outputDirectory,
 			List<String> processorTypes, boolean compile,
 			File destinationDirectory, boolean buildOnlyOutdatedFiles,
 			String sourceClasspath, String templateClasspath,
@@ -261,7 +253,7 @@ public abstract class Spoon {
 
 		// building
 		SpoonCompiler compiler = new JDTCompiler(factory);
-		compiler.setBuildOnlyOutdatedFiles(!nooutput && buildOnlyOutdatedFiles);
+		compiler.setBuildOnlyOutdatedFiles(!output.equals(OutputType.nooutput) && buildOnlyOutdatedFiles);
 		compiler.setDestinationDirectory(destinationDirectory);
 		compiler.setOutputDirectory(outputDirectory);
 		compiler.setSourceClasspath(sourceClasspath);
@@ -321,12 +313,11 @@ public abstract class Spoon {
 				+ (System.currentTimeMillis() - t) + " ms");
 
 		t = System.currentTimeMillis();
-		if (!nooutput) {
-			compiler.generateProcessedSourceFiles();
-			// print(factory);
-			env.debugMessage("generated source in "
-					+ (System.currentTimeMillis() - t) + " ms");
-		}
+        if (output.equals(OutputType.classes)) {
+            print(factory);
+        } else if (output.equals(OutputType.compilationunits)) {
+            compiler.generateProcessedSourceFiles();
+        }
 
 		t = System.currentTimeMillis();
 		if (compile) {
