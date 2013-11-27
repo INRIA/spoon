@@ -331,7 +331,7 @@ public class Launcher {
 		// Enable building only outdated files
 		sw1 = new Switch("buildOnlyOutdatedFiles");
 		sw1.setLongFlag("buildOnlyOutdatedFiles");
-		sw1.setHelp("Set Spoon to build only the source files that have been modified since the latest source code generation, for performance purpose. Note that this option requires to have the -noouput option set to true (which is the default)."
+		sw1.setHelp("Set Spoon to build only the source files that have been modified since the latest source code generation, for performance purpose. Note that this option requires to have the --ouput-type option not set to none."
 				+ "This option is not appropriate to all kinds of processing. In particular processings that implement or rely on a global analysis should avoid this option because the processor will only have access to the outdated source code (the files modified since the latest processing).");
 		sw1.setDefault("false");
 		jsap.registerParameter(sw1);
