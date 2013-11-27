@@ -1,15 +1,15 @@
 package spoon;
 
 /**
-* Types of output
-*/
+ * Types of output
+ */
 public enum OutputType {
-    /** analysis only, models are not pretty-printed to disk */
-    nooutput,
+	/** Analysis only, models are not pretty-printed to disk. */
+	NO_OUTPUT,
 
-    /** one file per top-level class */
-    classes,
+	/** One file per top-level class. */
+	CLASSES,
 
-    /** same compilation units as input */
-    compilationunits
+	/** Follows the compilation units given by the input. */
+	COMPILATION_UNITS
 }
