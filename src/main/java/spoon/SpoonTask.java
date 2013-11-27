@@ -111,6 +111,8 @@ public class SpoonTask extends Java {
 
 	boolean buildOnlyOutdatedFiles = false;
 
+	String outputType;
+	
 	/**
 	 * Constructor.
 	 */
@@ -178,8 +180,9 @@ public class SpoonTask extends Java {
 		createArg().setValue("--tabsize");
 		createArg().setValue("" + tabSize);
 
-		if (nooutput) {
-			createArg().setValue("--no");
+		if (outputType !=null) {
+			createArg().setValue("--output-type");
+			createArg().setValue(outputType);
 		}
 
 		if (compile) {
@@ -528,6 +531,13 @@ public class SpoonTask extends Java {
 	 */
 	public void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles) {
 		this.buildOnlyOutdatedFiles = buildOnlyOutdatedFiles;
+	}
+
+	/**
+	 * Sets the output type (none, classes, or compilationunits).
+	 */
+	public void setOutputType(String ouputType) {
+		this.outputType = ouputType;
 	}
 
 }

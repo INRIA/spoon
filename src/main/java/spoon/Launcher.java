@@ -70,7 +70,7 @@ public class Launcher {
 
 	private List<SpoonResource> inputResources = new ArrayList<SpoonResource>();
 
-    /**
+	/**
 	 * Contains the arguments accepted by this launcher (available after
 	 * construction and accessible by sub-classes).
 	 */
@@ -298,15 +298,21 @@ public class Launcher {
 		jsap.registerParameter(opt2);
 
 		// Sets output type generation
-        FlaggedOption opt3 = new FlaggedOption("output-type");
-        opt3.setLongFlag(opt3.getUsageName());
-        String msg = "states how to print the processed source code: ";
-        for (OutputType v: OutputType.values()) {
-            msg+=v.name()+"/";
-        }
-        opt3.setHelp(msg);
-        opt3.setDefault("classes");
-		jsap.registerParameter(opt3);
+		opt2 = new FlaggedOption("output-type");
+		opt2.setLongFlag(opt2.getID());
+		String msg = "States how to print the processed source code: ";
+		int i = 0;
+		for (OutputType v : OutputType.values()) {
+			i++;
+			msg += v.toString();
+			if (i != OutputType.values().length) {
+				msg += "|";
+			}
+		}
+		opt2.setStringParser(JSAP.STRING_PARSER);
+		opt2.setHelp(msg);
+		opt2.setDefault("classes");
+		jsap.registerParameter(opt2);
 
 		// Enable compilation
 		sw1 = new Switch("compile");
@@ -535,12 +541,19 @@ public class Launcher {
 
 		processArguments(factory);
 
+		OutputType outputType = OutputType.fromString(args
+				.getString("output-type"));
+		if (outputType == null) {
+			env.report(null, Severity.ERROR,
+					"unsupported output type: " + args.getString("output-type"));
+			printUsage();
+			throw new Exception("unsupported output type: "
+					+ args.getString("output-type"));
+		}
 		SpoonCompiler compiler = Spoon.run(factory,
-				arguments.getBoolean("precompile"),
-				OutputType.valueOf(args.getString("output-type")),
-                args.getFile("output"),
-				getProcessorTypes(), arguments.getBoolean("compile"),
-				args.getFile("destination"),
+				arguments.getBoolean("precompile"), outputType,
+				args.getFile("output"), getProcessorTypes(),
+				arguments.getBoolean("compile"), args.getFile("destination"),
 				args.getBoolean("buildOnlyOutdatedFiles"),
 				args.getString("source-classpath"),
 				args.getString("template-classpath"), getInputSources(),
