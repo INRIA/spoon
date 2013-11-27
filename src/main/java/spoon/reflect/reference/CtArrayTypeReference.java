@@ -22,7 +22,7 @@ import java.lang.reflect.Array;
 /**
  * This interface defines a reference to an array
  */
-public interface CtArrayTypeReference<T> extends CtTypeReference<Array> {
+public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 
 	/**
 	 * Gets the type of the elements contained in this array.
