@@ -253,7 +253,7 @@ public abstract class Spoon {
 
 		// building
 		SpoonCompiler compiler = new JDTCompiler(factory);
-		compiler.setBuildOnlyOutdatedFiles(!output.equals(OutputType.nooutput) && buildOnlyOutdatedFiles);
+		compiler.setBuildOnlyOutdatedFiles(output!=OutputType.NO_OUTPUT && buildOnlyOutdatedFiles);
 		compiler.setDestinationDirectory(destinationDirectory);
 		compiler.setOutputDirectory(outputDirectory);
 		compiler.setSourceClasspath(sourceClasspath);
@@ -313,9 +313,9 @@ public abstract class Spoon {
 				+ (System.currentTimeMillis() - t) + " ms");
 
 		t = System.currentTimeMillis();
-        if (output.equals(OutputType.classes)) {
+        if (output == OutputType.CLASSES) {
             print(factory);
-        } else if (output.equals(OutputType.compilationunits)) {
+        } else if (output == OutputType.COMPILATION_UNITS) {
             compiler.generateProcessedSourceFiles();
         }
 
