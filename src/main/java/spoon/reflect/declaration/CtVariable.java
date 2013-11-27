@@ -26,9 +26,10 @@ import spoon.reflect.reference.CtVariableReference;
 public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T> {
 
 	/**
-	 * Gets the expression assigned to the variable, when declared.
+	 * Gets the initialization expression assigned to the variable (also known
+	 * as the initializer), when declared.
 	 */
-    CtExpression<T> getDefaultExpression();
+	CtExpression<T> getDefaultExpression();
 
 	/*
 	 * (non-Javadoc)
@@ -38,7 +39,8 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T> {
 	CtVariableReference<T> getReference();
 
 	/**
-	 * Sets the expression assigned to the variable, when declared.
+	 * Sets the initialization expression assigned to the variable, when
+	 * declared.
 	 */
 	void setDefaultExpression(CtExpression<T> assignedExpression);
 }
