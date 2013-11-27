@@ -44,7 +44,7 @@
 	<target name="process">
 		<spoon input="${src.dir}" output="${spooned.dir}" classpathref="spoon-classpath"
 			sourceClasspathref="classpath" templateClasspathref="template-classpath"
-			verbose="true" debug="true" nooutput="false">
+			verbose="true" debug="true" outputType="compilationunits">
 			<!-- Add as many processors as required -->
 			<processor type="fully.qualified.ProcessorClass" />
 			<!-- Set your templates here if any -->
@@ -55,7 +55,7 @@
 	<target name="process-and-compile">
 		<spoon input="${src.dir}" output="${spooned.dir}" classpathref="spoon-classpath"
 			sourceClasspathref="classpath" templateClasspathref="template-classpath"
-			destination="${bin.dir}" verbose="true" debug="true" nooutput="false"
+			destination="${bin.dir}" verbose="true" debug="true" outputType="compilationunits"
 			compile="true">
 			<!-- Add as many processors as required -->
 			<processor type="fully.qualified.ProcessorClass" />
