@@ -17,11 +17,12 @@
 
 package spoon.reflect.reference;
 
+import java.lang.reflect.Array;
+
 /**
- * This interface defines a reference to an array of
- * {@link spoon.reflect.declaration.CtType}.
+ * This interface defines a reference to an array
  */
-public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
+public interface CtArrayTypeReference<T> extends CtTypeReference<Array> {
 
 	/**
 	 * Gets the type of the elements contained in this array.
@@ -39,17 +40,4 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * {@link #getComponentType()}).
 	 */
 	int getDimensionCount();
-
-	/**
-	 * Returns the simple name of the array type core component type (with no
-	 * []s). Use toString() to get the full array type including []s.
-	 */
-	String getSimpleName();
-
-	/**
-	 * Sets the the simple name of the array type core component type (with no
-	 * []s).
-	 */
-	void setSimpleName(String simpleName);
-
 }
