@@ -20,6 +20,7 @@ package spoon.processing;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -68,5 +69,9 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
 	 * annotation type to the <code>A</code> actual type.
 	 */
 	boolean inferConsumedAnnotationType();
+	
+	/** Returns true if this annotation should be removed from the processed code.
+	 */
+	boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation);
 
 }
