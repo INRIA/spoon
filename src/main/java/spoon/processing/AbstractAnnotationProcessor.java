@@ -164,8 +164,13 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 		}
 	}
 
-	private boolean shoudBeConsumed(
-			CtAnnotation<? extends Annotation> annotation) {
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * Removes all annotations A on elements E.
+	 */
+	@Override
+	public boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation) {
 		if (consumedAnnotationTypes.containsKey(annotation.getAnnotationType()
 				.getQualifiedName())) {
 			return true;
