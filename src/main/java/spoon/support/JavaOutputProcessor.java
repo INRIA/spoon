@@ -100,6 +100,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	 */
 	public void createJavaFile(CtSimpleType<?> element) {
 
+		getEnvironment().debugMessage(
+				"printing " + element.getQualifiedName() + " to " + directory);
+
 		new ModelConsistencyChecker(getEnvironment(), false).scan(element);
 
 		// we only create a file for top-level classes
