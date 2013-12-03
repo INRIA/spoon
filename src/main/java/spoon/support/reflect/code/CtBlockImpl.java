@@ -78,12 +78,10 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertBegin(CtStatement statement) {
-		List<CtInvocation<?>> invocations = Query.getElements(this,
-				new TypeFilter<CtInvocation<?>>(CtInvocation.class));
-		if (invocations.size() > 0) {
-			CtInvocation<?> invoc = invocations.get(0);
-			if (invoc.getExecutable().getSimpleName().startsWith("<init>")) {
-				invoc.insertAfter(statement);
+		if(getStatements().size()>0){
+			CtStatement first = getStatements().get(0);
+			if(first instanceof CtInvocation && ((CtInvocation)first).getExecutable().getSimpleName().startsWith("<init>")){
+				first.insertAfter(statement);
 				return;
 			}
 		}
