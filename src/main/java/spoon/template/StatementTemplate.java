@@ -31,8 +31,8 @@ import spoon.reflect.declaration.CtSimpleType;
  * the Java statements. It corresponds to a
  * {@link spoon.reflect.code.CtStatementList}.
  */
-public abstract class StatementTemplate implements
-		TemplateParameter<Void>, Template {
+public abstract class StatementTemplate implements TemplateParameter<Void>,
+		Template {
 
 	/**
 	 * Creates a new statement list template parameter.
@@ -47,11 +47,14 @@ public abstract class StatementTemplate implements
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
 		if (this instanceof Template) {
-			return Substitution.substitute(targetType, this, c
-					.getMethod("statement").getBody()).getStatements().get(0);
+			return Substitution.substitute(targetType, this,
+					c.getMethod("statement").getBody().getStatements().get(0));
 		} else {
-			return  targetType.getFactory().Core().clone(
-					c.getMethod("statement").getBody()).getStatements().get(0);
+			return targetType
+					.getFactory()
+					.Core()
+					.clone(c.getMethod("statement").getBody().getStatements()
+							.get(0));
 		}
 	}
 
