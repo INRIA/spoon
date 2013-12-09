@@ -28,6 +28,7 @@ import java.util.Map;
 
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
+import spoon.processing.TraversalStrategy;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
@@ -216,6 +217,11 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 
 	public Map<String, Map<Integer, Integer>> getLineNumberMappings() {
 		return lineNumberMappings;
+	}
+
+	@Override
+	public TraversalStrategy getTraversalStrategy() {
+		return TraversalStrategy.PRE_ORDER;
 	}
 
 }
