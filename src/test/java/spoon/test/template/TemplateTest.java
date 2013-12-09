@@ -1,6 +1,7 @@
 package spoon.test.template;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.template.Substitution;
 
@@ -26,7 +28,8 @@ public class TemplateTest {
 						"./src/test/java/spoon/test/template/SubClass.java",
 						"./src/test/java/spoon/test/template/SuperClass.java"),
 				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/template/SubTemplate.java",
+						.resources(
+								"./src/test/java/spoon/test/template/SubTemplate.java",
 								"./src/test/java/spoon/test/template/SuperTemplate.java"))
 				.build();
 
@@ -56,7 +59,9 @@ public class TemplateTest {
 				SpoonResourceHelper
 						.resources("./src/test/java/spoon/test/template/C1.java"),
 				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/template/TemplateWithConstructor.java"))
+						.resources(
+								"./src/test/java/spoon/test/template/TemplateWithConstructor.java",
+								"./src/test/java/spoon/test/template/TemplateWithFieldsAndMethods.java"))
 				.build();
 
 		CtClass<?> c1 = factory.Class().get(C1.class);
@@ -80,6 +85,27 @@ public class TemplateTest {
 		assertEquals(
 				"java.util.List<java.util.Date> toBeInserted = new java.util.ArrayList<java.util.Date>();",
 				toBeInserted.toString());
+
+		Substitution.insertAll(c1, new TemplateWithFieldsAndMethods(
+				"testparam", factory.Code().createLiteral("testparam2")));
+
+		assertEquals(3, c1.getConstructors().size());
+		assertNotNull(c1.getField("fieldToBeInserted"));
+
+		CtMethod<?> m = c1.getMethod("methodToBeInserted");
+		assertNotNull(m);
+		assertEquals("return \"testparam\"", m.getBody().getStatement(0)
+				.toString());
+
+		CtMethod<?> m2 = c1.getMethod("methodToBeInserted2");
+		assertNotNull(m2);
+		assertEquals("return \"testparam2\"", m2.getBody().getStatement(0)
+				.toString());
+
+		new ModelConsistencyChecker(factory.getEnvironment(), false, true).scan(c1);
+
+		assertEquals(0, factory.getEnvironment().getErrorCount());
+		assertEquals(0, factory.getEnvironment().getWarningCount());
 
 	}
 

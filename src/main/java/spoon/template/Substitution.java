@@ -17,14 +17,11 @@
 
 package spoon.template;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -37,7 +34,6 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
@@ -63,18 +59,19 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	public static void insertAll(CtType<?> targetType, Template template) {
+	public static <T extends Template> void insertAll(CtType<?> targetType,
+			T template) {
 
-		CtClass<? extends Template> sourceClass = targetType.getFactory()
-				.Template().Class().get(template.getClass());
+		CtClass<T> templateClass = targetType.getFactory().Template().Class()
+				.get(template.getClass());
 		// insert all the interfaces
-		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
+		for (CtTypeReference<?> t : templateClass.getSuperInterfaces()) {
 			if (!t.equals(targetType.getFactory().Type()
 					.createReference(Template.class))) {
 				CtTypeReference<?> t1 = t;
 				// substitute ref if needed
-				if (Parameters.getNames(sourceClass)
-						.contains(t.getSimpleName())) {
+				if (Parameters.getNames(templateClass).contains(
+						t.getSimpleName())) {
 					Object o = Parameters.getValue(template, t.getSimpleName(),
 							null);
 					if (o instanceof CtTypeReference) {
@@ -104,7 +101,7 @@ public abstract class Substitution {
 			}
 		}
 		// insert all the methods
-		for (CtMethod<?> m : sourceClass.getMethods()) {
+		for (CtMethod<?> m : templateClass.getMethods()) {
 			if (m.getAnnotation(Local.class) != null)
 				continue;
 			if (m.getAnnotation(Parameter.class) != null)
@@ -113,7 +110,7 @@ public abstract class Substitution {
 		}
 		// insert all the constructors
 		if (targetType instanceof CtClass) {
-			for (CtConstructor<?> c : sourceClass.getConstructors()) {
+			for (CtConstructor<?> c : templateClass.getConstructors()) {
 				if (c.isImplicit())
 					continue;
 				if (c.getAnnotation(Local.class) != null)
@@ -123,14 +120,14 @@ public abstract class Substitution {
 		}
 		// insert all the initialization blocks (only for classes)
 		if (targetType instanceof CtClass) {
-			for (CtAnonymousExecutable e : sourceClass
+			for (CtAnonymousExecutable e : templateClass
 					.getAnonymousExecutables()) {
 				((CtClass<?>) targetType).addAnonymousExecutable(substitute(
 						targetType, template, e));
 			}
 		}
 		// insert all the fields
-		for (CtField<?> f : sourceClass.getFields()) {
+		for (CtField<?> f : templateClass.getFields()) {
 			if (f.getAnnotation(Local.class) != null)
 				continue;
 			if (Parameters.isParameterSource(f.getReference()))
@@ -139,10 +136,10 @@ public abstract class Substitution {
 			insertField(targetType, template, f);
 		}
 		// insert all the inner types
-		for (CtSimpleType<?> t : sourceClass.getNestedTypes()) {
+		for (CtSimpleType<?> t : templateClass.getNestedTypes()) {
 			if (t.getAnnotation(Local.class) != null)
 				continue;
-			CtSimpleType<?> result = substitute(sourceClass, template, t);
+			CtSimpleType<?> result = substitute(templateClass, template, t);
 			targetType.addNestedType(result);
 		}
 
@@ -274,8 +271,9 @@ public abstract class Substitution {
 		if (targetType instanceof CtClass) {
 			for (CtAnonymousExecutable e : sourceClass
 					.getAnonymousExecutables()) {
-				((CtClass<?>) targetType).addAnonymousExecutable(substitute(
-						targetType, template, e));
+				CtAnonymousExecutable e2 = substitute(targetType, template, e);
+				((CtClass<?>) targetType).addAnonymousExecutable(e2);
+				// e2.setParent(targetType);
 			}
 		}
 	}
@@ -302,6 +300,7 @@ public abstract class Substitution {
 				.Constructor().create(targetClass, sourceMethod);
 		newConstructor = substitute(targetClass, template, newConstructor);
 		targetClass.addConstructor(newConstructor);
+		// newConstructor.setParent(targetClass);
 		return newConstructor;
 	}
 
@@ -325,6 +324,7 @@ public abstract class Substitution {
 		if (targetType instanceof CtInterface)
 			newMethod.setBody(null);
 		targetType.addMethod(newMethod);
+		// newMethod.setParent(targetType);
 		return newMethod;
 	}
 
@@ -355,6 +355,7 @@ public abstract class Substitution {
 				targetClass.getConstructors().remove(c);
 		}
 		targetClass.addConstructor(newConstrutor);
+		// newConstrutor.setParent(targetClass);
 		return newConstrutor;
 	}
 
@@ -373,7 +374,6 @@ public abstract class Substitution {
 	 * @return the body expression of the source executable template with all
 	 *         the template parameters substituted
 	 */
-
 	public static CtBlock<?> substituteMethodBody(CtClass<?> targetClass,
 			Template template, String executableName,
 			CtTypeReference<?>... parameterTypes) {
@@ -384,6 +384,36 @@ public abstract class Substitution {
 				.getConstructor(parameterTypes) : sourceClass.getMethod(
 				executableName, parameterTypes);
 		return substitute(targetClass, template, sourceExecutable.getBody());
+	}
+
+	/**
+	 * Gets a statement from a template executable with all the template
+	 * parameters substituted.
+	 * 
+	 * @param targetClass
+	 *            the target class
+	 * @param template
+	 *            the template that holds the executable
+	 * @param statementIndex
+	 *            the statement index in the executable's body
+	 * @param executableName
+	 *            the source executable template
+	 * @param parameterTypes
+	 *            the parameter types of the source executable
+	 * @return the body expression of the source executable template with all
+	 *         the template parameters substituted
+	 */
+	public static CtStatement substituteStatement(CtClass<?> targetClass,
+			Template template, int statementIndex, String executableName,
+			CtTypeReference<?>... parameterTypes) {
+		CtClass<?> sourceClass = targetClass.getFactory().Template().Class()
+				.get(template.getClass());
+		CtExecutable<?> sourceExecutable = executableName.equals(template
+				.getClass().getSimpleName()) ? sourceClass
+				.getConstructor(parameterTypes) : sourceClass.getMethod(
+				executableName, parameterTypes);
+		return substitute(targetClass, template, sourceExecutable.getBody()
+				.getStatement(statementIndex));
 	}
 
 	/**
@@ -500,6 +530,7 @@ public abstract class Substitution {
 			Template template, CtField<T> sourceField) {
 		CtField<T> field = substitute(targetType, template, sourceField);
 		targetType.addField(field);
+		// field.setParent(targetType);
 		return field;
 	}
 
@@ -524,75 +555,6 @@ public abstract class Substitution {
 				ref.setPackage(targetPackage);
 			}
 		}
-	}
-
-	/**
-	 * Substitute the parameters localized with
-	 * {@link SimpleTemplate#S(String, Class)} invocations. All the invocations
-	 * of the form <code>S("parameter-name")</code> will be replaced by the
-	 * given element.
-	 * 
-	 * @param target
-	 *            the target element
-	 * @param parameterName
-	 *            the parameter name to be substituted
-	 * @param element
-	 *            the element to substitute with
-	 * @return a copy of the target element, with all the found parameters
-	 *         substituted
-	 * @throws Exception
-	 *             if an error occurs
-	 */
-	public static <E extends CtElement> E substitute(E target,
-			String parameterName, CtElement element) throws Exception {
-		Map<String, CtElement> parameters = new HashMap<String, CtElement>();
-		parameters.put(parameterName, element);
-		return substitute(target, parameters);
-	}
-
-	/**
-	 * Substitute the parameters localized with
-	 * {@link SimpleTemplate#S(String, Class)} invocations. All the invocations
-	 * of the form <code>S("parameter-name")</code> will be replaced using the
-	 * given parameters.
-	 * 
-	 * @param target
-	 *            the target element
-	 * @param parameters
-	 *            a name-element parameter map
-	 * @return a copy of the target element, with all the found parameters
-	 *         substituted
-	 * @throws Exception
-	 *             if an error occurs
-	 */
-	public static <E extends CtElement> E substitute(E target,
-			Map<String, CtElement> parameters) throws Exception {
-		target = target.getFactory().Core().clone(target);
-		List<CtInvocation<?>> sInvocations = Query.getElements(target,
-				new Filter<CtInvocation<?>>() {
-					@Override
-					public Class<?> getType() {
-						return CtInvocation.class;
-					}
-
-					@Override
-					public boolean matches(CtInvocation<?> element) {
-						return element.getExecutable().getDeclaringType()
-								.getActualClass() == SimpleTemplate.class
-								&& (element.getExecutable().getSimpleName()
-										.equals("S") || element.getExecutable()
-										.getSimpleName().equals("S_throws"));
-					}
-				});
-		for (CtInvocation<?> i : sInvocations) {
-			for (Entry<String, CtElement> parameter : parameters.entrySet()) {
-				if (i.getArguments().get(0).toString()
-						.equals("\"" + parameter.getKey() + "\"")) {
-					i.replace(parameter.getValue());
-				}
-			}
-		}
-		return target;
 	}
 
 }

@@ -130,7 +130,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			return (Class<T>) Thread.currentThread().getContextClassLoader()
 					.loadClass(getQualifiedName());
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			// class cannot be found
+			return null;
 		}
 	}
 

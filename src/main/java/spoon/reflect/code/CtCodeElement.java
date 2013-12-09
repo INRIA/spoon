@@ -23,4 +23,14 @@ import spoon.reflect.declaration.CtElement;
  * This interface is the root interface of the code elements.
  */
 public interface CtCodeElement extends CtElement {
+
+	/**
+	 * Partially evaluates an element and all its sub-elements.
+	 * 
+	 * @param <R>
+	 *            the returned element
+	 * @return the result of the partial evaluation
+	 */
+	<R extends CtCodeElement> R partiallyEvaluate();
+
 }

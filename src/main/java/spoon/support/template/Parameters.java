@@ -201,16 +201,18 @@ public abstract class Parameters {
 	 */
 	public static boolean isParameterSource(CtFieldReference<?> ref) {
 		try {
-			return (ref.getDeclaration()!=null // we must have the source of this fieldref
-					&& ref.getDeclaration().getAnnotation(Parameter.class) != null)
+			return (ref.getDeclaration() != null // we must have the source of
+													// this fieldref
+			&& ref.getDeclaration().getAnnotation(Parameter.class) != null)
 					|| (!((ref.getType() instanceof CtTypeParameterReference) || ref
 							.getSimpleName().equals("this")) && TemplateParameter.class
 							.isAssignableFrom(ref.getType().getActualClass()));
 		} catch (RuntimeException e) {
-			if (e.getCause() instanceof ClassNotFoundException)
-				return false;
-			else
-				throw e;
+			// if (e.getCause() instanceof ClassNotFoundException) {
+			// return false;
+			// } else {
+			throw e;
+			// }
 		}
 	}
 
