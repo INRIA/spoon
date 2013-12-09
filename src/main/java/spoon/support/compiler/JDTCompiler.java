@@ -663,8 +663,11 @@ public class JDTCompiler implements SpoonCompiler {
 	}
 
 	public Set<File> getTemplateSources() {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("not implemented");
+		Set<File> files = new HashSet<File>();
+		for (SpoonFolder file : getTemplates().getSubFolders()) {
+			files.add(new File(file.getPath()));
+		}
+		return files;
 	}
 
 	@Override

@@ -157,6 +157,12 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 		if (value instanceof CtFieldReference) {
 			Class<?> c = ((CtFieldReference<?>) value).getDeclaringType()
 					.getActualClass();
+			if (c == null) {
+				return ((CtLiteral<?>) ((CtFieldReference<?>) value)
+						.getDeclaration().getDefaultExpression()
+						.partiallyEvaluate()).getValue();
+			}
+
 			if (((CtFieldReference<?>) value).getSimpleName().equals("class")) {
 				return c;
 			}

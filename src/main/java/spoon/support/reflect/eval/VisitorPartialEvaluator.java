@@ -348,7 +348,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		for (CtStatement s : block.getStatements()) {
 			CtStatement res = evaluate(b, s);
 			if (res != null) {
-				b.getStatements().add(res);
+				b.addStatement(res);
 			}
 			// do not copy unreachable statements
 			if (flowEnded) {
@@ -715,7 +715,23 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
+	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {		
+		CtExpression<?> operand = evaluate(operator, operator.getOperand());
+		if (operand instanceof CtLiteral) {
+			Object object = ((CtLiteral<?>) operand).getValue();
+			CtLiteral<Object> res = operator.getFactory().Core()
+					.createLiteral();
+			switch (operator.getKind()) {
+			case NOT:
+				res.setValue(!(Boolean) object);
+				break;
+			default:
+				throw new RuntimeException("unsupported operator "
+						+ operator.getKind());
+			}
+			setResult(res);
+			return;
+		}
 		setResult(operator.getFactory().Core().clone(operator));
 	}
 

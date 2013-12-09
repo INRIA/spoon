@@ -33,12 +33,12 @@ public interface CtIf extends CtStatement, TemplateParameter<Void> {
 	/**
 	 * Gets the statement executed when the condition is false.
 	 */
-	CtStatement getElseStatement();
+	<S extends CtStatement> S getElseStatement();
 
 	/**
 	 * Gets the statement executed when the condition is true.
 	 */
-	CtStatement getThenStatement();
+	<S extends CtStatement> S getThenStatement();
 
 	/**
 	 * Sets the boolean expression that represents the <code>if</code>'s

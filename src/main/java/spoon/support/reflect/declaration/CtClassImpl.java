@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnnotation;
@@ -35,6 +36,7 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.eval.VisitorPartialEvaluator;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
@@ -202,5 +204,12 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	public void setLabel(String label) {
 		throw new UnsupportedOperationException(
 				"cannot set a label on a class declaration");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <R extends CtCodeElement> R partiallyEvaluate() {
+		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+		return eval.evaluate(getParent(), (R) this);
 	}
 }

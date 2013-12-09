@@ -25,11 +25,11 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
@@ -62,12 +62,14 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertBegin(CtStatementList<?> statements) {
-		List<CtInvocation<?>> invocations = Query.getElements(this,
-				new TypeFilter<CtInvocation<?>>(CtInvocation.class));
-		if (invocations.size() > 0) {
-			CtInvocation<?> invoc = invocations.get(0);
-			if (invoc.getExecutable().getSimpleName().startsWith("<init>")) {
-				invoc.insertAfter(statements);
+		if (getParentNoExceptions() != null
+				&& getParentNoExceptions() instanceof CtConstructor
+				&& getStatements().size() > 0) {
+			CtStatement first = getStatements().get(0);
+			if (first instanceof CtInvocation
+					&& ((CtInvocation<?>) first).getExecutable()
+							.getSimpleName().startsWith("<init>")) {
+				first.insertAfter(statements);
 				return;
 			}
 		}
@@ -78,9 +80,13 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertBegin(CtStatement statement) {
-		if(getStatements().size()>0){
+		if (getParentNoExceptions() != null
+				&& getParentNoExceptions() instanceof CtConstructor
+				&& getStatements().size() > 0) {
 			CtStatement first = getStatements().get(0);
-			if(first instanceof CtInvocation && ((CtInvocation)first).getExecutable().getSimpleName().startsWith("<init>")){
+			if (first instanceof CtInvocation
+					&& ((CtInvocation<?>) first).getExecutable()
+							.getSimpleName().startsWith("<init>")) {
 				first.insertAfter(statement);
 				return;
 			}

@@ -159,7 +159,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	transient Stack<CtElement> cloningContext = new Stack<CtElement>();
+	// transient Stack<CtElement> cloningContext = new Stack<CtElement>();
 
 	Factory mainFactory;
 
@@ -169,8 +169,12 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	public DefaultCoreFactory() {
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T clone(T object) {
+		return clone(object, new Stack<CtElement>());
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T clone(T object, Stack<CtElement> cloningContext) {
 		if (object == null)
 			return null;
 		T result = null;
@@ -178,9 +182,11 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 			if (!(object instanceof CtElement || object instanceof CtReference)) {
 				return object;
 			}
+			// RP: this should be done first or removed?
 			if (object instanceof Cloneable) {
 				return (T) object.getClass().getMethod("clone").invoke(object);
 			}
+			// RP: never called?
 			if (object.getClass().isEnum()) {
 				return object;
 			}
@@ -188,26 +194,27 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 			// + object.getClass().getSimpleName() + "]");
 			result = (T) object.getClass().newInstance();
 			if (result instanceof CtElement) {
-				if (cloningContext.isEmpty()) {
-					CtElement e = (CtElement)object;
-					if(e.isParentInitialized()) {
-						cloningContext.push(e.getParent());
-					} else {
-						cloningContext.push(null);
-					}
-				}
+				// if (cloningContext.isEmpty()) {
+				// //CtElement e = (CtElement)object;
+				// //if(e.isParentInitialized()) {
+				// // cloningContext.push(e.getParent());
+				// //} else {
+				// cloningContext.push(null);
+				// //}
+				// }
 				cloningContext.push((CtElement) result);
 			}
 			for (Field f : RtHelper.getAllFields(object.getClass())) {
 				// if (!clonedFields.contains(f)) {
 				// clonedFields.push(f);
 				f.setAccessible(true);
-				if (f.getName().equals("parent")) {
-					// if (!cloningContext.isEmpty()) {
-					((CtElement) result).setParent(cloningContext
-							.get(cloningContext.size() - 2));
-					// }
-				} else {
+				// if (f.getName().equals("parent")) {
+				// // if (!cloningContext.isEmpty()) {
+				// ((CtElement) result).setParent(cloningContext
+				// .get(cloningContext.size() - 2));
+				// // }
+				// } else {
+				if (!f.getName().equals("parent")) {
 					Object fieldValue = f.get(object);
 					if (!Modifier.isFinal(f.getModifiers())
 							&& !Modifier.isStatic(f.getModifiers())) {
@@ -221,7 +228,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 										.getMethod("clone").invoke(fieldValue);
 								c.clear();
 								for (Object o : (Collection<Object>) fieldValue) {
-									c.add(clone(o));
+									c.add(clone(o, cloningContext));
 								}
 							}
 							f.set(result, c);
@@ -237,7 +244,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 							f.set(result, m);
 							for (Entry<?, ?> e : ((Map<?, ?>) fieldValue)
 									.entrySet()) {
-								m.put(e.getKey(), clone(e.getValue()));
+								m.put(e.getKey(),
+										clone(e.getValue(), cloningContext));
 							}
 						} else if ((object instanceof CtReference)
 								&& (fieldValue instanceof CtElement)) {
@@ -246,7 +254,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 						} else {
 							// System.err.println(" cloning field " + f+" :
 							// "+cloningContext.peek().getClass().getSimpleName());
-							f.set(result, clone(f.get(object)));
+							f.set(result, clone(f.get(object), cloningContext));
 						}
 					}
 				}
@@ -255,8 +263,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 			// }
 			if (result instanceof CtElement) {
 				cloningContext.pop();
-				if (cloningContext.size() == 1)
-					cloningContext.pop();
+				if (cloningContext.isEmpty()) {
+					((CtElement) result).setParent(null);
+				} else {
+					((CtElement) result).setParent(cloningContext.peek());
+				}
+				// if (cloningContext.size() == 1)
+				// cloningContext.pop();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

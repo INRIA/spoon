@@ -1,19 +1,19 @@
-package spoon.test.processing;
+package spoon.test;
 
-public class SampleForInsertBefore {
+public class SampleClass {
 
-	public SampleForInsertBefore() {
+	public SampleClass() {
 		new Thread() {
 		};
 	}
 
-	public SampleForInsertBefore(int j) {
+	public SampleClass(int j) {
 		this(j, 0);
 		new Thread() {
 		};
 	}
 
-	public SampleForInsertBefore(int j, int k) {
+	public SampleClass(int j, int k) {
 		super();
 		new Thread() {
 		};

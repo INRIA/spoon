@@ -21,7 +21,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * This interface defines a simple partial evaluator on the Spoon meta-model. It
+ * This interface defines a simple partial evaluator on the Spoon Java model. It
  * recursively transforms a meta-model element by partially evaluating it and
  * simplifies it when possible (i.e. when constant values are involved).
  */

@@ -796,13 +796,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctClass.getFields());
 		lst.addAll(ctClass.getMethods());
 
-		// if((ctClass.getSimpleName()==null ||
-		// ctClass.getSimpleName().isEmpty()) && ctClass.getParent()!=null &&
-		// ctClass.getParent() instanceof CtNewClass){
-		// context.currentThis.push(((CtNewClass)ctClass.getParent()).getType());
-		// }else{
+		 if((ctClass.getSimpleName()==null ||
+		 ctClass.getSimpleName().isEmpty()) && ctClass.getParent()!=null &&
+		 ctClass.getParent() instanceof CtNewClass){
+		 context.currentThis.push(((CtNewClass<?>)ctClass.getParent()).getType());
+		 }else{
 		context.currentThis.push(ctClass.getReference());
-		// }
+		 }
 		write(" {").incTab();
 		for (CtElement el : lst) {
 			writeln().scan(el).writeln();
@@ -1313,6 +1313,43 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return byteToHex(hi) + byteToHex(lo);
 	}
 
+	private void writeStringLiteral(String value) {
+		// handle some special char.....
+		write('\"');
+		for (int i = 0; i < value.length(); i++) {
+			switch (value.charAt(i)) {
+			case '\b':
+				write("\\b"); //$NON-NLS-1$
+				break;
+			case '\t':
+				write("\\t"); //$NON-NLS-1$
+				break;
+			case '\n':
+				write("\\n"); //$NON-NLS-1$
+				break;
+			case '\f':
+				write("\\f"); //$NON-NLS-1$
+				break;
+			case '\r':
+				write("\\r"); //$NON-NLS-1$
+				break;
+			case '\"':
+				write("\\\""); //$NON-NLS-1$
+				break;
+			case '\'':
+				write("\\'"); //$NON-NLS-1$
+				break;
+			case '\\': // take care not to display the escape as a potential
+						// real char
+				write("\\\\"); //$NON-NLS-1$
+				break;
+			default:
+				write(value.charAt(i));
+			}
+		}
+		write('\"');
+	}
+
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
 		enterCtExpression(literal);
 		if (literal.getValue() == null) {
@@ -1327,7 +1364,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("'");
 		} else if (literal.getValue() instanceof String) {
 			// JDTTreeBuilder is responsible for adding the double quotes
-			write(((String) literal.getValue()));
+			// RP: not anymore!
+			writeStringLiteral((String) literal.getValue());
 		} else if (literal.getValue() instanceof Class) {
 			write(((Class<?>) literal.getValue()).getName());
 		} else if (literal.getValue() instanceof CtReference) {
@@ -1798,12 +1836,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * Generates a string.
+	 * Outputs a string.
 	 */
 	public DefaultJavaPrettyPrinter write(String s) {
 		if (s != null) {
 			sbf.append(s);
 		}
+		return this;
+	}
+
+	/**
+	 * Outputs a char.
+	 */
+	public DefaultJavaPrettyPrinter write(char c) {
+		sbf.append(c);
 		return this;
 	}
 

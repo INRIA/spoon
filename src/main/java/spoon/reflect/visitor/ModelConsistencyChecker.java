@@ -22,6 +22,7 @@ import java.util.Stack;
 import spoon.compiler.Environment;
 import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtNamedElement;
 
 /**
  * This scanner checks that a program model is consistent whith regards to the
@@ -32,6 +33,7 @@ import spoon.reflect.declaration.CtElement;
 public class ModelConsistencyChecker extends CtScanner {
 
 	boolean fixInconsistencies = false;
+	boolean fixNullParents = false;
 
 	Environment environment;
 
@@ -43,13 +45,17 @@ public class ModelConsistencyChecker extends CtScanner {
 	 * @param environment
 	 *            the environment where to report errors
 	 * @param fixInconsistencies
-	 *            automatically fix the inconsitencies rather than reporting
+	 *            automatically fix the inconsistencies rather than reporting
+	 *            warnings (to report warnings, set this to false)
+	 * @param fixNullParents
+	 *            automatically fix the null parents rather than reporting
 	 *            warnings (to report warnings, set this to false)
 	 */
 	public ModelConsistencyChecker(Environment environment,
-			boolean fixInconsistencies) {
-		this.fixInconsistencies = fixInconsistencies;
+			boolean fixInconsistencies, boolean fixNullParents) {
 		this.environment = environment;
+		this.fixInconsistencies = fixInconsistencies;
+		this.fixNullParents = fixNullParents;
 	}
 
 	/**
@@ -60,17 +66,29 @@ public class ModelConsistencyChecker extends CtScanner {
 		if (!stack.isEmpty()) {
 			if (!element.isParentInitialized()
 					|| element.getParent() != stack.peek()) {
-				if (fixInconsistencies) {
+				if ((!element.isParentInitialized() && fixNullParents)
+						|| (element.getParent() != stack.peek() && fixInconsistencies)) {
 					// System.out.println("fixing inconsistent parent: "
 					// + element.getClass() + " - "
 					// + element.getPosition() + " - "
 					// + stack.peek().getPosition());
 					element.setParent(stack.peek());
 				} else {
-					environment.report(null, Severity.WARNING,
-							"inconsistent parent for " + element.getClass()
-									+ " - " + element.getPosition() + " - "
-									+ stack.peek().getPosition());
+					environment
+							.report(null,
+									Severity.WARNING,
+									(element.isParentInitialized() ? "inconsistent"
+											: "null")
+											+ " parent for "
+											+ element.getClass()
+											+ (element instanceof CtNamedElement ? " - "
+													+ ((CtNamedElement) element)
+															.getSimpleName()
+													: "")
+											+ " - "
+											+ element.getPosition()
+											+ " - "
+											+ stack.peek().getPosition());
 					dumpStack();
 				}
 			}

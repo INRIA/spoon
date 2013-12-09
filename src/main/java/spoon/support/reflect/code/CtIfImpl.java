@@ -41,16 +41,18 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		return condition;
 	}
 
-	public CtStatement getElseStatement() {
-		return elseStatement;
+	@SuppressWarnings("unchecked")
+	public <S extends CtStatement> S getElseStatement() {
+		return (S) elseStatement;
 	}
 
 	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 
-	public CtStatement getThenStatement() {
-		return thenStatement;
+	@SuppressWarnings("unchecked")
+	public <S extends CtStatement> S getThenStatement() {
+		return (S) thenStatement;
 	}
 
 	public Void S() {

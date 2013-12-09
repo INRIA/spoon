@@ -40,6 +40,7 @@ public class TypeFactory extends SubFactory {
 
 	CtTypeReference<?> nullType;
 
+	public final CtTypeReference<Void> VOID = createReference(Void.class);
 	public final CtTypeReference<String> STRING = createReference(String.class);
 	public final CtTypeReference<Boolean> BOOLEAN = createReference(Boolean.class);
 	public final CtTypeReference<Byte> BYTE = createReference(Byte.class);
@@ -48,6 +49,7 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Long> LONG = createReference(Long.class);
 	public final CtTypeReference<Float> FLOAT = createReference(Float.class);
 	public final CtTypeReference<Double> DOUBLE = createReference(Double.class);
+	public final CtTypeReference<Void> VOID_PRIMITIVE = createReference(void.class);
 	public final CtTypeReference<Boolean> BOOLEAN_PRIMITIVE = createReference(boolean.class);
 	public final CtTypeReference<Byte> BYTE_PRIMITIVE = createReference(byte.class);
 	public final CtTypeReference<Character> CHARACTER_PRIMITIVE = createReference(char.class);

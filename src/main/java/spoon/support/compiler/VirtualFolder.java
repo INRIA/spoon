@@ -35,20 +35,26 @@ public class VirtualFolder implements SpoonFolder {
 		return rootJavaPaths;
 	}
 
+	private void addRootJavaPath(String path) {
+		if(!rootJavaPaths.contains(path)) {
+			rootJavaPaths.add(path);
+		}
+	}
+	
 	public boolean addFile(SpoonFile o) {
 		if(o.isJava()) {
-			rootJavaPaths.add(o.getPath());
+			addRootJavaPath(o.getPath());
 		} else {
-			rootJavaPaths.add(o.getFileSystemParent().getPath());
+			addRootJavaPath(o.getFileSystemParent().getPath());
 		}
 		return files.add(o);
 	}
 
 	public boolean addFolder(SpoonFolder o) {
 		if(o.isArchive()) {
-			rootJavaPaths.add(o.getFileSystemParent().getPath());
+			addRootJavaPath(o.getFileSystemParent().getPath());
 		} else {
-			rootJavaPaths.add(o.getPath());
+			addRootJavaPath(o.getPath());
 		}
 		return folders.add(o);
 	}

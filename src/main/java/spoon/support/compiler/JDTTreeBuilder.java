@@ -859,20 +859,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return ref;
 		}
 
-		//Map<TypeBinding, CtTypeReference<?>> bindingCache = new HashMap<TypeBinding, CtTypeReference<?>>();
+		// Map<TypeBinding, CtTypeReference<?>> bindingCache = new
+		// HashMap<TypeBinding, CtTypeReference<?>>();
 
 		@SuppressWarnings("unchecked")
 		public <T> CtTypeReference<T> getTypeReference(TypeBinding binding) {
 			if (binding == null)
 				return null;
-			
+
 			CtTypeReference<?> ref = null;
-			
+
 			if (binding instanceof RawTypeBinding) {
-				ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
-			}
-			else 
-			if (binding instanceof ParameterizedTypeBinding) {
+				ref = getTypeReference(((ParameterizedTypeBinding) binding)
+						.genericType());
+			} else if (binding instanceof ParameterizedTypeBinding) {
 				ref = factory.Core().createTypeReference();
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName("");
@@ -887,7 +887,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 
-//				bindingCache.put(binding, ref);
+				// bindingCache.put(binding, ref);
 				if (((ParameterizedTypeBinding) binding).arguments != null)
 					for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
 						ref.addActualTypeArgument(getTypeReference(b));
@@ -928,7 +928,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (bounds && b.superInterfaces != null
 						&& b.superInterfaces != Binding.NO_SUPERINTERFACES) {
 					bounds = false;
-//					bindingCache.put(binding, ref);
+					// bindingCache.put(binding, ref);
 					for (int i = 0, length = b.superInterfaces.length; i < length; i++) {
 						TypeBinding tb = b.superInterfaces[i];
 						((CtTypeParameterReference) ref)
@@ -1008,7 +1008,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				throw new RuntimeException("Unknown TypeBinding: "
 						+ binding.getClass() + " " + binding);
 			}
-//			bindingCache.remove(binding);
+			// bindingCache.remove(binding);
 			return (CtTypeReference<T>) ref;
 		}
 
@@ -2777,7 +2777,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// here there is a contract between JDTTreeBuilder and
 		// DefaultJavaPrettyPrinter:
 		// JDTTreeBuilder si responsible for adding the double quotes
-		s.setValue(new String(stringLiteral.toString()));
+		//s.setValue(new String(stringLiteral.toString()));
+
+		// RP: this is not a good idea but many other usages of the value can be
+		// done (appart from the pretty printer). So I moved back the
+		// responsability of pretty printing the string inside the pretty
+		// printer (i.e. where it belongs)
+		s.setValue(new String(stringLiteral.source()));
 
 		context.enter(s, stringLiteral);
 		return true;

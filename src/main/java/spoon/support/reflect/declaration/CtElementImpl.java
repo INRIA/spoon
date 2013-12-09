@@ -412,7 +412,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public void updateAllParentsBelow() {
-		new ModelConsistencyChecker(getFactory().getEnvironment(), true)
+		new ModelConsistencyChecker(getFactory().getEnvironment(), true, true)
 				.scan(this);
 	}
 

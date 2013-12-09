@@ -32,7 +32,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 
 	/**
 	 * Gets the model's traversal strategy for this processor (default is
-	 * {@link TraversalStrategy#PRE_ORDER}). Programmers should override this
+	 * {@link TraversalStrategy#POST_ORDER}). Programmers should override this
 	 * method to return another strategy if needed.
 	 */
 	TraversalStrategy getTraversalStrategy();
@@ -56,12 +56,13 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	/**
 	 * A callback method upcalled by the meta-model scanner to perform a
 	 * dedicated job on the currently scanned element. The way Spoon upcalls
-	 * this method depends on the processed element types ({@link #getProcessedElementTypes()}),
-	 * the traversal strategy ({@link #getTraversalStrategy()}), and the used
-	 * processing manager ({@link Environment#getManager()}. Also, this method
-	 * is upcalled only if the method {@link #isToBeProcessed(CtElement)}
-	 * returns true for a given scanned element. In order to manually scan the
-	 * meta-model, one can define the {@link #process()} method instead.
+	 * this method depends on the processed element types (
+	 * {@link #getProcessedElementTypes()}), the traversal strategy (
+	 * {@link #getTraversalStrategy()}), and the used processing manager (
+	 * {@link Environment#getManager()}. Also, this method is upcalled only if
+	 * the method {@link #isToBeProcessed(CtElement)} returns true for a given
+	 * scanned element. In order to manually scan the meta-model, one can define
+	 * the {@link #process()} method instead.
 	 * 
 	 * @param element
 	 *            the element that is currenly being scanned
@@ -73,9 +74,11 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 * manually implement a processing job. On contrary to
 	 * {@link #process(CtElement)}, this method does not rely on a built-in
 	 * meta-model scanner and has to implement its own traversal strategy on the
-	 * meta-model, which is stored in the factory ({@link FactoryAccessor#getFactory}).
-	 * Note that if a processor implements both process methods, this one is
-	 * upcalled first. This method does nothing in default implementations ({@link spoon.processing.AbstractProcessor}).
+	 * meta-model, which is stored in the factory (
+	 * {@link FactoryAccessor#getFactory}). Note that if a processor implements
+	 * both process methods, this one is upcalled first. This method does
+	 * nothing in default implementations (
+	 * {@link spoon.processing.AbstractProcessor}).
 	 */
 	void process();
 
@@ -113,10 +116,11 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	void init();
 
 	/**
-	 * Initializes the properties defined by this processor by using the environment.
-	 *
-	 *@see Environment#getProcessorProperties(String)
+	 * Initializes the properties defined by this processor by using the
+	 * environment.
+	 * 
+	 * @see Environment#getProcessorProperties(String)
 	 */
 	void initProperties(ProcessorProperties properties);
-	
+
 }

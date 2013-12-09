@@ -64,7 +64,7 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	 * Invalid method in this context.
 	 */
 	public final TraversalStrategy getTraversalStrategy() {
-		return TraversalStrategy.PRE_ORDER;
+		return TraversalStrategy.POST_ORDER;
 	}
 
 	public void init() {
