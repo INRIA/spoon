@@ -58,6 +58,7 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Float> FLOAT_PRIMITIVE = createReference(float.class);
 	public final CtTypeReference<Double> DOUBLE_PRIMITIVE = createReference(double.class);
 	public final CtTypeReference<Date> DATE = createReference(Date.class);
+	public final CtTypeReference<Object> OBJECT = createReference(Object.class);
 
 	/**
 	 * Returns a reference on the null type (type of null).
