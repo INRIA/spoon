@@ -1249,7 +1249,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		boolean remove = false;
 		for (CtExpression<?> e : invocation.getArguments()) {
 			scan(e);
-			write(" ,");
+			write(", ");
 			remove = true;
 		}
 		if (remove) {
