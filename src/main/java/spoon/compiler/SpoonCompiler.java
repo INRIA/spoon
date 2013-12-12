@@ -216,4 +216,12 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 */
 	void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles);
 
+	/**
+	 * When {@link #setBuildOnlyOutdatedFiles(boolean)} is true, adds a resource
+	 * to the forced-to-be-built list. All the files added here will be build
+	 * even if no changes are detected on the file system. This list has no
+	 * impacts if @link #setBuildOnlyOutdatedFiles(boolean)} is false.
+	 */
+	void forceBuild(SpoonResource source);
+
 }
