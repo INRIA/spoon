@@ -305,11 +305,14 @@ public class JDTCompiler implements SpoonCompiler {
 			relativeOutputPaths.add(f.getAbsolutePath().substring(offset));
 		}
 		for (SpoonFile sf : new ArrayList<SpoonFile>(files)) {
+			if(forceBuildList.contains(sf)) {
+				continue;
+			}
 			File f = sf.toFile();
 			for (String s : relativeOutputPaths) {
 				if (f.getAbsolutePath().endsWith(s)) {
 					if (f.lastModified() <= new File(outputDirectory, s)
-							.lastModified()) {
+							.lastModified()) {						
 						files.remove(sf);
 					}
 				}
@@ -1025,6 +1028,13 @@ public class JDTCompiler implements SpoonCompiler {
 	@Override
 	public void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles) {
 		this.buildOnlyOutdatedFiles = buildOnlyOutdatedFiles;
+	}
+	
+	List<SpoonResource> forceBuildList = new ArrayList<>();
+	
+	@Override
+	public void forceBuild(SpoonResource source) {
+		forceBuildList.add(source);
 	}
 
 }
