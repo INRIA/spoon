@@ -23,6 +23,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import spoon.Spoon;
 import spoon.reflect.Factory;
 import spoon.reflect.ModelStreamer;
 import spoon.reflect.declaration.CtElement;
@@ -66,7 +67,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 			ois.close();
 			return f;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			Spoon.logger.error(e.getMessage(), e);
 			throw new IOException(e.getMessage());
 		}
 	}

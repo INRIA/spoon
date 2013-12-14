@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import spoon.Spoon;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -227,7 +228,7 @@ public class TemplateMatcher {
 		try {
 			clazz = declaration.getParent(CtClass.class);
 		} catch (ParentNotInitializedException e) {
-			e.printStackTrace();
+			Spoon.logger.error(e.getMessage(), e);
 		}
 		if (clazz == null) {
 			return new DefaultParameterMatcher();
@@ -413,7 +414,7 @@ public class TemplateMatcher {
 						return false;
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					Spoon.logger.error(e.getMessage(), e);
 				}
 			}
 			return true;
@@ -458,11 +459,10 @@ public class TemplateMatcher {
 				throw new RuntimeException();
 			}
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			Spoon.logger.error(e.getMessage(), e);
 			return true;
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Spoon.logger.error(e.getMessage(), e);
 			return true;
 		}
 	}

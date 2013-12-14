@@ -3,6 +3,7 @@ package spoon.support.compiler;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.Spoon;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtBlock;
@@ -65,7 +66,7 @@ public class SnippetCompilationHelper {
 					return (Class<CtMethod<?>>) Class.forName(CtMethod.class
 							.getName());
 				} catch (Exception e) {
-					e.printStackTrace();
+					Spoon.logger.error(e.getMessage(), e);
 					return null;
 				}
 			}

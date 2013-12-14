@@ -33,6 +33,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import spoon.Spoon;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -95,19 +96,19 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 			Exception x = spe;
 			if (spe.getException() != null)
 				x = spe.getException();
-			x.printStackTrace();
+			Spoon.logger.error(x.getMessage(), x);
 		} catch (SAXException sxe) {
 			// Error generated during parsing
 			Exception x = sxe;
 			if (sxe.getException() != null)
 				x = sxe.getException();
-			x.printStackTrace();
+			Spoon.logger.error(x.getMessage(), x);
 		} catch (ParserConfigurationException pce) {
 			// Parser with specified options can't be built
-			pce.printStackTrace();
+			Spoon.logger.error(pce.getMessage(), pce);
 		} catch (IOException ioe) {
 			// I/O error
-			ioe.printStackTrace();
+			Spoon.logger.error(ioe.getMessage(), ioe);
 		}
 	}
 
@@ -176,7 +177,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 				try {
 					annotateElement(t, clazz);
 				} catch (Exception e) {
-					e.printStackTrace();
+					Spoon.logger.error(e.getMessage(), e);
 				}
 
 				NodeList nodeList3 = clazz.getElementsByTagName("field");
@@ -192,7 +193,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 						try {
 							annotateElement(field, fieldElt);
 						} catch (Exception e) {
-							e.printStackTrace();
+							Spoon.logger.error(e.getMessage(), e);
 						}
 					}
 				}
@@ -220,7 +221,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 						try {
 							annotateElement(executable, executableElt);
 						} catch (Exception e) {
-							e.printStackTrace();
+							Spoon.logger.error(e.getMessage(), e);
 						}
 
 						// NodeList paramList = method
@@ -236,7 +237,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 						// try {
 						// annotateElement(parameter, param);
 						// } catch (Exception e) {
-						// e.printStackTrace();
+						// Spoon.logger.error(e.getMessage(), e);
 						// }
 						// }
 						// }

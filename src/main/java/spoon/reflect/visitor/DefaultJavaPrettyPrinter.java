@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.TreeMap;
 
+import spoon.Spoon;
 import spoon.compiler.Environment;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
@@ -796,13 +797,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctClass.getFields());
 		lst.addAll(ctClass.getMethods());
 
-		 if((ctClass.getSimpleName()==null ||
-		 ctClass.getSimpleName().isEmpty()) && ctClass.getParent()!=null &&
-		 ctClass.getParent() instanceof CtNewClass){
-		 context.currentThis.push(((CtNewClass<?>)ctClass.getParent()).getType());
-		 }else{
-		context.currentThis.push(ctClass.getReference());
-		 }
+		if ((ctClass.getSimpleName() == null || ctClass.getSimpleName()
+				.isEmpty())
+				&& ctClass.getParent() != null
+				&& ctClass.getParent() instanceof CtNewClass) {
+			context.currentThis.push(((CtNewClass<?>) ctClass.getParent())
+					.getType());
+		} else {
+			context.currentThis.push(ctClass.getReference());
+		}
 		write(" {").incTab();
 		for (CtElement el : lst) {
 			writeln().scan(el).writeln();
@@ -1198,7 +1201,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					write("super");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				Spoon.logger.error(e.getMessage(), e);
 			}
 		} else {
 			// It's a method invocation
@@ -1216,7 +1219,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					context.ignoreGenerics = false;
 					write(".");
 				} catch (Exception e) {
-					e.printStackTrace();
+					Spoon.logger.error(e.getMessage(), e);
 				}
 			} else if (invocation.getTarget() != null) {
 				context.enterTarget();
@@ -1259,45 +1262,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(invocation);
 	}
 
-	/**
-	 * Quotes a string.
-	 */
-	public static String quote(String s) {
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < s.length(); i++) {
-			char ch = s.charAt(i);
-			switch (ch) {
-			case '\n':
-				buf.append("\\n");
-				break;
-			case '\t':
-				buf.append("\\t");
-				break;
-			case '\b':
-				buf.append("\\b");
-				break;
-			case '\f':
-				buf.append("\\f");
-				break;
-			case '\r':
-				buf.append("\\r");
-				break;
-			case '\"':
-				buf.append("\\\"");
-				break;
-			case '\'':
-				buf.append("\\\'");
-				break;
-			case '\\':
-				buf.append("\\\\");
-				break;
-			default:
-				buf.append(ch);
-			}
-		}
-		return buf.toString();
-	}
-
 	static public String byteToHex(byte b) {
 		// Returns hex String representation of byte b
 		char hexDigit[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -1315,7 +1279,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private void writeStringLiteral(String value) {
 		// handle some special char.....
-		write('\"');
 		for (int i = 0; i < value.length(); i++) {
 			switch (value.charAt(i)) {
 			case '\b':
@@ -1347,7 +1310,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(value.charAt(i));
 			}
 		}
-		write('\"');
 	}
 
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
@@ -1360,12 +1322,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(literal.getValue() + "F");
 		} else if (literal.getValue() instanceof Character) {
 			write("'");
-			write(quote(String.valueOf(literal.getValue())));
+			writeStringLiteral(new String(
+					new char[] { (Character) literal.getValue() }));
 			write("'");
 		} else if (literal.getValue() instanceof String) {
-			// JDTTreeBuilder is responsible for adding the double quotes
-			// RP: not anymore!
+			write('\"');
 			writeStringLiteral((String) literal.getValue());
+			write('\"');
+
 		} else if (literal.getValue() instanceof Class) {
 			write(((Class<?>) literal.getValue()).getName());
 		} else if (literal.getValue() instanceof CtReference) {

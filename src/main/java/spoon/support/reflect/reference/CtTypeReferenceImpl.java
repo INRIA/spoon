@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.Spoon;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -240,6 +241,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 				// Class.forName(type.getQualifiedName());
 				return c2.isAssignableFrom(c1);
 			} catch (Exception e) {
+				Spoon.logger.error(e.getMessage(), e);
 				return false;
 			}
 		}
@@ -277,6 +279,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			// Class.forName(type.getQualifiedName());
 			return candidate.isAssignableFrom(c);
 		} catch (Exception e) {
+			Spoon.logger.error(e.getMessage(), e);
 			return false;
 		}
 	}

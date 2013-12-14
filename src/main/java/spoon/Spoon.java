@@ -3,6 +3,8 @@ package spoon;
 import java.io.File;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
@@ -31,6 +33,11 @@ import spoon.support.compiler.JDTCompiler;
  * </pre>
  */
 public abstract class Spoon {
+
+	/**
+	 * A default logger to be used by Spoon.
+	 */
+	public static final Logger logger = Logger.getLogger(Spoon.class);
 
 	private Spoon() {
 	}
@@ -201,6 +208,9 @@ public abstract class Spoon {
 	 * @param factory
 	 *            the factory to be used, with a properly initialized
 	 *            environment
+	 * @param encoding
+	 *            the encoding to be used (null to use the default system
+	 *            encoding)
 	 * @param precompile
 	 *            precompile the source code before processing to make sure that
 	 *            the input source classes will be available in the classpath
@@ -233,8 +243,8 @@ public abstract class Spoon {
 	 * @throws Exception
 	 *             in case something bad happens
 	 */
-	public static SpoonCompiler run(Factory factory, boolean precompile,
-			OutputType output, File outputDirectory,
+	public static SpoonCompiler run(Factory factory, String encoding,
+			boolean precompile, OutputType output, File outputDirectory,
 			List<String> processorTypes, boolean compile,
 			File destinationDirectory, boolean buildOnlyOutdatedFiles,
 			String sourceClasspath, String templateClasspath,
@@ -279,7 +289,7 @@ public abstract class Spoon {
 			env.report(null, Severity.ERROR, "Error while loading resource : "
 					+ e.getMessage());
 			if (env.isDebug()) {
-				e.printStackTrace();
+				Spoon.logger.debug(e.getMessage(), e);
 			}
 		}
 
