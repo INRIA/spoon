@@ -591,7 +591,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 					return;
 				} catch (Exception e) {
 					// swalow and don't simplify
-					// e.printStackTrace();
+					// Spoon.logger.error(e.getMessage(), e);
 				}
 			}
 		}

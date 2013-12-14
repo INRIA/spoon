@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
+import spoon.Spoon;
 import spoon.compiler.Environment;
 import spoon.reflect.Factory;
 
@@ -46,6 +47,10 @@ public class JDTSnippetCompiler extends JDTCompiler {
 		JDTBatchCompiler batchCompiler = createBatchCompiler();
 		List<String> args = new ArrayList<String>();
 		args.add("-1." + javaCompliance);
+		if (encoding != null) {
+			args.add("-encoding");
+			args.add(encoding);
+		}
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
@@ -73,14 +78,14 @@ public class JDTSnippetCompiler extends JDTCompiler {
 			}
 		}
 		// args.add("-nowarn");
-//		Set<String> paths = new HashSet<String>();
-//		for (SpoonFile file : sources.getAllJavaFiles()) {
-//			// We can not use file.getPath() because of in-memory code or files
-//			// within archives
-//			paths.add(file.getParent().getPath());
-//		}
-//		args.addAll(paths);
-		//args.addAll(sources.getRootJavaPaths());
+		// Set<String> paths = new HashSet<String>();
+		// for (SpoonFile file : sources.getAllJavaFiles()) {
+		// // We can not use file.getPath() because of in-memory code or files
+		// // within archives
+		// paths.add(file.getParent().getPath());
+		// }
+		// args.addAll(paths);
+		// args.addAll(sources.getRootJavaPaths());
 
 		File f = createTmpJavaFile(new File("."));
 		args.add(f.getPath());
@@ -89,9 +94,9 @@ public class JDTSnippetCompiler extends JDTCompiler {
 		try {
 			batchCompiler.configure(args.toArray(new String[0]));
 		} catch (Exception e) {
-			System.err.println("build args: " + args);
-			System.err.println("sources: " + sources.rootJavaPaths);
-			e.printStackTrace();
+			Spoon.logger.error("build args: " + args);
+			Spoon.logger.error("sources: " + sources.rootJavaPaths);
+			Spoon.logger.error(e.getMessage(), e);
 			throw e;
 		}
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources

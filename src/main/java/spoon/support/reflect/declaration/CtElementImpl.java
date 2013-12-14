@@ -29,6 +29,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+import spoon.Spoon;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.Factory;
 import spoon.reflect.cu.SourcePosition;
@@ -270,7 +271,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		} catch (CtUncomparableException e1) {
 			// do nothing
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			Spoon.logger.error(e1.getMessage(), e1);
 		}
 	}
 

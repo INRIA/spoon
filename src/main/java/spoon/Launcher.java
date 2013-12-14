@@ -216,7 +216,15 @@ public class Launcher {
 		opt2.setDefault("7");
 		jsap.registerParameter(opt2);
 
-		// setting Input files & Directory
+		// compiler's encoding 
+		opt2 = new FlaggedOption("encoding");
+		opt2.setLongFlag("encoding");
+		opt2.setStringParser(JSAP.STRING_PARSER);
+		opt2.setRequired(false);
+		opt2.setHelp("Forces the compiler to use a specific encoding (UTF-8, UTF-16, ...).");
+		jsap.registerParameter(opt2);
+		
+		// setting a spoonlet (packaged processors)
 		opt2 = new FlaggedOption("spoonlet");
 		opt2.setShortFlag('s');
 		opt2.setLongFlag("spoonlet");
@@ -377,7 +385,7 @@ public class Launcher {
 					env.report(null, Severity.ERROR,
 							"Unable to add source file : " + e.getMessage());
 					if (env.isDebug()) {
-						e.printStackTrace();
+						Spoon.logger.debug(e.getMessage(), e);
 					}
 				}
 			}
@@ -401,7 +409,7 @@ public class Launcher {
 					env.report(null, Severity.ERROR,
 							"Unable to add template file: " + e.getMessage());
 					if (env.isDebug()) {
-						e.printStackTrace();
+						Spoon.logger.error(e.getMessage(), e);
 					}
 				}
 			}
@@ -451,7 +459,7 @@ public class Launcher {
 			env.report(null, Severity.ERROR,
 					"Unable to load spoonlet: " + e.getMessage());
 			if (env.isDebug()) {
-				e.printStackTrace();
+				Spoon.logger.debug(e.getMessage(), e);
 			}
 			return;
 		}
@@ -482,9 +490,9 @@ public class Launcher {
 				xr.parse(new InputSource(stream));
 				stream.close();
 			} catch (SAXException e) {
-				e.printStackTrace();
+				Spoon.logger.error(e.getMessage(), e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Spoon.logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -551,6 +559,7 @@ public class Launcher {
 					+ args.getString("output-type"));
 		}
 		SpoonCompiler compiler = Spoon.run(factory,
+				arguments.getString("encoding"),
 				arguments.getBoolean("precompile"), outputType,
 				args.getFile("output"), getProcessorTypes(),
 				arguments.getBoolean("compile"), args.getFile("destination"),

@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import spoon.Spoon;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 
@@ -155,7 +156,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 				try {
 					process((A) annotation.getActualAnnotation(), element);
 				} catch (Exception e) {
-					e.printStackTrace();
+					Spoon.logger.error(e.getMessage(), e);
 				}
 				if (shoudBeConsumed(annotation)) {
 					element.getAnnotations().remove(annotation);

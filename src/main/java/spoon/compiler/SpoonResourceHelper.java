@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.Spoon;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.ZipFolder;
@@ -98,7 +99,7 @@ public abstract class SpoonResourceHelper {
 				return new ZipFolder(f);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Spoon.logger.error(e.getMessage(), e);
 		}
 
 		return null;

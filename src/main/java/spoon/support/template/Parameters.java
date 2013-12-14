@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import spoon.Spoon;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -191,7 +192,7 @@ public abstract class Parameters {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Spoon.logger.error(e.getMessage(), e);
 		}
 		return params;
 	}

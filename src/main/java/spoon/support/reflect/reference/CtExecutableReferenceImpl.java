@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.Spoon;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
@@ -144,7 +145,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 						.getConstructor(parametersTypes
 								.toArray(new CtTypeReference<?>[0]));
 			} catch (ClassCastException e) {
-				e.printStackTrace();
+				Spoon.logger.error(e.getMessage(), e);
 			}
 		}
 		return (CtExecutable<T>) ret;
@@ -306,7 +307,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		// }
 		// }
 		// } catch (Exception e1) {
-		// e1.printStackTrace();
+		// Spoon.logger.error(e1.getMessage(), e1);
 		// }
 		//
 		// return false;

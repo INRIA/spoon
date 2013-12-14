@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import spoon.compiler.Environment;
@@ -48,6 +49,8 @@ import spoon.support.processing.XmlProcessorProperties;
  * standard output stream (Java-compliant).
  */
 public class StandardEnvironment implements Serializable, Environment {
+
+	Logger logger = Logger.getLogger(StandardEnvironment.class);
 
 	/**
 	 * The processors' properties files extension (.xml)
@@ -95,7 +98,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public void debugMessage(String message) {
 		if (isDebug()) {
-			System.out.println(message);
+			logger.debug(message);
 		}
 	}
 
@@ -199,12 +202,13 @@ public class StandardEnvironment implements Serializable, Environment {
 	private void print(StringBuffer buffer, Severity severity) {
 		switch (severity) {
 		case ERROR:
+			logger.error(buffer.toString());
 		case WARNING:
-			System.out.println(buffer.toString());
+			logger.warn(buffer.toString());
 			break;
 		default:
 			if (isVerbose()) {
-				System.out.println(buffer.toString());
+				logger.info(buffer.toString());
 			}
 		}
 	}

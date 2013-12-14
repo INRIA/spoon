@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.Spoon;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtVariable;
@@ -60,7 +61,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 			return getDeclaringType().getActualClass().getDeclaredField(
 					getSimpleName());
 		} catch (Exception e) {
-			e.printStackTrace();
+			Spoon.logger.error(e.getMessage(), e);
 		}
 		return null;
 	}

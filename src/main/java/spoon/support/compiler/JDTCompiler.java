@@ -48,6 +48,7 @@ import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.util.Util;
 
+import spoon.Spoon;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
@@ -142,7 +143,7 @@ public class JDTCompiler implements SpoonCompiler {
 					culist.add(new CompilationUnit(IOUtils.toCharArray(f
 							.getContent()), f.getName(), null));
 				} catch (Exception e) {
-					e.printStackTrace();
+					Spoon.logger.error(e.getMessage(), e);
 				}
 			}
 			return culist.toArray(new CompilationUnit[0]);
@@ -305,14 +306,14 @@ public class JDTCompiler implements SpoonCompiler {
 			relativeOutputPaths.add(f.getAbsolutePath().substring(offset));
 		}
 		for (SpoonFile sf : new ArrayList<SpoonFile>(files)) {
-			if(forceBuildList.contains(sf)) {
+			if (forceBuildList.contains(sf)) {
 				continue;
 			}
 			File f = sf.toFile();
 			for (String s : relativeOutputPaths) {
 				if (f.getAbsolutePath().endsWith(s)) {
 					if (f.lastModified() <= new File(outputDirectory, s)
-							.lastModified()) {						
+							.lastModified()) {
 						files.remove(sf);
 					}
 				}
@@ -329,6 +330,10 @@ public class JDTCompiler implements SpoonCompiler {
 		JDTBatchCompiler batchCompiler = createBatchCompiler();
 		List<String> args = new ArrayList<String>();
 		args.add("-1." + javaCompliance);
+		if (encoding != null) {
+			args.add("-encoding");
+			args.add(encoding);
+		}
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
@@ -410,7 +415,7 @@ public class JDTCompiler implements SpoonCompiler {
 			FileUtils.writeStringToFile(f, "class Tmp {}");
 			f.deleteOnExit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Spoon.logger.error(e.getMessage(), e);
 		}
 		return f;
 	}
@@ -421,6 +426,10 @@ public class JDTCompiler implements SpoonCompiler {
 		JDTBatchCompiler batchCompiler = createBatchCompiler();
 		List<String> args = new ArrayList<String>();
 		args.add("-1." + javaCompliance);
+		if (encoding != null) {
+			args.add("-encoding");
+			args.add(encoding);
+		}
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
@@ -684,6 +693,10 @@ public class JDTCompiler implements SpoonCompiler {
 		JDTBatchCompiler batchCompiler = createBatchCompiler(true);
 		List<String> args = new ArrayList<String>();
 		args.add("-1." + javaCompliance);
+		if (encoding != null) {
+			args.add("-encoding");
+			args.add(encoding);
+		}
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
@@ -792,13 +805,10 @@ public class JDTCompiler implements SpoonCompiler {
 		@Override
 		public char[] getContents() {
 			String s = new String(getFileName());
-			// System.out.println("--- getContent: " + s);
-			// new Exception("getContent").printStackTrace();
 			if (factory != null
 					&& factory.CompilationUnit().getMap().containsKey(s)) {
 				try {
 					if (loadedContent.containsKey(s)) {
-						// System.out.println(new String(loadedContent.get(s)));
 						return loadedContent.get(s);
 					} else {
 						char[] content = IOUtils
@@ -807,7 +817,7 @@ public class JDTCompiler implements SpoonCompiler {
 						return content;
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					Spoon.logger.error(e.getMessage(), e);
 				}
 			}
 			return super.getContents();
@@ -876,7 +886,7 @@ public class JDTCompiler implements SpoonCompiler {
 			// stream.println(printer.getPackageDeclaration());
 			// stream.close();
 			// } catch (FileNotFoundException e) {
-			// e.printStackTrace();
+			// Spoon.logger.error(e.getMessage(), e);
 			// } finally {
 			// if (stream != null)
 			// stream.close();
@@ -901,7 +911,7 @@ public class JDTCompiler implements SpoonCompiler {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				Spoon.logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -918,7 +928,7 @@ public class JDTCompiler implements SpoonCompiler {
 			try {
 				printer = new FragmentDrivenJavaPrettyPrinter(env, cu);
 			} catch (Exception e) {
-				e.printStackTrace();
+				Spoon.logger.error(e.getMessage(), e);
 				printer = null;
 			}
 		}
@@ -952,6 +962,10 @@ public class JDTCompiler implements SpoonCompiler {
 		Main batchCompiler = createBatchCompiler(false);
 		List<String> args = new ArrayList<String>();
 		args.add("-1." + javaCompliance);
+		if (encoding != null) {
+			args.add("-encoding");
+			args.add(encoding);
+		}
 		args.add("-preserveAllLocals");
 		args.add("-enableJavadoc");
 		args.add("-noExit");
@@ -1029,12 +1043,24 @@ public class JDTCompiler implements SpoonCompiler {
 	public void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles) {
 		this.buildOnlyOutdatedFiles = buildOnlyOutdatedFiles;
 	}
-	
+
 	List<SpoonResource> forceBuildList = new ArrayList<>();
-	
+
 	@Override
 	public void forceBuild(SpoonResource source) {
 		forceBuildList.add(source);
+	}
+
+	protected String encoding = null;
+
+	@Override
+	public String getEncoding() {
+		return encoding;
+	}
+
+	@Override
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
 	}
 
 }
