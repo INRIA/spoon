@@ -138,6 +138,9 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	 * "sourcefile:line", or "sourcefile" if no line number is available.
 	 */
 	public String toString() {
+		if (getFile() == null) {
+			return "(unknown file)";
+		}
 		int ln = getLine();
 		return (ln >= 1) ? "("
 				+ getFile().getAbsolutePath().replace('\\', '/')
