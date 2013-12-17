@@ -333,7 +333,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctEnum.getAnnotations());
 		scan(ctEnum.getFields());
 		scan(ctEnum.getMethods());
-		scan(ctEnum.getNestedTypes());		
+		scan(ctEnum.getNestedTypes());
 		exit(ctEnum);
 	}
 
@@ -372,7 +372,7 @@ public abstract class CtScanner implements CtVisitor {
 		scanReferences(thisAccess.getTypeCasts());
 		exit(thisAccess);
 	}
-	
+
 	public <T> void visitCtAnnotationFieldAccess(
 			CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		enter(annotationFieldAccess);
@@ -632,7 +632,8 @@ public abstract class CtScanner implements CtVisitor {
 		exit(whileLoop);
 	}
 
-	public <T> void visitCtCodeSnippetExpression(CtCodeSnippetExpression<T> expression) {
+	public <T> void visitCtCodeSnippetExpression(
+			CtCodeSnippetExpression<T> expression) {
 	}
 
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {

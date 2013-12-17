@@ -24,5 +24,13 @@ import spoon.reflect.declaration.CtPackage;
  * {@link spoon.reflect.declaration.CtPackage}.
  */
 public interface CtPackageReference extends CtReference {
+	/**
+	 * Gets the package element when available in the source code.
+	 */
 	CtPackage getDeclaration();
+
+	/**
+	 * Gets the package element when available in the class path.
+	 */
+	Package getActualPackage();
 }

@@ -391,4 +391,20 @@ public class StandardEnvironment implements Serializable, Environment {
 		return warningCount;
 	}
 
+	private ClassLoader inputClassLoader;
+
+	@Override
+	public ClassLoader getInputClassLoader() {
+		if (inputClassLoader == null) {
+			return Thread.currentThread().getContextClassLoader();
+		} else {
+			return this.inputClassLoader;
+		}
+	}
+
+	@Override
+	public void setInputClassLoader(ClassLoader classLoader) {
+		this.inputClassLoader = classLoader;
+	}
+
 }

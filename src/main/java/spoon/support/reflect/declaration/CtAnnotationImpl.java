@@ -156,9 +156,11 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 	@SuppressWarnings("unchecked")
 	private <E extends Enum<E>> Object convertValue(Object value) {
 		if (value instanceof CtFieldReference) {
-			Class<?> c = ((CtFieldReference<?>) value).getDeclaringType()
-					.getActualClass();
-			if (c == null) {
+			Class<?> c = null;
+			try {
+				c = ((CtFieldReference<?>) value).getDeclaringType()
+						.getActualClass();
+			} catch (Exception e) {
 				return ((CtLiteral<?>) ((CtFieldReference<?>) value)
 						.getDeclaration().getDefaultExpression()
 						.partiallyEvaluate()).getValue();

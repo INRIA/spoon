@@ -8,12 +8,23 @@ import javax.swing.JOptionPane;
 
 public class AnonymousClass {
 
+	public interface I {
+
+	}
+
 	private JButton foo;
-	
-	public void crashingMethod(){
-		foo.addActionListener(new ActionListener(){
+
+	public void crashingMethod() {
+		foo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showInputDialog("Boom!");
-			}});
-		}
+			}
+		});
+	}
+
+	public void annonymousCreation() {
+		new I() {
+		};
+	}
+
 }

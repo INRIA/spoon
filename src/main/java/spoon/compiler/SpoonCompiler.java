@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import spoon.OutputType;
 import spoon.Spoon;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.Factory;
@@ -158,8 +159,11 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * Generates the source code associated to the classes stored in this
 	 * compiler's factory. The source code is generated in the directory given
 	 * by {@link #getOutputDirectory()}.
+	 * 
+	 * @param outputType
+	 *            the output method
 	 */
-	void generateProcessedSourceFiles() throws Exception;
+	void generateProcessedSourceFiles(OutputType outputType) throws Exception;
 
 	/**
 	 * Generates the bytecode associated to the classes stored in this
@@ -234,5 +238,10 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * system encoding.
 	 */
 	String getEncoding();
+
+	/**
+	 * Processes the Java model with the given processors.
+	 */
+	void process(List<String> processorTypes);
 
 }
