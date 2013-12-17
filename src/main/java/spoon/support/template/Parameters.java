@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import spoon.Spoon;
+import spoon.reflect.Factory;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -34,6 +35,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.RtHelper;
 import spoon.template.Parameter;
 import spoon.template.Template;
@@ -206,8 +208,8 @@ public abstract class Parameters {
 													// this fieldref
 			&& ref.getDeclaration().getAnnotation(Parameter.class) != null)
 					|| (!((ref.getType() instanceof CtTypeParameterReference) || ref
-							.getSimpleName().equals("this")) && TemplateParameter.class
-							.isAssignableFrom(ref.getType().getActualClass()));
+							.getSimpleName().equals("this")) && getTemplateParameterType(ref.getFactory())
+							.isAssignableFrom(ref.getType()));
 		} catch (RuntimeException e) {
 			// if (e.getCause() instanceof ClassNotFoundException) {
 			// return false;
@@ -223,6 +225,18 @@ public abstract class Parameters {
 	public static boolean isParameterSource(Field field) {
 		return (field.getAnnotation(Parameter.class) != null)
 				|| TemplateParameter.class.isAssignableFrom(field.getType());
+	}
+
+	static CtTypeReference<TemplateParameter<?>> templateParameterType;
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	synchronized private static CtTypeReference<TemplateParameter<?>> getTemplateParameterType(
+			Factory factory) {
+		if (templateParameterType == null) {
+			templateParameterType = (CtTypeReference<TemplateParameter<?>>) (CtTypeReference) factory
+					.Type().createReference(TemplateParameter.class);
+		}
+		return templateParameterType;
 	}
 
 	/**

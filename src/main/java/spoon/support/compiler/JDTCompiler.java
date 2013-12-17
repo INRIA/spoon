@@ -48,6 +48,7 @@ import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.util.Util;
 
+import spoon.OutputType;
 import spoon.Spoon;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
@@ -55,6 +56,7 @@ import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.processing.ProcessingManager;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtPackage;
@@ -63,6 +65,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.DefaultCoreFactory;
+import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
 
 public class JDTCompiler implements SpoonCompiler {
@@ -325,6 +328,7 @@ public class JDTCompiler implements SpoonCompiler {
 	protected boolean buildSources() throws Exception {
 		if (sources.getRootJavaPaths().isEmpty())
 			return true;
+		initInputClassLoader();
 		// long t=System.currentTimeMillis();
 		// Build input
 		JDTBatchCompiler batchCompiler = createBatchCompiler();
@@ -684,6 +688,7 @@ public class JDTCompiler implements SpoonCompiler {
 
 	@Override
 	public boolean compile() {
+		initInputClassLoader();
 		factory.getEnvironment().debugMessage(
 				"compiling sources: "
 						+ factory.CompilationUnit().getMap().keySet());
@@ -827,7 +832,35 @@ public class JDTCompiler implements SpoonCompiler {
 
 	boolean writePackageAnnotationFile = true;
 
-	public void generateProcessedSourceFiles() throws Exception {
+	@Override
+	public void generateProcessedSourceFiles(OutputType outputType)
+			throws Exception {
+		initInputClassLoader();
+		switch (outputType) {
+		case CLASSES:
+			generateProcessedSourceFilesUsingTypes();
+			break;
+
+		case COMPILATION_UNITS:
+			generateProcessedSourceFilesUsingCUs();
+			break;
+
+		case NO_OUTPUT:
+
+		}
+	}
+
+	protected void generateProcessedSourceFilesUsingTypes() throws Exception {
+		if (factory.getEnvironment().getDefaultFileGenerator() != null) {
+			ProcessingManager processing = new QueueProcessingManager(factory);
+			processing.addProcessor(factory.getEnvironment()
+					.getDefaultFileGenerator());
+			processing.process();
+		}
+	}
+
+	protected void generateProcessedSourceFilesUsingCUs() throws Exception {
+
 		// Check output directory
 		if (outputDirectory == null)
 			throw new RuntimeException(
@@ -954,6 +987,7 @@ public class JDTCompiler implements SpoonCompiler {
 
 	@Override
 	public boolean compileInputSources() throws Exception {
+		initInputClassLoader();
 		factory.getEnvironment().debugMessage(
 				"compiling input sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
@@ -1061,6 +1095,76 @@ public class JDTCompiler implements SpoonCompiler {
 	@Override
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
+	}
+
+	public class CompilerClassLoader extends URLClassLoader {
+		public CompilerClassLoader(URL[] urls, ClassLoader parent) {
+			super(urls, parent);
+		}
+	}
+
+	private CompilerClassLoader getCompilerClassLoader(
+			ClassLoader initialClassLoader) {
+		while (initialClassLoader != null) {
+			if (initialClassLoader instanceof CompilerClassLoader) {
+				return (CompilerClassLoader) initialClassLoader;
+			}
+			initialClassLoader = initialClassLoader.getParent();
+		}
+		return null;
+	}
+
+	private boolean hasClassLoader(ClassLoader initialClassLoader,
+			ClassLoader classLoader) {
+		while (initialClassLoader != null) {
+			if (initialClassLoader == classLoader) {
+				return true;
+			}
+			initialClassLoader = initialClassLoader.getParent();
+		}
+		return false;
+	}
+
+	protected void initInputClassLoader() {
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		if (buildOnlyOutdatedFiles && getDestinationDirectory() != null) {
+			CompilerClassLoader ccl = getCompilerClassLoader(cl);
+			if (ccl == null) {
+				try {
+					Spoon.logger.debug("setting classloader for "
+							+ getDestinationDirectory().toURI().toURL());
+					Thread.currentThread().setContextClassLoader(
+							new CompilerClassLoader(
+									new URL[] { getDestinationDirectory()
+											.toURI().toURL() }, factory
+											.getEnvironment()
+											.getInputClassLoader()));
+				} catch (Exception e) {
+					Spoon.logger.error(e.getMessage(), e);
+				}
+			}
+		} else {
+			if (!hasClassLoader(Thread.currentThread().getContextClassLoader(),
+					factory.getEnvironment().getInputClassLoader())) {
+				Thread.currentThread().setContextClassLoader(
+						factory.getEnvironment().getInputClassLoader());
+			}
+		}
+	}
+
+	@Override
+	public void process(List<String> processorTypes) {
+		initInputClassLoader();
+
+		// processing (consume all the processors)
+		ProcessingManager processing = new QueueProcessingManager(factory);
+		for (String processorName : processorTypes) {
+			processing.addProcessor(processorName);
+			factory.getEnvironment().debugMessage(
+					"Loaded processor " + processorName + ".");
+		}
+
+		processing.process();
 	}
 
 }

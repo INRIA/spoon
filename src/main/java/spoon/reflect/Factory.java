@@ -78,6 +78,17 @@ public class Factory implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private transient Factory parentFactory;
+
+	/**
+	 * Returns the parent of this factory. When an element is not found in a
+	 * factory, it can be looked up in its parent factory using a delegation
+	 * model.
+	 */
+	public Factory getParentFactory() {
+		return parentFactory;
+	}
+
 	private transient AnnotationFactory Annotation;
 
 	/**
@@ -258,7 +269,8 @@ public class Factory implements Serializable {
 	 */
 	public Factory Template() {
 		if (Template == null) {
-			Template = new Factory(new DefaultCoreFactory(), getEnvironment());
+			Template = new Factory(new DefaultCoreFactory(), getEnvironment(),
+					this);
 		}
 		return Template;
 	}
@@ -295,13 +307,22 @@ public class Factory implements Serializable {
 	}
 
 	/**
-	 * The constructor.
+	 * A constructor that takes the parent factory
 	 */
-	public Factory(CoreFactory coreFactory, Environment environment) {
+	public Factory(CoreFactory coreFactory, Environment environment,
+			Factory parentFactory) {
 		this();
 		this.Environment = environment;
 		this.Core = coreFactory;
 		this.Core.setMainFactory(this);
+		this.parentFactory = parentFactory;
+	}
+
+	/**
+	 * The constructor.
+	 */
+	public Factory(CoreFactory coreFactory, Environment environment) {
+		this(coreFactory, environment, null);
 	}
 
 	/**

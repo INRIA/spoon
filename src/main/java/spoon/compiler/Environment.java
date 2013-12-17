@@ -219,6 +219,10 @@ public interface Environment {
 	 */
 	String getSourcePath();
 
+	/**
+	 * Tell to the Java printer to automatically generate imports and use simple
+	 * names instead of fully-qualified name.
+	 */
 	void setAutoImports(boolean autoImports);
 
 	/**
@@ -238,5 +242,15 @@ public interface Environment {
 	 * this environment.
 	 */
 	int getWarningCount();
+
+	/**
+	 * Gets the class loader used to compile/process the input source code.
+	 */
+	ClassLoader getInputClassLoader();
+
+	/**
+	 * Sets the class loader used to compile/process the input source code.
+	 */
+	void setInputClassLoader(ClassLoader classLoader);
 
 }

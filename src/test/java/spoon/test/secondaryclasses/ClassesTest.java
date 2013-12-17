@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import spoon.compiler.SpoonCompiler;
 import spoon.reflect.Factory;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.secondaryclasses.AnonymousClass.I;
 
 public class ClassesTest {
 
@@ -52,12 +53,30 @@ public class ClassesTest {
 
 		CtNewClass<?> x = type.getElements(
 				new TypeFilter<CtNewClass<?>>(CtNewClass.class)).get(0);
+		CtNewClass<?> y = type.getElements(
+				new TypeFilter<CtNewClass<?>>(CtNewClass.class)).get(1);
+
+		if (x.getParent() instanceof CtBlock) {
+			CtNewClass<?> z = x;
+			x = y;
+			y = z;
+		}
 
 		// ActionListner is not in the Spoon path
 		assertNull(x.getType().getDeclaration());
 
 		// but the actual class is known
 		assertEquals(ActionListener.class, x.getType().getActualClass());
+
+		assertNotNull(y.getType().getDeclaration());
+
+		assertEquals(".", y.getExecutable().toString());
+
+		// the superclass of an anonymous class can be an interface (the one
+		// from which it is built)
+		assertEquals(type.getFactory().Type().createReference(I.class), y
+				.getAnonymousClass().getSuperclass());
+
 	}
 
 	@Test
@@ -78,8 +97,7 @@ public class ClassesTest {
 	@Test
 	public void testInnerClassContruction() throws Exception {
 		Factory f = build(PrivateInnerClasses.class);
-		CtClass<?> c = f.Class()
-				.get(PrivateInnerClasses.class);
+		CtClass<?> c = f.Class().get(PrivateInnerClasses.class);
 		assertNotNull(c);
 		assertEquals(0, f.getEnvironment().getErrorCount());
 	}

@@ -186,8 +186,8 @@ public class SubstitutionVisitor extends CtScanner {
 		 */
 		@Override
 		public <T> void visitCtClass(CtClass<T> ctClass) {
-			ctClass.removeSuperInterface(
-					f.Type().createReference(Template.class));
+			ctClass.removeSuperInterface(f.Type().createReference(
+					Template.class));
 			for (CtMethod<?> m : new TreeSet<CtMethod<?>>(ctClass.getMethods())) {
 				if (m.getAnnotation(Local.class) != null) {
 					ctClass.getMethods().remove(m);
@@ -498,7 +498,9 @@ public class SubstitutionVisitor extends CtScanner {
 							.setActualTypeArguments(t.getActualTypeArguments());
 				} else {
 					throw new RuntimeException(
-							"unsupported reference substitution");
+							"unsupported reference substitution: "
+									+ reference.getSimpleName()
+									+ " with value " + o);
 				}
 				reference.setPackage(t.getPackage());
 				reference.setSimpleName(t.getSimpleName());

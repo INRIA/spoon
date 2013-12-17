@@ -19,11 +19,19 @@ package spoon.support.reflect.reference;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import spoon.Spoon;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.visitor.SignaturePrinter;
 
@@ -60,15 +68,51 @@ public abstract class CtReferenceImpl implements CtReference, Serializable {
 		return false;
 	}
 
+	abstract protected AnnotatedElement getActualAnnotatedElement();
+
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		CtElement e = getDeclaration();
 		if (e != null) {
 			return e.getAnnotation(annotationType);
+		} else {
+			return getActualAnnotatedElement().getAnnotation(annotationType);
 		}
-		return null;
 	}
 
-	public Annotation[] getAnnotations() {
+	@Override
+	public <A extends Annotation> CtAnnotation<A> getAnnotation(
+			CtTypeReference<A> annotationType) {
+		CtElement e = getDeclaration();
+		if (e != null) {
+			return e.getAnnotation(annotationType);
+		} else {
+			try {
+				Class<A> ac = annotationType.getActualClass();
+				A a = getActualAnnotatedElement().getAnnotation(ac);
+				Map<String, Object> values = new HashMap<String, Object>();
+				for (Method m : ac.getMethods()) {
+					Object value;
+					value = m.invoke(a);
+					if (value instanceof Class) {
+						Class<?> clazz = (Class<?>) value;
+						values.put(m.getName(), getFactory().Type()
+								.createReference(clazz));
+					} else {
+						values.put(m.getName(), value);
+					}
+				}
+				CtAnnotation<A> ctAnnotation = getFactory().Core()
+						.createAnnotation();
+				ctAnnotation.setElementValues(values);
+				return ctAnnotation;
+			} catch (Exception ex) {
+				Spoon.logger.error(ex.getMessage(), ex);
+				return null;
+			}
+		}
+	}
+
+	public List<Annotation> getAnnotations() {
 		CtElement e = getDeclaration();
 		if (e != null) {
 			Annotation[] annotations = new Annotation[e.getAnnotations().size()];
@@ -76,9 +120,11 @@ public abstract class CtReferenceImpl implements CtReference, Serializable {
 			for (CtAnnotation<?> a : e.getAnnotations()) {
 				annotations[i++] = a.getActualAnnotation();
 			}
-			return annotations;
+			return Arrays.asList(annotations);
+		} else {
+			AnnotatedElement elt = getActualAnnotatedElement();
+			return Arrays.asList(elt.getAnnotations());
 		}
-		return null;
 	}
 
 	public String getSimpleName() {
@@ -93,10 +139,10 @@ public abstract class CtReferenceImpl implements CtReference, Serializable {
 
 	@Override
 	public String toString() {
-        DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
-                getFactory().getEnvironment());
-        printer.scan(this);
-        return printer.toString();
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
+				getFactory().getEnvironment());
+		printer.scan(this);
+		return printer.toString();
 	}
 
 	public Factory getFactory() {

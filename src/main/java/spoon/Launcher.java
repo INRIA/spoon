@@ -558,7 +558,9 @@ public class Launcher {
 			throw new Exception("unsupported output type: "
 					+ args.getString("output-type"));
 		}
-		SpoonCompiler compiler = Spoon.run(factory,
+		
+		SpoonCompiler compiler = Spoon.createCompiler(factory);
+		Spoon.run(compiler,
 				arguments.getString("encoding"),
 				arguments.getBoolean("precompile"), outputType,
 				args.getFile("output"), getProcessorTypes(),

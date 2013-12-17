@@ -18,6 +18,7 @@
 package spoon.support.reflect.reference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,6 +130,12 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 			return false;
 		}
 		return bounds.remove(bound);
+	}
+
+	@Override
+	protected AnnotatedElement getActualAnnotatedElement() {
+		// this is never annotated
+		return null;
 	}
 
 }

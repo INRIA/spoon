@@ -17,6 +17,8 @@
 
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.AnnotatedElement;
+
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -35,6 +37,16 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtPackageReference(this);
+	}
+
+	@Override
+	public Package getActualPackage() {
+		return Package.getPackage(getSimpleName());
+	}
+
+	@Override
+	protected AnnotatedElement getActualAnnotatedElement() {
+		return getActualPackage();
 	}
 
 }

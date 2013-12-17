@@ -153,4 +153,9 @@ public interface CtTypeReference<T> extends CtReference,
 	 */
 	void setSuperReference(boolean b);
 
+	/**
+	 * Returns true if this type is an interface.
+	 */
+	boolean isInterface();
+	
 }

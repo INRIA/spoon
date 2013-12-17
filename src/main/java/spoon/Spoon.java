@@ -8,12 +8,10 @@ import org.apache.log4j.Logger;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
-import spoon.processing.ProcessingManager;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
-import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.JDTCompiler;
 
@@ -191,30 +189,35 @@ public abstract class Spoon {
 	}
 
 	/**
-	 * Runs Spoon on the given factory, with the given run options. A Spoon run
-	 * will perform the following tasks:
+	 * Runs Spoon using the given compiler, with the given run options. A Spoon
+	 * run will perform the following tasks:
 	 * 
 	 * <ol>
-	 * <li>Pre-compilation (optional).</li>
-	 * <li>Source model building in the given factory.</li>
+	 * <li>Pre-compilation (optional):
+	 * {@link SpoonCompiler#compileInputSources()}.</li>
+	 * <li>Source model building in the given compiler:
+	 * {@link SpoonCompiler#build()}.</li>
 	 * <li>Template model building in the given factory (if any template source
-	 * is given).</li>
-	 * <li>Model processing with the list of given processors if any.</li>
+	 * is given): {@link SpoonCompiler#build()}.</li>
+	 * <li>Model processing with the list of given processors if any:
+	 * {@link SpoonCompiler#process(List)}.</li>
 	 * <li>Processed Source code printing and generation (can be disabled with
-	 * <code>nooutput</code>).</li>
-	 * <li>Processed source code compilation (optional).</li>
+	 * {@link OutputType#NO_OUTPUT}):
+	 * {@link SpoonCompiler#generateProcessedSourceFiles(OutputType)}.</li>
+	 * <li>Processed source code compilation (optional):
+	 * {@link SpoonCompiler#compile()}.</li>
 	 * <ol>
 	 * 
-	 * @param factory
-	 *            the factory to be used, with a properly initialized
-	 *            environment
+	 * @param compiler
+	 *            the compiler to be used, with a properly initialized factory
+	 *            and environment
 	 * @param encoding
 	 *            the encoding to be used (null to use the default system
 	 *            encoding)
 	 * @param precompile
 	 *            precompile the source code before processing to make sure that
 	 *            the input source classes will be available in the classpath
-	 * @param output
+	 * @param outputType
 	 *            sets type of source code output
 	 * @param outputDirectory
 	 *            the output directory of the generated source files
@@ -239,18 +242,17 @@ public abstract class Spoon {
 	 * @param templateSources
 	 *            a list of resources containing the template sources (can
 	 *            contain zip or jar files)
-	 * @return the Spoon compiler created by Spoon
 	 * @throws Exception
 	 *             in case something bad happens
 	 */
-	public static SpoonCompiler run(Factory factory, String encoding,
-			boolean precompile, OutputType output, File outputDirectory,
+	public static void run(SpoonCompiler compiler, String encoding,
+			boolean precompile, OutputType outputType, File outputDirectory,
 			List<String> processorTypes, boolean compile,
 			File destinationDirectory, boolean buildOnlyOutdatedFiles,
 			String sourceClasspath, String templateClasspath,
 			List<SpoonResource> inputSources,
 			List<SpoonResource> templateSources) throws Exception {
-		Environment env = factory.getEnvironment();
+		Environment env = compiler.getFactory().getEnvironment();
 		env.reportProgressMessage("running Spoon...");
 
 		if (env.isUsingSourceCodeFragments()) {
@@ -262,8 +264,7 @@ public abstract class Spoon {
 		long tstart = t;
 
 		// building
-		SpoonCompiler compiler = new JDTCompiler(factory);
-		compiler.setBuildOnlyOutdatedFiles(output != OutputType.NO_OUTPUT
+		compiler.setBuildOnlyOutdatedFiles(outputType != OutputType.NO_OUTPUT
 				&& buildOnlyOutdatedFiles);
 		compiler.setDestinationDirectory(destinationDirectory);
 		compiler.setOutputDirectory(outputDirectory);
@@ -319,16 +320,12 @@ public abstract class Spoon {
 		// }
 
 		t = System.currentTimeMillis();
-		process(factory, processorTypes);
+		compiler.process(processorTypes);
 		env.debugMessage("model processed in "
 				+ (System.currentTimeMillis() - t) + " ms");
 
 		t = System.currentTimeMillis();
-		if (output == OutputType.CLASSES) {
-			print(factory);
-		} else if (output == OutputType.COMPILATION_UNITS) {
-			compiler.generateProcessedSourceFiles();
-		}
+		compiler.generateProcessedSourceFiles(outputType);
 
 		t = System.currentTimeMillis();
 		if (compile) {
@@ -357,35 +354,6 @@ public abstract class Spoon {
 		env.debugMessage("program spooning done in " + (t - tstart) + " ms");
 		env.reportEnd();
 
-		return compiler;
-
-	}
-
-	/**
-	 * Processes the built model with the processors.
-	 */
-	public static void process(Factory factory, List<String> processorTypes) {
-		// processing (consume all the processors)
-		ProcessingManager processing = new QueueProcessingManager(factory);
-		for (String processorName : processorTypes) {
-			processing.addProcessor(processorName);
-			factory.getEnvironment().debugMessage(
-					"Loaded processor " + processorName + ".");
-		}
-
-		processing.process();
-	}
-
-	/**
-	 * Prints out the built model into files.
-	 */
-	public static void print(Factory factory) {
-		if (factory.getEnvironment().getDefaultFileGenerator() != null) {
-			ProcessingManager processing = new QueueProcessingManager(factory);
-			processing.addProcessor(factory.getEnvironment()
-					.getDefaultFileGenerator());
-			processing.process();
-		}
 	}
 
 }

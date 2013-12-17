@@ -697,6 +697,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				return;
 			} else if (child instanceof CtClass) {
 				newClass.setAnonymousClass((CtClass<?>) child);
+				// this can be an interface but we don't know it so we set it to
+				// the superclass
 				((CtClass<?>) child).setSuperclass(newClass.getType());
 				return;
 			}
@@ -2777,7 +2779,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// here there is a contract between JDTTreeBuilder and
 		// DefaultJavaPrettyPrinter:
 		// JDTTreeBuilder si responsible for adding the double quotes
-		//s.setValue(new String(stringLiteral.toString()));
+		// s.setValue(new String(stringLiteral.toString()));
 
 		// RP: this is not a good idea but many other usages of the value can be
 		// done (appart from the pretty printer). So I moved back the

@@ -18,6 +18,7 @@
 package spoon.support.reflect.reference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -31,6 +32,7 @@ import spoon.Spoon;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
@@ -125,14 +127,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			}
 		}
 		try {
-			if(getPackage().getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME))
-				return (Class<T>) Thread.currentThread().getContextClassLoader()
-						.loadClass(getSimpleName());
 			return (Class<T>) Thread.currentThread().getContextClassLoader()
 					.loadClass(getQualifiedName());
 		} catch (Exception e) {
 			// class cannot be found
-			return null;
+			throw new RuntimeException("cannot load class: "
+					+ getQualifiedName() + " with class loader "
+					+ Thread.currentThread().getContextClassLoader(), e);
+			// return null;
 		}
 	}
 
@@ -155,21 +157,17 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 				// ignore the exception and return null.
 				return null;
 				// }
-				//throw e;
+				// throw e;
 			}
 		}
 		return a;
 	}
 
 	@Override
-	public Annotation[] getAnnotations() {
-		Annotation[] a = super.getAnnotations();
-		if (a == null) {
-			return getActualClass().getAnnotations();
-		}
-		return a;
+	protected AnnotatedElement getActualAnnotatedElement() {
+		return getActualClass();
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public CtSimpleType<T> getDeclaration() {
 		if (!isPrimitive() && (getQualifiedName().length() > 0)) {
@@ -191,7 +189,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName()
 					+ CtSimpleType.INNERTTYPE_SEPARATOR + getSimpleName();
-		} else if (getPackage() != null) {
+		} else if (getPackage() != null
+				&& !getPackage().getSimpleName().equals(
+						CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 			return getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR
 					+ getSimpleName();
 		} else {
@@ -222,65 +222,80 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		if (type instanceof CtTypeParameterReference) {
 			return false;
 		}
+		// anonymous types cannot be resolved
+		if (isAnonymous() || type.isAnonymous()) {
+			return false;
+		}
 		if (isPrimitive() || type.isPrimitive()) {
 			return equals(type);
 		}
-		CtSimpleType<?> t2 = type.getDeclaration();
-		CtSimpleType<?> t1 = getDeclaration();
-		if ((t1 == null) && (t2 == null)) {
+		CtSimpleType<?> superTypeDecl = type.getDeclaration();
+		CtSimpleType<?> subTypeDecl = getDeclaration();
+		if ((subTypeDecl == null) && (superTypeDecl == null)) {
 			try {
-				if (((this instanceof CtArrayTypeReference) || (type instanceof CtArrayTypeReference))) {
+				if (((this instanceof CtArrayTypeReference) && (type instanceof CtArrayTypeReference))) {
 					return ((CtArrayTypeReference<?>) this).getComponentType()
 							.isSubtypeOf(
 									((CtArrayTypeReference<?>) type)
 											.getComponentType());
 				}
-				Class<?> c1 = getActualClass();
-				// Class.forName(this.getQualifiedName());
-				Class<?> c2 = type.getActualClass();
-				// Class.forName(type.getQualifiedName());
-				return c2.isAssignableFrom(c1);
+				Class<?> actualSubType = getActualClass();
+				Class<?> actualSuperType = type.getActualClass();
+				return actualSuperType.isAssignableFrom(actualSubType);
 			} catch (Exception e) {
-				Spoon.logger.error(e.getMessage(), e);
+				Spoon.logger.error("cannot determine runtime types for '"
+						+ this + "' (" + getActualClass() + ") and '" + type
+						+ "' (" + type.getActualClass() + ")", e);
 				return false;
 			}
 		}
 		if (getQualifiedName().equals(type.getQualifiedName())) {
 			return true;
 		}
-		if (t1 != null) {
-			if (t1 instanceof CtType) {
-				for (CtTypeReference<?> ref : ((CtType<?>) t1)
+		if (subTypeDecl != null) {
+			if (subTypeDecl instanceof CtType) {
+				for (CtTypeReference<?> ref : ((CtType<?>) subTypeDecl)
 						.getSuperInterfaces()) {
 					if (ref.isSubtypeOf(type)) {
 						return true;
 					}
 				}
-				if (t1 instanceof CtClass) {
-					if (getFactory().Type().createReference(Object.class)
-							.equals(type)) {
+				if (subTypeDecl instanceof CtClass) {
+					if (getFactory().Type().OBJECT.equals(type)) {
 						return true;
 					}
-					if (((CtClass<?>) t1).getSuperclass() != null) {
-						if (((CtClass<?>) t1).getSuperclass().equals(type)) {
+					if (((CtClass<?>) subTypeDecl).getSuperclass() != null) {
+						if (((CtClass<?>) subTypeDecl).getSuperclass().equals(
+								type)) {
 							return true;
 						}
-						return ((CtClass<?>) t1).getSuperclass().isSubtypeOf(
-								type);
+						return ((CtClass<?>) subTypeDecl).getSuperclass()
+								.isSubtypeOf(type);
 					}
 				}
 			}
 			return false;
-		}
-		try {
-			Class<?> c = getActualClass();
-			// Class.forName(getQualifiedName());
-			Class<?> candidate = type.getActualClass();
-			// Class.forName(type.getQualifiedName());
-			return candidate.isAssignableFrom(c);
-		} catch (Exception e) {
-			Spoon.logger.error(e.getMessage(), e);
-			return false;
+		} else {
+			try {
+				Class<?> actualSubType = getActualClass();
+				for (Class<?> c : actualSubType.getInterfaces()) {
+					if (getFactory().Type().createReference(c)
+							.isSubtypeOf(type)) {
+						return true;
+					}
+				}
+				CtTypeReference<?> superType = getFactory().Type()
+						.createReference(actualSubType.getSuperclass());
+				if (superType.equals(type)) {
+					return true;
+				} else {
+					return superType.isSubtypeOf(type);
+				}
+			} catch (Exception e) {
+				Spoon.logger.error("cannot determine runtime types for '"
+						+ this + "' and '" + type + "'", e);
+				return false;
+			}
 		}
 	}
 
@@ -519,10 +534,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public boolean isSuperReference() {
-		return isSuperReference ;
+		return isSuperReference;
 	}
-	
-	public void setSuperReference(boolean b){
+
+	public void setSuperReference(boolean b) {
 		isSuperReference = b;
 	}
 
@@ -545,5 +560,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return actualTypeArguments.remove(actualTypeArgument);
 	}
 
-	
+	@Override
+	public boolean isInterface() {
+		CtSimpleType<T> t = getDeclaration();
+		if (t == null) {
+			return getActualClass().isInterface();
+		} else {
+			return (t instanceof CtInterface);
+		}
+	}
+
 }

@@ -17,10 +17,8 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -67,59 +65,64 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 	}
 
 	@Override
-	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-		A annotation = super.getAnnotation(annotationType);
-		if (annotation != null) {
-			return annotation;
-		}
-		// use reflection
-		Class<?> c = getDeclaringType().getActualClass();
-		if (c.isAnnotation()) {
-			for (Method m : RtHelper.getAllMethods(c)) {
-				if (!getSimpleName().equals(m.getName())) {
-					continue;
-				}
-				m.setAccessible(true);
-				return m.getAnnotation(annotationType);
-			}
-		} else {
-			for (Field f : RtHelper.getAllFields(c)) {
-				if (!getSimpleName().equals(f.getName())) {
-					continue;
-				}
-				f.setAccessible(true);
-				return f.getAnnotation(annotationType);
-			}
-		}
-		return null;
+	protected AnnotatedElement getActualAnnotatedElement() {
+		return (AnnotatedElement) getActualField();
 	}
 
-	@Override
-	public Annotation[] getAnnotations() {
-		Annotation[] annotations = super.getAnnotations();
-		if (annotations != null) {
-			return annotations;
-		}
-		// use reflection
-		Class<?> c = getDeclaringType().getActualClass();
-		for (Field f : RtHelper.getAllFields(c)) {
-			if (!getSimpleName().equals(f.getName())) {
-				continue;
-			}
-			f.setAccessible(true);
-			return f.getAnnotations();
-		}
-		// If the fields belong to an annotation type, they are actually
-		// methods
-		for (Method m : RtHelper.getAllMethods(c)) {
-			if (!getSimpleName().equals(m.getName())) {
-				continue;
-			}
-			m.setAccessible(true);
-			return m.getAnnotations();
-		}
-		return null;
-	}
+	// @Override
+	// public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+	// A annotation = super.getAnnotation(annotationType);
+	// if (annotation != null) {
+	// return annotation;
+	// }
+	// // use reflection
+	// Class<?> c = getDeclaringType().getActualClass();
+	// if (c.isAnnotation()) {
+	// for (Method m : RtHelper.getAllMethods(c)) {
+	// if (!getSimpleName().equals(m.getName())) {
+	// continue;
+	// }
+	// m.setAccessible(true);
+	// return m.getAnnotation(annotationType);
+	// }
+	// } else {
+	// for (Field f : RtHelper.getAllFields(c)) {
+	// if (!getSimpleName().equals(f.getName())) {
+	// continue;
+	// }
+	// f.setAccessible(true);
+	// return f.getAnnotation(annotationType);
+	// }
+	// }
+	// return null;
+	// }
+
+	// @Override
+	// public Annotation[] getAnnotations() {
+	// Annotation[] annotations = super.getAnnotations();
+	// if (annotations != null) {
+	// return annotations;
+	// }
+	// // use reflection
+	// Class<?> c = getDeclaringType().getActualClass();
+	// for (Field f : RtHelper.getAllFields(c)) {
+	// if (!getSimpleName().equals(f.getName())) {
+	// continue;
+	// }
+	// f.setAccessible(true);
+	// return f.getAnnotations();
+	// }
+	// // If the fields belong to an annotation type, they are actually
+	// // methods
+	// for (Method m : RtHelper.getAllMethods(c)) {
+	// if (!getSimpleName().equals(m.getName())) {
+	// continue;
+	// }
+	// m.setAccessible(true);
+	// return m.getAnnotations();
+	// }
+	// return null;
+	// }
 
 	@SuppressWarnings("unchecked")
 	public CtField<T> getDeclaration() {

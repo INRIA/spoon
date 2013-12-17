@@ -17,7 +17,11 @@
 
 package spoon.reflect.reference;
 
+import java.lang.annotation.Annotation;
+import java.util.List;
+
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Root;
@@ -55,4 +59,38 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
 	 */
 	void accept(CtVisitor visitor);
 
+	/**
+	 * Searches for an annotation (proxy) of the given class that annotates the
+	 * current referenced element.
+	 * 
+	 * <p>
+	 * NOTE: before using an annotation proxy, you have to make sure that all
+	 * the types referenced by the annotation have been compiled and are in the
+	 * classpath so that accessed values can be converted into the actual types.
+	 * Otherwise, use {@link #getAnnotation(CtTypeReference)}.
+	 * 
+	 * @param <A>
+	 *            the annotation's type
+	 * @param annotationType
+	 *            the annotation's class
+	 * @return if found, returns a proxy for this annotation
+	 */
+	<A extends Annotation> A getAnnotation(Class<A> annotationType);
+
+	/**
+	 * Gets the annotation element for a given annotation type.
+	 * 
+	 * @param annotationType
+	 *            the annotation type
+	 * @return the annotation if this element is annotated by one annotation of
+	 *         the given type
+	 */
+	<A extends Annotation> CtAnnotation<A> getAnnotation(
+			CtTypeReference<A> annotationType);
+	
+	/**
+	 * Returns the annotations that are present on this element.
+	 */
+	List<Annotation> getAnnotations();
+	
 }
