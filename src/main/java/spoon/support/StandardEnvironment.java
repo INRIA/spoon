@@ -203,6 +203,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		switch (severity) {
 		case ERROR:
 			logger.error(buffer.toString());
+			break;
 		case WARNING:
 			logger.warn(buffer.toString());
 			break;
