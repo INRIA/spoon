@@ -27,10 +27,11 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Root;
 
 /**
- * This is the root inferface for program element references. References can
- * point to program element reified in the metamodel or not. In the latter case,
- * introspection methods fall back on runtime reflection (<code>java.lang.reflect</code>)
- * to access the program information, as long as available in the classpath.
+ * This is the root interface for named program element references. References
+ * can point to program element built in the model or not. In the latter case,
+ * introspection methods fall back on runtime reflection (
+ * <code>java.lang.reflect</code>) to access the program information, as long as
+ * available in the classpath.
  * 
  * @see spoon.reflect.declaration.CtElement
  */
@@ -87,10 +88,10 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
 	 */
 	<A extends Annotation> CtAnnotation<A> getAnnotation(
 			CtTypeReference<A> annotationType);
-	
+
 	/**
 	 * Returns the annotations that are present on this element.
 	 */
 	List<Annotation> getAnnotations();
-	
+
 }
