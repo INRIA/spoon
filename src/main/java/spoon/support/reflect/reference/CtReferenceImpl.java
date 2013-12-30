@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
@@ -106,7 +106,7 @@ public abstract class CtReferenceImpl implements CtReference, Serializable {
 				ctAnnotation.setElementValues(values);
 				return ctAnnotation;
 			} catch (Exception ex) {
-				Spoon.logger.error(ex.getMessage(), ex);
+				Launcher.logger.error(ex.getMessage(), ex);
 				return null;
 			}
 		}

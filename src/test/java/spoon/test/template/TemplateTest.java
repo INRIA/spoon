@@ -7,7 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtClass;
@@ -21,8 +21,9 @@ public class TemplateTest {
 
 	@Test
 	public void testTemplateInheritance() throws Exception {
-		Factory factory = Spoon.createFactory();
-		Spoon.createCompiler(
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
 						"./src/test/java/spoon/test/template/SubClass.java",
@@ -53,8 +54,9 @@ public class TemplateTest {
 
 	@Test
 	public void testTemplateC1() throws Exception {
-		Factory factory = Spoon.createFactory();
-		Spoon.createCompiler(
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
 						.resources("./src/test/java/spoon/test/template/C1.java"),

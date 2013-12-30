@@ -27,7 +27,7 @@ import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.TreeMap;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
@@ -1342,7 +1342,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					write("super");
 				}
 			} catch (Exception e) {
-				Spoon.logger.error(e.getMessage(), e);
+				Launcher.logger.error(e.getMessage(), e);
 			}
 		} else {
 			// It's a method invocation
@@ -1360,7 +1360,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					context.ignoreGenerics = false;
 					write(".");
 				} catch (Exception e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				}
 			} else if (invocation.getTarget() != null) {
 				context.enterTarget();

@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.compiler.SpoonFile;
@@ -41,7 +41,7 @@ public class FileSystemFile implements SpoonFile {
 		try {
 			return new FileInputStream(file);
 		} catch (FileNotFoundException e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -54,7 +54,7 @@ public class FileSystemFile implements SpoonFile {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
 		} catch (FileNotFoundException e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -76,7 +76,7 @@ public class FileSystemFile implements SpoonFile {
 		try {
 			return file.getCanonicalPath();
 		} catch (Exception e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 			return file.getPath();
 		}
 	}

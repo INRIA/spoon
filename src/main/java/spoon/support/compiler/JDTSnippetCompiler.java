@@ -9,7 +9,7 @@ import java.util.List;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.Factory;
 
@@ -94,9 +94,9 @@ public class JDTSnippetCompiler extends JDTCompiler {
 		try {
 			batchCompiler.configure(args.toArray(new String[0]));
 		} catch (Exception e) {
-			Spoon.logger.error("build args: " + args);
-			Spoon.logger.error("sources: " + sources.rootJavaPaths);
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error("build args: " + args);
+			Launcher.logger.error("sources: " + sources.rootJavaPaths);
+			Launcher.logger.error(e.getMessage(), e);
 			throw e;
 		}
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources

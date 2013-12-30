@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLiteral;
@@ -183,7 +183,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 					return ((Field) ((CtFieldReference<?>) value)
 							.getActualField()).get(null);
 				} catch (Exception e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				}
 				return null;
 			}

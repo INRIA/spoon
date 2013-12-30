@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.processing.Severity;
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtAbstractInvocation;
@@ -384,7 +384,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 			try {
 				invoke(null, executable.getReference(), target, cargs);
 			} catch (SymbolicWrappedException e) {
-				Spoon.logger.error(e.getMessage(), e);
+				Launcher.logger.error(e.getMessage(), e);
 				// swallow it
 			}
 			notifyEndPath();

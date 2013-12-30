@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import spoon.OutputType;
-import spoon.Spoon;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.Factory;
 

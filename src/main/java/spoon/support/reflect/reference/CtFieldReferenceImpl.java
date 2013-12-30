@@ -22,7 +22,7 @@ import java.lang.reflect.Member;
 import java.util.Set;
 import java.util.TreeSet;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtVariable;
@@ -59,7 +59,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 			return getDeclaringType().getActualClass().getDeclaredField(
 					getSimpleName());
 		} catch (Exception e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		}
 		return null;
 	}

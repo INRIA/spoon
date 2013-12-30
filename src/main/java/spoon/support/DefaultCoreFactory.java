@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.reflect.CoreFactory;
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtAnnotationFieldAccess;
@@ -271,7 +271,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 				// cloningContext.pop();
 			}
 		} catch (Exception e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		}
 		return result;
 
