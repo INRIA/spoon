@@ -2,6 +2,7 @@ package spoon.test.exceptions;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.reflect.Factory;
@@ -35,5 +36,30 @@ public class ExceptionTest {
 				Exception.class,
 				tryStmt.getCatchers().get(1).getParameter().getType().getActualClass());
 	}
+	
+	@Test
+	@Ignore("this is the specification of Java7 exception ")
+	public void testExceptionJava7() {
+		// test the order of the model
+		CtClass<?> clazz = factory
+				.Code()
+				.createCodeSnippetStatement(
+						"" + "class X {" + "public void foo() {"
+								+ " try{}catch(RuntimeException | Error e){}" + "}"
+								+ "};").compile();
+		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
+
+		assertEquals(2, tryStmt.getCatchers().size());
+
+		// the first caught exception is RuntimeException
+		assertEquals(
+				RuntimeException.class,
+				tryStmt.getCatchers().get(0).getParameter().getType().getActualClass());
+		
+		assertEquals(
+				Error.class,
+				tryStmt.getCatchers().get(1).getParameter().getType().getActualClass());
+	}
+
 
 }
