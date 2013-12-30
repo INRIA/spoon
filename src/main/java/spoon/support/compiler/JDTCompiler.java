@@ -49,7 +49,7 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.util.Util;
 
 import spoon.OutputType;
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
@@ -146,7 +146,7 @@ public class JDTCompiler implements SpoonCompiler {
 					culist.add(new CompilationUnit(IOUtils.toCharArray(f
 							.getContent()), f.getName(), null));
 				} catch (Exception e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				}
 			}
 			return culist.toArray(new CompilationUnit[0]);
@@ -419,7 +419,7 @@ public class JDTCompiler implements SpoonCompiler {
 			FileUtils.writeStringToFile(f, "class Tmp {}");
 			f.deleteOnExit();
 		} catch (Exception e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		}
 		return f;
 	}
@@ -835,7 +835,7 @@ public class JDTCompiler implements SpoonCompiler {
 						return content;
 					}
 				} catch (Exception e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				}
 			}
 			return super.getContents();
@@ -936,7 +936,7 @@ public class JDTCompiler implements SpoonCompiler {
 			// stream.println(printer.getPackageDeclaration());
 			// stream.close();
 			// } catch (FileNotFoundException e) {
-			// Spoon.logger.error(e.getMessage(), e);
+			// Launcher.logger.error(e.getMessage(), e);
 			// } finally {
 			// if (stream != null)
 			// stream.close();
@@ -961,7 +961,7 @@ public class JDTCompiler implements SpoonCompiler {
 				}
 
 			} catch (Exception e) {
-				Spoon.logger.error(e.getMessage(), e);
+				Launcher.logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -978,7 +978,7 @@ public class JDTCompiler implements SpoonCompiler {
 			try {
 				printer = new FragmentDrivenJavaPrettyPrinter(env, cu);
 			} catch (Exception e) {
-				Spoon.logger.error(e.getMessage(), e);
+				Launcher.logger.error(e.getMessage(), e);
 				printer = null;
 			}
 		}
@@ -1148,7 +1148,7 @@ public class JDTCompiler implements SpoonCompiler {
 			CompilerClassLoader ccl = getCompilerClassLoader(cl);
 			if (ccl == null) {
 				try {
-					Spoon.logger.debug("setting classloader for "
+					Launcher.logger.debug("setting classloader for "
 							+ getDestinationDirectory().toURI().toURL());
 					Thread.currentThread().setContextClassLoader(
 							new CompilerClassLoader(
@@ -1157,7 +1157,7 @@ public class JDTCompiler implements SpoonCompiler {
 											.getEnvironment()
 											.getInputClassLoader()));
 				} catch (Exception e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				}
 			}
 		} else {

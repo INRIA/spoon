@@ -6,7 +6,7 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtAssignment;
@@ -22,8 +22,9 @@ public class ReplaceTest {
 
 	@Before
 	public void setup() throws Exception {
-		factory = Spoon.createFactory();
-		Spoon.createCompiler(
+		Launcher spoon = new Launcher();
+		factory = spoon.createFactory();
+		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
 						.resources("./src/test/java/spoon/test/replace/Foo.java"))

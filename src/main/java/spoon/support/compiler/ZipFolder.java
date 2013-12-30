@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
@@ -93,7 +93,7 @@ public class ZipFolder implements SpoonFolder {
 				zipInput.close();
 
 			} catch (Exception e) {
-				Spoon.logger.error(e.getMessage(), e);
+				Launcher.logger.error(e.getMessage(), e);
 			}
 		}
 		return files;
@@ -107,7 +107,7 @@ public class ZipFolder implements SpoonFolder {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
 		} catch (FileNotFoundException e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -129,7 +129,7 @@ public class ZipFolder implements SpoonFolder {
 		try {
 			return file.getCanonicalPath();
 		} catch (Exception e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 			return file.getPath();
 		}
 	}

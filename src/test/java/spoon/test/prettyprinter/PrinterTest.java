@@ -1,13 +1,14 @@
 package spoon.test.prettyprinter;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtSimpleType;
-import static org.junit.Assert.assertEquals;
 
 public class PrinterTest {
 
@@ -15,8 +16,9 @@ public class PrinterTest {
 
 	@Before
 	public void setup() throws Exception {
-		factory = Spoon.createFactory();
-		Spoon.createCompiler(
+	    Launcher spoon = new Launcher();
+		factory = spoon.createFactory();
+		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
 						.resources(

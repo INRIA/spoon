@@ -29,7 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import spoon.Spoon;
+import spoon.Launcher;
 
 public class SpoonObjectFieldsTable extends JFrame {
 	public class SpoonObjectTableModel extends AbstractTableModel {
@@ -75,18 +75,18 @@ public class SpoonObjectFieldsTable extends JFrame {
 					if (val != null)
 						return val.getClass().getCanonicalName();
 				} catch (IllegalArgumentException e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				} catch (IllegalAccessException e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				}
 				break;
 			case (3):
 				try {
 					return m.get(o);
 				} catch (IllegalArgumentException e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				} catch (IllegalAccessException e) {
-					Spoon.logger.error(e.getMessage(), e);
+					Launcher.logger.error(e.getMessage(), e);
 				}
 			}
 			return null;

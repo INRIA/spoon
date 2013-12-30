@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtAnnotation;
@@ -33,8 +33,9 @@ public class AnnotationTest {
 	public void testModelBuildingAnnotationBoundUsage() throws Exception {
 		// we can not use TestUtils.build because we need to compile two classes
 		// at the same time
-		Factory factory = Spoon.createFactory();
-		Spoon.createCompiler(
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
 						"./src/test/java/spoon/test/annotation/Bound.java",
@@ -45,7 +46,7 @@ public class AnnotationTest {
 				.getType("Main");
 
 		assertEquals("Main", type.getSimpleName());
-		CtParameter<?> param = (CtParameter<?>) type.getElements(
+		CtParameter<?> param = type.getElements(
 				new TypeFilter<CtParameter<?>>(CtParameter.class)).get(0);
 		assertEquals("a", param.getSimpleName());
 		List<CtAnnotation<? extends Annotation>> annotations = param

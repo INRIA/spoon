@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
@@ -70,7 +70,7 @@ public class FileSystemFolder implements SpoonFolder {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
 		} catch (FileNotFoundException e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -83,7 +83,7 @@ public class FileSystemFolder implements SpoonFolder {
 					try {
 						subFolders.add(SpoonResourceHelper.createFolder(f));
 					} catch (FileNotFoundException e) {
-						Spoon.logger.error(e.getMessage(), e);
+						Launcher.logger.error(e.getMessage(), e);
 					}
 			}
 		}
@@ -113,7 +113,7 @@ public class FileSystemFolder implements SpoonFolder {
 		try {
 			return file.getCanonicalPath();
 		} catch (Exception e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 			return file.getPath();
 		}
 	}

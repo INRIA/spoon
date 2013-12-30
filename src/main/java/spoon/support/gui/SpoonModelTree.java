@@ -39,7 +39,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtPackage;
 import spoon.support.SerializationModelStreamer;
@@ -139,7 +139,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 							ser.save(factory, new FileOutputStream(chooser
 									.getSelectedFile()));
 						} catch (IOException e1) {
-							Spoon.logger.error(e1.getMessage(), e1);
+							Launcher.logger.error(e1.getMessage(), e1);
 						}
 					}
 				}

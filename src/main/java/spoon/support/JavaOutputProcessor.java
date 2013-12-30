@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
 import spoon.processing.TraversalStrategy;
@@ -87,7 +87,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		try {
 			directory = directory.getCanonicalFile();
 		} catch (IOException e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -129,7 +129,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 				printer = new FragmentDrivenJavaPrettyPrinter(getEnvironment(),
 						element.getPosition().getCompilationUnit());
 			} catch (Exception e) {
-				Spoon.logger.error(e.getMessage(), e);
+				Launcher.logger.error(e.getMessage(), e);
 				printer = null;
 			}
 		}
@@ -169,7 +169,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 				stream.println(printer.getPackageDeclaration());
 				stream.close();
 			} catch (FileNotFoundException e) {
-				Spoon.logger.error(e.getMessage(), e);
+				Launcher.logger.error(e.getMessage(), e);
 			} finally {
 				if (stream != null)
 					stream.close();
@@ -193,9 +193,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			}
 			stream.close();
 		} catch (FileNotFoundException e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		} catch (IOException e) {
-			Spoon.logger.error(e.getMessage(), e);
+			Launcher.logger.error(e.getMessage(), e);
 		} finally {
 			if (stream != null)
 				stream.close();

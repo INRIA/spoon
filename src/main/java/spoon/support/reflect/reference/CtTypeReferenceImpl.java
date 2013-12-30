@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import spoon.Spoon;
+import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -243,7 +243,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 				Class<?> actualSuperType = type.getActualClass();
 				return actualSuperType.isAssignableFrom(actualSubType);
 			} catch (Exception e) {
-				Spoon.logger.error("cannot determine runtime types for '"
+				Launcher.logger.error("cannot determine runtime types for '"
 						+ this + "' (" + getActualClass() + ") and '" + type
 						+ "' (" + type.getActualClass() + ")", e);
 				return false;
@@ -292,7 +292,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 					return superType.isSubtypeOf(type);
 				}
 			} catch (Exception e) {
-				Spoon.logger.error("cannot determine runtime types for '"
+				Launcher.logger.error("cannot determine runtime types for '"
 						+ this + "' and '" + type + "'", e);
 				return false;
 			}
