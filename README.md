@@ -8,6 +8,7 @@ Contributors (alphabetical order of last names):
 
 * Benoit Cornu
 * Christophe Dufour
+* Matias Martinez
 * Martin Monperrus
 * Renaud Pawlak
 * Nicolas Petitprez
