@@ -7,6 +7,7 @@ See <http://spoon.gforge.inria.fr/>
 Contributors (alphabetical order of last names):
 
 * Benoit Cornu
+* Favio DeMarco
 * Christophe Dufour
 * Matias Martinez
 * Martin Monperrus
