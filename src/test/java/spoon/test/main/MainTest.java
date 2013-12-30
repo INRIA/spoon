@@ -8,7 +8,7 @@ public class MainTest {
 	public void testMain() throws Exception {
 		spoon.Launcher.main(new String[] { "-i", "src/main/java", "-o",
 				"target/spooned", "--source-classpath",
-				System.getProperty("java.class.path"), "--compile" });
+				System.getProperty("java.class.path"), "--compile", "--lines" });
 		// we should have no exception
 	}
 

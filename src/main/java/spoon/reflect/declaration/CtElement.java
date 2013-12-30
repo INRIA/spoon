@@ -76,7 +76,7 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	/**
 	 * Returns the annotations that are present on this element.
 	 */
-	Set<CtAnnotation<? extends Annotation>> getAnnotations();
+	List<CtAnnotation<? extends Annotation>> getAnnotations();
 
 	/**
 	 * Returns the text of the documentation ("javadoc") comment of this
@@ -245,6 +245,6 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	/**
 	 * Sets the annotations for this element.
 	 */
-	void setAnnotations(Set<CtAnnotation<? extends Annotation>> annotation);
+	void setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
 }

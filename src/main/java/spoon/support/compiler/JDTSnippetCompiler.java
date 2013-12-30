@@ -102,6 +102,10 @@ public class JDTSnippetCompiler extends JDTCompiler {
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources
 				.getAllJavaFiles());
 
+		if(f!=null && f.exists()) {
+			f.delete();
+		}
+		
 		// here we build the model
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		for (CompilationUnitDeclaration unit : units) {

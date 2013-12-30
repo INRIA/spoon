@@ -107,7 +107,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		this.factory = factory;
 	}
 
-	Set<CtAnnotation<? extends Annotation>> annotations = new TreeSet<CtAnnotation<? extends Annotation>>();
+	List<CtAnnotation<? extends Annotation>> annotations = EMPTY_LIST();
 
 	String docComment;
 
@@ -161,7 +161,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return null;
 	}
 
-	public Set<CtAnnotation<? extends Annotation>> getAnnotations() {
+	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
 		return annotations;
 	}
 
@@ -336,12 +336,19 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public void setAnnotations(
-			Set<CtAnnotation<? extends Annotation>> annotations) {
+			List<CtAnnotation<? extends Annotation>> annotations) {
 		this.annotations = annotations;
 	}
 
 	public boolean addAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		return this.annotations.add(annotation);
+		if ((List<?>) this.annotations == (List<?>) EMPTY_LIST()) {
+			this.annotations = new ArrayList<>();
+		}
+		if (!this.annotations.contains(annotation)) {
+			return this.annotations.add(annotation);
+		} else {
+			return false;
+		}
 	}
 
 	public boolean removeAnnotation(

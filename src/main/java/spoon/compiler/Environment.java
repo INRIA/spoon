@@ -253,4 +253,16 @@ public interface Environment {
 	 */
 	void setInputClassLoader(ClassLoader classLoader);
 
+	/**
+	 * When set, the generated source code will try to generate code that
+	 * preserves the line numbers of the original source code. This option may
+	 * lead to difficult-to-read indentation and formatting.
+	 */
+	void setPreserveLineNumbers(boolean preserveLineNumbers);
+
+	/**
+	 * Tells if the source generator will try to preserve the original line numbers.
+	 */
+	boolean isPreserveLineNumbers();
+	
 }

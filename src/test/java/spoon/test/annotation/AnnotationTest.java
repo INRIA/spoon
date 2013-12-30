@@ -8,7 +8,7 @@ import static spoon.test.TestUtils.build;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.Set;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -48,7 +48,7 @@ public class AnnotationTest {
 		CtParameter<?> param = (CtParameter<?>) type.getElements(
 				new TypeFilter<CtParameter<?>>(CtParameter.class)).get(0);
 		assertEquals("a", param.getSimpleName());
-		Set<CtAnnotation<? extends Annotation>> annotations = param
+		List<CtAnnotation<? extends Annotation>> annotations = param
 				.getAnnotations();
 		CtAnnotation<?> a = annotations.toArray(new CtAnnotation[0])[0];
 		assertEquals(1, annotations.size());

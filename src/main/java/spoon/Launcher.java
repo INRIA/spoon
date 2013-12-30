@@ -216,14 +216,14 @@ public class Launcher {
 		opt2.setDefault("7");
 		jsap.registerParameter(opt2);
 
-		// compiler's encoding 
+		// compiler's encoding
 		opt2 = new FlaggedOption("encoding");
 		opt2.setLongFlag("encoding");
 		opt2.setStringParser(JSAP.STRING_PARSER);
 		opt2.setRequired(false);
 		opt2.setHelp("Forces the compiler to use a specific encoding (UTF-8, UTF-16, ...).");
 		jsap.registerParameter(opt2);
-		
+
 		// setting a spoonlet (packaged processors)
 		opt2 = new FlaggedOption("spoonlet");
 		opt2.setShortFlag('s');
@@ -344,6 +344,12 @@ public class Launcher {
 		sw1.setDefault("false");
 		jsap.registerParameter(sw1);
 
+		sw1 = new Switch("lines");
+		sw1.setLongFlag("lines");
+		sw1.setHelp("Set Spoon to try to preserve the original line numbers when generating the source code (may lead to human-unfriendly formatting).");
+		sw1.setDefault("false");
+		jsap.registerParameter(sw1);
+		
 		// show GUI
 		sw1 = new Switch("gui");
 		sw1.setShortFlag('g');
@@ -540,7 +546,8 @@ public class Launcher {
 				args.getBoolean("verbose"), args.getBoolean("debug"),
 				args.getFile("properties"), args.getBoolean("imports"),
 				args.getInt("tabsize"), args.getBoolean("tabs"),
-				args.getBoolean("fragments"), args.getFile("output"));
+				args.getBoolean("fragments"), args.getBoolean("lines"),
+				args.getFile("output"));
 
 		env.reportProgressMessage("Spoon version 2.0");
 
@@ -558,10 +565,9 @@ public class Launcher {
 			throw new Exception("unsupported output type: "
 					+ args.getString("output-type"));
 		}
-		
+
 		SpoonCompiler compiler = Spoon.createCompiler(factory);
-		Spoon.run(compiler,
-				arguments.getString("encoding"),
+		Spoon.run(compiler, arguments.getString("encoding"),
 				arguments.getBoolean("precompile"), outputType,
 				args.getFile("output"), getProcessorTypes(),
 				arguments.getBoolean("compile"), args.getFile("destination"),

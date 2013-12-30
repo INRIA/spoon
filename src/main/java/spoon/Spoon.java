@@ -160,6 +160,10 @@ public abstract class Spoon {
 	 *            tells if Spoon uses tabulations (vs spaces)
 	 * @param useSourceCodeFragments
 	 *            tells if Spoon should be in source code fragments mode
+	 * @param preserveLineNumbers
+	 *            tells if Spoon should try to preserve the original line
+	 *            numbers when generating the source code (may lead to
+	 *            human-unfriendly formatting)
 	 * @param sourceOutputDir
 	 *            sets the Spoon output directory where to generate the printed
 	 *            source code
@@ -169,7 +173,7 @@ public abstract class Spoon {
 			int complianceLevel, boolean verbose, boolean debug,
 			File properties, boolean autoImports, int tabulationSize,
 			boolean useTabulations, boolean useSourceCodeFragments,
-			File sourceOutputDir) {
+			boolean preserveLineNumbers, File sourceOutputDir) {
 
 		// environment initialization
 		environment.setComplianceLevel(complianceLevel);
@@ -182,6 +186,7 @@ public abstract class Spoon {
 		environment.setVerbose(verbose || debug);
 		environment.setDebug(debug);
 		environment.setAutoImports(autoImports);
+		environment.setPreserveLineNumbers(preserveLineNumbers);
 
 		environment.setTabulationSize(tabulationSize);
 		environment.useTabulations(useTabulations);
@@ -301,6 +306,7 @@ public abstract class Spoon {
 					+ (System.currentTimeMillis() - t) + " ms");
 		}
 
+		t = System.currentTimeMillis();
 		compiler.build();
 		env.debugMessage("model built in " + (System.currentTimeMillis() - t)
 				+ " ms");
@@ -326,6 +332,8 @@ public abstract class Spoon {
 
 		t = System.currentTimeMillis();
 		compiler.generateProcessedSourceFiles(outputType);
+		env.debugMessage("source generated in "
+				+ (System.currentTimeMillis() - t) + " ms");
 
 		t = System.currentTimeMillis();
 		if (compile) {
