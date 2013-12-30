@@ -81,6 +81,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private String classpath = null;
 
+	private boolean preserveLineNumbers = false;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -406,6 +408,16 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setInputClassLoader(ClassLoader classLoader) {
 		this.inputClassLoader = classLoader;
+	}
+
+	@Override
+	public boolean isPreserveLineNumbers() {
+		return preserveLineNumbers;
+	}
+
+	@Override
+	public void setPreserveLineNumbers(boolean preserveLineNumbers) {
+		this.preserveLineNumbers = preserveLineNumbers;
 	}
 
 }

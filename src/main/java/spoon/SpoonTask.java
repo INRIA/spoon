@@ -115,6 +115,8 @@ public class SpoonTask extends Java {
 
 	String encoding;
 
+	boolean lines;
+
 	/**
 	 * Constructor.
 	 */
@@ -198,6 +200,10 @@ public class SpoonTask extends Java {
 
 		if (buildOnlyOutdatedFiles) {
 			createArg().setValue("--buildOnlyOutdatedFiles");
+		}
+
+		if (lines) {
+			createArg().setValue("--lines");
 		}
 
 		createArg().setValue("--compliance");
@@ -552,6 +558,14 @@ public class SpoonTask extends Java {
 	 */
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
+	}
+
+	/**
+	 * Tells if Spoon should try to preserve the original line numbers when
+	 * generating the source code (may lead to human-unfriendly formatting).
+	 */
+	public void setLines(boolean lines) {
+		this.lines = lines;
 	}
 
 }

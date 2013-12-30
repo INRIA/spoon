@@ -147,8 +147,8 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	}
 
 	@Override
-	public Set<CtAnnotation<? extends Annotation>> getAnnotations() {
-		Set<CtAnnotation<? extends Annotation>> annot = super.getAnnotations();
+	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
+		List<CtAnnotation<? extends Annotation>> annot = super.getAnnotations();
 
 		if (getSuperclass() != null) {
 			CtSimpleType<?> sup = getSuperclass().getDeclaration();

@@ -424,6 +424,13 @@ public class JDTCompiler implements SpoonCompiler {
 		return f;
 	}
 
+	protected void deleteTmpJavaFile(File folder) {
+		File f = new File(folder, "Tmp.java");
+		if (f.exists()) {
+			f.delete();
+		}
+	}
+
 	protected boolean buildTemplates() throws Exception {
 		if (templates.getRootJavaPaths().isEmpty())
 			return true;
@@ -442,6 +449,8 @@ public class JDTCompiler implements SpoonCompiler {
 		// args.add("none");
 		// args.add("-g");
 		// args.add("-nowarn");
+
+		File f = null;
 
 		if (templateClasspath != null) {
 			String fullClasspath = templateClasspath + File.pathSeparator + ".";
@@ -468,7 +477,7 @@ public class JDTCompiler implements SpoonCompiler {
 			for (SpoonFolder file : templates.getSubFolders()) {
 				if (file.isArchive()) {
 					// JDT bug HACK
-					createTmpJavaFile(file.getFileSystemParent());
+					f = createTmpJavaFile(file.getFileSystemParent());
 				}
 			}
 			args.addAll(templates.getRootJavaPaths());
@@ -485,6 +494,10 @@ public class JDTCompiler implements SpoonCompiler {
 		batchCompiler.configure(args.toArray(new String[0]));
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits(templates
 				.getAllJavaFiles());
+
+		if (f != null && f.exists()) {
+			f.delete();
+		}
 
 		// here we build the model in the template factory
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory.Template());
@@ -852,6 +865,8 @@ public class JDTCompiler implements SpoonCompiler {
 
 	protected void generateProcessedSourceFilesUsingTypes() throws Exception {
 		if (factory.getEnvironment().getDefaultFileGenerator() != null) {
+			factory.getEnvironment().debugMessage(
+					"Generating source using types...");
 			ProcessingManager processing = new QueueProcessingManager(factory);
 			processing.addProcessor(factory.getEnvironment()
 					.getDefaultFileGenerator());
@@ -861,6 +876,8 @@ public class JDTCompiler implements SpoonCompiler {
 
 	protected void generateProcessedSourceFilesUsingCUs() throws Exception {
 
+		factory.getEnvironment().debugMessage(
+				"Generating source using compilation units...");
 		// Check output directory
 		if (outputDirectory == null)
 			throw new RuntimeException(

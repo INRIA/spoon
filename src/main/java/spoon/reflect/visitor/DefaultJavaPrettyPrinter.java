@@ -268,6 +268,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		boolean ignoreEnclosingClass = false;
 
+		boolean noNewLines = false;
+
 		void enterTarget() {
 		}
 
@@ -328,7 +330,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private void mapLine(int line, CtElement e) {
 		if ((e.getPosition() != null)
 				&& (e.getPosition().getCompilationUnit() == sourceCompilationUnit)) {
-			// only map elements comming from the source CU
+			// only map elements coming from the source CU
 			lineNumberMapping.put(line, e.getPosition().getLine());
 		} else {
 			undefLine(line);
@@ -465,7 +467,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean isWhite(char c) {
-		return (c == ' ') || (c == '\t') || (c == '\n');
+		return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 	}
 
 	/**
@@ -528,10 +530,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	protected DefaultJavaPrettyPrinter removeLastChar() {
 		while (isWhite(sbf.charAt(sbf.length() - 1))) {
+			if (sbf.charAt(sbf.length() - 1) == '\n') {
+				line--;
+			}
 			sbf.deleteCharAt(sbf.length() - 1);
 		}
 		sbf.deleteCharAt(sbf.length() - 1);
 		while (isWhite(sbf.charAt(sbf.length() - 1))) {
+			if (sbf.charAt(sbf.length() - 1) == '\n') {
+				line--;
+			}
 			sbf.deleteCharAt(sbf.length() - 1);
 		}
 		return this;
@@ -560,10 +568,119 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 			context.elementStack.push(e);
+			if (env.isPreserveLineNumbers()) {
+				context.noNewLines = e.getPosition() == null
+						|| e.getPosition().getCompilationUnit() != sourceCompilationUnit;
+				if (!(e instanceof CtNamedElement)) {
+					adjustPosition(e);
+				}
+			}
 			e.accept(this);
 			context.elementStack.pop();
 		}
 		return this;
+	}
+
+	private void insertLine() {
+		// System.out.println("insert");
+		int i = sbf.length() - 1;
+		while (i >= 0 && (sbf.charAt(i) == ' ' || sbf.charAt(i) == '\t')) {
+			i--;
+		}
+		sbf.insert(i + 1, System.getProperty("line.separator"));
+		line++;
+	}
+
+	private boolean removeLine() {
+		// System.out.println("remove");
+		String ls = System.getProperty("line.separator");
+		int i = sbf.length() - ls.length();
+		boolean hasWhite = false;
+		while (i > 0 && !ls.equals(sbf.substring(i, i + ls.length()))) {
+			if (!isWhite(sbf.charAt(i))) {
+				return false;
+			}
+			hasWhite = true;
+			i--;
+		}
+		if (i <= 0) {
+			return false;
+		}
+		hasWhite = hasWhite || isWhite(sbf.charAt(i - 1));
+		sbf.replace(i, i + ls.length(), hasWhite ? "" : " ");
+		line--;
+		return true;
+	}
+
+	protected void printCharArray(char[] c) {
+		for (int i = 0; i < c.length; i++) {
+			switch (c[i]) {
+			case '\b':
+				System.out.print("\\b"); //$NON-NLS-1$
+				break;
+			case '\t':
+				System.out.print("\\t"); //$NON-NLS-1$
+				break;
+			case '\n':
+				System.out.print("\\n"); //$NON-NLS-1$
+				break;
+			case '\f':
+				System.out.print("\\f"); //$NON-NLS-1$
+				break;
+			case '\r':
+				System.out.print("\\r"); //$NON-NLS-1$
+				break;
+			case '\"':
+				System.out.print("\\\""); //$NON-NLS-1$
+				break;
+			case '\'':
+				System.out.print("\\'"); //$NON-NLS-1$
+				break;
+			case '\\': // take care not to display the escape as a potential
+						// real char
+				System.out.println("\\\\"); //$NON-NLS-1$
+				break;
+			default:
+				System.out.print(c[i]);
+			}
+			if (i < c.length - 1) {
+				System.out.print(",");
+			}
+		}
+	}
+
+	private void adjustPosition(CtElement e) {
+		// System.out.println(" -- " + e.getSignature() + " - " +
+		// e.getPosition()
+		// + " - " + line);
+		// System.out.print("===================");
+		// printCharArray(sbf.toString().toCharArray());
+		// System.out.println("===================");
+		if (e.getPosition() != null
+				&& e.getPosition().getCompilationUnit() != null
+				&& e.getPosition().getCompilationUnit() == sourceCompilationUnit) {
+			while (line < e.getPosition().getLine()) {
+				insertLine();
+			}
+			while (line > e.getPosition().getLine()) {
+				if (!removeLine()) {
+					if (line > e.getPosition().getEndLine()) {
+						env.report(null, Severity.WARNING, e,
+								"cannot adjust position of "
+										+ e.getClass().getSimpleName() + " '"
+										+ e.getSignature() + "' "
+										+ " to match lines: " + line + " > ["
+										+ e.getPosition().getLine() + ", "
+										+ e.getPosition().getEndLine() + "]");
+					}
+					break;
+				}
+			}
+		}
+		// System.out.print("===================");
+		// printCharArray(sbf.toString().toCharArray());
+		// System.out.println("===================");
+
 	}
 
 	/**
@@ -619,7 +736,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			removeLastChar();
 			write(")");
 		}
-		writeln();
+		writeln().writeTabs();
 	}
 
 	public <A extends Annotation> void visitCtAnnotationType(
@@ -634,9 +751,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(annotationType.getFields());
 
 		for (CtElement el : lst) {
-			writeln().scan(el).writeln();
+			writeln().writeTabs().scan(el);
+			if (!env.isPreserveLineNumbers()) {
+				writeln();
+			}
 		}
-		decTab().writeln().write("}");
+		decTab().writeTabs().write("}");
 	}
 
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable impl) {
@@ -702,11 +822,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write("{").incTab();
 		for (CtStatement e : block.getStatements()) {
 			if (!e.isImplicit()) {
-				writeln();
+				writeln().writeTabs();
 				writeStatement(e);
 			}
 		}
-		decTab().writeln().write("}");
+		if (env.isPreserveLineNumbers()) {
+			decTab().write("}");
+		} else {
+			decTab().writeln().writeTabs().write("}");
+		}
 	}
 
 	public void visitCtBreak(CtBreak breakStatement) {
@@ -742,7 +866,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(" :").incTab();
 
 		for (CtStatement s : caseStatement.getStatements()) {
-			writeln().writeStatement(s);
+			writeln().writeTabs().writeStatement(s);
 		}
 		decTab();
 	}
@@ -808,9 +932,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		write(" {").incTab();
 		for (CtElement el : lst) {
-			writeln().scan(el).writeln();
+			writeln().writeTabs().scan(el);
+			if (!env.isPreserveLineNumbers()) {
+				writeln();
+			}
 		}
-		decTab().writeln().write("}");
+		decTab().writeTabs().write("}");
 		context.currentThis.pop();
 	}
 
@@ -926,11 +1053,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(";");
 		}
 		for (CtField<?> ec : l2) {
-			writeln().scan(ec);
+			writeln().writeTabs().scan(ec);
 		}
 		for (CtConstructor<?> c : ctEnum.getConstructors()) {
 			if (!c.isImplicit()) {
-				writeln().scan(c);
+				writeln().writeTabs().scan(c);
 			}
 		}
 
@@ -942,9 +1069,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctEnum.getMethods());
 
 		for (CtElement el : lst) {
-			writeln().scan(el).writeln();
+			writeln().writeTabs().scan(el);
+			if (!env.isPreserveLineNumbers()) {
+				writeln();
+			}
 		}
-		decTab().writeln().write("}");
+		decTab().writeTabs().write("}");
 		context.currentThis.pop();
 	}
 
@@ -1102,7 +1232,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(" ");
 			scan(forLoop.getBody());
 		} else {
-			incTab().writeln();
+			incTab().writeln().writeTabs();
 			writeStatement(forLoop.getBody());
 			decTab();
 		}
@@ -1120,7 +1250,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(" ");
 			scan(foreach.getBody());
 		} else {
-			incTab().writeln();
+			incTab().writeln().writeTabs();
 			writeStatement(foreach.getBody());
 			decTab();
 		}
@@ -1136,9 +1266,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(ifElement.getThenStatement());
 			write(" ");
 		} else {
-			incTab().writeln();
+			incTab().writeln().writeTabs();
 			writeStatement(ifElement.getThenStatement());
-			decTab().writeln();
+			if (env.isPreserveLineNumbers()) {
+				decTab();
+			} else {
+				decTab().writeln().writeTabs();
+			}
 		}
 		if (ifElement.getElseStatement() != null) {
 			write("else");
@@ -1149,9 +1283,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(" ");
 				scan(ifElement.getElseStatement());
 			} else {
-				incTab().writeln();
+				incTab().writeln().writeTabs();
 				writeStatement(ifElement.getElseStatement());
-				decTab().writeln();
+				if (env.isPreserveLineNumbers()) {
+					decTab();
+				} else {
+					decTab().writeln().writeTabs();
+				}
 			}
 		}
 	}
@@ -1179,9 +1317,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(intrface.getMethods());
 		// Content
 		for (CtElement e : lst) {
-			writeln().scan(e);
+			writeln().writeTabs().scan(e);
+			if (!env.isPreserveLineNumbers()) {
+				writeln();
+			}
 		}
-		decTab().writeln().write("}");
+		decTab().writeTabs().write("}");
 	}
 
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
@@ -1245,6 +1386,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					removeLastChar();
 				}
 				write(">");
+			}
+			// TODO: this does not work because the invocation does not have the
+			// right line number
+			if (env.isPreserveLineNumbers()) {
+				adjustPosition(invocation);
 			}
 			write(invocation.getExecutable().getSimpleName());
 		}
@@ -1342,6 +1488,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> DefaultJavaPrettyPrinter writeLocalVariable(
 			CtLocalVariable<T> localVariable) {
+		if (env.isPreserveLineNumbers()) {
+			adjustPosition(localVariable);
+		}
 		if (!context.noTypeDecl) {
 			writeModifiers(localVariable);
 			scan(localVariable.getType());
@@ -1440,8 +1589,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public void visitCtNamedElement(CtNamedElement e) {
 		// Write comments
-		if (context.printDocs && (e.getDocComment() != null)) {
-			write("/** ").writeln();
+		if (!env.isPreserveLineNumbers() && context.printDocs
+				&& (e.getDocComment() != null)) {
+			write("/** ").writeln().writeTabs();
 			String[] lines = e.getDocComment().split("\n");
 			for (int i = 0; i < lines.length; i++) {
 				String com = lines[i].trim();
@@ -1449,15 +1599,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					continue;
 				}
 				if (com.startsWith("//")) {
-					write(com).writeln();
+					write(com).writeln().writeTabs();
 				} else {
-					write(" * " + com).writeln();
+					write(" * " + com).writeln().writeTabs();
 				}
 			}
 			write(" */").writeln();
 		}
 		// Write element parameters (Annotations)
 		writeAnnotations(e);
+		if (env.isPreserveLineNumbers()) {
+			adjustPosition(e);
+		}
 		writeModifiers(e);
 	}
 
@@ -1630,9 +1783,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(switchStatement.getSelector());
 		write(") {").incTab();
 		for (CtCase<?> c : switchStatement.getCases()) {
-			writeln().scan(c);
+			writeln().writeTabs().scan(c);
 		}
-		decTab().writeln().write("}");
+		if (env.isPreserveLineNumbers()) {
+			decTab().write("}");
+		} else {
+			decTab().writeln().writeTabs().write("}");
+		}
 	}
 
 	public void visitCtSynchronized(CtSynchronized synchro) {
@@ -1793,7 +1950,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(" ");
 			scan(whileLoop.getBody());
 		} else {
-			incTab().writeln();
+			incTab().writeln().writeTabs();
 			writeStatement(whileLoop.getBody());
 			decTab();
 		}
@@ -1896,7 +2053,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public DefaultJavaPrettyPrinter writeHeader(List<CtSimpleType<?>> types) {
 		if (!types.isEmpty()) {
 			CtPackage pack = types.get(0).getPackage();
-			scan(pack).writeln().writeln();
+			scan(pack).writeln().writeln().writeTabs();
 			if (env.isAutoImports()) {
 				for (CtTypeReference<?> ref : importsContext.imports.values()) {
 					// ignore non-top-level type
@@ -1908,27 +2065,31 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 							if (!ref.getPackage().getSimpleName()
 									.equals(pack.getQualifiedName())) {
 								write("import " + ref.getQualifiedName() + ";")
-										.writeln();
+										.writeln().writeTabs();
 							}
 						}
 					}
 				}
 			}
-			writeln();
+			writeln().writeTabs();
 		}
 		return this;
 	}
 
-	int line = 1;
+	private int line = 1;
 
 	/**
-	 * Generates a new line starting with the current number of tabs.
+	 * Generates a new line.
 	 */
 	public DefaultJavaPrettyPrinter writeln() {
 		// context.currentLength = 0;
-		sbf.append(System.getProperty("line.separator"));
-		line++;
-		return writeTabs();
+		if (context.noNewLines) {
+			sbf.append(" ");
+		} else {
+			sbf.append(System.getProperty("line.separator"));
+			line++;
+		}
+		return this;
 	}
 
 	public DefaultJavaPrettyPrinter writeTabs() {
@@ -2063,7 +2224,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		writeHeader(types);
 		for (CtSimpleType<?> t : types) {
 			scan(t);
-			writeln().writeln();
+			writeln().writeln().writeTabs();
 		}
 	}
 
