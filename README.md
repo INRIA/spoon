@@ -11,6 +11,7 @@ Contributors (alphabetical order of last names):
 * Christophe Dufour
 * Matias Martinez
 * Martin Monperrus
+* Carlos Noguera
 * Renaud Pawlak
 * Nicolas Petitprez
 * Lionel Seinturier
