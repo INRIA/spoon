@@ -21,6 +21,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
+import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 public class SnippetCompilationHelper {

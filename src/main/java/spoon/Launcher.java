@@ -41,8 +41,8 @@ import spoon.reflect.Factory;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
-import spoon.support.compiler.JDTCompiler;
 import spoon.support.compiler.ZipFolder;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.gui.SpoonModelTree;
 import spoon.support.processing.SpoonletXmlHandler;
 
@@ -543,7 +543,7 @@ public class Launcher {
 	 *            the factory this compiler works on
 	 */
 	public SpoonCompiler createCompiler(Factory factory) {
-		return new JDTCompiler(factory);
+		return new JDTBasedSpoonCompiler(factory);
 	}
 
 	/**
@@ -557,7 +557,7 @@ public class Launcher {
 	 */
 	public SpoonCompiler createCompiler(Factory factory,
 			List<SpoonResource> inputSources) {
-		SpoonCompiler c = new JDTCompiler(factory);
+		SpoonCompiler c = createCompiler(factory);
 		c.addInputSources(inputSources);
 		return c;
 	}
@@ -569,7 +569,7 @@ public class Launcher {
 	public SpoonCompiler createCompiler(Factory factory,
 			List<SpoonResource> inputSources,
 			List<SpoonResource> templateSources) {
-		SpoonCompiler c = new JDTCompiler(factory);
+		SpoonCompiler c = createCompiler(factory);
 		c.addInputSources(inputSources);
 		c.addTemplateSources(templateSources);
 		return c;
@@ -581,7 +581,7 @@ public class Launcher {
 	 * accessed with the {@link SpoonCompiler#getFactory()}.
 	 */
 	public SpoonCompiler createCompiler() {
-		return new JDTCompiler(createFactory());
+		return createCompiler(createFactory());
 	}
 
 	/**
@@ -589,7 +589,7 @@ public class Launcher {
 	 * input sources.
 	 */
 	public SpoonCompiler createCompiler(List<SpoonResource> inputSources) {
-		SpoonCompiler c = new JDTCompiler(createFactory());
+		SpoonCompiler c = createCompiler(createFactory());
 		c.addInputSources(inputSources);
 		return c;
 	}
@@ -601,7 +601,7 @@ public class Launcher {
 	public SpoonCompiler createCompiler(
 			List<SpoonResource> inputSources,
 			List<SpoonResource> templateSources) {
-		SpoonCompiler c = new JDTCompiler(createFactory());
+		SpoonCompiler c = createCompiler(createFactory());
 		c.addInputSources(inputSources);
 		c.addTemplateSources(templateSources);
 		return c;
