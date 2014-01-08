@@ -27,7 +27,6 @@ import java.util.Stack;
 
 import spoon.Launcher;
 import spoon.processing.Severity;
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -91,6 +90,7 @@ import spoon.reflect.eval.SymbolicEvaluatorObserver;
 import spoon.reflect.eval.SymbolicHeap;
 import spoon.reflect.eval.SymbolicInstance;
 import spoon.reflect.eval.SymbolicStackFrame;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;

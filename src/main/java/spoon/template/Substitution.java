@@ -62,7 +62,7 @@ public abstract class Substitution {
 	public static <T extends Template> void insertAll(CtType<?> targetType,
 			T template) {
 
-		CtClass<T> templateClass = targetType.getFactory().Template().Class()
+		CtClass<T> templateClass = targetType.getFactory().Class()
 				.get(template.getClass());
 		// insert all the interfaces
 		for (CtTypeReference<?> t : templateClass.getSuperInterfaces()) {
@@ -158,7 +158,7 @@ public abstract class Substitution {
 			Template template) {
 
 		CtClass<? extends Template> sourceClass = targetType.getFactory()
-				.Template().Class().get(template.getClass());
+				.Class().get(template.getClass());
 		// insert all the interfaces
 		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
 			if (!t.equals(targetType.getFactory().Type()
@@ -204,7 +204,7 @@ public abstract class Substitution {
 	 */
 	public static void insertAllMethods(CtType<?> targetType, Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template().Class()
+		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
@@ -228,7 +228,7 @@ public abstract class Substitution {
 	 */
 	public static void insertAllFields(CtType<?> targetType, Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template().Class()
+		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
 		// insert all the fields
 		for (CtField<?> f : sourceClass.getFields()) {
@@ -255,7 +255,7 @@ public abstract class Substitution {
 	public static void insertAllConstructors(CtType<?> targetType,
 			Template template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Template().Class()
+		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
 		// insert all the constructors
 		if (targetType instanceof CtClass) {
@@ -377,7 +377,7 @@ public abstract class Substitution {
 	public static CtBlock<?> substituteMethodBody(CtClass<?> targetClass,
 			Template template, String executableName,
 			CtTypeReference<?>... parameterTypes) {
-		CtClass<?> sourceClass = targetClass.getFactory().Template().Class()
+		CtClass<?> sourceClass = targetClass.getFactory().Class()
 				.get(template.getClass());
 		CtExecutable<?> sourceExecutable = executableName.equals(template
 				.getClass().getSimpleName()) ? sourceClass
@@ -406,7 +406,7 @@ public abstract class Substitution {
 	public static CtStatement substituteStatement(CtClass<?> targetClass,
 			Template template, int statementIndex, String executableName,
 			CtTypeReference<?>... parameterTypes) {
-		CtClass<?> sourceClass = targetClass.getFactory().Template().Class()
+		CtClass<?> sourceClass = targetClass.getFactory().Class()
 				.get(template.getClass());
 		CtExecutable<?> sourceExecutable = executableName.equals(template
 				.getClass().getSimpleName()) ? sourceClass
@@ -432,7 +432,7 @@ public abstract class Substitution {
 
 	public static CtExpression<?> substituteFieldDefaultExpression(
 			CtSimpleType<?> targetType, Template template, String fieldName) {
-		CtClass<?> sourceClass = targetType.getFactory().Template().Class()
+		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
 		CtField<?> sourceField = sourceClass.getField(fieldName);
 		return substitute(targetType, template,

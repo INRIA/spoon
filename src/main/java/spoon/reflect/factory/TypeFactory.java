@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
@@ -196,12 +195,7 @@ public class TypeFactory extends SubFactory {
 			String s = qualifiedName.substring(0, inertTypeIndex);
 			CtSimpleType<T> t = get(s);
 			if (t == null) {
-				if (getFactory().getParentFactory() != null) {
-					return getFactory().getParentFactory().Type()
-							.get(qualifiedName);
-				} else {
-					return null;
-				}
+				return null;
 			}
 			return t.getNestedType(qualifiedName.substring(inertTypeIndex + 1));
 		}
@@ -217,12 +211,7 @@ public class TypeFactory extends SubFactory {
 		}
 
 		if (pack == null) {
-			if (getFactory().getParentFactory() != null) {
-				return getFactory().getParentFactory().Type()
-						.get(qualifiedName);
-			} else {
-				return null;
-			}
+			return null;
 		}
 
 		return (CtSimpleType<T>) pack.getType(qualifiedName

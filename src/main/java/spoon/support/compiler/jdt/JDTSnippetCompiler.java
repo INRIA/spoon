@@ -11,7 +11,7 @@ import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
 import spoon.Launcher;
 import spoon.compiler.Environment;
-import spoon.reflect.Factory;
+import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.VirtualFile;
 

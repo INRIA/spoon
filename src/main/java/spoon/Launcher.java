@@ -37,7 +37,8 @@ import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Severity;
-import spoon.reflect.Factory;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
@@ -62,7 +63,7 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
  * 
  * 
  * @see spoon.compiler.Environment
- * @see spoon.reflect.Factory
+ * @see spoon.reflect.factory.Factory
  * @see spoon.compiler.SpoonCompiler
  * @see spoon.processing.ProcessingManager
  * @see spoon.processing.Processor
@@ -613,7 +614,7 @@ public class Launcher {
 	 * processors.
 	 */
 	public Factory createFactory() {
-		return new Factory(new DefaultCoreFactory(), new StandardEnvironment());
+		return new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 	}
 
 	/**
@@ -624,7 +625,7 @@ public class Launcher {
 	 * @return the created factory
 	 */
 	public Factory createFactory(Environment environment) {
-		return new Factory(new DefaultCoreFactory(), environment);
+		return new FactoryImpl(new DefaultCoreFactory(), environment);
 	}
 
 	/**

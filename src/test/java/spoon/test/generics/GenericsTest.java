@@ -9,21 +9,24 @@ import java.util.List;
 
 import org.junit.Test;
 
-import spoon.reflect.Factory;
-import spoon.reflect.code.*;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.test.TestUtils;
 
 public class GenericsTest {
 
@@ -71,8 +74,7 @@ public class GenericsTest {
 
 	@Test
 	public void testDiamond1() {
-		Factory factory = new Factory(new DefaultCoreFactory(),
-				new StandardEnvironment());
+		Factory factory = TestUtils.createFactory();
 		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(

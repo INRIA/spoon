@@ -4,19 +4,16 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
+import spoon.test.TestUtils;
 
 public class CastTest {
-	Factory factory = new Factory(new DefaultCoreFactory(),
-			new StandardEnvironment());
-
+	Factory factory = TestUtils.createFactory();
 	@Test
 	public void testCast1() {
 		CtClass<?> clazz = factory

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
@@ -15,13 +14,11 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
+import spoon.reflect.factory.Factory;
+import spoon.test.TestUtils;
 
 public class IntercessionTest {
-	Factory factory = new Factory(new DefaultCoreFactory(),
-			new StandardEnvironment());
-
+	Factory factory = TestUtils.createFactory();
 	@Test
 	public void testInsertBegin() {
 		CtClass<?> clazz = factory
@@ -74,7 +71,7 @@ public class IntercessionTest {
 		CtBlock<?> body = foo.getBody();
 		assertEquals(3, body.getStatements().size());
 
-		CtStatement s = (CtStatement) body.getStatements().get(2);
+		CtStatement s = body.getStatements().get(2);
 		assertEquals("int z = x + y", s.toString());
 
 		// adding a new statement;
@@ -139,7 +136,7 @@ public class IntercessionTest {
 		CtBlock<?> body = foo.getBody();
 		assertEquals(3, body.getStatements().size());
 
-		CtStatement s = (CtStatement) body.getStatements().get(2);
+		CtStatement s = body.getStatements().get(2);
 		assertEquals("int z = x + y", s.toString());
 
 		// adding a new statement;

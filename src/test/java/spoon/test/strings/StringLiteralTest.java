@@ -4,17 +4,16 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
+import spoon.reflect.factory.Factory;
+import spoon.test.TestUtils;
 
 public class StringLiteralTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void testSnippetFullClass() {
-		Factory factory = new Factory(new DefaultCoreFactory(), new StandardEnvironment());		
+		Factory factory = TestUtils.createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement(
 				"class StringValueUTF {\n" + 
 				"	String f0 = \"toto\";\n" + 

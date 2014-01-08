@@ -21,7 +21,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 
-import spoon.reflect.Factory;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.Import;
 import spoon.reflect.reference.CtFieldReference;
@@ -90,7 +89,7 @@ public class CompilationUnitFactory extends SubFactory {
 	 * Creates an import for the given type.
 	 */
 	public Import createImport(Class<?> type) {
-		return new ImportImpl(getFactory().Type().createReference(type));
+		return new ImportImpl(factory.Type().createReference(type));
 	}
 
 	/**

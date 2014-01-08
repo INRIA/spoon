@@ -20,7 +20,6 @@ package spoon.reflect.factory;
 import java.lang.reflect.Field;
 import java.util.Set;
 
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtSimpleType;

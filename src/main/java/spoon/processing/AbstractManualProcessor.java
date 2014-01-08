@@ -20,8 +20,8 @@ package spoon.processing;
 import java.util.Set;
 
 import spoon.compiler.Environment;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 
 /**
  * This class defines an abstract processor to be subclassed by the user for

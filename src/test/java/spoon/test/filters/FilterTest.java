@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.RegexFilter;
 
 public class FilterTest {

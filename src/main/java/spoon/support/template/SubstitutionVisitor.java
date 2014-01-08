@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
@@ -48,6 +47,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -620,7 +620,7 @@ public class SubstitutionVisitor extends CtScanner {
 				f.Type().createReference(TemplateParameter.class),
 				f.Type().createTypeParameterReference("T"), "S");
 		templateRef = f.Type().createReference(template.getClass());
-		templateType = f.Template().Class().get(templateRef.getQualifiedName());
+		templateType = f.Class().get(templateRef.getQualifiedName());
 		parameterNames = Parameters.getNames(templateType);
 		targetRef = f.Type().createReference(targetType);
 		templateTypeRef = f.Type().createReference(Template.class);

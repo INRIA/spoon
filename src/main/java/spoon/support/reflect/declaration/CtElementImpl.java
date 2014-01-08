@@ -31,12 +31,12 @@ import org.apache.log4j.Logger;
 
 import spoon.Launcher;
 import spoon.processing.FactoryAccessor;
-import spoon.reflect.Factory;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;

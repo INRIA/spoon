@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Set;
 
 import spoon.processing.FactoryAccessor;
-import spoon.reflect.Factory;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.Import;
 import spoon.reflect.cu.SourceCodeFragment;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.factory.Factory;
 
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 

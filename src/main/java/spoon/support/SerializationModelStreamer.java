@@ -24,9 +24,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import spoon.Launcher;
-import spoon.reflect.Factory;
 import spoon.reflect.ModelStreamer;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtScanner;
 

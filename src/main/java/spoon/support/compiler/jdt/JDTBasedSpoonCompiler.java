@@ -52,15 +52,13 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Severity;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.DefaultCoreFactory;
 import spoon.support.QueueProcessingManager;
-import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.VirtualFolder;
 
@@ -116,9 +114,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	// example usage (please do not use directly, use instead the spoon.Spoon
 	// API to create the factory)
-	public static void main(String[] args) {
-		JDTBasedSpoonCompiler comp = new JDTBasedSpoonCompiler(new Factory(
-				new DefaultCoreFactory(), new StandardEnvironment()));
+	public static void main(String[] args) throws Exception {
+		Launcher main = new Launcher();
+		JDTBasedSpoonCompiler comp = new JDTBasedSpoonCompiler(main.createFactory());
 		comp.createBatchCompiler().printUsage();
 		SpoonFile file = new FileSystemFile(new File(
 				"./src/main/java/spoon/support/compiler/JDTCompiler.java"));
@@ -341,7 +339,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 
 		// here we build the model in the template factory
-		JDTTreeBuilder builder = new JDTTreeBuilder(factory.Template());
+		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		for (CompilationUnitDeclaration unit : units) {
 			unit.traverse(builder, unit.scope);
 		}

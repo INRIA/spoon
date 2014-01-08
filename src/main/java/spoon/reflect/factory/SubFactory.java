@@ -17,20 +17,16 @@
 
 package spoon.reflect.factory;
 
-import java.io.Serializable;
-
-import spoon.processing.FactoryAccessor;
-import spoon.reflect.Factory;
 
 /**
  * This class is the superclass for all the sub-factories of
- * {@link spoon.reflect.Factory}.
+ * {@link spoon.reflect.factory.Factory}.
  */
-public abstract class SubFactory implements Serializable, FactoryAccessor {
+public abstract class SubFactory  {
 
 	private static final long serialVersionUID = 1L;
 
-	Factory factory;
+	protected Factory factory;
 
 	/**
 	 * The sub-factory constructor takes an instance of the parent factory.
@@ -40,17 +36,6 @@ public abstract class SubFactory implements Serializable, FactoryAccessor {
 		this.factory = factory;
 	}
 
-	/**
-	 * Sets the parent factory (discouraged).
-	 */
-	public void setFactory(Factory factory) {
-		this.factory = factory;
-	}
-
-	public Factory getFactory() {
-		return factory;
-	}
-	
 	/**
 	 * Generically sets the parent of a set of elements or lists of elements.
 	 * 

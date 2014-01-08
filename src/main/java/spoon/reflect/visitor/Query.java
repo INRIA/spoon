@@ -20,9 +20,9 @@ package spoon.reflect.visitor;
 import java.util.ArrayList;
 import java.util.List;
 
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 
 /**

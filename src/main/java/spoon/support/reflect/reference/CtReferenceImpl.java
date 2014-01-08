@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.Launcher;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
