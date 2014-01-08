@@ -107,6 +107,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnaryExpression;
+import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.WhileStatement;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
@@ -133,8 +134,6 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 
-import spoon.reflect.CoreFactory;
-import spoon.reflect.Factory;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -156,7 +155,6 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
@@ -181,18 +179,16 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -202,7 +198,6 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -322,7 +317,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		void exit(ASTNode node) {
 			ASTPair pair = stack.pop();
 			if (pair.node != node)
-				throw new RuntimeException("Unconsistant Stack " + node);
+				throw new RuntimeException("Inconsistent Stack " + node+"\n"+pair.node);
 			CtElement current = pair.element;
 			if (!stack.isEmpty()) {
 				current.setParent(stack.peek().element);
@@ -348,468 +343,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			arguments.push(e);
 		}
 	}
-
-	@SuppressWarnings("unchecked")
-	public class ParentExiter extends CtInheritanceScanner {
-		CtElement child;
-
-		@Override
-		public void scanCtElement(CtElement e) {
-			if (child instanceof CtAnnotation
-					&& context.annotationValueName.isEmpty()) {
-				e.addAnnotation((CtAnnotation<?>) child);
-				return;
-			}
-		}
-
-		@Override
-		public <R> void scanCtExecutable(CtExecutable<R> e) {
-			if (child instanceof CtParameter) {
-				e.addParameter((CtParameter<?>) child);
-				return;
-			} else if (child instanceof CtBlock) {
-				e.setBody((CtBlock<R>) child);
-				return;
-			}
-			super.scanCtExecutable(e);
-		}
-
-		@Override
-		public void scanCtGenericElement(CtGenericElement e) {
-			return;
-		}
-
-		@Override
-		public void scanCtLoop(CtLoop loop) {
-			if (loop.getBody() == null && child instanceof CtStatement) {
-				loop.setBody((CtStatement) child);
-			}
-			super.scanCtLoop(loop);
-		}
-
-		@Override
-		public <T> void scanCtSimpleType(CtSimpleType<T> t) {
-			if (child instanceof CtSimpleType) {
-				if (t.getNestedTypes().contains(child)) {
-					t.getNestedTypes().remove(child);
-				}
-				t.addNestedType((CtSimpleType<?>) child);
-				return;
-			} else if (child instanceof CtField) {
-				t.addField((CtField<?>) child);
-				return;
-			} else if (child instanceof CtConstructor) {
-				return;
-			}
-			super.scanCtSimpleType(t);
-		}
-
-		@Override
-		public <T, E extends CtExpression<?>> void scanCtTargetedExpression(
-				CtTargetedExpression<T, E> targetedExpression) {
-			if (!context.target.isEmpty()
-					&& context.target.peek() == targetedExpression) {
-				targetedExpression.setTarget((E) child);
-				return;
-			}
-			super.scanCtTargetedExpression(targetedExpression);
-		}
-
-		@Override
-		public <T> void scanCtType(CtType<T> type) {
-			if (child instanceof CtMethod) {
-				type.addMethod((CtMethod<?>) child);
-				return;
-			}
-			super.scanCtType(type);
-		}
-
-		@Override
-		public <T> void scanCtVariable(CtVariable<T> v) {
-			if (child instanceof CtExpression && !context.arguments.isEmpty()
-					&& context.arguments.peek() == v) {
-				v.setDefaultExpression((CtExpression<T>) child);
-				return;
-			}
-			super.scanCtVariable(v);
-		}
-
-		@Override
-		public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(
-				CtAnnotation<A> annotation) {
-
-			// //GANYMEDE FIX: JDT now inserts a simpletyperef below annotations
-			// that points
-			// //to the type of the annotation. The JDTTreeBuilder supposes that
-			// this simpletyperef is
-			// //in fact part of a member/value pair, and will try to construct
-			// the pair. I think it is safe to
-			// // ignore this, but we should really migrate to the JDT Binding
-			// API since this will only get worse
-			// // Just to be safe I upcall the visitCtAnnotation in the
-			// inheritance scanner.
-			// if(context.annotationValueName.isEmpty()){
-			// super.visitCtAnnotation(annotation);
-			// return;
-			// }
-
-			String name = context.annotationValueName.peek();
-			Object value = child;
-
-			if (value instanceof CtVariableAccess)
-				value = ((CtVariableAccess<?>) value).getVariable();
-			if (value instanceof CtFieldReference
-					&& ((CtFieldReference<?>) value).getSimpleName().equals(
-							"class")) {
-				value = ((CtFieldReference<?>) value).getType();
-			}
-			annotation.getElementValues().put(name, value);
-			super.visitCtAnnotation(annotation);
-		}
-
-		@Override
-		public void visitCtAnonymousExecutable(CtAnonymousExecutable e) {
-			if (child instanceof CtBlock) {
-				e.setBody((CtBlock<?>) child);
-				return;
-			}
-			super.visitCtAnonymousExecutable(e);
-		}
-
-		@Override
-		public <T, E extends CtExpression<?>> void visitCtArrayAccess(
-				CtArrayAccess<T, E> arrayAccess) {
-			if (context.arguments.size() > 0
-					&& context.arguments.peek() == arrayAccess) {
-				arrayAccess.setIndexExpression((CtExpression<Integer>) child);
-				return;
-			} else if (arrayAccess.getTarget() == null) {
-				arrayAccess.setTarget((E) child);
-				return;
-			}
-			super.visitCtArrayAccess(arrayAccess);
-		}
-
-		@Override
-		public <T> void visitCtAssert(CtAssert<T> asserted) {
-			if (child instanceof CtExpression)
-				if (!context.arguments.isEmpty()
-						&& context.arguments.peek() == asserted) {
-					asserted.setExpression((CtExpression<T>) child);
-					return;
-				} else {
-					asserted.setAssertExpression((CtExpression<Boolean>) child);
-					return;
-				}
-			super.visitCtAssert(asserted);
-		}
-
-		@Override
-		public <T, A extends T> void visitCtAssignment(
-				CtAssignment<T, A> assignement) {
-			if (assignement.getAssigned() == null) {
-				assignement.setAssigned((CtExpression<T>) child);
-				return;
-			} else if (assignement.getAssignment() == null) {
-				assignement.setAssignment((CtExpression<A>) child);
-				return;
-			}
-			super.visitCtAssignment(assignement);
-		}
-
-		@Override
-		public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
-			if (child instanceof CtExpression)
-				if (operator.getLeftHandOperand() == null) {
-					operator.setLeftHandOperand((CtExpression<?>) child);
-					return;
-				} else if (operator.getRightHandOperand() == null) {
-					operator.setRightHandOperand((CtExpression<?>) child);
-					return;
-				}
-			super.visitCtBinaryOperator(operator);
-		}
-
-		@Override
-		public <R> void visitCtBlock(CtBlock<R> block) {
-			if (child instanceof CtStatement) {
-				block.addStatement((CtStatement) child);
-				return;
-			}
-			super.visitCtBlock(block);
-		}
-
-		@Override
-		public <E> void visitCtCase(CtCase<E> caseStatement) {
-			if (context.selector && caseStatement.getCaseExpression() == null
-					&& child instanceof CtExpression) {
-				caseStatement.setCaseExpression((CtExpression<E>) child);
-				return;
-			} else if (child instanceof CtStatement) {
-				caseStatement.addStatement((CtStatement) child);
-				return;
-			}
-			super.visitCtCase(caseStatement);
-		}
-
-		@Override
-		public void visitCtCatch(CtCatch catchBlock) {
-			if (child instanceof CtBlock) {
-				catchBlock.setBody((CtBlock<?>) child);
-				return;
-			} else if (child instanceof CtLocalVariable) {
-				catchBlock
-						.setParameter((CtLocalVariable<? extends Throwable>) child);
-				return;
-			}
-			super.visitCtCatch(catchBlock);
-		}
-
-		@Override
-		public <T> void visitCtClass(CtClass<T> ctClass) {
-			if (child instanceof CtConstructor) {
-				CtConstructor<T> c = (CtConstructor<T>) child;
-				ctClass.addConstructor(c);
-				if (c.getPosition() != null
-						&& c.getPosition().equals(ctClass.getPosition())) {
-					c.setImplicit(true);
-				}
-			}
-			if (child instanceof CtAnonymousExecutable) {
-				ctClass.addAnonymousExecutable((CtAnonymousExecutable) child);
-			}
-			super.visitCtClass(ctClass);
-		}
-
-		@Override
-		public <T> void visitCtConditional(CtConditional<T> conditional) {
-			if (child instanceof CtExpression) {
-				if (conditional.getCondition() == null) {
-					conditional.setCondition((CtExpression<Boolean>) child);
-				} else if (conditional.getThenExpression() == null) {
-					conditional.setThenExpression((CtExpression<T>) child);
-				} else if (conditional.getElseExpression() == null) {
-					conditional.setElseExpression((CtExpression<T>) child);
-				}
-			}
-			super.visitCtConditional(conditional);
-		}
-
-		@Override
-		public void visitCtDo(CtDo doLoop) {
-			if (doLoop.getBody() != null && child instanceof CtExpression
-					&& doLoop.getLoopingExpression() == null) {
-				doLoop.setLoopingExpression((CtExpression<Boolean>) child);
-				return;
-			}
-			super.visitCtDo(doLoop);
-		}
-
-		@Override
-		public <T> void visitCtField(CtField<T> f) {
-			if (f.getDefaultExpression() == null
-					&& child instanceof CtExpression) {
-				f.setDefaultExpression((CtExpression<T>) child);
-				return;
-			}
-			super.visitCtField(f);
-		}
-
-		@Override
-		public void visitCtFor(CtFor forLoop) {
-			if (context.forinit && child instanceof CtStatement) {
-				forLoop.addForInit((CtStatement) child);
-				return;
-			}
-			if (!context.forupdate && forLoop.getExpression() == null
-					&& child instanceof CtExpression) {
-				forLoop.setExpression((CtExpression<Boolean>) child);
-				return;
-			}
-			if (context.forupdate && child instanceof CtStatement) {
-				forLoop.addForUpdate((CtStatement) child);
-				return;
-			}
-			super.visitCtFor(forLoop);
-		}
-
-		@Override
-		public void visitCtForEach(CtForEach foreach) {
-			if (foreach.getVariable() == null && child instanceof CtVariable) {
-				foreach.setVariable((CtLocalVariable<?>) child);
-				return;
-			} else if (foreach.getExpression() == null
-					&& child instanceof CtExpression) {
-				foreach.setExpression((CtExpression<?>) child);
-				return;
-			} else if (child instanceof CtStatement) {
-				foreach.setBody((CtStatement) child);
-				return;
-			}
-			super.visitCtForEach(foreach);
-		}
-
-		@Override
-		public void visitCtIf(CtIf ifElement) {
-			if (ifElement.getCondition() == null
-					&& child instanceof CtExpression) {
-				ifElement.setCondition((CtExpression<Boolean>) child);
-				return;
-			} else if (child instanceof CtStatement) {
-				if (ifElement.getThenStatement() == null) {
-					ifElement.setThenStatement((CtStatement) child);
-					return;
-				} else if (ifElement.getElseStatement() == null) {
-					ifElement.setElseStatement((CtStatement) child);
-					return;
-				}
-			}
-			super.visitCtIf(ifElement);
-		}
-
-		@Override
-		public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-			if (context.isArgument(invocation) && child instanceof CtExpression) {
-				invocation.addArgument((CtExpression<?>) child);
-				return;
-			} else if (child instanceof CtExpression) {
-				invocation.setTarget((CtExpression<?>) child);
-				return;
-			}
-			super.visitCtInvocation(invocation);
-		}
-
-		@Override
-		public <T> void visitCtNewArray(CtNewArray<T> newArray) {
-			if (context.isArgument(newArray)) {
-				newArray.addDimensionExpression((CtExpression<Integer>) child);
-				return;
-			} else if (child instanceof CtExpression) {
-				newArray.addElement((CtExpression<?>) child);
-				return;
-			}
-		}
-
-		@Override
-		public <T> void visitCtNewClass(CtNewClass<T> newClass) {
-			if (context.isArgument(newClass) && child instanceof CtExpression) {
-				newClass.addArgument((CtExpression<?>) child);
-				return;
-			} else if (child instanceof CtClass) {
-				newClass.setAnonymousClass((CtClass<?>) child);
-				// this can be an interface but we don't know it so we set it to
-				// the superclass
-				((CtClass<?>) child).setSuperclass(newClass.getType());
-				return;
-			}
-			super.visitCtNewClass(newClass);
-		}
-
-		@Override
-		public void visitCtPackage(CtPackage ctPackage) {
-			if (child instanceof CtSimpleType) {
-				if (ctPackage.getTypes().contains(child)) {
-					ctPackage.getTypes().remove(child);
-				}
-				ctPackage.getTypes().add((CtSimpleType<?>) child);
-				context.addCreatedType((CtSimpleType<?>) child);
-				if (child.getPosition() != null
-						&& child.getPosition().getCompilationUnit() != null) {
-					child.getPosition().getCompilationUnit().getDeclaredTypes()
-							.add((CtSimpleType<?>) child);
-				}
-				return;
-			}
-			super.visitCtPackage(ctPackage);
-		}
-
-		@Override
-		public <R> void visitCtReturn(CtReturn<R> returnStatement) {
-			if (child instanceof CtExpression) {
-				returnStatement.setReturnedExpression((CtExpression<R>) child);
-				return;
-			}
-			super.visitCtReturn(returnStatement);
-		}
-
-		@Override
-		public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
-			if (switchStatement.getSelector() == null
-					&& child instanceof CtExpression) {
-				switchStatement.setSelector((CtExpression<E>) child);
-				return;
-			}
-			if (child instanceof CtCase) {
-				switchStatement.addCase((CtCase<E>) child);
-				return;
-			}
-			super.visitCtSwitch(switchStatement);
-		}
-
-		@Override
-		public void visitCtSynchronized(CtSynchronized synchro) {
-			if (synchro.getExpression() == null
-					&& child instanceof CtExpression) {
-				synchro.setExpression((CtExpression<?>) child);
-				return;
-			}
-			if (synchro.getBlock() == null && child instanceof CtBlock) {
-				synchro.setBlock((CtBlock<?>) child);
-				return;
-			}
-			super.visitCtSynchronized(synchro);
-		}
-
-		@Override
-		public void visitCtThrow(CtThrow throwStatement) {
-			if (throwStatement.getThrownExpression() == null) {
-				throwStatement
-						.setThrownExpression((CtExpression<? extends Throwable>) child);
-				return;
-			}
-			super.visitCtThrow(throwStatement);
-		}
-
-		@Override
-		public void visitCtTry(CtTry tryBlock) {
-			if (child instanceof CtBlock) {
-				if (!context.finallyzer.isEmpty()
-						&& context.finallyzer.peek() == tryBlock)
-					tryBlock.setFinalizer((CtBlock<?>) child);
-				else
-					tryBlock.setBody((CtBlock<?>) child);
-				return;
-			} else if (child instanceof CtLocalVariable) {
-				if (tryBlock.getResources() == null) {
-					tryBlock.setResources(new ArrayList<CtLocalVariable<? extends AutoCloseable>>());
-				}
-				tryBlock.addResource((CtLocalVariable<? extends AutoCloseable>) child);
-			} else if (child instanceof CtCatch) {
-				tryBlock.addCatcher((CtCatch) child);
-				return;
-			}
-			super.visitCtTry(tryBlock);
-		}
-
-		@Override
-		public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
-			if (operator.getOperand() == null && child instanceof CtExpression) {
-				operator.setOperand((CtExpression<T>) child);
-				return;
-			}
-			super.visitCtUnaryOperator(operator);
-		}
-
-		@Override
-		public void visitCtWhile(CtWhile whileLoop) {
-			if (whileLoop.getLoopingExpression() == null
-					&& child instanceof CtExpression) {
-				whileLoop.setLoopingExpression((CtExpression<Boolean>) child);
-				return;
-			}
-			super.visitCtWhile(whileLoop);
-		}
-	};
 
 	public class ReferenceBuilder {
 
@@ -1167,7 +700,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	BuilderContext context = new BuilderContext();
 
-	ParentExiter exiter = new ParentExiter();
+	ParentExiter exiter = new ParentExiter(this);
 
 	Factory factory;
 
@@ -2896,24 +2429,31 @@ public class JDTTreeBuilder extends ASTVisitor {
 		tryStatement.tryBlock.traverse(this, scope);
 		if (tryStatement.catchArguments != null) {
 			for (int i = 0; i < tryStatement.catchArguments.length; i++) {
-				CtCatch c = factory.Core().createCatch();
-				context.enter(c, tryStatement.catchBlocks[i]);
-				CtLocalVariable<Throwable> var = factory.Core()
-						.createLocalVariable();
-				var.setSimpleName(new String(
-						tryStatement.catchArguments[i].name));
-				if (tryStatement.catchArguments[i].binding != null) {
+				//  the jdt catch
+				Argument jdtCatch = tryStatement.catchArguments[i];
+				
+				// case 1: old catch
+				if (jdtCatch.type instanceof SingleTypeReference) {
 					CtTypeReference<Throwable> r = references
-							.getTypeReference(tryStatement.catchArguments[i].binding.type);
-					var.setType(r);
+							.getTypeReference(jdtCatch.type.resolvedType);
+					CtCatch c = createCtCatch(jdtCatch, r);
+					tryStatement.catchBlocks[i].traverse(this, scope);
+					context.exit(jdtCatch);
 				}
-				for (ModifierKind modifier : getModifiers(tryStatement.catchArguments[i].modifiers)) {
-					var.addModifier(modifier);
-				}
-				context.enter(var, tryStatement.catchArguments[i]);
-				context.exit(tryStatement.catchArguments[i]);
-				tryStatement.catchBlocks[i].traverse(this, scope);
-				context.exit(tryStatement.catchBlocks[i]);
+				
+				// case 2: Java 7 multiple catch blocks
+				if (jdtCatch.type instanceof UnionTypeReference) { 
+					UnionTypeReference utr = (UnionTypeReference)jdtCatch.type;
+					for (TypeReference type : utr.typeReferences) {
+						CtTypeReference<Throwable> r = references
+								.getTypeReference(type.resolvedType);
+						CtCatch c = createCtCatch(jdtCatch, r);					
+						tryStatement.catchBlocks[i].traverse(this, scope);
+						context.exit(jdtCatch);
+					}
+				} 
+				
+
 			}
 		}
 		if (tryStatement.finallyBlock != null) {
@@ -2922,6 +2462,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.finallyzer.pop();
 		}
 		return false;
+	}
+
+	private CtCatch createCtCatch(Argument jdtCatch, CtTypeReference<Throwable> r) {
+		CtCatch c = factory.Core().createCatch();
+		CtLocalVariable<Throwable> var = factory.Core()
+				.createLocalVariable();
+		context.enter(c, jdtCatch);
+		context.enter(var, jdtCatch);
+		var.setSimpleName(new String(
+				jdtCatch.name));
+		var.setType(r);
+		for (ModifierKind modifier : getModifiers(jdtCatch.modifiers)) {
+			var.addModifier(modifier);
+		}
+		context.exit(jdtCatch);
+		return c;
 	}
 
 	@Override
