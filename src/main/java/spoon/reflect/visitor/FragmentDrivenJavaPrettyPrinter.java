@@ -62,14 +62,13 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 	 * Creates a new fragment-driven pretty printer for the given compilation
 	 * unit.
 	 */
-	public FragmentDrivenJavaPrettyPrinter(Environment env,
-			CompilationUnit compilationUnit) throws Exception {
+	public FragmentDrivenJavaPrettyPrinter(Environment env) {
 		this.env = env;
-		this.compilationUnit = compilationUnit;
 	}
 
 	public void calculate(CompilationUnit originalCompilationUnit,
 			List<CtSimpleType<?>> types) {
+		this.compilationUnit = originalCompilationUnit;
 		// do nothing
 	}
 

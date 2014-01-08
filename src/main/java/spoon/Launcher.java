@@ -39,6 +39,9 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Severity;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
@@ -70,9 +73,9 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
  */
 public class Launcher {
 
+	private Factory factory = createFactory();
+	
 	private String[] args = new String[0];
-
-	private JSAPResult arguments;
 
 	private List<SpoonResource> inputResources = new ArrayList<SpoonResource>();
 
@@ -98,12 +101,16 @@ public class Launcher {
 	 */
 	public static void main(String[] args) throws Exception {
 		Launcher launcher = new Launcher();
-		launcher.args = args;
+		launcher.setArgs(args);
 		if (args.length != 0) {
 			launcher.run();
 		} else {
 			launcher.printUsage();
 		}
+	}
+
+	public void setArgs(String[] args2) {
+		this.args = args2;
 	}
 
 	/**
@@ -360,21 +367,14 @@ public class Launcher {
 	/**
 	 * Returns the command-line given launching arguments in JSAP format.
 	 */
-	protected final JSAPResult getArguments() {
-		if (arguments == null) {
-			try {
-				arguments = parseArgs(args);
-			} catch (JSAPException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return arguments;
+	protected final JSAPResult getArguments() throws Exception {
+		return parseArgs();
 	}
 
 	/**
 	 * Processes the arguments.
 	 */
-	protected void processArguments(Factory factory) {
+	protected void processArguments(Factory factory) throws Exception {
 
 		Environment env = factory.getEnvironment();
 
@@ -509,7 +509,10 @@ public class Launcher {
 	 * @throws JSAPException
 	 *             when an error occurs in the argument parsing
 	 */
-	protected JSAPResult parseArgs(String[] args) throws JSAPException {
+	protected JSAPResult parseArgs() throws JSAPException {
+		if (args==null) {
+			throw new IllegalStateException("no args, please call setArgs before");
+		}
 		JSAPResult arguments = jsapArgs.parse(args);
 		if (!arguments.success()) {
 			// print out specific error messages describing the problems
@@ -582,7 +585,7 @@ public class Launcher {
 	 * accessed with the {@link SpoonCompiler#getFactory()}.
 	 */
 	public SpoonCompiler createCompiler() {
-		return createCompiler(createFactory());
+		return createCompiler(factory);
 	}
 
 	/**
@@ -590,7 +593,7 @@ public class Launcher {
 	 * input sources.
 	 */
 	public SpoonCompiler createCompiler(List<SpoonResource> inputSources) {
-		SpoonCompiler c = createCompiler(createFactory());
+		SpoonCompiler c = createCompiler(factory);
 		c.addInputSources(inputSources);
 		return c;
 	}
@@ -602,7 +605,7 @@ public class Launcher {
 	public SpoonCompiler createCompiler(
 			List<SpoonResource> inputSources,
 			List<SpoonResource> templateSources) {
-		SpoonCompiler c = createCompiler(createFactory());
+		SpoonCompiler c = createCompiler(factory);
 		c.addInputSources(inputSources);
 		c.addTemplateSources(templateSources);
 		return c;
@@ -614,7 +617,7 @@ public class Launcher {
 	 * processors.
 	 */
 	public Factory createFactory() {
-		return new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		return createFactory(new StandardEnvironment());
 	}
 
 	/**
@@ -676,7 +679,7 @@ public class Launcher {
 		environment.setVerbose(true);
 		environment.setXmlRootFolder(properties);
 
-		JavaOutputProcessor printer = new JavaOutputProcessor(sourceOutputDir);
+		JavaOutputProcessor printer = createOutputWriter(sourceOutputDir);
 		environment.setDefaultFileGenerator(printer);
 
 		environment.setVerbose(verbose || debug);
@@ -687,6 +690,18 @@ public class Launcher {
 		environment.setTabulationSize(tabulationSize);
 		environment.useTabulations(useTabulations);
 		environment.useSourceCodeFragments(useSourceCodeFragments);
+	}
+
+	public JavaOutputProcessor createOutputWriter(File sourceOutputDir) {
+		return new JavaOutputProcessor(sourceOutputDir, createPrettyPrinter());
+	}
+
+	public PrettyPrinter createPrettyPrinter() {
+		if (factory.getEnvironment().isUsingSourceCodeFragments()) {
+			return new FragmentDrivenJavaPrettyPrinter(factory.getEnvironment());
+		} else {
+			return new DefaultJavaPrettyPrinter(factory.getEnvironment());
+		}
 	}
 
 	/**
@@ -769,7 +784,13 @@ public class Launcher {
 				&& buildOnlyOutdatedFiles);
 		compiler.setDestinationDirectory(destinationDirectory);
 		compiler.setOutputDirectory(outputDirectory);
-		compiler.setSourceClasspath(sourceClasspath);
+		
+		// backward compatibility
+		// we don't have to set the source classpath
+		if (sourceClasspath != null) {
+		  compiler.setSourceClasspath(sourceClasspath);
+		}
+		
 		compiler.setTemplateClasspath(templateClasspath);
 
 		env.debugMessage("output: " + compiler.getOutputDirectory());
@@ -866,18 +887,16 @@ public class Launcher {
 	public void run() throws Exception {
 
 		JSAPResult args = getArguments();
-		Environment env = createEnvironment();
-		Factory factory = createFactory(env);
-		initEnvironment(env, args.getInt("compliance"),
+		initEnvironment(factory.getEnvironment(), args.getInt("compliance"),
 				args.getBoolean("verbose"), args.getBoolean("debug"),
 				args.getFile("properties"), args.getBoolean("imports"),
 				args.getInt("tabsize"), args.getBoolean("tabs"),
 				args.getBoolean("fragments"), args.getBoolean("lines"),
 				args.getFile("output"));
 
-		env.reportProgressMessage("Spoon version 2.0");
+		factory.getEnvironment().reportProgressMessage("Spoon version 2.0");
 
-		env.debugMessage("loading command-line arguments: "
+		factory.getEnvironment().debugMessage("loading command-line arguments: "
 				+ Arrays.asList(this.args));
 
 		processArguments(factory);
@@ -885,7 +904,7 @@ public class Launcher {
 		OutputType outputType = OutputType.fromString(args
 				.getString("output-type"));
 		if (outputType == null) {
-			env.report(null, Severity.ERROR,
+			factory.getEnvironment().report(null, Severity.ERROR,
 					"unsupported output type: " + args.getString("output-type"));
 			printUsage();
 			throw new Exception("unsupported output type: "
@@ -893,10 +912,10 @@ public class Launcher {
 		}
 
 		SpoonCompiler compiler = createCompiler(factory);
-		run(compiler, arguments.getString("encoding"),
-				arguments.getBoolean("precompile"), outputType,
+		run(compiler, args.getString("encoding"),
+				args.getBoolean("precompile"), outputType,
 				args.getFile("output"), getProcessorTypes(),
-				arguments.getBoolean("compile"), args.getFile("destination"),
+				args.getBoolean("compile"), args.getFile("destination"),
 				args.getBoolean("buildOnlyOutdatedFiles"),
 				args.getString("source-classpath"),
 				args.getString("template-classpath"), getInputSources(),
