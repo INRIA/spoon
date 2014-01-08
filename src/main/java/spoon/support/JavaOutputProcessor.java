@@ -34,7 +34,6 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 
 //import spoon.reflect.cu.CompilationUnit;
@@ -44,6 +43,8 @@ import spoon.reflect.visitor.PrettyPrinter;
  */
 public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		implements FileGenerator<CtSimpleType<?>> {
+	PrettyPrinter printer;
+
 	File directory;
 
 	List<File> printedFiles = new ArrayList<File>();
@@ -56,8 +57,12 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	 * @param outputDirectory
 	 *            the root output directory
 	 */
-	public JavaOutputProcessor(File outputDirectory) {
+	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
 		this.directory = outputDirectory;
+		this.printer = printer;
+	}
+
+	public JavaOutputProcessor() {
 	}
 
 	public List<File> getCreatedFiles() {
@@ -122,23 +127,11 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		List<CtSimpleType<?>> toBePrinted = new ArrayList<CtSimpleType<?>>();
 		toBePrinted.add(element);
 
-		PrettyPrinter printer = null;
 
-		if (getEnvironment().isUsingSourceCodeFragments()) {
-			try {
-				printer = new FragmentDrivenJavaPrettyPrinter(getEnvironment(),
-						element.getPosition().getCompilationUnit());
-			} catch (Exception e) {
-				Launcher.logger.error(e.getMessage(), e);
-				printer = null;
-			}
-		}
-		if (printer == null) {
-			printer = new DefaultJavaPrettyPrinter(getEnvironment());
-			printer.calculate(cu, toBePrinted);
-		}
-
+		printer.calculate(cu, toBePrinted);
+		
 		CtPackage pack = element.getPackage();
+		
 		PrintStream stream = null;
 
 		// create package directory

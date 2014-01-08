@@ -772,17 +772,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		PrettyPrinter printer = null;
 
 		if (env.isUsingSourceCodeFragments()) {
-			try {
-				printer = new FragmentDrivenJavaPrettyPrinter(env, cu);
-			} catch (Exception e) {
-				Launcher.logger.error(e.getMessage(), e);
-				printer = null;
-			}
+			printer = new FragmentDrivenJavaPrettyPrinter(env);
 		}
 		if (printer == null) {
 			printer = new DefaultJavaPrettyPrinter(env);
-			printer.calculate(cu, toBePrinted);
 		}
+		printer.calculate(cu, toBePrinted);
 
 		return new ByteArrayInputStream(printer.getResult().toString()
 				.getBytes());
