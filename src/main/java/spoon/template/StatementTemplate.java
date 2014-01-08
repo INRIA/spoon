@@ -42,7 +42,7 @@ public abstract class StatementTemplate implements TemplateParameter<Void>,
 
 	public CtStatement getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<?> c;
-		c = targetType.getFactory().Template().Class().get(this.getClass());
+		c = targetType.getFactory().Class().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}

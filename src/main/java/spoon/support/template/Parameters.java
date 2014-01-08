@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import spoon.Launcher;
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -33,6 +32,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;

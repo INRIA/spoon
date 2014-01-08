@@ -17,7 +17,7 @@
 
 package spoon.processing;
 
-import spoon.reflect.Factory;
+import spoon.reflect.factory.Factory;
 
 /**
  * This interface represents an object that can access the meta-model factory.

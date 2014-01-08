@@ -41,6 +41,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.processing.XmlProcessorProperties;
 
 /**
  * A processor to add/replace/override/remove annotations described in an XML
@@ -298,7 +299,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 				String fieldValue = fieldNode.getAttribute("value");
 				Class<?> type = aref.getActualClass().getMethod(fieldName)
 						.getReturnType();
-				Object v = getFactory().convert(type, fieldValue);
+				Object v = ((XmlProcessorProperties) getEnvironment().getProcessorProperties(this.getClass().getName())).convert(type, fieldValue);
 				getFactory().Annotation().annotate(javaElt, aref, fieldName, v);
 			}
 		}

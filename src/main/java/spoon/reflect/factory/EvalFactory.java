@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.eval.SymbolicEvaluationPath;

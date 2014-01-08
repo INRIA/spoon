@@ -23,8 +23,8 @@ import java.util.ConcurrentModificationException;
 
 import spoon.processing.Processor;
 import spoon.processing.TraversalStrategy;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 
 /**

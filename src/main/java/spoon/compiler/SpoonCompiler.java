@@ -24,7 +24,7 @@ import java.util.Set;
 
 import spoon.OutputType;
 import spoon.processing.FactoryAccessor;
-import spoon.reflect.Factory;
+import spoon.reflect.factory.Factory;
 
 /**
  * This interface defines the Spoon Java compiler and code processor.

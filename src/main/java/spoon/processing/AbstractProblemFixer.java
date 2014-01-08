@@ -17,8 +17,8 @@
 
 package spoon.processing;
 
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 
 /**
  * To be subclassed when defining a new problem fixer.

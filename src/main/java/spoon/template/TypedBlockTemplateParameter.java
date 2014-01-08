@@ -49,7 +49,7 @@ public abstract class TypedBlockTemplateParameter<R> implements
 	@SuppressWarnings("unchecked")
 	public CtBlock<R> getSubstitution(CtSimpleType<?> targetType) {
 		CtClass<?> c;
-		c = targetType.getFactory().Template().Class().get(this.getClass());
+		c = targetType.getFactory().Class().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}

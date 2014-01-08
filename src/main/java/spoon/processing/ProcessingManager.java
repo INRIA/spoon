@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtElement;
 
 /**
  * The processing manager defines the API to process a program model of a given
- * {@link spoon.reflect.Factory} with a set of processors. The program model has
+ * {@link spoon.reflect.factory.Factory} with a set of processors. The program model has
  * been previously built using a {@link spoon.compiler.SpoonCompiler} - see
  * {@link spoon.compiler.SpoonCompiler#build()}. To use, add processors to
  * the manager, and then call the {@code process} method. The processors will be

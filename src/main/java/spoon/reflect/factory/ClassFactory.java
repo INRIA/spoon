@@ -17,7 +17,6 @@
 
 package spoon.reflect.factory;
 
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 

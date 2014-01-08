@@ -29,7 +29,7 @@ import spoon.reflect.declaration.CtElement;
 
 /**
  * This interface represents the environment in which Spoon is launched -
- * accessible through {@link spoon.reflect.Factory#getEnvironment()}. Its
+ * accessible through {@link spoon.reflect.factory.Factory#getEnvironment()}. Its
  * primary use is to report messages, warnings, and errors.
  */
 public interface Environment {

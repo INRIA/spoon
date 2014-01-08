@@ -26,8 +26,8 @@ import java.util.Set;
 
 import spoon.Launcher;
 import spoon.compiler.Environment;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import spoon.support.util.RtHelper;
 
 /**

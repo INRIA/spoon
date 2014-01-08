@@ -24,9 +24,9 @@ import java.util.List;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.Severity;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.factory.Factory;
 import spoon.support.util.Timer;
 import spoon.support.visitor.ProcessingVisitor;
 

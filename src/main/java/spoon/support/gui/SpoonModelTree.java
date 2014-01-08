@@ -40,8 +40,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import spoon.Launcher;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.factory.Factory;
 import spoon.support.SerializationModelStreamer;
 
 public class SpoonModelTree extends JFrame implements KeyListener,

@@ -26,7 +26,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResource;
-import spoon.reflect.Factory;
+import spoon.reflect.factory.Factory;
 
 /**
  * This class defines the SAX handler to parse a Spoonlet deployment descriptor

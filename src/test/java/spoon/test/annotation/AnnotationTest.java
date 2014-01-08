@@ -14,10 +14,10 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.Factory;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class AnnotationTest {
