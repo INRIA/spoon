@@ -139,7 +139,7 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	/**
 	 * Replaces this element by another one.
 	 */
-	void replace(CtElement element) throws ParentNotInitializedException;
+	void replace(CtElement element);
 
 	/**
 	 * Add an annotation for this element
