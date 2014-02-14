@@ -162,7 +162,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
-		return annotations;
+		return Collections.unmodifiableList(annotations);
 	}
 
 	public String getDocComment() {

@@ -17,8 +17,6 @@
 
 package spoon.support.reflect.declaration;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Inherited;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -27,12 +25,10 @@ import java.util.TreeSet;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -144,26 +140,6 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 
 	public void setSuperclass(CtTypeReference<?> superClass) {
 		this.superClass = superClass;
-	}
-
-	@Override
-	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
-		List<CtAnnotation<? extends Annotation>> annot = super.getAnnotations();
-
-		if (getSuperclass() != null) {
-			CtSimpleType<?> sup = getSuperclass().getDeclaration();
-			if (sup != null) {
-				for (CtAnnotation<? extends Annotation> a : sup
-						.getAnnotations()) {
-					if (!a.getAnnotationType().equals(
-							getFactory().Annotation().createReference(
-									Inherited.class))) {
-						annot.add(a);
-					}
-				}
-			}
-		}
-		return annot;
 	}
 
 	public boolean isSubtypeOf(CtTypeReference<?> type) {

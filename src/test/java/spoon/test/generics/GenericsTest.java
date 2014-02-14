@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -13,6 +14,7 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -156,7 +158,7 @@ public class GenericsTest {
 
 			CtField<?> INSTANCE2 = type.getElements(
 					new NameFilter<CtField<?>>("INSTANCE2")).get(0);
-			INSTANCE2.getAnnotations().clear();
+			INSTANCE2.setAnnotations(new ArrayList<CtAnnotation<?>>());
 			assertEquals(
 					"public static final spoon.test.generics.ACLass<?> INSTANCE2 = new spoon.test.generics.ACLass();",
 					INSTANCE2.toString());
