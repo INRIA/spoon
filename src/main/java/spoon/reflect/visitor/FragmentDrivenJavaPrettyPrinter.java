@@ -32,7 +32,7 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 
 	Map<Integer, Integer> lineNumberMapping = new HashMap<Integer, Integer>();
 
-	public StringBuffer getResult() {
+	public String getResult() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(compilationUnit.getOriginalSourceCode());
 		List<SourceCodeFragment> fragments = new ArrayList<SourceCodeFragment>();
@@ -47,7 +47,7 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 			sb.replace(f.position, f.position + f.replacementLength, f.code);
 			// sb.insert(f.position, f.code);
 		}
-		return sb;
+		return sb.toString();
 	}
 
 	public String getPackageDeclaration() {
@@ -74,6 +74,11 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 
 	public Map<Integer, Integer> getLineNumberMapping() {
 		return lineNumberMapping;
+	}
+
+	@Override
+	public void reset() {
+		throw new UnsupportedOperationException();
 	}
 
 }

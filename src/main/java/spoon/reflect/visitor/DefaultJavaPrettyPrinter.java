@@ -420,8 +420,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * 
 	 * @see spoon.reflect.visitor.JavaPrettyPrinter#getResult()
 	 */
-	public StringBuffer getResult() {
-		return sbf;
+	public String getResult() {
+		return sbf.toString();
 	}
 
 	/**
