@@ -19,8 +19,14 @@ public interface PrettyPrinter {
 	/**
 	 * Gets the contents of the compilation unit.
 	 */
-	StringBuffer getResult();
+	String getResult();
 
+	/**
+	 * Resets the buffering of results
+	 */
+	public void reset();
+
+	   
 	/**
 	 * Calculates the resulting source file for a list of types. The source
 	 * compilation unit is required for calculating the line numbers mapping.

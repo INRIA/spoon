@@ -203,6 +203,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	public void process(CtSimpleType<?> type) {
 		if (type.isTopLevel())
 			createJavaFile(type);
+		printer.reset();
 	}
 
 	public void setOutputDirectory(File directory) {

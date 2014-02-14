@@ -642,7 +642,7 @@ public class Launcher {
 	 * Initializes an environment with the given parameters.
 	 * 
 	 * @param environment
-	 *            the environment to be intialized
+	 *            the environment to be initialized
 	 * @param complianceLevel
 	 *            the Java source code compliance level (... 4, 5, 6, 7)
 	 * @param verbose
