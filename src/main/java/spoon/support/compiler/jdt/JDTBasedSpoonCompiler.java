@@ -183,10 +183,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// args.add("-d");
 		// args.add("none");
 
-		if (destinationDirectory != null) {
-			sourceClasspath += File.pathSeparator
-					+ destinationDirectory.getAbsolutePath();
-		}
 		if (sourceClasspath != null) {
 			args.add("-cp");
 			args.add(sourceClasspath);
