@@ -555,13 +555,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (e.isParentInitialized()) {
 					if (parent != e.getParent()) {
 						env.report(null, Severity.WARNING,
-								"ignoring unconsistent parent for "
+								"ignoring inconsistent parent for "
 										+ e.getClass().getSimpleName()
 										+ " ("
 										+ parent.getClass().getSimpleName()
 										+ " != "
 										+ e.getParent().getClass()
-												.getSimpleName() + ")");
+												.getSimpleName() + ")"
+										+ e.getPosition()
+										);
 					}
 				} else {
 					e.setParent(parent);
@@ -1134,7 +1136,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		enterCtExpression(thisAccess);
 		if (thisAccess.isQualified() && thisAccess.isImplicit()) {
-			throw new RuntimeException("unconsistent this definition");
+			throw new RuntimeException("inconsistent this definition");
 		}
 		if (thisAccess.isQualified()) {
 			visitCtTypeReferenceWithoutGenerics(thisAccess.getType());
