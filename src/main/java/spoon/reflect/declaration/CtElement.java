@@ -75,6 +75,8 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 
 	/**
 	 * Returns the annotations that are present on this element.
+	 * 
+	 * For sake of encapsulation, the returned list is unmodifiable.
 	 */
 	List<CtAnnotation<? extends Annotation>> getAnnotations();
 
