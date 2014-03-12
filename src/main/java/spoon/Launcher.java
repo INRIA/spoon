@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
@@ -522,7 +523,7 @@ public class Launcher {
 			}
 		}
 		if (!arguments.success() || arguments.getBoolean("help")) {
-			System.err.println();
+			System.err.println(getVersionMessage());
 			System.err.println("Usage: java <launcher name> [option(s)]");
 			System.err.println();
 			System.err.println("Options : ");
@@ -894,7 +895,7 @@ public class Launcher {
 				args.getBoolean("fragments"), args.getBoolean("lines"),
 				args.getFile("output"));
 
-		factory.getEnvironment().reportProgressMessage("Spoon version 2.0");
+		factory.getEnvironment().reportProgressMessage(getVersionMessage());
 
 		factory.getEnvironment().debugMessage("loading command-line arguments: "
 				+ Arrays.asList(this.args));
@@ -926,6 +927,10 @@ public class Launcher {
 			new SpoonModelTree(compiler.getFactory());
 		}
 
+	}
+
+	private String getVersionMessage() {
+		return "Spoon version "+ResourceBundle.getBundle("spoon").getString("application.version");
 	}
 
 }
