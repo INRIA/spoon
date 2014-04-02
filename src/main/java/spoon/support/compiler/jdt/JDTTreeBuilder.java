@@ -1460,7 +1460,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ArrayInitializer arrayInitializer, BlockScope scope) {
 		CtNewArray<?> array = factory.Core().createNewArray();
-		array.setInitializer(true);
 		context.enter(array, arrayInitializer);
 		return super.visit(arrayInitializer, scope);
 	}
@@ -2188,7 +2187,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 						fa.setVariable(varRef);
 					}
 					fa.setType(references
-							.getTypeReference(qualifiedNameReference.resolvedType));
+							.getTypeReference(b.type));
 					va.setParent(fa);
 					va = fa;
 				}

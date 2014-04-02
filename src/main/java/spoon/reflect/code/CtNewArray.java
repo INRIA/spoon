@@ -28,17 +28,6 @@ import java.util.List;
 public interface CtNewArray<T> extends CtExpression<T> {
 
 	/**
-	 * Returns true if this new array expression is a simplified initializer
-	 * (without the new part).
-	 */
-	boolean isInitializer();
-
-	/**
-	 * Sets this new array expression to be an initializer or not.
-	 */
-	void setInitializer(boolean initializer);
-
-	/**
 	 * Gets the expressions that define the array's dimensions.
 	 */
 	List<CtExpression<Integer>> getDimensionExpressions();

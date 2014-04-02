@@ -1330,6 +1330,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		enterCtStatement(invocation);
 		enterCtExpression(invocation);
+//BCUTAG ??? 
+//		if (invocation.getExecutable() ==null || invocation.getExecutable().getSimpleName() == null){
+//			exitCtExpression(invocation);
+//			return;
+//		}
 		if (invocation.getExecutable().getSimpleName().equals("<init>")) {
 			// It's a constructor (super or this)
 			try {
@@ -1620,8 +1625,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
 
-		if (!(context.currentTopLevel instanceof CtAnnotationType)
-				&& !newArray.isInitializer()) {
+		if (!(context.currentTopLevel instanceof CtAnnotationType)) {
 			CtTypeReference<?> ref = newArray.getType();
 
 			if (ref != null) {
@@ -1888,11 +1892,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (ref.getDeclaringType() != null) {
 				if (!context.currentThis.contains(ref.getDeclaringType())) {
 					if (!context.ignoreEnclosingClass) {
-						boolean ign = context.ignoreGenerics;
-						context.ignoreGenerics = false;
+//						boolean ign = context.ignoreGenerics;
+//						context.ignoreGenerics = false;
 						scan(ref.getDeclaringType());
 						write(".");
-						context.ignoreGenerics = ign;
+//						context.ignoreGenerics = ign;
 					}
 				}
 				write(ref.getSimpleName());

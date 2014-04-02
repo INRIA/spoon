@@ -29,8 +29,6 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 		CtNewArray<T> {
 	private static final long serialVersionUID = 1L;
 
-	boolean initializer = false;
-	
 	List<CtExpression<Integer>> dimensionExpressions = EMPTY_LIST();
 
 	List<CtExpression<?>> expressions = EMPTY_LIST();
@@ -90,14 +88,5 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 		return expressions.remove(expression);
 	}
 
-	@Override
-	public boolean isInitializer() {
-		return initializer;
-	}
-
-	@Override
-	public void setInitializer(boolean initializer) {
-		this.initializer = initializer;
-	}
 
 }
