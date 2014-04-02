@@ -2432,7 +2432,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 				Argument jdtCatch = tryStatement.catchArguments[i];
 				
 				// case 1: old catch
-				if (jdtCatch.type instanceof SingleTypeReference) {
+				if (jdtCatch.type instanceof SingleTypeReference
+						|| jdtCatch.type instanceof QualifiedTypeReference
+						) {
 					CtTypeReference<Throwable> r = references
 							.getTypeReference(jdtCatch.type.resolvedType);
 					CtCatch c = createCtCatch(jdtCatch, r);
@@ -2441,7 +2443,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 				
 				// case 2: Java 7 multiple catch blocks
-				if (jdtCatch.type instanceof UnionTypeReference) { 
+				else if (jdtCatch.type instanceof UnionTypeReference) { 
 					UnionTypeReference utr = (UnionTypeReference)jdtCatch.type;
 					for (TypeReference type : utr.typeReferences) {
 						CtTypeReference<Throwable> r = references
@@ -2451,7 +2453,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 						context.exit(jdtCatch);
 					}
 				} 
-				
+				else { 
+					throw new RuntimeException("I don't know how to do this");
+				}
 
 			}
 		}
