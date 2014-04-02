@@ -6,6 +6,7 @@ import static spoon.test.TestUtils.build;
 import org.junit.Test;
 
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
@@ -96,4 +97,32 @@ public class FieldAccessTest {
 				meth0.getBody().getStatements().get(0).toString());
 	}
 
+	@Test
+	public void testBCUBug20140402() throws Exception {
+		CtSimpleType<?> type = build("spoon.test.fieldaccesses",
+				"BCUBug20140402");
+		assertEquals("BCUBug20140402", type.getSimpleName());
+
+		CtLocalVariable var = type.getElements(
+				new TypeFilter<CtLocalVariable>(CtLocalVariable.class)).get(0);
+		CtFieldAccess expr = (CtFieldAccess) var.getDefaultExpression();
+		assertEquals(
+				"length",
+				expr.getVariable().toString());
+		assertEquals(
+				"int",
+				expr.getType().getSimpleName());
+		
+		// in the model the top-most field access is .length get(0)
+		// and the second one is ".data" get(1)
+		CtFieldAccess fa = expr.getElements(new TypeFilter<CtFieldAccess>(CtFieldAccess.class)).get(1);
+		// we check that we have the data
+		assertEquals(
+				"data",
+				fa.getVariable().toString());
+		assertEquals(
+				"java.lang.Object[]",
+				fa.getType().toString());
+	}
+	
 }
