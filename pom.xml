@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>2.0-SNAPSHOT</version>
+  <version>2.0</version>
   <name>Spoon Core</name>
   <description>Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -30,9 +29,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:svn://scm.gforge.inria.fr/svnroot/spoon/trunk</connection>
-    <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/?cvsroot=spoon</url>
-    <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svnroot/spoon/trunk</developerConnection>
+    <connection>scm:svn:svn://scm.gforge.inria.fr/svnroot/spoon/tags/spoon-core-2.0</connection>
+    <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/tags/spoon-core-2.0?cvsroot=spoon</url>
+    <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svnroot/spoon/tags/spoon-core-2.0</developerConnection>
   </scm>
   <developers>
     <developer>
@@ -281,7 +280,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore></ignore>
+                    <ignore />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -322,12 +321,6 @@
           <encoding>UTF-8</encoding>
           <docencoding>UTF-8</docencoding>
           <charset>UTF-8</charset>
-          <doclet>gr.spinellis.umlgraph.doclet.UmlGraphDoc</doclet>
-          <docletArtifact>
-            <groupId>gr.spinellis</groupId>
-            <artifactId>UmlGraph</artifactId>
-            <version>4.6</version>
-          </docletArtifact>
           <links>
             <link>http://java.sun.com/j2se/${java.src.version}/docs/api/</link>
             <link>http://slf4j.org/api/</link>
@@ -435,11 +428,6 @@
           <name>inria</name>
           <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/releases</url>
         </repository>
-        <site>
-          <id>local</id>
-          <name>inria</name>
-          <url>file:///~/mvnsites/${project.artifactId}</url>
-        </site>
       </distributionManagement>
     </profile>
   </profiles>
