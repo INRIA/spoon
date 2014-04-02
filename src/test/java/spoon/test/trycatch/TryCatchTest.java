@@ -60,8 +60,6 @@ public class TryCatchTest {
 								+ "};").compile();
 		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 
-		System.out.println(tryStmt.toString());
-
 		// the first caught exception is RuntimeException
 		assertEquals(
 				RuntimeException.class,
