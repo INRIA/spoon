@@ -3,7 +3,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>3.0-SNAPSHOT</version>
+  <version>2.0</version>
   <name>Spoon Core</name>
   <description>Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -33,79 +33,6 @@
     <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/?cvsroot=spoon</url>
     <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svnroot/spoon/trunk</developerConnection>
   </scm>
-  <developers>
-    <developer>
-      <name>Renaud Pawlak</name>
-      <email>renaud.pawlak@inria.fr</email>
-      <organization>inria</organization>
-      <roles>
-        <role>Project Manager</role>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Nicolas Petitprez</name>
-      <email>nicolas.petitprez@lifl.fr</email>
-      <organization>inria</organization>
-      <roles>
-        <role>Project Manager</role>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Carlos Noguera</name>
-      <email>noguera@lifl.fr</email>
-      <organization>inria</organization>
-      <roles>
-        <role>Project Manager</role>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Didier Donsez</name>
-      <email>didier.donsez@imag.fr</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Lionel Seinturier</name>
-      <email>Lionel.Seinturier@lifl.fr</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Nicolas Pessemier</name>
-      <email>Nicolas.Pessemier@lifl.fr</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Olivier Barais</name>
-      <email>barais@irisa.fr</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Benoit Cornu</name>
-      <email>benoit.cornu@inria.fr</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>David Bernard</name>
-      <email>dwayneb@users.sourceforge.net</email>
-      <roles>
-        <role>Developer</role>
-        <role>maven support</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
-  </developers>
   <properties>
     <java.src.version>1.7</java.src.version>
     <runtime.log>target/velocity.log</runtime.log>
@@ -287,6 +214,33 @@
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
+        <plugin>
+          <artifactId>maven-source-plugin</artifactId>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <minmemory>128m</minmemory>
+            <maxmemory>512</maxmemory>
+            <excludePackageNames>spoon.support.*</excludePackageNames>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -388,56 +342,19 @@
     </repository>
   </repositories>
 
-  <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-              <minmemory>128m</minmemory>
-              <maxmemory>512</maxmemory>
-              <excludePackageNames>spoon.support.*</excludePackageNames>
-            </configuration>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-      <distributionManagement>
-        <repository>
-          <id>gforge.inria.fr-release</id>
-          <name>inria</name>
-          <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/releases</url>
-        </repository>
-      </distributionManagement>
-    </profile>
-  </profiles>
   <distributionManagement>
+    <repository>
+      <id>gforge.inria.fr-release</id>
+      <name>inria</name>
+      <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/releases</url>
+    </repository>
     <snapshotRepository>
       <id>gforge.inria.fr-snapshot</id>
       <name>inria-snapshots</name>
       <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
+  
   <organization>
     <name>Inria</name>
     <url>http://www.inria.fr</url>
