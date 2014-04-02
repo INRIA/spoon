@@ -27,6 +27,11 @@ public class AnnotationTest {
 		CtSimpleType<?> type = build("spoon.test.annotation", "Bound");
 		assertEquals("Bound", type.getSimpleName());
 		assertEquals(1, type.getAnnotations().size());
+	}	@Test
+	
+	public void testWritingAnnotParamArray() throws Exception {
+		CtSimpleType<?> type = build("spoon.test.annotation", "AnnotParam");
+		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })\n", type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
 	}
 
 	@Test

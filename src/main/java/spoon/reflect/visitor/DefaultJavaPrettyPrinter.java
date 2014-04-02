@@ -1625,7 +1625,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
 
-		if (!(context.currentTopLevel instanceof CtAnnotationType)) {
+		if (!(context.currentTopLevel instanceof CtAnnotationType)
+				&& (newArray.getParent(CtAnnotation.class)==null)
+				) {
 			CtTypeReference<?> ref = newArray.getType();
 
 			if (ref != null) {
