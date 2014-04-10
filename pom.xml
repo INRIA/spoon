@@ -3,9 +3,9 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>2.0</version>
+  <version>3.0-SNAPSHOT</version>
   <name>Spoon Core</name>
-  <description>Spoon is a Java program processor that fully supports Java 5. It provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification.</description>
+  <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
   <inceptionYear>2007</inceptionYear>
   <licenses>
@@ -30,7 +30,7 @@
   </mailingLists>
   <scm>
     <connection>scm:svn:svn://scm.gforge.inria.fr/svnroot/spoon/trunk</connection>
-    <url>http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/spoon-core/?cvsroot=spoon</url>
+    <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
     <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svnroot/spoon/trunk</developerConnection>
   </scm>
   <properties>
@@ -275,27 +275,14 @@
           <encoding>UTF-8</encoding>
           <docencoding>UTF-8</docencoding>
           <charset>UTF-8</charset>
-          <links>
-            <link>http://java.sun.com/j2se/${java.src.version}/docs/api/</link>
-            <link>http://slf4j.org/api/</link>
-            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
-            <link>http://logging.apache.org/log4j/docs/api/</link>
-            <link>http://people.apache.org/~tobrien/wicket/apidocs/</link>
-            <link>http://commons.apache.org/lang/api-release/</link>
-            <link>http://commons.apache.org/io/api-release/</link>
-            <link>http://testng.org/javadocs/</link>
-            <link>http://junit.sourceforge.net/javadoc/</link>
-            <link>http://help.eclipse.org/help33/topic/org.eclipse.jdt.doc.isv/reference/api/</link>
-          </links>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-jxr-plugin</artifactId>
       </plugin>
-      <plugin>
+<!--      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
-        <!-- version 2.1 is bugged ouput coverage 100% or 0% -->
         <version>2.0</version>
         <configuration>
           <formats>
@@ -303,7 +290,7 @@
             <format>html</format>
           </formats>
         </configuration>
-      </plugin>
+      </plugin>-->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
@@ -315,21 +302,6 @@
             <tag>@deprecated</tag>
           </tags>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>2.0-beta-2</version>
-        <configuration>
-          <issueLinkTemplate>%URL%/tracker/index.php?aid=%ISSUE%</issueLinkTemplate>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>changes-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
       </plugin>
     </plugins>
   </reporting>
@@ -353,6 +325,11 @@
       <name>inria-snapshots</name>
       <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/snapshots</url>
     </snapshotRepository>
+    <site>
+      <id>gforge.inria.fr-site</id>
+      <name>inria</name>
+      <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites</url>
+    </site>
   </distributionManagement>
   
   <organization>

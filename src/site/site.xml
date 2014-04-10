@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
-  <bannerRight>
-    <name>Spoon</name>
-    <src>images/spoon.jpg</src>
-  </bannerRight>
-  <bannerLeft>
-    <src>images/inria.png</src>
-  </bannerLeft>
   <publishDate position="left" format="yyyy-MM-dd HH:mm" />
   <!-- 
   <skin>
@@ -15,10 +8,6 @@
     <version>1.0-SNAPSHOT</version>
   </skin>
   -->
-  <poweredBy>
-    <logo name="Build with Maven 2" href="http://maven.apache.org" img="images/logos/maven-feather.png" />
-    <logo name="Inria" href="http://gforge.inria.fr/" img="http://gforge.inria.fr/themes/inria/images/logo.png" />
-  </poweredBy>
 
   <body>
     <links>
