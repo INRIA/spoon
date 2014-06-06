@@ -1,6 +1,7 @@
 package spoon.test.strings;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.test.TestUtils.build;
 
 import org.junit.Test;
 
@@ -44,6 +45,24 @@ public class StringLiteralTest {
 		
 		// Spoon rewrites €
 		//assertEquals("java.lang.String f2 = \"\\u10ac\";", f2.toString()); //
+	}
+	
+	@Test
+	public void testUnicode() throws Exception{
+		CtClass<?> type = build("spoon.test.strings", "SampleForUnicode");
+		String expected = "private static final char CHAR_COPY = '\\u00a9';";
+			
+		assertEquals("spooned failed for field "+type.getFields().get(0).getSimpleName(),expected, type.getFields().get(0).toString());
+
+	}
+	
+	@Test
+	public void testOctal() throws Exception{
+		CtClass<?> type = build("spoon.test.strings", "SampleForOctal");
+		String expected = "private static final char CHAR_COPY = '\\111';";
+			
+		assertEquals("spooned failed for field "+type.getFields().get(0).getSimpleName(),expected, type.getFields().get(0).toString());
+
 	}
 
 }
