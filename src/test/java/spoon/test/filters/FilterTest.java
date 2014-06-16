@@ -35,29 +35,20 @@ public class FilterTest {
 	public void setup() throws Exception {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
-		spoon.createCompiler(
-				factory,
-				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/filters/Foo.java"))
-				.build();
+		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/java/spoon/test/filters/Foo.java")).build();
 	}
 
 	@Test
 	public void testFilters() throws Exception {
-
-		CtClass<?> foo = factory.Package().get("spoon.test.filters")
-				.getType("Foo");
+		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
-
-		List<CtExpression<?>> expressions = foo
-				.getElements(new RegexFilter<CtExpression<?>>(".* = .*"));
-
+		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<CtExpression<?>>(".* = .*"));
 		assertEquals(2, expressions.size());
-
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
-	public void typeFilter() throws Exception {
+	public void filteredElementsAreOfTheCorrectType() throws Exception {
 		Factory factory = TestUtils.build("spoon.test", "SampleClass").getFactory();
 		Class<CtMethod> filterClass = CtMethod.class;
 		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(filterClass);
@@ -67,34 +58,36 @@ public class FilterTest {
 		}
 	}
 	
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
-	public void compositeFilter1() throws Exception {
+	public void intersectionOfTwoFilters() throws Exception {
 		Factory factory = TestUtils.build("spoon.test", "SampleClass").getFactory();
 		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(CtMethod.class);
 		TypeFilter<CtMethodImpl> statementImplFilter = new TypeFilter<CtMethodImpl>(CtMethodImpl.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.INTERSECTION, statementFilter, statementImplFilter);
 		
-		List<CtMethod> elementsA = Query.getElements(factory, statementFilter);
-		List<CtMethodImpl> elementsB = Query.getElements(factory, statementImplFilter);
+		List<CtMethod> methodsWithInterfaceSuperclass = Query.getElements(factory, statementFilter);
+		List<CtMethodImpl> methodWithConcreteClass = Query.getElements(factory, statementImplFilter);
 		
-		assertEquals(elementsA.size(), elementsB.size());
-		assertEquals(elementsA, elementsB);
+		assertEquals(methodsWithInterfaceSuperclass.size(), methodWithConcreteClass.size());
+		assertEquals(methodsWithInterfaceSuperclass, methodWithConcreteClass);
 		
-		List elements = Query.getElements(factory, compositeFilter);
+		List intersection = Query.getElements(factory, compositeFilter);
 		
-		assertEquals(elementsA.size(), elements.size());
-		assertEquals(elementsA, elements);
+		assertEquals(methodsWithInterfaceSuperclass.size(), intersection.size());
+		assertEquals(methodsWithInterfaceSuperclass, intersection);
 	}
 	
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
-	public void compositeFilter2() throws Exception {
+	public void unionOfTwoFilters() throws Exception {
 		Factory factory = TestUtils.build("spoon.test", "SampleClass").getFactory();
 		TypeFilter<CtNewClass> newClassFilter = new TypeFilter<CtNewClass>(CtNewClass.class);
-		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(CtMethod.class);
-		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.UNION, statementFilter, newClassFilter);
+		TypeFilter<CtMethod> methodFilter = new TypeFilter<CtMethod>(CtMethod.class);
+		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.UNION, methodFilter, newClassFilter);
 		
-		List elements = Query.getElements(factory, compositeFilter);
-		List<CtMethod> methods = Query.getElements(factory, statementFilter);
+		List filteredWithCompositeFilter = Query.getElements(factory, compositeFilter);
+		List<CtMethod> methods = Query.getElements(factory, methodFilter);
 		List<CtNewClass> newClasses = Query.getElements(factory, newClassFilter);
 		
 		List<CtElement> union = new ArrayList<CtElement>();
@@ -102,18 +95,19 @@ public class FilterTest {
 		union.addAll(newClasses);
 		
 		assertEquals(methods.size() + newClasses.size(), union.size());
-		assertEquals(union.size(), elements.size());
-		assertTrue(elements.containsAll(union));
+		assertEquals(union.size(), filteredWithCompositeFilter.size());
+		assertTrue(filteredWithCompositeFilter.containsAll(union));
 	}
 	
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
-	public void compositeFilter3() throws Exception {
+	public void classCastExceptionIsNotThrown() throws Exception {
 		Factory factory = TestUtils.build("spoon.test", "SampleClass").getFactory();
 		NameFilter<CtVariable<?>> nameFilterA = new NameFilter<CtVariable<?>>("j");
 		NameFilter<CtVariable<?>> nameFilterB = new NameFilter<CtVariable<?>>("k");
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.INTERSECTION, nameFilterA, nameFilterB);
-		
-		List elements = Query.getElements(factory, compositeFilter);
-		assertTrue(elements.isEmpty());
+		List filteredWithCompositeFilter = Query.getElements(factory, compositeFilter);
+		assertTrue(filteredWithCompositeFilter.isEmpty());
 	}
+
 }
