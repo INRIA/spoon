@@ -49,9 +49,9 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 			throw new RuntimeException(
 					"cannot insert in this context (use insertEnd?)");
 		}
-		CtBlock<?> parentBlock = (CtBlock<?>) e;
+		CtStatementList parentStatementList = (CtStatementList) e;
 		int i = 0;
-		for (CtStatement s : parentBlock.getStatements()) {
+		for (CtStatement s : parentStatementList.getStatements()) {
 			i++;
 			if (s == target) {
 				break;
@@ -59,7 +59,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		}
 		for (int j = statements.getStatements().size() - 1; j >= 0; j--) {
 			CtStatement s = statements.getStatements().get(j);
-			parentBlock.getStatements().add(i, s);
+			parentStatementList.getStatements().add(i, s);
 		}
 	}
 
