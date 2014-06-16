@@ -157,6 +157,16 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 				s.getFile()))
 				&& getLine() == s.getLine() && getColumn() == s.getColumn();
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + getLine();
+		result = prime * result + getColumn();
+		result = prime * result + getFile().hashCode();
+		return result;
+	}
 
 	CompilationUnit compilationUnit;
 
