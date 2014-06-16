@@ -36,13 +36,13 @@ public class CompositeFilter<T extends CtElement> implements Filter<T> {
 		switch (operator) {
 		case INTERSECTION:
 			for (Filter<T> f : filters) {
-				if (! hasMatch(f, element))
+				if (!f.matches(element))
 					return false;
 			}
 			return true;
 		case UNION:
 			for (Filter<T> f : filters) {
-				if (hasMatch(f, element))
+				if (f.matches(element))
 					return true;
 			}
 			return false;
@@ -78,14 +78,7 @@ public class CompositeFilter<T extends CtElement> implements Filter<T> {
 		this.filters = filters;
 		this.operator = operator;
 	}
-	
-	private boolean hasMatch(Filter<T> filter, T element) {
-		if (filter.getType().isAssignableFrom(element.getClass())) {
-			return filter.matches(element);
-		}
-		return false;
-	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Class<T> getType() {
 		return (Class<T>) CtElement.class;
