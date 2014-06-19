@@ -17,6 +17,7 @@
 
 package spoon.reflect.code;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -29,12 +30,8 @@ import java.util.List;
  * @param <R>
  *            the type of the returned expression if the last statement is a
  *            return statement
- * @see spoon.template.TemplateParameterList
- * @see spoon.reflect.code.CtBlock
- * @see spoon.reflect.code.CtBlock#insertAfter(Filter, CtStatementList)
- * @see spoon.reflect.code.CtBlock#insertBefore(Filter, CtStatementList)
  */
-public interface CtStatementList<R> extends CtCodeElement {
+public interface CtStatementList<R> extends CtCodeElement, Iterable<CtStatement> {
 
 	/**
 	 * Returns the statement list.
