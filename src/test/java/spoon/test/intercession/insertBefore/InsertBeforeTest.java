@@ -94,6 +94,33 @@ public class InsertBeforeTest {
         assertTrue(ifWithBraces.getThenStatement() instanceof CtBlock);
         assertEquals(s, ((CtBlock)ifWithBraces.getThenStatement()).getStatement(0));
         }
-
     }
+
+    @Test
+    public void testInsertBeforeSwitchCase() throws Exception {
+        CtClass<?> foo = factory.Package().get("spoon.test.intercession.insertBefore")
+                .getType("InsertBeforeExample");
+
+        {
+            CtMethod<?> sm = (CtMethod)foo.getElements(
+                    new NameFilter("switchMethod")).get(0);
+
+            CtCase s = factory.Core().createCase();
+            CtLiteral<Object> literal = factory.Core().createLiteral();
+            literal.setValue(1);
+            s.setCaseExpression(literal);
+
+            CtSwitch sw = sm.getElements(
+                    new TypeFilter<CtSwitch>(CtSwitch.class)).get(0);
+
+            // Inserts a s before the then statement
+            CtCase ctCase = (CtCase) sw.getCases().get(1);
+            ctCase.insertBefore(s);
+
+            assertEquals(4, sw.getCases().size());
+            assertEquals(s, sw.getCases().get(1));
+            assertEquals(ctCase, sw.getCases().get(2));
+        }
+    }
+
 }

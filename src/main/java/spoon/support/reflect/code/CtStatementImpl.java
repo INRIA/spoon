@@ -101,7 +101,26 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 					((CtIf) targetParent).setElseStatement(block);
 				parentBlock = block;
 			}
-		} else if (targetParent instanceof CtLoop) {
+		} else if (targetParent instanceof CtSwitch) {
+            for (CtStatement s : statementsToBeInserted) {
+                if (! (s instanceof CtCase)) {
+                    throw new RuntimeException(
+                            "cannot insert something that is not case in a switch");
+                }
+            }
+            int i=0;
+            for (CtStatement s : ((CtSwitch<?>) targetParent).getCases()) {
+                if (s == target) {
+                    break;
+                }
+                i++;
+            }
+            for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
+                CtStatement s = statementsToBeInserted.getStatements().get(j);
+                ((CtSwitch<?>) targetParent).getCases().add(i, (CtCase)s);
+            }
+            return;
+        } else if (targetParent instanceof CtLoop) {
 			CtStatement stat = ((CtLoop) targetParent).getBody();
 			if (stat instanceof CtBlock) {
 				parentBlock = (CtBlock<?>) stat;
