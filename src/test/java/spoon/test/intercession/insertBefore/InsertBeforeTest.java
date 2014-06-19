@@ -92,7 +92,7 @@ public class InsertBeforeTest {
         // Inserts a s before the then statement
         ifWithBraces.getThenStatement().insertBefore(s);
         assertTrue(ifWithBraces.getThenStatement() instanceof CtBlock);
-        assertEquals(s, ((CtBlock)ifWithBraces.getThenStatement()).getStatement(0));
+        assertEquals(s, ((CtBlock) ifWithBraces.getThenStatement()).getStatement(0));
         }
     }
 
@@ -113,13 +113,21 @@ public class InsertBeforeTest {
             CtSwitch sw = sm.getElements(
                     new TypeFilter<CtSwitch>(CtSwitch.class)).get(0);
 
-            // Inserts a s before the then statement
+            CtCase ctCase1 = (CtCase) sw.getCases().get(2);
+            CtCase ctCase2= (CtCase) sw.getCases().get(3);
+            CtCodeSnippetStatement snippet = factory.Code().createCodeSnippetStatement("System.out.println(\"foo\")");
+            ((CtStatement)ctCase1.getStatements().get(0)).insertBefore(snippet);
+            ((CtStatement)ctCase2.getStatements().get(1)).insertBefore(snippet);
+            assertEquals(snippet, ctCase1.getStatements().get(0));
+            assertEquals(snippet, ctCase2.getStatements().get(1));
+
             CtCase ctCase = (CtCase) sw.getCases().get(1);
             ctCase.insertBefore(s);
 
-            assertEquals(4, sw.getCases().size());
+            assertEquals(5, sw.getCases().size());
             assertEquals(s, sw.getCases().get(1));
             assertEquals(ctCase, sw.getCases().get(2));
+
         }
     }
 
