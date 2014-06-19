@@ -17,15 +17,11 @@
 
 package spoon.support.reflect.code;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLoop;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		CtStatement {
@@ -76,69 +72,77 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 	}
 
 	public static void insertBefore(CtStatement target,
-			CtStatementList<?> statements) throws ParentNotInitializedException {
-		CtElement e = target.getParent();
-		if (e instanceof CtExecutable) {
+			CtStatementList<?> statementsToBeInserted) throws ParentNotInitializedException {
+		CtElement targetParent = target.getParent();
+		if (targetParent instanceof CtExecutable) {
 			throw new RuntimeException(
 					"cannot insert in this context (use insertEnd?)");
 		}
-		int i = 0;
 		CtBlock<?> parentBlock;
-		if (e instanceof CtIf) {
+		if (targetParent instanceof CtIf) {
 			boolean inThen = true;
-			CtStatement stat = ((CtIf) e).getThenStatement();
+			CtStatement stat = ((CtIf) targetParent).getThenStatement();
 			if (stat != target) {
-				stat = ((CtIf) e).getElseStatement();
+				stat = ((CtIf) targetParent).getElseStatement();
 				inThen = false;
 			}
 			if (stat != target) {
 				throw new IllegalArgumentException("should not happen");
 			}
 			if (stat instanceof CtBlock) {
-				parentBlock = (CtBlock<?>) stat;
+                ((CtBlock<?>) stat).insertBegin(statementsToBeInserted);
+                return;
 			} else {
 				CtBlock<?> block = target.getFactory().Core().createBlock();
 				block.addStatement(stat);
 				if (inThen)
-					((CtIf) e).setThenStatement(block);
+					((CtIf) targetParent).setThenStatement(block);
 				else
-					((CtIf) e).setElseStatement(block);
+					((CtIf) targetParent).setElseStatement(block);
 				parentBlock = block;
 			}
-		} else if (e instanceof CtLoop) {
-			CtStatement stat = ((CtLoop) e).getBody();
+		} else if (targetParent instanceof CtLoop) {
+			CtStatement stat = ((CtLoop) targetParent).getBody();
 			if (stat instanceof CtBlock) {
 				parentBlock = (CtBlock<?>) stat;
+                ((CtBlock<?>) stat).insertBegin(statementsToBeInserted);
+                return;
 			} else {
 				CtBlock<?> block = target.getFactory().Core().createBlock();
 				block.getStatements().add(stat);
-				((CtLoop) e).setBody(block);
+				((CtLoop) targetParent).setBody(block);
 				parentBlock = block;
 			}
-		} else if (e instanceof CtCase) {
-			for (CtStatement s : ((CtCase<?>) e).getStatements()) {
-				if (s == target) {
-					break;
-				}
-				i++;
-			}
-			for (int j = statements.getStatements().size() - 1; j >= 0; j--) {
-				CtStatement s = statements.getStatements().get(j);
-				((CtCase<?>) e).getStatements().add(i, s);
-			}
-			return;
-		} else {
-			parentBlock = (CtBlock<?>) e;// BCUTAG bad cast
+		} else if (targetParent instanceof CtCase) {
+            int i=0;
+            for (CtStatement s : ((CtCase<?>) targetParent).getStatements()) {
+                if (s == target) {
+                    break;
+                }
+                i++;
+            }
+            for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
+                CtStatement s = statementsToBeInserted.getStatements().get(j);
+                ((CtCase<?>) targetParent).getStatements().add(i, s);
+            }
+            return;
+        } else {
+			parentBlock = (CtBlock<?>) targetParent;// BCUTAG bad cast
 		}
+
+        if (!(parentBlock instanceof CtBlock)) {
+            throw new RuntimeException("can not add a statement that is not in a block");
+        }
+
+        int indexOfTargetElement = 0;
 		for (CtStatement s : parentBlock.getStatements()) {
 			if (s == target) {
 				break;
 			}
-			i++;
+			indexOfTargetElement++;
 		}
-		for (int j = statements.getStatements().size() - 1; j >= 0; j--) {
-			CtStatement s = statements.getStatements().get(j);
-			parentBlock.getStatements().add(i, s);
+		for (CtStatement s : statementsToBeInserted) {
+			parentBlock.getStatements().add(indexOfTargetElement++, s);
 		}
 	}
 
