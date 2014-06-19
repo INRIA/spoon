@@ -21,6 +21,9 @@ public class ArraysTest {
 
         CtField<?> x = type.getField("x");
         assertTrue(x.getType() instanceof CtArrayTypeReference);
+        assertEquals("Array",x.getType().getSimpleName());
+        assertEquals("java.lang.reflect.Array",x.getType().getQualifiedName());
+        assertEquals("int",((CtArrayTypeReference)x.getType()).getComponentType().getSimpleName());
         assertTrue(((CtArrayTypeReference)x.getType()).getComponentType().getActualClass().equals(int.class));
     }
 
