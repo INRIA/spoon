@@ -45,7 +45,7 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 
 	@Override
 	public String getSimpleName() {
-		return componentType.getSimpleName();
+		return Array.class.getSimpleName();
 	}
 
 	@Override
@@ -55,15 +55,7 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 
 	@Override
 	public String getQualifiedName() {
-		if (getComponentType().getDeclaringType() != null) {
-			return getComponentType().getDeclaringType().getQualifiedName()
-					+ CtSimpleType.INNERTTYPE_SEPARATOR + getSimpleName();
-		} else if (getComponentType().getPackage() != null) {
-			return getComponentType().getPackage().getSimpleName()
-					+ CtPackage.PACKAGE_SEPARATOR + getSimpleName();
-		} else {
-			return getSimpleName();
-		}
+                 return Array.class.getCanonicalName();
 	}
 
 	@SuppressWarnings("unchecked")

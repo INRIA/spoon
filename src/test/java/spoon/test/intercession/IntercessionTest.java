@@ -59,31 +59,6 @@ public class IntercessionTest {
 	}
 
 	@Test
-	public void testInsertBefore() {
-		CtClass<?> clazz = factory
-				.Code()
-				.createCodeSnippetStatement(
-						"" + "class X {" + "public void foo() {" + " int x=0;"
-								+ " int y=0;" + " int z=x+y;" + "}" + "};")
-				.compile();
-		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
-
-		CtBlock<?> body = foo.getBody();
-		assertEquals(3, body.getStatements().size());
-
-		CtStatement s = body.getStatements().get(2);
-		assertEquals("int z = x + y", s.toString());
-
-		// adding a new statement;
-		CtCodeSnippetStatement stmt = factory.Core()
-				.createCodeSnippetStatement();
-		stmt.setValue("System.out.println(x);");
-		s.insertBefore(stmt);
-		assertEquals(4, body.getStatements().size());
-		assertSame(stmt, body.getStatements().get(2));
-	}
-
-	@Test
 	public void test_setThrownExpression() {
 		CtThrow throwStmt = factory.Core().createThrow();
 		CtExpression<Exception> exp = factory.Code()

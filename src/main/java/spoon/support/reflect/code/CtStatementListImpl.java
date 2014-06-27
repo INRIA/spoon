@@ -18,6 +18,7 @@
 package spoon.support.reflect.code;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import spoon.reflect.code.CtStatement;
@@ -76,4 +77,8 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		this.statements.remove(statement);
 	}
 
+    @Override
+    public Iterator<CtStatement> iterator() {
+        return statements.iterator();
+    }
 }
