@@ -3,10 +3,13 @@ package spoon.test.fieldaccesses;
 import static org.junit.Assert.assertEquals;
 import static spoon.test.TestUtils.build;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
@@ -125,4 +128,24 @@ public class FieldAccessTest {
 				fa.getType().toString());
 	}
 	
+	@Test
+	public void testTargetedAccessPosition() throws Exception{
+		CtSimpleType<?> type = build("spoon.test.fieldaccesses", "TargetedAccessPosition");
+		List<CtFieldAccess<?>> vars = type.getElements(
+				new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
+		//vars is [t.ta.ta, t.ta]
+		assertEquals(2, vars.size());
+		
+		assertEquals(vars.get(1), vars.get(0).getTarget());
+		
+		// 6 is length(t.ta.ta) - 1
+		assertEquals(6, vars.get(0).getPosition().getSourceEnd() - vars.get(0).getPosition().getSourceStart());
+		
+		// 3 is length(t.ta) - 1
+		assertEquals(3, vars.get(0).getTarget().getPosition().getSourceEnd() - vars.get(0).getTarget().getPosition().getSourceStart());
+
+		// 0 is length(t)-1
+		assertEquals(0, ((CtTargetedAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() - 
+				((CtTargetedAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
+	}
 }
