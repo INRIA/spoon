@@ -126,7 +126,7 @@ public class AnnotationFactory extends TypeFactory {
 			annotation = factory.Core().createAnnotation();
 			annotation.setAnnotationType(factory.Type().createReference(
 					annotationType));
-			element.getAnnotations().add(annotation);
+			element.addAnnotation(annotation);
 		}
 		boolean isArray;
 
@@ -199,7 +199,7 @@ public class AnnotationFactory extends TypeFactory {
 			annotation = factory.Core().createAnnotation();
 			annotation.setAnnotationType(factory.Type().createReference(
 					annotationType));
-			element.getAnnotations().add(annotation);
+			element.addAnnotation(annotation);
 		}
 		return annotation;
 	}
