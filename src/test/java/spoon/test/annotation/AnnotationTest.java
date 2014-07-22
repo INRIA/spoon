@@ -18,6 +18,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class AnnotationTest {
@@ -31,7 +32,7 @@ public class AnnotationTest {
 	
 	public void testWritingAnnotParamArray() throws Exception {
 		CtSimpleType<?> type = build("spoon.test.annotation", "AnnotParam");
-		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })\n", type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
+		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })" + DefaultJavaPrettyPrinter.LINE_SEPARATOR, type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
 	}
 
 	@Test
