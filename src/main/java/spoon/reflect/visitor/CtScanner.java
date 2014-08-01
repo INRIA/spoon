@@ -542,7 +542,7 @@ public abstract class CtScanner implements CtVisitor {
 		exit(returnStatement);
 	}
 
-	public <R> void visitCtStatementList(CtStatementList<R> statements) {
+	public <R> void visitCtStatementList(CtStatementList statements) {
 		enter(statements);
 		scan(statements.getAnnotations());
 		scan(statements.getStatements());

@@ -33,6 +33,24 @@ import spoon.test.TestUtils;
 public class GenericsTest {
 
 	@Test
+	public void testBugComparableComparator() throws Exception {
+		CtClass<?> type = build("spoon.test.generics",
+				"ComparableComparatorBug");
+
+		assertEquals("ComparableComparatorBug", type.getSimpleName());
+
+		CtField field = type
+				.getElements(
+						new TypeFilter<CtField<?>>(CtField.class))
+				.get(1);
+
+		assertEquals(0, field.getType().getActualTypeArguments().size());
+		assertEquals(0, ((CtNewClass) field.getDefaultExpression()).getType()
+				.getActualTypeArguments().size());
+	}
+
+	
+	@Test
 	public void testModelBuildingTree() throws Exception {
 		CtClass<?> type = build("spoon.test.generics", "Tree");
 		assertEquals("Tree", type.getSimpleName());

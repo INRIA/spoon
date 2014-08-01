@@ -17,8 +17,6 @@
 
 package spoon.reflect.code;
 
-import java.util.List;
-
 import spoon.reflect.visitor.Filter;
 import spoon.template.TemplateParameter;
 
@@ -28,7 +26,7 @@ import spoon.template.TemplateParameter;
  * value, the block should contain a return statement as a lastly reachable
  * statement. The returned type if any is given by <code>R</code>.
  */
-public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
+public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParameter<R> {
 
 	/**
 	 * Inserts the given statement at the begining of the block.
@@ -38,7 +36,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	/**
 	 * Inserts the given statement list at the begining of the block.
 	 */
-	void insertBegin(CtStatementList<?> statements);
+	void insertBegin(CtStatementList statements);
 
 	/**
 	 * Inserts the given statement at the end of the block.
@@ -48,7 +46,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	/**
 	 * Inserts the given statements at the end of the block.
 	 */
-	void insertEnd(CtStatementList<?> statements);
+	void insertEnd(CtStatementList statements);
 
 	/**
 	 * Inserts the given statement before a set of insertion points given by a
@@ -62,7 +60,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 * by a filter.
 	 */
 	void insertBefore(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList<?> statements);
+			CtStatementList statements);
 
 	/**
 	 * Inserts the given statement after a set of insertion points given by a
@@ -76,22 +74,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 * a filter.
 	 */
 	void insertAfter(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList<?> statements);
-
-	/**
-	 * Returns the statements enclosed by this block.
-	 */
-	List<CtStatement> getStatements();
-
-	/**
-	 * Converts this block to a statement list.
-	 */
-	CtStatementList<R> toStatementList();
-
-	/**
-	 * Sets the statements enclosed by this block.
-	 */
-	void setStatements(List<CtStatement> statements);
+			CtStatementList statements);
 
 	/**
 	 * Gets the ith statement of this block.

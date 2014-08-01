@@ -158,7 +158,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		spoon.support.reflect.code.CtStatementImpl.insertAfter(this, statement);
 	}
 
-	public void insertAfter(CtStatementList<?> statements) {
+	public void insertAfter(CtStatementList statements) {
 		spoon.support.reflect.code.CtStatementImpl
 				.insertAfter(this, statements);
 	}
@@ -168,7 +168,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 				.insertBefore(this, statement);
 	}
 
-	public void insertBefore(CtStatementList<?> statements) {
+	public void insertBefore(CtStatementList statements) {
 		spoon.support.reflect.code.CtStatementImpl.insertBefore(this,
 				statements);
 	}

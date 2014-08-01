@@ -18,6 +18,7 @@
 package spoon.support.reflect.code;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import spoon.reflect.code.CtCase;
@@ -54,35 +55,32 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	}
 
 	@Override
-	public boolean addStatement(CtStatement statement) {
+	public void addStatement(CtStatement statement) {
 		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
 			statements = new ArrayList<CtStatement>();
 		}
-		return statements.add(statement);
+		statements.add(statement);
 	}
 
 	@Override
-	public void addStatement(int i, CtStatement statement) {
-		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			statements = new ArrayList<CtStatement>();
-		}
-		statements.add(i, statement);
-	}
-
-	@Override
-	public boolean removeStatement(CtStatement statement) {
-		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			return false;
-		}
-		return statements.remove(statement);
-	}
-
-	@Override
-	public void removeStatement(int i) {
+	public void removeStatement(CtStatement statement) {
 		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
 			return;
 		}
-		statements.remove(i);
+		statements.remove(statement);
 	}
+
+	@Override
+	public Iterator<CtStatement> iterator() {
+		return getStatements().iterator();
+	}
+
+	// adds all those elements before the current case
+//	@Override
+//	public void insertBefore(CtStatementList statements)
+//			throws ParentNotInitializedException {
+//		
+//		throw new SpoonException("");
+//	}
 
 }

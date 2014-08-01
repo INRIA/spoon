@@ -297,7 +297,7 @@ public interface CtVisitor {
 	/**
 	 * Visits a statement list.
 	 */
-	<R> void visitCtStatementList(CtStatementList<R> statements);
+	<R> void visitCtStatementList(CtStatementList statements);
 
 	/**
 	 * Visits a <code>switch</code> statement.

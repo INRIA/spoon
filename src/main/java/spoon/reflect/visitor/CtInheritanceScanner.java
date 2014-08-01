@@ -476,7 +476,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtCFlowBreak(returnStatement);
 	}
 
-	public <R> void visitCtStatementList(CtStatementList<R> statements) {
+	public <R> void visitCtStatementList(CtStatementList statements) {
 		scanCtCodeElement(statements);
 	}
 

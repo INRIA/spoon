@@ -316,7 +316,7 @@ public interface CoreFactory {
 	/**
 	 * Creates a statement list.
 	 */
-	<R> CtStatementList<R> createStatementList();
+	<R> CtStatementList createStatementList();
 
 	/**
 	 * Creates a <code>switch</code> statement.

@@ -29,13 +29,13 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 
 	public static void insertAfter(CtStatement target, CtStatement statement)
 			throws ParentNotInitializedException {
-		CtStatementList<?> sts = target.getFactory().Core()
+		CtStatementList sts = target.getFactory().Core()
 				.createStatementList();
 		sts.addStatement(statement);
 		insertAfter(target, sts);
 	}
 
-	public static void replace(CtStatement target, CtStatementList<?> statements)
+	public static void replace(CtStatement target, CtStatementList statements)
 			throws ParentNotInitializedException {
 		insertAfter(target, statements);
 		CtBlock<?> parentBlock = (CtBlock<?>) target.getParent();
@@ -43,7 +43,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 	}
 
 	public static void insertAfter(CtStatement target,
-			CtStatementList<?> statements) throws ParentNotInitializedException {
+			CtStatementList statements) throws ParentNotInitializedException {
 		CtElement e = target.getParent();
 		if (e instanceof CtExecutable) {
 			throw new RuntimeException(
@@ -65,14 +65,14 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 
 	public static void insertBefore(CtStatement target, CtStatement statement)
 			throws ParentNotInitializedException {
-		CtStatementList<?> sts = target.getFactory().Core()
+		CtStatementList sts = target.getFactory().Core()
 				.createStatementList();
 		sts.addStatement(statement);
 		insertBefore(target, sts);
 	}
 
 	public static void insertBefore(CtStatement target,
-			CtStatementList<?> statementsToBeInserted) throws ParentNotInitializedException {
+			CtStatementList statementsToBeInserted) throws ParentNotInitializedException {
 		CtElement targetParent = target.getParent();
 		if (targetParent instanceof CtExecutable) {
 			throw new RuntimeException(
@@ -170,7 +170,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		insertBefore(this, statement);
 	}
 
-	public void insertBefore(CtStatementList<?> statements)
+	public void insertBefore(CtStatementList statements)
 			throws ParentNotInitializedException {
 		insertBefore(this, statements);
 	}
@@ -180,14 +180,14 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		insertAfter(this, statement);
 	}
 
-	public void insertAfter(CtStatementList<?> statements)
+	public void insertAfter(CtStatementList statements)
 			throws ParentNotInitializedException {
 		insertAfter(this, statements);
 	}
 
 	public void replace(CtElement element) {
 		if (element instanceof CtStatementList) {
-			CtStatementImpl.replace(this, (CtStatementList<?>) element);
+			CtStatementImpl.replace(this, (CtStatementList) element);
 		} else {
 			super.replace(element);
 		}

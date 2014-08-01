@@ -531,7 +531,7 @@ public class TemplateMatcher {
 			if (isCurrentTemplate(teList.get(te), inMulti)) {
 				if (te + 1 >= teList.size()) {
 					multi.addAll(taList.subList(te, taList.size()));
-					CtStatementList<?> tpl = templateType.getFactory().Core()
+					CtStatementList tpl = templateType.getFactory().Core()
 							.createStatementList();
 					tpl.setStatements((List<CtStatement>) (List<?>) multi);
 					if (!invokeCallBack(tpl, inMulti)) {
@@ -546,7 +546,7 @@ public class TemplateMatcher {
 					multi.add(taList.get(ta));
 					ta++;
 				}
-				CtStatementList<Object> tpl = templateType.getFactory().Core()
+				CtStatementList tpl = templateType.getFactory().Core()
 						.createStatementList();
 				tpl.setStatements((List<CtStatement>) (List<?>) multi);
 				if (!invokeCallBack(tpl, inMulti)) {
@@ -561,9 +561,11 @@ public class TemplateMatcher {
 					return false;
 				}
 				if (!(ta + 1 < taList.size()) && (inMulti != null)) {
-					CtStatementList<CtStatement> tpl = templateType
+					CtStatementList tpl = templateType
 							.getFactory().Core().createStatementList();
-					tpl.setStatements((List<CtStatement>) (List<?>) multi);
+					for (Object o: multi) {
+						tpl.addStatement((CtStatement) o);
+					}
 					if (!invokeCallBack(tpl, inMulti)) {
 						return false;
 					}

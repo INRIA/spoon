@@ -242,8 +242,8 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a new statement list from an existing block.
 	 */
-	public <R> CtStatementList<R> createStatementList(CtBlock<R> block) {
-		CtStatementList<R> l = factory.Core().createStatementList();
+	public <R> CtStatementList createStatementList(CtBlock<R> block) {
+		CtStatementList l = factory.Core().createStatementList();
 		for (CtStatement s : block.getStatements()) {
 			l.addStatement(factory.Core().clone(s));
 		}
@@ -339,10 +339,10 @@ public class CodeFactory extends SubFactory {
 	 *            the assigned expressions
 	 * @return a list of variable assignments
 	 */
-	public <T> CtStatementList<?> createVariableAssignments(
+	public <T> CtStatementList createVariableAssignments(
 			List<? extends CtVariable<T>> variables,
 			List<? extends CtExpression<T>> expressions) {
-		CtStatementList<?> result = factory.Core().createStatementList();
+		CtStatementList result = factory.Core().createStatementList();
 		for (int i = 0; i < variables.size(); i++) {
 			result.addStatement(createVariableAssignment(
 					variables.get(i).getReference(),

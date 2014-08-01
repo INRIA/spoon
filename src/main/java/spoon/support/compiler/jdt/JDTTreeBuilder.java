@@ -1347,11 +1347,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 				CtTypeReference<Object> res = references
 						.getTypeReference(((ParameterizedTypeBinding) allocationExpression.type.resolvedType)
 								.genericType());
-				if (((ParameterizedTypeBinding) allocationExpression.type.resolvedType).arguments != null)
+				ParameterizedTypeBinding paramType = ((ParameterizedTypeBinding) allocationExpression.type.resolvedType);
+				if (paramType.arguments != null
+						&& paramType.isBoundParameterizedType()
+						) {
 					for (TypeBinding b : ((ParameterizedTypeBinding) allocationExpression.type.resolvedType).arguments) {
 						res.addActualTypeArgument(references
 								.getTypeReference(b));
 					}
+				}
 				c.setType(res);
 			} else
 				c.setType(references

@@ -260,7 +260,7 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	}
 
-	public <R> void visitCtStatementList(CtStatementList<R> statements) {
+	public <R> void visitCtStatementList(CtStatementList statements) {
 
 	}
 
