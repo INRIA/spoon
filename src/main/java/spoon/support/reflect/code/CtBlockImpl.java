@@ -18,6 +18,7 @@
 package spoon.support.reflect.code;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -172,7 +173,10 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public Iterator<CtStatement> iterator() {
-		return getStatements().iterator();
+		// we have to both create a defensive object and un unmodifable list
+		// with only Collections.unmodifiableList you can modify the defensive object
+		// with only new ArrayList it breaks the encapsulation
+		return Collections.unmodifiableList(new ArrayList<CtStatement>(getStatements())).iterator();
 	}
 
 }
