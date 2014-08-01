@@ -17,8 +17,6 @@
 
 package spoon.reflect.code;
 
-import java.util.List;
-
 import spoon.reflect.visitor.Filter;
 import spoon.template.TemplateParameter;
 
@@ -28,7 +26,7 @@ import spoon.template.TemplateParameter;
  * value, the block should contain a return statement as a lastly reachable
  * statement. The returned type if any is given by <code>R</code>.
  */
-public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
+public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParameter<R> {
 
 	/**
 	 * Inserts the given statement at the begining of the block.
@@ -77,21 +75,6 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 */
 	void insertAfter(Filter<? extends CtStatement> insertionPoints,
 			CtStatementList statements);
-
-	/**
-	 * Returns the statements enclosed by this block.
-	 */
-	List<CtStatement> getStatements();
-
-	/**
-	 * Converts this block to a statement list.
-	 */
-	CtStatementList toStatementList();
-
-	/**
-	 * Sets the statements enclosed by this block.
-	 */
-	void setStatements(List<CtStatement> statements);
 
 	/**
 	 * Gets the ith statement of this block.

@@ -18,6 +18,7 @@
 package spoon.support.reflect.code;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import spoon.reflect.code.CtBlock;
@@ -45,7 +46,6 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		return statements;
 	}
 
-	@Override
 	public CtStatementList toStatementList() {
 		return getFactory().Code().createStatementList(this);
 	}
@@ -168,6 +168,11 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			this.statements = new ArrayList<CtStatement>();
 		}
 		this.statements.remove(statement);
+	}
+
+	@Override
+	public Iterator<CtStatement> iterator() {
+		return getStatements().iterator();
 	}
 
 }
