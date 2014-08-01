@@ -17,7 +17,6 @@
 
 package spoon.reflect.code;
 
-import java.util.List;
 
 /**
  * This code element defines a <code>case</code> within a <code>switch</code>.
@@ -26,7 +25,7 @@ import java.util.List;
  *            This type must be assignable from the switch type
  * @see spoon.reflect.code.CtSwitch
  */
-public interface CtCase<S> extends CtStatement {
+public interface CtCase<S> extends CtStatement, CtStatementList {
 	/**
 	 * Gets the case expression.
 	 */
@@ -36,34 +35,4 @@ public interface CtCase<S> extends CtStatement {
 	 * Sets the case expression.
 	 */
 	void setCaseExpression(CtExpression<S> caseExpression);
-
-	/**
-	 * Gets the list of statements that defines the case body.
-	 */
-	List<CtStatement> getStatements();
-
-	/**
-	 * Adds a statement to the case.
-	 */
-	boolean addStatement(CtStatement statement);
-
-	/**
-	 * Adds a statement to the case at the ith position.
-	 */
-	void addStatement(int i, CtStatement statement);
-
-	/**
-	 * Removes a statement from the case.
-	 */
-	boolean removeStatement(CtStatement statement);
-
-	/**
-	 * Removes the ith statement from the case.
-	 */
-	void removeStatement(int i);
-
-	/**
-	 * Sets the list of statements that defines the case body.
-	 */
-	void setStatements(List<CtStatement> statements);
 }
