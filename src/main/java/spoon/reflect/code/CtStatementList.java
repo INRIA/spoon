@@ -17,21 +17,14 @@
 
 package spoon.reflect.code;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * This code element represents a list of statements. It is not a valid Java
- * program element and is never used directly in the meta-model, on contrary to
- * a {@link spoon.reflect.code.CtBlock}. However, it is used as a container of
- * statements during code manipulation and for defining multiple-statement
- * template parameters.
- * 
- * @param <R>
- *            the type of the returned expression if the last statement is a
- *            return statement
+ * program element and is never used directly, on contrary to
+ * a {@link spoon.reflect.code.CtBlock}.
  */
-public interface CtStatementList<R> extends CtCodeElement, Iterable<CtStatement> {
+public interface CtStatementList extends CtCodeElement, Iterable<CtStatement> {
 
 	/**
 	 * Returns the statement list.
@@ -44,7 +37,7 @@ public interface CtStatementList<R> extends CtCodeElement, Iterable<CtStatement>
 	void setStatements(List<CtStatement> statements);
 
 	/**
-	 * Adds a statement.
+	 * Adds a statement at the end of the list.
 	 */
 	void addStatement(CtStatement statement);
 

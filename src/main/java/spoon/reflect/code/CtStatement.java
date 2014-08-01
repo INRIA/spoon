@@ -36,7 +36,7 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	void insertAfter(CtStatementList<?> statements)
+	void insertAfter(CtStatementList statements)
 			throws ParentNotInitializedException;
 
 	/**
@@ -49,7 +49,7 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	void insertBefore(CtStatementList<?> statements)
+	void insertBefore(CtStatementList statements)
 			throws ParentNotInitializedException;
 
 	/**

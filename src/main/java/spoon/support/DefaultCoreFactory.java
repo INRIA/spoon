@@ -517,8 +517,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
-	public <R> CtStatementList<R> createStatementList() {
-		CtStatementList<R> e = new CtStatementListImpl<R>();
+	public <R> CtStatementList createStatementList() {
+		CtStatementList e = new CtStatementListImpl<R>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

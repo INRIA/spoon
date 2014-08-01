@@ -1769,7 +1769,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtNamedElement(type);
 	}
 
-	public <R> void visitCtStatementList(CtStatementList<R> statements) {
+	public <R> void visitCtStatementList(CtStatementList statements) {
 		for (CtStatement s : statements.getStatements()) {
 			scan(s);
 		}

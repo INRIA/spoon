@@ -98,17 +98,17 @@ public class CtInvocationImpl<T> extends
 		CtStatementImpl.insertBefore(this, statement);
 	}
 
-	public void insertAfter(CtStatementList<?> statements) {
+	public void insertAfter(CtStatementList statements) {
 		CtStatementImpl.insertAfter(this, statements);
 	}
 
-	public void insertBefore(CtStatementList<?> statements) {
+	public void insertBefore(CtStatementList statements) {
 		CtStatementImpl.insertBefore(this, statements);
 	}
 
 	public void replace(CtElement element) {
 		if (element instanceof CtStatementList) {
-			CtStatementImpl.replace(this, (CtStatementList<?>) element);
+			CtStatementImpl.replace(this, (CtStatementList) element);
 		} else {
 			super.replace(element);
 		}

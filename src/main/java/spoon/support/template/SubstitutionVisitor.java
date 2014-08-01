@@ -236,7 +236,7 @@ public class SubstitutionVisitor extends CtScanner {
 				if (Parameters.isParameterSource(fa.getVariable())) {
 					Object[] value = (Object[]) Parameters.getValue(template,
 							fa.getVariable().getSimpleName(), null);
-					CtStatementList<?> l = foreach.getFactory().Core()
+					CtStatementList l = foreach.getFactory().Core()
 							.createStatementList();
 					CtStatement body = foreach.getBody();
 					for (Object element : value) {

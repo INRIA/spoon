@@ -657,7 +657,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public <R> void visitCtStatementList(CtStatementList<R> statements) {
+	public <R> void visitCtStatementList(CtStatementList statements) {
 		throw new RuntimeException("Unknow Element");
 	}
 

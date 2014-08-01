@@ -46,7 +46,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public CtStatementList<R> toStatementList() {
+	public CtStatementList toStatementList() {
 		return getFactory().Code().createStatementList(this);
 	}
 
@@ -61,7 +61,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		return (T) statements.get(statements.size() - 1);
 	}
 
-	public void insertBegin(CtStatementList<?> statements) {
+	public void insertBegin(CtStatementList statements) {
 		if (getParentNoExceptions() != null
 				&& getParentNoExceptions() instanceof CtConstructor
 				&& getStatements().size() > 0) {
@@ -104,7 +104,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		addStatement(statement);
 	}
 
-	public void insertEnd(CtStatementList<?> statements) {
+	public void insertEnd(CtStatementList statements) {
 		for (CtStatement s : statements.getStatements()) {
 			insertEnd(s);
 		}
@@ -118,7 +118,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertAfter(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList<?> statements) {
+			CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statements);
 		}
@@ -132,7 +132,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertBefore(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList<?> statements) {
+			CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statements);
 		}

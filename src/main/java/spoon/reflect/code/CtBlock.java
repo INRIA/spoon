@@ -38,7 +38,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	/**
 	 * Inserts the given statement list at the begining of the block.
 	 */
-	void insertBegin(CtStatementList<?> statements);
+	void insertBegin(CtStatementList statements);
 
 	/**
 	 * Inserts the given statement at the end of the block.
@@ -48,7 +48,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	/**
 	 * Inserts the given statements at the end of the block.
 	 */
-	void insertEnd(CtStatementList<?> statements);
+	void insertEnd(CtStatementList statements);
 
 	/**
 	 * Inserts the given statement before a set of insertion points given by a
@@ -62,7 +62,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 * by a filter.
 	 */
 	void insertBefore(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList<?> statements);
+			CtStatementList statements);
 
 	/**
 	 * Inserts the given statement after a set of insertion points given by a
@@ -76,7 +76,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	 * a filter.
 	 */
 	void insertAfter(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList<?> statements);
+			CtStatementList statements);
 
 	/**
 	 * Returns the statements enclosed by this block.
@@ -86,7 +86,7 @@ public interface CtBlock<R> extends CtStatement, TemplateParameter<R> {
 	/**
 	 * Converts this block to a statement list.
 	 */
-	CtStatementList<R> toStatementList();
+	CtStatementList toStatementList();
 
 	/**
 	 * Sets the statements enclosed by this block.

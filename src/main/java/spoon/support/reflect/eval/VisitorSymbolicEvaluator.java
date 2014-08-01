@@ -869,7 +869,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		throw new RuntimeException("Not evaluable");
 	}
 
-	public <R> void visitCtStatementList(CtStatementList<R> statements) {
+	public <R> void visitCtStatementList(CtStatementList statements) {
 		skip(statements);
 	}
 

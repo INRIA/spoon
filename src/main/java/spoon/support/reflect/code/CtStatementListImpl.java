@@ -29,7 +29,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtStatementListImpl<R> extends CtCodeElementImpl implements
-		CtStatementList<R> {
+		CtStatementList {
 	private static final long serialVersionUID = 1L;
 
 	List<CtStatement> statements = EMPTY_LIST();
@@ -50,7 +50,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		return null;
 	}
 
-	public CtStatementList<R> getSubstitution(CtSimpleType<?> targetType) {
+	public CtStatementList getSubstitution(CtSimpleType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 
