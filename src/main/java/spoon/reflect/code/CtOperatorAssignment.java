@@ -24,11 +24,15 @@ public interface CtOperatorAssignment<T, A extends T> extends
 		CtAssignment<T, A> {
 	/**
 	 * Sets the operator kind.
+	 *
+	 * @param kind the kind of the binary operator
 	 */
 	void setKind(BinaryOperatorKind kind);
 
 	/**
 	 * Gets the operator kind.
+	 *
+	 * @return the kind of the binary operator
 	 */
 	BinaryOperatorKind getKind();
 }

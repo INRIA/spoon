@@ -27,11 +27,15 @@ public interface CtVariableReference<T> extends CtReference {
 
 	/**
 	 * Gets the type of the variable.
+	 *
+	 * @return the type of the variable
 	 */
 	CtTypeReference<T> getType();
 
 	/**
 	 * Sets the type of the variable.
+	 *
+	 * @param type the type of this variable
 	 */
 	void setType(CtTypeReference<T> type);
 

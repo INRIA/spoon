@@ -23,11 +23,15 @@ package spoon.reflect.code;
 public interface CtDo extends CtLoop {
 	/**
 	 * Returns the looping test as a boolean expression.
+	 *
+	 * @return condition expression
 	 */
 	CtExpression<Boolean> getLoopingExpression();
 
 	/**
 	 * Sets the looping test as a boolean expression.
+	 *
+	 * @param expression the condition expression to set
 	 */
 	void setLoopingExpression(CtExpression<Boolean> expression);
 }

@@ -23,28 +23,36 @@ package spoon.reflect.code;
  * @param <T>
  *            type of assigned expression
  * @param <A>
- *            type of expression to assign, it should extends <T>
+ *            type of expression to assign, it should extends &lt;T&gt;
  */
 public interface CtAssignment<T, A extends T> extends CtStatement,
 		CtExpression<T> {
 
 	/**
 	 * Returns the assigned expression (a variable, an array access...).
+	 *
+	 * @return the expression that gets assigned
 	 */
 	CtExpression<T> getAssigned();
 
 	/**
 	 * Returns the assignment that is set to the assigned expression.
+	 *
+	 * @return the assignment expression itself
 	 */
 	CtExpression<A> getAssignment();
 
 	/**
 	 * Sets the assigned expression.
+	 *
+	 * @param assigned the expression to assign
 	 */
 	void setAssigned(CtExpression<T> assigned);
 
 	/**
 	 * Sets the expression that is set to the assigned expression.
+	 *
+	 * @param assignment the assignment expression
 	 */
 	void setAssignment(CtExpression<A> assignment);
 

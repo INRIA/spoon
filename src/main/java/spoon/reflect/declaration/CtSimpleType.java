@@ -39,6 +39,8 @@ public interface CtSimpleType<T> extends CtNamedElement {
 	 * @param includeSamePackage
 	 *            set to true if the method should return also the types located
 	 *            in the same package as the current type
+	 *
+	 * @return a Set of type references
 	 */
 	Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage);
 
@@ -55,11 +57,6 @@ public interface CtSimpleType<T> extends CtNamedElement {
 	Class<T> getActualClass();
 
 	/**
-	 * Returns the fields that are directly declared by this class or interface.
-	 * Includes enum constants.
-	 */
-	// List<CtField<?>> getAllFields();
-	/**
 	 * Gets the type where this one is declared. If a declaring type is set, the
 	 * package corresponds to the declaring type's package.
 	 * 
@@ -69,6 +66,8 @@ public interface CtSimpleType<T> extends CtNamedElement {
 
 	/**
 	 * Gets a field from its name.
+	 *
+	 * @param name the name of the field
 	 * 
 	 * @return null if does not exit
 	 */
@@ -77,27 +76,40 @@ public interface CtSimpleType<T> extends CtNamedElement {
 	/**
 	 * Returns the fields that are directly declared by this class or interface.
 	 * Includes enum constants.
+	 *
+	 * @return the List of fields
 	 */
 	List<CtField<?>> getFields();
 
 	/**
 	 * Gets a nested type from its name.
+	 *
+	 * @param <N> the type's name
+	 * @param name the type's name
+	 *
+	 * @return the nested type
 	 */
 	<N extends CtSimpleType<?>> N getNestedType(String name);
 
 	/**
 	 * Returns the declarations of the nested classes and interfaces that are
 	 * directly declared by this class or interface.
+	 *
+	 * @return a Set of simple types
 	 */
 	Set<CtSimpleType<?>> getNestedTypes();
 
 	/**
 	 * Gets the package where this type is declared.
+	 *
+	 * @return the declaring package
 	 */
 	CtPackage getPackage();
 
 	/**
 	 * Returns the fully qualified name of this type declaration.
+	 *
+	 * @return the qualified name as a string
 	 */
 	String getQualifiedName();
 
@@ -106,11 +118,15 @@ public interface CtSimpleType<T> extends CtNamedElement {
 	/**
 	 * Returns true if this type is top-level (declared as the main type in a
 	 * file).
+	 *
+	 * @return true if this is a top-level type
 	 */
 	boolean isTopLevel();
 
 	/**
 	 * Sets the type's fields.
+	 *
+	 * @param fields the List of fields to set
 	 * 
 	 * @deprecated use {@link #addField(CtField)} and
 	 *             {@link #removeField(CtField)} instead
@@ -119,23 +135,27 @@ public interface CtSimpleType<T> extends CtNamedElement {
 	void setFields(List<CtField<?>> fields);
 
 	/**
-	 * add a Field
-	 * 
-	 * @param field
+	 * Adds a field
+	 *
+	 * @param <F> the field's type
+	 * @param field the field to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<F> boolean addField(CtField<F> field);
 
 	/**
-	 * remove a Field
-	 * 
-	 * @param field
+	 * Removes a field
+	 *
+	 * @param <F> the field's type
+	 * @param field the field to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<F> boolean removeField(CtField<F> field);
 
 	/**
 	 * Sets some nested types.
+	 *
+	 * @param nestedTypes the Set of nested types to set
 	 * 
 	 * @deprecated use {@link #addNestedType(CtSimpleType)} and
 	 *             {@link #removeNestedType(CtSimpleType)} instead
@@ -145,16 +165,18 @@ public interface CtSimpleType<T> extends CtNamedElement {
 
 	/**
 	 * remove a nested type
-	 * 
-	 * @param nestedType
+	 *
+	 * @param <N> type type's generic type
+	 * @param nestedType the nested type to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<N> boolean addNestedType(CtSimpleType<N> nestedType);
 
 	/**
 	 * add a nested type
-	 * 
-	 * @param nestedType
+	 *
+	 * @param <N> type type's generic type
+	 * @param nestedType the nested type to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<N> boolean removeNestedType(CtSimpleType<N> nestedType);

@@ -23,11 +23,15 @@ package spoon.reflect.code;
 public interface CtWhile extends CtLoop {
 	/**
 	 * Gets the looping boolean test expression.
+	 *
+	 * @return the condition expression
 	 */
 	CtExpression<Boolean> getLoopingExpression();
 
 	/**
 	 * Sets the looping boolean test expression.
+	 *
+	 * @param expression the condition expression
 	 */
 	void setLoopingExpression(CtExpression<Boolean> expression);
 }

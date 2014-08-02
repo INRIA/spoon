@@ -29,41 +29,65 @@ public interface CtNewArray<T> extends CtExpression<T> {
 
 	/**
 	 * Gets the expressions that define the array's dimensions.
+	 *
+	 * @return the List of the dimension expressions
 	 */
 	List<CtExpression<Integer>> getDimensionExpressions();
 
 	/**
 	 * Sets the expressions that define the array's dimensions.
+	 *
+	 * @param dimensions the List of expressions to set
 	 */
 	void setDimensionExpressions(List<CtExpression<Integer>> dimensions);
 
 	/**
 	 * Adds a dimension expression.
+	 *
+	 * @param dimension the expression to be added
+	 *
+	 * @return true if the expression has been added
 	 */
 	boolean addDimensionExpression(CtExpression<Integer> dimension);
 
 	/**
 	 * Removes a dimension expression.
+	 *
+	 * @param dimension the expression to be removed
+	 *
+	 * @return true if the expression has been removed
 	 */
 	boolean removeDimensionExpression(CtExpression<Integer> dimension);
 
 	/**
 	 * Gets the initialization expressions.
+	 *
+	 * @return the List of initialization expressions
 	 */
 	List<CtExpression<?>> getElements();
 
 	/**
 	 * Sets the initialization expressions.
+	 *
+	 * @param expression a List of expressions to add
 	 */
 	void setElements(List<CtExpression<?>> expression);
 
 	/**
 	 * Adds an element.
+	 *
+	 * @param expression the expression to add
+	 *
+	 * @return true if the expression has been added
 	 */
 	boolean addElement(CtExpression<?> expression);
 
 	/**
 	 * Removes an element.
+	 *
+	 * @param expression the expression to remove
+	 *
+	 * @return true if the expression has been removed
 	 */
 	boolean removeElement(CtExpression<?> expression);
 

@@ -59,6 +59,8 @@ public class SpoonTask extends Java {
 
 		/**
 		 * Gets the processor type.
+		 *
+		 * @return the qualified name if the processor name
 		 */
 		public String getType() {
 			return type;
@@ -67,6 +69,8 @@ public class SpoonTask extends Java {
 		/**
 		 * Sets the processor's type as a string representing the Java qualified
 		 * name.
+		 *
+		 * @param type the qualified name of the processors type
 		 */
 		public void setType(String type) {
 			this.type = type;
@@ -128,6 +132,8 @@ public class SpoonTask extends Java {
 	/**
 	 * Adds a new processor type to be instantiated and used by Spoon when
 	 * processing the code.
+	 *
+	 * @param processorType the processor type to add
 	 */
 	public void addProcessor(ProcessorType processorType) {
 		processorTypes.add(processorType);
@@ -135,6 +141,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Adds a source set.
+	 *
+	 * @param set the files to set
 	 */
 	public void addSourceSet(FileSet set) {
 		sourcefilesets.addElement(set);
@@ -142,6 +150,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Adds a template source set.
+	 *
+	 * @param set the files to set
 	 */
 	public void addTemplateSet(FileSet set) {
 		templatefilesets.addElement(set);
@@ -347,6 +357,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Sets the name of the laucher to be used.
+	 *
+	 * @param classname the class name to set
 	 */
 	public void setClassName(String classname) {
 		this.classname = classname;
@@ -372,7 +384,9 @@ public class SpoonTask extends Java {
 	}
 
 	/**
-	 * Sets the java14 property (to be able to parse java 1.4 source files).
+	 * Sets the compliance level (JDK version 1.X where X would be the parameter for this method).
+	 *
+	 * @param javaCompliance the compliance level to set
 	 */
 	public void setJavaCompliance(int javaCompliance) {
 		this.javaCompliance = javaCompliance;
@@ -380,6 +394,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Tells Spoon not to generate any source files.
+	 *
+	 * @param nooutput true to not generate any source files
 	 */
 	public void setNoOutput(boolean nooutput) {
 		this.nooutput = nooutput;
@@ -387,6 +403,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Tells Spoon to generate class files (bytecode).
+	 *
+	 * @param compile true to enable class file generation
 	 */
 	public void setCompile(boolean compile) {
 		this.compile = compile;
@@ -394,6 +412,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Sets the output directory for generated sources.
+	 *
+	 * @param output the output directory as a {@link java.io.File}
 	 */
 	@Override
 	public void setOutput(File output) {
@@ -402,6 +422,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Sets the destination directory for compiled classes (bytecode).
+	 *
+	 * @param destination the destination directory as a {@link java.io.File}
 	 */
 	public void setDestination(File destination) {
 		this.destination = destination;
@@ -410,6 +432,8 @@ public class SpoonTask extends Java {
 	/**
 	 * Sets the root directory where the processors' properties XML
 	 * configuration files are located.
+	 *
+	 * @param properties the property file to set
 	 */
 	public void setProperties(File properties) {
 		this.properties = properties;
@@ -417,6 +441,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Enables/disable printing out statistics on Spoon execution time.
+	 *
+	 * @param stats true to enable statistic output
 	 */
 	public void setStats(boolean stats) {
 		this.stats = stats;
@@ -425,6 +451,8 @@ public class SpoonTask extends Java {
 	/**
 	 * Sets a file or a directory to be processed (only templates, see
 	 * {@link #setInput(File)}).
+	 *
+	 * @param template sets the template file
 	 */
 	public void setTemplate(File template) {
 		this.template = template;
@@ -432,6 +460,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Sets Spoon to be in verbose mode.
+	 *
+	 * @param verbose true to enable verbose mode
 	 */
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
@@ -439,6 +469,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Sets Spoon to be in debug mode.
+	 *
+	 * @param debug true to enable debugging
 	 */
 	public void setDebug(boolean debug) {
 		this.debug = debug;
@@ -448,6 +480,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Sets Spoon to use tabulations instead of spaces when printing source.
+	 *
+	 * @param tabs true to use tabs instead of spaces
 	 */
 	public void setTabs(boolean tabs) {
 		this.tabs = tabs;
@@ -458,6 +492,8 @@ public class SpoonTask extends Java {
 	/**
 	 * Sets Spoon to use source code fragment driven generation technique
 	 * (preserves original formatting).
+	 *
+	 * @param fragments true to use fragment driven generation
 	 */
 	public void setFragments(boolean fragments) {
 		this.fragments = fragments;
@@ -467,6 +503,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Sets the tabulation size (default is 4 spaces).
+	 *
+	 * @param tabSize the tab size
 	 */
 	public void setTabSize(int tabSize) {
 		this.tabSize = tabSize;
@@ -474,6 +512,8 @@ public class SpoonTask extends Java {
 
 	/**
 	 * Tells if Spoon should precompile the input files before processing.
+	 *
+	 * @param precompile true to pre compile the input files
 	 */
 	public void setPrecompile(boolean precompile) {
 		this.precompile = precompile;
@@ -541,20 +581,26 @@ public class SpoonTask extends Java {
 	/**
 	 * Sets Spoon to build only the outdated source files (gives better
 	 * performances). This option will be ignored if the noouput option is on.
+	 *
+	 * @param buildOnlyOutdatedFiles true to only build outdated files
 	 */
 	public void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles) {
 		this.buildOnlyOutdatedFiles = buildOnlyOutdatedFiles;
 	}
 
 	/**
-	 * Sets the output type (none, classes, or compilationunits).
+	 * Sets the output type ({@code none}, {@code classes}, or {@code compilationunits}).
+	 *
+	 * @param outputType the output type string
 	 */
-	public void setOutputType(String ouputType) {
-		this.outputType = ouputType;
+	public void setOutputType(String outputType) {
+		this.outputType = outputType;
 	}
 
 	/**
 	 * Sets the encoding to be used by the compiler.
+	 *
+	 * @param encoding the encoding used by the compiler
 	 */
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
@@ -563,6 +609,8 @@ public class SpoonTask extends Java {
 	/**
 	 * Tells if Spoon should try to preserve the original line numbers when
 	 * generating the source code (may lead to human-unfriendly formatting).
+	 *
+	 * @param lines true to enable line preservation
 	 */
 	public void setLines(boolean lines) {
 		this.lines = lines;

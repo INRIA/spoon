@@ -51,11 +51,15 @@ public class AnnotationFactory extends TypeFactory {
 
 	/**
 	 * Creates an annotation type.
-	 * 
+	 *
+	 * @param <T>
+	 *            the annotation's type
 	 * @param owner
 	 *            the package of the annotation type
 	 * @param simpleName
 	 *            the name of annotation
+	 *
+	 * @return a new annotation type
 	 */
 	public <T extends Annotation> CtAnnotationType<?> create(CtPackage owner,
 			String simpleName) {
@@ -70,6 +74,8 @@ public class AnnotationFactory extends TypeFactory {
 	 * 
 	 * @param qualifiedName
 	 *            the fully qualified name of the annotation type.
+	 *
+	 * @return a new annotation type
 	 */
 	public CtAnnotationType<?> create(String qualifiedName) {
 		return create(
@@ -79,6 +85,11 @@ public class AnnotationFactory extends TypeFactory {
 
 	/**
 	 * Gets a annotation type from its name.
+	 *
+	 * @param <T> the annotation's type
+	 * @param qualifiedName the qualified name of the annotation
+	 *
+	 * @return the type of the annotation
 	 */
 	public <T extends Annotation> CtSimpleType<T> getAnnotationType(
 			String qualifiedName) {
@@ -87,7 +98,9 @@ public class AnnotationFactory extends TypeFactory {
 
 	/**
 	 * Creates/updates an element's annotation value.
-	 * 
+	 *
+	 * @param <A>
+	 *            the annotation's type
 	 * @param element
 	 *            the program element to annotate
 	 * @param annotationType
@@ -107,7 +120,9 @@ public class AnnotationFactory extends TypeFactory {
 
 	/**
 	 * Creates/updates an element's annotation value.
-	 * 
+	 *
+	 * @param <A>
+	 *            the annotation's type
 	 * @param element
 	 *            the program element to annotate
 	 * @param annotationType
@@ -170,7 +185,9 @@ public class AnnotationFactory extends TypeFactory {
 
 	/**
 	 * Adds an annotation to an element.
-	 * 
+	 *
+	 * @param <A>
+	 *            the annotation's type
 	 * @param element
 	 *            the program element to annotate
 	 * @param annotationType
@@ -184,7 +201,9 @@ public class AnnotationFactory extends TypeFactory {
 
 	/**
 	 * Adds an annotation to an element.
-	 * 
+	 *
+	 * @param <A>
+	 *            the annotation's type
 	 * @param element
 	 *            the program element to annotate
 	 * @param annotationType

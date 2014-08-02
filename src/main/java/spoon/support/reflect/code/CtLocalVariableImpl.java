@@ -41,13 +41,13 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 	CtTypeReference<T> type;
 
 	public boolean addModifier(ModifierKind modifier) {
-        setMutable();
-        return modifiers.add(modifier);
+		setMutable();
+		return modifiers.add(modifier);
 	}
 
 	public boolean removeModifier(ModifierKind modifier) {
-        setMutable();
-        return modifiers.remove(modifier);
+		setMutable();
+		return modifiers.remove(modifier);
 	}
 
 	public void accept(CtVisitor visitor) {
@@ -107,14 +107,14 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 		this.type = type;
 	}
 
-    private void setMutable() {
-        if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-            modifiers = new TreeSet<ModifierKind>();
-        }
-    }
+	private void setMutable() {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			modifiers = new TreeSet<ModifierKind>();
+		}
+	}
 
 	public void setVisibility(ModifierKind visibility) {
-        setMutable();
+		setMutable();
 		getModifiers().remove(ModifierKind.PUBLIC);
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);

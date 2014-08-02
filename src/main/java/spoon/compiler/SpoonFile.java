@@ -27,11 +27,15 @@ public interface SpoonFile extends SpoonResource {
 
 	/**
 	 * Gets the file content as a stream.
+	 *
+	 * @return an InputStream to get the content
 	 */
 	InputStream getContent();
 
 	/**
 	 * True if a Java source code file.
+	 *
+	 * @return true if this is a java source file
 	 */
 	boolean isJava();
 
@@ -39,7 +43,7 @@ public interface SpoonFile extends SpoonResource {
 	 * Tells if this file is an actual file (not a virtual file that holds
 	 * in-memory contents).
 	 * 
-	 * @return
+	 * @return true if it is an actual file in the file system
 	 */
 	boolean isActualFile();
 

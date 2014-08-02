@@ -28,7 +28,7 @@ import spoon.reflect.declaration.CtElement;
  * {@link spoon.compiler.SpoonCompiler#build()}. To use, add processors to
  * the manager, and then call the {@code process} method. The processors will be
  * removed from the manager once applied. Also, the method
- * {@link spoon.processing.Processor#processingDone()} is upcalled.
+ * {@link spoon.processing.Processor#processingDone()} is up called.
  * 
  * @see spoon.compiler.Environment#getManager()
  */
@@ -37,24 +37,30 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * Adds a processor by instantiating its type (a class that must define an
 	 * empty constructor).
 	 * 
-	 * @see #getProcessors().
+	 * @see #getProcessors()
+	 *
+	 * @param type the {@link java.lang.Class} of the processor to add
 	 */
 	void addProcessor(Class<? extends Processor<?>> type);
 
 	/**
 	 * Adds a processor.
 	 * 
-	 * @see #getProcessors().
+	 * @see #getProcessors()
+	 *
+	 * @param p the processor to add
+	 *
+	 * @return true if the processor has been added
 	 */
 	boolean addProcessor(Processor<?> p);
 
 	/**
 	 * Adds a processor by instantiating its type (a class that must define an
-	 * empty constructor and implement {@link Processor}).
+	 * empty constructor and implement {@link spoon.processing.Processor}.
 	 * 
 	 * @param qualifiedName
 	 *            the qualified name of the processor's type
-	 * @see #getProcessors().
+	 * @see #getProcessors()
 	 */
 	void addProcessor(String qualifiedName);
 
@@ -66,6 +72,10 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * 
 	 * @see #process(Collection)
 	 * @see #process()
+	 *
+	 * @param type the type of the processor
+	 *
+	 * @return true if the processor is to be applied
 	 */
 	boolean isToBeApplied(Class<? extends Processor<?>> type);
 
@@ -75,6 +85,8 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * 
 	 * @see #process(Collection)
 	 * @see #process()
+	 *
+	 * @return a {@link java.util.Collection} of processors
 	 */
 	Collection<Processor<?>> getProcessors();
 
@@ -86,6 +98,8 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * <code>process</code> method (non-blocking implementation). Processors
 	 * that have been applied are removed from the manager and
 	 * {@link #getProcessors()} does not contain them anymore.
+	 *
+	 * @param elements a {@link java.util.Collection} of elements to process
 	 */
 	void process(Collection<? extends CtElement> elements);
 
@@ -96,6 +110,8 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * another call to a <code>process</code> method (non-blocking
 	 * implementation). Processors that have been applied are removed from the
 	 * manager and {@link #getProcessors()} does not contain them anymore.
+	 *
+	 * @param element the element to process
 	 */
 	void process(CtElement element);
 
@@ -112,6 +128,8 @@ public interface ProcessingManager extends FactoryAccessor {
 	/**
 	 * Gets the processor which is currently achieving the processing task if
 	 * any.
+	 *
+	 * @return the current processor
 	 */
 	Processor<?> getCurrentProcessor();
 }

@@ -21,25 +21,32 @@ package spoon.reflect.code;
  * This code element defines a <code>foreach</code> loop (enhanced
  * <code>for</code>).
  */
-
 public interface CtForEach extends CtLoop {
 	/**
 	 * Gets the iterated expression (an iterable of an array).
+	 *
+	 * @return the expression
 	 */
 	CtExpression<?> getExpression();
 
 	/**
 	 * Gets the variable that references the currently iterated element.
+	 *
+	 * @return the local variable
 	 */
 	CtLocalVariable<?> getVariable();
 
 	/**
 	 * Sets the iterated expression (an iterable of an array).
+	 *
+	 * @param expression the iterated expression
 	 */
 	void setExpression(CtExpression<?> expression);
 
 	/**
 	 * Sets the variable that references the currently iterated element.
+	 *
+	 * @param variable the local variable
 	 */
 	void setVariable(CtLocalVariable<?> variable);
 }

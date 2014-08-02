@@ -13,8 +13,12 @@ public interface CtCodeSnippetExpression<T> extends CtCodeSnippet,
 
 	/**
 	 * Compiles this expression snippet to produce the corresponding AST expression.
-	 * 
-	 * @throws SnippetCompilationError
+	 *
+	 * @param <E> the expression's type
+	 *
+	 * @return the compiled expression
+	 *
+	 * @throws spoon.support.compiler.SnippetCompilationError
 	 *             when the current snippet is not valid Java code expression
 	 */
 	<E extends CtExpression<T>> E compile() throws SnippetCompilationError;

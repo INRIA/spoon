@@ -33,11 +33,15 @@ public interface ProblemFixer<T extends CtElement> extends FactoryAccessor {
 
 	/**
 	 * Returns the description of this fixer
+	 *
+	 * @return a description
 	 */
 	public abstract String getDescription();
 
 	/**
 	 * Returns a short String that represent this fixer.
+	 *
+	 * @return a label
 	 */
 	public abstract String getLabel();
 
@@ -47,7 +51,7 @@ public interface ProblemFixer<T extends CtElement> extends FactoryAccessor {
 	 * 
 	 * @param element
 	 *            the element marked by a problem
-	 * @return List of modified elements
+	 * @return List of modified elements as a {@link spoon.reflect.Changes} object
 	 */
 	public abstract Changes run(T element);
 }

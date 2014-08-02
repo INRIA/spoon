@@ -26,21 +26,29 @@ public interface SpoonFolder extends SpoonResource {
 
 	/**
 	 * Gets all the files (excluding folders) in the folder.
+	 *
+	 * @return a List of all files but no folders
 	 */
 	List<SpoonFile> getFiles();
 
 	/**
 	 * Gets all the files (including folders) in the folder.
+	 *
+	 * @return a List of all files
 	 */
 	List<SpoonFile> getAllFiles();
 
 	/**
 	 * Gets all the Java source files in the folder.
+	 *
+	 * @return a List of all java source files
 	 */
 	List<SpoonFile> getAllJavaFiles();
 
 	/**
 	 * Gets the subfolders in this folder.
+	 *
+	 * @return the List of sub folders
 	 */
 	List<SpoonFolder> getSubFolders();
 

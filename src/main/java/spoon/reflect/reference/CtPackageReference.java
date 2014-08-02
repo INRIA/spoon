@@ -26,11 +26,15 @@ import spoon.reflect.declaration.CtPackage;
 public interface CtPackageReference extends CtReference {
 	/**
 	 * Gets the package element when available in the source code.
+	 *
+	 * @return the package
 	 */
 	CtPackage getDeclaration();
 
 	/**
 	 * Gets the package element when available in the class path.
+	 *
+	 * @return the actual package
 	 */
 	Package getActualPackage();
 }

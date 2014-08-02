@@ -31,11 +31,18 @@ public interface CtType<T> extends CtSimpleType<T>, CtGenericElement {
 	/**
 	 * Return all the accessible methods for this type (the recursion stops when
 	 * the super-type is not in the model).
+	 *
+	 * @return a List of all methods
 	 */
 	Set<CtMethod<?>> getAllMethods();
 
 	/**
 	 * Gets a method from its return type, name, and parameter types.
+	 *
+	 * @param <R> the method's return type
+	 * @param name the name of the method
+	 * @param returnType the return type reference
+	 * @param parameterTypes the type references of the parameters
 	 * 
 	 * @return null if does not exit
 	 */
@@ -44,6 +51,10 @@ public interface CtType<T> extends CtSimpleType<T>, CtGenericElement {
 
 	/**
 	 * Gets a method from its name and parameter types.
+	 *
+	 * @param <R> the method's return type
+	 * @param name the name of the method
+	 * @param parameterTypes the types of the parameters
 	 * 
 	 * @return null if does not exit
 	 */
@@ -52,63 +63,97 @@ public interface CtType<T> extends CtSimpleType<T>, CtGenericElement {
 	/**
 	 * Returns the methods that are directly declared by this class or
 	 * interface.
+	 *
+	 * @return the Set of methods directly declared by this type
 	 */
 	Set<CtMethod<?>> getMethods();
 
 	/**
 	 * Returns the methods that are directly declared by this class or
 	 * interface and annotated with one of the given annotations.
+	 *
+	 * @param annotationTypes annotations to search for
+	 *
+	 * @return the Set of methods annotated by the given annotations
 	 */
 	Set<CtMethod<?>> getMethodsAnnotatedWith(CtTypeReference<?>... annotationTypes);
 
 	/**
 	 * Returns the methods that are directly declared by this class or
 	 * interface and that have the given name.
+	 *
+	 * @param name the name to search for
+	 *
+	 * @return the List of methods matching the given name
 	 */
 	List<CtMethod<?>> getMethodsByName(String name);
 	
 	/**
 	 * Returns the interface types directly implemented by this class or
 	 * extended by this interface.
+	 *
+	 * @return the Set of super interface type references
 	 */
 	Set<CtTypeReference<?>> getSuperInterfaces();
 
 	/**
 	 * Sets the methods of this type.
+	 *
+	 * @param methods The Set of methods to set
 	 */
 	void setMethods(Set<CtMethod<?>> methods);
 
 	/**
 	 * Adds a method to this type.
+	 *
+	 * @param <M> the method's type
+	 * @param method the method to add
+	 *
+	 * @return true if the method has been added
 	 */
 	<M> boolean addMethod(CtMethod<M> method);
 
 	/**
 	 * Removes a method from this type.
+	 *
+	 * @param <M> the method's type
+	 * @param method the method to remove
+	 *
+	 * @return true of the method has been removed
 	 */
 	<M> boolean removeMethod(CtMethod<M> method);
 
 	/**
 	 * Sets the super interfaces of this type.
+	 *
+	 * @param interfaces A Set of interface type references to set
 	 */
 	void setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
 
 	/**
-	 * 
-	 * @param interfac
+	 * Adds a super interface to this type
+	 *
+	 * @param <S> the type reference' type
+	 * @param interfac the super interface type reference to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<S> boolean addSuperInterface(CtTypeReference<S> interfac);
 
 	/**
-	 * 
-	 * @param interfac
+	 * Removes a super interface from this type.
+	 *
+	 * @param <S> the type reference' type
+	 * @param interfac the super interface type reference to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<S> boolean removeSuperInterface(CtTypeReference<S> interfac);
 
 	/**
 	 * Tells if this type is a subtype of the given type.
+	 *
+	 * @param type the type to check against
+	 *
+	 * @return true if this type is a sub type of the given type
 	 */
 	boolean isSubtypeOf(CtTypeReference<?> type);
 

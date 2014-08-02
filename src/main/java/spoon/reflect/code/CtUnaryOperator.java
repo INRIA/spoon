@@ -28,21 +28,29 @@ public interface CtUnaryOperator<T> extends CtExpression<T>, CtStatement {
 
 	/**
 	 * Gets the expression to which the operator is applied.
+	 *
+	 * @return the expression this operator is applied to
 	 */
 	CtExpression<T> getOperand();
 
 	/**
 	 * Sets the expression to which the operator is applied.
+	 *
+	 * @param expression the expression this operator gets applied
 	 */
 	void setOperand(CtExpression<T> expression);
 
 	/**
 	 * Sets the kind of this operator.
+	 *
+	 * @param kind the kind of the unary operator to set
 	 */
 	void setKind(UnaryOperatorKind kind);
 
 	/**
 	 * Gets the kind of this operator.
+	 *
+	 * @return the kind of this unary operator
 	 */
 	UnaryOperatorKind getKind();
 

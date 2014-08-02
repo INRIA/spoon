@@ -28,21 +28,29 @@ public interface CtStatementList extends CtCodeElement, Iterable<CtStatement> {
 
 	/**
 	 * Returns the statement list.
+	 *
+	 * @return the List if statements
 	 */
 	List<CtStatement> getStatements();
 
 	/**
 	 * Sets the statement list.
+	 *
+	 * @param statements the List of statements to set
 	 */
 	void setStatements(List<CtStatement> statements);
 
 	/**
 	 * Adds a statement at the end of the list.
+	 *
+	 * @param statement the statement to add
 	 */
 	void addStatement(CtStatement statement);
 
 	/**
 	 * Removes a statement.
+	 *
+	 * @param statement the statement to remove
 	 */
 	void removeStatement(CtStatement statement);
 

@@ -35,6 +35,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Copies a frame from a given one (does not clone stateless info).
+	 *
+	 * @param frame the frame to copy
 	 */
 	public SymbolicStackFrame(SymbolicStackFrame frame) {
 		for (Entry<CtVariableReference<?>, SymbolicInstance<?>> e : frame.variables
@@ -79,6 +81,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Gets the parent invocation of this frame.
+	 *
+	 * @return the parent invocation
 	 */
 	public CtAbstractInvocation<?> getInvocation() {
 		return invocation;
@@ -86,6 +90,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Gets the <code>this</code> value.
+	 *
+	 * @return {@code this} from this stack frame
 	 */
 	public SymbolicInstance<?> getThis() {
 		return target;
@@ -93,6 +99,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Gets the calling instance if applicable.
+	 *
+	 * @return the calling instance
 	 */
 	public SymbolicInstance<?> getCaller() {
 		return caller;
@@ -100,6 +108,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Gets the local variables defined for this frame.
+	 *
+	 * @return a Map of the local variables of the frame
 	 */
 	public Map<CtVariableReference<?>, SymbolicInstance<?>> getVariables() {
 		return variables;
@@ -109,6 +119,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Return the arguments (also present in the variables).
+	 *
+	 * @return the List of arguments of from current stack frame
 	 */
 	public List<SymbolicInstance<?>> getArguments() {
 		return arguments;
@@ -125,6 +137,8 @@ public class SymbolicStackFrame {
 	 *            the target (this) of the frame ({@link #getThis()})
 	 * @param executable
 	 *            the executable that corresponds to this frame
+	 * @param arguments
+	 *            the arguments for the given executable
 	 * @param variables
 	 *            the local variables defined within this frame (should be a
 	 *            copy)
@@ -155,6 +169,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Gets the executable of the frame.
+	 *
+	 * @return the executable of this frame
 	 */
 	public CtExecutableReference<?> getExecutable() {
 		return executable;
@@ -164,6 +180,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Gets the result of this frame execution.
+	 *
+	 * @return the result
 	 */
 	public SymbolicInstance<?> getResult() {
 		return result;
@@ -171,6 +189,8 @@ public class SymbolicStackFrame {
 
 	/**
 	 * Sets the result of this frame execution.
+	 *
+	 * @param result the result to set
 	 */
 	public void setResult(SymbolicInstance<?> result) {
 		this.result = result;

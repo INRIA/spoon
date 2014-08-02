@@ -26,11 +26,15 @@ public interface CtThrow extends CtCFlowBreak, TemplateParameter<Void> {
 
 	/**
 	 * Returns the thrown expression (must be a throwable).
+	 *
+	 * @return the thrown expression
 	 */
 	CtExpression<? extends Throwable> getThrownExpression();
 
 	/**
 	 * Sets the thrown expression (must be a throwable).
+	 *
+	 * @param thrownExpression the expression to be thrown
 	 */
 	void setThrownExpression(CtExpression<? extends Throwable> thrownExpression);
 

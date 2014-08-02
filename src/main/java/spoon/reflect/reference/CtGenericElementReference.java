@@ -26,21 +26,33 @@ import java.util.List;
 public interface CtGenericElementReference {
 	/**
 	 * Gets the type arguments.
+	 *
+	 * @return the List of type arguments
 	 */
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
 	 * Sets the type arguments.
+	 *
+	 * @param actualTypeArguments the List of actual type parameters to set
 	 */
 	void setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Adds a type argument.
+	 *
+	 * @param actualTypeArgument the type argument to add
+	 *
+	 * @return true if the actual type argument has been added
 	 */
 	boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
 	 * Removes a type argument.
+	 *
+	 * @param actualTypeArgument the type argument to remove
+	 *
+	 * @return true if the actual type argument has been removed
 	 */
 	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 

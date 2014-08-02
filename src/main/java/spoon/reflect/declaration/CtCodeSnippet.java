@@ -15,11 +15,15 @@ public interface CtCodeSnippet {
 
 	/**
 	 * Sets the textual value of the code.
+	 *
+	 * @param value the code as a string
 	 */
 	void setValue(String value);
 
 	/**
 	 * Gets the textual value of the code.
+	 *
+	 * @return the code as a string
 	 */
 	String getValue();
 

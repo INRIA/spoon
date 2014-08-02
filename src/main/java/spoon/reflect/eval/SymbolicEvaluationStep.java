@@ -50,6 +50,8 @@ public class SymbolicEvaluationStep {
 
 	/**
 	 * Gets the stack frame that corresponds to this state.
+	 *
+	 * @return the symbolic stack frame
 	 */
 	public SymbolicStackFrame getFrame() {
 		return frame;
@@ -57,6 +59,8 @@ public class SymbolicEvaluationStep {
 
 	/**
 	 * Gets the heap that corresponds to this state.
+	 *
+	 * @return the symbolic heap
 	 */
 	public SymbolicHeap getHeap() {
 		return heap;
@@ -73,6 +77,8 @@ public class SymbolicEvaluationStep {
 
 	/**
 	 * Gets the step kind.
+	 *
+	 * @return the kind of this step
 	 */
 	public StepKind getKind() {
 		return kind;
@@ -80,6 +86,8 @@ public class SymbolicEvaluationStep {
 
 	/**
 	 * Gets a symbolic instance from its id at the current evaluation step.
+	 *
+	 * @param id the string ID of the symbolic instance
 	 * 
 	 * @return null if not found
 	 */

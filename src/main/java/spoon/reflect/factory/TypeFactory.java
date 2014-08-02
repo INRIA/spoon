@@ -61,6 +61,8 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Returns a reference on the null type (type of null).
+	 *
+	 * @return a new null type
 	 */
 	public CtTypeReference<?> nullType() {
 		if (nullType == null) {
@@ -86,6 +88,8 @@ public class TypeFactory extends SubFactory {
 	 *            type of array
 	 * @param type
 	 *            type of array values
+	 *
+	 * @return a new array reference
 	 */
 	public <T> CtArrayTypeReference<T[]> createArrayReference(
 			CtSimpleType<T> type) {
@@ -97,6 +101,11 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a reference to a one-dimension array of given type.
+	 *
+	 * @param <T> the array's type
+	 * @param reference the type of the new array
+	 *
+	 * @return a new array reference
 	 */
 	public <T> CtArrayTypeReference<T[]> createArrayReference(
 			CtTypeReference<T> reference) {
@@ -108,6 +117,11 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a reference to an n-dimension array of given type.
+	 *
+	 * @param reference the type of the array
+	 * @param n the number of dimensions
+	 *
+	 * @return a new array reference
 	 */
 	public CtArrayTypeReference<?> createArrayReference(
 			CtTypeReference<?> reference, int n) {
@@ -124,6 +138,11 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a reference to an array of given type.
+	 *
+	 * @param <T> the array's type
+	 * @param qualifiedName the qualified name of the array type
+	 *
+	 * @return the new array type reference
 	 */
 	public <T> CtArrayTypeReference<T> createArrayReference(String qualifiedName) {
 		CtArrayTypeReference<T> array = factory.Core()
@@ -134,6 +153,11 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a reference to a simple type
+	 *
+	 * @param <T> the reference' type
+	 * @param type the class to reference
+	 *
+	 * @return the new type reference
 	 */
 	public <T> CtTypeReference<T> createReference(Class<T> type) {
 		if (type.isArray()) {
@@ -147,6 +171,11 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Create a reference to a simple type
+	 *
+	 * @param <T> the reference' type
+	 * @param type the simple type to reference
+	 *
+	 * @return the new type reference
 	 */
 	public <T> CtTypeReference<T> createReference(CtSimpleType<T> type) {
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
@@ -165,6 +194,11 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Create a reference to a simple type
+	 *
+	 * @param <T> the reference' type
+	 * @param qualifiedName the qualified name of the type
+	 *
+	 * @return the new type reference
 	 */
 	public <T> CtTypeReference<T> createReference(String qualifiedName) {
 		if (qualifiedName.endsWith("[]")) {
@@ -184,6 +218,9 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets a created type from its qualified name.
+	 *
+	 * @param <T> the type's actual type
+	 * @param qualifiedName the qualified name of the type
 	 * 
 	 * @return a found type or null if does not exist
 	 */
@@ -220,6 +257,8 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets the list of all top-level created types.
+	 *
+	 * @return the List of all top level types
 	 */
 	public List<CtSimpleType<?>> getAll() {
 		List<CtSimpleType<?>> types = new ArrayList<CtSimpleType<?>>();
@@ -231,6 +270,10 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets the list of all created types.
+	 *
+	 * @param includeNestedTypes true to include nested types as well
+	 *
+	 * @return the List of all created types
 	 */
 	public List<CtSimpleType<?>> getAll(boolean includeNestedTypes) {
 		if (!includeNestedTypes) {
@@ -258,8 +301,10 @@ public class TypeFactory extends SubFactory {
 	 * @param <T>
 	 *            actual type of the class
 	 * @param cl
-	 *            the java class: note that this class should be Class<T> but it
+	 *            the java class: note that this class should be Class&lt;T&gt; but it
 	 *            then poses problem when T is a generic type itself
+	 *
+	 * @return the simple type of a class
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtSimpleType<T> get(Class<?> cl) {
@@ -268,6 +313,10 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets the declaring type name for a given Java qualified name.
+	 *
+	 * @param qualifiedName the qualified name
+	 *
+	 * @return the declaring type name
 	 */
 	protected String getDeclaringTypeName(String qualifiedName) {
 		return qualifiedName.substring(0, hasInnerType(qualifiedName));
@@ -275,6 +324,10 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a collection of type references from a collection of classes.
+	 *
+	 * @param classes the List if classes to create references for
+	 *
+	 * @return the List of references to the given classes
 	 */
 	public List<CtTypeReference<?>> createReferences(List<Class<?>> classes) {
 		List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>();
@@ -286,6 +339,10 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets the package name for a given Java qualified name.
+	 *
+	 * @param qualifiedName the qualified name
+	 *
+	 * @return the package name from the give
 	 */
 	protected String getPackageName(String qualifiedName) {
 		if (hasPackage(qualifiedName) >= 0) {
@@ -296,6 +353,10 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets the simple name for a given Java qualified name.
+	 *
+	 * @param qualifiedName the qualified name
+	 *
+	 * @return the simple name from the given qualified name
 	 */
 	protected String getSimpleName(String qualifiedName) {
 		if (hasInnerType(qualifiedName) > 0) {
@@ -309,6 +370,10 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Tells if a given Java qualified name is that of an inner type.
+	 *
+	 * @param qualifiedName the qualified name the qualified name to check
+	 *
+	 * @return if not -1 the given name has an inner type
 	 */
 	protected int hasInnerType(String qualifiedName) {
 		int ret = qualifiedName.lastIndexOf(CtSimpleType.INNERTTYPE_SEPARATOR);
@@ -327,6 +392,10 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Tells if a given Java qualified name contains a package name.
+	 *
+	 * @param qualifiedName the qualified name to check
+	 *
+	 * @return if not -1 the qualified name contains the package name
 	 */
 	protected int hasPackage(String qualifiedName) {
 		return qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
@@ -339,6 +408,8 @@ public class TypeFactory extends SubFactory {
 	 *            the owning declaration
 	 * @param name
 	 *            the name of the formal parameter
+	 *
+	 * @return the new type parameter
 	 */
 	public CtTypeParameter createTypeParameter(CtElement owner, String name) {
 		CtTypeParameter typeParam = factory.Core().createTypeParameter();
@@ -355,6 +426,8 @@ public class TypeFactory extends SubFactory {
 	 *            the name of the formal parameter
 	 * @param bounds
 	 *            the bounds
+	 *
+	 * @return the new type parameter
 	 */
 	public CtTypeParameter createTypeParameter(CtElement owner, String name,
 			List<CtTypeReference<?>> bounds) {
@@ -369,6 +442,8 @@ public class TypeFactory extends SubFactory {
 	 * 
 	 * @param name
 	 *            the name of the formal parameter
+	 *
+	 * @return the new type parameter reference
 	 */
 	public CtTypeParameterReference createTypeParameterReference(String name) {
 		CtTypeParameterReference typeParam = factory.Core()
@@ -384,6 +459,8 @@ public class TypeFactory extends SubFactory {
 	 *            the name of the formal parameter
 	 * @param bounds
 	 *            the bounds
+	 *
+	 * @return the new type parameter reference
 	 */
 	public CtTypeParameterReference createTypeParameterReference(String name,
 			List<CtTypeReference<?>> bounds) {

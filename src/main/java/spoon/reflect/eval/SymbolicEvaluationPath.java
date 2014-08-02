@@ -36,6 +36,8 @@ public class SymbolicEvaluationPath {
 
 	/**
 	 * Adds a step to this path.
+	 *
+	 * @param step the evaluation step to add
 	 * 
 	 * @return the just added SymbolicEvaluationStep
 	 */
@@ -45,7 +47,11 @@ public class SymbolicEvaluationPath {
 	}
 
 	/**
-	 * Gets the ith step.
+	 * Gets the {@code i}-th step.
+	 *
+	 * @param i the index of the steop
+	 *
+	 * @return the evaluation step
 	 */
 	public SymbolicEvaluationStep getStep(int i) {
 		return steps.get(i);
@@ -53,6 +59,8 @@ public class SymbolicEvaluationPath {
 
 	/**
 	 * Returns the evaluation steps list.
+	 *
+	 * @return the List of evaluation steps
 	 */
 	public List<SymbolicEvaluationStep> getSteps() {
 		return steps;
@@ -60,6 +68,8 @@ public class SymbolicEvaluationPath {
 
 	/**
 	 * Gets the number of steps in this path.
+	 *
+	 * @return the number of steps
 	 */
 	public int getStepCount() {
 		return steps.size();
@@ -93,6 +103,8 @@ public class SymbolicEvaluationPath {
 	/**
 	 * Returns a new symbolic evaluation path that only contains the
 	 * {@link StepKind#ENTER} steps of this current path.
+	 *
+	 * @return the symbolic evaluation path
 	 */
 	public SymbolicEvaluationPath getEnterSteps() {
 		SymbolicEvaluationPath res = new SymbolicEvaluationPath();
@@ -107,6 +119,8 @@ public class SymbolicEvaluationPath {
 	/**
 	 * Returns a new symbolic evaluation path that only contains the
 	 * {@link StepKind#EXIT} steps of this current path.
+	 *
+	 * @return the symbolic evaluation path
 	 */
 	public SymbolicEvaluationPath getExitSteps() {
 		SymbolicEvaluationPath res = new SymbolicEvaluationPath();

@@ -73,6 +73,8 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	 * Adds a consumed annotation type (to be used in subclasses constructors).
 	 * A consumed annotation type is also part of the processed annotation
 	 * types.
+	 *
+	 * @param annotationType the annotation type to consume
 	 */
 	final protected void addConsumedAnnotationType(
 			Class<? extends A> annotationType) {
@@ -82,6 +84,8 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 
 	/**
 	 * Adds a processed annotation type (to be used in subclasses constructors).
+	 *
+	 * @param annotationType the annotation type to process
 	 */
 	final protected void addProcessedAnnotationType(
 			Class<? extends A> annotationType) {
@@ -90,6 +94,8 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 
 	/**
 	 * Removes a processed annotation type.
+	 *
+	 * @param annotationType the annotation type to not process anymore
 	 */
 	final protected void removeProcessedAnnotationType(
 			Class<? extends A> annotationType) {
@@ -111,7 +117,9 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	}
 
 	/**
-	 * Removes a processed annotation type.
+	 * Removes a consumed annotation type.
+	 *
+	 * @param annotationType the annotation type to not consume anymore
 	 */
 	final protected void removeConsumedAnnotationType(
 			Class<? extends A> annotationType) {

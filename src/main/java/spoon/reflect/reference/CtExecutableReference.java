@@ -85,11 +85,17 @@ public interface CtExecutableReference<T> extends CtReference,
 	/**
 	 * Returns <code>true</code> if this executable overrides the given
 	 * executable.
+	 *
+	 * @param executable the executable to check
+	 *
+	 * @return true if the given executable is overridden by this executable
 	 */
 	boolean isOverriding(CtExecutableReference<?> executable);
 
 	/**
-	 * Returns the executable overriden by this one, if exists (null otherwise).
+	 * Returns the executable overridden by this one, if exists (null otherwise).
+	 *
+	 * @return the overriding executable
 	 */
 	CtExecutableReference<?> getOverridingExecutable();
 
@@ -110,31 +116,43 @@ public interface CtExecutableReference<T> extends CtReference,
 
 	/**
 	 * Tells if the referenced executable is static.
+	 *
+	 * @return true if this executable is static
 	 */
 	boolean isStatic();
 
 	/**
 	 * Sets the declaring type.
+	 *
+	 * @param declaringType the type that declares this executable
 	 */
 	void setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**
 	 * Sets the list of the executable's parameters types.
+	 *
+	 * @param parameterTypes the List of parameters
 	 */
 	void setParameterTypes(List<CtTypeReference<?>> parameterTypes);
 
 	/**
 	 * Sets this executable reference to be static or not.
+	 *
+	 * @param b true to make this executable static
 	 */
 	void setStatic(boolean b);
 
 	/**
 	 * Sets the type of the variable.
+	 *
+	 * @param type the variable type
 	 */
 	void setType(CtTypeReference<T> type);
 
 	/**
 	 * Tells if the referenced executable is final.
+	 *
+	 * @return true if this executable is final
 	 */
 	boolean isFinal();
 }

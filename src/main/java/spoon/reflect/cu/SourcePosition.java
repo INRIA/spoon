@@ -29,28 +29,38 @@ public interface SourcePosition {
 	/**
 	 * Returns a string representation of this position in the form
 	 * "sourcefile:line", or "sourcefile" if no line number is available.
+	 *
+	 * @return a String representation
 	 */
 	String toString();
 
 	/**
 	 * Gets the file for this position.
+	 *
+	 * @return the file
 	 */
 	File getFile();
 
 	/**
 	 * Gets the compilation unit for this position.
+	 *
+	 * @return the compilation unit
 	 */
 	CompilationUnit getCompilationUnit();
 
 	/**
 	 * Gets the line in the source file (1 indexed). Prefer using
 	 * {@link #getSourceStart()}}.
+	 *
+	 * @return the line (beginning with 1)
 	 */
 	int getLine();
 
 	/**
 	 * Gets the end line in the source file (1 indexed). Prefer using
 	 * {@link #getSourceEnd()}}.
+	 *
+	 * @return the end line (beginning with 1)
 	 */
 	int getEndLine();
 
@@ -59,6 +69,8 @@ public interface SourcePosition {
 	 * because it has to calculate the column number depending on
 	 * {@link Environment#getTabulationSize()} and
 	 * {@link CompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceStart()}.
+	 *
+	 * @return the column (beginning with 1)
 	 */
 	int getColumn();
 
@@ -67,16 +79,22 @@ public interface SourcePosition {
 	 * because it has to calculate the column number depending on
 	 * {@link Environment#getTabulationSize()} and
 	 * {@link CompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceEnd()}.
+	 *
+	 * @return the end column (beginning with 1)
 	 */
 	int getEndColumn();
 
 	/**
 	 * Gets the index at which the position ends in the source file.
+	 *
+	 * @return the end index
 	 */
 	int getSourceEnd();
 
 	/**
 	 * Gets the index at which the position starts in the source file.
+	 *
+	 * @return the the start index
 	 */
 	int getSourceStart();
 

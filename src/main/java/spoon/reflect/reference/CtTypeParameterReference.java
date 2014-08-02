@@ -27,31 +27,47 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 
 	/**
 	 * Gets the bounds (aka generics) of the referenced parameter.
+	 *
+	 * @return the List of bounds
 	 */
 	List<CtTypeReference<?>> getBounds();
 
 	/**
 	 * Returns {@code true} if the bounds are upper bounds.
+	 *
+	 * @return if this is an upper bound
 	 */
 	boolean isUpper();
 
 	/**
 	 * Sets the bounds (aka generics) of the referenced parameter.
+	 *
+	 * @param bounds the List of bounds to set
 	 */
 	void setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * Set to {@code true} if the bounds are upper bounds.
+	 *
+	 * @param upper true to make this an upper bound
 	 */
 	void setUpper(boolean upper);
 
 	/**
 	 * Adds a bound.
+	 *
+	 * @param bound the bound to add
+	 *
+	 * @return true if the bound has been added
 	 */
 	boolean addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
+	 *
+	 * @param bound the bound to remove
+	 *
+	 * @return true if the bound has been removed
 	 */
 	boolean removeBound(CtTypeReference<?> bound);
 

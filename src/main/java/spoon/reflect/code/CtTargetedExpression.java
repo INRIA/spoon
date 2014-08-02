@@ -32,11 +32,15 @@ public interface CtTargetedExpression<T, E extends CtExpression<?>> extends
 
 	/**
 	 * Gets the target expression.
+	 *
+	 * @return the target
 	 */
 	E getTarget();
 
 	/**
 	 * Sets the target expression.
+	 *
+	 * @param target the target to set
 	 */
 	void setTarget(E target);
 

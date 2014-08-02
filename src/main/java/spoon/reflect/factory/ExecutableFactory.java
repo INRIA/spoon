@@ -51,6 +51,11 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an anonymous executable (initializer block) in a target class).
+	 *
+	 * @param target the target class
+	 * @param body the body
+	 *
+	 * @return the new anonymous executable
 	 */
 	public CtAnonymousExecutable createAnonymous(CtClass<?> target,
 			CtBlock<?> body) {
@@ -62,6 +67,13 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates a new parameter.
+	 *
+	 * @param <T> the parameter's type
+	 * @param parent the declaring executable
+	 * @param type the type of the parameter
+	 * @param name the name of the parameter
+	 *
+	 * @return the new parameter
 	 */
 	public <T> CtParameter<T> createParameter(CtExecutable<?> parent,
 			CtTypeReference<T> type, String name) {
@@ -81,6 +93,8 @@ public class ExecutableFactory extends SubFactory {
 	 *            the parameter's type
 	 * @param parameter
 	 *            the parameter
+	 *
+	 * @return the new parameter reference
 	 */
 	public <T> CtParameterReference<T> createParameterReference(
 			CtParameter<T> parameter) {
@@ -96,6 +110,11 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an executable reference from an existing executable.
+	 *
+	 * @param <T> the executable's type
+	 * @param e the executable
+	 *
+	 * @return the new executable reference
 	 */
 	public <T> CtExecutableReference<T> createReference(CtExecutable<T> e) {
 		CtTypeReference<?> refs[] = new CtTypeReference[e.getParameters()
@@ -115,7 +134,9 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an executable reference.
-	 * 
+	 *
+	 * @param <T>
+	 *            the return type of the referenced executable
 	 * @param declaringType
 	 *            reference to the declaring type
 	 * @param type
@@ -124,6 +145,8 @@ public class ExecutableFactory extends SubFactory {
 	 *            simple name
 	 * @param parameterTypes
 	 *            list of parameter's types
+	 *
+	 * @return a new executable reference
 	 */
 	public <T> CtExecutableReference<T> createReference(
 			CtTypeReference<?> declaringType, CtTypeReference<T> type,
@@ -143,7 +166,9 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an executable reference.
-	 * 
+	 *
+	 * @param <T>
+	 *            the return type of the referenced executable
 	 * @param declaringType
 	 *            reference to the declaring type
 	 * @param isStatic
@@ -154,6 +179,8 @@ public class ExecutableFactory extends SubFactory {
 	 *            simple name
 	 * @param parameterTypes
 	 *            list of parameter's types
+	 *
+	 * @return a new executable reference
 	 */
 	public <T> CtExecutableReference<T> createReference(
 			CtTypeReference<?> declaringType, boolean isStatic,
@@ -175,7 +202,9 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an executable reference.
-	 * 
+	 *
+	 * @param <T>
+	 *            the return type of the referenced executable
 	 * @param declaringType
 	 *            reference to the declaring type
 	 * @param isStatic
@@ -186,6 +215,8 @@ public class ExecutableFactory extends SubFactory {
 	 *            simple name
 	 * @param parameterTypes
 	 *            list of parameter's types
+	 *
+	 * @return a new executable reference
 	 */
 	public <T> CtExecutableReference<T> createReference(
 			CtTypeReference<?> declaringType, boolean isStatic,
@@ -207,7 +238,9 @@ public class ExecutableFactory extends SubFactory {
 
 	/**
 	 * Creates an executable reference.
-	 * 
+	 *
+	 * @param <T>
+	 *            the return type of the referenced executable
 	 * @param declaringType
 	 *            reference to the declaring type
 	 * @param type
@@ -216,6 +249,8 @@ public class ExecutableFactory extends SubFactory {
 	 *            simple name
 	 * @param parameterTypes
 	 *            list of parameter's types
+	 *
+	 * @return a new executable reference
 	 */
 	public <T> CtExecutableReference<T> createReference(
 			CtTypeReference<?> declaringType, CtTypeReference<T> type,
@@ -236,6 +271,12 @@ public class ExecutableFactory extends SubFactory {
 	/**
 	 * Creates an executable reference from its signature, as defined by the
 	 * executable reference's toString.
+	 *
+	 * @param <T>
+	 *            the return type of the referenced executable
+	 * @param signature the executable signature as a string
+	 *
+	 * @return a new executable reference
 	 */
 	public <T> CtExecutableReference<T> createReference(String signature) {
 		CtExecutableReference<T> executableRef = factory.Core()

@@ -40,6 +40,8 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 
 	/**
 	 * Invalid method in this context.
+	 *
+	 * @param elementType the {@link java.lang.Class} of the element
 	 */
 	protected void addProcessedElementType(
 			Class<? extends CtElement> elementType) {
@@ -72,6 +74,8 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 
 	/**
 	 * Invalid method in this context.
+	 *
+	 * @return true if privileged
 	 */
 	public final boolean isPrivileged() {
 		return false;

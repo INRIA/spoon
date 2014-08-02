@@ -32,22 +32,32 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 
 	/**
 	 * Gets the fields defined by this class.
+	 *
+	 * @return A List of all fields
 	 */
 	List<CtField<?>> getFields();
 
 	/**
 	 * Returns the anonymous blocks of this class.
+	 *
+	 * @return a List of anonymous executables
 	 */
 	List<CtAnonymousExecutable> getAnonymousExecutables();
 
 	/**
 	 * Returns the constructor of the class that takes the given argument types.
+	 *
+	 * @param parameterTypes the type references of the constructor parameters
+	 *
+	 * @return The constructor with a matching signature
 	 */
 	CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes);
 
 	/**
 	 * Returns the constructors of this class. This includes the default
 	 * constructor if this class has no constructors explicitly declared.
+	 *
+	 * @return a Set of constructors
 	 */
 	Set<CtConstructor<T>> getConstructors();
 
@@ -61,13 +71,16 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 
 	/**
 	 * Sets the anonymous blocks of this class.
+	 *
+	 * @param e the Set of  anonymous executables to set
 	 */
 	void setAnonymousExecutables(List<CtAnonymousExecutable> e);
 
 	/**
 	 * Add an anonymous block to this class.
 	 * 
-	 * @param e
+	 * @param e an anonymous executable to add
+	 *
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean addAnonymousExecutable(CtAnonymousExecutable e);
@@ -75,28 +88,37 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Remove an anonymous block to this class.
 	 * 
-	 * @param e
+	 * @param e an anonymous executable to remove
+	 *
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeAnonymousExecutable(CtAnonymousExecutable e);
 
 	/**
 	 * Sets the constructors for this class.
+	 *
+	 * @param constructors the Set of constructors for this class
 	 */
 	void setConstructors(Set<CtConstructor<T>> constructors);
 
 	/**
 	 * Adds a constructor to this class.
+	 *
+	 * @param constructor the constructor to add
 	 */
 	void addConstructor(CtConstructor<T> constructor);
 
 	/**
 	 * Removes a constructor from this class.
+	 *
+	 * @param constructor the constructor to remove
 	 */
 	void removeConstructor(CtConstructor<T> constructor);
 
 	/**
 	 * Sets the superclass type.
+	 *
+	 * @param classType the type reference to set
 	 */
 	void setSuperclass(CtTypeReference<?> classType);
 

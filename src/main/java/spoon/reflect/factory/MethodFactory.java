@@ -54,7 +54,11 @@ public class MethodFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a method.
-	 * 
+	 *
+	 * @param <R>
+	 *            the return type of the method
+	 * @param <B>
+	 *            the return type of the method body
 	 * @param target
 	 *            the class where the method is inserted
 	 * @param modifiers
@@ -69,6 +73,8 @@ public class MethodFactory extends ExecutableFactory {
 	 *            the thrown types
 	 * @param body
 	 *            the method's body
+	 *
+	 * @return a new method
 	 */
 	public <R, B extends R> CtMethod<R> create(CtClass<?> target,
 			Set<ModifierKind> modifiers, CtTypeReference<R> returnType,
@@ -94,6 +100,7 @@ public class MethodFactory extends ExecutableFactory {
 	 *            tells if all the references to the owning type of the source
 	 *            method should be redirected to the target type (true is
 	 *            recommended for most uses)
+	 *
 	 * @return the newly created method
 	 */
 	public <T> CtMethod<T> create(CtType<?> target, CtMethod<T> source,
@@ -109,7 +116,9 @@ public class MethodFactory extends ExecutableFactory {
 
 	/**
 	 * Creates an empty method.
-	 * 
+	 *
+	 * @param <T>
+	 *            the type of the method
 	 * @param target
 	 *            the class where the method is inserted
 	 * @param modifiers
@@ -122,6 +131,8 @@ public class MethodFactory extends ExecutableFactory {
 	 *            the parameters
 	 * @param thrownTypes
 	 *            the thrown types
+	 *
+	 * @return the newly created method
 	 */
 	public <T> CtMethod<T> create(CtType<?> target,
 			Set<ModifierKind> modifiers, CtTypeReference<T> returnType,
@@ -145,6 +156,11 @@ public class MethodFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a method reference.
+	 *
+	 * @param <T> the return type of the referenced method
+	 * @param m the method to reference
+	 *
+	 * @return a new method reference
 	 */
 	public <T> CtExecutableReference<T> createReference(CtMethod<T> m) {
 		return factory.Executable().createReference(m);
@@ -152,6 +168,11 @@ public class MethodFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a method reference from an actual method.
+	 *
+	 * @param <T> the returned type of the referenced method
+	 * @param method the method to reference
+	 *
+	 * @return a new executable reference
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtExecutableReference<T> createReference(Method method) {
@@ -168,6 +189,8 @@ public class MethodFactory extends ExecutableFactory {
 
 	/**
 	 * Gets all the main methods stored in this factory.
+	 *
+	 * @return the Collection of all main methods
 	 */
 	public Collection<CtMethod<Void>> getMainMethods() {
 		Collection<CtMethod<Void>> methods = new ArrayList<CtMethod<Void>>();

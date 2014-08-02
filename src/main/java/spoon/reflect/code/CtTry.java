@@ -29,64 +29,96 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	/**
 	 * Gets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
+	 *
+	 * @return the List of resources
 	 */
 	List<CtLocalVariable<? extends AutoCloseable>> getResources();
 
 	/**
 	 * Sets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
+	 *
+	 * @param resources the List of resources to set
 	 */
 	void setResources(List<CtLocalVariable<? extends AutoCloseable>> resources);
 
 	/**
 	 * Adds a resource.
+	 *
+	 * @param resource the resource to add
+	 *
+	 * @return true if the resource has been added
 	 */
 	boolean addResource(CtLocalVariable<? extends AutoCloseable> resource);
 
 	/**
 	 * Removes a resource.
+	 *
+	 * @param resource the resource to remove
+	 *
+	 * @return true if the resource has been removed
 	 */
 	boolean removeResource(CtLocalVariable<? extends AutoCloseable> resource);
 
 	/**
 	 * Gets the <i>catchers</i> of this <code>try</code>.
+	 *
+	 * @return the List of catch blocks
 	 */
 	List<CtCatch> getCatchers();
 
 	/**
 	 * Sets the <i>catchers</i> of this <code>try</code>.
+	 *
+	 * @param catchers the List of catch blocks to set
 	 */
 	void setCatchers(List<CtCatch> catchers);
 
 	/**
 	 * Adds a catch block.
+	 *
+	 * @param catcher the catch block to add
+	 *
+	 * @return true if the catch block as been added
 	 */
 	boolean addCatcher(CtCatch catcher);
 
 	/**
 	 * Removes a catch block.
+	 *
+	 * @param catcher the catch block to remove
+	 *
+	 * @return true if the catch block as been removed
 	 */
 	boolean removeCatcher(CtCatch catcher);
 
 	/**
 	 * Sets the tried body.
+	 *
+	 * @return the body
 	 */
 	CtBlock<?> getBody();
 
 	/**
 	 * Sets the tried body.
+	 *
+	 * @param body the body
 	 */
 	void setBody(CtBlock<?> body);
 
 	/**
 	 * Gets the <i>finalizer</i> block of this <code>try</code> (
 	 * <code>finally</code> part).
+	 *
+	 * @return the finally block
 	 */
 	CtBlock<?> getFinalizer();
 
 	/**
 	 * Sets the <i>finalizer</i> block of this <code>try</code> (
 	 * <code>finally</code> part).
+	 *
+	 * @param finalizer the finally block to set
 	 */
 	void setFinalizer(CtBlock<?> finalizer);
 }

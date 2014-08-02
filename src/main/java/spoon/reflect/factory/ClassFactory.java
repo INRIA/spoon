@@ -40,10 +40,14 @@ public class ClassFactory extends TypeFactory {
 	/**
 	 * Creates an inner class.
 	 *
+	 * @param <T>
+	 *            the class' type
 	 * @param declaringClass
 	 *            declaring class
 	 * @param simpleName
 	 *            simple name of inner class (without . or $)
+	 *
+	 * @return the new class
 	 */
 	public <T> CtClass<T> create(CtClass<?> declaringClass, String simpleName) {
 		CtClass<T> c = factory.Core().createClass();
@@ -54,10 +58,14 @@ public class ClassFactory extends TypeFactory {
 	/**
 	 * Creates a top-level class.
 	 *
+	 * @param <T>
+	 *            the class' type
 	 * @param owner
 	 *            the declaring package
 	 * @param simpleName
 	 *            the simple name
+	 *
+	 * @return the new class
 	 */
 	public <T> CtClass<T> create(CtPackage owner, String simpleName) {
 		CtClass<T> c = factory.Core().createClass();
@@ -78,6 +86,7 @@ public class ClassFactory extends TypeFactory {
 	 * @param qualifiedName
 	 *            full name of class to create. Name can contain . or $ for
 	 *            inner types
+	 * @return the new class
 	 */
 	public <T> CtClass<T> create(String qualifiedName) {
 		if (hasInnerType(qualifiedName) > 0) {
@@ -94,7 +103,7 @@ public class ClassFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param cl
-	 *            the java class: note that this class should be Class<T> but
+	 *            the java class: note that this class should be Class&lt;T&gt; but
 	 *            it then poses problem when T is a generic type itself
 	 */
 	@Override

@@ -28,11 +28,15 @@ package spoon.reflect.code;
 public interface CtCase<S> extends CtStatement, CtStatementList {
 	/**
 	 * Gets the case expression.
+	 *
+	 * @return the case expression
 	 */
 	CtExpression<S> getCaseExpression();
 
 	/**
 	 * Sets the case expression.
+	 *
+	 * @param caseExpression the case expression to set
 	 */
 	void setCaseExpression(CtExpression<S> caseExpression);
 }

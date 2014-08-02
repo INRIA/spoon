@@ -46,13 +46,15 @@ public interface CtModifiable extends CtElement, FactoryAccessor {
 
 	/**
 	 * Sets the modifiers.
+	 *
+	 * @param modifiers The Set of modifiers to set
 	 */
 	void setModifiers(Set<ModifierKind> modifiers);
 
 	/**
 	 * add a modifier
 	 * 
-	 * @param modifier
+	 * @param modifier the modifier to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean addModifier(ModifierKind modifier);
@@ -60,18 +62,22 @@ public interface CtModifiable extends CtElement, FactoryAccessor {
 	/**
 	 * remove a modifier
 	 * 
-	 * @param modifier
+	 * @param modifier the modifier to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeModifier(ModifierKind modifier);
 
 	/**
 	 * Sets the visibility of this modifiable element (replaces old visibility).
+	 *
+	 * @param visibility the visibility modifier
 	 */
 	void setVisibility(ModifierKind visibility);
 
 	/**
 	 * Gets the visibility of this modifiable element.
+	 *
+	 * @return the kind of modifier
 	 */
 	ModifierKind getVisibility();
 }

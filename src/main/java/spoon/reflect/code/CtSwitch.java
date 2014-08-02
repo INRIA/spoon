@@ -34,6 +34,8 @@ public interface CtSwitch<S> extends CtStatement {
 	 * <code>byte</code>, <code>short</code>, <code>int</code>,
 	 * <code>Character</code>, <code>Byte</code>, <code>Short</code>,
 	 * <code>Integer</code>, or an <code>enum</code> type
+	 *
+	 * @return the selector expression
 	 */
 	CtExpression<S> getSelector();
 
@@ -42,26 +44,40 @@ public interface CtSwitch<S> extends CtStatement {
 	 * <code>byte</code>, <code>short</code>, <code>int</code>,
 	 * <code>Character</code>, <code>Byte</code>, <code>Short</code>,
 	 * <code>Integer</code>, or an <code>enum</code> type
+	 *
+	 * @param selector the selector expression to set
 	 */
 	void setSelector(CtExpression<S> selector);
 
 	/**
 	 * Gets the list of cases defined for this switch.
+	 *
+	 * @return the List of cases
 	 */
 	List<CtCase<? super S>> getCases();
 
 	/**
 	 * Sets the list of cases defined for this switch.
+	 *
+	 * @param cases the List of cases to set
 	 */
 	void setCases(List<CtCase<? super S>> cases);
 
 	/**
 	 * Adds a case;
+	 *
+	 * @param c the case to add
+	 *
+	 * @return true if the case has been added
 	 */
 	boolean addCase(CtCase<? super S> c);
 
 	/**
 	 * Removes a case;
+	 *
+	 * @param c the case to remove
+	 *
+	 * @return true if the case has been removed
 	 */
 	boolean removeCase(CtCase<? super S> c);
 

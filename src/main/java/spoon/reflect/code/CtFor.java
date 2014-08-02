@@ -26,51 +26,79 @@ public interface CtFor extends CtLoop {
 
 	/**
 	 * Gets the end-loop test expression.
+	 *
+	 * @return the expression of the condition
 	 */
 	CtExpression<Boolean> getExpression();
 
 	/**
 	 * Gets the <i>init</i> statements.
+	 *
+	 * @return the initialization statement
 	 */
 	List<CtStatement> getForInit();
 
 	/**
 	 * Adds an <i>init</i> statement.
+	 *
+	 * @param statement the statement to add
+	 *
+	 * @return true if the statement has been added
 	 */
 	boolean addForInit(CtStatement statement);
 
 	/**
 	 * Removes an <i>init</i> statement.
+	 *
+	 * @param statement the statement to remove
+	 *
+	 * @return true if the statement has een removed
 	 */
 	boolean removeForInit(CtStatement statement);
 
 	/**
 	 * Gets the <i>update</i> statements.
+	 *
+	 * @return the List of update statements
 	 */
 	List<CtStatement> getForUpdate();
 
 	/**
 	 * Sets the end-loop test expression.
+	 *
+	 * @param expression the expression to set for the condition
 	 */
 	void setExpression(CtExpression<Boolean> expression);
 
 	/**
 	 * Sets the <i>init</i> statements.
+	 *
+	 * @param forInit the List of initialization statements to set
 	 */
 	void setForInit(List<CtStatement> forInit);
 
 	/**
 	 * Sets the <i>update</i> statements.
+	 *
+	 * @param forUpdate the List if update statements to set
 	 */
 	void setForUpdate(List<CtStatement> forUpdate);
 
 	/**
 	 * Adds an <i>update</i> statement.
+	 *
+	 * @param statement the statement to add
+	 *
+	 * @return true if the update statement has been added
 	 */
 	boolean addForUpdate(CtStatement statement);
 
 	/**
 	 * Removes an <i>update</i> statement.
+	 *
+	 * @param statement the statement to remove
+	 *
+	 * @return true of the statement has been removed
 	 */
 	boolean removeForUpdate(CtStatement statement);
 

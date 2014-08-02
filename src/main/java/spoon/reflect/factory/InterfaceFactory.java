@@ -40,6 +40,12 @@ public class InterfaceFactory extends TypeFactory {
 
 	/**
 	 * Creates an interface.
+	 *
+	 * @param <T> the actual type of the interface
+	 * @param owner the package the interface will belong to
+	 * @param simpleName the simple name of the interface
+	 *
+	 * @return a new interface
 	 */
 	public <T> CtInterface<T> create(CtPackage owner, String simpleName) {
 		CtInterface<T> i = factory.Core().createInterface();
@@ -50,6 +56,12 @@ public class InterfaceFactory extends TypeFactory {
 
 	/**
 	 * Creates an inner interface
+	 *
+	 * @param <T> the actual type of the interface
+	 * @param owner the type the interface will belong to
+	 * @param simpleName the simple name of the interface
+	 *
+	 * @return a new interface
 	 */
 	public <T> CtInterface<T> create(CtType<T> owner, String simpleName) {
 		CtInterface<T> i = factory.Core().createInterface();
@@ -60,6 +72,11 @@ public class InterfaceFactory extends TypeFactory {
 
 	/**
 	 * Creates an interface.
+	 *
+	 * @param <T> the actual type of the interface
+	 * @param qualifiedName the qualified name of the interface
+	 *
+	 * @return a new interface
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtInterface<T> create(String qualifiedName) {
@@ -74,6 +91,8 @@ public class InterfaceFactory extends TypeFactory {
 
 	/**
 	 * Gets a created interface
+	 *
+	 * @param qualifiedName the qualified name to look for
 	 *
 	 * @return the interface or null if does not exist
 	 */
@@ -93,8 +112,10 @@ public class InterfaceFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param cl
-	 *            the java class: note that this class should be Class<T> but
+	 *            the java class: note that this class should be Class&lt;T&gt; but
 	 *            it then poses problem when T is a generic type itself
+	 *
+	 * @return the interface or null if does not exist
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

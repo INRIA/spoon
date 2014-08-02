@@ -28,18 +28,22 @@ import spoon.reflect.reference.CtTypeReference;
 public interface CtGenericElement extends CtElement {
 	/**
 	 * Returns the formal type parameters of this generic element.
+	 *
+	 * @return the List of type parameters
 	 */
 	List<CtTypeReference<?>> getFormalTypeParameters();
 
 	/**
 	 * Sets the type parameters of this generic element.
+	 *
+	 * @param formalTypeParameters the List of type parameters
 	 */
 	void setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters);
 
 	/**
 	 * Add a type parameter to this generic element.
 	 * 
-	 * @param formalTypeParameter
+	 * @param formalTypeParameter the type parameter to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter);
@@ -47,7 +51,7 @@ public interface CtGenericElement extends CtElement {
 	/**
 	 * Removes a type parameters from this generic element.
 	 * 
-	 * @param formalTypeParameter
+	 * @param formalTypeParameter the type parameter to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter);

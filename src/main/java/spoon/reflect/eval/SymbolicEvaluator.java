@@ -30,8 +30,10 @@ import spoon.reflect.reference.CtTypeReference;
 public interface SymbolicEvaluator {
 
 	/**
-	 * Returns the list of external classes that should be handled as statefull
+	 * Returns the list of external classes that should be handled as stateful
 	 * beans.
+	 *
+	 * @return the List of stateful externals
 	 */
 	List<CtTypeReference<?>> getStatefullExternals();
 
@@ -83,25 +85,38 @@ public interface SymbolicEvaluator {
 
 	/**
 	 * Gets the heap of the current symbolic evaluation step.
+	 *
+	 * @return the symbolic heap
 	 */
 	SymbolicHeap getHeap();
 
 	/**
 	 * Gets the stack of the symbolic abstract evaluation step.
+	 *
+	 * @return the evaluation stack
 	 */
 	SymbolicEvaluationStack getStack();
 
 	/**
 	 * Evaluates the given meta-model element in the current context of the
 	 * evaluator.
+	 *
+	 * @param element the element to evaluate
+	 *
+	 * @return the result of the evaluation of the given element
 	 */
 	SymbolicInstance<?> evaluate(CtElement element);
 
 	/**
 	 * Evaluates the given meta-model expression in the current context of the
 	 * evaluator.
+	 *
+	 * @param <T> the value's type
+	 * @param expression the expression to evaluate
+	 *
+	 * @return result of the symbolid evaluation of the given expression
 	 */
-	<T> SymbolicInstance<T> evaluate(CtExpression<T> expresion);
+	<T> SymbolicInstance<T> evaluate(CtExpression<T> expression);
 
 	/**
 	 * Adds an evaluation observer.

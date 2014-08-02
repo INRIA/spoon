@@ -31,11 +31,15 @@ public interface CtNewClass<T> extends
 
 	/**
 	 * Gets the created class.
+	 *
+	 * @return the anonymous class
 	 */
 	CtClass<?> getAnonymousClass();
 
 	/**
 	 * Sets the created class.
+	 *
+	 * @param anonymousClass the anonymous class
 	 */
 	void setAnonymousClass(CtClass<?> anonymousClass);
 

@@ -14,7 +14,8 @@ public interface CtCodeSnippetStatement extends CtCodeSnippet, CtStatement {
 	/**
 	 * Compiles this statement code snippet to produce the corresponding AST
 	 * statement.
-	 * 
+	 *
+	 * @param <S> the statement's type
 	 * @return a statement
 	 * @throws SnippetCompilationError
 	 *             when the current snippet is not valid Java code

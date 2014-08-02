@@ -40,11 +40,15 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
 
 	/**
 	 * Gets the simple name of referenced element.
+	 *
+	 * @return the simple name
 	 */
 	String getSimpleName();
 
 	/**
 	 * Sets the name of referenced element.
+	 *
+	 * @param simpleName the simple name to set
 	 */
 	void setSimpleName(String simpleName);
 
@@ -57,6 +61,8 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
 
 	/**
 	 * Accepts a visitor
+	 *
+	 * @param visitor a visitor
 	 */
 	void accept(CtVisitor visitor);
 
@@ -80,7 +86,8 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
 
 	/**
 	 * Gets the annotation element for a given annotation type.
-	 * 
+	 *
+	 * @param <A> the type of the annotation
 	 * @param annotationType
 	 *            the annotation type
 	 * @return the annotation if this element is annotated by one annotation of
@@ -91,6 +98,8 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
 
 	/**
 	 * Returns the annotations that are present on this element.
+	 *
+	 * @return the List of annotations
 	 */
 	List<Annotation> getAnnotations();
 

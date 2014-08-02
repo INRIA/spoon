@@ -24,12 +24,16 @@ public interface CtBreak extends CtCFlowBreak {
 	/**
 	 * Gets the label from which the control flow breaks (null if no label
 	 * defined).
+	 *
+	 * @return the target label name or null if none set
 	 */
 	String getTargetLabel();
 
 	/**
 	 * Sets the label from which the control flow breaks (null if no label
 	 * defined).
+	 *
+	 * @param targetLabel the target label name or null
 	 */
 	void setTargetLabel(String targetLabel);
 }

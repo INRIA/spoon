@@ -37,6 +37,8 @@ public class CompilationUnitFactory extends SubFactory {
 
 	/**
 	 * Creates the evaluation factory.
+	 *
+	 * @param factory the factory
 	 */
 	public CompilationUnitFactory(Factory factory) {
 		super(factory);
@@ -47,7 +49,7 @@ public class CompilationUnitFactory extends SubFactory {
 	/**
 	 * Gets the compilation unit map.
 	 * 
-	 * @return a map (path -> {@link CompilationUnit})
+	 * @return a map (path -&gt; {@link CompilationUnit})
 	 */
 	public Map<String, CompilationUnit> getMap() {
 		return compilationUnits;
@@ -55,6 +57,8 @@ public class CompilationUnitFactory extends SubFactory {
 
 	/**
 	 * Creates a compilation unit with no associated files.
+	 *
+	 * @return the new {@link spoon.reflect.cu.CompilationUnit}
 	 */
 	public CompilationUnit create() {
 		CompilationUnit cu = factory.Core().createCompilationUnit();
@@ -63,6 +67,10 @@ public class CompilationUnitFactory extends SubFactory {
 
 	/**
 	 * Creates or gets a compilation unit for a given file path.
+	 *
+	 * @param filePath the file path as a string
+	 *
+	 * @return the new {@link spoon.reflect.cu.CompilationUnit}
 	 */
 	public CompilationUnit create(String filePath) {
 		CompilationUnit cu = compilationUnits.get(filePath);
@@ -80,6 +88,10 @@ public class CompilationUnitFactory extends SubFactory {
 
 	/**
 	 * Creates an import for the given type.
+	 *
+	 * @param type a type reference to create the import from
+	 *
+	 * @return the new import
 	 */
 	public Import createImport(CtTypeReference<?> type) {
 		return new ImportImpl(type);
@@ -87,6 +99,10 @@ public class CompilationUnitFactory extends SubFactory {
 
 	/**
 	 * Creates an import for the given type.
+	 *
+	 * @param type the type to create the import for
+	 *
+	 * @return the new import
 	 */
 	public Import createImport(Class<?> type) {
 		return new ImportImpl(factory.Type().createReference(type));
@@ -94,6 +110,10 @@ public class CompilationUnitFactory extends SubFactory {
 
 	/**
 	 * Creates an import for the given field.
+	 *
+	 * @param field a field reference to create the import for
+	 *
+	 * @return the new import
 	 */
 	public Import createImport(CtFieldReference<?> field) {
 		return new ImportImpl(field);
@@ -101,6 +121,10 @@ public class CompilationUnitFactory extends SubFactory {
 
 	/**
 	 * Creates an import for the given package.
+	 *
+	 * @param pack a package reference
+	 *
+	 * @return the new import
 	 */
 	public Import createImport(CtPackageReference pack) {
 		return new ImportImpl(pack);

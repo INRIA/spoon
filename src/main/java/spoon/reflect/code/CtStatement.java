@@ -29,12 +29,20 @@ public interface CtStatement extends CtCodeElement {
 
 	/**
 	 * Inserts a statement after the current statement.
+	 *
+	 * @param statement the statement to insert
+	 *
+	 * @throws spoon.reflect.declaration.ParentNotInitializedException if the parent is not initialized
 	 */
 	void insertAfter(CtStatement statement)
 			throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement list before the current statement.
+	 *
+	 * @param statements a List of statements to insert
+	 *
+	 * @throws spoon.reflect.declaration.ParentNotInitializedException if the parent is not initialized
 	 */
 	void insertAfter(CtStatementList statements)
 			throws ParentNotInitializedException;
@@ -42,12 +50,20 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Inserts a statement given as parameter before the current statement
 	 * (this).
+	 *
+	 * @param statement the statement to insert
+	 *
+	 * @throws spoon.reflect.declaration.ParentNotInitializedException if the parent is not initialized
 	 */
 	void insertBefore(CtStatement statement)
 			throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement list before the current statement.
+	 *
+	 * @param statements a List of statements to insert
+	 *
+	 * @throws spoon.reflect.declaration.ParentNotInitializedException if the parent is not initialized
 	 */
 	void insertBefore(CtStatementList statements)
 			throws ParentNotInitializedException;
@@ -61,6 +77,8 @@ public interface CtStatement extends CtCodeElement {
 
 	/**
 	 * Sets the label of this statement.
+	 *
+	 * @param label the label to set
 	 */
 	void setLabel(String label);
 

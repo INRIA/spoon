@@ -30,35 +30,45 @@ public interface CtTypeParameter extends CtElement {
 	 * Returns the bounds of this type parameter. These are the types given by
 	 * the <i>extends</i> clause. If there is no explicit <i>extends</i> clause,
 	 * then <tt>java.lang.Object</tt> is considered to be the sole bound.
+	 *
+	 * @return the List of bounds
 	 */
 	List<CtTypeReference<?>> getBounds();
 
 	/**
 	 * Returns the name of this type parameter.
+	 *
+	 * @return the name of this parameter
 	 */
 	String getName();
 
 	/**
 	 * Sets the bounds of this type parameter.
+	 *
+	 * @param bounds the Set of bounds to set
 	 */
 	void setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
+	 * Adds a bound
 	 * 
-	 * @param bounds
-	 * @return
+	 * @param bound the bound to add
+	 * @return true if the bound was added
 	 */
-	boolean addBound(CtTypeReference<?> bounds);
+	boolean addBound(CtTypeReference<?> bound);
 
 	/**
+	 * Removes a bound
 	 * 
-	 * @param bounds
-	 * @return
+	 * @param bound the bound to remove
+	 * @return true if the bound was removed
 	 */
-	boolean removeBound(CtTypeReference<?> bounds);
+	boolean removeBound(CtTypeReference<?> bound);
 
 	/**
 	 * Sets the name of this type parameter.
+	 *
+	 * @param name the new name
 	 */
 	void setName(String name);
 
