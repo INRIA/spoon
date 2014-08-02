@@ -102,6 +102,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public static final String JAVA_PACKAGE_DECLARATION = "package-info"
 			+ JAVA_FILE_EXTENSION;
 
+	/**
+	 * Line separator which is used by the system
+	 */
+	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
 	Map<Integer, Integer> lineNumberMapping = new HashMap<Integer, Integer>();
 
 	/**
@@ -571,13 +576,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		while (i >= 0 && (sbf.charAt(i) == ' ' || sbf.charAt(i) == '\t')) {
 			i--;
 		}
-		sbf.insert(i + 1, System.getProperty("line.separator"));
+		sbf.insert(i + 1, LINE_SEPARATOR);
 		line++;
 	}
 
 	private boolean removeLine() {
 		// System.out.println("remove");
-		String ls = System.getProperty("line.separator");
+		String ls = LINE_SEPARATOR;
 		int i = sbf.length() - ls.length();
 		boolean hasWhite = false;
 		while (i > 0 && !ls.equals(sbf.substring(i, i + ls.length()))) {
@@ -2084,7 +2089,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (context.noNewLines) {
 			sbf.append(" ");
 		} else {
-			sbf.append(System.getProperty("line.separator"));
+			sbf.append(LINE_SEPARATOR);
 			line++;
 		}
 		return this;

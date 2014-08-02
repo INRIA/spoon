@@ -1,4 +1,25 @@
+# Maven
+build/
+dist/
+nbproject/
+target/
+dependency-reduced-pom.xml
+
+# Netbeans
+nb-configuration.xml
+nb-actions.xml
+
+# Eclipse
+.settings/
+#.project/
 .classpath
-.settings
+.externalToolBuilders/
+maven-eclipse.xml
+
+# IntelliJ IDEA
+.idea/*
+!.idea/codeStyleSettings.xml
+*.iml
+
+# Spoon
 spooned-classes/*
-target/*
