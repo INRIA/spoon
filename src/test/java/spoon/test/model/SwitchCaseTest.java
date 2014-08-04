@@ -40,7 +40,7 @@ public class SwitchCaseTest {
 
 	    assertEquals(3, sw.getCases().size());
 
-	    CtCase c = (CtCase) sw.getCases().get(0);
+	    CtCase<?> c = (CtCase) sw.getCases().get(0);
 	    
 	    assertEquals(0, ((CtLiteral)c.getCaseExpression()).getValue());
 	    assertEquals(2, c.getStatements().size());
