@@ -8,6 +8,11 @@ class Foo {
 		z= x+1;
 		System.out.println(z);
 	}
+	
+	void bar() {
+		int y = 4;
+	}
+	
 }
 
 class Bar {
