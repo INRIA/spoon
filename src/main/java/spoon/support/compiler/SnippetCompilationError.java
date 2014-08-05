@@ -3,7 +3,9 @@ package spoon.support.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SnippetCompilationError extends RuntimeException {
+import spoon.SpoonException;
+
+public class SnippetCompilationError extends SpoonException {
 
 	private static final long serialVersionUID = 7805276558728052328L;
 

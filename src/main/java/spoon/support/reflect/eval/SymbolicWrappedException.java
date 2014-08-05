@@ -17,11 +17,12 @@
 
 package spoon.support.reflect.eval;
 
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.eval.SymbolicEvaluationStack;
 import spoon.reflect.eval.SymbolicInstance;
 
-public class SymbolicWrappedException extends RuntimeException {
+public class SymbolicWrappedException extends SpoonException {
 
 	private static final long serialVersionUID = 1L;
 

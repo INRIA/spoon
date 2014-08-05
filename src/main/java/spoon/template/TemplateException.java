@@ -17,6 +17,8 @@
 
 package spoon.template;
 
+import spoon.SpoonException;
+
 /**
  * This runtime exception can be throws when something wrong occurs in template
  * operations such as loading, subtitution, and matching.
@@ -24,7 +26,7 @@ package spoon.template;
  * @see spoon.template.Substitution
  * @see spoon.template.TemplateMatcher
  */
-public class TemplateException extends RuntimeException {
+public class TemplateException extends SpoonException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,13 +42,6 @@ public class TemplateException extends RuntimeException {
 	 */
 	public TemplateException(String message) {
 		super(message);
-	}
-
-	/**
-	 * Exception with a message and a cause.
-	 */
-	public TemplateException(String message, Throwable cause) {
-		super(message, cause);
 	}
 
 	/**

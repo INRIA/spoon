@@ -17,7 +17,9 @@
 
 package spoon.support.template;
 
-public class UndefinedParameterException extends RuntimeException {
+import spoon.SpoonException;
+
+public class UndefinedParameterException extends SpoonException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,10 +29,6 @@ public class UndefinedParameterException extends RuntimeException {
 
 	public UndefinedParameterException(String message) {
 		super(message);
-	}
-
-	public UndefinedParameterException(String message, Throwable cause) {
-		super(message, cause);
 	}
 
 	public UndefinedParameterException(Throwable cause) {
