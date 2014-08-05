@@ -93,6 +93,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
 		this.defaultExpression = defaultExpression;
+		this.defaultExpression.setParent(this);
 	}
 
 	public void setModifiers(Set<ModifierKind> modifiers) {
