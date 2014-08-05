@@ -64,8 +64,8 @@ public class ReplaceTest {
 	public void testReplaceBlock() throws Exception {
 		CtClass<?> foo = factory.Package().get("spoon.test.replace")
 				.getType("Foo");
-		CtMethod<?> m = foo.getElements(
-				new TypeFilter<CtMethod<?>>(CtMethod.class)).get(0);
+		CtMethod<?> m = (CtMethod<?>) foo.getElements(
+				new NameFilter("foo")).get(0);
 		assertEquals("foo", m.getSimpleName());
 
 		CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) m.getBody()
