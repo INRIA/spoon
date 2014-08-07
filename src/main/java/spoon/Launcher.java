@@ -503,9 +503,7 @@ public class Launcher {
 
 	/**
 	 * Parses the arguments given by the command line.
-	 * 
-	 * @param args
-	 *            the command-line arguments as a string array
+	 *
 	 * @return the JSAP-presented arguments
 	 * @throws JSAPException
 	 *             when an error occurs in the argument parsing
@@ -667,7 +665,6 @@ public class Launcher {
 	 * @param sourceOutputDir
 	 *            sets the Spoon output directory where to generate the printed
 	 *            source code
-	 * @return a properly initialized environment
 	 */
 	public void initEnvironment(Environment environment,
 			int complianceLevel, boolean verbose, boolean debug,
@@ -723,7 +720,7 @@ public class Launcher {
 	 * {@link SpoonCompiler#generateProcessedSourceFiles(OutputType)}.</li>
 	 * <li>Processed source code compilation (optional):
 	 * {@link SpoonCompiler#compile()}.</li>
-	 * <ol>
+	 * </ol>
 	 * 
 	 * @param compiler
 	 *            the compiler to be used, with a properly initialized factory
@@ -746,9 +743,9 @@ public class Launcher {
 	 *            the destination directory of the compiled bytecode
 	 * @param buildOnlyOutdatedFiles
 	 *            build and compile the files that has been modified since the
-	 *            last build/compilation (requires <code>!nooutput</code> and
-	 *            <code>compile</code> with a correctly set
-	 *            <code>detinatioDirectory</code>)
+	 *            last build/compilation (requires {@code !nooutput} and
+	 *            {@code compile} with a correctly set
+	 *            {@code destinationDirectory})
 	 * @param sourceClasspath
 	 *            the classpath to build and compile the input sources, given as
 	 *            a string

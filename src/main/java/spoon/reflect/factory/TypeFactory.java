@@ -258,7 +258,7 @@ public class TypeFactory extends SubFactory {
 	 * @param <T>
 	 *            actual type of the class
 	 * @param cl
-	 *            the java class: note that this class should be Class<T> but it
+	 *            the java class: note that this class should be Class&lt;T&gt; but it
 	 *            then poses problem when T is a generic type itself
 	 */
 	@SuppressWarnings("unchecked")

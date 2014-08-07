@@ -8,10 +8,8 @@ import spoon.reflect.reference.CtReference;
  * feature of a compilation unit is turned off, the programmer can manually
  * specify the imports to be done.
  * 
- * @see CompilationUnit#isAutoImport()
- * @see CompilationUnit#setAutoImport(boolean)
- * @see CompilationUnit#getManualImports()
- * @see CompilationUnit#setManualImports(java.util.Set)
+ * @see spoon.compiler.Environment#isAutoImports()
+ * @see spoon.compiler.Environment#setAutoImports(boolean) 
  */
 public interface Import {
 	

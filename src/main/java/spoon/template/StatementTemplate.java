@@ -27,7 +27,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * 
  * <p>
  * To define a new statement list template parameter, you must subclass this
- * class and implement the {@link #statements()} method, which actually defines
+ * class and implement the {@link #statement()} method, which actually defines
  * the Java statements. It corresponds to a
  * {@link spoon.reflect.code.CtStatementList}.
  */

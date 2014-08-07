@@ -28,7 +28,7 @@ import spoon.reflect.declaration.CtElement;
  * {@link spoon.compiler.SpoonCompiler#build()}. To use, add processors to
  * the manager, and then call the {@code process} method. The processors will be
  * removed from the manager once applied. Also, the method
- * {@link spoon.processing.Processor#processingDone()} is upcalled.
+ * {@link spoon.processing.Processor#processingDone()} is up called.
  * 
  * @see spoon.compiler.Environment#getManager()
  */
@@ -37,14 +37,14 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * Adds a processor by instantiating its type (a class that must define an
 	 * empty constructor).
 	 * 
-	 * @see #getProcessors().
+	 * @see #getProcessors()
 	 */
 	void addProcessor(Class<? extends Processor<?>> type);
 
 	/**
 	 * Adds a processor.
 	 * 
-	 * @see #getProcessors().
+	 * @see #getProcessors()
 	 */
 	boolean addProcessor(Processor<?> p);
 
@@ -54,7 +54,7 @@ public interface ProcessingManager extends FactoryAccessor {
 	 * 
 	 * @param qualifiedName
 	 *            the qualified name of the processor's type
-	 * @see #getProcessors().
+	 * @see #getProcessors()
 	 */
 	void addProcessor(String qualifiedName);
 
