@@ -34,11 +34,15 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 * Gets the model's traversal strategy for this processor (default is
 	 * {@link TraversalStrategy#POST_ORDER}). Programmers should override this
 	 * method to return another strategy if needed.
+	 *
+	 * @return the traversal strategy
 	 */
 	TraversalStrategy getTraversalStrategy();
 
 	/**
 	 * Gets the environment of this processor.
+	 *
+	 * @return the environment of this processor
 	 */
 	Environment getEnvironment();
 
@@ -92,6 +96,8 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 
 	/**
 	 * Gets all the element types than need to be processed.
+	 *
+	 * @return a {@link java.util.Set} of the processed element types
 	 */
 	Set<Class<? extends CtElement>> getProcessedElementTypes();
 
@@ -120,6 +126,8 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 * environment.
 	 * 
 	 * @see Environment#getProcessorProperties(String)
+	 *
+	 * @param properties the processor properties
 	 */
 	void initProperties(ProcessorProperties properties);
 

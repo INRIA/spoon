@@ -26,11 +26,15 @@ public interface CtLoop extends CtStatement, TemplateParameter<Void> {
 
 	/**
 	 * Gets the body of this loop.
+	 *
+	 * @return the body statement of the loop
 	 */
 	CtStatement getBody();
 
 	/**
 	 * Sets the body of this loop.
+	 *
+	 * @param body the body statement to set
 	 */
 	void setBody(CtStatement body);
 }

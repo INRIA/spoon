@@ -27,11 +27,15 @@ public interface CtLiteral<T> extends CtExpression<T> {
 
 	/**
 	 * Gets the actual value of the literal (statically known).
+	 *
+	 * @return the literal value
 	 */
 	T getValue();
 
 	/**
 	 * Sets the actual value of the literal.
+	 *
+	 * @param value the literal value to set
 	 */
 	void setValue(T value);
 

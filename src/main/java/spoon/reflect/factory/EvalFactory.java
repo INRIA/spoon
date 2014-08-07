@@ -41,6 +41,8 @@ public class EvalFactory extends SubFactory {
 
 	/**
 	 * Creates the evaluation factory.
+	 *
+	 * @param factory the parent factory
 	 */
 	public EvalFactory(Factory factory) {
 		super(factory);
@@ -48,6 +50,8 @@ public class EvalFactory extends SubFactory {
 
 	/**
 	 * Creates a partial evaluator on the Spoon meta-model.
+	 *
+	 * @return a new partial evaluator
 	 */
 	public PartialEvaluator createPartialEvaluator() {
 		return new VisitorPartialEvaluator();
@@ -58,6 +62,8 @@ public class EvalFactory extends SubFactory {
 	 * 
 	 * @param observers
 	 *            the observers to be notified of the the evaluation progress
+	 *
+	 * @return a new symbolic evaluator
 	 */
 	public SymbolicEvaluator createSymbolicEvaluator(
 			SymbolicEvaluatorObserver... observers) {
@@ -66,13 +72,17 @@ public class EvalFactory extends SubFactory {
 
 	/**
 	 * Creates a new symbolic instance.
-	 * 
+	 *
+	 * @param <T>
+	 *            the type of the symbolic instance
 	 * @param evaluator
 	 *            the evaluator
 	 * @param concreteType
 	 *            the type of the instance
 	 * @param isType
 	 *            tells if it is a type instance or a regular instance
+	 *
+	 * @return a new symbolic instance
 	 */
 	public <T> SymbolicInstance<T> createSymbolicInstance(
 			SymbolicEvaluator evaluator, CtTypeReference<T> concreteType,

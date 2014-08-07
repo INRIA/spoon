@@ -28,6 +28,8 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T> {
 	/**
 	 * Gets the initialization expression assigned to the variable (also known
 	 * as the initializer), when declared.
+	 *
+	 * @return the default expression
 	 */
 	CtExpression<T> getDefaultExpression();
 
@@ -41,6 +43,8 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T> {
 	/**
 	 * Sets the initialization expression assigned to the variable, when
 	 * declared.
+	 *
+	 * @param assignedExpression the assigned expression to set
 	 */
 	void setDefaultExpression(CtExpression<T> assignedExpression);
 }

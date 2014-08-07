@@ -45,6 +45,8 @@ public class EnumFactory extends TypeFactory {
 	 *            package
 	 * @param simpleName
 	 *            the simple name
+	 *
+	 * @return a new enum
 	 */
 	public CtEnum<?> create(CtPackage owner, String simpleName) {
 		CtEnum<?> e = factory.Core().createEnum();
@@ -55,6 +57,10 @@ public class EnumFactory extends TypeFactory {
 
 	/**
 	 * Creates an enum from its qualified name.
+	 *
+	 * @param qualifiedName the qualified name of the enum
+	 *
+	 * @return a new enum
 	 */
 	public CtEnum<?> create(String qualifiedName) {
 		return create(
@@ -82,8 +88,10 @@ public class EnumFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param cl
-	 *            the java class: note that this class should be Class<T> but it
+	 *            the java class: note that this class should be Class&lt;T&gt; but it
 	 *            then poses problem when T is a generic type itself
+	 *
+	 * @return a new enum
 	 */
 	public <T extends Enum<?>> CtEnum<T> getEnum(Class<T> cl) {
 		try {

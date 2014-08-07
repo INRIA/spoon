@@ -34,6 +34,8 @@ public interface TemplateParameter<T> {
 	 * marker in a template code. When generating a template code, each
 	 * invocation of this method will be substituted with the result of the
 	 * {@link #getSubstitution(CtSimpleType)} method.
+	 *
+	 * @return the parameter
 	 */
 	T S();
 
@@ -44,6 +46,8 @@ public interface TemplateParameter<T> {
 	 * @param targetType
 	 *            the type that defines the context of the substitution (for
 	 *            reference redirection).
+	 *
+	 * @return the substitution code element
 	 */
 	CtCodeElement getSubstitution(CtSimpleType<?> targetType);
 }

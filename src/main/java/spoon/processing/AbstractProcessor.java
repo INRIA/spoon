@@ -64,6 +64,8 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	/**
 	 * Adds a processed element type. This method is typically invoked in
 	 * subclasses' constructors.
+	 *
+	 * @param elementType the {@link java.lang.Class} of the element
 	 */
 	protected void addProcessedElementType(
 			Class<? extends CtElement> elementType) {
@@ -92,6 +94,10 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	/**
 	 * Helper method to load the properties of the given processor (uses
 	 * {@link Environment#getProcessorProperties(String)}).
+	 *
+	 * @param p the processor t load the properties for
+	 *
+	 * @return the processor properties
 	 */
 	public static ProcessorProperties loadProperties(Processor<?> p) {
 		ProcessorProperties props = null;
@@ -143,6 +149,9 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 
 	/**
 	 * Helper method to initialize the properties of a given processor.
+	 *
+	 * @param p the processor
+	 * @param properties the processor properties
 	 */
 	public static void initProperties(Processor<?> p,
 			ProcessorProperties properties) {
@@ -185,6 +194,8 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 
 	/**
 	 * Removes a processed element type.
+	 *
+	 * @param elementType the {@link java.lang.Class} of the element
 	 */
 	protected void removeProcessedElementType(
 			Class<? extends CtElement> elementType) {

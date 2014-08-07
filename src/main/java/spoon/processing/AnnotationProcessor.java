@@ -67,10 +67,17 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
 	/**
 	 * Returns true (default) if the processor automatically infers the consumed
 	 * annotation type to the <code>A</code> actual type.
+	 *
+	 * @return true if annotations are automatically inferred
 	 */
 	boolean inferConsumedAnnotationType();
 	
-	/** Returns true if this annotation should be removed from the processed code.
+	/**
+	 * Returns true if this annotation should be removed from the processed code.
+	 *
+	 * @param annotation the annotation to check for
+	 *
+	 * @return true of the given annotation should be consumed
 	 */
 	boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation);
 

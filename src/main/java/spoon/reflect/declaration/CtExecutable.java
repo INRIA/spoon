@@ -38,16 +38,24 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 
 	/**
 	 * Gets the body expression.
+	 *
+	 * @param <B> the body's type
+	 *
+	 * @return the body
 	 */
 	<B extends R> CtBlock<B> getBody();
 
 	/**
 	 * Gets the declaring type
+	 *
+	 * @return the declaring type
 	 */
 	CtType<?> getDeclaringType();
 
 	/**
 	 * Gets the parameters list.
+	 *
+	 * @return the List of parameters
 	 */
 	List<CtParameter<?>> getParameters();
 
@@ -61,23 +69,30 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 	/**
 	 * Returns the exceptions and other throwables listed in this method or
 	 * constructor's <tt>throws</tt> clause.
+	 *
+	 * @return the Set of thrown types
 	 */
 	Set<CtTypeReference<? extends Throwable>> getThrownTypes();
 
 	/**
 	 * Sets the body expression.
+	 *
+	 * @param <B> the body's type
+	 * @param body the body to set
 	 */
 	<B extends R> void setBody(CtBlock<B> body);
 
 	/**
 	 * Sets the parameters.
+	 *
+	 * @param parameters the Set of parameters to set
 	 */
 	void setParameters(List<CtParameter<?>> parameters);
 
 	/**
 	 * Add a parameter for this executable
 	 * 
-	 * @param parameter
+	 * @param parameter the parameter to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean addParameter(CtParameter<?> parameter);
@@ -85,20 +100,22 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 	/**
 	 * Remove a parameter for this executable
 	 * 
-	 * @param parameter
+	 * @param parameter the parameter to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeParameter(CtParameter<?> parameter);
 
 	/**
 	 * Sets the thrown types.
+	 *
+	 * @param thrownTypes the Set of throwable types to set
 	 */
 	void setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	/**
 	 * add a thrown type.
 	 * 
-	 * @param throwType
+	 * @param throwType the thrown type to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean addThrownType(CtTypeReference<? extends Throwable> throwType);
@@ -106,7 +123,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 	/**
 	 * remove a thrown type.
 	 * 
-	 * @param throwType
+	 * @param throwType the thrown type to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeThrownType(CtTypeReference<? extends Throwable> throwType);

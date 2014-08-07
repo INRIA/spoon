@@ -26,11 +26,15 @@ import spoon.reflect.reference.CtTypeReference;
 public interface CtTypedElement<T> extends CtElement, FactoryAccessor {
 	/**
 	 * Gets this element's type.
+	 *
+	 * @return the type reference
 	 */
 	CtTypeReference<T> getType();
 
 	/**
 	 * Sets this element's type.
+	 *
+	 * @param type the type reference to set
 	 */
 	void setType(CtTypeReference<T> type);
 }

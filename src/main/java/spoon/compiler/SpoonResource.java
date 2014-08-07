@@ -27,37 +27,51 @@ public interface SpoonResource {
 
 	/**
 	 * Gets the folder that contains this resource.
+	 *
+	 * @return The parent spoon folder of this resource
 	 */
 	SpoonFolder getParent();
 
 	/**
 	 * Gets the name of this resource.
+	 *
+	 * @return the name of this resource
 	 */
 	String getName();
 
 	/**
 	 * Tells if this resource is a file.
+	 *
+	 * @return true if this file is an actual file on the filesystem
 	 */
 	boolean isFile();
 
 	/**
 	 * Tells if this resource is an archive.
+	 *
+	 * @return true if this is resource is an archive
 	 */
 	boolean isArchive();
 
 	/**
 	 * Gets this resource path.
+	 *
+	 * @return the path of this resource as a string
 	 */
 	String getPath();
 
 	/**
 	 * Gets the parent of this resource on the file system.
+	 *
+	 * @return a File instance for this resource' parent
 	 */
 	File getFileSystemParent();
 
 	/**
 	 * Gets the corresponding file if possible (returns null if this resource
 	 * does not correspond to any file on the filesystem).
+	 *
+	 * @return a File instance for this resource
 	 */
 	File toFile();
 

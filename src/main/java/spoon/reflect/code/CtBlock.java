@@ -30,27 +30,38 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 
 	/**
 	 * Inserts the given statement at the begining of the block.
+	 *
+	 * @param statement the statement to insert
 	 */
 	void insertBegin(CtStatement statement);
 
 	/**
 	 * Inserts the given statement list at the begining of the block.
+	 *
+	 * @param statements a List of statements to insert
 	 */
 	void insertBegin(CtStatementList statements);
 
 	/**
 	 * Inserts the given statement at the end of the block.
+	 *
+	 * @param statement the statement to insert
 	 */
 	void insertEnd(CtStatement statement);
 
 	/**
 	 * Inserts the given statements at the end of the block.
+	 *
+	 * @param statements a {@link spoon.reflect.code.CtStatementList} to insert
 	 */
 	void insertEnd(CtStatementList statements);
 
 	/**
 	 * Inserts the given statement before a set of insertion points given by a
 	 * filter.
+	 *
+	 * @param insertionPoints a {@link spoon.reflect.visitor.Filter} to find insertion points
+	 * @param statement the statement to insert
 	 */
 	void insertBefore(Filter<? extends CtStatement> insertionPoints,
 			CtStatement statement);
@@ -58,6 +69,9 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	/**
 	 * Inserts the given statement list before a set of insertion points given
 	 * by a filter.
+	 *
+	 * @param insertionPoints a {@link spoon.reflect.visitor.Filter} to find insertion points
+	 * @param statements a {@link spoon.reflect.code.CtStatementList} to insert
 	 */
 	void insertBefore(Filter<? extends CtStatement> insertionPoints,
 			CtStatementList statements);
@@ -65,6 +79,9 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	/**
 	 * Inserts the given statement after a set of insertion points given by a
 	 * filter.
+	 *
+	 * @param insertionPoints a {@link spoon.reflect.visitor.Filter} to find insertion points
+	 * @param statement the statement to insert
 	 */
 	void insertAfter(Filter<? extends CtStatement> insertionPoints,
 			CtStatement statement);
@@ -72,27 +89,43 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	/**
 	 * Inserts the given statement list after a set of insertion points given by
 	 * a filter.
+	 *
+	 * @param insertionPoints a {@link spoon.reflect.visitor.Filter} to find insertion points
+	 * @param statements a List of statements to insert
 	 */
 	void insertAfter(Filter<? extends CtStatement> insertionPoints,
 			CtStatementList statements);
 
 	/**
 	 * Gets the ith statement of this block.
+	 *
+	 * @param <T> the statement's type
+	 * @param i the index of the statement to get
+	 *
+	 * @return the statement at index i
 	 */
 	<T extends CtStatement> T getStatement(int i);
 
 	/**
 	 * Gets the last statement of this block.
+	 *
+	 * @param <T> the statement's type
+	 *
+	 * @return the last statement
 	 */
 	<T extends CtStatement> T getLastStatement();
 
 	/**
 	 * Adds a statement to this block.
+	 *
+	 * @param statement the statement to add
 	 */
 	void addStatement(CtStatement statement);
 
 	/**
 	 * Removes a statement from this block.
+	 *
+	 * @param statement the statement to remove
 	 */
 	void removeStatement(CtStatement statement);
 

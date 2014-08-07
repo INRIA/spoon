@@ -30,6 +30,8 @@ public abstract class SubFactory  {
 
 	/**
 	 * The sub-factory constructor takes an instance of the parent factory.
+	 *
+	 * @param factory the parent factory
 	 */
 	public SubFactory(Factory factory) {
 		super();

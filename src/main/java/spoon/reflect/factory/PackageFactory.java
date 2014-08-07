@@ -52,6 +52,12 @@ public class PackageFactory extends SubFactory implements Serializable {
 
 	/**
 	 * Creates a reference to an existing package.
+	 *
+	 * @param pack the pakcage to reference
+	 *
+	 * @return a new package reference
+	 *
+	 * @throws java.lang.IllegalArgumentException if the given package is null
 	 */
 	public CtPackageReference createReference(CtPackage pack) {
 		if (pack==null) { 
@@ -66,6 +72,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * 
 	 * @param pack
 	 *            a runtime package
+	 *
 	 * @return reference to the package
 	 */
 	public CtPackageReference createReference(Package pack) {
@@ -76,6 +83,8 @@ public class PackageFactory extends SubFactory implements Serializable {
 	
 	/**
 	 * Returns a reference on the top level package.
+	 *
+	 * @return the top level package referenc
 	 */
 	public CtPackageReference topLevel() {
 		if(topLevel==null) {
@@ -89,6 +98,8 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * 
 	 * @param name
 	 *            full name of the package to reference
+	 *
+	 * @return a new package reference
 	 */
 	public CtPackageReference createReference(String name) {	  
 		CtPackageReference ref = factory.Core().createPackageReference();
@@ -103,6 +114,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 *            the parent package (can be null)
 	 * @param simpleName
 	 *            the package's simple name (no dots)
+	 *
 	 * @return the newly created package
 	 */
 	public CtPackage create(CtPackage parent, String simpleName) {
@@ -115,6 +127,8 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * 
 	 * @param qualifiedName
 	 *            the full name of the package
+	 *
+	 * @return a new package or the existing one
 	 */
 	public CtPackage getOrCreate(String qualifiedName) {
 		StringTokenizer token = new StringTokenizer(qualifiedName,
@@ -155,7 +169,8 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * 
 	 * @param qualifiedName
 	 *            the package to search
-	 * @return a found package or null
+	 *
+	 * @return a found package or null of not found
 	 */
 	public CtPackage get(String qualifiedName) {
 		if (qualifiedName.contains(CtType.INNERTTYPE_SEPARATOR)) {
@@ -178,6 +193,8 @@ public class PackageFactory extends SubFactory implements Serializable {
 	/**
 	 * Gets the list of all created packages. It includes all the top-level
 	 * packages and their sub-packages.
+	 *
+	 * @return the Collection of all packages
 	 */
 	public Collection<CtPackage> getAll() {
 		Collection<CtPackage> packs = new ArrayList<CtPackage>();
@@ -189,6 +206,8 @@ public class PackageFactory extends SubFactory implements Serializable {
 
 	/**
 	 * Gets the list of all created root packages
+	 *
+	 * @return a Collection of all root packages
 	 */
 	public Collection<CtPackage> getAllRoots() {
 		return packages.values();
@@ -205,13 +224,15 @@ public class PackageFactory extends SubFactory implements Serializable {
 
 	/**
 	 * Registers a top-level package.
+	 *
+	 * @param pack the package to register
 	 */
-	public void register(CtPackage pck) {
-		if (packages.containsKey(pck.getQualifiedName())) {
-			throw new RuntimeException("package " + pck.getQualifiedName()
+	public void register(CtPackage pack) {
+		if (packages.containsKey(pack.getQualifiedName())) {
+			throw new RuntimeException("package " + pack.getQualifiedName()
 					+ " already created");
 		}
-		packages.put(pck.getQualifiedName(), pck);
+		packages.put(pack.getQualifiedName(), pack);
 	}
 
 }

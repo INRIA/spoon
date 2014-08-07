@@ -24,24 +24,32 @@ public interface CtContinue extends CtCFlowBreak {
 	/**
 	 * Gets the statement where the control flow continues (null if no label
 	 * defined).
+	 *
+	 * @return the labelled statement
 	 */
 	CtStatement getLabelledStatement();
 
 	/**
 	 * Sets the statement where the control flow continues (null if no label
 	 * defined).
+	 *
+	 * @param labelledStatement the labelled statement
 	 */
 	void setLabelledStatement(CtStatement labelledStatement);
 	
 	/**
 	 * Gets the label from which the control flow breaks (null if no label
 	 * defined).
+	 *
+	 * @return the target label name
 	 */
 	String getTargetLabel();
 
 	/**
 	 * Sets the label from which the control flow breaks (null if no label
 	 * defined).
+	 *
+	 * @param targetLabel the target label name to set
 	 */
 	void setTargetLabel(String targetLabel);
 }

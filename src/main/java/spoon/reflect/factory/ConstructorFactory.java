@@ -50,7 +50,9 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Copies a constructor into a target class.
-	 * 
+	 *
+	 * @param <T>
+	 *            the constructor's type
 	 * @param target
 	 *            the target class
 	 * @param source
@@ -69,7 +71,9 @@ public class ConstructorFactory extends ExecutableFactory {
 	/**
 	 * Creates a constructor into a target class by copying it from a source
 	 * method.
-	 * 
+	 *
+	 * @param <T>
+	 *            the constructor's type
 	 * @param target
 	 *            the target class
 	 * @param source
@@ -93,13 +97,19 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Creates an empty constructor.
-	 * 
+	 *
+	 * @param <T>
+	 *            the constructor's type
+	 * @param target
+	 *            the target class
 	 * @param modifiers
 	 *            the modifiers
 	 * @param parameters
 	 *            the parameters
 	 * @param thrownTypes
 	 *            the thrown types
+	 *
+	 * @return the new constructor
 	 */
 	public <T> CtConstructor<T> create(CtClass<T> target,
 			Set<ModifierKind> modifiers, List<CtParameter<?>> parameters,
@@ -114,7 +124,9 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Create the default empty constructor.
-	 * 
+	 *
+	 * @param <T>
+	 *            the constructor's type
 	 * @param target
 	 *            the class to insert the constructor into
 	 * @return the created constructor
@@ -128,7 +140,11 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a constructor.
-	 * 
+	 *
+	 * @param <T>
+	 *            the constructor's type
+	 * @param target
+	 *            the target class
 	 * @param modifiers
 	 *            the modifiers
 	 * @param parameters
@@ -137,6 +153,8 @@ public class ConstructorFactory extends ExecutableFactory {
 	 *            the thrown types
 	 * @param body
 	 *            the body
+	 *
+	 * @return a new constructor
 	 */
 	public <T> CtConstructor<T> create(CtClass<T> target,
 			Set<ModifierKind> modifiers, List<CtParameter<?>> parameters,
@@ -150,6 +168,11 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a constructor reference from an existing constructor.
+	 *
+	 * @param <T> the executable's type
+	 * @param c a constructor
+	 *
+	 * @return the new executable reference
 	 */
 	public <T> CtExecutableReference<T> createReference(CtConstructor<T> c) {
 		return factory.Executable().createReference(c);
@@ -157,6 +180,11 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a constructor reference from an actual constructor.
+	 *
+	 * @param <T> the constructor's type
+	 * @param constructor the constructor
+	 *
+	 * @return the new constructor reference
 	 */
 	public <T> CtExecutableReference<T> createReference(
 			Constructor<T> constructor) {

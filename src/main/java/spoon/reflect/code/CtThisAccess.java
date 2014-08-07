@@ -27,11 +27,15 @@ public interface CtThisAccess<T> extends CtExpression<T> {
 
 	/**
 	 * Tells if this access must be qualified by the class it refers to.
+	 *
+	 * @return true if this {@code this} access must be qualified
 	 */
 	boolean isQualified();
 
 	/**
 	 * Sets this access to be qualified by the class it refers to.
+	 *
+	 * @param qualified true to require a qualified access
 	 */
 	void setQualified(boolean qualified);
 

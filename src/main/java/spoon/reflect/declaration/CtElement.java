@@ -64,7 +64,8 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 
 	/**
 	 * Gets the annotation element for a given annotation type.
-	 * 
+	 *
+	 * @param <A> the type of the annotation
 	 * @param annotationType
 	 *            the annotation type
 	 * @return the annotation if this element is annotated by one annotation of
@@ -77,12 +78,16 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 * Returns the annotations that are present on this element.
 	 * 
 	 * For sake of encapsulation, the returned list is unmodifiable.
+	 *
+	 * @return a List of annotations
 	 */
 	List<CtAnnotation<? extends Annotation>> getAnnotations();
 
 	/**
 	 * Returns the text of the documentation ("javadoc") comment of this
 	 * element.
+	 *
+	 * @return the documentation string
 	 */
 	String getDocComment();
 
@@ -91,6 +96,8 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 * manually added to the tree may have a null parent if not manually set.
 	 * Note that the parents of an entire tree of elements can be automatically
 	 * set by using the {@link #updateAllParentsBelow()}.
+	 *
+	 * @return the parent element
 	 * 
 	 * @throws ParentNotInitializedException
 	 *             when the parent of this element is not initialized
@@ -99,6 +106,8 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 
 	/**
 	 * Tells if this parent has been initialized.
+	 *
+	 * @return true if the parent is initialized
 	 */
 	boolean isParentInitialized();
 
@@ -107,27 +116,44 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	 * parent, which is different from being not initialized). When an element
 	 * is a root element, {@link #getParent()} will return null without throwing
 	 * an exception.
+	 *
+	 * @return true if this element is a root element
 	 */
 	boolean isRootElement();
 
 	/**
 	 * Sets the root element flag to this element.
+	 *
+	 * @param rootElement true to set this element as a root element
 	 */
 	void setRootElement(boolean rootElement);
 
 	/**
 	 * Gets the signature of the element.
+	 *
+	 * @return the signature of the element as a string
 	 */
 	String getSignature();
 
 	/**
 	 * Gets the first parent that matches the given type.
+	 *
+	 * @param <P> the type of element
+	 * @param parentType  the type of parent
+	 *
+	 * @return the element
 	 */
 	<P extends CtElement> P getParent(Class<P> parentType)
 			throws ParentNotInitializedException;
 
 	/**
 	 * Tells if the given element is a direct or indirect parent.
+	 *
+	 * @param candidate the element to check
+	 *
+	 * @return true if the given element has a parent
+	 *
+	 * @throws spoon.reflect.declaration.ParentNotInitializedException if the parent is not initialized
 	 */
 	boolean hasParent(CtElement candidate) throws ParentNotInitializedException;
 
@@ -140,13 +166,15 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 
 	/**
 	 * Replaces this element by another one.
+	 *
+	 * @param element the element to replace
 	 */
 	void replace(CtElement element);
 
 	/**
 	 * Add an annotation for this element
 	 * 
-	 * @param annotation
+	 * @param annotation the annotation to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean addAnnotation(CtAnnotation<? extends Annotation> annotation);
@@ -154,7 +182,7 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	/**
 	 * Remove an anntation for this element
 	 * 
-	 * @param annotation
+	 * @param annotation the annotation to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeAnnotation(CtAnnotation<? extends Annotation> annotation);
@@ -162,6 +190,8 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	/**
 	 * Sets the text of the documentation ("javadoc") comment of this
 	 * declaration.
+	 *
+	 * @param docComment the comment string to set
 	 */
 	void setDocComment(String docComment);
 
@@ -208,29 +238,37 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 	/**
 	 * Returns true if this element is implicit and automatically added by the
 	 * Java compiler.
+	 *
+	 * @return true if this element is implicit
 	 */
 	boolean isImplicit();
 
 	/**
 	 * Sets this element to be implicit (will not be printed).
+	 *
+	 * @param b true to set this element implicit
 	 */
 	void setImplicit(boolean b);
 
 	/**
 	 * Calculates and returns the set of all the types referenced by this
 	 * element (and sub-elements in the AST).
+	 *
+	 * @return a Set of type references
 	 */
 	Set<CtTypeReference<?>> getReferencedTypes();
 
 	/**
-	 * @param filter
-	 * @return
+	 * @param <E> the type of element
+	 * @param filter the filter to apply
+	 * @return the elements
 	 */
 	<E extends CtElement> List<E> getElements(Filter<E> filter);
 
 	/**
-	 * @param filter
-	 * @return
+	 * @param <T> the reference type
+	 * @param filter the reference filter to apply
+	 * @return the reference
 	 */
 	<T extends CtReference> List<T> getReferences(ReferenceFilter<T> filter);
 
@@ -246,6 +284,8 @@ public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
 
 	/**
 	 * Sets the annotations for this element.
+	 *
+	 * @param annotation the annotations to set as a List
 	 */
 	void setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 

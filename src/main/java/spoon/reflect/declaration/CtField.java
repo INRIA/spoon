@@ -31,6 +31,8 @@ public interface CtField<T> extends CtNamedElement, CtVariable<T> {
 
 	/**
 	 * Gets the type that declares this field.
+	 *
+	 * @return the declaring type
 	 */
 	CtSimpleType<?> getDeclaringType();
 

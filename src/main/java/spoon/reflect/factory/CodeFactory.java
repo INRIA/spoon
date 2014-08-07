@@ -58,6 +58,8 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a {@link spoon.reflect.code.CtCodeElement} sub-factory.
+	 *
+	 * @param factory the parent factory
 	 */
 	public CodeFactory(Factory factory) {
 		super(factory);
@@ -171,6 +173,11 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a one-dimension array that must only contain literals.
+	 *
+	 * @param <T> the array's type
+	 * @param value the literal array value
+	 *
+	 * @return the new array
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtNewArray<T[]> createLiteralArray(T[] value) {
@@ -215,6 +222,11 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a local variable reference that points to an existing local
 	 * variable (strong referencing).
+	 *
+	 * @param <T> the local variable's type
+	 * @param localVariable the local variable to reference
+	 *
+	 * @return the new local variable reference
 	 */
 	public <T> CtLocalVariableReference<T> createLocalVariableReference(
 			CtLocalVariable<T> localVariable) {
@@ -229,6 +241,12 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a local variable reference with its name an type (weak
 	 * referencing).
+	 *
+	 * @param <T> the local variable's type
+	 * @param type the type of the accessed variable
+	 * @param name the name of the variable
+	 *
+	 * @return the new local variable reference
 	 */
 	public <T> CtLocalVariableReference<T> createLocalVariableReference(
 			CtTypeReference<T> type, String name) {
@@ -241,6 +259,11 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a new statement list from an existing block.
+	 *
+	 * @param <R> the block's type
+	 * @param block the backing block
+	 *
+	 * @return the new statement list
 	 */
 	public <R> CtStatementList createStatementList(CtBlock<R> block) {
 		CtStatementList l = factory.Core().createStatementList();
@@ -269,6 +292,12 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a variable access.
+	 *
+	 * @param <T> the variable's type
+	 * @param variable the variable to access
+	 * @param isStatic true if the variable is static
+	 *
+	 * @return the new variable access
 	 */
 	public <T> CtVariableAccess<T> createVariableAccess(
 			CtVariableReference<T> variable, boolean isStatic) {
@@ -295,6 +324,8 @@ public class CodeFactory extends SubFactory {
 	 * 
 	 * @param variables
 	 *            the variables to be accessed
+	 *
+	 * @return the List of variable access expressions
 	 */
 	public List<CtExpression<?>> createVariableAccesses(
 			List<? extends CtVariable<?>> variables) {
@@ -308,9 +339,11 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a variable assignment (can be an expression or a statement).
-	 * 
+	 *
+	 * @param <A>
+	 *            the type of the variable being assigned
 	 * @param <T>
-	 *            the type of the assigned variable
+	 *            the type of the assigned expression
 	 * @param variable
 	 *            a reference to the assigned variable
 	 * @param isStatic
@@ -332,7 +365,8 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a list of statements that contains the assignments of a set of
 	 * variables.
-	 * 
+	 *
+	 * @param <T> the type of the variables and expressions
 	 * @param variables
 	 *            the variables to be assigned
 	 * @param expressions

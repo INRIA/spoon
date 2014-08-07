@@ -28,11 +28,15 @@ import spoon.reflect.reference.CtVariableReference;
 public interface CtVariableAccess<T> extends CtExpression<T> {
 	/**
 	 * Gets the reference to the accessed variable.
+	 *
+	 * @return the variable reference
 	 */
 	CtVariableReference<T> getVariable();
 
 	/**
 	 * Sets the reference to the accessed variable.
+	 *
+	 * @param variable the variable reference to set
 	 */
 	void setVariable(CtVariableReference<T> variable);
 }

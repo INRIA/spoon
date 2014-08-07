@@ -27,31 +27,43 @@ public interface CtBinaryOperator<T> extends CtExpression<T> {
 
 	/**
 	 * Returns the left-hand operand.
+	 *
+	 * @return the expression from the left hand side
 	 */
 	CtExpression<?> getLeftHandOperand();
 
 	/**
 	 * Returns the right-hand operand.
+	 *
+	 * @return the expression from the right hand side
 	 */
 	CtExpression<?> getRightHandOperand();
 
 	/**
 	 * Sets the left-hand operand.
+	 *
+	 * @param expression the expression to set
 	 */
 	void setLeftHandOperand(CtExpression<?> expression);
 
 	/**
 	 * Sets the right-hand operand.
+	 *
+	 * @param expression the expression to set
 	 */
 	void setRightHandOperand(CtExpression<?> expression);
 
 	/**
 	 * Sets the kind of this binary operator.
+	 *
+	 * @param kind the kind of binary operator to set
 	 */
 	void setKind(BinaryOperatorKind kind);
 
 	/**
 	 * Gets the kind of this binary operator.
+	 *
+	 * @return the kinf of binary operator
 	 */
 	BinaryOperatorKind getKind();
 

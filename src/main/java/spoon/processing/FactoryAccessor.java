@@ -26,11 +26,15 @@ public interface FactoryAccessor {
 
 	/**
 	 * Gets the factory of this object.
+	 *
+	 * @return the factory
 	 */
 	Factory getFactory();
 
 	/**
 	 * Sets the factory object.
+	 *
+	 * @param factory the factory to set
 	 */
 	void setFactory(Factory factory);
 

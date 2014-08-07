@@ -39,6 +39,8 @@ public interface CtPackage extends CtNamedElement {
 
 	/**
 	 * Gets the declaring package of the current one.
+	 *
+	 * @return the declaring package
 	 */
 	CtPackage getDeclaringPackage();
 
@@ -53,6 +55,8 @@ public interface CtPackage extends CtNamedElement {
 
 	/**
 	 * Gets the set of included child packages.
+	 *
+	 * @return the Set of included child packages
 	 */
 	Set<CtPackage> getPackages();
 
@@ -74,6 +78,9 @@ public interface CtPackage extends CtNamedElement {
 
 	/**
 	 * Finds a top-level type by name.
+	 *
+	 * @param <T> the type's concrete type
+	 * @param simpleName the simple name of the type
 	 * 
 	 * @return the found type or null
 	 */
@@ -81,16 +88,22 @@ public interface CtPackage extends CtNamedElement {
 
 	/**
 	 * Returns the set of the top-level types in this package.
+	 *
+	 * @return the Set of top level types
 	 */
 	Set<CtSimpleType<?>> getTypes();
 
 	/**
 	 * Adds a type to this package.
+	 *
+	 * @param type the type to add
 	 */
 	void addType(CtSimpleType<?> type);
 
 	/**
 	 * Removes a type from this package.
+	 *
+	 * @param type the type to remove
 	 */
 	void removeType(CtSimpleType<?> type);
 
@@ -103,17 +116,17 @@ public interface CtPackage extends CtNamedElement {
 	void setPackages(Set<CtPackage> pack);
 
 	/**
-	 * add a subpackage
+	 * Adds a sub package
 	 * 
-	 * @param pack
+	 * @param pack the sub package to add
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean addPackage(CtPackage pack);
 
 	/**
-	 * remove a subpackage
+	 * Removes a sub package
 	 * 
-	 * @param pack
+	 * @param pack the sub package to remove
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removePackage(CtPackage pack);

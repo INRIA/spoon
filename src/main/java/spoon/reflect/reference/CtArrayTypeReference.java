@@ -24,11 +24,15 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 
 	/**
 	 * Gets the type of the elements contained in this array.
+	 *
+	 * @return the type of this array
 	 */
 	CtTypeReference<?> getComponentType();
 
 	/**
 	 * Sets the type of the elements contained in this array.
+	 *
+	 * @param componentType the type of this array
 	 */
 	void setComponentType(CtTypeReference<?> componentType);
 
@@ -36,18 +40,24 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * Returns the number of dimensions of this array type. This corresponds to
 	 * the number of array types recursively embedded into the current one (see
 	 * {@link #getComponentType()}).
+	 *
+	 * @return the number of dimensions
 	 */
 	int getDimensionCount();
 
 	/**
 	 * Returns the simple name of the array type core component type (with no
 	 * []s). Use toString() to get the full array type including []s.
+	 *
+	 * @return the array type's simple name
 	 */
 	String getSimpleName();
 
 	/**
 	 * Sets the the simple name of the array type core component type (with no
 	 * []s).
+	 *
+	 * @param simpleName the simple name of the array's type
 	 */
 	void setSimpleName(String simpleName);
 

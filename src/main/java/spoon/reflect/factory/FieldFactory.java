@@ -47,7 +47,9 @@ public class FieldFactory extends SubFactory {
 
 	/**
 	 * Creates a field.
-	 * 
+	 *
+	 * @param <T>
+	 *            the type of the field
 	 * @param target
 	 *            the target type to which the field is added
 	 * @param modifiers
@@ -56,6 +58,8 @@ public class FieldFactory extends SubFactory {
 	 *            the field's type
 	 * @param name
 	 *            the field's name
+	 *
+	 * @return a new field
 	 */
 	public <T> CtField<T> create(CtSimpleType<?> target,
 			Set<ModifierKind> modifiers, CtTypeReference<T> type, String name) {
@@ -70,7 +74,9 @@ public class FieldFactory extends SubFactory {
 
 	/**
 	 * Creates a field.
-	 * 
+	 *
+	 * @param <T>
+	 *            the type of the field
 	 * @param target
 	 *            the target type to which the field is added
 	 * @param modifiers
@@ -81,6 +87,8 @@ public class FieldFactory extends SubFactory {
 	 *            the field's name
 	 * @param defaultExpression
 	 *            the initializing expression
+	 *
+	 *  @return a new field
 	 */
 	public <T> CtField<T> create(CtSimpleType<?> target,
 			Set<ModifierKind> modifiers, CtTypeReference<T> type, String name,
@@ -99,6 +107,7 @@ public class FieldFactory extends SubFactory {
 	 *            the target type where the new field has to be inserted to
 	 * @param source
 	 *            the source field to be copied
+	 *
 	 * @return the newly created field
 	 */
 	public <T> CtField<T> create(CtType<?> target, CtField<T> source) {
@@ -110,6 +119,11 @@ public class FieldFactory extends SubFactory {
 
 	/**
 	 * Creates a field reference from an existing field.
+	 *
+	 * @param <T> the type of the referenced field
+	 * @param field the field to reference
+	 *
+	 * @return a new field reference
 	 */
 	public <T> CtFieldReference<T> createReference(CtField<T> field) {
 		return createReference(
@@ -119,6 +133,13 @@ public class FieldFactory extends SubFactory {
 
 	/**
 	 * Creates a field reference.
+	 *
+	 * @param <T> the actual type of the referenced field
+	 * @param declaringType the type that declares the referenced field
+	 * @param type the type of the referenced field
+	 * @param fieldName the name of the new field
+	 *
+	 * @return a new field reference
 	 */
 	public <T> CtFieldReference<T> createReference(
 			CtTypeReference<?> declaringType, CtTypeReference<T> type,
@@ -132,6 +153,11 @@ public class FieldFactory extends SubFactory {
 
 	/**
 	 * Creates a field reference from a <code>java.lang.reflect</code> field.
+	 *
+	 * @param <T> the type of the referenced field
+	 * @param field the field to reference
+	 *
+	 * @return a new field reference
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtFieldReference<T> createReference(Field field) {
@@ -148,6 +174,11 @@ public class FieldFactory extends SubFactory {
 	/**
 	 * Creates a field reference from its signature, as defined by the field
 	 * reference's toString.
+	 *
+	 * @param <T> the type of the referenced field
+	 * @param signature the signature of the field as a string
+	 *
+	 * @return a new field reference
 	 */
 	public <T> CtFieldReference<T> createReference(String signature) {
 		CtFieldReference<T> fieldRef = factory.Core().createFieldReference();

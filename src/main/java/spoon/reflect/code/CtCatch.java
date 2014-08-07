@@ -26,21 +26,29 @@ public interface CtCatch extends CtCodeElement {
 
 	/**
 	 * Gets the catch's parameter (a throwable).
+	 *
+	 * @return the throwable declaration
 	 */
 	CtLocalVariable<? extends Throwable> getParameter();
 
 	/**
 	 * Sets the catch's parameter (a throwable).
+	 *
+	 * @param parameter the throwable declaration to set
 	 */
 	void setParameter(CtLocalVariable<? extends Throwable> parameter);
 
 	/**
 	 * Gets the catch's body.
+	 *
+	 * @return the catch body block
 	 */
 	CtBlock<?> getBody();
 
 	/**
 	 * Sets the catch's body.
+	 *
+	 * @param body the catch body block to set
 	 */
 	void setBody(CtBlock<?> body);
 }

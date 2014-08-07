@@ -55,7 +55,7 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 
 	@Override
 	public String getQualifiedName() {
-                 return Array.class.getCanonicalName();
+				 return Array.class.getCanonicalName();
 	}
 
 	@SuppressWarnings("unchecked")

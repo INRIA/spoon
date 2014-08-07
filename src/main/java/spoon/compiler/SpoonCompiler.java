@@ -31,14 +31,14 @@ import spoon.reflect.factory.Factory;
  * 
  * <p>
  * The Spoon model (see {@link Factory} is built from input sources given as
- * files. Use {@link #build(Factory))} and {@link #build(Factory, List)))} to
- * create the Spoon model. Once the model is built and stored in the factory, it
+ * files. Use {@link #build()} to create the Spoon model.
+ * Once the model is built and stored in the factory, it
  * can be processed by using a {@link spoon.processing.ProcessingManager}.
  * </p>
  * 
  * <p>
  * Create an instance of the default implementation of the Spoon compiler by
- * using {@link Spoon#createCompiler()}. For example:
+ * using {@link spoon.Launcher#createCompiler()}. For example:
  * </p>
  * 
  * <pre>
@@ -48,7 +48,7 @@ import spoon.reflect.factory.Factory;
  * compiler.build(factory, files);
  * </pre>
  * 
- * @see Spoon#createCompiler()
+ * @see spoon.Launcher#createCompiler()
  */
 public interface SpoonCompiler extends FactoryAccessor {
 
@@ -58,6 +58,8 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * @param source
 	 *            file or directory to add
+	 *
+	 * @throws java.io.IOException if the file is invalid
 	 */
 	void addInputSource(File source) throws IOException;
 
@@ -66,11 +68,15 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * @param destinationDirectory
 	 *            destination directory
+	 *
+	 * @throws java.io.IOException if the destination directory was not found
 	 */
 	void setDestinationDirectory(File destinationDirectory) throws IOException;
 
 	/**
 	 * Gets the output directory of this compiler.
+	 *
+	 * @return the output directory as a File
 	 */
 	File getDestinationDirectory();
 
@@ -79,11 +85,15 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * @param outputDirectory
 	 *            output directory
+	 *
+	 * @throws java.io.IOException if the directory is invalid
 	 */
 	void setOutputDirectory(File outputDirectory) throws IOException;
 
 	/**
 	 * Gets the output directory of this compiler.
+	 *
+	 * @return the output directory as a File
 	 */
 	File getOutputDirectory();
 
@@ -100,6 +110,8 @@ public interface SpoonCompiler extends FactoryAccessor {
 	/**
 	 * Gets all the files/directories given as input sources to this builder
 	 * (see {@link #addInputSource(File)}).
+	 *
+	 * @return a Set of input files
 	 */
 	Set<File> getInputSources();
 
@@ -112,6 +124,8 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * @param source
 	 *            file or directory to add
+	 *
+	 * @throws java.io.IOException in case the file is not found
 	 */
 	void addTemplateSource(File source) throws IOException;
 
@@ -131,6 +145,8 @@ public interface SpoonCompiler extends FactoryAccessor {
 	/**
 	 * Gets all the files/directories given as template sources to this builder
 	 * (see {@link #addTemplateSource(File)}).
+	 *
+	 * @return a Set of template sources
 	 */
 	Set<File> getTemplateSources();
 
@@ -142,15 +158,15 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * Builds the program's model with this compiler's factory and stores the
 	 * result into this factory. Note that this method should only be used once
 	 * on a given factory.
+	 *
+	 * @see #getSourceClasspath
+	 * @see #getTemplateClasspath
 	 * 
 	 * @return true if the Java was successfully compiled with the core Java
 	 *         compiler, false if some errors were encountered while compiling
 	 * 
-	 * @exception Exception
+	 * @throws  java.lang.Exception
 	 *                when a building problem occurs
-	 * 
-	 * @see #getSourceClasspath()
-	 * @see #getTemplateClasspath()
 	 */
 	boolean build() throws Exception;
 
@@ -161,6 +177,8 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * @param outputType
 	 *            the output method
+	 *
+	 * @throws java.lang.Exception in case the generation fails
 	 */
 	void generateProcessedSourceFiles(OutputType outputType) throws Exception;
 
@@ -170,6 +188,8 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * {@link #getDestinationDirectory()}.
 	 * 
 	 * @see #getSourceClasspath()
+	 *
+	 * @return true on success
 	 */
 	boolean compile();
 
@@ -177,11 +197,11 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * Generates the bytecode by compiling the input sources. The bytecode is
 	 * generated in the directory given by {@link #getDestinationDirectory()}.
 	 * 
-	 * @param addDestinationDirectoryToClasspath
-	 *            set this flag to true to automatically add the bytecode
-	 *            destination directory to the classpath
-	 * 
 	 * @see #getSourceClasspath()
+	 *
+	 * @return true if no problems occur
+	 *
+	 * @throws java.lang.Exception if compilation files
 	 */
 	boolean compileInputSources() throws Exception;
 
@@ -190,32 +210,40 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * @see #compileInputSources()
 	 * @see #build()
-	 * @see #build(List)
 	 * @see #compile()
+	 *
+	 * @return the source classpath
 	 */
 	String getSourceClasspath();
 
 	/**
 	 * Sets the classpath that is used to build/compile the input sources.
-	 * 
+	 *
+	 * @param classpath the source classpath to set
 	 */
 	void setSourceClasspath(String classpath);
 
 	/**
 	 * Gets the classpath that is used to build the template sources.
 	 * 
-	 * @see #buildTemplates(List)
+	 * @see #build
+	 *
+	 * @return the template classpath
 	 */
 	String getTemplateClasspath();
 
 	/**
 	 * Sets the classpath that is used to build the template sources.
+	 *
+	 * @param classpath the template classpath to set
 	 */
 	void setTemplateClasspath(String classpath);
 
 	/**
 	 * Sets this compiler to optimize the model building process by ignoring
 	 * files that has not be modified since the latest source code generation.
+	 *
+	 * @param buildOnlyOutdatedFiles true to only build outdated files
 	 */
 	void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles);
 
@@ -224,22 +252,30 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * to the forced-to-be-built list. All the files added here will be build
 	 * even if no changes are detected on the file system. This list has no
 	 * impacts if @link #setBuildOnlyOutdatedFiles(boolean)} is false.
+	 *
+	 * @param source the source to build
 	 */
 	void forceBuild(SpoonResource source);
 
 	/**
 	 * Sets the encoding to use when different from the system encoding.
+	 *
+	 * @param encoding the encoding to use
 	 */
 	void setEncoding(String encoding);
 
 	/**
 	 * Gets the encoding used by this compiler. Null means that it uses the
 	 * system encoding.
+	 *
+	 * @return the current encoding
 	 */
 	String getEncoding();
 
 	/**
 	 * Processes the Java model with the given processors.
+	 *
+	 * @param processorTypes the processor types as a List
 	 */
 	void process(List<String> processorTypes);
 

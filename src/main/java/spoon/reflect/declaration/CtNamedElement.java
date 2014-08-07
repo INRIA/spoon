@@ -26,16 +26,22 @@ public interface CtNamedElement extends CtElement, CtModifiable {
 
 	/**
 	 * Returns the simple (unqualified) name of this element.
+	 *
+	 * @return the simple name
 	 */
 	String getSimpleName();
 
 	/**
 	 * Sets the simple (unqualified) name of this element.
+	 *
+	 * @param simpleName the simple name to set
 	 */
 	void setSimpleName(String simpleName);
 
 	/**
 	 * Returns the corresponding reference.
+	 *
+	 * @return the reference
 	 */
 	CtReference getReference();
 

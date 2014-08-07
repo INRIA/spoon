@@ -178,9 +178,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	public CtElement getParent() throws ParentNotInitializedException {
 		if (parent == null) {
-            String exceptionMsg ="";
+			String exceptionMsg ="";
 			if (this instanceof CtNamedElement) {
-                exceptionMsg =(
+				exceptionMsg =(
 						"parent not initialized for "
 								+ ((CtNamedElement) this).getSimpleName()
 								+ (getPosition() != null ? " " + getPosition()
@@ -192,7 +192,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 								+ (getPosition() != null ? " " + getPosition()
 										: " (?)"));
 			}
-            throw new ParentNotInitializedException(exceptionMsg);
+			throw new ParentNotInitializedException(exceptionMsg);
 		}
 		if (parent == ROOT_ELEMENT) {
 			return null;

@@ -29,6 +29,8 @@ public interface CtParameter<T> extends CtNamedElement, CtVariable<T> {
 	/**
 	 * Gets the executable that is the parent declaration of this parameter
 	 * declaration.
+	 *
+	 * @return the declaring executable
 	 */
 	CtExecutable<?> getParent();
 
@@ -36,11 +38,15 @@ public interface CtParameter<T> extends CtNamedElement, CtVariable<T> {
 	 * Returns <tt>true</tt> if this parameter accepts a variable number of
 	 * arguments (must be the last parameter of
 	 * {@link CtExecutable#getParameters()}).
+	 *
+	 * @return true for a vararg
 	 */
 	boolean isVarArgs();
 
 	/**
 	 * Sets this parameter to have varargs.
+	 *
+	 * @param varArgs true to set this parameter to varargs
 	 */
 	void setVarArgs(boolean varArgs);
 

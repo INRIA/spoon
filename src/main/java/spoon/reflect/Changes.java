@@ -42,6 +42,8 @@ public class Changes {
 	
 	/**
 	 * Gets the list of elements added in the model.
+	 *
+	 * @return the List of added elements
 	 */
 	public List<CtElement> getAdded() {
 		if (added == null) {
@@ -52,6 +54,8 @@ public class Changes {
 
 	/**
 	 * Gets the list of elements removed from the model.
+	 *
+	 * @return the List of removed elements
 	 */
 	public List<CtElement> getRemoved() {
 		if (removed == null) {
@@ -62,6 +66,8 @@ public class Changes {
 
 	/**
 	 * Gets the list of updated elements.
+	 *
+	 * @return the List of modified elements
 	 */
 	public List<CtElement> getModified() {
 		if (modified == null) {
@@ -72,6 +78,8 @@ public class Changes {
 
 	/**
 	 * Returns true if elements are added.
+	 *
+	 * @return true if elements are added
 	 */
 	public boolean hasAdded() {
 		return added != null && !added.isEmpty();
@@ -79,6 +87,8 @@ public class Changes {
 
 	/**
 	 * Returns true if elements are modified.
+	 *
+	 * @return true if elements are modified
 	 */
 	public boolean hasModified() {
 		return modified != null && !modified.isEmpty();
@@ -86,6 +96,8 @@ public class Changes {
 
 	/**
 	 * Returns true if elements are removed.
+	 *
+	 * @return true if elements are removed
 	 */
 	public boolean hasRemoved() {
 		return removed != null && !removed.isEmpty();

@@ -686,22 +686,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (e.getTypeCasts().size() != 0) {
 			return true;
 		}
-        try {
-            if ((e.getParent() instanceof CtBinaryOperator)
-                    || (e.getParent() instanceof CtUnaryOperator)) {
-                return (e instanceof CtTargetedExpression)
-                        || (e instanceof CtAssignment)
-                        || (e instanceof CtConditional)
-                        || (e instanceof CtUnaryOperator);
-            }
-            if (e.getParent() instanceof CtTargetedExpression) {
-                return (e instanceof CtBinaryOperator)
-                        || (e instanceof CtAssignment)
-                        || (e instanceof CtConditional);
-            }
-        } catch (ParentNotInitializedException ex) {
-            // nothing we accept not to have a parent
-        }
+		try {
+			if ((e.getParent() instanceof CtBinaryOperator)
+					|| (e.getParent() instanceof CtUnaryOperator)) {
+				return (e instanceof CtTargetedExpression)
+						|| (e instanceof CtAssignment)
+						|| (e instanceof CtConditional)
+						|| (e instanceof CtUnaryOperator);
+			}
+			if (e.getParent() instanceof CtTargetedExpression) {
+				return (e instanceof CtBinaryOperator)
+						|| (e instanceof CtAssignment)
+						|| (e instanceof CtConditional);
+			}
+		} catch (ParentNotInitializedException ex) {
+			// nothing we accept not to have a parent
+		}
 		return false;
 	}
 
@@ -797,11 +797,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		enterCtExpression(operator);
 		boolean paren = false;
-        try { paren = (operator.getParent() instanceof CtBinaryOperator)
+		try { paren = (operator.getParent() instanceof CtBinaryOperator)
 				|| (operator.getParent() instanceof CtUnaryOperator);
-        } catch (ParentNotInitializedException ex) {
-            // nothing if we have no parent
-        }
+		} catch (ParentNotInitializedException ex) {
+			// nothing if we have no parent
+		}
 		if (paren) {
 			write("(");
 		}

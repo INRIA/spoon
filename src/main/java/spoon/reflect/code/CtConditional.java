@@ -24,31 +24,43 @@ public interface CtConditional<T> extends CtExpression<T> {
 
 	/**
 	 * Gets the "false" expression.
+	 *
+	 * @return the expression of the false section
 	 */
 	CtExpression<T> getElseExpression();
 
 	/**
 	 * Gets the "true" expression.
+	 *
+	 * @return the expression of the true section
 	 */
 	CtExpression<T> getThenExpression();
 
 	/**
 	 * Gets the condition expression.
+	 *
+	 * @return the condition expression
 	 */
 	CtExpression<Boolean> getCondition();
 
 	/**
 	 * Sets the "false" expression.
+	 *
+	 * @param elseExpression the expression for the else section
 	 */
 	void setElseExpression(CtExpression<T> elseExpression);
 
 	/**
 	 * Sets the "true" expression.
+	 *
+	 * @param thenExpression the expression for the true section
 	 */
 	void setThenExpression(CtExpression<T> thenExpression);
 
 	/**
 	 * Sets the condition expression.
+	 *
+	 * @param condition the condition expression
 	 */
 	void setCondition(CtExpression<Boolean> condition);
 

@@ -23,21 +23,29 @@ package spoon.reflect.code;
 public interface CtAssert<T> extends CtStatement {
 	/**
 	 * Gets the assert expression.
+	 *
+	 * @return the assertion expression
 	 */
 	CtExpression<Boolean> getAssertExpression();
 
 	/**
 	 * Sets the assert expression.
+	 *
+	 * @param asserted the assertion expression to set
 	 */
 	void setAssertExpression(CtExpression<Boolean> asserted);
 
 	/**
 	 * Gets the expression of the assertion if defined.
+	 *
+	 * @return the expression
 	 */
 	CtExpression<T> getExpression();
 
 	/**
 	 * Sets the expression of the assertion.
+	 *
+	 * @param expression the expression to set
 	 */
 	void setExpression(CtExpression<T> expression);
 }

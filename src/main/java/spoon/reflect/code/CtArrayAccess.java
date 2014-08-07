@@ -32,11 +32,15 @@ public interface CtArrayAccess<T, E extends CtExpression<?>> extends
 		CtTargetedExpression<T, E> {
 	/**
 	 * Sets the expression that defines the index.
+	 *
+	 * @param expression the index expression to set
 	 */
 	void setIndexExpression(CtExpression<Integer> expression);
 
 	/**
 	 * Returns the expression that defines the index.
+	 *
+	 * @return the index expression
 	 */
 	CtExpression<Integer> getIndexExpression();
 }

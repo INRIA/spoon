@@ -24,11 +24,19 @@ public interface ProcessorProperties {
 
 	/**
 	 * Gets the property converted in given type or null (can be an array).
+	 *
+	 * @param <T> the type of the property
+	 * @param type the {@link java.lang.Class} of the type
+	 * @param name the name of the property
+	 *
+	 * @return the property
 	 */
 	<T> T get(Class<T> type, String name);
 
 	/**
 	 * Gets the corresponding processor name.
+	 *
+	 * @return name of the processor
 	 */
 	String getProcessorName();
 

@@ -34,16 +34,22 @@ public interface FileGenerator<T extends CtElement> extends Processor<T> {
 
 	/**
 	 * Sets the root directory where files should be created.
+	 *
+	 * @param directory the output directory as a {@link java.io.File} to add
 	 */
 	public void setOutputDirectory(File directory);
 
 	/**
 	 * Gets the root directory where files are created.
+	 *
+	 * @return the output directory as a {@link java.io.File}
 	 */
 	public File getOutputDirectory();
 
 	/**
 	 * Gets the created files.
+	 *
+	 * @return a {@link java.util.List} of created files
 	 */
 	public List<File> getCreatedFiles();
 

@@ -42,6 +42,11 @@ public interface CtTypeReference<T> extends CtReference,
 	 */
 	Class<T> getActualClass();
 
+	/**
+	 * Returns the declaration of this type
+	 *
+	 * @return the declaration
+	 */
 	CtSimpleType<T> getDeclaration();
 
 	/**
@@ -69,92 +74,130 @@ public interface CtTypeReference<T> extends CtReference,
 	/**
 	 * Returns <code>true</code> if this referenced type is assignable from an
 	 * instance of the given type.
+	 *
+	 * @param type the type to check
+	 *
+	 * @return true if this type is assignable from the given type
 	 */
 	boolean isAssignableFrom(CtTypeReference<?> type);
 
 	/**
 	 * Return {@code true} if the referenced type is a primitive type (int,
 	 * double, boolean...).
+	 *
+	 * @return true if this is a primitive type
 	 */
 	boolean isPrimitive();
 
 	/**
 	 * Return {@code true} if the referenced type is a anonymous type
+	 *
+	 * @return true of this is an anonymous type
 	 */
 	boolean isAnonymous();
 
 	/**
 	 * Returns the corresponding non-primitive type for a primitive type (the
-	 * same type otherwhise).
+	 * same type otherwise).
+	 *
+	 * @return a boxed primitive if applicable
 	 */
 	CtTypeReference<?> box();
 
 	/**
 	 * Returns the primitive type for a boxing type (unchanged if the type does
 	 * not correspond to a boxing type).
+	 *
+	 * @return unboxes the primitive type of applicable
 	 */
 	CtTypeReference<?> unbox();
 
 	/**
 	 * Returns true if the referenced type is a sub-type of the given type.
+	 *
+	 * @param type the type to check against
+	 *
+	 * @return true of this type is a sub type of the given type
 	 */
 	boolean isSubtypeOf(CtTypeReference<?> type);
 
 	/**
 	 * Sets the reference to the declaring type. Should be set to null if the
 	 * referenced type is not a inner type.
+	 *
+	 * @param type the declaring type to set or null if this type is not a inner type
 	 */
 	void setDeclaringType(CtTypeReference<?> type);
 
 	/**
 	 * Sets the reference to the declaring package.
+	 *
+	 * @param pack the package to set
 	 */
 	void setPackage(CtPackageReference pack);
 
 	/**
 	 * Gets the fields declared by this type.
+	 *
+	 * @return the Collection of fields declared by this type
 	 */
 	Collection<CtFieldReference<?>> getDeclaredFields();
 
 	/**
 	 * Gets the fields declared by this type and by all its supertypes if
 	 * applicable.
+	 *
+	 * @return the Collection of all fields
 	 */
 	Collection<CtFieldReference<?>> getAllFields();
 
 	/**
 	 * Gets the executables declared by this type if applicable.
+	 *
+	 * @return the Collection of executables declared by this type
 	 */
 	Collection<CtExecutableReference<?>> getDeclaredExecutables();
 
 	/**
 	 * Gets the executables declared by this type and by all its supertypes if
 	 * applicable.
+	 *
+	 * @return the Collections of executables from this type
 	 */
 	Collection<CtExecutableReference<?>> getAllExecutables();
 
 	/**
 	 * Gets the superclass of this type if applicable (only for classes).
+	 *
+	 * @return a type reference of the super class
 	 */
 	CtTypeReference<?> getSuperclass();
 
 	/**
 	 * Gets the super interfaces of this type.
+	 *
+	 * @return the Set of super interfaces
 	 */
 	Set<CtTypeReference<?>> getSuperInterfaces();
 
 	/**
 	 * Returns true if the reference refers to the super implementation
+	 *
+	 * @return true if referring to the super implementation
 	 */
 	boolean isSuperReference();
 
 	/**
 	 * Says that this reference refers to the super implementation
+	 *
+	 * @param b true to refer to the super imeplementation
 	 */
 	void setSuperReference(boolean b);
 
 	/**
 	 * Returns true if this type is an interface.
+	 *
+	 * @return true if this type is an interface
 	 */
 	boolean isInterface();
 	

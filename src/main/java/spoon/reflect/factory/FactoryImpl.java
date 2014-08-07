@@ -47,6 +47,8 @@ public class FactoryImpl implements Factory, Serializable {
 	 * Returns the parent of this factory. When an element is not found in a
 	 * factory, it can be looked up in its parent factory using a delegation
 	 * model.
+	 *
+	 * @return the parent factory
 	 */
 	public Factory getParentFactory() {
 		return parentFactory;
@@ -54,9 +56,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient AnnotationFactory Annotation;
 
-	/**
-	 * The {@link CtAnnotationType} sub-factory.
-	 */
 	public AnnotationFactory Annotation() {
 		if (Annotation == null) {
 			Annotation = new AnnotationFactory(this);
@@ -66,9 +65,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient ClassFactory Class;
 
-	/**
-	 * The {@link CtClass} sub-factory.
-	 */
 	public ClassFactory Class() {
 		if (Class == null) {
 			Class = new ClassFactory(this);
@@ -78,9 +74,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient CodeFactory Code;
 
-	/**
-	 * The {@link spoon.reflect.code.CtCodeElement} sub-factory.
-	 */
 	public CodeFactory Code() {
 		if (Code == null) {
 			Code = new CodeFactory(this);
@@ -90,9 +83,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient ConstructorFactory Constructor;
 
-	/**
-	 * The {@link CtConstructor} sub-factory.
-	 */
 	public ConstructorFactory Constructor() {
 		if (Constructor == null) {
 			Constructor = new ConstructorFactory(this);
@@ -102,9 +92,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient CoreFactory Core;
 
-	/**
-	 * The core factory.
-	 */
 	public CoreFactory Core() {
 		if (Core == null) {
 			Core = new DefaultCoreFactory();
@@ -116,6 +103,8 @@ public class FactoryImpl implements Factory, Serializable {
 
 	/**
 	 * The {@link CtEnum} sub-factory.
+	 *
+	 * @return the singleton enum factory
 	 */
 	public EnumFactory Enum() {
 		if (Enum == null) {
@@ -126,9 +115,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient Environment Environment;
 
-	/**
-	 * Gets the Spoon environment that encloses this factory.
-	 */
 	public Environment getEnvironment() {
 		if (Environment == null) {
 			Environment = new StandardEnvironment();
@@ -138,9 +124,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient ExecutableFactory Executable;
 
-	/**
-	 * The {@link CtExecutable} sub-factory.
-	 */
 	public ExecutableFactory Executable() {
 		if (Executable == null) {
 			Executable = new ExecutableFactory(this);
@@ -150,9 +133,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient EvalFactory Eval;
 
-	/**
-	 * The evaluators sub-factory.
-	 */
 	public EvalFactory Eval() {
 		if (Eval == null) {
 			Eval = new EvalFactory(this);
@@ -162,9 +142,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient FieldFactory Field;
 
-	/**
-	 * The {@link CtField} sub-factory.
-	 */
 	public FieldFactory Field() {
 		if (Field == null) {
 			Field = new FieldFactory(this);
@@ -179,6 +156,8 @@ public class FactoryImpl implements Factory, Serializable {
 
 	/**
 	 * The {@link CtInterface} sub-factory.
+	 *
+	 * @return the singleton interface factory
 	 */
 	public InterfaceFactory Interface() {
 		if (Interface == null) {
@@ -189,9 +168,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient MethodFactory Method;
 
-	/**
-	 * The {@link CtMethod} sub-factory.
-	 */
 	public MethodFactory Method() {
 		if (Method == null) {
 			Method = new MethodFactory(this);
@@ -201,9 +177,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private PackageFactory Package;
 
-	/**
-	 * The {@link CtPackage} sub-factory.
-	 */
 	public PackageFactory Package() {
 		if (Package == null) {
 			Package = new PackageFactory(this);
@@ -213,9 +186,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private CompilationUnitFactory CompilationUnit;
 
-	/**
-	 * The {@link CompilationUnit} sub-factory.
-	 */
 	public CompilationUnitFactory CompilationUnit() {
 		if (CompilationUnit == null) {
 			CompilationUnit = new CompilationUnitFactory(this);
@@ -227,9 +197,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient TypeFactory Type;
 
-	/**
-	 * The {@link CtType} sub-factory.
-	 */
 	public TypeFactory Type() {
 		if (Type == null) {
 			Type = new TypeFactory(this);
@@ -250,6 +217,8 @@ public class FactoryImpl implements Factory, Serializable {
 	 * contructed for the first time. Any subsequent constructions will not
 	 * affect the launching factory and references to other factories have to be
 	 * handled manually, if ever needed.
+	 *
+	 * @return the launching factory
 	 */
 	public static Factory getLauchingFactory() {
 		return launchingFactory;
@@ -257,6 +226,10 @@ public class FactoryImpl implements Factory, Serializable {
 
 	/**
 	 * A constructor that takes the parent factory
+	 *
+	 * @param coreFactory the core factory
+	 * @param environment the environment
+	 * @param parentFactory the parent factory
 	 */
 	public FactoryImpl(CoreFactory coreFactory, Environment environment,
 			Factory parentFactory) {
@@ -269,6 +242,9 @@ public class FactoryImpl implements Factory, Serializable {
 
 	/**
 	 * The constructor.
+	 *
+	 * @param coreFactory the core factory
+	 * @param environment the environment
 	 */
 	public FactoryImpl(CoreFactory coreFactory, Environment environment) {
 		this(coreFactory, environment, null);

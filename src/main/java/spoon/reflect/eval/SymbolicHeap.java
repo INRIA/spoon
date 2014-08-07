@@ -36,6 +36,8 @@ public class SymbolicHeap {
 
 	/**
 	 * Copies the given heap.
+	 *
+	 * @param heap the heap to copy
 	 */
 	@SuppressWarnings("unchecked")
 	public SymbolicHeap(SymbolicHeap heap) {
@@ -77,6 +79,8 @@ public class SymbolicHeap {
 	 * 
 	 * @param <T>
 	 *            the actual type if known
+	 * @param evaluator
+	 *            the symbolic avulator
 	 * @param concreteType
 	 *            the type reference
 	 * @return the symbolic value for the type
@@ -94,6 +98,8 @@ public class SymbolicHeap {
 
 	/**
 	 * Stores the given symbolic instance in the heap.
+	 *
+	 * @param instance the symbolic instance to store
 	 */
 	public void store(SymbolicInstance<?> instance) {
 		if (instance.isStateful()) {
@@ -105,6 +111,11 @@ public class SymbolicHeap {
 
 	/**
 	 * Gets an existing symbolic instance from its id.
+	 *
+	 * @param <T> the value's type
+	 * @param id the ID
+	 *
+	 * @return the symbolic instance for the given ID
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> SymbolicInstance<T> get(String id) {

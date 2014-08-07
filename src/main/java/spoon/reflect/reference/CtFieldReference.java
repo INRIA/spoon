@@ -37,36 +37,50 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 
 	/**
 	 * Gets the type in which the field is declared.
+	 *
+	 * @return the type that declares this field
 	 */
 	CtTypeReference<?> getDeclaringType();
 
 	/**
 	 * Gets the qualified name of the field.
+	 *
+	 * The qualified name of the field
 	 */
 	String getQualifiedName();
 
 	/**
 	 * Tells if the referenced field is final.
+	 *
+	 * @return true if this field is final
 	 */
 	boolean isFinal();
 
 	/**
 	 * Tells if the referenced field is static.
+	 *
+	 * @return true if this field is static
 	 */
 	boolean isStatic();
 
 	/**
 	 * Sets the type in which the field is declared.
+	 *
+	 * @param declaringType the type that declares this field
 	 */
 	void setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**
 	 * Forces a reference to a final element.
+	 *
+	 * @param b true to make this field final
 	 */
 	void setFinal(boolean b);
 
 	/**
 	 * Forces a reference to a static element.
+	 *
+	 * @param b true to make this field static
 	 */
 	void setStatic(boolean b);
 }

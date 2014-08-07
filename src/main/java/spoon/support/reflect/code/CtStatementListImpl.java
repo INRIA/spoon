@@ -77,8 +77,8 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		this.statements.remove(statement);
 	}
 
-    @Override
-    public Iterator<CtStatement> iterator() {
-        return statements.iterator();
-    }
+	@Override
+	public Iterator<CtStatement> iterator() {
+		return statements.iterator();
+	}
 }

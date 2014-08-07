@@ -78,6 +78,8 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Creates a literal symbolic instance.
+	 *
+	 * @param literal the name
 	 */
 	public SymbolicInstance(String literal) {
 		this.literal = literal;
@@ -89,6 +91,8 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Gets the next id to be attributed to the created instance.
+	 *
+	 * @return the next ID
 	 */
 	private static long getNextId() {
 		return id++;
@@ -123,6 +127,8 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Gets the unique Id of this abstract instance.
+	 *
+	 * @return the ID of this instance as a string
 	 */
 	public String getId() {
 		if (literal != null) {
@@ -151,6 +157,10 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Tests the equality by reference.
+	 *
+	 * @param obj the object to test against
+	 *
+	 * @return true if the given object equals this instance
 	 */
 	public boolean equalsRef(Object obj) {
 		if (this == obj) {
@@ -247,6 +257,8 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Tells if this logical value is stateful or not.
+	 *
+	 * @return true if this instance is stateful
 	 */
 	public boolean isStateful() {
 		return !fields.isEmpty();
@@ -262,6 +274,8 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Gets the type of the abstract instance.
+	 *
+	 * @return the concrete type
 	 */
 	public CtTypeReference<T> getConcreteType() {
 		return concreteType;
@@ -270,6 +284,8 @@ public class SymbolicInstance<T> {
 	/**
 	 * Gets the value of a field belonging to this instance, as an abstract
 	 * instance id.
+	 *
+	 * @param fref a reference to the field
 	 *
 	 * @return null if non-existing field
 	 */
@@ -280,6 +296,8 @@ public class SymbolicInstance<T> {
 	/**
 	 * Gets the value of a field belonging to this instance and identified by
 	 * its name, as an abstract instance id.
+	 *
+	 * @param fname the name of the field
 	 *
 	 * @return null if non-existing field
 	 */
@@ -316,6 +334,10 @@ public class SymbolicInstance<T> {
 	/**
 	 * Sets the value of a field belonging to this instance, and stores the
 	 * instance on the heap.
+	 *
+	 * @param heap the heap to set the field value in
+	 * @param fref the field to set the value for
+	 * @param value the value to set
 	 */
 	public void setFieldValue(SymbolicHeap heap, CtVariableReference<?> fref,
 			SymbolicInstance<?> value) {
@@ -332,6 +354,8 @@ public class SymbolicInstance<T> {
 	/**
 	 * Tells if this instance is a wrapper for an instance external from the
 	 * evaluator (regular Java object).
+	 *
+	 * @return true if this instance is a wrapper for an external instance
 	 */
 	public boolean isExternal() {
 		return isExternal;
@@ -351,6 +375,8 @@ public class SymbolicInstance<T> {
 	/**
 	 * Gets a copy of this instance (if the instance is stateless, returns
 	 * this).
+	 *
+	 * @return a clone of this instance
 	 */
 	public SymbolicInstance<T> getClone() {
 		if (!isStateful()) {
@@ -361,6 +387,8 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Creates a copy of the given instance.
+	 *
+	 * @param i the instance to copy
 	 */
 	public SymbolicInstance(SymbolicInstance<T> i) {
 		concreteType = i.concreteType;
@@ -371,6 +399,8 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Gets the name of this symbolic instance.
+	 *
+	 * @return the symbol name
 	 */
 	public String getSymbolName() {
 		return symbolName;
@@ -378,6 +408,8 @@ public class SymbolicInstance<T> {
 
 	/**
 	 * Gets the fields for this instance.
+	 *
+	 * @return the fields of this instance
 	 */
 	public Map<CtVariableReference<?>, String> getFields() {
 		return fields;

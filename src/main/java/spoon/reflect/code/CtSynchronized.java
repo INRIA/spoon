@@ -30,16 +30,22 @@ public interface CtSynchronized extends CtStatement {
 
 	/**
 	 * Sets the expression that defines the monitored.
+	 *
+	 * @param expression the expression to monitor
 	 */
 	void setExpression(CtExpression<?> expression);
 
 	/**
 	 * Gets the synchronized block.
+	 *
+	 * @return the synchronized block
 	 */
 	CtBlock<?> getBlock();
 
 	/**
 	 * Sets the synchronized block.
+	 *
+	 * @param block the synchronized block
 	 */
 	void setBlock(CtBlock<?> block);
 }

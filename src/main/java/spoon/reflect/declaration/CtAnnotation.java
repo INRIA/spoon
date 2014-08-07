@@ -37,12 +37,14 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	 * NOTE: before using an annotation proxy, you have to make sure that all
 	 * the types referenced by the annotation have been compiled and are in the
 	 * classpath so that accessed values can be converted into the actual types ({@link #getElementValue(String)}).
+	 *
+	 * @return the actual annotation instance
 	 */
 	A getActualAnnotation();
 
 	/**
 	 * Returns the annotation type of this annotation.
-	 * 
+	 *
 	 * @return a reference to the type of this annotation
 	 */
 	CtTypeReference<A> getAnnotationType();
@@ -54,7 +56,8 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	 * NOTE: in case of a type, the value is converted to the actual type. To
 	 * access the type as a reference, use {@link #getElementValues()}, which
 	 * returns a map containing the raw (unconverted) values.
-	 * 
+	 *
+	 * @param <T> the type of the value
 	 * @param key
 	 *            name of searched value
 	 * @return the value or null if not found
@@ -89,6 +92,8 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	 * form of a map that associates element names with their corresponding
 	 * values. Note that type values are stored as
 	 * {@link spoon.reflect.reference.CtTypeReference}.
+	 *
+	 * @param values a Map of annotation values
 	 */
 	void setElementValues(Map<String, Object> values);
 

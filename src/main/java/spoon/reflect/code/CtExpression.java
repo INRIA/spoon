@@ -34,16 +34,22 @@ public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>,
 
 	/**
 	 * Returns the type casts if any.
+	 *
+	 * @return the List of type references
 	 */
 	List<CtTypeReference<?>> getTypeCasts();
 
 	/**
 	 * Sets the type casts.
+	 *
+	 * @param types a List of type references to set
 	 */
 	void setTypeCasts(List<CtTypeReference<?>> types);
 
 	/**
 	 * Adds a type cast.
+	 *
+	 * @param type a type reference to add
 	 */
 	void addTypeCast(CtTypeReference<?> type);
 	

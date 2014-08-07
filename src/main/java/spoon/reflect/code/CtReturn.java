@@ -26,11 +26,15 @@ public interface CtReturn<R> extends CtCFlowBreak, TemplateParameter<Void> {
 
 	/**
 	 * Gets the returned expression.
+	 *
+	 * @return the returned expression
 	 */
 	CtExpression<R> getReturnedExpression();
 
 	/**
 	 * Sets the returned expression.
+	 *
+	 * @param returnedExpression the expression to return
 	 */
 	void setReturnedExpression(CtExpression<R> returnedExpression);
 

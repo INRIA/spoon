@@ -31,6 +31,8 @@ import java.lang.annotation.Target;
 public @interface Property {
 	/**
 	 * An optional text that describes the property.
+	 *
+	 * @return a description
 	 */
 	String value() default "";
 }

@@ -99,6 +99,10 @@ public class Launcher {
 	/**
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
+	 *
+	 * @param args The command line arguments
+	 *
+	 * @throws java.lang.Exception if the argument handling fails
 	 */
 	public static void main(String[] args) throws Exception {
 		Launcher launcher = new Launcher();
@@ -116,6 +120,8 @@ public class Launcher {
 
 	/**
 	 * Print the usage for this command-line launcher.
+	 *
+	 * @throws java.lang.Exception if the argument handling fails
 	 */
 	public void printUsage() throws Exception {
 		this.args = new String[] { "--help" };
@@ -124,6 +130,8 @@ public class Launcher {
 
 	/**
 	 * Constructor with no arguments.
+	 *
+	 * @throws com.martiansoftware.jsap.JSAPException if defining the ocmmon arguments fails
 	 */
 	public Launcher() throws JSAPException {
 		jsapArgs = defineArgs();
@@ -131,6 +139,8 @@ public class Launcher {
 
 	/**
 	 * Adds an input resource to be processed by Spoon.
+	 *
+	 * @param resource the input resource to add
 	 */
 	public void addInputResource(SpoonResource resource) {
 		inputResources.add(resource);
@@ -138,6 +148,8 @@ public class Launcher {
 
 	/**
 	 * Adds a processor.
+	 *
+	 * @param name the name of the processor
 	 */
 	public void addProcessor(String name) {
 		processors.add(name);
@@ -145,6 +157,8 @@ public class Launcher {
 
 	/**
 	 * Adds a resource that contains a template (usually a source File).
+	 *
+	 * @param resource the resource to add
 	 */
 	public void addTemplateResource(SpoonResource resource) {
 		templateResources.add(resource);
@@ -367,6 +381,10 @@ public class Launcher {
 
 	/**
 	 * Returns the command-line given launching arguments in JSAP format.
+	 *
+	 * @return the JSAP result
+	 *
+	 * @throws java.lang.Exception if parsing the arguments fails
 	 */
 	protected final JSAPResult getArguments() throws Exception {
 		return parseArgs();
@@ -374,6 +392,10 @@ public class Launcher {
 
 	/**
 	 * Processes the arguments.
+	 *
+	 * @param factory a factory implementation
+	 *
+	 * @throws java.lang.Exception if the argument handling fails
 	 */
 	protected void processArguments(Factory factory) throws Exception {
 
@@ -431,6 +453,8 @@ public class Launcher {
 	/**
 	 * Gets the list of input sources as files. This method can be overriden to
 	 * customize this list.
+	 *
+	 * @return A List of input sources
 	 */
 	protected java.util.List<SpoonResource> getInputSources() {
 		return inputResources;
@@ -439,6 +463,8 @@ public class Launcher {
 	/**
 	 * Gets the list of processor types to be initially applied during the
 	 * processing (-p option).
+	 *
+	 * @return a List of processor types
 	 */
 	protected java.util.List<String> getProcessorTypes() {
 		return processors;
@@ -446,6 +472,8 @@ public class Launcher {
 
 	/**
 	 * Gets the list of template sources as files.
+	 *
+	 * @return A List of template sources
 	 */
 	protected List<SpoonResource> getTemplateSources() {
 		return templateResources;
@@ -453,6 +481,9 @@ public class Launcher {
 
 	/**
 	 * Load content of spoonlet file (template and processor list).
+	 *
+	 * @param factory the factory to use
+	 * @param spoonletFile the file of the spoonlet to load
 	 */
 	protected void loadSpoonlet(Factory factory, File spoonletFile) {
 		Environment env = factory.getEnvironment();
@@ -503,9 +534,7 @@ public class Launcher {
 
 	/**
 	 * Parses the arguments given by the command line.
-	 * 
-	 * @param args
-	 *            the command-line arguments as a string array
+	 *
 	 * @return the JSAP-presented arguments
 	 * @throws JSAPException
 	 *             when an error occurs in the argument parsing
@@ -546,6 +575,8 @@ public class Launcher {
 	 * 
 	 * @param factory
 	 *            the factory this compiler works on
+	 *
+	 * @return a new spoon compiler
 	 */
 	public SpoonCompiler createCompiler(Factory factory) {
 		return new JDTBasedSpoonCompiler(factory);
@@ -559,6 +590,8 @@ public class Launcher {
 	 *            the factory this compiler works on
 	 * @param inputSources
 	 *            the sources to be processed and/or compiled
+	 *
+	 * @return a new spoon compiler
 	 */
 	public SpoonCompiler createCompiler(Factory factory,
 			List<SpoonResource> inputSources) {
@@ -570,6 +603,12 @@ public class Launcher {
 	/**
 	 * Creates a new Spoon Java compiler in order to process and compile Java
 	 * source code.
+	 *
+	 * @param factory the factory to use
+	 * @param inputSources the input sources to use
+	 * @param templateSources the template sources to use
+	 *
+	 * @return a new spoon compiler
 	 */
 	public SpoonCompiler createCompiler(Factory factory,
 			List<SpoonResource> inputSources,
@@ -584,6 +623,8 @@ public class Launcher {
 	 * Creates a new Spoon Java compiler with a default factory in order to
 	 * process and compile Java source code. The compiler's factory can be
 	 * accessed with the {@link SpoonCompiler#getFactory()}.
+	 *
+	 * @return a new spoon compiler
 	 */
 	public SpoonCompiler createCompiler() {
 		return createCompiler(factory);
@@ -592,6 +633,10 @@ public class Launcher {
 	/**
 	 * Creates a new Spoon Java compiler with a default factory and a list of
 	 * input sources.
+	 *
+	 * @param inputSources the input soures to use
+	 *
+	 * @return a new spoon compiler
 	 */
 	public SpoonCompiler createCompiler(List<SpoonResource> inputSources) {
 		SpoonCompiler c = createCompiler(factory);
@@ -602,6 +647,11 @@ public class Launcher {
 	/**
 	 * Creates a new Spoon Java compiler with a default factory and a list of
 	 * input and template sources.
+	 *
+	 * @param inputSources the input sources to use
+	 * @param templateSources the template sources to use
+	 *
+	 * @return a new spoon compiler
 	 */
 	public SpoonCompiler createCompiler(
 			List<SpoonResource> inputSources,
@@ -616,6 +666,8 @@ public class Launcher {
 	 * Creates a default Spoon factory, which holds the Java model (AST)
 	 * compiled from the source files and which can be processed by Spoon
 	 * processors.
+	 *
+	 * @return a new Factory instance
 	 */
 	public Factory createFactory() {
 		return createFactory(new StandardEnvironment());
@@ -634,6 +686,8 @@ public class Launcher {
 
 	/**
 	 * Creates a new default environment.
+	 *
+	 * @return a new Environment instance
 	 */
 	public Environment createEnvironment() {
 		return new StandardEnvironment();
@@ -651,6 +705,7 @@ public class Launcher {
 	 * @param debug
 	 *            tells Spoon to print out the detailed traces
 	 * @param properties
+	 *            tells Spoon where the processor configuration files are loaded from
 	 * @param autoImports
 	 *            tells Spoon to automatically generate the imports when
 	 *            printing out the source code
@@ -667,7 +722,6 @@ public class Launcher {
 	 * @param sourceOutputDir
 	 *            sets the Spoon output directory where to generate the printed
 	 *            source code
-	 * @return a properly initialized environment
 	 */
 	public void initEnvironment(Environment environment,
 			int complianceLevel, boolean verbose, boolean debug,
@@ -723,7 +777,7 @@ public class Launcher {
 	 * {@link SpoonCompiler#generateProcessedSourceFiles(OutputType)}.</li>
 	 * <li>Processed source code compilation (optional):
 	 * {@link SpoonCompiler#compile()}.</li>
-	 * <ol>
+	 * </ol>
 	 * 
 	 * @param compiler
 	 *            the compiler to be used, with a properly initialized factory
@@ -746,9 +800,9 @@ public class Launcher {
 	 *            the destination directory of the compiled bytecode
 	 * @param buildOnlyOutdatedFiles
 	 *            build and compile the files that has been modified since the
-	 *            last build/compilation (requires <code>!nooutput</code> and
-	 *            <code>compile</code> with a correctly set
-	 *            <code>detinatioDirectory</code>)
+	 *            last build/compilation (requires {@code !nooutput} and
+	 *            {@code compile} with a correctly set
+	 *            {@code destinationDirectory})
 	 * @param sourceClasspath
 	 *            the classpath to build and compile the input sources, given as
 	 *            a string
@@ -884,6 +938,8 @@ public class Launcher {
 
 	/**
 	 * Starts the Spoon processing.
+	 *
+	 * @throws java.lang.Exception if the argument handling fails
 	 */
 	public void run() throws Exception {
 
