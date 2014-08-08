@@ -31,14 +31,14 @@ import spoon.reflect.factory.Factory;
  * 
  * <p>
  * The Spoon model (see {@link Factory} is built from input sources given as
- * files. Use {@link #build(Factory))} and {@link #build(Factory, List)))} to
- * create the Spoon model. Once the model is built and stored in the factory, it
+ * files. Use {@link #build()} to create the Spoon model.
+ * Once the model is built and stored in the factory, it
  * can be processed by using a {@link spoon.processing.ProcessingManager}.
  * </p>
  * 
  * <p>
  * Create an instance of the default implementation of the Spoon compiler by
- * using {@link Spoon#createCompiler()}. For example:
+ * using {@link spoon.Launcher#createCompiler()}. For example:
  * </p>
  * 
  * <pre>
@@ -48,7 +48,7 @@ import spoon.reflect.factory.Factory;
  * compiler.build(factory, files);
  * </pre>
  * 
- * @see Spoon#createCompiler()
+ * @see spoon.Launcher#createCompiler()
  */
 public interface SpoonCompiler extends FactoryAccessor {
 
@@ -177,10 +177,6 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * Generates the bytecode by compiling the input sources. The bytecode is
 	 * generated in the directory given by {@link #getDestinationDirectory()}.
 	 * 
-	 * @param addDestinationDirectoryToClasspath
-	 *            set this flag to true to automatically add the bytecode
-	 *            destination directory to the classpath
-	 * 
 	 * @see #getSourceClasspath()
 	 */
 	boolean compileInputSources() throws Exception;
@@ -190,7 +186,6 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * @see #compileInputSources()
 	 * @see #build()
-	 * @see #build(List)
 	 * @see #compile()
 	 */
 	String getSourceClasspath();
@@ -203,8 +198,6 @@ public interface SpoonCompiler extends FactoryAccessor {
 
 	/**
 	 * Gets the classpath that is used to build the template sources.
-	 * 
-	 * @see #buildTemplates(List)
 	 */
 	String getTemplateClasspath();
 

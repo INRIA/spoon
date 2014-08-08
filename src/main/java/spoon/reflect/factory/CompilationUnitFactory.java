@@ -47,7 +47,7 @@ public class CompilationUnitFactory extends SubFactory {
 	/**
 	 * Gets the compilation unit map.
 	 * 
-	 * @return a map (path -> {@link CompilationUnit})
+	 * @return a map (path -&gt; {@link CompilationUnit})
 	 */
 	public Map<String, CompilationUnit> getMap() {
 		return compilationUnits;

@@ -94,7 +94,7 @@ public class ClassFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param cl
-	 *            the java class: note that this class should be Class<T> but
+	 *            the java class: note that this class should be Class&lt;T&gt; but
 	 *            it then poses problem when T is a generic type itself
 	 */
 	@Override
