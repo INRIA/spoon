@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -41,4 +42,27 @@ public class BlockTest {
 	    assertTrue(body.getStatements().equals(l));	    
 	  }
 	  
+	@Test
+	public void testAddEmptyBlock() {
+		// specifies a bug found by Benoit Cornu on August 7 2014
+		
+		Factory factory = TestUtils.createFactory();
+		CtClass<?> clazz = factory
+				.Code()
+				.createCodeSnippetStatement(
+						"" + "class X {" + "public void foo() {" + " "
+								+ "}};")
+				.compile();
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
+
+		CtBlock<?> body = foo.getBody(); // empty block (immutable EMPTY_LIST())
+
+		CtCodeSnippetStatement snippet = factory.Core()
+				.createCodeSnippetStatement();
+		body.getStatements().add(snippet);
+
+		assertEquals(snippet, body.getStatement(0));
+		// plus implicit assertion: no exception
+	}
+
 }

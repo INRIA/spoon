@@ -37,13 +37,31 @@ import spoon.support.reflect.declaration.CtElementImpl;
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtStatement> statements = EMPTY_LIST();
+	private List<CtStatement> statements = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtBlock(this);
 	}
 
 	public List<CtStatement> getStatements() {
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			return new ArrayList<CtStatement>(statements) {
+				@Override
+				public boolean add(CtStatement element) {
+					// transforming immutable list in mutable
+					statements = new ArrayList<CtStatement>();
+					return statements.add(element);
+				}
+				
+				@Override
+				public CtStatement set(int i, CtStatement element) {
+					// transforming immutable list in mutable
+					statements = new ArrayList<CtStatement>();
+					return statements.set(i,element);
+				}
+			};			
+		}
+
 		return statements;
 	}
 
