@@ -18,34 +18,35 @@ import spoon.test.TestUtils;
 
 public class BlockTest {
 
-	  @Test
-	  public void testIterationStatements() {
+	@Test
+	public void testIterationStatements() {
 		Factory factory = TestUtils.createFactory();
-	    CtClass<?> clazz = factory
-	        .Code()
-	        .createCodeSnippetStatement(
-	            "" + "class X {" + "public void foo() {" + " int x=0;int y=0;"
-	                 + "}};")
-	        .compile();
-	    CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
+		CtClass<?> clazz = factory
+				.Code()
+				.createCodeSnippetStatement(
+						"" + "class X {" + "public void foo() {"
+								+ " int x=0;int y=0;"
+								+ "}};")
+				.compile();
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-	    CtBlock<?> body = foo.getBody();
-	    assertEquals(2, body.getStatements().size());
+		CtBlock<?> body = foo.getBody();
+		assertEquals(2, body.getStatements().size());
 
-	    List l = new ArrayList();
-	    
-	    // this compiles (thanks to the new CtBlock extends CtStatementList)
-	    for (CtStatement s : body) {
-	    	l.add(s);
-	    }
-	    
-	    assertTrue(body.getStatements().equals(l));	    
-	  }
-	  
+		List l = new ArrayList();
+
+		// this compiles (thanks to the new CtBlock extends CtStatementList)
+		for (CtStatement s : body) {
+			l.add(s);
+		}
+
+		assertTrue(body.getStatements().equals(l));
+	}
+
 	@Test
 	public void testAddEmptyBlock() {
 		// specifies a bug found by Benoit Cornu on August 7 2014
-		
+
 		Factory factory = TestUtils.createFactory();
 		CtClass<?> clazz = factory
 				.Code()
@@ -59,10 +60,26 @@ public class BlockTest {
 
 		CtCodeSnippetStatement snippet = factory.Core()
 				.createCodeSnippetStatement();
-		body.getStatements().add(snippet);
+		List<CtStatement> statements = body.getStatements();
+		statements.add(snippet);
 
 		assertEquals(snippet, body.getStatement(0));
 		// plus implicit assertion: no exception
+
+		CtCodeSnippetStatement snippet2 = factory.Core()
+				.createCodeSnippetStatement();
+		body.getStatements().add(snippet2);
+
+		assertEquals(snippet2, body.getStatement(1));
+		assertEquals(2, body.getStatements().size());
+
+		CtCodeSnippetStatement snippet3 = factory.Core()
+				.createCodeSnippetStatement();
+		statements.add(snippet3);
+
+		assertEquals(snippet3, body.getStatement(2));
+		assertEquals(3, body.getStatements().size());
+
 	}
 
 }

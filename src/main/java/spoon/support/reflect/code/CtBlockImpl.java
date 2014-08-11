@@ -45,24 +45,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	public List<CtStatement> getStatements() {
 		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			return new ArrayList<CtStatement>(statements) {
-				@Override
-				public boolean add(CtStatement element) {
-					// transforming immutable list in mutable
-					statements = new ArrayList<CtStatement>();
-					return statements.add(element);
-				}
-				
-				@Override
-				public CtStatement set(int i, CtStatement element) {
-					// transforming immutable list in mutable
-					statements = new ArrayList<CtStatement>();
-					return statements.set(i,element);
-				}
-			};			
+			this.statements = new ArrayList<CtStatement>();
 		}
-
-		return statements;
+		return this.statements;
 	}
 
 	public CtStatementList toStatementList() {
@@ -194,7 +179,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		// we have to both create a defensive object and un unmodifable list
 		// with only Collections.unmodifiableList you can modify the defensive object
 		// with only new ArrayList it breaks the encapsulation
-		return Collections.unmodifiableList(new ArrayList<CtStatement>(getStatements())).iterator();
+		return Collections.unmodifiableList(
+				new ArrayList<CtStatement>(getStatements())).iterator();
 	}
 
 }
