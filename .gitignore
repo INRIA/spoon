@@ -17,9 +17,10 @@ nb-actions.xml
 maven-eclipse.xml
 
 # IntelliJ IDEA
-.idea/*
+.idea/
 !.idea/codeStyleSettings.xml
 *.iml
 
 # Spoon
-spooned-classes/*
+spooned-classes/
+spooned/
