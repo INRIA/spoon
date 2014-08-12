@@ -193,11 +193,19 @@ public interface SpoonCompiler extends FactoryAccessor {
 	/**
 	 * Sets the classpath that is used to build/compile the input sources.
 	 * 
+	 * The classpath is either a jar file or a folder containing bytecode files.
+	 * 
+	 * Multiple classpath elements (jar or folders) can be given separated by ":".
+	 * 
+	 * Note that this character is the convention taken in the Spoon API, it is different
+	 * from the platform-dependent Java convention (':' on Unix, ';' on Windows, etc)
 	 */
 	void setSourceClasspath(String classpath);
 
 	/**
 	 * Gets the classpath that is used to build the template sources.
+	 * 
+	 * See {@link #setSourceClasspath} for the meaning of the returned string.
 	 */
 	String getTemplateClasspath();
 
