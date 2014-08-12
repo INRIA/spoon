@@ -110,6 +110,12 @@ public interface ProcessingManager extends FactoryAccessor {
 	void process();
 
 	/**
+	 * Delete the Processors of this ProcessingManager. After the invocation
+	 * of this method, {@link #getProcessors()} returns an empty list.
+	 */
+	void clear();
+	
+	/**
 	 * Gets the processor which is currently achieving the processing task if
 	 * any.
 	 */
