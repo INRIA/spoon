@@ -427,32 +427,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return this;
 	}
 
-	// RP: this function does NOT work well... it is used to remove imports and
-	// should stopped being used when imports will be dealt with conveniently.
-	// I don't even think we have a test so we are not even sure that it is
-	// actually useful...
-	private boolean isHiddenByField(CtType<?> container, CtTypeReference<?> type) {
-		if (container == null) {
-			return false;
-		}
-		// TODO: Deal with anonymous class better
-		if ((container.getSimpleName() == null)
-				|| container.getSimpleName().equals("")) {
-			return false;
-		}
-		// TODO: Deal with internal class better
-		if (container.getQualifiedName().contains("$")) {
-			return false;
-		}
-		// TODO: this is really bad to need reflection to do this...
-		for (CtFieldReference<?> f : container.getReference().getAllFields()) {
-			if (f.getSimpleName().equals(type.getSimpleName())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private boolean isWhite(char c) {
 		return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 	}
@@ -1352,9 +1326,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				try {
 					CtTypeReference<?> type = invocation.getExecutable()
 							.getDeclaringType();
-					if (env.isAutoImports()
-							&& isHiddenByField(
-									invocation.getParent(CtType.class), type)) {
+					if (env.isAutoImports()) {
 						importsContext.imports.remove(type.getSimpleName());
 					}
 					context.ignoreGenerics = true;
