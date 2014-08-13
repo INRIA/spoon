@@ -34,7 +34,7 @@ import spoon.support.visitor.ProcessingVisitor;
 /**
  * This processing manager implements a blocking processing policy that consists
  * of applying the processors in a FIFO order until no processors remain to be
- * applied.
+ * applied.The processors will be removed from the manager once applied.
  */
 public class QueueProcessingManager implements ProcessingManager {
 	Processor<?> current;
