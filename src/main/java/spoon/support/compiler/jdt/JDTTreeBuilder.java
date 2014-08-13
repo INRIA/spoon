@@ -2157,22 +2157,38 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(QualifiedNameReference qualifiedNameReference,
 			BlockScope scope) {
+		long[] positions = qualifiedNameReference.sourcePositions;
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
 			CtFieldAccess<Object> fa = factory.Core().createFieldAccess();
 			fa.setVariable(references
 					.getVariableReference(qualifiedNameReference.fieldBinding()));
 
-			if (qualifiedNameReference.otherBindings != null)
-				for (FieldBinding b : qualifiedNameReference.otherBindings) {
+			if (qualifiedNameReference.otherBindings != null){
+				int i = 0; //positions index;
+			int sourceStart = (int)(positions[0] >>> 32);
+			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 					if (b != null) {
 						CtFieldAccess<Object> other = factory.Core()
 								.createFieldAccess();
 						other.setVariable(references.getVariableReference(b));
 						other.setTarget(fa);
 						fa.setParent(other);
+						//set source position of fa;
+						CompilationUnit cu = factory.CompilationUnit().create(
+								new String(context.compilationunitdeclaration.getFileName()));
+						int sourceEnd = (int)(positions[i]);
+						fa.setPosition(factory.Core()
+								.createSourcePosition(
+										cu,
+										sourceStart,
+										sourceEnd,
+										context.compilationunitdeclaration.compilationResult.lineSeparatorPositions));
+						
 						fa = other;
+						i++;
 					}
 				}
+			}
 			context.enter(fa, qualifiedNameReference);
 			return true;
 		} else if (qualifiedNameReference.binding instanceof VariableBinding) {
@@ -2181,6 +2197,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					.getVariableReference((VariableBinding) qualifiedNameReference.binding));
 			va.setType(va.getVariable().getType());
 			if (qualifiedNameReference.otherBindings != null) {
+				int i = 0; //positions index;
+				int sourceStart = (int)(positions[0] >>> 32);
 				for (FieldBinding b : qualifiedNameReference.otherBindings) {
 					CtFieldAccess<Object> fa = factory.Core()
 							.createFieldAccess();
@@ -2193,7 +2211,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 					fa.setType(references
 							.getTypeReference(b.type));
 					va.setParent(fa);
+					//set source position of va;
+					CompilationUnit cu = factory.CompilationUnit().create(
+							new String(context.compilationunitdeclaration.getFileName()));
+					int sourceEnd = (int)(positions[i]);
+					va.setPosition(factory.Core()
+							.createSourcePosition(
+									cu,
+									sourceStart,
+									sourceEnd,
+									context.compilationunitdeclaration.compilationResult.lineSeparatorPositions));
 					va = fa;
+					i++;
 				}
 			}
 			context.enter(va, qualifiedNameReference);
