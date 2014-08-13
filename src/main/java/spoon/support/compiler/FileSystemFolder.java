@@ -19,14 +19,14 @@ package spoon.support.compiler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import spoon.Launcher;
-import spoon.compiler.SpoonResourceHelper;
+import spoon.SpoonException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.compiler.SpoonResourceHelper;
 
 public class FileSystemFolder implements SpoonFolder {
 
@@ -36,10 +36,10 @@ public class FileSystemFolder implements SpoonFolder {
 
 	List<SpoonFolder> subFolders;
 
-	public FileSystemFolder(File file) throws IOException {
+	public FileSystemFolder(File file) {
 		super();
 		if (!file.isDirectory())
-			throw new IOException("Not a directory");
+			throw new SpoonException("Not a directory "+file);
 		this.file = file;
 	}
 

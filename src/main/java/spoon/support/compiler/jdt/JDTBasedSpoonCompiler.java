@@ -45,6 +45,8 @@ import org.eclipse.jdt.internal.compiler.util.Util;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.Environment;
+import spoon.compiler.InvalidClassPathException;
+import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
@@ -60,11 +62,14 @@ import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.compiler.FileSystemFile;
+import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.VirtualFolder;
 
 public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	// private Logger logger = Logger.getLogger(SpoonBuildingManager.class);
+
+	public static final String CLASSPATH_ELEMENT_SEPARATOR = ":";
 
 	public int javaCompliance = 7;
 
@@ -476,14 +481,18 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 		File file = new File(new String(problem.getOriginatingFileName()));
 		String filename = file.getAbsolutePath();
+		
+		String message = problem.getMessage() + " at " + filename + ":"
+				+ problem.getSourceLineNumber();
+		
+		if (problem.isError()) {
+			throw new ModelBuildingException(message);
+		}
+
 		environment.report(
 				null,
-				problem.isError() ? Severity.ERROR
-						: problem.isWarning() ? Severity.WARNING
-								: Severity.MESSAGE,
-
-				problem.getMessage() + " at " + filename + ":"
-						+ problem.getSourceLineNumber());
+				problem.isWarning()?Severity.WARNING:Severity.MESSAGE,
+				message);
 	}
 
 	public void reportProblems(Environment environment) {
@@ -870,6 +879,27 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public void setSourceClasspath(String classpath) {
+		for (String classPathElem : classpath
+				.split(CLASSPATH_ELEMENT_SEPARATOR)) {
+			// preconditions
+			File classOrJarFolder = new File(classPathElem);
+			if (!classOrJarFolder.exists()) {
+				throw new InvalidClassPathException(classPathElem
+						+ " does not exist, it is not a valid folder");
+			}
+
+			if (classOrJarFolder.isDirectory()) {
+				// it should not contain a java file
+				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
+				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
+				if (javaFiles.size() > 0) {
+					throw new InvalidClassPathException(
+							"you're trying to give source code in the classpath, this should be given to addInputSource "
+									+ javaFiles);
+				}
+			}
+		}
+
 		this.sourceClasspath = classpath;
 	}
 

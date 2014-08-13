@@ -34,7 +34,7 @@ public class APITest {
 			}
 			
 		};
-		spoon.setArgs(new String[] {"-i", "src/test/resources"});
+		spoon.setArgs(new String[] {"-i", "src/test/resources/spoon/test/api/"});
 		spoon.run();
 		Assert.assertEquals(2, l.size());
 	}

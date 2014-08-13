@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
@@ -62,7 +63,7 @@ import spoon.template.Parameter;
 import spoon.template.Template;
 import spoon.template.TemplateParameter;
 
-class SkipException extends RuntimeException {
+class SkipException extends SpoonException {
 	private static final long serialVersionUID = 1L;
 
 	Object skipped;

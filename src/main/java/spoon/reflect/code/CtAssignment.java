@@ -23,7 +23,7 @@ package spoon.reflect.code;
  * @param <T>
  *            type of assigned expression
  * @param <A>
- *            type of expression to assign, it should extends <T>
+ *            type of expression to assign, it should extends &lt;T&gt;
  */
 public interface CtAssignment<T, A extends T> extends CtStatement,
 		CtExpression<T> {

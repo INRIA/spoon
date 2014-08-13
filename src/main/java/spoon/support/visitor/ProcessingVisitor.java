@@ -19,7 +19,6 @@ package spoon.support.visitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 
 import spoon.processing.Processor;
 import spoon.processing.TraversalStrategy;
@@ -75,6 +74,7 @@ public class ProcessingVisitor extends CtScanner {
 	 * {@link Factory#Processor }, the {@link Processor#process(CtElement)}
 	 * method if {@link Processor#isToBeProcessed(CtElement)} returns true.
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public void scan(CtElement e) {
 		if (e == null) {
@@ -87,12 +87,7 @@ public class ProcessingVisitor extends CtScanner {
 				p.process(e);
 			}
 		}
-		try {
-			super.scan(e);
-		} catch (ConcurrentModificationException e1) {
-			this.scan(e);
-		}
-		// try {
+		super.scan(e);
 		if (p.getTraversalStrategy() == TraversalStrategy.POST_ORDER
 				&& canBeProcessed(p, e)) {
 			if (p.isToBeProcessed(e)) {

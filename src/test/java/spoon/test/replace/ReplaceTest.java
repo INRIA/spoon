@@ -10,10 +10,13 @@ import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class ReplaceTest {
@@ -61,8 +64,8 @@ public class ReplaceTest {
 	public void testReplaceBlock() throws Exception {
 		CtClass<?> foo = factory.Package().get("spoon.test.replace")
 				.getType("Foo");
-		CtMethod<?> m = foo.getElements(
-				new TypeFilter<CtMethod<?>>(CtMethod.class)).get(0);
+		CtMethod<?> m = (CtMethod<?>) foo.getElements(
+				new NameFilter("foo")).get(0);
 		assertEquals("foo", m.getSimpleName());
 
 		CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) m.getBody()
@@ -83,6 +86,35 @@ public class ReplaceTest {
 		s2.replace(s1);
 		assertSame(s1, assignment.getAssignment());
 		assertEquals("z = x + 1", assignment.toString());
+	}
+
+	@Test
+	public void testReplaceReplace() throws Exception {
+		// bug found by Benoit
+		CtClass<?> foo = factory.Package().get("spoon.test.replace")
+				.getType("Foo");
+		
+		CtMethod<?> fooMethod = (CtMethod<?>) foo.getElements(
+				new NameFilter("foo")).get(0);
+		assertEquals("foo", fooMethod.getSimpleName());
+
+		CtMethod<?> barMethod = (CtMethod<?>) foo.getElements(
+				new NameFilter("bar")).get(0);
+		assertEquals("bar", barMethod.getSimpleName());
+
+		CtLocalVariable<?> assignment = (CtLocalVariable<?>) fooMethod.getBody()
+				.getStatements().get(0);
+		CtLocalVariable<?> newAssignment = barMethod.getBody().getStatement(0);
+
+		assignment.replace(newAssignment);
+		
+		assertEquals(fooMethod.getBody(), newAssignment.getParent());
+		
+		CtLiteral<?> lit = foo.getElements(
+				new TypeFilter<CtLiteral<?>>(CtLiteral.class)).get(0);
+		CtLiteral<?> newLit = factory.Code().createLiteral(0);
+		lit.replace(newLit);
+		assertEquals("int y = 0", fooMethod.getBody().getStatement(0).toString());				
 	}
 
 }

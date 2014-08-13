@@ -37,14 +37,17 @@ import spoon.support.reflect.declaration.CtElementImpl;
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtStatement> statements = EMPTY_LIST();
+	private List<CtStatement> statements = EMPTY_LIST();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtBlock(this);
 	}
 
 	public List<CtStatement> getStatements() {
-		return statements;
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>();
+		}
+		return this.statements;
 	}
 
 	public CtStatementList toStatementList() {
@@ -176,7 +179,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		// we have to both create a defensive object and un unmodifable list
 		// with only Collections.unmodifiableList you can modify the defensive object
 		// with only new ArrayList it breaks the encapsulation
-		return Collections.unmodifiableList(new ArrayList<CtStatement>(getStatements())).iterator();
+		return Collections.unmodifiableList(
+				new ArrayList<CtStatement>(getStatements())).iterator();
 	}
 
 }

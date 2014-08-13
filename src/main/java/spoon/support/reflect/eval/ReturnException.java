@@ -17,9 +17,10 @@
 
 package spoon.support.reflect.eval;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtReturn;
 
-public class ReturnException extends RuntimeException {
+public class ReturnException extends SpoonException {
 
 	private static final long serialVersionUID = 1L;
 

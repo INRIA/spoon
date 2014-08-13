@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.Launcher;
+import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -125,7 +126,7 @@ public class SnippetCompilationHelper {
 		try {
 			builder.build();
 		} catch (Exception e) {
-			throw new RuntimeException(
+			throw new ModelBuildingException(
 					"snippet compilation error while compiling: " + contents, e);
 		}
 	}

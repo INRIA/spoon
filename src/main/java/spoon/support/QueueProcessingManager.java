@@ -166,4 +166,9 @@ public class QueueProcessingManager implements ProcessingManager {
 		factory.getEnvironment().setManager(this);
 	}
 
+	@Override
+	public void clear() {
+		getProcessors().clear();
+	}
+
 }
