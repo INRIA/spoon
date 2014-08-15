@@ -25,8 +25,6 @@ import spoon.reflect.declaration.CtPackage;
  */
 public class ClassFactory extends TypeFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a class sub-factory.
 	 *

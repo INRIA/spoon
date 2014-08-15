@@ -82,7 +82,7 @@ public class InsertBeforeTest {
         ifWithoutBraces.getThenStatement().insertBefore(s);
 
         assertTrue(ifWithoutBraces.getThenStatement() instanceof CtBlock);
-        assertEquals(s, ((CtBlock) ifWithoutBraces.getThenStatement()).getStatement(0));
+        assertEquals(s, ((CtBlock<?>) ifWithoutBraces.getThenStatement()).getStatement(0));
         //System.out.println("end 1");
 
         }
@@ -100,7 +100,7 @@ public class InsertBeforeTest {
         // Inserts a s before the then statement
         ifWithBraces.getThenStatement().insertBefore(s);
         assertTrue(ifWithBraces.getThenStatement() instanceof CtBlock);
-        assertEquals(s, ((CtBlock) ifWithBraces.getThenStatement()).getStatement(0));
+        assertEquals(s, ((CtBlock<?>) ifWithBraces.getThenStatement()).getStatement(0));
         }
     }
 
@@ -113,23 +113,23 @@ public class InsertBeforeTest {
             CtMethod<?> sm = (CtMethod)foo.getElements(
                     new NameFilter("switchMethod")).get(0);
 
-            CtCase caseElem = factory.Core().createCase();
+            CtCase<Object> caseElem = factory.Core().createCase();
             CtLiteral<Object> literal = factory.Core().createLiteral();
             literal.setValue(1);
             caseElem.setCaseExpression(literal);
 
-            CtSwitch sw = sm.getElements(
-                    new TypeFilter<CtSwitch>(CtSwitch.class)).get(0);
+            CtSwitch<?> sw = sm.getElements(
+                    new TypeFilter<CtSwitch<?>>(CtSwitch.class)).get(0);
 
-            CtCase ctCase1 = (CtCase) sw.getCases().get(2);
-            CtCase ctCase2= (CtCase) sw.getCases().get(3);
+            CtCase<?> ctCase1 = (CtCase<?>) sw.getCases().get(2);
+            CtCase<?> ctCase2= (CtCase<?>) sw.getCases().get(3);
             CtCodeSnippetStatement snippet = factory.Code().createCodeSnippetStatement("System.out.println(\"foo\")");
             ctCase1.getStatements().get(0).insertBefore(snippet);
             ctCase2.getStatements().get(1).insertBefore(snippet);
             assertEquals(snippet, ctCase1.getStatements().get(0));
             assertEquals(snippet, ctCase2.getStatements().get(1));
 
-            CtCase ctCase = (CtCase) sw.getCases().get(1);
+            CtCase<?> ctCase = (CtCase<?>) sw.getCases().get(1);
             
             // here we may call either insertBefore(CtStatement) or insertBefore(CtStatementList)
             // ctCase.insertBefore(caseElem);

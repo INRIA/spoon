@@ -24,8 +24,6 @@ package spoon.reflect.factory;
  */
 public abstract class SubFactory  {
 
-	private static final long serialVersionUID = 1L;
-
 	protected Factory factory;
 
 	/**

@@ -41,7 +41,7 @@ public class ParentTest {
 		try {
 			CtLiteral<Object> literal = factory.Core().createLiteral();
 			literal.setValue(1);
-			CtBinaryOperator minus = factory.Core().createBinaryOperator();
+			CtBinaryOperator<?> minus = factory.Core().createBinaryOperator();
 			minus.setKind(BinaryOperatorKind.MINUS);
 			minus.setRightHandOperand(literal);
 			minus.setLeftHandOperand(literal);
