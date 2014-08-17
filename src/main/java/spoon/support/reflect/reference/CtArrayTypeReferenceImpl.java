@@ -19,8 +19,6 @@ package spoon.support.reflect.reference;
 
 import java.lang.reflect.Array;
 
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
