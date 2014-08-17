@@ -26,7 +26,7 @@ import spoon.reflect.declaration.CtElement;
  * This interface should be implemented by processing tasks that generate new
  * files as processing results. This interface is typically implemented by
  * processors that generate files during processing. For a given processing
- * environment, the default file generator is set to the default ouput directory
+ * environment, the default file generator is set to the default output directory
  * that is retrieved by using
  * {@link spoon.compiler.Environment#getDefaultFileGenerator()}.
  */

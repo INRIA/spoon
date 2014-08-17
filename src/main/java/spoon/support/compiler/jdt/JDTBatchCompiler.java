@@ -20,9 +20,6 @@ import spoon.compiler.SpoonFile;
 // we use a fully qualified name to make it clear we are extending jdt
 class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 
-	/**
-	 * 
-	 */
 	private JDTBasedSpoonCompiler jdtCompiler;
 	private boolean useFactory;
 

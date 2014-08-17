@@ -58,7 +58,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		Object value;
 
 		/**
-		 * Handdles a tag content.
+		 * Handles a tag content.
 		 */
 		@SuppressWarnings("unchecked")
 		@Override
@@ -73,7 +73,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		}
 
 		/**
-		 * Handdles a tag end.
+		 * Handles a tag end.
 		 */
 		@Override
 		public void endElement(String uri, String localName, String qName)
@@ -87,7 +87,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		}
 
 		/**
-		 * Handdles a tag start.
+		 * Handles a tag start.
 		 */
 		@Override
 		public void startElement(String uri, String localName, String qName,

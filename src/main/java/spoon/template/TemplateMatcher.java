@@ -484,7 +484,7 @@ public class TemplateMatcher {
 
 	/**
 	 * Matches a target program sub-tree against a template. Once this method
-	 * has been called, {@link #getMatches()} will give the mathing parts if
+	 * has been called, {@link #getMatches()} will give the matching parts if
 	 * any.
 	 * 
 	 * @param targetRoot

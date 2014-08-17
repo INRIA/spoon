@@ -29,7 +29,7 @@ import spoon.reflect.reference.CtReference;
  * This class provides some useful methods to retrieve program elements and
  * reference through a {@link spoon.reflect.visitor.CtScanner}-based deep
  * search. It uses the {@link spoon.reflect.visitor.Filter} and
- * {@link spoon.reflect.visitor.ReferenceFilter} facitily to select the right
+ * {@link spoon.reflect.visitor.ReferenceFilter} facility to select the right
  * elements or references.
  */
 public abstract class Query extends CtScanner {
@@ -42,7 +42,7 @@ public abstract class Query extends CtScanner {
 	 * filter.
 	 * 
 	 * @param <E>
-	 *            the type of the seeked program elements
+	 *            the type of the sought program elements
 	 * @param factory
 	 *            the factory that contains the elements where to recursive
 	 *            search on
@@ -62,7 +62,7 @@ public abstract class Query extends CtScanner {
 	 * Returns all the program elements that match the filter.
 	 * 
 	 * @param <E>
-	 *            the type of the seeked program elements
+	 *            the type of the sought program elements
 	 * @param rootElement
 	 *            the element to start the recursive search on
 	 * @param filter
@@ -79,7 +79,7 @@ public abstract class Query extends CtScanner {
 	 * Returns all the program element references that match the filter.
 	 * 
 	 * @param <T>
-	 *            the type of the seeked program element references
+	 *            the type of the sought program element references
 	 * @param rootElement
 	 *            the element to start the recursive search on
 	 * @param filter
@@ -97,7 +97,7 @@ public abstract class Query extends CtScanner {
 	 * match the filter.
 	 * 
 	 * @param <R>
-	 *            the type of the seeked program element references
+	 *            the type of the sought program element references
 	 * @param factory
 	 *            the factory that contains the references where to recursive
 	 *            search on

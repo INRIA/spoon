@@ -25,7 +25,7 @@ import spoon.reflect.factory.Factory;
 
 /**
  * This interface defines the protocol to save and load a factory and it's
- * associated model through ouput and input streams.
+ * associated model through output and input streams.
  */
 public interface ModelStreamer {
 

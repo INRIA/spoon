@@ -29,12 +29,12 @@ import spoon.template.TemplateParameter;
 public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParameter<R> {
 
 	/**
-	 * Inserts the given statement at the begining of the block.
+	 * Inserts the given statement at the beginning of the block.
 	 */
 	void insertBegin(CtStatement statement);
 
 	/**
-	 * Inserts the given statement list at the begining of the block.
+	 * Inserts the given statement list at the beginning of the block.
 	 */
 	void insertBegin(CtStatementList statements);
 

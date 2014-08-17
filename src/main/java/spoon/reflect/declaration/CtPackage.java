@@ -95,7 +95,7 @@ public interface CtPackage extends CtNamedElement {
 	void removeType(CtSimpleType<?> type);
 
 	/**
-	 * Sets the childs defined in this package
+	 * Sets the children defined in this package
 	 * 
 	 * @param pack
 	 *            new set of child packages

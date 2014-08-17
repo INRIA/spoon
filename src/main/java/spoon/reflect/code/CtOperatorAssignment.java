@@ -18,7 +18,7 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines an self-operated assignement such as += or *=.
+ * This code element defines an self-operated assignment such as += or *=.
  */
 public interface CtOperatorAssignment<T, A extends T> extends
 		CtAssignment<T, A> {

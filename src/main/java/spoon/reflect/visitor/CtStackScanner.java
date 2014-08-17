@@ -47,6 +47,7 @@ public class CtStackScanner extends CtScanner {
 	/**
 	 * Pops the element.
 	 */
+	@Override
 	protected void exit(CtElement e) {
 		CtElement ret = elementStack.pop();
 		if (ret != e)
@@ -57,6 +58,7 @@ public class CtStackScanner extends CtScanner {
 	/**
 	 * Pops the element reference.
 	 */
+	@Override
 	protected void exitReference(CtReference e) {
 		CtReference ret = referenceStack.pop();
 		if (ret != e)
@@ -67,6 +69,7 @@ public class CtStackScanner extends CtScanner {
 	/**
 	 * Pushes the element.
 	 */
+	@Override
 	protected void enter(CtElement e) {
 		elementStack.push(e);
 		super.enter(e);
@@ -75,6 +78,7 @@ public class CtStackScanner extends CtScanner {
 	/**
 	 * Pushes the element reference.
 	 */
+	@Override
 	protected void enterReference(CtReference e) {
 		referenceStack.push(e);
 		super.enterReference(e);

@@ -41,7 +41,7 @@ public class ParentTest {
 		try {
 			CtLiteral<Object> literal = factory.Core().createLiteral();
 			literal.setValue(1);
-			CtBinaryOperator minus = factory.Core().createBinaryOperator();
+			CtBinaryOperator<?> minus = factory.Core().createBinaryOperator();
 			minus.setKind(BinaryOperatorKind.MINUS);
 			minus.setRightHandOperand(literal);
 			minus.setLeftHandOperand(literal);
@@ -56,7 +56,7 @@ public class ParentTest {
 				.getType("Foo");
 		
 		CtMethod<?> fooMethod = (CtMethod<?>) foo.getElements(
-				new NameFilter("foo")).get(0);
+				new NameFilter<CtMethod<?>>("foo")).get(0);
 		assertEquals("foo", fooMethod.getSimpleName());
 
 		CtLocalVariable<?> localVar = (CtLocalVariable<?>) fooMethod.getBody()

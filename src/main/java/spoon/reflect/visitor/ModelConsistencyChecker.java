@@ -25,7 +25,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 
 /**
- * This scanner checks that a program model is consistent whith regards to the
+ * This scanner checks that a program model is consistent with regards to the
  * parent elements (children must have the right parent). This class can be used
  * to validate that a program transformation does not harm the model integrity,
  * and also to automatically fix it when possible.

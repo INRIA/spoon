@@ -24,6 +24,7 @@ public class CtAnnotationFieldAccesImpl<T> extends CtFieldAccessImpl<T>
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAnnotationFieldAccess(this);
 	}

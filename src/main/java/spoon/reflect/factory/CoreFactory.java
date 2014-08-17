@@ -278,7 +278,7 @@ public interface CoreFactory {
 	<T> CtNewClass<T> createNewClass();
 
 	/**
-	 * Creates a new operator assignement (like +=).
+	 * Creates a new operator assignment (like +=).
 	 */
 	<T, A extends T> CtOperatorAssignment<T, A> createOperatorAssignment();
 

@@ -33,8 +33,6 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class FieldFactory extends SubFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a new field sub-factory.
 	 * 

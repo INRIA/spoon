@@ -487,7 +487,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * Removes the last non-white charater.
+	 * Removes the last non-white character.
 	 */
 	protected DefaultJavaPrettyPrinter removeLastChar() {
 		while (isWhite(sbf.charAt(sbf.length() - 1))) {
@@ -1155,7 +1155,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				} else {
 					ref2 = context.currentTopLevel.getReference();
 				}
-				// print type if not annonymous class ref and not within the
+				// print type if not anonymous class ref and not within the
 				// current scope
 				printType = !declTypeRef.getSimpleName().equals("")
 						&& !(declTypeRef.equals(ref2));

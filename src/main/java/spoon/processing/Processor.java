@@ -65,7 +65,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 * the {@link #process()} method instead.
 	 * 
 	 * @param element
-	 *            the element that is currenly being scanned
+	 *            the element that is currently being scanned
 	 */
 	void process(E element);
 
@@ -111,7 +111,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 * using a default constructor to initialize the processor, since the
 	 * factory is not initialized at construction time. When overriding, do not
 	 * forget to call super.init() first so that all the initializations
-	 * performed by superclasses are also applied.
+	 * performed by super classes are also applied.
 	 */
 	void init();
 
