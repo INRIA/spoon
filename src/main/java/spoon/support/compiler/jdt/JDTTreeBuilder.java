@@ -1265,7 +1265,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		case OperatorIds.LESS:
 			return BinaryOperatorKind.LT;
 		case OperatorIds.QUESTIONCOLON:
-			throw new RuntimeException("Unknow operator");
+			throw new RuntimeException("Unknown operator");
 		case OperatorIds.EQUAL:
 			return BinaryOperatorKind.EQ;
 		}
@@ -1286,7 +1286,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 						javadoc.sourceStart, javadoc.sourceEnd
 								- javadoc.sourceStart + 1);
 				return cleanJavadoc(s);
-			} catch (StringIndexOutOfBoundsException e) {// BCUTAG trouver cause
+			} catch (StringIndexOutOfBoundsException e) {// BCUTAG find cause
 				return null;
 			}
 		}
@@ -1779,7 +1779,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// As far as I can tell, this if makes sure that pika.length if pika is
 		// an array, gets the correct type.
 		// if anything, I guess that the jdt-core now does not think that length
-		// is a field... so we wouldn;t need this anymore.
+		// is a field... so we wouldn't need this anymore.
 
 		// if (fieldReference.receiverType instanceof ArrayBinding
 		// && new String(fieldReference.token).equals("length")) {
@@ -2347,8 +2347,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// s.setValue(new String(stringLiteral.toString()));
 
 		// RP: this is not a good idea but many other usages of the value can be
-		// done (appart from the pretty printer). So I moved back the
-		// responsability of pretty printing the string inside the pretty
+		// done (apart from the pretty printer). So I moved back the
+		// responsibility of pretty printing the string inside the pretty
 		// printer (i.e. where it belongs)
 		s.setValue(new String(stringLiteral.source()));
 

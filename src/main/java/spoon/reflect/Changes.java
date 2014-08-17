@@ -23,7 +23,7 @@ import java.util.List;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * This class is a container for a list changes that may have occured on a model
+ * This class is a container for a list changes that may have occurred on a model
  * because of a transformation.
  */
 public class Changes {

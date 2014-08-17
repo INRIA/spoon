@@ -173,7 +173,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	}
 
 	/**
-	 * The manual meta-model processing cannot be overriden (use
+	 * The manual meta-model processing cannot be overridden (use
 	 * {@link AbstractManualProcessor}) to do so.
 	 */
 	public final void process() {

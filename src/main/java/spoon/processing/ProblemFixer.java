@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtElement;
 
 /**
  * This interface defines problem fixers. Problem fixers can be provided when a
- * problem is reported to the environment. The user can then chose what fixer to
+ * problem is reported to the environment. The user can then choose what fixer to
  * use.
  * 
  * @see Environment#report(Processor, Severity, CtElement, String,

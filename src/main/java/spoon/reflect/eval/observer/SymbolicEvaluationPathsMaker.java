@@ -11,7 +11,7 @@ import spoon.support.reflect.eval.VisitorSymbolicEvaluator;
 
 /**
  * This symbolic evaluator observer will create all the evaluation paths for a
- * given evaluator. Note that it is costful to memorize all the evaluation paths
+ * given evaluator. Note that it is costly to memorize all the evaluation paths
  * and this observer should not be used on large programs (or programs which are
  * known to generate a great deal of evaluation paths.
  * <p>

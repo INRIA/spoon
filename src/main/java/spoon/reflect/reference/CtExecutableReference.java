@@ -89,7 +89,7 @@ public interface CtExecutableReference<T> extends CtReference,
 	boolean isOverriding(CtExecutableReference<?> executable);
 
 	/**
-	 * Returns the executable overriden by this one, if exists (null otherwise).
+	 * Returns the executable overridden by this one, if exists (null otherwise).
 	 */
 	CtExecutableReference<?> getOverridingExecutable();
 
