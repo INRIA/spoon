@@ -64,8 +64,8 @@ public class ReplaceTest {
 	public void testReplaceBlock() throws Exception {
 		CtClass<?> foo = factory.Package().get("spoon.test.replace")
 				.getType("Foo");
-		CtMethod<?> m = (CtMethod<?>) foo.getElements(
-				new NameFilter("foo")).get(0);
+		CtMethod<?> m = foo.getElements(
+				new NameFilter<CtMethod<?>>("foo")).get(0);
 		assertEquals("foo", m.getSimpleName());
 
 		CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) m.getBody()
@@ -94,12 +94,12 @@ public class ReplaceTest {
 		CtClass<?> foo = factory.Package().get("spoon.test.replace")
 				.getType("Foo");
 		
-		CtMethod<?> fooMethod = (CtMethod<?>) foo.getElements(
-				new NameFilter("foo")).get(0);
+		CtMethod<?> fooMethod = foo.getElements(
+				new NameFilter<CtMethod<?>>("foo")).get(0);
 		assertEquals("foo", fooMethod.getSimpleName());
 
-		CtMethod<?> barMethod = (CtMethod<?>) foo.getElements(
-				new NameFilter("bar")).get(0);
+		CtMethod<?> barMethod = foo.getElements(
+				new NameFilter<CtMethod<?>>("bar")).get(0);
 		assertEquals("bar", barMethod.getSimpleName());
 
 		CtLocalVariable<?> assignment = (CtLocalVariable<?>) fooMethod.getBody()

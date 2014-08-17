@@ -69,8 +69,8 @@ public class InsertBeforeTest {
                 .getType("InsertBeforeExample");
 
         {
-        CtMethod<?> ifWithoutBraces_m = (CtMethod)foo.getElements(
-                new NameFilter("ifWithoutBraces")).get(0);
+        CtMethod<?> ifWithoutBraces_m = foo.getElements(
+                new NameFilter<CtMethod<?>>("ifWithoutBraces")).get(0);
 
         // replace the return
         CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
@@ -88,8 +88,8 @@ public class InsertBeforeTest {
         }
 
         {
-        CtMethod<?> ifWithBraces_m = (CtMethod)foo.getElements(
-                new NameFilter("ifWithBraces")).get(0);
+        CtMethod<?> ifWithBraces_m = foo.getElements(
+                new NameFilter<CtMethod<?>>("ifWithBraces")).get(0);
 
         // replace the return
         CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
@@ -110,8 +110,8 @@ public class InsertBeforeTest {
                 .getType("InsertBeforeExample");
 
         {
-            CtMethod<?> sm = (CtMethod)foo.getElements(
-                    new NameFilter("switchMethod")).get(0);
+            CtMethod<?> sm = foo.getElements(
+                    new NameFilter<CtMethod<?>>("switchMethod")).get(0);
 
             CtCase<Object> caseElem = factory.Core().createCase();
             CtLiteral<Object> literal = factory.Core().createLiteral();

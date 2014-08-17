@@ -56,7 +56,7 @@ public class ParentTest {
 				.getType("Foo");
 		
 		CtMethod<?> fooMethod = (CtMethod<?>) foo.getElements(
-				new NameFilter("foo")).get(0);
+				new NameFilter<CtMethod<?>>("foo")).get(0);
 		assertEquals("foo", fooMethod.getSimpleName());
 
 		CtLocalVariable<?> localVar = (CtLocalVariable<?>) fooMethod.getBody()

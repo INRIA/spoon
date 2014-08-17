@@ -129,7 +129,7 @@ public class GenericsTest {
 	@Test
 	public void testTypeParameterReference() throws Exception {
 		CtClass<?> classThatBindsAGenericType = build("spoon.test.generics", "ClassThatBindsAGenericType");
-		CtClass<?> classThatDefinesANewTypeArgument = (CtClass<?>) classThatBindsAGenericType.getPackage().getElements(new NameFilter("ClassThatDefinesANewTypeArgument")).get(0);
+		CtClass<?> classThatDefinesANewTypeArgument = classThatBindsAGenericType.getPackage().getElements(new NameFilter<CtClass<?>>("ClassThatDefinesANewTypeArgument")).get(0);
 
 		CtTypeReference<?> tr1 = classThatBindsAGenericType.getSuperclass();
         CtTypeReference<?> trExtends = tr1.getActualTypeArguments().get(0);
