@@ -61,6 +61,7 @@ public class AnnotationTest {
 		assertEquals(1, annotations.size());
 		Bound actualAnnotation = (Bound) a.getActualAnnotation();
 		assertEquals(8, actualAnnotation.max());
+		actualAnnotation.values();
 	}
 
 	@Test
