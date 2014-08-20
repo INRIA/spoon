@@ -292,6 +292,10 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 			} else if ((type == long.class) && (ret.getClass() != long.class)) {
 				ret = Long.parseLong(ret.toString());
 			}
+			else if (type == short.class && ret.getClass() != short.class)
+			{
+				ret = Short.parseShort(ret.toString());
+			}
 		}
 		return (T) ret;
 	}
