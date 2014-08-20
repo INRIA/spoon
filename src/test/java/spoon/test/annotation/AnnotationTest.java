@@ -15,10 +15,12 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class AnnotationTest {
@@ -28,8 +30,9 @@ public class AnnotationTest {
 		CtSimpleType<?> type = build("spoon.test.annotation", "Bound");
 		assertEquals("Bound", type.getSimpleName());
 		assertEquals(1, type.getAnnotations().size());
-	}	@Test
+	}
 	
+	@Test
 	public void testWritingAnnotParamArray() throws Exception {
 		CtSimpleType<?> type = build("spoon.test.annotation", "AnnotParam");
 		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })" + DefaultJavaPrettyPrinter.LINE_SEPARATOR, type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
@@ -61,7 +64,6 @@ public class AnnotationTest {
 		assertEquals(1, annotations.size());
 		Bound actualAnnotation = (Bound) a.getActualAnnotation();
 		assertEquals(8, actualAnnotation.max());
-		actualAnnotation.values();
 	}
 
 	@Test
@@ -78,6 +80,48 @@ public class AnnotationTest {
 		assertNotNull(a2);
 		assertTrue(a1.getElementValues().containsKey("value"));
 		assertTrue(a2.getElementValues().containsKey("value"));
+	}
+	
+	@Test
+	public void testAnnotationParameterTypes() throws Exception {
+		// we can not use TestUtils.build because we need to compile two classes
+		// at the same time
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources(
+						"./src/test/java/spoon/test/annotation/AnnotParamTypes.java",
+						"./src/test/java/spoon/test/annotation/Main.java"))
+				.build();
+
+		CtSimpleType<?> type = factory.Package().get("spoon.test.annotation")
+				.getType("Main");
+		
+		CtMethod<?> m1 = type.getElements(
+				new NameFilter<CtMethod<?>>("m1")).get(0);
+		List<CtAnnotation<? extends Annotation>> annotations = m1
+				.getAnnotations();
+		CtAnnotation<?> a = annotations.toArray(new CtAnnotation[0])[0];
+		AnnotParamTypes annot = (AnnotParamTypes) a.getActualAnnotation();
+		assertEquals(42,annot.integer());
+//		assertEquals(2,annot.integers().length);
+		assertEquals("Hello World!",annot.string());
+//		assertEquals(2,annot.strings().length);
+		assertEquals(Integer.class,annot.clazz());
+//		assertEquals(2,annot.classes().length);
+		
+		CtMethod<?> m2 = type.getElements(
+				new NameFilter<CtMethod<?>>("m2")).get(0);
+		annotations = m2.getAnnotations();
+		a = annotations.toArray(new CtAnnotation[0])[0];
+		annot = (AnnotParamTypes) a.getActualAnnotation();
+		assertEquals(42,annot.integer());
+//		assertEquals(2,annot.integers().length);
+		assertEquals("Hello World!",annot.string());
+//		assertEquals(2,annot.strings().length);
+		assertEquals(Integer.class,annot.clazz());
+//		assertEquals(2,annot.classes().length);
 	}
 
 }
