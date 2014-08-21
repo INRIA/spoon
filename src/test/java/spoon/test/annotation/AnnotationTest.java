@@ -107,11 +107,18 @@ public class AnnotationTest {
 		CtAnnotation<?> a = annotations.toArray(new CtAnnotation[0])[0];
 		AnnotParamTypes annot = (AnnotParamTypes) a.getActualAnnotation();
 		assertEquals(42,annot.integer());
-//		assertEquals(2,annot.integers().length);
+		assertEquals(1,annot.integers().length);
 		assertEquals("Hello World!",annot.string());
-//		assertEquals(2,annot.strings().length);
+		assertEquals(2,annot.strings().length);
 		assertEquals(Integer.class,annot.clazz());
-//		assertEquals(2,annot.classes().length);
+		assertEquals(2,annot.classes().length);
+		assertEquals(true,annot.b());
+		assertEquals('c',annot.c());
+		assertEquals(42,annot.byt());
+//		assertEquals((short)42,annot.s());
+		assertEquals(42,annot.l());
+		assertEquals(3.14f,annot.f(),0f);
+		assertEquals(3.14159,annot.d(),0);
 		
 		CtMethod<?> m2 = type.getElements(
 				new NameFilter<CtMethod<?>>("m2")).get(0);
@@ -119,11 +126,15 @@ public class AnnotationTest {
 		a = annotations.toArray(new CtAnnotation[0])[0];
 		annot = (AnnotParamTypes) a.getActualAnnotation();
 		assertEquals(42,annot.integer());
-//		assertEquals(2,annot.integers().length);
+		assertEquals(1,annot.integers().length);
 		assertEquals("Hello World!",annot.string());
-//		assertEquals(2,annot.strings().length);
-		assertEquals(Integer.class,annot.clazz());
-//		assertEquals(2,annot.classes().length);
+		assertEquals(2,annot.strings().length);
+		assertEquals(false,annot.b());
+		assertEquals(42,annot.byt());
+//		assertEquals((short)42,annot.s());
+		assertEquals(42,annot.l());
+		assertEquals(3.14f,annot.f(),0f);
+		assertEquals(3.14159,annot.d(),0);
 	}
 
 }
