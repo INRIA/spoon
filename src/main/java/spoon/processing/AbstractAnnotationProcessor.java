@@ -159,7 +159,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 					Launcher.logger.error(e.getMessage(), e);
 				}
 				if (shoudBeConsumed(annotation)) {
-					element.getAnnotations().remove(annotation);
+					element.removeAnnotation(annotation);
 				}
 			}
 		}
