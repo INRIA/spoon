@@ -115,7 +115,7 @@ public class SymbolicStackFrame {
 	}
 
 	/**
-	 * Creates a new evalutation stack frame.
+	 * Creates a new evaluation stack frame.
 	 * 
 	 * @param invocation
 	 *            the parent invocation

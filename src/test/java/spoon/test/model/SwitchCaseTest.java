@@ -36,16 +36,16 @@ public class SwitchCaseTest {
 	        .compile();
 	    CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-	    CtSwitch sw = foo.getElements(new TypeFilter<CtSwitch>(CtSwitch.class)).get(0);
+	    CtSwitch<?> sw = foo.getElements(new TypeFilter<CtSwitch<?>>(CtSwitch.class)).get(0);
 
 	    assertEquals(3, sw.getCases().size());
 
-	    CtCase<?> c = (CtCase) sw.getCases().get(0);
+	    CtCase<?> c = (CtCase<?>) sw.getCases().get(0);
 	    
-	    assertEquals(0, ((CtLiteral)c.getCaseExpression()).getValue());
+	    assertEquals(0, ((CtLiteral<?>)c.getCaseExpression()).getValue());
 	    assertEquals(2, c.getStatements().size());
 
-	    List l = new ArrayList();
+	    List<CtStatement> l = new ArrayList<CtStatement>();
 	    
 	    // this compiles (thanks to the new CtCase extends CtStatementList)
 	    for (CtStatement s : c) {

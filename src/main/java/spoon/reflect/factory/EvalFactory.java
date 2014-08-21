@@ -37,8 +37,6 @@ import spoon.support.reflect.eval.VisitorSymbolicEvaluator;
  */
 public class EvalFactory extends SubFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates the evaluation factory.
 	 */

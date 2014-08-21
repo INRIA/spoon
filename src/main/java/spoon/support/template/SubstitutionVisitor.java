@@ -130,7 +130,7 @@ public class SubstitutionVisitor extends CtScanner {
 			CtAnnotation<?> a = e.getAnnotation(e.getFactory().Type()
 					.createReference(Local.class));
 			if (a != null) {
-				e.getAnnotations().remove(a);
+				e.removeAnnotation(a);
 			}
 			super.scanCtElement(e);
 		}
@@ -191,7 +191,7 @@ public class SubstitutionVisitor extends CtScanner {
 					Template.class));
 			for (CtMethod<?> m : new TreeSet<CtMethod<?>>(ctClass.getMethods())) {
 				if (m.getAnnotation(Local.class) != null) {
-					ctClass.getMethods().remove(m);
+					ctClass.removeMethod(m);
 				}
 			}
 			for (CtConstructor<?> c : new TreeSet<CtConstructor<?>>(

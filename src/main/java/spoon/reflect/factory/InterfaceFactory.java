@@ -26,8 +26,6 @@ import spoon.reflect.declaration.CtType;
  */
 public class InterfaceFactory extends TypeFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a new interface sub-factory.
 	 *

@@ -42,7 +42,7 @@ public abstract class RtHelper {
 
 	/**
 	 * Gets all the runtime fields for a given class (including the
-	 * superclasses').
+	 * super classes').
 	 */
 	public static Field[] getAllFields(Class<?> c) {
 		List<Field> fields = new ArrayList<Field>();
@@ -59,7 +59,7 @@ public abstract class RtHelper {
 
 	/**
 	 * Gets all the runtime methods for a given class or interface (including
-	 * the superclasses' or interfaces').
+	 * the super classes' or interfaces').
 	 */
 	public static Method[] getAllMethods(Class<?> c) {
 		List<Method> methods = new ArrayList<Method>();

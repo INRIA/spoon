@@ -37,8 +37,6 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class AnnotationFactory extends TypeFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates an annotation sub-factory.
 	 * 
@@ -130,7 +128,7 @@ public class AnnotationFactory extends TypeFactory {
 		}
 		boolean isArray;
 
-		// try with CT reflexion
+		// try with CT reflection
 		CtAnnotationType<A> annotationtype = ((CtAnnotationType<A>) annotation
 				.getAnnotationType().getDeclaration());
 		if (annotationtype != null) {

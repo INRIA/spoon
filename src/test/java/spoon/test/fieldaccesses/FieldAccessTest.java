@@ -106,9 +106,9 @@ public class FieldAccessTest {
 				"BCUBug20140402");
 		assertEquals("BCUBug20140402", type.getSimpleName());
 
-		CtLocalVariable var = type.getElements(
-				new TypeFilter<CtLocalVariable>(CtLocalVariable.class)).get(0);
-		CtFieldAccess expr = (CtFieldAccess) var.getDefaultExpression();
+		CtLocalVariable<?> var = type.getElements(
+				new TypeFilter<CtLocalVariable<?>>(CtLocalVariable.class)).get(0);
+		CtFieldAccess<?> expr = (CtFieldAccess<?>) var.getDefaultExpression();
 		assertEquals(
 				"length",
 				expr.getVariable().toString());
@@ -118,7 +118,7 @@ public class FieldAccessTest {
 		
 		// in the model the top-most field access is .length get(0)
 		// and the second one is ".data" get(1)
-		CtFieldAccess fa = expr.getElements(new TypeFilter<CtFieldAccess>(CtFieldAccess.class)).get(1);
+		CtFieldAccess<?> fa = expr.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class)).get(1);
 		// we check that we have the data
 		assertEquals(
 				"data",

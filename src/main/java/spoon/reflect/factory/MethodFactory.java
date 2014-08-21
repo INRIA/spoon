@@ -40,8 +40,6 @@ import spoon.template.Substitution;
  */
 public class MethodFactory extends ExecutableFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a new method sub-factory.
 	 * 
@@ -103,7 +101,7 @@ public class MethodFactory extends ExecutableFactory {
 			Substitution.redirectTypeReferences(newMethod, source
 					.getDeclaringType().getReference(), target.getReference());
 		}
-		target.getMethods().add(newMethod);
+		target.addMethod(newMethod);
 		return newMethod;
 	}
 

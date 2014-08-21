@@ -176,7 +176,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public Iterator<CtStatement> iterator() {
-		// we have to both create a defensive object and un unmodifable list
+		// we have to both create a defensive object and an unmodifiable list
 		// with only Collections.unmodifiableList you can modify the defensive object
 		// with only new ArrayList it breaks the encapsulation
 		return Collections.unmodifiableList(

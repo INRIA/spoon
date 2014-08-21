@@ -36,8 +36,6 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class ConstructorFactory extends ExecutableFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a new constructor sub-factory.
 	 * 

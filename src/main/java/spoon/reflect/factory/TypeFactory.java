@@ -35,8 +35,6 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class TypeFactory extends SubFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	CtTypeReference<?> nullType;
 
 	public final CtTypeReference<Void> VOID = createReference(Void.class);

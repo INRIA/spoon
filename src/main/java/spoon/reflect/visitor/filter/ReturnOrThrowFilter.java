@@ -22,7 +22,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtThrow;
 
 /**
- * This simple filter matches all the occurences of a return or a throw
+ * This simple filter matches all the occurrences of a return or a throw
  * statement (end of execution flow).
  */
 public class ReturnOrThrowFilter extends AbstractFilter<CtCFlowBreak> {
