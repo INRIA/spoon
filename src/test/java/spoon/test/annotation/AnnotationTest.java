@@ -115,7 +115,7 @@ public class AnnotationTest {
 		assertEquals(true,annot.b());
 		assertEquals('c',annot.c());
 		assertEquals(42,annot.byt());
-//		assertEquals((short)42,annot.s());
+		assertEquals((short)42,annot.s());
 		assertEquals(42,annot.l());
 		assertEquals(3.14f,annot.f(),0f);
 		assertEquals(3.14159,annot.d(),0);
@@ -131,7 +131,7 @@ public class AnnotationTest {
 		assertEquals(2,annot.strings().length);
 		assertEquals(false,annot.b());
 		assertEquals(42,annot.byt());
-//		assertEquals((short)42,annot.s());
+		assertEquals((short)42,annot.s());
 		assertEquals(42,annot.l());
 		assertEquals(3.14f,annot.f(),0f);
 		assertEquals(3.14159,annot.d(),0);
