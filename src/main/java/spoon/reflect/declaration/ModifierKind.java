@@ -52,6 +52,7 @@ public enum ModifierKind {
 	/**
 	 * Returns this modifier's name in lowercase.
 	 */
+	@Override
 	public String toString() {
 		if (lowercase == null) {
 			lowercase = name().toLowerCase(java.util.Locale.US);

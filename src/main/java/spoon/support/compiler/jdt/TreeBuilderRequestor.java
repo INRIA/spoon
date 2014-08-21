@@ -5,9 +5,6 @@ import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 
 public class TreeBuilderRequestor implements ICompilerRequestor {
 
-	/**
-	 * 
-	 */
 	private final JDTBasedSpoonCompiler jdtCompiler;
 
 	/**

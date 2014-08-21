@@ -139,7 +139,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		if (pack.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 			packageDir = new File(directory.getAbsolutePath());
 		} else {
-			// Create current package dir
+			// Create current package directory
 			packageDir = new File(directory.getAbsolutePath()
 					+ File.separatorChar
 					+ pack.getQualifiedName().replace('.', File.separatorChar));

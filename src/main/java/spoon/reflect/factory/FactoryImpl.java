@@ -223,8 +223,6 @@ public class FactoryImpl implements Factory, Serializable {
 		return CompilationUnit;
 	}
 
-	private Factory Template;
-
 	private transient TypeFactory Type;
 
 	/**
@@ -247,7 +245,7 @@ public class FactoryImpl implements Factory, Serializable {
 	/**
 	 * Gets the factory that was created at launching time (the firstly created
 	 * factory). This factory is automatically initialized when a factory is
-	 * contructed for the first time. Any subsequent constructions will not
+	 * constructed for the first time. Any subsequent constructions will not
 	 * affect the launching factory and references to other factories have to be
 	 * handled manually, if ever needed.
 	 */

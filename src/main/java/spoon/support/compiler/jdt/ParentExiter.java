@@ -49,9 +49,7 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 
 @SuppressWarnings("unchecked")
 public class ParentExiter extends CtInheritanceScanner {
-	/**
-	 * 
-	 */
+
 	private final JDTTreeBuilder jdtTreeBuilder;
 
 	/**

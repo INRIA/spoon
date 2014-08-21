@@ -67,6 +67,7 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements
 		CtStatementImpl.insertBefore(this, statements);
 	}
 
+	@Override
 	public void replace(CtElement element) {
 		if (element instanceof CtStatementList) {
 			CtStatementImpl.replace(this, (CtStatementList) element);

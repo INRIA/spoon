@@ -46,7 +46,6 @@ public class DefaultParameterMatcher implements ParameterMatcher {
 	 */
 	public boolean match(TemplateMatcher templateMatcher, CtReference template,
 			CtReference toMatch) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 

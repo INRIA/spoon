@@ -33,7 +33,7 @@ public class BlockTest {
 		CtBlock<?> body = foo.getBody();
 		assertEquals(2, body.getStatements().size());
 
-		List l = new ArrayList();
+		List<CtStatement> l = new ArrayList<CtStatement>();
 
 		// this compiles (thanks to the new CtBlock extends CtStatementList)
 		for (CtStatement s : body) {

@@ -495,7 +495,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public void visitCtGenericElementReference(
 			CtGenericElementReference reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public void visitCtIf(CtIf ifElement) {
@@ -582,7 +582,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				// try to completely evaluate
 				T r = null;
 				try {
-					// System.err.println("invocking "+i);
+					// System.err.println("invoking "+i);
 					r = RtHelper.invoke(i);
 					CtLiteral<T> l = invocation.getFactory().Core()
 							.createLiteral();
@@ -625,11 +625,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
@@ -646,27 +646,27 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtPackage(CtPackage ctPackage) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public void visitCtPackageReference(CtPackageReference reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <T> void visitCtParameter(CtParameter<T> parameter) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <R> void visitCtStatementList(CtStatementList statements) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public void visitCtReference(CtReference reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
@@ -689,7 +689,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <T, E extends CtExpression<?>> void visitCtTargetedExpression(
 			CtTargetedExpression<T, E> targetedExpression) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public void visitCtThrow(CtThrow throwStatement) {
@@ -704,15 +704,15 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {		
@@ -755,7 +755,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <T> void visitCtVariableReference(CtVariableReference<T> reference) {
-		throw new RuntimeException("Unknow Element");
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public void visitCtWhile(CtWhile whileLoop) {

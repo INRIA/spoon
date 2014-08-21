@@ -1,6 +1,5 @@
 package spoon.reflect.visitor;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -22,7 +21,7 @@ public enum JavaIdentifiers {
 
 	static {
 		KEYWORDS = new HashSet<String>();
-		for (JavaIdentifiers kw : Arrays.asList(JavaIdentifiers.values())) {
+		for (JavaIdentifiers kw : JavaIdentifiers.values()) {
 			KEYWORDS.add(kw.name().toLowerCase());
 		}
 	}
@@ -40,7 +39,7 @@ public enum JavaIdentifiers {
 	}
 
 	/**
-	 * Ckecks if a string is a valid Java identifier and not a Java keyword.
+	 * Checks if a string is a valid Java identifier and not a Java keyword.
 	 * 
 	 * @param string
 	 *            the string to be tested
@@ -52,7 +51,7 @@ public enum JavaIdentifiers {
 	}
 
 	/**
-	 * Ckecks if a string is a valid Java package identifier.
+	 * Checks if a string is a valid Java package identifier.
 	 * 
 	 * @param string
 	 *            the string to be tested
@@ -69,7 +68,7 @@ public enum JavaIdentifiers {
 	}
 
 	/**
-	 * Ckecks if a string is a valid Java package identifier.
+	 * Checks if a string is a valid Java package identifier.
 	 * 
 	 * @param string
 	 *            the string to be tested
