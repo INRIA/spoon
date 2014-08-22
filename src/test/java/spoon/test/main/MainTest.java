@@ -4,8 +4,6 @@ import org.junit.Test;
 
 import java.io.File;
 
-import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
-
 public class MainTest {
 
 	@Test
@@ -20,7 +18,7 @@ public class MainTest {
 			if (!classpathEntry.contains("test-classes"))
 			{
 				classpath.append(classpathEntry);
-				classpath.append(JDTBasedSpoonCompiler.CLASSPATH_ELEMENT_SEPARATOR);
+				classpath.append(File.pathSeparator);
 			}
 		}
 		String systemClassPath = classpath.substring(0, classpath.length() - 1);

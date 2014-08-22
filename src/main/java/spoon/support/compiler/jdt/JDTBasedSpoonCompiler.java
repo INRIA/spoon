@@ -69,8 +69,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	// private Logger logger = Logger.getLogger(SpoonBuildingManager.class);
 
-	public static final String CLASSPATH_ELEMENT_SEPARATOR = ":";
-
 	public int javaCompliance = 7;
 
 	String sourceClasspath = null;
@@ -880,7 +878,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	@Override
 	public void setSourceClasspath(String classpath) {
 		for (String classPathElem : classpath
-				.split(CLASSPATH_ELEMENT_SEPARATOR)) {
+				.split(File.pathSeparator)) {
 			// preconditions
 			File classOrJarFolder = new File(classPathElem);
 			if (!classOrJarFolder.exists()) {
