@@ -2470,7 +2470,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 						) {
 					CtTypeReference<Throwable> r = references
 							.getTypeReference(jdtCatch.type.resolvedType);
-					CtCatch c = createCtCatch(jdtCatch, r);
+					createCtCatch(jdtCatch, r);
 					tryStatement.catchBlocks[i].traverse(this, scope);
 					context.exit(jdtCatch);
 				}
@@ -2481,7 +2481,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					for (TypeReference type : utr.typeReferences) {
 						CtTypeReference<Throwable> r = references
 								.getTypeReference(type.resolvedType);
-						CtCatch c = createCtCatch(jdtCatch, r);					
+						createCtCatch(jdtCatch, r);					
 						tryStatement.catchBlocks[i].traverse(this, scope);
 						context.exit(jdtCatch);
 					}
