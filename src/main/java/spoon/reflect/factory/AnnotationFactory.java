@@ -37,8 +37,6 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class AnnotationFactory extends TypeFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates an annotation sub-factory.
 	 * 

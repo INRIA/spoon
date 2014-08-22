@@ -54,8 +54,6 @@ import spoon.reflect.reference.CtVariableReference;
  */
 public class CodeFactory extends SubFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a {@link spoon.reflect.code.CtCodeElement} sub-factory.
 	 */

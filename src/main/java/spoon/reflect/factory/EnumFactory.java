@@ -26,8 +26,6 @@ import spoon.reflect.declaration.CtSimpleType;
  */
 public class EnumFactory extends TypeFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a new enum sub-factory.
 	 * 

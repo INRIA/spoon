@@ -223,8 +223,6 @@ public class FactoryImpl implements Factory, Serializable {
 		return CompilationUnit;
 	}
 
-	private Factory Template;
-
 	private transient TypeFactory Type;
 
 	/**
