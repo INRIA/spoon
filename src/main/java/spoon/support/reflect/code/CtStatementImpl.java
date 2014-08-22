@@ -17,11 +17,16 @@
 
 package spoon.support.reflect.code;
 
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLoop;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		CtStatement {
