@@ -115,11 +115,11 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	}
 
 	/**
-	 * Override this method to create other types of matchings than the defaut
+	 * Override this method to create other types of matchings than the default
 	 * one (java.util.regexp).
 	 * 
 	 * @param type
-	 *            the canditate type
+	 *            the candidate type
 	 * @param typeExpression
 	 *            and expression to match the type against.
 	 * @return true if the type matches the expression
@@ -131,11 +131,11 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	}
 
 	/**
-	 * Override this method to create other types of matchings than the defaut
+	 * Override this method to create other types of matchings than the default
 	 * one (java.util.regexp).
 	 * 
 	 * @param executable
-	 *            the canditate executable
+	 *            the candidate executable
 	 * @param executableExpression
 	 *            and expression to match the executable against.
 	 * @return true if the executable matches the expression
@@ -148,11 +148,11 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	}
 
 	/**
-	 * Override this method to create other types of matchings than the defaut
+	 * Override this method to create other types of matchings than the default
 	 * one (java.util.regexp).
 	 * 
 	 * @param field
-	 *            the canditate field
+	 *            the candidate field
 	 * @param fieldExpression
 	 *            and expression to match the field against.
 	 * @return true if the field matches the expression

@@ -128,7 +128,7 @@ public class AnnotationFactory extends TypeFactory {
 		}
 		boolean isArray;
 
-		// try with CT reflexion
+		// try with CT reflection
 		CtAnnotationType<A> annotationtype = ((CtAnnotationType<A>) annotation
 				.getAnnotationType().getDeclaration());
 		if (annotationtype != null) {

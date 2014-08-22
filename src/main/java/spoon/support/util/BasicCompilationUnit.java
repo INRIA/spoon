@@ -119,6 +119,7 @@ public class BasicCompilationUnit implements ICompilationUnit {
 		return this.packageName;
 	}
 
+	@Override
 	public String toString() {
 		return "CompilationUnit: " + new String(this.fileName); //$NON-NLS-1$
 	}

@@ -52,6 +52,7 @@ public class TypeReferenceScanner extends CtScanner {
 		return references.add(ref);
 	}
 
+	@Override
 	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
 		enter(targetedAccess);
 		scan(targetedAccess.getVariable());
@@ -63,6 +64,7 @@ public class TypeReferenceScanner extends CtScanner {
 		exit(targetedAccess);
 	}
 
+	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enterReference(reference);
 		scan(reference.getDeclaringType());

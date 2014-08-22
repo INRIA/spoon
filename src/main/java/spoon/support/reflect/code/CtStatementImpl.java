@@ -155,7 +155,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		}
 
         if (!(parentBlock instanceof CtBlock)) {
-            throw new RuntimeException("can not add a statement that is not in a block");
+            throw new RuntimeException("cannot add a statement that is not in a block");
         }
 
         int indexOfTargetElement = 0;
@@ -190,6 +190,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		insertAfter(this, statements);
 	}
 
+	@Override
 	public void replace(CtElement element) {
 		if (element instanceof CtStatementList) {
 			CtStatementImpl.replace(this, (CtStatementList) element);

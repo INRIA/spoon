@@ -487,7 +487,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * Removes the last non-white charater.
+	 * Removes the last non-white character.
 	 */
 	protected DefaultJavaPrettyPrinter removeLastChar() {
 		while (isWhite(sbf.charAt(sbf.length() - 1))) {

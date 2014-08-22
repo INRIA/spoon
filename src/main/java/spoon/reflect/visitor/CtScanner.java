@@ -91,28 +91,28 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * This method is upcalled by the scanner when entering a scanned element.
-	 * To be overriden to implement specific scanners.
+	 * To be overridden to implement specific scanners.
 	 */
 	protected void enter(CtElement e) {
 	}
 
 	/**
 	 * This method is upcalled by the scanner when entering a scanned element
-	 * reference. To be overriden to implement specific scanners.
+	 * reference. To be overridden to implement specific scanners.
 	 */
 	protected void enterReference(CtReference e) {
 	}
 
 	/**
 	 * This method is upcalled by the scanner when exiting a scanned element. To
-	 * be overriden to implement specific scanners.
+	 * be overridden to implement specific scanners.
 	 */
 	protected void exit(CtElement e) {
 	}
 
 	/**
 	 * This method is upcalled by the scanner when exiting a scanned element
-	 * reference. To be overriden to implement specific scanners.
+	 * reference. To be overridden to implement specific scanners.
 	 */
 	protected void exitReference(CtReference e) {
 	}

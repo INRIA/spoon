@@ -65,7 +65,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 * the {@link #process()} method instead.
 	 * 
 	 * @param element
-	 *            the element that is currenly being scanned
+	 *            the element that is currently being scanned
 	 */
 	void process(E element);
 

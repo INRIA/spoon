@@ -6,9 +6,7 @@ import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import spoon.Launcher;
 
 class CompilationUnitWrapper extends CompilationUnit {
-	/**
-	 * 
-	 */
+
 	private final JDTBasedSpoonCompiler jdtCompiler;
 
 	public CompilationUnitWrapper(JDTBasedSpoonCompiler jdtCompiler, CompilationUnit wrappedUnit) {

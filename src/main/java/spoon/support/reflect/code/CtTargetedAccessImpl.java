@@ -29,6 +29,7 @@ public class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T> implements
 
 	CtExpression<?> target;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtTargetedAccess(this);
 	}
@@ -37,10 +38,12 @@ public class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T> implements
 		return target;
 	}
 
+	@Override
 	public CtFieldReference<T> getVariable() {
 		return (CtFieldReference<T>) super.getVariable();
 	}
 
+	@Override
 	public void setVariable(CtVariableReference<T> variable) {
 		super.setVariable(variable);
 	}

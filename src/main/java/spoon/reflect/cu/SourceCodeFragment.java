@@ -3,7 +3,7 @@ package spoon.reflect.cu;
 /**
  * This class defines textual source code fragments that can be attached to a
  * compilation unit in order to modify its source code by preserving its
- * original formatting. Source code fragements are ignored by default. A special
+ * original formatting. Source code fragments are ignored by default. A special
  * mode must be activated in order to take them into account (-f or --fragments
  * with command line). When this mode is activated, the programs model is not
  * used any more to generate the transformed code (unless a fragment uses it to
@@ -12,7 +12,7 @@ package spoon.reflect.cu;
 public class SourceCodeFragment {
 
 	/**
-	 * The position in the orginal source code where this fragment must be
+	 * The position in the original source code where this fragment must be
 	 * inserted. Default value is 0;
 	 */
 	public int position = 0;
