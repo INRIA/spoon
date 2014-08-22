@@ -103,7 +103,7 @@ public class MethodFactory extends ExecutableFactory {
 			Substitution.redirectTypeReferences(newMethod, source
 					.getDeclaringType().getReference(), target.getReference());
 		}
-		target.getMethods().add(newMethod);
+		target.addMethod(newMethod);
 		return newMethod;
 	}
 
