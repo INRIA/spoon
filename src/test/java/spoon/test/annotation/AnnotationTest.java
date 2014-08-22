@@ -46,6 +46,7 @@ public class AnnotationTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
+						"./src/test/java/spoon/test/annotation/AnnotParamTypes.java",
 						"./src/test/java/spoon/test/annotation/Bound.java",
 						"./src/test/java/spoon/test/annotation/Main.java"))
 				.build();
