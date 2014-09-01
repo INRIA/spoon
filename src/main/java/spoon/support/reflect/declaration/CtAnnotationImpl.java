@@ -24,17 +24,17 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import spoon.Launcher;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtField;
@@ -190,7 +190,23 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 		} else if (value instanceof CtFieldAccess) {
 			// Get variable
 			return convertValue(((CtFieldAccess<?>) value).getVariable());
-		} else if (value instanceof CtAnnotation) {
+		}
+		else if (value instanceof CtNewArray)
+		{
+			CtNewArray<?> arrayExpression = (CtNewArray<?>) value;
+
+			Class<?> componentType = arrayExpression.getType().getActualClass().getComponentType();
+			List<CtExpression<?>> elements = arrayExpression.getElements();
+
+			Object array = Array.newInstance(componentType, elements.size());
+			for (int i = 0; i < elements.size(); i++)
+			{
+				Array.set(array, i, this.convertValue(elements.get(i)));
+			}
+
+			return array;
+		}
+		else if (value instanceof CtAnnotation) {
 			// Get proxy
 			return ((CtAnnotation<?>) value).getActualAnnotation();
 		} else if (value instanceof CtLiteral) {
@@ -247,8 +263,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 
 	@SuppressWarnings("unchecked")
 	public <T> T getElementValue(String key) {
-		Object ret = null;
-		ret = elementValues.get(key);
+		Object ret = this.elementValues.get(key);
 		if (ret == null) {
 			ret = getDefaultValue(key);
 		}
@@ -258,30 +273,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 
 		Class<?> type = getElementType(key);
 
-		if (type.isArray()) {
-			if (!(ret instanceof Collection)) {
-				List<Object> lst = new ArrayList<Object>();
-
-				if (ret.getClass().isArray()) {
-					Object[] temp = (Object[]) ret;
-					lst.addAll(Arrays.asList(temp));
-				} else {
-					lst.add(ret);
-				}
-				ret = lst;
-
-			}
-			Collection<?> col = (Collection<?>) ret;
-			Object[] array = (Object[]) Array.newInstance(
-					type.getComponentType(), col.size());
-			int i = 0;
-			for (Object obj : col) {
-				array[i++] = convertValue(obj);
-			}
-			ret = array;
-		} else {
-			ret = convertValue(ret);
-		}
+		ret = this.convertValue(ret);
 
 		if (type.isPrimitive()) {
 			if ((type == boolean.class) && (ret.getClass() != boolean.class)) {
@@ -299,6 +291,10 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 				ret = Integer.parseInt(ret.toString());
 			} else if ((type == long.class) && (ret.getClass() != long.class)) {
 				ret = Long.parseLong(ret.toString());
+			}
+			else if (type == short.class && ret.getClass() != short.class)
+			{
+				ret = Short.parseShort(ret.toString());
 			}
 		}
 		return (T) ret;
