@@ -20,7 +20,7 @@ package spoon.compiler;
 import java.io.InputStream;
 
 /**
- * This interface represents files that can be uses as resources for the Spoon
+ * This interface represents files that can be used as resources for the Spoon
  * compiler.
  */
 public interface SpoonFile extends SpoonResource {

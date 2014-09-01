@@ -40,8 +40,6 @@ import spoon.template.Substitution;
  */
 public class MethodFactory extends ExecutableFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a new method sub-factory.
 	 * 

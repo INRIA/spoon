@@ -106,6 +106,7 @@ public class CtInvocationImpl<T> extends
 		CtStatementImpl.insertBefore(this, statements);
 	}
 
+	@Override
 	public void replace(CtElement element) {
 		if (element instanceof CtStatementList) {
 			CtStatementImpl.replace(this, (CtStatementList) element);

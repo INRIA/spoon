@@ -33,8 +33,6 @@ import spoon.support.reflect.cu.ImportImpl;
  */
 public class CompilationUnitFactory extends SubFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates the evaluation factory.
 	 */

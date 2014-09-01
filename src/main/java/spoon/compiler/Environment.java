@@ -97,7 +97,7 @@ public interface Environment {
 	/**
 	 * Helper method called by a processor to report an error, warning or
 	 * message as dictated by the severity parameter. Note that this does not
-	 * stop the processing or any remaing task. To do so, use
+	 * stop the processing or any remaining task. To do so, use
 	 * {@link #setProcessingStopped(boolean)}.
 	 * 
 	 * @param processor

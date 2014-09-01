@@ -682,7 +682,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		if (outputDirectory == null)
 			throw new RuntimeException(
 					"You should set output directory before generating source files");
-		// Create spooned dir
+		// Create spooned directory
 		if (outputDirectory.isFile())
 			throw new RuntimeException("Output must be a directory");
 		if (!outputDirectory.exists()) {
@@ -711,7 +711,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 					.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 				packageDir = new File(outputDirectory.getAbsolutePath());
 			} else {
-				// Create current package dir
+				// Create current package directory
 				packageDir = new File(outputDirectory.getAbsolutePath()
 						+ File.separatorChar
 						+ pack.getQualifiedName().replace('.',

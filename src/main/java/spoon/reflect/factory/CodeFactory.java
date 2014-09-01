@@ -54,8 +54,6 @@ import spoon.reflect.reference.CtVariableReference;
  */
 public class CodeFactory extends SubFactory {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Creates a {@link spoon.reflect.code.CtCodeElement} sub-factory.
 	 */
@@ -160,7 +158,7 @@ public class CodeFactory extends SubFactory {
 	 * @param <T>
 	 *            the type of the literal
 	 * @param value
-	 *            the value of the litteral
+	 *            the value of the literal
 	 * @return a new literal
 	 */
 	public <T> CtLiteral<T> createLiteral(T value) {

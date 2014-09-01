@@ -25,7 +25,7 @@ import java.util.List;
  * @param <S>
  *            the type of the selector expression (it would be better to be able
  *            to define an upper bound, but it is not possible because of Java's
- *            type hierachy, especially since the enums that make things even
+ *            type hierarchy, especially since the enums that make things even
  *            worse!)
  */
 public interface CtSwitch<S> extends CtStatement {

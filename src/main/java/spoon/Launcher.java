@@ -429,7 +429,7 @@ public class Launcher {
 	}
 
 	/**
-	 * Gets the list of input sources as files. This method can be overriden to
+	 * Gets the list of input sources as files. This method can be overridden to
 	 * customize this list.
 	 */
 	protected java.util.List<SpoonResource> getInputSources() {

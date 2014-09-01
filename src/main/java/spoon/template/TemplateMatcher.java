@@ -191,7 +191,7 @@ public class TemplateMatcher {
 
 	/**
 	 * Finds all target program sub-trees that correspond to a template. Once
-	 * this method has been called, {@link #getFinds()} will give the mathing
+	 * this method has been called, {@link #getFinds()} will give the matching
 	 * CtElements if any.
 	 * 
 	 * @param targetRoot
@@ -484,7 +484,7 @@ public class TemplateMatcher {
 
 	/**
 	 * Matches a target program sub-tree against a template. Once this method
-	 * has been called, {@link #getMatches()} will give the mathing parts if
+	 * has been called, {@link #getMatches()} will give the matching parts if
 	 * any.
 	 * 
 	 * @param targetRoot

@@ -48,7 +48,7 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
 			}
 		}
 		throw new IllegalStateException(
-				"Could not found declaration for parameter " + getSimpleName());
+				"Cannot found declaration for parameter " + getSimpleName());
 	}
 
 	public CtExecutableReference<?> getDeclaringExecutable() {

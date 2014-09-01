@@ -40,7 +40,7 @@ public enum JavaIdentifiers {
 	}
 
 	/**
-	 * Ckecks if a string is a valid Java identifier and not a Java keyword.
+	 * Checks if a string is a valid Java identifier and not a Java keyword.
 	 * 
 	 * @param string
 	 *            the string to be tested
@@ -52,7 +52,7 @@ public enum JavaIdentifiers {
 	}
 
 	/**
-	 * Ckecks if a string is a valid Java package identifier.
+	 * Checks if a string is a valid Java package identifier.
 	 * 
 	 * @param string
 	 *            the string to be tested
@@ -69,7 +69,7 @@ public enum JavaIdentifiers {
 	}
 
 	/**
-	 * Ckecks if a string is a valid Java package identifier.
+	 * Checks if a string is a valid Java package identifier.
 	 * 
 	 * @param string
 	 *            the string to be tested

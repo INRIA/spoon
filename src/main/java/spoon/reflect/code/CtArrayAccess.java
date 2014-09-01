@@ -19,7 +19,7 @@ package spoon.reflect.code;
 
 /**
  * This code element defines a one-dimensional array access. When
- * multi-dimensionnal, array accesses are applied to other one-dimensional array
+ * multi-dimensional, array accesses are applied to other one-dimensional array
  * accesses. The target of {@link spoon.reflect.code.CtTargetedExpression}
  * defines the expression that represents the accessed array.
  * 

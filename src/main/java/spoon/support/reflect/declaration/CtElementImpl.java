@@ -50,12 +50,6 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 
-/**
- * The implementation for {@link spoon.test.spoon.reflect.Declaration}.
- * 
- * @author Renaud Pawlak
- * @see spoon.test.spoon.reflect.Declaration
- */
 public abstract class CtElementImpl implements CtElement, Serializable {
 
 	protected static final Logger logger = Logger

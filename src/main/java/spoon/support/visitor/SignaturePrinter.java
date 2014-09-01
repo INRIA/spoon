@@ -295,7 +295,7 @@ public class SignaturePrinter implements CtVisitor {
 			write(reference.getSimpleName());
 		} catch (NullPointerException npe) {
 			System.err
-					.println("Null Pointer Exception in SingnaturePrinter.visitCtFieldReference()");
+					.println("Null Pointer Exception in SignaturePrinter.visitCtFieldReference()");
 		}
 	}
 

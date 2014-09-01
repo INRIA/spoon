@@ -85,7 +85,7 @@ public interface CtTypeReference<T> extends CtReference,
 
 	/**
 	 * Returns the corresponding non-primitive type for a primitive type (the
-	 * same type otherwhise).
+	 * same type otherwise).
 	 */
 	CtTypeReference<?> box();
 

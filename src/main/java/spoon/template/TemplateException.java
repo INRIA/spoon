@@ -21,7 +21,7 @@ import spoon.SpoonException;
 
 /**
  * This runtime exception can be throws when something wrong occurs in template
- * operations such as loading, subtitution, and matching.
+ * operations such as loading, substitution, and matching.
  * 
  * @see spoon.template.Substitution
  * @see spoon.template.TemplateMatcher

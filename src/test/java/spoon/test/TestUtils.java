@@ -42,7 +42,7 @@ public class TestUtils {
 
 	public static Factory build(Class<?>... classesToBuild) throws Exception {
 		SpoonCompiler comp = new Launcher().createCompiler();
-        for (Class classToBuild : classesToBuild) {
+        for (Class<?> classToBuild : classesToBuild) {
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/"
 				+ classToBuild.getName().replace('.', '/') + ".java"));
         }
