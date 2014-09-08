@@ -677,9 +677,6 @@ public class Launcher {
 		environment.setVerbose(true);
 		environment.setXmlRootFolder(properties);
 
-		JavaOutputProcessor printer = createOutputWriter(sourceOutputDir);
-		environment.setDefaultFileGenerator(printer);
-
 		environment.setVerbose(verbose || debug);
 		environment.setDebug(debug);
 		environment.setAutoImports(autoImports);
@@ -688,6 +685,8 @@ public class Launcher {
 		environment.setTabulationSize(tabulationSize);
 		environment.useTabulations(useTabulations);
 		environment.useSourceCodeFragments(useSourceCodeFragments);
+        JavaOutputProcessor printer = createOutputWriter(sourceOutputDir);
+      		environment.setDefaultFileGenerator(printer);
 	}
 
 	public JavaOutputProcessor createOutputWriter(File sourceOutputDir) {
