@@ -37,7 +37,8 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 		sb.append(compilationUnit.getOriginalSourceCode());
 		List<SourceCodeFragment> fragments = new ArrayList<SourceCodeFragment>();
 		if (compilationUnit.getSourceCodeFragments() != null) {
-			for (SourceCodeFragment f : compilationUnit.getSourceCodeFragments()) {
+			for (SourceCodeFragment f : compilationUnit
+					.getSourceCodeFragments()) {
 				fragments.add(new SourceCodeFragment(f.position, f.code,
 						f.replacementLength));
 			}
@@ -78,7 +79,6 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 
 	@Override
 	public void reset() {
-		throw new UnsupportedOperationException();
 	}
 
 }

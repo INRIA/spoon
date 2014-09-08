@@ -676,6 +676,58 @@ public class Launcher {
 		return new StandardEnvironment();
 	}
 
+	/**
+	 * Initializes an environment with the given parameters.
+	 *
+	 * @param environment
+	 * 		the environment to be initialized
+	 * @param complianceLevel
+	 * 		the Java source code compliance level (... 4, 5, 6, 7)
+	 * @param verbose
+	 * 		tells Spoon to print out the basic traces
+	 * @param debug
+	 * 		tells Spoon to print out the detailed traces
+	 * @param properties
+	 * @param autoImports
+	 * 		tells Spoon to automatically generate the imports when
+	 * 		printing out the source code
+	 * @param tabulationSize
+	 * 		the size of the tabulations in the printed source code
+	 * @param useTabulations
+	 * 		tells if Spoon uses tabulations (vs spaces)
+	 * @param useSourceCodeFragments
+	 * 		tells if Spoon should be in source code fragments mode
+	 * @param preserveLineNumbers
+	 * 		tells if Spoon should try to preserve the original line
+	 * 		numbers when generating the source code (may lead to
+	 * 		human-unfriendly formatting)
+	 * @param sourceOutputDir
+	 * 		sets the Spoon output directory where to generate the printed
+	 * 		source code
+	 */
+	public void initEnvironment(Environment environment,
+			int complianceLevel, boolean verbose, boolean debug,
+			File properties, boolean autoImports, int tabulationSize,
+			boolean useTabulations, boolean useSourceCodeFragments,
+			boolean preserveLineNumbers, File sourceOutputDir) {
+
+		// environment initialization
+		environment.setComplianceLevel(complianceLevel);
+		environment.setVerbose(true);
+		environment.setXmlRootFolder(properties);
+
+		environment.setVerbose(verbose || debug);
+		environment.setDebug(debug);
+		environment.setAutoImports(autoImports);
+		environment.setPreserveLineNumbers(preserveLineNumbers);
+
+		environment.setTabulationSize(tabulationSize);
+		environment.useTabulations(useTabulations);
+		environment.useSourceCodeFragments(useSourceCodeFragments);
+		JavaOutputProcessor printer = createOutputWriter(sourceOutputDir);
+		environment.setDefaultFileGenerator(printer);
+	}
+
 	public JavaOutputProcessor createOutputWriter(File sourceOutputDir) {
 		return new JavaOutputProcessor(sourceOutputDir, createPrettyPrinter());
 	}
