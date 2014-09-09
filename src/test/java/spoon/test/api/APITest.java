@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.support.JavaOutputProcessor;
 
@@ -19,7 +20,7 @@ public class APITest {
 		final List<Object> l = new ArrayList<>();
 		Launcher spoon = new Launcher() {
 			@Override
-			public JavaOutputProcessor createOutputWriter(File sourceOutputDir) {				
+			public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
 				return new JavaOutputProcessor() { 
 					@Override
 					public void process(CtSimpleType<?> e) {

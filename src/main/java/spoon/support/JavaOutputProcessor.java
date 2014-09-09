@@ -65,7 +65,11 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	public JavaOutputProcessor() {
 	}
 
-	public List<File> getCreatedFiles() {
+    public PrettyPrinter getPrinter() {
+        return printer;
+    }
+
+    public List<File> getCreatedFiles() {
 		return printedFiles;
 	}
 
