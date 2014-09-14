@@ -17,23 +17,18 @@
 
 package spoon.reflect.reference;
 
-import spoon.reflect.declaration.CtVariable;
+import java.util.Set;
+
+import spoon.reflect.declaration.ModifierKind;
 
 /**
- * This interface defines a reference to a
- * {@link spoon.reflect.declaration.CtVariable} or sub-type.
+ * This interface defines a reference that can have modifiers.
  */
-public interface CtVariableReference<T> extends CtReference, CtModifiableReference {
+public interface CtModifiableReference {
 
 	/**
-	 * Gets the type of the variable.
+	 * Gets the modifiers.
 	 */
-	CtTypeReference<T> getType();
+	Set<ModifierKind> getModifiers();
 
-	/**
-	 * Sets the type of the variable.
-	 */
-	void setType(CtTypeReference<T> type);
-
-	CtVariable<T> getDeclaration();
 }
