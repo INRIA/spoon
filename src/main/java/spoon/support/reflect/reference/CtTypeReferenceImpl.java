@@ -459,6 +459,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 					l.addAll(st.getAllExecutables());
 				}
 			}
+			if( t instanceof CtInterface ) {
+				Set<CtTypeReference<?>> sups =
+					((CtInterface<?>) t).getSuperInterfaces();
+				for (CtTypeReference<?> sup : sups) {
+					l.addAll(sup.getAllExecutables());
+				}
+			}
 		}
 		return l;
 	}
