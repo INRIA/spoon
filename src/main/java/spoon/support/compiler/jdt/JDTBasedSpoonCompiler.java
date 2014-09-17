@@ -246,7 +246,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		String jdtClasspath="";
 		String[] sourceClasspath = getSourceClasspath();
 		for (int i=0; i<=sourceClasspath.length-2; i++) {
-			jdtClasspath+=sourceClasspath[i]+":";//JDT always understands ":"
+			jdtClasspath+=sourceClasspath[i]+File.pathSeparator;
 		}
 		jdtClasspath+=sourceClasspath[sourceClasspath.length-1];
 		return jdtClasspath;
