@@ -786,7 +786,7 @@ public class Launcher {
 		// backward compatibility
 		// we don't have to set the source classpath
 		if (sourceClasspath != null) {
-		  compiler.setSourceClasspath(sourceClasspath);
+		  compiler.setSourceClasspath(sourceClasspath.split(System.getProperty("path.separator")));
 		}
 		
 		compiler.setTemplateClasspath(templateClasspath);

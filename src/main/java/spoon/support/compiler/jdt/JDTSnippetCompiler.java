@@ -62,7 +62,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 		if (sourceClasspath != null) {
 			args.add("-cp");
-			args.add(sourceClasspath);
+			args.add(computeJdtClassPath());
 		} else {
 			ClassLoader currentClassLoader = Thread.currentThread()
 					.getContextClassLoader();// ClassLoader.getSystemClassLoader();

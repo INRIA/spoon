@@ -71,7 +71,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	public int javaCompliance = 7;
 
-	String sourceClasspath = null;
+	String[] sourceClasspath = null;
 
 	String templateClasspath = null;
 
@@ -187,8 +187,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// args.add("none");
 
 		if (sourceClasspath != null) {
-			args.add("-cp");
-			args.add(sourceClasspath);
+			addClasspathToJDTArgs(args);
 		} else {
 			ClassLoader currentClassLoader = Thread.currentThread()
 					.getContextClassLoader();// ClassLoader.getSystemClassLoader();
@@ -245,6 +244,20 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 
 		return probs.size() == 0;
+	}
+
+	protected String computeJdtClassPath() {
+		String jdtClasspath="";
+		for (int i=0; i<=sourceClasspath.length-2; i++) {
+			jdtClasspath+=sourceClasspath[i]+":";//JDT always understands ":"
+		}
+		jdtClasspath+=sourceClasspath[sourceClasspath.length-1];
+		return jdtClasspath;
+	}
+
+	protected void addClasspathToJDTArgs(List<String> args) {
+		args.add("-cp");
+		args.add(computeJdtClassPath());
 	}
 
 	// this function is used to hack the JDT compiler...
@@ -564,7 +577,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		String finalClassPath = null;
 		if (sourceClasspath != null) {
-			finalClassPath = sourceClasspath;
+			finalClassPath = computeJdtClassPath();
 		} else {
 			ClassLoader currentClassLoader = Thread.currentThread()
 					.getContextClassLoader();// ClassLoader.getSystemClassLoader();
@@ -826,7 +839,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		String finalClassPath = null;
 		if (sourceClasspath != null) {
-			finalClassPath = sourceClasspath;
+			finalClassPath = computeJdtClassPath();
 		} else {
 			ClassLoader currentClassLoader = Thread.currentThread()
 					.getContextClassLoader();// ClassLoader.getSystemClassLoader();
@@ -866,7 +879,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public String getSourceClasspath() {
+	public String[] getSourceClasspath() {
 		return sourceClasspath;
 	}
 
@@ -876,9 +889,8 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public void setSourceClasspath(String classpath) {
-		for (String classPathElem : classpath
-				.split(File.pathSeparator)) {
+	public void setSourceClasspath(String... classpath) {
+		for (String classPathElem : classpath) {
 			// preconditions
 			File classOrJarFolder = new File(classPathElem);
 			if (!classOrJarFolder.exists()) {

@@ -1,8 +1,8 @@
 package spoon.test.main;
 
-import org.junit.Test;
-
 import java.io.File;
+
+import org.junit.Test;
 
 public class MainTest {
 
