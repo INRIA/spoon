@@ -60,7 +60,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		// args.add("-d");
 		// args.add("none");
 
-		if (sourceClasspath != null) {
+		if (getSourceClasspath() != null) {
 			args.add("-cp");
 			args.add(computeJdtClassPath());
 		} else {

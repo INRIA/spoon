@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -30,6 +31,9 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import spoon.compiler.Environment;
+import spoon.compiler.InvalidClassPathException;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -42,6 +46,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.support.compiler.FileSystemFolder;
 import spoon.support.processing.XmlProcessorProperties;
 
 /**
@@ -79,7 +84,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private File xmlRootFolder;
 
-	private String classpath = null;
+	private String[] sourceClasspath = null;
 
 	private boolean preserveLineNumbers = false;
 
@@ -378,12 +383,35 @@ public class StandardEnvironment implements Serializable, Environment {
 		return ".";
 	}
 
-	public String getClasspath() {
-		return classpath;
+	public String[] getSourceClasspath() {
+		return sourceClasspath;
 	}
 
-	public void setClasspath(String classpath) {
-		this.classpath = classpath;
+	public void setSourceClasspath(String[] sourceClasspath) {
+		verifySourceClasspath(sourceClasspath);
+		this.sourceClasspath = sourceClasspath ;
+	}
+	
+	private void verifySourceClasspath(String[] sourceClasspath) throws InvalidClassPathException {
+		for (String classPathElem : sourceClasspath) {
+			// preconditions
+			File classOrJarFolder = new File(classPathElem);
+			if (!classOrJarFolder.exists()) {
+				throw new InvalidClassPathException(classPathElem
+						+ " does not exist, it is not a valid folder");
+			}
+
+			if (classOrJarFolder.isDirectory()) {
+				// it should not contain a java file
+				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
+				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
+				if (javaFiles.size() > 0) {
+					throw new InvalidClassPathException(
+							"you're trying to give source code in the classpath, this should be given to addInputSource "
+									+ javaFiles);
+				}
+			}
+		}
 	}
 
 	public int getErrorCount() {

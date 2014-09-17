@@ -45,7 +45,6 @@ import org.eclipse.jdt.internal.compiler.util.Util;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.Environment;
-import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
@@ -62,7 +61,6 @@ import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.compiler.FileSystemFile;
-import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.VirtualFolder;
 
 public class JDTBasedSpoonCompiler implements SpoonCompiler {
@@ -70,8 +68,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	// private Logger logger = Logger.getLogger(SpoonBuildingManager.class);
 
 	public int javaCompliance = 7;
-
-	String[] sourceClasspath = null;
 
 	String templateClasspath = null;
 
@@ -186,7 +182,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// args.add("-d");
 		// args.add("none");
 
-		if (sourceClasspath != null) {
+		if (getSourceClasspath() != null) {
 			addClasspathToJDTArgs(args);
 		} else {
 			ClassLoader currentClassLoader = Thread.currentThread()
@@ -248,6 +244,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	protected String computeJdtClassPath() {
 		String jdtClasspath="";
+		String[] sourceClasspath = getSourceClasspath();
 		for (int i=0; i<=sourceClasspath.length-2; i++) {
 			jdtClasspath+=sourceClasspath[i]+":";//JDT always understands ":"
 		}
@@ -576,7 +573,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// args.add(getDestinationDirectory().toString());
 
 		String finalClassPath = null;
-		if (sourceClasspath != null) {
+		if (getSourceClasspath() != null) {
 			finalClassPath = computeJdtClassPath();
 		} else {
 			ClassLoader currentClassLoader = Thread.currentThread()
@@ -838,7 +835,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 
 		String finalClassPath = null;
-		if (sourceClasspath != null) {
+		if (getSourceClasspath() != null) {
 			finalClassPath = computeJdtClassPath();
 		} else {
 			ClassLoader currentClassLoader = Thread.currentThread()
@@ -879,38 +876,18 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public String[] getSourceClasspath() {
-		return sourceClasspath;
-	}
-
-	@Override
 	public String getTemplateClasspath() {
 		return templateClasspath;
+	}
+	
+	@Override
+	public String[] getSourceClasspath() {
+		return getEnvironment().getSourceClasspath();
 	}
 
 	@Override
 	public void setSourceClasspath(String... classpath) {
-		for (String classPathElem : classpath) {
-			// preconditions
-			File classOrJarFolder = new File(classPathElem);
-			if (!classOrJarFolder.exists()) {
-				throw new InvalidClassPathException(classPathElem
-						+ " does not exist, it is not a valid folder");
-			}
-
-			if (classOrJarFolder.isDirectory()) {
-				// it should not contain a java file
-				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
-				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
-				if (javaFiles.size() > 0) {
-					throw new InvalidClassPathException(
-							"you're trying to give source code in the classpath, this should be given to addInputSource "
-									+ javaFiles);
-				}
-			}
-		}
-
-		this.sourceClasspath = classpath;
+		getEnvironment().setSourceClasspath(classpath);;
 	}
 
 	@Override
@@ -1006,4 +983,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		processing.process();
 	}
 
+	protected Environment getEnvironment() {
+		return getFactory().getEnvironment();
+	}
 }
