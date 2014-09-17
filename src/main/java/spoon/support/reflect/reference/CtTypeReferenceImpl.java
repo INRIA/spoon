@@ -17,11 +17,16 @@
 
 package spoon.support.reflect.reference;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -126,16 +132,47 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 				return (Class<T>) void.class;
 			}
 		}
+		return findClass();
+	}
+	
+	/**
+	 * Helps find the class requested in {@link #getActualClass()}.
+	 * Firstly, it tries to find the class in {@link Thread.currentThread().getContextClassLoader()}.
+	 * If it is not found, then the source class path is inspected to try to find the
+	 * binary definition of the target class. If still missing, a RuntimeException is thrown.
+	 */
+	@SuppressWarnings("unchecked")
+	protected Class<T> findClass() {
+		URLClassLoader loader = new URLClassLoader(classpath(), Thread.currentThread().getContextClassLoader());
 		try {
-			return (Class<T>) Thread.currentThread().getContextClassLoader()
-					.loadClass(getQualifiedName());
-		} catch (Exception e) {
-			// class cannot be found
-			throw new RuntimeException("cannot load class: "
+			return (Class<T>) loader.loadClass(getQualifiedName());
+		} catch (ClassNotFoundException cnfe) {
+			throw new SpoonException("cannot load class: "
 					+ getQualifiedName() + " with class loader "
-					+ Thread.currentThread().getContextClassLoader(), e);
-			// return null;
+					+ Thread.currentThread().getContextClassLoader(), cnfe);
+		} finally {
+			try {
+				loader.close();
+			}
+			catch (IOException ioe) {}
 		}
+	}
+	
+	/**
+	 * Creates a URL class path from {@link Environment.getSourceClasspath()} 
+	 */
+	protected URL[] classpath() {
+		String[] classpath = getFactory().getEnvironment().getSourceClasspath();
+		int length = (classpath == null) ? 0 : classpath.length;
+		URL[] urls = new URL[length];
+		for (int i = 0; i < length; i += 1) {
+			try {
+				urls[i] = new File(classpath[i]).toURI().toURL();
+			} catch (MalformedURLException e) {
+				throw new IllegalStateException("Invalid classpath: " + classpath, e);
+			}
+		}
+		return urls;
 	}
 
 	public List<CtTypeReference<?>> getActualTypeArguments() {

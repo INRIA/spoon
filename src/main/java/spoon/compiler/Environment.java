@@ -265,4 +265,17 @@ public interface Environment {
 	 */
 	boolean isPreserveLineNumbers();
 	
+	/**
+	 * Returns the source class path of the Spoon model.
+	 * This class path is used when the SpoonCompiler is building the model and also
+	 * to find external classes, referenced from within the model. 
+	 */
+	String[] getSourceClasspath();
+
+	/**
+	 * Sets the source class path of the Spoon model.
+	 * After the class path is set, it can be retrieved by
+	 * {@link #getSourceClasspath()}.
+	 */
+	void setSourceClasspath(String[] sourceClasspath);
 }
