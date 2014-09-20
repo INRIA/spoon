@@ -2563,6 +2563,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					.getOrCreate(
 							new String(typeDeclaration.binding.fPackage
 									.readableName()));
+			context.compilationunitdeclaration = scope.referenceContext;
 			context.enter(pack, typeDeclaration);
 
 			// AST bug HACK
