@@ -2563,6 +2563,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					.getOrCreate(
 							new String(typeDeclaration.binding.fPackage
 									.readableName()));
+			pack.setDocComment(this.getJavaDoc(typeDeclaration.javadoc, scope.referenceContext));
+
 			context.compilationunitdeclaration = scope.referenceContext;
 			context.enter(pack, typeDeclaration);
 

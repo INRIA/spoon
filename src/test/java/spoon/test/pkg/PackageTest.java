@@ -32,6 +32,7 @@ public class PackageTest
 		CtPackage ctPackage = clazz.getPackage();
 		Assert.assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
 		Assert.assertNull(ctPackage.getPosition());
+		Assert.assertNull(ctPackage.getDocComment());
 		Assert.assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
@@ -40,16 +41,18 @@ public class PackageTest
 		Assert.assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
 		Assert.assertEquals(1, ctPackage.getPosition().getLine());
 		Assert.assertEquals(1, ctPackage.getAnnotations().size());
+		Assert.assertEquals("\n This is test\n JavaDoc.\n \n", ctPackage.getDocComment());
 
 		CtAnnotation<?> annotation = ctPackage.getAnnotations().get(0);
 		Assert.assertEquals(Deprecated.class, annotation.getAnnotationType().getActualClass());
 		Assert.assertEquals(packageInfoFile.getCanonicalPath(), annotation.getPosition().getFile().getCanonicalPath());
-		Assert.assertEquals(1, annotation.getPosition().getLine());
+		Assert.assertEquals(5, annotation.getPosition().getLine());
 
 		Assert.assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		Assert.assertEquals("spoon.test", ctPackage.getQualifiedName());
 		Assert.assertNull(ctPackage.getPosition());
+		Assert.assertNull(ctPackage.getDocComment());
 	}
 }
