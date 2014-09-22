@@ -20,6 +20,7 @@ package spoon.support.reflect.declaration;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtPackageReference;
@@ -115,4 +116,17 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		types.remove(type);
 	}
 
+	@Override
+	public SourcePosition getPosition()
+	{
+		/*
+		 * The super.getPosition() method returns the own position
+		 * or if it's null the position of the parent element,
+		 * but that isn't possible for packages.
+		 * A package should return the position of the package-info file
+		 * if it exists. The parent of a package is another package which
+		 * needs to have an own package-info file.
+		 */
+		return this.position;
+	}
 }
