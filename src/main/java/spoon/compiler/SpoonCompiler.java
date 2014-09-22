@@ -203,12 +203,12 @@ public interface SpoonCompiler extends FactoryAccessor {
 	 * 
 	 * See {@link #setSourceClasspath} for the meaning of the returned string.
 	 */
-	String getTemplateClasspath();
+	String[] getTemplateClasspath();
 
 	/**
 	 * Sets the classpath that is used to build the template sources.
 	 */
-	void setTemplateClasspath(String classpath);
+	void setTemplateClasspath(String... classpath);
 
 	/**
 	 * Sets this compiler to optimize the model building process by ignoring

@@ -69,7 +69,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	public int javaCompliance = 7;
 
-	String templateClasspath = null;
+	private String[] templateClasspath = null;
 
 	File outputDirectory;
 
@@ -876,7 +876,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public String getTemplateClasspath() {
+	public String[] getTemplateClasspath() {
 		return templateClasspath;
 	}
 	
@@ -891,7 +891,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public void setTemplateClasspath(String classpath) {
+	public void setTemplateClasspath(String... classpath) {
 		this.templateClasspath = classpath;
 	}
 
