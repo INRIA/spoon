@@ -78,7 +78,6 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 
 	@Override
 	public void reset() {
-		throw new UnsupportedOperationException();
 	}
 
 }

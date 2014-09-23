@@ -677,9 +677,6 @@ public class Launcher {
 		environment.setVerbose(true);
 		environment.setXmlRootFolder(properties);
 
-		JavaOutputProcessor printer = createOutputWriter(sourceOutputDir);
-		environment.setDefaultFileGenerator(printer);
-
 		environment.setVerbose(verbose || debug);
 		environment.setDebug(debug);
 		environment.setAutoImports(autoImports);
@@ -688,17 +685,19 @@ public class Launcher {
 		environment.setTabulationSize(tabulationSize);
 		environment.useTabulations(useTabulations);
 		environment.useSourceCodeFragments(useSourceCodeFragments);
+        JavaOutputProcessor printer = createOutputWriter(sourceOutputDir, environment);
+      		environment.setDefaultFileGenerator(printer);
 	}
 
-	public JavaOutputProcessor createOutputWriter(File sourceOutputDir) {
-		return new JavaOutputProcessor(sourceOutputDir, createPrettyPrinter());
+	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
+		return new JavaOutputProcessor(sourceOutputDir, createPrettyPrinter(environment));
 	}
 
-	public PrettyPrinter createPrettyPrinter() {
-		if (factory.getEnvironment().isUsingSourceCodeFragments()) {
-			return new FragmentDrivenJavaPrettyPrinter(factory.getEnvironment());
+	public PrettyPrinter createPrettyPrinter(Environment environment) {
+		if (environment.isUsingSourceCodeFragments()) {
+			return new FragmentDrivenJavaPrettyPrinter(environment);
 		} else {
-			return new DefaultJavaPrettyPrinter(factory.getEnvironment());
+			return new DefaultJavaPrettyPrinter(environment);
 		}
 	}
 
