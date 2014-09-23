@@ -19,6 +19,7 @@ package spoon.support.compiler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +33,6 @@ public class FileSystemFolder implements SpoonFolder {
 
 	File file;
 
-	List<SpoonFile> files;
-
-	List<SpoonFolder> subFolders;
 
 	public FileSystemFolder(File file) {
 		super();
@@ -52,12 +50,11 @@ public class FileSystemFolder implements SpoonFolder {
 	}
 
 	public List<SpoonFile> getFiles() {
-		if (files == null) {
-			files = new ArrayList<SpoonFile>();
-			for (File f : file.listFiles()) {
-				if (SpoonResourceHelper.isFile(f))
-					files.add(new FileSystemFile(f));
-			}
+		List<SpoonFile> files;
+		files = new ArrayList<SpoonFile>();
+		for (File f : file.listFiles()) {
+			if (SpoonResourceHelper.isFile(f))
+				files.add(new FileSystemFile(f));
 		}
 		return files;
 	}
@@ -76,16 +73,15 @@ public class FileSystemFolder implements SpoonFolder {
 	}
 
 	public List<SpoonFolder> getSubFolders() {
-		if (subFolders == null) {
-			subFolders = new ArrayList<SpoonFolder>();
-			for (File f : file.listFiles()) {
-				if (!SpoonResourceHelper.isFile(f))
-					try {
-						subFolders.add(SpoonResourceHelper.createFolder(f));
-					} catch (FileNotFoundException e) {
-						Launcher.logger.error(e.getMessage(), e);
-					}
-			}
+		List<SpoonFolder> subFolders;
+		subFolders = new ArrayList<SpoonFolder>();
+		for (File f : file.listFiles()) {
+			if (!SpoonResourceHelper.isFile(f))
+				try {
+					subFolders.add(SpoonResourceHelper.createFolder(f));
+				} catch (FileNotFoundException e) {
+					Launcher.logger.error(e.getMessage(), e);
+				}
 		}
 		return subFolders;
 	}
@@ -130,7 +126,11 @@ public class FileSystemFolder implements SpoonFolder {
 
 	@Override
 	public File toFile() {
-		return file;
+		try {
+			return file.getCanonicalFile();
+		} catch (IOException e) {
+			throw new SpoonException(e);
+		}
 	}
 
 	@Override
@@ -141,6 +141,16 @@ public class FileSystemFolder implements SpoonFolder {
 	@Override
 	public int hashCode() {
 		return toString().hashCode();
+	}
+
+	@Override
+	public void addFile(SpoonFile source) {
+		throw new UnsupportedOperationException("not possible a real folder");
+	}
+
+	@Override
+	public void addFolder(SpoonFolder source) {
+		throw new UnsupportedOperationException("not possible a real folder");
 	}
 	
 }

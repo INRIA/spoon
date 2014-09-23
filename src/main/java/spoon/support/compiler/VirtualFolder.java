@@ -19,86 +19,80 @@ package spoon.support.compiler;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 
 public class VirtualFolder implements SpoonFolder {
-	List<SpoonFile> files = new ArrayList<SpoonFile>();
+	final private Set<SpoonFile> files = new HashSet<SpoonFile>();
+	final private Set<SpoonFolder> folders = new HashSet<SpoonFolder>();
 
-	List<SpoonFolder> folders = new ArrayList<SpoonFolder>();
-
-	List<String> rootJavaPaths = new ArrayList<>();
-	
-	public List<String> getRootJavaPaths() {
-		return rootJavaPaths;
+	@Override	
+	public void addFile(SpoonFile o) {
+		files.add(o);
 	}
 
-	private void addRootJavaPath(String path) {
-		if(!rootJavaPaths.contains(path)) {
-			rootJavaPaths.add(path);
-		}
-	}
-	
-	public boolean addFile(SpoonFile o) {
-		if(o.isJava()) {
-			addRootJavaPath(o.getPath());
-		} else {
-			addRootJavaPath(o.getFileSystemParent().getPath());
-		}
-		return files.add(o);
+	@Override	
+	public void addFolder(SpoonFolder o) {
+		folders.add(o);
 	}
 
-	public boolean addFolder(SpoonFolder o) {
-		if(o.isArchive()) {
-			addRootJavaPath(o.getFileSystemParent().getPath());
-		} else {
-			addRootJavaPath(o.getPath());
-		}
-		return folders.add(o);
-	}
-
+	@Override	
 	public List<SpoonFile> getAllFiles() {
-		List<SpoonFile> files = new ArrayList<SpoonFile>(getFiles());
-
+		List<SpoonFile> result = new ArrayList<SpoonFile>();
 		for (SpoonFolder f : folders)
-			files.addAll(f.getAllJavaFiles());
-		return files;
+			result.addAll(f.getAllFiles());
+		
+		for (SpoonFile f: getFiles()) {
+			// we take care not to add a file that was already found in a folder
+			if (!result.contains(f)) {
+				result.add(f);
+			}
+		}
+		return result;
 	}
 
+	@Override	
 	public List<SpoonFile> getAllJavaFiles() {
-		List<SpoonFile> files = new ArrayList<SpoonFile>();
+		List<SpoonFile> result = new ArrayList<SpoonFile>();
 
-		for (SpoonFile f : getFiles())
+		for (SpoonFile f : getAllFiles())
 			if (f.isJava())
-				files.add(f);
-
-		for (SpoonFolder fol : folders)
-			files.addAll(fol.getAllJavaFiles());
-		return files;
+				result.add(f);
+		
+		return result;
 	}
 
+	@Override	
 	public List<SpoonFile> getFiles() {
-		return files;
+		return Collections.unmodifiableList(new ArrayList<SpoonFile>(files));
 	}
 
+	@Override	
 	public String getName() {
 		return "Virtual directory";
 	}
 
+	@Override	
 	public SpoonFolder getParent() {
 		return null;
 	}
 
+	@Override	
 	public List<SpoonFolder> getSubFolders() {
-		return folders;
+		return Collections.unmodifiableList(new ArrayList<SpoonFolder>(folders));
 	}
 
+	@Override	
 	public boolean isFile() {
 		return false;
 	}
 
+	@Override	
 	public String getPath() {
 		// it has to be real path for snippet building
 		return ".";
@@ -119,4 +113,9 @@ public class VirtualFolder implements SpoonFolder {
 		return null;
 	}
 	
+	@Override
+	public String toString() {
+		return "<virtual folder>: "+super.toString();
+	}
+		
 }

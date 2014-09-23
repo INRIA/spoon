@@ -44,4 +44,10 @@ public interface SpoonFolder extends SpoonResource {
 	 */
 	List<SpoonFolder> getSubFolders();
 
+	/** Adds a file in this folder */
+	void addFile(SpoonFile source);
+
+	/** Adds a sub folder in this folder */
+	void addFolder(SpoonFolder source);
+
 }

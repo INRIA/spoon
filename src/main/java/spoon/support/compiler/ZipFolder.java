@@ -29,9 +29,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import spoon.Launcher;
-import spoon.compiler.SpoonResourceHelper;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.compiler.SpoonResourceHelper;
 
 public class ZipFolder implements SpoonFolder {
 
@@ -157,6 +157,16 @@ public class ZipFolder implements SpoonFolder {
 	@Override
 	public int hashCode() {
 		return toString().hashCode();
+	}
+
+	@Override
+	public void addFile(SpoonFile source) {
+		throw new UnsupportedOperationException("not possible a real folder");
+	}
+
+	@Override
+	public void addFolder(SpoonFolder source) {
+		throw new UnsupportedOperationException("not possible a real folder");
 	}
 
 }

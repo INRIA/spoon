@@ -20,13 +20,15 @@ package spoon.support.compiler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import spoon.Launcher;
-import spoon.compiler.SpoonResource;
-import spoon.compiler.SpoonResourceHelper;
+import spoon.SpoonException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.compiler.SpoonResource;
+import spoon.compiler.SpoonResourceHelper;
 
 public class FileSystemFile implements SpoonFile {
 
@@ -93,7 +95,11 @@ public class FileSystemFile implements SpoonFile {
 
 	@Override
 	public File toFile() {
-		return file;
+		try {
+		return file.getCanonicalFile();
+		} catch (IOException e) {
+			throw new SpoonException(e);
+		}
 	}
 
 	@Override
