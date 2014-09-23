@@ -93,9 +93,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public void setDestinationDirectory(File desinationDirectory)
+	public void setDestinationDirectory(File destinationDirectory)
 			throws IOException {
-		this.destinationDirectory = desinationDirectory;
+		this.destinationDirectory = destinationDirectory;
 	}
 
 	public JDTBasedSpoonCompiler(Factory factory, PrintWriter outWriter,

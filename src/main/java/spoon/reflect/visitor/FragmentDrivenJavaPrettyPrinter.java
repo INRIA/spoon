@@ -14,7 +14,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * This pretty printer is used when Spoon is use with the "fragments" mode. This
  * pretty printer simply prints out the original source code of the compilation
  * unit and replaces some fragments of code as defined by the
- * {@link CompilationUnit#getSourceCodeFraments()} method.
+ * {@link CompilationUnit#getSourceCodeFragments()} method.
  */
 
 public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
@@ -36,8 +36,8 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 		StringBuffer sb = new StringBuffer();
 		sb.append(compilationUnit.getOriginalSourceCode());
 		List<SourceCodeFragment> fragments = new ArrayList<SourceCodeFragment>();
-		if (compilationUnit.getSourceCodeFraments() != null) {
-			for (SourceCodeFragment f : compilationUnit.getSourceCodeFraments()) {
+		if (compilationUnit.getSourceCodeFragments() != null) {
+			for (SourceCodeFragment f : compilationUnit.getSourceCodeFragments()) {
 				fragments.add(new SourceCodeFragment(f.position, f.code,
 						f.replacementLength));
 			}
