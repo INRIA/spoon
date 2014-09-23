@@ -164,7 +164,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	protected boolean buildSources() throws Exception {
-		if (sources.getRootJavaPaths().isEmpty())
+		if (sources.getAllJavaFiles().isEmpty())
 			return true;
 		initInputClassLoader();
 		// long t=System.currentTimeMillis();
@@ -208,7 +208,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// // within archives
 		// paths.add(file.getFileSystemParent().getPath());
 		// }
-		args.addAll(sources.getRootJavaPaths());
+		args.addAll(toStringList(sources.getAllJavaFiles()));
 
 		getFactory().getEnvironment().debugMessage("build args: " + args);
 
@@ -216,7 +216,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			batchCompiler.configure(args.toArray(new String[0]));
 		} catch (Exception e) {
 			System.err.println("build args: " + args);
-			System.err.println("sources: " + sources.getRootJavaPaths());
+			System.err.println("sources: " + sources.getAllFiles());
 			throw e;
 		}
 		List<SpoonFile> filesToBuild = sources.getAllJavaFiles();
@@ -240,6 +240,15 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 
 		return probs.size() == 0;
+	}
+
+	private Collection<? extends String> toStringList(
+			List<SpoonFile> files) {
+		List<String> res = new ArrayList<String>();
+		for (SpoonFile f : files) {
+			res.add(f.toString());
+		}
+		return res;
 	}
 
 	protected String computeJdtClassPath() {
@@ -280,7 +289,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	protected boolean buildTemplates() throws Exception {
-		if (templates.getRootJavaPaths().isEmpty())
+		if (templates.getAllJavaFiles().isEmpty())
 			return true;
 		JDTBatchCompiler batchCompiler = createBatchCompiler();
 		List<String> args = new ArrayList<String>();
@@ -328,7 +337,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 					f = createTmpJavaFile(file.getFileSystemParent());
 				}
 			}
-			args.addAll(templates.getRootJavaPaths());
+			args.addAll(toStringList(templates.getAllJavaFiles()));
 		} else {
 			// when no class path is defined, we are probably in test and we try
 			// to get as much source as we can compiled
@@ -408,9 +417,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	private boolean build = false;
 
-	VirtualFolder sources = new VirtualFolder();
+	SpoonFolder sources = new VirtualFolder();
 
-	VirtualFolder templates = new VirtualFolder();
+	SpoonFolder templates = new VirtualFolder();
 
 	@Override
 	public void addInputSources(List<SpoonResource> resources) {
@@ -524,11 +533,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		return files;
 	}
 
-	public VirtualFolder getSource() {
+	public SpoonFolder getSource() {
 		return sources;
 	}
 
-	public VirtualFolder getTemplates() {
+	public SpoonFolder getTemplates() {
 		return templates;
 	}
 
@@ -630,7 +639,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			args.add(getOutputDirectory().getAbsolutePath());
 
 		} else {
-			args.addAll(sources.getRootJavaPaths());
+			args.addAll(toStringList(sources.getAllJavaFiles()));
 		}
 
 		getFactory().getEnvironment().debugMessage("compile args: " + args);
@@ -863,7 +872,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// }
 		// args.addAll(paths);
 
-		args.addAll(sources.getRootJavaPaths());
+		args.addAll(toStringList(sources.getAllJavaFiles()));
 
 		// configure(args.toArray(new String[0]));
 

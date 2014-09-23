@@ -43,7 +43,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	@Override
 	protected boolean buildSources() throws Exception {
-		if (sources.getRootJavaPaths().isEmpty())
+		if (sources.getAllJavaFiles().isEmpty())
 			return true;
 		// long t=System.currentTimeMillis();
 		// Build input
@@ -98,7 +98,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 			batchCompiler.configure(args.toArray(new String[0]));
 		} catch (Exception e) {
 			Launcher.logger.error("build args: " + args);
-			Launcher.logger.error("sources: " + sources.getRootJavaPaths());
+			Launcher.logger.error("sources: " + sources.getAllJavaFiles());
 			Launcher.logger.error(e.getMessage(), e);
 			throw e;
 		}
