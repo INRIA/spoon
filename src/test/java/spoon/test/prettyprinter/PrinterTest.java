@@ -22,7 +22,7 @@ public class PrinterTest {
 				factory,
 				SpoonResourceHelper
 						.resources(
-								"./src/test/java/spoon/test/annotation/PersistenceProperty.java",
+								"./src/test/java/spoon/test/annotation/testclasses/PersistenceProperty.java",
 								"./src/test/java/spoon/test/prettyprinter/Validation.java"))
 				.build();
 	}

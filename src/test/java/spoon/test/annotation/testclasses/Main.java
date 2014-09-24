@@ -1,6 +1,11 @@
-package spoon.test.annotation;
+package spoon.test.annotation.testclasses;
 
+@TestAnnotation
 public class Main {
+
+	@TestAnnotation
+	public Main()
+	{ }
 
 	public void m(@Bound(max = 8) int a) {
 	} 
@@ -10,7 +15,7 @@ public class Main {
 		string="Hello World!", strings={"Hello","World"},
 		clazz=Integer.class, classes={Integer.class, String.class},
 		b=true, byt=42, c='c', s=(short)42, l=42, f=3.14f, d=3.14159,
-		e=AnnotParamTypeEnum.G)
+		e=AnnotParamTypeEnum.G, ia=@InnerAnnot("dd"))
 	public void m1() {}
 	
 	final public static int INTEGER = 42;
@@ -30,6 +35,12 @@ public class Main {
 		string=STRING, strings={STRING1,STRING2},
 		clazz=Integer.class, classes={Integer.class, String.class},
 		b=BOOLEAN, byt=BYTE, c=CHAR, s=SHORT, l=LONG, f=FLOAT, d=DOUBLE,
-		e=AnnotParamTypeEnum.G)
+		e=AnnotParamTypeEnum.G, ia=@InnerAnnot("dd"))
 	public void m2() {}
+
+	@Override
+	public String toString()
+	{
+		return super.toString();
+	}
 }

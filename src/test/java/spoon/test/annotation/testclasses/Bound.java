@@ -1,9 +1,9 @@
-package spoon.test.annotation;
+package spoon.test.annotation.testclasses;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 public @interface Bound {
-    int max() default 10;
+	int max() default 10;
 }
