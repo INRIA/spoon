@@ -12,11 +12,30 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.factory.Factory;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.compiler.FileSystemFolder;
 
 public class APITest {
 
+	@Test
+	public void testBasicAPIUsage() throws Exception {
+		// this test shows a basic usage of the Launcher API without command line
+		// and asserts there is no exception
+		Launcher spoon = new Launcher();
+		spoon.addInputResource(new FileSystemFolder(new File("src/test/resources/spoon/test/api")));
+		spoon.run();
+		Factory factory = spoon.getFactory();
+		for(CtPackage p : factory.Package().getAll()) {
+			System.out.println("package: "+p.getQualifiedName());
+		}
+		for(CtSimpleType s : factory.Class().getAll()) {
+			System.out.println("class: "+s.getQualifiedName());
+		}
+	}
+	
 	@Test
 	public void testOverrideOutputWriter() throws Exception {
 		// this test that we can correctly set the Java output processor

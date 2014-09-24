@@ -610,6 +610,11 @@ public class Launcher {
 	public Factory createFactory() {
 		return createFactory(new StandardEnvironment());
 	}
+	
+	/** returns the current factory */
+	public Factory getFactory() {
+		return factory;
+	}
 
 	/**
 	 * Creates a default factory with the given environment.
