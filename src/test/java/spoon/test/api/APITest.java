@@ -80,7 +80,7 @@ public class APITest {
 			spoon.setArgs(new String[] {
 					"-i",
 					// note the nasty ./
-					duplicateEntry+":"+"./"+duplicateEntry,
+					duplicateEntry + File.pathSeparator + "./"+duplicateEntry,
 					"-o", "target/spooned-apitest" });
 			spoon.run();
 		} catch (IllegalArgumentException e) // from JDT
@@ -98,7 +98,7 @@ public class APITest {
 			String duplicateEntry = "src/test/resources/spoon/test/api/";
 			spoon.setArgs(new String[] {
 					"-i",
-					duplicateEntry+":"+"./"+duplicateEntry,
+					duplicateEntry+ File.pathSeparator +"./"+duplicateEntry,
 					"-o", "target/spooned-apitest" });
 			spoon.run();
 		} catch (IllegalArgumentException e) // from JDT
@@ -114,7 +114,7 @@ public class APITest {
 			Launcher spoon = new Launcher();
 			spoon.setArgs(new String[] {
 					"-i",
-					"src/test/resources/spoon/test/api/"+":"+"src/test/resources/spoon/test/api/Foo.java",
+					"src/test/resources/spoon/test/api/" + File.pathSeparator + "src/test/resources/spoon/test/api/Foo.java",
 					"-o", "target/spooned-apitest" });
 			spoon.run();
 		} catch (IllegalArgumentException e) // from JDT
