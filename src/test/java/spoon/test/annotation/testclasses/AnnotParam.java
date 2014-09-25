@@ -1,4 +1,4 @@
-package spoon.test.annotation;
+package spoon.test.annotation.testclasses;
 
 
 public class AnnotParam {

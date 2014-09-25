@@ -1,4 +1,4 @@
-package spoon.test.annotation;
+package spoon.test.annotation.testclasses;
 
 public @interface AnnotParamTypes {
 
@@ -20,6 +20,5 @@ public @interface AnnotParamTypes {
 	double d();
 	
 	AnnotParamTypeEnum e();
+	InnerAnnot ia();
 }
-
-enum AnnotParamTypeEnum { R,G,B; }

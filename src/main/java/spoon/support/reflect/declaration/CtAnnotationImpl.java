@@ -34,11 +34,19 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -46,7 +54,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotation}.
- * 
+ *
  * @author Renaud Pawlak
  */
 public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
@@ -324,5 +332,56 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 		for (Entry<String, Object> e : values.entrySet()) {
 			this.elementValues.put(e.getKey(), e.getValue());
 		}
+	}
+
+	@Override
+	public CtElement getAnnotatedElement()
+	{
+		return this.getParent();
+	}
+
+	@Override
+	public CtAnnotatedElementType getAnnotatedElementType()
+	{
+		CtElement annotatedElement = this.getAnnotatedElement();
+
+		if (annotatedElement == null)
+		{
+			return null;
+		}
+
+		if (annotatedElement instanceof CtMethod)
+		{
+			return CtAnnotatedElementType.METHOD;
+		}
+		if (annotatedElement instanceof CtType)
+		{
+			return CtAnnotatedElementType.TYPE;
+		}
+		if (annotatedElement instanceof CtField)
+		{
+			return CtAnnotatedElementType.FIELD;
+		}
+		if (annotatedElement instanceof CtConstructor)
+		{
+			return CtAnnotatedElementType.CONSTRUCTOR;
+		}
+		if (annotatedElement instanceof CtParameter)
+		{
+			return CtAnnotatedElementType.PARAMETER;
+		}
+		if (annotatedElement instanceof CtLocalVariable)
+		{
+			return CtAnnotatedElementType.LOCAL_VARIABLE;
+		}
+		if (annotatedElement instanceof CtPackage)
+		{
+			return CtAnnotatedElementType.PACKAGE;
+		}
+		if (annotatedElement instanceof CtAnnotation || annotatedElement instanceof CtAnnotationType)
+		{
+			return CtAnnotatedElementType.ANNOTATION_TYPE;
+		}
+		return null;
 	}
 }

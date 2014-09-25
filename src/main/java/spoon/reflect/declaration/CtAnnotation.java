@@ -92,4 +92,17 @@ public interface CtAnnotation<A extends Annotation> extends CtElement {
 	 */
 	void setElementValues(Map<String, Object> values);
 
+	/**
+	 * Returns the element which is annotated by this annotation.
+	 *
+	 * @return annotated {@link spoon.reflect.declaration.CtElement}
+	 */
+	CtElement getAnnotatedElement();
+
+	/**
+	 * Returns the type of the element which is annotated by this annotation.
+	 *
+	 * @return {@link spoon.reflect.declaration.CtAnnotatedElementType}
+	 */
+	CtAnnotatedElementType getAnnotatedElementType();
 }
