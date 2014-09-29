@@ -17,16 +17,11 @@
 
 package spoon.support.reflect.reference;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -136,45 +131,20 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 	
 	/**
-	 * Helps find the class requested in {@link #getActualClass()}.
-	 * Firstly, it tries to find the class in {@link Thread.currentThread().getContextClassLoader()}.
-	 * If it is not found, then the source class path is inspected to try to find the
-	 * binary definition of the target class. If still missing, a RuntimeException is thrown.
+	 * Finds the class requested in {@link #getActualClass()}, using the
+	 * {@code ClassLoader} of the {@code Environment}
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
-		URLClassLoader loader = new URLClassLoader(classpath(), Thread.currentThread().getContextClassLoader());
 		try {
-			return (Class<T>) loader.loadClass(getQualifiedName());
+			return  (Class<T>)  getFactory().getEnvironment().getClassLoader().loadClass(getQualifiedName());
 		} catch (ClassNotFoundException cnfe) {
 			throw new SpoonException("cannot load class: "
 					+ getQualifiedName() + " with class loader "
 					+ Thread.currentThread().getContextClassLoader(), cnfe);
-		} finally {
-			try {
-				loader.close();
-			}
-			catch (IOException ioe) {}
 		}
 	}
 	
-	/**
-	 * Creates a URL class path from {@link Environment.getSourceClasspath()} 
-	 */
-	protected URL[] classpath() {
-		String[] classpath = getFactory().getEnvironment().getSourceClasspath();
-		int length = (classpath == null) ? 0 : classpath.length;
-		URL[] urls = new URL[length];
-		for (int i = 0; i < length; i += 1) {
-			try {
-				urls[i] = new File(classpath[i]).toURI().toURL();
-			} catch (MalformedURLException e) {
-				throw new IllegalStateException("Invalid classpath: " + classpath, e);
-			}
-		}
-		return urls;
-	}
-
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return actualTypeArguments;
 	}
