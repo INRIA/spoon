@@ -12,10 +12,12 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
@@ -93,5 +95,58 @@ public class TypeReferenceTest {
 		// we can get the actual class from the reference, because it is loaded from the class path
 		Class referencedClass = referencedType.getActualClass();
 		assertEquals(referencedQualifiedName, referencedClass.getName());
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked"})
+	@Test
+	public void doNotCloseLoader() throws Exception {
+		
+		/* Given the following scenario:
+		 * 	- ClassA has a field of ClassB.
+		 *	- ClassB has a field of ClassC.
+		 * 	- Spoon only models ClassA.
+		 * 
+		 * We want to get the field of ClassB, which should be accessible because
+		 * the definitions of ClassB and ClassC were provided in the class path.
+		 */
+		
+		SpoonCompiler comp = new Launcher().createCompiler();
+		Factory factory = comp.getFactory();
+
+		String qualifiedName = "spoontest.a.ClassA";
+		String referenceQualifiedName = "spoontest.b.ClassB";
+		
+		// we only create the model for ClassA
+		List<SpoonResource> fileToBeSpooned = SpoonResourceHelper.resources("./src/test/resources/reference-test-2/" + qualifiedName.replace('.', '/') + ".java");
+		comp.addInputSources(fileToBeSpooned);
+		assertEquals(1, fileToBeSpooned.size()); // for ClassA
+
+		// Spoon requires the binary version of dependencies
+		List<SpoonResource> classpath = SpoonResourceHelper.resources("./src/test/resources/reference-test-2/ReferenceTest2.jar");
+		String[] dependencyClasspath = new String[] { classpath.get(0).getPath() };
+		
+		factory.getEnvironment().setSourceClasspath(dependencyClasspath);
+		assertEquals(1, classpath.size());
+
+		// now we can build the model
+		comp.build();
+
+		// we can get the model of ClassA
+		CtSimpleType<?> theClass = factory.Type().get(qualifiedName);
+
+		// we get ClassA's field of type ClassB
+		List<CtField<?>> fields = theClass.getFields();
+		assertEquals(1, fields.size());
+		
+		CtField<?> bField = fields.get(0);
+		CtTypeReference referencedType = bField.getType();
+		assertEquals(referenceQualifiedName, referencedType.getQualifiedName());
+		
+		// we get ClassB's field of type ClassC
+		Collection<CtFieldReference<?>> fieldsOfB = referencedType.getAllFields();
+		assertEquals(1, fieldsOfB.size());
+		
+		CtFieldReference<?> cField = fieldsOfB.iterator().next();
+		assertEquals("spoontest.c.ClassC", cField.getType().getQualifiedName());
 	}
 }

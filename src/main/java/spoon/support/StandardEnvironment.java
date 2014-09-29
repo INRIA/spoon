@@ -23,6 +23,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -85,6 +88,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private File xmlRootFolder;
 
 	private String[] sourceClasspath = null;
+	
+	private URLClassLoader classLoader = null;
 
 	private boolean preserveLineNumbers = false;
 
@@ -383,13 +388,41 @@ public class StandardEnvironment implements Serializable, Environment {
 		return ".";
 	}
 
+	@Override
+	public ClassLoader getClassLoader() {
+		if (classLoader == null) {
+			classLoader = new URLClassLoader(urlClasspath(), Thread.currentThread().getContextClassLoader());
+		}
+		return classLoader;
+	}
+	
+	/**
+	 * Creates a URL class path from {@link getSourceClasspath()} 
+	 */
+	public URL[] urlClasspath() {
+		String[] classpath = getSourceClasspath();
+		int length = (classpath == null) ? 0 : classpath.length;
+		URL[] urls = new URL[length];
+		for (int i = 0; i < length; i += 1) {
+			try {
+				urls[i] = new File(classpath[i]).toURI().toURL();
+			} catch (MalformedURLException e) {
+				throw new IllegalStateException("Invalid classpath: " + classpath, e);
+			}
+		}
+		return urls;
+	}
+	
+	@Override
 	public String[] getSourceClasspath() {
 		return sourceClasspath;
 	}
 
+	@Override
 	public void setSourceClasspath(String[] sourceClasspath) {
 		verifySourceClasspath(sourceClasspath);
-		this.sourceClasspath = sourceClasspath ;
+		this.sourceClasspath = sourceClasspath;
+		this.classLoader = null;
 	}
 	
 	private void verifySourceClasspath(String[] sourceClasspath) throws InvalidClassPathException {
@@ -413,11 +446,13 @@ public class StandardEnvironment implements Serializable, Environment {
 			}
 		}
 	}
-
+	
+	@Override
 	public int getErrorCount() {
 		return errorCount;
 	}
 
+	@Override
 	public int getWarningCount() {
 		return warningCount;
 	}

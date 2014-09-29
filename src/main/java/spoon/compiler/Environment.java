@@ -278,4 +278,10 @@ public interface Environment {
 	 * {@link #getSourceClasspath()}.
 	 */
 	void setSourceClasspath(String[] sourceClasspath);
+	
+	/**
+	 * Returns a {@code ClassLoader} which is able to load classes from the
+	 * class path returned by {@link getSourceClassPath()} 
+	 */
+	ClassLoader getClassLoader();
 }
