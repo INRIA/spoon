@@ -44,9 +44,29 @@
     </mailingList>
   </mailingLists>
 
+  <!-- to generate the list for the README -->
+  <!-- xmlstarlet sel -t -m "//_:developer/_:name" -o "* " -v . -n  pom.xml -->
   <developers>
     <developer>
+      <name>Olivier Barais</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>David Bernard</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
       <name>Benoit Cornu</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Didier Donsez</name>
       <roles>
         <role>Contributor</role>
       </roles>
@@ -59,6 +79,12 @@
     </developer>
     <developer>
       <name>Christophe Dufour</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Sebastian Lamelas Marcote</name>
       <roles>
         <role>Contributor</role>
       </roles>
@@ -88,6 +114,12 @@
       </roles>
     </developer>
     <developer>
+      <name>Nicolas Pessemier</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
       <name>Nicolas Petitprez</name>
       <roles>
         <role>Contributor</role>
@@ -95,6 +127,12 @@
     </developer>
     <developer>
       <name>Lionel Seinturier</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Stefan Wolf</name>
       <roles>
         <role>Contributor</role>
       </roles>
