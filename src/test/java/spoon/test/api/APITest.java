@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,7 +122,7 @@ public class APITest {
 		}
 	}
 	
-	@Test(expected=FileNotFoundException.class)
+	@Test(expected=Exception.class)
 	public void testNotValidInput() throws Exception {
 		Launcher spoon = new Launcher();
 		String invalidEntry = "does/not/exists//Foo.java";
