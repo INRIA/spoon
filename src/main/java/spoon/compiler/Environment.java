@@ -284,4 +284,11 @@ public interface Environment {
 	 * class path returned by {@link getSourceClassPath()} 
 	 */
 	ClassLoader getClassLoader();
+
+	/** Sets the option noclasspath */
+	public void setNoClasspath(boolean option);
+	
+	/** Returns the value ot the option noclasspath */
+	public boolean getNoClasspath();
+
 }
