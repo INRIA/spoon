@@ -157,8 +157,6 @@ public class Launcher {
 	 * Defines the common arguments for sub-launchers.
 	 * 
 	 * @return the JSAP arguments
-	 * @throws JSAPException
-	 *             when the creation fails
 	 */
 	protected JSAP defineArgs() {
 		try {
@@ -376,7 +374,7 @@ public class Launcher {
 	
 			return jsap;
 		} catch (JSAPException e) {
-			throw new SpoonException(e.getMessage());
+			throw new SpoonException(e.getMessage(),e);
 		}
 	}
 

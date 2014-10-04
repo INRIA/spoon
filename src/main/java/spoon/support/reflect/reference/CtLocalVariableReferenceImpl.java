@@ -17,8 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.reflect.AnnotatedElement;
-
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -43,12 +41,6 @@ public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T>
 
 	public void setDeclaration(CtLocalVariable<T> declaration) {
 		this.declaration = declaration;
-	}
-
-	@Override
-	protected AnnotatedElement getActualAnnotatedElement() {
-		// this is never available through reflection
-		return null;
 	}
 	
 }

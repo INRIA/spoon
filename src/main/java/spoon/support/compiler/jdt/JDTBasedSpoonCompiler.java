@@ -495,7 +495,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
 		srcSuccess = buildSources();
+		
 		reportProblems(factory.getEnvironment());
+		
 		factory.getEnvironment().debugMessage(
 				"built in " + (System.currentTimeMillis() - t) + " ms");
 		factory.getEnvironment().debugMessage(
@@ -520,13 +522,18 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 				+ problem.getSourceLineNumber();
 		
 		if (problem.isError()) {
-			throw new ModelBuildingException(message);
+			if (!environment.getNoClasspath()) {
+				// by default, compilation errors are notified as exception
+				throw new ModelBuildingException(message);
+			} else {
+				// in noclasspath mode, errors are only reported
+				environment.report(
+						null,
+						problem.isError()?Severity.ERROR:Severity.WARNING,
+						message);
+			}
 		}
 
-		environment.report(
-				null,
-				problem.isWarning()?Severity.WARNING:Severity.MESSAGE,
-				message);
 	}
 
 	public void reportProblems(Environment environment) {
