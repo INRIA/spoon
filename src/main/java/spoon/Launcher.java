@@ -376,7 +376,7 @@ public class Launcher {
 	
 			return jsap;
 		} catch (JSAPException e) {
-			throw new SpoonException(e.getMessage());
+			throw new SpoonException(e.getMessage(),e);
 		}
 	}
 

@@ -17,6 +17,7 @@
 
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -24,6 +25,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.visitor.CtVisitor;
 
 public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 		implements CtVariableReference<T> {
@@ -59,6 +61,22 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 			return v.getModifiers();
 		}
 		return new TreeSet<ModifierKind>();
+	}
+
+	@Override
+	protected AnnotatedElement getActualAnnotatedElement() {
+		// this is never available through reflection
+		return null;
+	}
+
+	@Override
+	public void accept(CtVisitor visitor) {
+		// nothing
+	}
+
+	@Override
+	public CtVariable<T> getDeclaration() {
+		return null;
 	}
 
 }
