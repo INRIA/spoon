@@ -344,6 +344,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 	}
 
+	private String createTypeName(char[][] typeName){
+		String s="";
+		for (int i = 0; i < typeName.length - 1; i++) {
+			s+=new String(typeName[i])+".";
+		}
+		s+=new String(typeName[typeName.length - 1]);
+		return s;
+	}
+	
 	public class ReferenceBuilder {
 
 		Map<String, CtTypeReference<?>> basestypes = new TreeMap<String, CtTypeReference<?>>();
@@ -363,8 +372,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		public <T> CtExecutableReference<T> getExecutableReference(
 				MethodBinding exec) {
 			if (exec == null) {
-				logger.error("null method binding");
-				return null;
+				return null; 
 			}
 			CtExecutableReference<T> ref = factory.Core()
 					.createExecutableReference();
@@ -397,6 +405,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// Map<TypeBinding, CtTypeReference<?>> bindingCache = new
 		// HashMap<TypeBinding, CtTypeReference<?>>();
 
+		@SuppressWarnings("unchecked")
+		public <T> CtTypeReference<T> getTypeReference(TypeBinding binding, TypeReference ref) {
+			CtTypeReference<T> ctRef = getTypeReference(binding);
+			if (ctRef != null) {
+				return ctRef;
+			}
+			ctRef = factory.Core().createTypeReference();
+			ctRef.setSimpleName(new String(createTypeName(ref.getTypeName())));
+			return ctRef;
+		}
+		
 		@SuppressWarnings("unchecked")
 		public <T> CtTypeReference<T> getTypeReference(TypeBinding binding) {
 			if (binding == null)
@@ -600,7 +619,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					return ref;
 				}
 			} else {
-				logger.error("unknow VariableBinding " + varbin);
+				// unknow VariableBinding, the caller must do something
 				return null;
 			}
 		}
@@ -1364,8 +1383,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		c.setExecutable(references
 				.getExecutableReference(allocationExpression.binding));
 		if (c.getExecutable() == null) {
-			logger.error("null executable ref at "
-					+ context.createSourcePosition(allocationExpression));
+			// "null executable ref 
 		} else {
 			c.getExecutable().setType(
 					(CtTypeReference<Object>) c.getExecutable()
@@ -1941,16 +1959,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(MessageSend messageSend, BlockScope scope) {
-		if (messageSend.actualReceiverType == null) {
-			logger.error("unconsistent message send at "
-					+ context.createSourcePosition(messageSend));
-		}
 		if (messageSend.actualReceiverType == null
 				|| !messageSend.actualReceiverType.isAnnotationType()) {
 			CtInvocation<Object> inv = factory.Core().createInvocation();
-			if (messageSend.binding != null)
+			if (messageSend.binding != null) {
 				inv.setExecutable(references
 						.getExecutableReference(messageSend.binding));
+			} else {
+				CtExecutableReference<Object> ref = factory.Core().createExecutableReference();
+				ref.setSimpleName(new String(messageSend.selector));
+				inv.setExecutable(ref);
+			}
 			// inv
 			// .setType(references
 			// .getTypeReference(messageSend.binding.returnType));
@@ -1995,7 +2014,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (methodDeclaration.thrownExceptions != null) {
 			for (TypeReference r : methodDeclaration.thrownExceptions) {
 				CtTypeReference<? extends Throwable> tr = references
-						.getTypeReference(r.resolvedType);
+						.getTypeReference(r.resolvedType, r);
 				m.addThrownType(tr);
 			}
 		}
@@ -2014,7 +2033,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			m.setDocComment(getJavaDoc(methodDeclaration.javadoc,
 					methodDeclaration.scope.referenceCompilationUnit()));
 		} else {
-			logger.error("null scope", new Exception());
+			// null scope for "+methodDeclaration
 		}
 
 		context.enter(m, methodDeclaration);
@@ -2208,8 +2227,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 					if (varRef != null) {
 						fa.setVariable(varRef);
 					}
+					if (b!=null)
 					fa.setType(references
 							.getTypeReference(b.type));
+					else {
+						// case with no complete classpath
+						CtTypeReference<Object> ref = factory.Core().createTypeReference();
+						ref.setSimpleName(new String(qualifiedNameReference.tokens[qualifiedNameReference.tokens.length-1]));
+						fa.setType(ref);
+					}
 					va.setParent(fa);
 					//set source position of va;
 					CompilationUnit cu = factory.CompilationUnit().create(

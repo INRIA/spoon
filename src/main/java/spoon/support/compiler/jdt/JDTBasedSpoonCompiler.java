@@ -478,7 +478,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
 		srcSuccess = buildSources();
-		reportProblems(factory.getEnvironment());
+		
+		// if spoon works in noclasspath mode, don't show the errors
+		if(!factory.getEnvironment().getNoClasspath()) {
+		  reportProblems(factory.getEnvironment());
+		}
+		
 		factory.getEnvironment().debugMessage(
 				"built in " + (System.currentTimeMillis() - t) + " ms");
 		factory.getEnvironment().debugMessage(
