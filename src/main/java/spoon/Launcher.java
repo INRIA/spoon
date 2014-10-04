@@ -76,7 +76,7 @@ public class Launcher {
 
 	private Factory factory = createFactory();
 	
-	private String[] args = new String[0];
+	private String[] commandLineArgs = new String[0];
 
 	private List<SpoonResource> inputResources = new ArrayList<SpoonResource>();
 
@@ -84,7 +84,8 @@ public class Launcher {
 	 * Contains the arguments accepted by this launcher (available after
 	 * construction and accessible by sub-classes).
 	 */
-	protected JSAP jsapArgs;
+	protected JSAP jsapSpec;
+	protected JSAPResult jsapActualArgs;
 
 	private List<String> processors = new ArrayList<String>();
 
@@ -111,22 +112,24 @@ public class Launcher {
 	}
 
 	public void setArgs(String[] args2) {
-		this.args = args2;
+		this.commandLineArgs = args2;
+		processArguments();		
 	}
 
 	/**
 	 * Print the usage for this command-line launcher.
 	 */
 	public void printUsage() throws Exception {
-		this.args = new String[] { "--help" };
+		this.commandLineArgs = new String[] { "--help" };
 		run();
 	}
 
 	/**
 	 * Constructor with no arguments.
 	 */
-	public Launcher() throws JSAPException {
-		jsapArgs = defineArgs();
+	public Launcher() {
+			jsapSpec = defineArgs();
+			processArguments();
 	}
 
 	/**
@@ -157,265 +160,306 @@ public class Launcher {
 	 * @throws JSAPException
 	 *             when the creation fails
 	 */
-	protected JSAP defineArgs() throws JSAPException {
-		// Verbose output
-		JSAP jsap = new JSAP();
-
-		// help
-		Switch sw1 = new Switch("help");
-		sw1.setShortFlag('h');
-		sw1.setLongFlag("help");
-		sw1.setDefault("false");
-		jsap.registerParameter(sw1);
-
-		// Verbose
-		sw1 = new Switch("verbose");
-		sw1.setShortFlag('v');
-		sw1.setLongFlag("verbose");
-		sw1.setDefault("false");
-		sw1.setHelp("Output messages about what the compiler is doing.");
-		jsap.registerParameter(sw1);
-
-		// Tabs
-		sw1 = new Switch("tabs");
-		sw1.setLongFlag("tabs");
-		sw1.setDefault("false");
-		sw1.setHelp("Use tabulations instead of spaces in the generated code (use spaces by default).");
-		jsap.registerParameter(sw1);
-
-		// fragments
-		sw1 = new Switch("fragments");
-		sw1.setLongFlag("fragments");
-		sw1.setShortFlag('f');
-		sw1.setDefault("false");
-		sw1.setHelp("Use source code fragments to generate source code (preserve formatting).");
-		jsap.registerParameter(sw1);
-
-		// Tab size
-		FlaggedOption opt2 = new FlaggedOption("tabsize");
-		opt2.setLongFlag("tabsize");
-		opt2.setStringParser(JSAP.INTEGER_PARSER);
-		opt2.setDefault("4");
-		opt2.setHelp("Define tabulation size.");
-		jsap.registerParameter(opt2);
-
-		// Super Verbose
-		sw1 = new Switch("debug");
-		sw1.setLongFlag("vvv");
-		sw1.setDefault("false");
-		sw1.setHelp("Generate all debugging info.");
-		jsap.registerParameter(sw1);
-
-		// Auto-import
-		sw1 = new Switch("imports");
-		sw1.setLongFlag("with-imports");
-		sw1.setDefault("false");
-		sw1.setHelp("Enable imports in generated files.");
-		jsap.registerParameter(sw1);
-
-		// java compliance
-		opt2 = new FlaggedOption("compliance");
-		opt2.setLongFlag("compliance");
-		opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6 or 7).");
-		opt2.setStringParser(JSAP.INTEGER_PARSER);
-		opt2.setDefault("7");
-		jsap.registerParameter(opt2);
-
-		// compiler's encoding
-		opt2 = new FlaggedOption("encoding");
-		opt2.setLongFlag("encoding");
-		opt2.setStringParser(JSAP.STRING_PARSER);
-		opt2.setRequired(false);
-		opt2.setHelp("Forces the compiler to use a specific encoding (UTF-8, UTF-16, ...).");
-		jsap.registerParameter(opt2);
-
-		// setting a spoonlet (packaged processors)
-		opt2 = new FlaggedOption("spoonlet");
-		opt2.setShortFlag('s');
-		opt2.setLongFlag("spoonlet");
-		opt2.setStringParser(JSAP.STRING_PARSER);
-		opt2.setRequired(false);
-		opt2.setHelp("List of spoonlet files to load.");
-		jsap.registerParameter(opt2);
-
-		// setting Input files & Directory
-		opt2 = new FlaggedOption("input");
-		opt2.setShortFlag('i');
-		opt2.setLongFlag("input");
-		opt2.setStringParser(JSAP.STRING_PARSER);
-		opt2.setRequired(false);
-		opt2.setHelp("List of path to sources files.");
-		jsap.registerParameter(opt2);
-
-		// Processor qualified name
-		opt2 = new FlaggedOption("processors");
-		opt2.setShortFlag('p');
-		opt2.setLongFlag("processors");
-		opt2.setHelp("List of processor's qualified name to be used.");
-		opt2.setStringParser(JSAP.STRING_PARSER);
-		opt2.setRequired(false);
-		jsap.registerParameter(opt2);
-
-		// setting input template
-		opt2 = new FlaggedOption("template");
-		opt2.setShortFlag('t');
-		opt2.setLongFlag("template");
-		opt2.setHelp("List of source templates.");
-		opt2.setStringParser(JSAP.STRING_PARSER);
-		opt2.setRequired(false);
-		opt2.setHelp("List of path to templates java files.");
-		jsap.registerParameter(opt2);
-
-		// Spooned output directory
-		opt2 = new FlaggedOption("output");
-		opt2.setShortFlag('o');
-		opt2.setLongFlag("output");
-		opt2.setDefault("spooned");
-		opt2.setHelp("Specify where to place generated java files.");
-		opt2.setStringParser(FileStringParser.getParser());
-		opt2.setRequired(false);
-		jsap.registerParameter(opt2);
-
-		// Location of properties files
-		opt2 = new FlaggedOption("properties");
-		opt2.setLongFlag("properties");
-		opt2.setStringParser(FileStringParser.getParser());
-		opt2.setRequired(false);
-		opt2.setHelp("Directory to search for spoon properties files.");
-		jsap.registerParameter(opt2);
-
-		// Source classpath
-		opt2 = new FlaggedOption("source-classpath");
-		opt2.setLongFlag("source-classpath");
-		opt2.setHelp("An optional classpath to be passed to the internal Java compiler when building or compiling the input sources.");
-		opt2.setStringParser(JSAP.STRING_PARSER);
-		opt2.setRequired(false);
-		jsap.registerParameter(opt2);
-
-		// Template classpath
-		opt2 = new FlaggedOption("template-classpath");
-		opt2.setLongFlag("template-classpath");
-		opt2.setHelp("An optional classpath to be passed to the internal Java compiler when building the template sources.");
-		opt2.setStringParser(JSAP.STRING_PARSER);
-		opt2.setRequired(false);
-		jsap.registerParameter(opt2);
-
-		// Destination
-		opt2 = new FlaggedOption("destination");
-		opt2.setShortFlag('d');
-		opt2.setLongFlag("destination");
-		opt2.setDefault("spooned-classes");
-		opt2.setHelp("An optional destination directory for the generated class files.");
-		opt2.setStringParser(FileStringParser.getParser());
-		opt2.setRequired(false);
-		jsap.registerParameter(opt2);
-
-		// Sets output type generation
-		opt2 = new FlaggedOption("output-type");
-		opt2.setLongFlag(opt2.getID());
-		String msg = "States how to print the processed source code: ";
-		int i = 0;
-		for (OutputType v : OutputType.values()) {
-			i++;
-			msg += v.toString();
-			if (i != OutputType.values().length) {
-				msg += "|";
+	protected JSAP defineArgs() {
+		try {
+			// Verbose output
+			JSAP jsap = new JSAP();
+	
+			// help
+			Switch sw1 = new Switch("help");
+			sw1.setShortFlag('h');
+			sw1.setLongFlag("help");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+	
+			// Verbose
+			sw1 = new Switch("verbose");
+			sw1.setShortFlag('v');
+			sw1.setLongFlag("verbose");
+			sw1.setDefault("false");
+			sw1.setHelp("Output messages about what the compiler is doing.");
+			jsap.registerParameter(sw1);
+	
+			// Tabs
+			sw1 = new Switch("tabs");
+			sw1.setLongFlag("tabs");
+			sw1.setDefault("false");
+			sw1.setHelp("Use tabulations instead of spaces in the generated code (use spaces by default).");
+			jsap.registerParameter(sw1);
+	
+			// fragments
+			sw1 = new Switch("fragments");
+			sw1.setLongFlag("fragments");
+			sw1.setShortFlag('f');
+			sw1.setDefault("false");
+			sw1.setHelp("Use source code fragments to generate source code (preserve formatting).");
+			jsap.registerParameter(sw1);
+	
+			// Tab size
+			FlaggedOption opt2 = new FlaggedOption("tabsize");
+			opt2.setLongFlag("tabsize");
+			opt2.setStringParser(JSAP.INTEGER_PARSER);
+			opt2.setDefault("4");
+			opt2.setHelp("Define tabulation size.");
+			jsap.registerParameter(opt2);
+	
+			// Super Verbose
+			sw1 = new Switch("debug");
+			sw1.setLongFlag("vvv");
+			sw1.setDefault("false");
+			sw1.setHelp("Generate all debugging info.");
+			jsap.registerParameter(sw1);
+	
+			// Auto-import
+			sw1 = new Switch("imports");
+			sw1.setLongFlag("with-imports");
+			sw1.setDefault("false");
+			sw1.setHelp("Enable imports in generated files.");
+			jsap.registerParameter(sw1);
+	
+			// java compliance
+			opt2 = new FlaggedOption("compliance");
+			opt2.setLongFlag("compliance");
+			opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6 or 7).");
+			opt2.setStringParser(JSAP.INTEGER_PARSER);
+			opt2.setDefault("7");
+			jsap.registerParameter(opt2);
+	
+			// compiler's encoding
+			opt2 = new FlaggedOption("encoding");
+			opt2.setLongFlag("encoding");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setRequired(false);
+			opt2.setHelp("Forces the compiler to use a specific encoding (UTF-8, UTF-16, ...).");
+			jsap.registerParameter(opt2);
+	
+			// setting a spoonlet (packaged processors)
+			opt2 = new FlaggedOption("spoonlet");
+			opt2.setShortFlag('s');
+			opt2.setLongFlag("spoonlet");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setRequired(false);
+			opt2.setHelp("List of spoonlet files to load.");
+			jsap.registerParameter(opt2);
+	
+			// setting Input files & Directory
+			opt2 = new FlaggedOption("input");
+			opt2.setShortFlag('i');
+			opt2.setLongFlag("input");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setRequired(false);
+			opt2.setHelp("List of path to sources files.");
+			jsap.registerParameter(opt2);
+	
+			// Processor qualified name
+			opt2 = new FlaggedOption("processors");
+			opt2.setShortFlag('p');
+			opt2.setLongFlag("processors");
+			opt2.setHelp("List of processor's qualified name to be used.");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setRequired(false);
+			jsap.registerParameter(opt2);
+	
+			// setting input template
+			opt2 = new FlaggedOption("template");
+			opt2.setShortFlag('t');
+			opt2.setLongFlag("template");
+			opt2.setHelp("List of source templates.");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setRequired(false);
+			opt2.setHelp("List of path to templates java files.");
+			jsap.registerParameter(opt2);
+	
+			// Spooned output directory
+			opt2 = new FlaggedOption("output");
+			opt2.setShortFlag('o');
+			opt2.setLongFlag("output");
+			opt2.setDefault("spooned");
+			opt2.setHelp("Specify where to place generated java files.");
+			opt2.setStringParser(FileStringParser.getParser());
+			opt2.setRequired(false);
+			jsap.registerParameter(opt2);
+	
+			// Location of properties files
+			opt2 = new FlaggedOption("properties");
+			opt2.setLongFlag("properties");
+			opt2.setStringParser(FileStringParser.getParser());
+			opt2.setRequired(false);
+			opt2.setHelp("Directory to search for spoon properties files.");
+			jsap.registerParameter(opt2);
+	
+			// Source classpath
+			opt2 = new FlaggedOption("source-classpath");
+			opt2.setLongFlag("source-classpath");
+			opt2.setHelp("An optional classpath to be passed to the internal Java compiler when building or compiling the input sources.");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setRequired(false);
+			jsap.registerParameter(opt2);
+	
+			// Template classpath
+			opt2 = new FlaggedOption("template-classpath");
+			opt2.setLongFlag("template-classpath");
+			opt2.setHelp("An optional classpath to be passed to the internal Java compiler when building the template sources.");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setRequired(false);
+			jsap.registerParameter(opt2);
+	
+			// Destination
+			opt2 = new FlaggedOption("destination");
+			opt2.setShortFlag('d');
+			opt2.setLongFlag("destination");
+			opt2.setDefault("spooned-classes");
+			opt2.setHelp("An optional destination directory for the generated class files.");
+			opt2.setStringParser(FileStringParser.getParser());
+			opt2.setRequired(false);
+			jsap.registerParameter(opt2);
+	
+			// Sets output type generation
+			opt2 = new FlaggedOption("output-type");
+			opt2.setLongFlag(opt2.getID());
+			String msg = "States how to print the processed source code: ";
+			int i = 0;
+			for (OutputType v : OutputType.values()) {
+				i++;
+				msg += v.toString();
+				if (i != OutputType.values().length) {
+					msg += "|";
+				}
 			}
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setHelp(msg);
+			opt2.setDefault("classes");
+			jsap.registerParameter(opt2);
+	
+			// Enable compilation
+			sw1 = new Switch("compile");
+			sw1.setLongFlag(sw1.getUsageName());
+			sw1.setHelp("Enable compilation and output class files.");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+	
+			// Enable pre-compilation
+			sw1 = new Switch("precompile");
+			sw1.setLongFlag("precompile");
+			sw1.setHelp("Enable pre-compilation of input source files before processing. Compiled classes will be added to the classpath so that they are accessible to the processing manager (typically, processors, annotations, and templates should be pre-compiled most of the time).");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+	
+			// Enable building only outdated files
+			sw1 = new Switch("buildOnlyOutdatedFiles");
+			sw1.setLongFlag("buildOnlyOutdatedFiles");
+			sw1.setHelp("Set Spoon to build only the source files that have been modified since the latest source code generation, for performance purpose. Note that this option requires to have the --ouput-type option not set to none."
+					+ "This option is not appropriate to all kinds of processing. In particular processings that implement or rely on a global analysis should avoid this option because the processor will only have access to the outdated source code (the files modified since the latest processing).");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+	
+			sw1 = new Switch("lines");
+			sw1.setLongFlag("lines");
+			sw1.setHelp("Set Spoon to try to preserve the original line numbers when generating the source code (may lead to human-unfriendly formatting).");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+			
+			// nobinding
+			sw1 = new Switch("noclasspath");
+			sw1.setShortFlag('x');
+			sw1.setLongFlag("noclasspath");
+			sw1.setHelp("Does not assume a full classpath");
+			jsap.registerParameter(sw1);
+	
+			
+			// show GUI
+			sw1 = new Switch("gui");
+			sw1.setShortFlag('g');
+			sw1.setLongFlag("gui");
+			sw1.setHelp("Show spoon model after processing");
+			jsap.registerParameter(sw1);
+	
+			return jsap;
+		} catch (JSAPException e) {
+			throw new SpoonException(e.getMessage());
 		}
-		opt2.setStringParser(JSAP.STRING_PARSER);
-		opt2.setHelp(msg);
-		opt2.setDefault("classes");
-		jsap.registerParameter(opt2);
-
-		// Enable compilation
-		sw1 = new Switch("compile");
-		sw1.setLongFlag(sw1.getUsageName());
-		sw1.setHelp("Enable compilation and output class files.");
-		sw1.setDefault("false");
-		jsap.registerParameter(sw1);
-
-		// Enable pre-compilation
-		sw1 = new Switch("precompile");
-		sw1.setLongFlag("precompile");
-		sw1.setHelp("Enable pre-compilation of input source files before processing. Compiled classes will be added to the classpath so that they are accessible to the processing manager (typically, processors, annotations, and templates should be pre-compiled most of the time).");
-		sw1.setDefault("false");
-		jsap.registerParameter(sw1);
-
-		// Enable building only outdated files
-		sw1 = new Switch("buildOnlyOutdatedFiles");
-		sw1.setLongFlag("buildOnlyOutdatedFiles");
-		sw1.setHelp("Set Spoon to build only the source files that have been modified since the latest source code generation, for performance purpose. Note that this option requires to have the --ouput-type option not set to none."
-				+ "This option is not appropriate to all kinds of processing. In particular processings that implement or rely on a global analysis should avoid this option because the processor will only have access to the outdated source code (the files modified since the latest processing).");
-		sw1.setDefault("false");
-		jsap.registerParameter(sw1);
-
-		sw1 = new Switch("lines");
-		sw1.setLongFlag("lines");
-		sw1.setHelp("Set Spoon to try to preserve the original line numbers when generating the source code (may lead to human-unfriendly formatting).");
-		sw1.setDefault("false");
-		jsap.registerParameter(sw1);
-		
-		// show GUI
-		sw1 = new Switch("gui");
-		sw1.setShortFlag('g');
-		sw1.setLongFlag("gui");
-		sw1.setHelp("Show spoon model after processing");
-		jsap.registerParameter(sw1);
-
-		return jsap;
 	}
 
 	/**
 	 * Returns the command-line given launching arguments in JSAP format.
 	 */
-	protected final JSAPResult getArguments() throws Exception {
+	protected final JSAPResult getArguments() {
 		return parseArgs();
 	}
 
-	/**
-	 * Processes the arguments.
-	 */
-	protected void processArguments(Factory factory) throws Exception {
+	protected void processArguments() {
 
-		Environment env = factory.getEnvironment();
+		try {
+			jsapActualArgs = getArguments();
 
-		if (getArguments().getString("input") != null) {
-			for (String s : getArguments().getString("input").split(
-					"[" + File.pathSeparatorChar + "]")) {
+			Environment environment = factory.getEnvironment();
+			boolean debug = jsapActualArgs.getBoolean("debug");
+			// environment initialization
+			environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
+			environment.setVerbose(true);
+			environment.setXmlRootFolder(jsapActualArgs.getFile("properties"));
+
+			JavaOutputProcessor printer = createOutputWriter(jsapActualArgs
+					.getFile("output"));
+			environment.setDefaultFileGenerator(printer);
+
+			environment.setVerbose(jsapActualArgs.getBoolean("verbose")
+					|| debug);
+			environment.setDebug(debug);
+			environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
+			environment
+					.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
+			environment.setPreserveLineNumbers(jsapActualArgs
+					.getBoolean("lines"));
+
+			environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
+			environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
+			environment.useSourceCodeFragments(jsapActualArgs
+					.getBoolean("fragments"));
+
+			if (getArguments().getString("input") != null) {
+				for (String s : getArguments().getString("input").split(
+						"[" + File.pathSeparatorChar + "]")) {
 					inputResources.add(SpoonResourceHelper
 							.createResource(new File(s)));
+				}
 			}
-		}
 
-		if (getArguments().getString("spoonlet") != null) {
-			for (String s : getArguments().getString("spoonlet").split(
-					"[" + File.pathSeparatorChar + "]")) {
-				loadSpoonlet(factory, new File(s));
+			if (getArguments().getString("spoonlet") != null) {
+				for (String s : getArguments().getString("spoonlet").split(
+						"[" + File.pathSeparatorChar + "]")) {
+					loadSpoonlet(factory, new File(s));
+				}
 			}
-		}
 
-		// Adding template from command-line
-		if (getArguments().getString("template") != null) {
-			for (String s : getArguments().getString("template").split(
-					"[" + File.pathSeparatorChar + "]")) {
-				try {
-					addTemplateResource(SpoonResourceHelper
-							.createResource(new File(s)));
-				} catch (FileNotFoundException e) {
-					env.report(null, Severity.ERROR,
-							"Unable to add template file: " + e.getMessage());
-					if (env.isDebug()) {
-						logger.error(e.getMessage(), e);
+			// Adding template from command-line
+			if (getArguments().getString("template") != null) {
+				for (String s : getArguments().getString("template").split(
+						"[" + File.pathSeparatorChar + "]")) {
+					try {
+						addTemplateResource(SpoonResourceHelper
+								.createResource(new File(s)));
+					} catch (FileNotFoundException e) {
+						environment.report(
+								null,
+								Severity.ERROR,
+								"Unable to add template file: "
+										+ e.getMessage());
+						if (environment.isDebug()) {
+							logger.error(e.getMessage(), e);
+						}
 					}
 				}
 			}
-		}
 
-		if (getArguments().getString("processors") != null) {
-			for (String processorName : getArguments().getString("processors")
-					.split(File.pathSeparator)) {
-				addProcessor(processorName);
+			if (getArguments().getString("processors") != null) {
+				for (String processorName : getArguments().getString(
+						"processors").split(File.pathSeparator)) {
+					addProcessor(processorName);
+				}
 			}
+		} catch (Exception e) {
+			throw new SpoonException(e);
 		}
 
 	}
@@ -500,11 +544,11 @@ public class Launcher {
 	 * @throws JSAPException
 	 *             when an error occurs in the argument parsing
 	 */
-	protected JSAPResult parseArgs() throws JSAPException {
-		if (args==null) {
+	protected JSAPResult parseArgs() {
+		if (jsapSpec==null) {
 			throw new IllegalStateException("no args, please call setArgs before");
 		}
-		JSAPResult arguments = jsapArgs.parse(args);
+		JSAPResult arguments = jsapSpec.parse(commandLineArgs);
 		if (!arguments.success()) {
 			// print out specific error messages describing the problems
 			for (java.util.Iterator<?> errs = arguments
@@ -518,7 +562,7 @@ public class Launcher {
 			System.err.println();
 			System.err.println("Options : ");
 			System.err.println();
-			System.err.println(jsapArgs.getHelp());
+			System.err.println(jsapSpec.getHelp());
 			System.exit(-1);
 		}
 
@@ -608,7 +652,7 @@ public class Launcher {
 	 * processors.
 	 */
 	public Factory createFactory() {
-		return createFactory(new StandardEnvironment());
+		return createFactory(createEnvironment());
 	}
 	
 	/** returns the current factory */
@@ -632,59 +676,6 @@ public class Launcher {
 	 */
 	public Environment createEnvironment() {
 		return new StandardEnvironment();
-	}
-
-	/**
-	 * Initializes an environment with the given parameters.
-	 * 
-	 * @param environment
-	 *            the environment to be initialized
-	 * @param complianceLevel
-	 *            the Java source code compliance level (... 4, 5, 6, 7)
-	 * @param verbose
-	 *            tells Spoon to print out the basic traces
-	 * @param debug
-	 *            tells Spoon to print out the detailed traces
-	 * @param properties
-	 * @param autoImports
-	 *            tells Spoon to automatically generate the imports when
-	 *            printing out the source code
-	 * @param tabulationSize
-	 *            the size of the tabulations in the printed source code
-	 * @param useTabulations
-	 *            tells if Spoon uses tabulations (vs spaces)
-	 * @param useSourceCodeFragments
-	 *            tells if Spoon should be in source code fragments mode
-	 * @param preserveLineNumbers
-	 *            tells if Spoon should try to preserve the original line
-	 *            numbers when generating the source code (may lead to
-	 *            human-unfriendly formatting)
-	 * @param sourceOutputDir
-	 *            sets the Spoon output directory where to generate the printed
-	 *            source code
-	 */
-	public void initEnvironment(Environment environment,
-			int complianceLevel, boolean verbose, boolean debug,
-			File properties, boolean autoImports, int tabulationSize,
-			boolean useTabulations, boolean useSourceCodeFragments,
-			boolean preserveLineNumbers, File sourceOutputDir) {
-
-		// environment initialization
-		environment.setComplianceLevel(complianceLevel);
-		environment.setVerbose(true);
-		environment.setXmlRootFolder(properties);
-
-		JavaOutputProcessor printer = createOutputWriter(sourceOutputDir);
-		environment.setDefaultFileGenerator(printer);
-
-		environment.setVerbose(verbose || debug);
-		environment.setDebug(debug);
-		environment.setAutoImports(autoImports);
-		environment.setPreserveLineNumbers(preserveLineNumbers);
-
-		environment.setTabulationSize(tabulationSize);
-		environment.useTabulations(useTabulations);
-		environment.useSourceCodeFragments(useSourceCodeFragments);
 	}
 
 	public JavaOutputProcessor createOutputWriter(File sourceOutputDir) {
@@ -881,39 +872,29 @@ public class Launcher {
 	 */
 	public void run() throws Exception {
 
-		JSAPResult args = getArguments();
-		initEnvironment(factory.getEnvironment(), args.getInt("compliance"),
-				args.getBoolean("verbose"), args.getBoolean("debug"),
-				args.getFile("properties"), args.getBoolean("imports"),
-				args.getInt("tabsize"), args.getBoolean("tabs"),
-				args.getBoolean("fragments"), args.getBoolean("lines"),
-				args.getFile("output"));
-
 		factory.getEnvironment().reportProgressMessage(getVersionMessage());
 
 		factory.getEnvironment().debugMessage("loading command-line arguments: "
-				+ Arrays.asList(this.args));
+				+ Arrays.asList(this.jsapActualArgs));
 
-		processArguments(factory);
-
-		OutputType outputType = OutputType.fromString(args
+		OutputType outputType = OutputType.fromString(jsapActualArgs
 				.getString("output-type"));
 		if (outputType == null) {
 			factory.getEnvironment().report(null, Severity.ERROR,
-					"unsupported output type: " + args.getString("output-type"));
+					"unsupported output type: " + jsapActualArgs.getString("output-type"));
 			printUsage();
 			throw new Exception("unsupported output type: "
-					+ args.getString("output-type"));
+					+ jsapActualArgs.getString("output-type"));
 		}
 
 		SpoonCompiler compiler = createCompiler(factory);
-		run(compiler, args.getString("encoding"),
-				args.getBoolean("precompile"), outputType,
-				args.getFile("output"), getProcessorTypes(),
-				args.getBoolean("compile"), args.getFile("destination"),
-				args.getBoolean("buildOnlyOutdatedFiles"),
-				args.getString("source-classpath"),
-				args.getString("template-classpath"), getInputSources(),
+		run(compiler, jsapActualArgs.getString("encoding"),
+				jsapActualArgs.getBoolean("precompile"), outputType,
+				jsapActualArgs.getFile("output"), getProcessorTypes(),
+				jsapActualArgs.getBoolean("compile"), jsapActualArgs.getFile("destination"),
+				jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"),
+				jsapActualArgs.getString("source-classpath"),
+				jsapActualArgs.getString("template-classpath"), getInputSources(),
 				getTemplateSources());
 
 		// display GUI
