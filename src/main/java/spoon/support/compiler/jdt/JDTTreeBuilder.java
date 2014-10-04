@@ -200,6 +200,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -2253,8 +2254,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 			context.enter(va, qualifiedNameReference);
 			return false;
+		} else {
+			CtVariableAccess<Object> va = factory.Core().createVariableAccess();
+			CtVariableReference<Object> varRef = new CtUnboundVariableReferenceImpl();
+			varRef.setSimpleName(qualifiedNameReference.toString());
+			va.setVariable(varRef);
+			context.enter(va, qualifiedNameReference);
+			return false;
 		}
-		return false;
 	}
 
 	@Override

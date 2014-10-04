@@ -1,10 +1,12 @@
 package spoon.test.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -12,6 +14,7 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -41,11 +44,34 @@ public class NoClasspathTest {
 			fail(); 
 		} catch (SpoonException e) {} 
 		
-		// now we see whether we have a method for which there is no declaration
-		// we take the second invocation
-		// because the first one is hidden in the implicit default constructor
-		CtInvocation<?> c = clazz.getElements(new TypeFilter<CtInvocation>(CtInvocation.class)).get(1);
-		assertEquals("method", c.getExecutable().getSimpleName());
+		{
+			CtMethod method = clazz.getMethod("method", new CtTypeReference[0]);
+			assertNotNull(method);
+			List<CtInvocation> invocations = method.getElements(new TypeFilter<CtInvocation>(CtInvocation.class));
+			assertEquals(1, invocations.size());
+			CtInvocation<?> c = invocations.get(0);
+			assertEquals("method", c.getExecutable().getSimpleName());
+			assertEquals("x.method()", method.getBody().getStatement(1).toString());
+		}
+		
+		{
+			CtMethod method = clazz.getMethod("m2", new CtTypeReference[0]);
+			assertNotNull(method);
+			List<CtInvocation> invocations = method.getElements(new TypeFilter<CtInvocation>(CtInvocation.class));
+			assertEquals(3, invocations.size());
+			CtInvocation<?> c = invocations.get(1);
+			assertEquals("second", c.getExecutable().getSimpleName());
+			assertEquals("x.first().second().third()", method.getBody().getStatement(1).toString());
+		}
+
+		{
+			CtMethod method = clazz.getMethod("m1", new CtTypeReference[0]);
+			assertNotNull(method);
+			List<CtInvocation> invocations = method.getElements(new TypeFilter<CtInvocation>(CtInvocation.class));
+			assertEquals(1, invocations.size());
+			CtInvocation<?> c = invocations.get(0);
+			assertEquals("x.y.z.method()", method.getBody().getStatement(0).toString());
+		}
 	}
 	
 }
