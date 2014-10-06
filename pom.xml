@@ -171,7 +171,7 @@
     <site>
       <id>gforge.inria.fr-site</id>
       <name>inria</name>
-      <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites</url>
+      <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/spoon-core</url>
     </site>
   </distributionManagement>
 
@@ -446,6 +446,11 @@
             <tag>@deprecated</tag>
           </tags>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
       </plugin>
     </plugins>
   </reporting>
