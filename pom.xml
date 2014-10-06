@@ -147,8 +147,8 @@
 
   <scm>
     <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
-    <connection>scm:svn:svn://scm.gforge.inria.fr/svnroot/spoon/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svnroot/spoon/trunk</developerConnection>
+    <connection>scm:git:git+ssh://scm.gforge.inria.fr//home/groups/spoon/spoon.git</connection>
+    <developerConnection>scm:git:git+ssh://scm.gforge.inria.fr//home/groups/spoon/spoon.git</developerConnection>
   </scm>
 
   <properties>
