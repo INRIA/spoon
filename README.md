@@ -20,5 +20,6 @@ Contributors (alphabetical order of last names):
 * Renaud Pawlak
 * Nicolas Pessemier
 * Nicolas Petitprez
+* Phillip Schichtel
 * Lionel Seinturier
 * Stefan Wolf

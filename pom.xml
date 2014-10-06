@@ -126,6 +126,12 @@
       </roles>
     </developer>
     <developer>
+      <name>Phillip Schichtel</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
       <name>Lionel Seinturier</name>
       <roles>
         <role>Contributor</role>
