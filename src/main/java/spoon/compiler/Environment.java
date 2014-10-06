@@ -285,7 +285,26 @@ public interface Environment {
 	 */
 	ClassLoader getClassLoader();
 
-	/** Sets the option noclasspath */
+	/**
+	 * Sets the option "noclasspath", use with caution (see explanation below).
+	 * 
+	 * With this option, Spoon does not require the full classpath to build the
+	 * model. In this case, all references to classes that are not in the
+	 * classpath are handled with the reference mechanism. The "simplename" of
+	 * the reference object refers to the unbound identifier.
+	 * 
+	 * This option facilitates the use of Spoon when is is hard to have the
+	 * complete and correct classpath, for example for mining software
+	 * repositories.
+	 * 
+	 * For writing analyses, this option works well if you don't cross the
+	 * reference by a call to getDeclaration() (if you really want to do so,
+	 * then check for nullness of the result before).
+	 * 
+	 * But be careful, if the source code to be analyzed contains errors beyond
+	 * the classpath errors, they will not be shown at all.
+	 * 
+	 */
 	public void setNoClasspath(boolean option);
 	
 	/** Returns the value ot the option noclasspath */
