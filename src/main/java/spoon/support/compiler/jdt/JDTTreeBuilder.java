@@ -1725,12 +1725,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ExtendedStringLiteral extendedStringLiteral,
 			BlockScope scope) {
-		throw new RuntimeException(
-				"invalid ast node: the parser must be configured with parseLiteralExpressionsAsConstants set to false");
-		// CtLiteral<String> l = factory.Core().createLiteral();
-		// l.setValue(new String(extendedStringLiteral.source()));
-		// context.enter(l, extendedStringLiteral);
-		// return true;
+		 CtLiteral<String> l = factory.Core().createLiteral();
+		 l.setValue(new String(extendedStringLiteral.source()));
+		 context.enter(l, extendedStringLiteral);
+		 return true;
 	}
 
 	@Override
