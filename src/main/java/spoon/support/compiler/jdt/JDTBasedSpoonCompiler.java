@@ -27,6 +27,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.batch.Main;
@@ -62,6 +64,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.VirtualFolder;
+import spoon.support.gui.SpoonModelTree;
 
 public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
@@ -407,12 +410,26 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	// return units;
 	// }
 
-	final List<CategorizedProblem[]> probs = new ArrayList<CategorizedProblem[]>();
+	final private List<CategorizedProblem> probs = new ArrayList<CategorizedProblem>();
 
+	/** report a compilation problem (callback for JDT) */
+	public void reportProblem(CategorizedProblem pb) {
+		if (pb==null) {return;}
+		
+		// we can not accept this problem, even in noclasspath mode
+		// otherwise a nasty null pointer exception occurs later
+		if (pb.getID() == IProblem.DuplicateTypes) {
+			throw new ModelBuildingException(pb.getMessage());
+		}
+		
+		probs.add(pb);
+	}
+	
 	public final TreeBuilderRequestor requestor = new TreeBuilderRequestor(this);
 
-	public List<CategorizedProblem[]> getProblems() {
-		return this.probs;
+	/** returns the list of current problems */
+	public List<CategorizedProblem> getProblems() {
+		return Collections.unmodifiableList(this.probs);
 	}
 
 	private boolean build = false;
@@ -493,9 +510,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	protected void report(Environment environment, CategorizedProblem problem) {
 		if (problem == null) {
-			System.out.println("cannot report null problem");
-			return;
+			throw new IllegalArgumentException("problem cannot be null");
 		}
+
 		File file = new File(new String(problem.getOriginatingFileName()));
 		String filename = file.getAbsolutePath();
 		
@@ -514,12 +531,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	public void reportProblems(Environment environment) {
 		if (getProblems().size() > 0) {
-			for (CategorizedProblem[] cps : getProblems()) {
-				for (int i = 0; i < cps.length; i++) {
-					CategorizedProblem problem = cps[i];
-					if (problem != null) {
-						report(environment, problem);
-					}
+			for (CategorizedProblem problem : getProblems()) {
+				if (problem != null) {
+					report(environment, problem);
 				}
 			}
 		}
