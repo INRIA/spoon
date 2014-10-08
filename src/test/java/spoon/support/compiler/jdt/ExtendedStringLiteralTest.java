@@ -1,5 +1,7 @@
 package spoon.support.compiler.jdt;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -11,6 +13,9 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.factory.Factory;
 
 public class ExtendedStringLiteralTest {
@@ -56,5 +61,12 @@ public class ExtendedStringLiteralTest {
 		comp.addInputSources(SpoonResourceHelper.resources(
 				"./src/test/java/spoon/support/compiler/jdt/ExtendedStringLiteralClass.java"));
 		comp.build();
+		
+		CtClass<?> cl =
+			comp.getFactory().Package().get("spoon.support.compiler.jdt").
+			getType("ExtendedStringLiteralClass");
+		CtField<?> f = cl.getField("extendedStringLiteral");
+		CtExpression<?> de = f.getDefaultExpression();
+		assertEquals("\"hello world!\"", de.toString());
 	}
 }
