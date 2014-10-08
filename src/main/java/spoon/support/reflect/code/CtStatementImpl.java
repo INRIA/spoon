@@ -43,8 +43,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 	public static void replace(CtStatement target, CtStatementList statements)
 			throws ParentNotInitializedException {
 		insertAfter(target, statements);
-		CtBlock<?> parentBlock = (CtBlock<?>) target.getParent();
-		parentBlock.removeStatement(target);
+        statements.removeStatement(target);
 	}
 
 	public static void insertAfter(CtStatement target,

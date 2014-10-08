@@ -171,7 +171,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			exitReference(reference);
 		}
 
-		@Override
+        @Override
+        public <T> void visitCtInvocation(CtInvocation<T> invocation) {
+            // For a ctinvocation, we don't have to import declaring type
+            scan(invocation.getTarget());
+        }
+
+        @Override
 		public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 			if (!(reference instanceof CtArrayTypeReference)) {
 				if (reference.getDeclaringType() == null) {
@@ -1146,8 +1152,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		boolean printType = true;
 
 		if (reference.isFinal() && reference.isStatic()) {
-			if (context.currentTopLevel != null) {
-				CtTypeReference<?> declTypeRef = reference.getDeclaringType();
+            CtTypeReference<?> declTypeRef = reference.getDeclaringType();
+            if (context.currentTopLevel != null) {
 				CtTypeReference<?> ref2;
 				if (context.currentThis != null
 						&& context.currentThis.size() > 0) {
@@ -1157,12 +1163,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 				// print type if not annonymous class ref and not within the
 				// current scope
-				printType = !declTypeRef.getSimpleName().equals("")
+				printType = !"".equals(declTypeRef.getSimpleName())
 						&& !(declTypeRef.equals(ref2));
 			} else {
-				printType = true;
+                printType =  !"".equals(declTypeRef.getSimpleName());
 			}
-		}
+        }
 
 		if (isStatic && printType && !context.ignoreStaticAccess) {
 			context.ignoreGenerics = true;
