@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>FAQ</title>
+    <meta name="description" content="Transform and analyze your Java source code.
+">
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="canonical" href="http://inria.github.io/faq/">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Spoon</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+
+        
+          
+          <a class="page-link" href="/papers/">Papers</a>
+          
+        
+          
+          <a class="page-link" href="/ecosystem/">Ecosystem</a>
+          
+        
+          
+          <a class="page-link" href="/faq/">FAQ</a>
+          
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">FAQ</h1>
+  </header>
+
+  <article class="post-content">
+    <h2 id="practical-information">Practical Information</h2>
+
+<h3 id="how-to-subscribe-to-spoons-mailing-list">How to subscribe to Spoon’s mailing list</h3>
+
+<p>Go <a href="http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss">here</a> and fill the form.</p>
+
+<h3 id="how-to-access-spoons-repository">How to access Spoon’s repository</h3>
+
+<p>Go <a href="http://gforge.inria.fr/scm/?group_id=73">here</a> and follow the instructions.</p>
+
+<h2 id="basics">Basics</h2>
+
+<h3 id="how-to-use-spoon-in-standalone-mode">How to use Spoon in standalone mode</h3>
+
+<p>You can download the Spoon standalone version (here) that includes the Eclipse JDT compiler and can be applied to any Java program using command-line style.</p>
+
+<p>You need to specify a list of compiled processor types to apply to your program, and define the location of the source code to be processed.</p>
+
+<div class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="n">java</span> <span class="n">-cp</span> <span class="n">spoon-core-with-dependencies</span><span class="p">.</span><span class="n">jar</span> <span class="n">spoon</span><span class="p">.</span><span class="n">Launcher</span> <span class="n">-i</span> <span class="n">sourceFolder</span> <span class="n">-p</span> <span class="n">CatchProcessor</span> <span class="n">-v</span> <span class="p">-</span><span class="n">-compliance</span> <span class="n">6</span></code></pre></div>
+
+<p>Optionally, if you use templates, you have to specify the location of your template source files.</p>
+
+<h3 id="how-to-use-spoon-with-ant">How to use Spoon with Ant</h3>
+
+<p>First, get the Spoon standalone version.</p>
+
+<p>You need to set the Spoon jar and the compiled processors in the classpath reference (see ant taskdef).</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- define spoon task --&gt;</span>
+<span class="nt">&lt;taskdef</span> <span class="na">name=</span><span class="s">&quot;spoon&quot;</span> <span class="na">classname=</span><span class="s">&quot;spoon.SpoonTask&quot;</span> 
+   <span class="na">classpathref=</span> <span class="s">&quot;classpath&quot;</span><span class="nt">/&gt;</span>
+
+<span class="c">&lt;!-- process some files --&gt;</span>
+<span class="nt">&lt;spoon</span> <span class="na">classpathref=</span> <span class="s">&quot;classpath&quot;</span> <span class="na">verbose=</span> <span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;sourceSet</span> <span class="na">dir=</span> <span class="s">&quot;${src}&quot;</span> <span class="na">includes=</span> <span class="s">&quot;x/y/z/src/&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;templateset</span> <span class="na">dir=</span> <span class="s">&quot;${src}&quot;</span> <span class="na">includes=</span> <span class="s">&quot;x/y/z/template/&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;processor</span> <span class="na">type=</span> <span class="s">&quot;x.y.z.MyProcessor1&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;processor</span> <span class="na">type=</span> <span class="s">&quot;x.y.z.MyProcessor2&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;processor</span> <span class="na">type=</span> <span class="s">&quot;x.y.z.MyProcessor3&quot;</span> <span class="nt">/&gt;</span>
+    ...
+<span class="nt">&lt;/spoon&gt;</span>
+
+<span class="c">&lt;!-- process some files with a spoonlet rather than a processors list --&gt;</span>
+<span class="nt">&lt;spoon</span> <span class="na">classpathref=</span> <span class="s">&quot;classpath&quot;</span> <span class="na">verbose=</span> <span class="s">&quot;true&quot;</span> <span class="na">spoonlet=</span><span class="s">&quot;myspoonlet.jar&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;sourceSet</span> <span class="na">dir=</span> <span class="s">&quot;${src}&quot;</span> <span class="na">includes=</span> <span class="s">&quot;x/y/z/src/&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/spoon&gt;</span></code></pre></div>
+
+<h3 id="how-to-use-spoon-with-the-java-launcher">How to use Spoon with the Java launcher</h3>
+
+<p>First, get the Spoon standalone version.</p>
+
+<p>You can process program with the Java launcher. For instance, with the following command:</p>
+
+<div class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="n">java</span> <span class="n">spoon</span><span class="p">.</span><span class="n">Launcher</span> <span class="n">-i</span> <span class="n">x</span><span class="p">/</span><span class="n">y</span><span class="p">/</span><span class="n">z</span><span class="p">/</span><span class="n">src</span><span class="p">/</span> <span class="n">-t</span> <span class="n">x</span><span class="p">/</span><span class="n">y</span><span class="p">/</span><span class="n">z</span><span class="p">/</span><span class="n">template</span><span class="p">/</span> 
+  <span class="n">-p</span> <span class="n">x</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">z</span><span class="p">.</span><span class="n">MyProcessor1</span><span class="p">;</span><span class="n">x</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">z</span><span class="p">.</span><span class="n">MyProcessor2</span><span class="p">;</span><span class="n">x</span><span class="p">.</span><span class="n">y</span><span class="p">.</span><span class="n">z</span><span class="p">.</span><span class="n">MyProcessor3</span><span class="p">...</span>
+<span class="n">Usage</span><span class="err">:</span> <span class="n">java</span> <span class="p">&lt;</span><span class="n">launcher</span> <span class="n">name</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">option</span><span class="p">(</span><span class="n">s</span><span class="p">)]</span>
+<span class="n">Options</span> <span class="err">:</span> 
+  <span class="p">[</span><span class="n">-h</span><span class="p">|-</span><span class="n">-help</span><span class="p">]</span>
+  <span class="p">[</span><span class="n">-v</span><span class="p">|-</span><span class="n">-verbose</span><span class="p">]</span>
+        <span class="n">Output</span> <span class="n">messages</span> <span class="n">about</span> <span class="n">what</span> <span class="n">the</span> <span class="n">compiler</span> <span class="n">is</span> <span class="n">doing</span>
+  <span class="p">[-</span><span class="n">-vvv</span><span class="p">]</span>
+        <span class="n">Generate</span> <span class="n">all</span> <span class="n">debugging</span> <span class="n">info</span>
+  <span class="p">[-</span><span class="n">-compliance</span> <span class="p">&lt;</span><span class="n">compliance</span><span class="p">&gt;]</span>
+        <span class="n">set</span> <span class="n">java</span> <span class="n">compliance</span> <span class="n">level</span> <span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="n">2</span><span class="p">,</span><span class="n">3</span><span class="p">,</span><span class="n">4</span><span class="p">,</span><span class="n">5</span> <span class="n">or</span> <span class="n">6</span><span class="p">)</span> <span class="p">(</span><span class="k">default</span><span class="err">:</span> <span class="n">5</span><span class="p">)</span>
+  <span class="p">[(</span><span class="n">-s</span><span class="p">|-</span><span class="n">-spoonlet</span><span class="p">)</span> <span class="p">&lt;</span><span class="n">spoonlet</span><span class="p">&gt;]</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">spoonlet</span> <span class="n">files</span> <span class="n">to</span> <span class="n">load</span>
+  <span class="p">[(</span><span class="n">-i</span><span class="p">|-</span><span class="n">-input</span><span class="p">)</span> <span class="p">&lt;</span><span class="n">input</span><span class="p">&gt;]</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">path</span> <span class="n">to</span> <span class="n">sources</span> <span class="n">files</span>
+  <span class="p">[(</span><span class="n">-p</span><span class="p">|-</span><span class="n">-processors</span><span class="p">)</span> <span class="p">&lt;</span><span class="n">processors</span><span class="p">&gt;]</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">processor</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">qualified</span> <span class="n">name</span> <span class="n">to</span> <span class="n">be</span> <span class="n">used</span>
+  <span class="p">[(</span><span class="n">-t</span><span class="p">|-</span><span class="n">-template</span><span class="p">)</span> <span class="p">&lt;</span><span class="n">template</span><span class="p">&gt;]</span>
+        <span class="n">list</span> <span class="n">of</span> <span class="n">path</span> <span class="n">to</span> <span class="n">templates</span> <span class="n">java</span> <span class="n">files</span>
+  <span class="p">[(</span><span class="n">-o</span><span class="p">|-</span><span class="n">-output</span><span class="p">)</span> <span class="p">&lt;</span><span class="n">output</span><span class="p">&gt;]</span>
+        <span class="n">specify</span> <span class="n">where</span> <span class="n">to</span> <span class="n">place</span> <span class="n">generated</span> <span class="n">java</span> <span class="n">files</span> <span class="p">(</span><span class="k">default</span><span class="err">:</span> <span class="n">spooned</span><span class="p">)</span>
+  <span class="p">[-</span><span class="n">-properties</span> <span class="p">&lt;</span><span class="n">properties</span><span class="p">&gt;]</span>
+        <span class="n">Directory</span> <span class="n">to</span> <span class="n">search</span> <span class="k">for</span> <span class="n">spoon</span> <span class="n">properties</span> <span class="n">files</span>
+  <span class="p">[&lt;</span><span class="n">class</span><span class="p">&gt;]</span>
+        <span class="n">class</span> <span class="n">to</span> <span class="n">launch</span> <span class="n">within</span> <span class="n">the</span> <span class="n">Spoon</span> <span class="n">context</span> <span class="p">(</span><span class="n">Main</span> <span class="n">class</span><span class="p">)</span>
+  <span class="no">[arguments1 arguments2 ... argumentsN]</span>
+        <span class="n">parameters</span> <span class="n">to</span> <span class="n">be</span> <span class="n">passed</span> <span class="n">to</span> <span class="n">the</span> <span class="n">main</span> <span class="n">method</span>
+  <span class="p">[-</span><span class="n">-no</span><span class="p">]</span>
+        <span class="n">disable</span> <span class="n">output</span> <span class="n">printing</span>
+  <span class="p">[(</span><span class="n">-b</span><span class="p">|-</span><span class="n">-build</span><span class="p">)</span> <span class="p">&lt;</span><span class="n">build</span><span class="p">&gt;]</span>
+        <span class="n">specify</span> <span class="n">where</span> <span class="n">to</span> <span class="n">place</span> <span class="n">generated</span> <span class="n">class</span> <span class="n">files</span> <span class="p">(</span><span class="k">default</span><span class="err">:</span> <span class="n">spoonBuild</span><span class="p">)</span>
+  <span class="p">[</span><span class="n">-g</span><span class="p">|-</span><span class="n">-gui</span><span class="p">]</span>
+        <span class="n">show</span> <span class="n">spoon</span> <span class="n">model</span> <span class="n">after</span> <span class="n">processing</span></code></pre></div>
+
+<h3 id="how-to-use-spoon-as-a-maven-task">How to use Spoon as a Maven task</h3>
+
+<p>A Maven plugin by David Bernard is on its way! It is avalaible in beta at this <a href="http://alchim.sf.net/spoon-maven-plugin/">link</a>.</p>
+
+<h3 id="how-to-write-your-own-processors">How to write your own processor(s)</h3>
+
+<p>You need to get the standalone version Spoon jar (<a href="http://spoon.gforge.inria.fr/Spoon/HomePage">here</a>) and add it to the build path of your Java project. Then you have to subclass the class <a href="http://spoon.gforge.inria.fr/javadoc/spoon/spoon/processing/AbstractProcessor.html">spoon.processing.AbstractProcessor</a> and implement the process method. This class is parameterized by the type of program element you want to process. These types are those of the Spoon’s Java metamodel defined in the <a href="http://spoon.gforge.inria.fr/javadoc/spoon/spoon/reflect/declaration/package-summary.html">spoon.reflect.declaration package</a> and <a href="http://spoon.gforge.inria.fr/javadoc/spoon/spoon/reflect/code/package-summary.html">spoon.reflect.code package</a>. For example, to process all the Java program elements, you can write the following processor:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">spoon.processing.AbstractProcessor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">spoon.reflect.declaration.CtElement</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProcessor</span> <span class="kd">extends</span> <span class="n">AbstractProcessor</span><span class="o">&lt;</span><span class="n">CtElement</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">CtElement</span> <span class="n">element</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// do your processing here</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>In the process method, you can access the currenly processed element passed as a parameter. Spoon automatically scan all the elements of the target program so that you do not have to implement the scanning yourself. On contrary to APT or JSR 269, you can also modify the program while scanning it. As an example, the following processor reports warnings when it meet undocumented public methods:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">spoon.processing.AbstractProcessor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">spoon.processing.Severity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">spoon.reflect.declaration.CtMethod</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">spoon.reflect.declaration.ModifierKind</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProcessor</span> <span class="kd">extends</span> <span class="n">AbstractProcessor</span><span class="o">&lt;</span><span class="n">CtMethod</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">CtMethod</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getModifiers</span><span class="o">().</span><span class="na">contains</span><span class="o">(</span><span class="n">ModifierKind</span><span class="o">.</span><span class="na">PUBLIC</span><span class="o">)</span>
+        <span class="o">&amp;&amp;</span> <span class="n">method</span><span class="o">.</span><span class="na">getDocComment</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">getFactory</span><span class="o">().</span><span class="na">getEnvironment</span><span class="o">().</span><span class="na">report</span><span class="o">(</span>
+           <span class="n">Severity</span><span class="o">.</span><span class="na">WARNING</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span><span class="s">&quot;undocumented public method&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Once compiled, you can apply your processor direclty with the Java launcher or Ant (here), or you can package it in a Spoonlet in order to deploy it in Eclipse (here).</p>
+
+<h3 id="how-to-internationalize-a-spoonlet">How to internationalize a Spoonlet</h3>
+
+<p>You can use a ResourceBundle named “spoonlet” in your code to internationalize your application. The processor attribute name and doc starting with ‘%’ will be substitued by values found in your properties files with default locale.</p>
+
+<p>More information about java internationalization <a href="http://docs.oracle.com/javase/tutorial/i18n/">here</a>.</p>
+
+<p>Example:</p>
+
+<p><strong>spoonlet_en.properties file:</strong></p>
+
+<div class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="n">Idiom</span> <span class="p">=</span> <span class="n">Class</span> <span class="n">implements</span> <span class="n">Cloneable</span>
+<span class="n">Idiom_doc</span> <span class="p">=</span> <span class="n">Class</span> <span class="n">implements</span> <span class="n">Cloneable</span> <span class="n">but</span> <span class="n">does</span> <span class="n">not</span> <span class="n">define</span> <span class="n">or</span> <span class="n">use</span> <span class="n">clone</span> <span class="n">method</span><span class="p">.</span></code></pre></div>
+
+<p><strong>extract of spoon.xml file:</strong></p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;processor</span> <span class="na">active=</span><span class="s">&quot;true&quot;</span>
+	<span class="na">name=</span><span class="s">&quot;%Idiom&quot;</span>
+	<span class="na">class=</span><span class="s">&quot;spoon.vsuite.findbugs.am.Idiom&quot;</span>
+	<span class="na">doc=</span><span class="s">&quot;%Idiom_doc&quot;</span><span class="nt">/&gt;</span></code></pre></div>
+
+<p><strong>Sample java code:</strong></p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ResourceBundle</span> <span class="n">messages</span> <span class="o">=</span> <span class="n">ResourceBundle</span><span class="o">.</span><span class="na">getBundle</span><span class="o">(</span><span class="s">&quot;spoonlet&quot;</span><span class="o">,</span><span class="n">Locale</span><span class="o">.</span><span class="na">getDefault</span><span class="o">());</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">messages</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;Idiom&quot;</span><span class="o">));</span></code></pre></div>
+
+<h3 id="how-to-process-annotations-like-with-apt-or-jsr-269">How to process annotations like with APT or JSR 269</h3>
+
+<p>Spoon is fully compatible with annotations and you can process any program element, including annotations. Even simpler, you can declare that you want to process a certain annotation type by subclassing the special kind of processor <a href="http://spoon.gforge.inria.fr/javadoc/spoon/spoon/processing/AbstractAnnotationProcessor.html">spoon.processing.AbstractAnnotationProcessor</a>. For instance, to process the methods annotated with <code>@SuppressWarnings</code>:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">spoon.processing.AbstractAnnotationProcessor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">spoon.reflect.declaration.CtMethod</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyAnnotationProcessor</span> <span class="kd">extends</span> 
+    <span class="n">AbstractAnnotationProcessor</span><span class="o">&lt;</span><span class="n">SuppressWarnings</span><span class="o">,</span><span class="n">CtMethod</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">SuppressWarnings</span> <span class="n">a</span><span class="o">,</span><span class="n">CtMethod</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// do the processing</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<h2 id="advanced">Advanced</h2>
+
+<h3 id="how-to-preserve-the-transformed-source-code-formatting-and-one-line-comments">How to preserve the transformed source code formatting and one-line comments</h3>
+
+<p>There is a way to preserve comments and formatting of the existing code. However, it requires to use the code fragment API.</p>
+
+<p>The idea of code fragments is that you indicate the changes you make in the code at the compilation unit level. For example to replace an expression e:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">CtExpression</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+  <span class="c1">// gets the compilation unit</span>
+  <span class="n">CompilationUnit</span> <span class="n">cu</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="na">getPosition</span><span class="o">().</span><span class="na">getCompilationUnit</span><span class="o">();</span>
+  <span class="c1">// creates an initialize the code fragment</span>
+  <span class="n">SourceCodeFragment</span> <span class="n">fragment</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">SourceCodeFragment</span><span class="o">();</span>
+  <span class="c1">// the fragment will start to be printed out at the original </span>
+  <span class="c1">// start position of the expression</span>
+  <span class="n">fragment</span><span class="o">.</span><span class="na">position</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">getPosition</span><span class="o">().</span><span class="na">getSourceStart</span><span class="o">();</span>
+  <span class="c1">// here we replace the whole expression</span>
+  <span class="c1">// note: to insert, just leave replacementLength to 0 (default)</span>
+  <span class="n">fragment</span><span class="o">.</span><span class="na">replacementLength</span> <span class="o">=</span> 
+    <span class="n">e</span><span class="o">.</span><span class="na">getPosition</span><span class="o">().</span><span class="na">getSourceEnd</span><span class="o">()</span> <span class="o">-</span> <span class="n">e</span><span class="o">.</span><span class="na">getPosition</span><span class="o">().</span><span class="na">getSourceStart</span><span class="o">();</span>
+  <span class="c1">// here put whatever code you want to replace the expression with...</span>
+  <span class="n">fragment</span><span class="o">.</span><span class="na">code</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="o">;</span>
+  <span class="c1">// now just add the code fragment to the compilation unit</span>
+  <span class="n">cu</span><span class="o">.</span><span class="na">addSourceCodeFragment</span><span class="o">(</span><span class="n">fragment</span><span class="o">);</span> 
+  <span class="c1">// you can add as many code fragments as you wish</span>
+<span class="o">}</span></code></pre></div>
+
+<p>You then just need to start Spoon with the -f option (–fragments). In this mode, all the chages in the AST will ignored and the source code will be changed only when code fragments are found on the compilation units. Note that this feature is not supported (yet) by the Eclipse plugin (so you need to run Spoon in standalone).</p>
+
+<h3 id="how-to-implement-and-deploy-configurable-processors">How to implement and deploy configurable processors</h3>
+
+<p>To create a configurable processor, you must define properties in your processors that Spoon will fill automatically with some values found in XML files. In processors, you define properties by annotating a field with @spoon.processing.Property. The field can be a primitive value (including java.lang.String), a reference, or a collection/array of those. To set the default value for the property, you can affect a value in the field declaration.</p>
+
+<p><strong>Properties files in standalone mode</strong></p>
+
+<p>In standalone mode (no Eclipse plugin), the properties can be stored in XML files (one for each processor) - see the DTD <a href="http://spoon.gforge.inria.fr/pub/xml/properties.dtd">here</a>. Property files should be named with the fully-qualified class name of processor (with the xml extension). You can configure the location of files with option <code>--properties</code> location in command-line or <code>&lt;spoon properties="location"&gt;</code> with Ant.</p>
+
+<p><strong>Properties in Spoonlets</strong></p>
+
+<p>If you create a Spoonlet to package your processors, properties default values have to be defined in the ‘spoon.xml’ deployment descriptor. Note that Spoonlets can be used in standalone mode or with Eclipse or any other Spoonlet containers. Packaging Spoonlets for Eclipse is explained here.</p>
+
+<p><strong>Examples</strong></p>
+
+<p>This is a sample processor with properties:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">test</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">spoon.processing.AbstractManualProcessor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">spoon.processing.Property</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Sample</span> <span class="kd">extends</span> <span class="n">AbstractManualProcessor</span> <span class="o">{</span>
+  <span class="nd">@Property</span>
+  <span class="n">String</span><span class="o">[]</span> <span class="n">spooners</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;none&quot;</span> <span class="o">};</span>
+
+  <span class="nd">@Property</span>
+  <span class="kt">double</span> <span class="n">a</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">spooners</span><span class="o">));</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">a</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>And its associated property file:</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE note SYSTEM &quot;http://spoon.gforge.inria.fr/pub/xml/properties.dtd&quot;&gt;</span>
+
+<span class="nt">&lt;properties&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;spooners&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;value&gt;</span>Yoda<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;value&gt;</span>Padawan<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;a&quot;</span> <span class="na">value=</span><span class="s">&quot;5.0&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/properties&gt;</span></code></pre></div>
+
+<p>If you run this processor with Spoon in standalone mode by specifying the location of the property file, you should get:</p>
+
+<div class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="no">[Yoda, Padawan]</span>
+<span class="n">5</span><span class="p">.</span><span class="n">0</span>
+<span class="n">Done</span></code></pre></div>
+
+<p>When using Spoonlets, the Spoonlet deployment descriptor would look like:</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE spoon SYSTEM &quot;http://spoon.gforge.inria.fr/pub/xml/spoonlet.dtd&quot; &gt;</span>
+
+<span class="nt">&lt;spoon&gt;</span>
+  <span class="nt">&lt;processor</span> <span class="na">name=</span><span class="s">&quot;Properties test&quot;</span>
+     <span class="na">class=</span><span class="s">&quot;test.Sample&quot;</span> <span class="na">active=</span><span class="s">&quot;true&quot;</span>
+     <span class="na">doc=</span><span class="s">&quot;Prints out the contents of the properties.&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;spooners&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;value&gt;</span>Yoda<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;value&gt;</span>Padawan<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;a&quot;</span> <span class="na">value=</span><span class="s">&quot;5.0&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/processor&gt;</span>
+<span class="nt">&lt;/spoon&gt;</span></code></pre></div>
+
+<h3 id="how-to-implement-program-transformations-with-well-typed-templates">How to implement program transformations with well-typed Templates</h3>
+
+<p>See the section Generative Programming with Spoon of the Tutorial.</p>
+
+<h3 id="how-to-prevent-annotation-processors-from-consuming-the-annotations-that-they-process">How to prevent Annotation processors from consuming the annotations that they process</h3>
+
+<p>By default, whenever an Annotation Processor processes a CtElement it will consume (delete) the processed annotation from it. If you want the annotation to be kept, override the init() method from the <code>AbstractAnnotationProcessor</code> class, and call the protected method <code>clearConsumedAnnotationTypes</code> like so:</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml">@Override
+public void init() {
+	super.init();
+	clearConsumedAnnotationTypes();
+}</code></pre></div>
+
+<h3 id="how-to-compare-and-create-type-references-in-a-type-safe-way">How to compare and create type references in a type-safe way</h3>
+
+<p>Use actual classes instead of strings.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">CtTypeReference</span> <span class="n">t</span><span class="o">=...</span>
+<span class="k">if</span><span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">getActualClass</span><span class="o">()==</span><span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
+<span class="n">Factory</span> <span class="n">f</span><span class="o">=...</span>
+<span class="n">t</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="na">Type</span><span class="o">().</span><span class="na">createReference</span><span class="o">(</span><span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">);</span></code></pre></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Spoon</li>
+          <li><a href="mailto:spoon-discuss@lists.gforge.inria.fr">spoon-discuss@lists.gforge.inria.fr</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/INRIA/spoon">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">INRIA/spoon</span>
+            </a>
+          </li>
+          
+
+          <li>
+            <a href="http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs">Javadoc</a>
+          </li>
+          <li>
+            <a href="http://spoon.gforge.inria.fr/mvnsites/spoon-core/">Maven2 site</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Transform and analyze your Java source code.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
