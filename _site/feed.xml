@@ -4,10 +4,10 @@
     <title>Spoon</title>
     <description>Transform and analyze your Java source code.
 </description>
-    <link>http://inria.github.io/</link>
-    <atom:link href="http://inria.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 08 Oct 2014 16:52:53 +0200</pubDate>
-    <lastBuildDate>Wed, 08 Oct 2014 16:52:53 +0200</lastBuildDate>
+    <link>http://inria.github.io/spoon/</link>
+    <atom:link href="http://inria.github.io/spoon/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Thu, 09 Oct 2014 11:26:31 +0200</pubDate>
+    <lastBuildDate>Thu, 09 Oct 2014 11:26:31 +0200</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -17,8 +17,8 @@
 &lt;p&gt;You can view a technical presentation &lt;a href=&quot;http://spoon.gforge.inria.fr/source-code-analysis-transformation-spoon.pdf&quot;&gt;here&lt;/a&gt; and slides &lt;a href=&quot;http://www.monperrus.net/martin/lecture-slides-source-code-analysis-and-transformation.pdf&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 </description>
         <pubDate>Sun, 05 Oct 2014 18:29:03 +0200</pubDate>
-        <link>http://inria.github.io/home/2014/10/05/introduction.html</link>
-        <guid isPermaLink="true">http://inria.github.io/home/2014/10/05/introduction.html</guid>
+        <link>http://inria.github.io/spoon/home/2014/10/05/introduction.html</link>
+        <guid isPermaLink="true">http://inria.github.io/spoon/home/2014/10/05/introduction.html</guid>
         
         
         <category>home</category>
@@ -56,8 +56,8 @@
 &lt;p&gt;The &lt;a href=&quot;https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/distcalc/?root=spoon&quot;&gt;Distributed Calculus example&lt;/a&gt; creates a fun new language for distributed computing using Java and Spoon.&lt;/p&gt;
 </description>
         <pubDate>Sat, 04 Oct 2014 18:30:06 +0200</pubDate>
-        <link>http://inria.github.io/home/2014/10/04/usage.html</link>
-        <guid isPermaLink="true">http://inria.github.io/home/2014/10/04/usage.html</guid>
+        <link>http://inria.github.io/spoon/home/2014/10/04/usage.html</link>
+        <guid isPermaLink="true">http://inria.github.io/spoon/home/2014/10/04/usage.html</guid>
         
         
         <category>home</category>
@@ -66,7 +66,7 @@
     
       <item>
         <title>Download</title>
-        <description>&lt;p&gt;&lt;a href=&quot;https://gforge.inria.fr/frs/?group_id=73&quot;&gt;v2.1 JAR&lt;/a&gt; - &lt;a href=&quot;http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs&quot;&gt;Javadoc&lt;/a&gt;&lt;/p&gt;
+        <description>&lt;p&gt;&lt;a href=&quot;https://gforge.inria.fr/frs/?group_id=73&quot;&gt;v2.3.1 JAR&lt;/a&gt; - &lt;a href=&quot;http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs&quot;&gt;Javadoc&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;The source code to the Spoon and this website is &lt;a href=&quot;https://github.com/INRIA/spoon&quot;&gt;available on GitHub&lt;/a&gt;.&lt;/p&gt;
 
@@ -74,21 +74,11 @@
 
 &lt;p&gt;Stable version:&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;
-	&lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
-		&lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;fr.inria.gforge.spoon&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
-		&lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spoon-core&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
-		&lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;2.1&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
-	&lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencies&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;repositories&amp;gt;&lt;/span&gt;
-	&lt;span class=&quot;nt&quot;&gt;&amp;lt;repository&amp;gt;&lt;/span&gt;
-		&lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;gforge.inria.fr-release&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
-		&lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;Maven Repository for Spoon&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-		&lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://spoon.gforge.inria.fr/repositories/releases/&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
-		&lt;span class=&quot;nt&quot;&gt;&amp;lt;releases&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-	&lt;span class=&quot;nt&quot;&gt;&amp;lt;/repository&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/repositories&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;fr.inria.gforge.spoon&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spoon-core&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;2.3.1&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Snapshot version:&lt;/p&gt;
 
@@ -109,8 +99,8 @@
 &lt;span class=&quot;nt&quot;&gt;&amp;lt;/repositories&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 </description>
         <pubDate>Fri, 03 Oct 2014 18:30:03 +0200</pubDate>
-        <link>http://inria.github.io/home/2014/10/03/download.html</link>
-        <guid isPermaLink="true">http://inria.github.io/home/2014/10/03/download.html</guid>
+        <link>http://inria.github.io/spoon/home/2014/10/03/download.html</link>
+        <guid isPermaLink="true">http://inria.github.io/spoon/home/2014/10/03/download.html</guid>
         
         
         <category>home</category>
@@ -124,8 +114,8 @@
 &lt;p&gt;When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible. Please also make sure your code compiles by running &lt;code&gt;mvn clean verify&lt;/code&gt;.&lt;/p&gt;
 </description>
         <pubDate>Thu, 02 Oct 2014 18:30:03 +0200</pubDate>
-        <link>http://inria.github.io/home/2014/10/02/contributing.html</link>
-        <guid isPermaLink="true">http://inria.github.io/home/2014/10/02/contributing.html</guid>
+        <link>http://inria.github.io/spoon/home/2014/10/02/contributing.html</link>
+        <guid isPermaLink="true">http://inria.github.io/spoon/home/2014/10/02/contributing.html</guid>
         
         
         <category>home</category>
@@ -137,8 +127,8 @@
         <description>&lt;p&gt;Spoon is Free and Open Source (CeCILL-C license - French equivalent to LGPL).&lt;/p&gt;
 </description>
         <pubDate>Wed, 01 Oct 2014 18:30:03 +0200</pubDate>
-        <link>http://inria.github.io/home/2014/10/01/license.html</link>
-        <guid isPermaLink="true">http://inria.github.io/home/2014/10/01/license.html</guid>
+        <link>http://inria.github.io/spoon/home/2014/10/01/license.html</link>
+        <guid isPermaLink="true">http://inria.github.io/spoon/home/2014/10/01/license.html</guid>
         
         
         <category>home</category>

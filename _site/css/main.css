@@ -149,7 +149,11 @@ pre {
   border-top: 5px solid #424242;
   border-bottom: 1px solid #e8e8e8;
   min-height: 56px;
+  background-color: #41495C;
   position: relative; }
+
+.site-header .wrapper a {
+  color: #fdfdfd; }
 
 .site-title {
   font-size: 26px;
