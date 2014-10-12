@@ -833,9 +833,8 @@ public class Launcher {
 
 		env.debugMessage("output: " + compiler.getOutputDirectory());
 		env.debugMessage("destination: " + compiler.getDestinationDirectory());
-		env.debugMessage("source classpath: " + compiler.getSourceClasspath());
-		env.debugMessage("template classpath: "
-				+ compiler.getTemplateClasspath());
+		env.debugMessage("source classpath: " + Arrays.toString(compiler.getSourceClasspath()));
+		env.debugMessage("template classpath: " + Arrays.toString(compiler.getTemplateClasspath()));
 
 		try {
 			for (SpoonResource f : inputSources) {
