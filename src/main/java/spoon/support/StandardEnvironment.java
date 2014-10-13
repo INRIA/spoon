@@ -483,4 +483,14 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.preserveLineNumbers = preserveLineNumbers;
 	}
 
+	private boolean noclasspath = false;
+	@Override
+	public void setNoClasspath(boolean option) {
+		noclasspath = option;
+	}
+	@Override
+	public boolean getNoClasspath() {
+		return noclasspath;
+	}
+
 }
