@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Ecosystem
-permalink: /ecosystem/
+permalink: /Spoon/Contributions/
 ---
 
 ## SpoonJDT

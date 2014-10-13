@@ -3,7 +3,7 @@ title: Spoon
 email: spoon-discuss@lists.gforge.inria.fr
 description: >
   Transform and analyze your Java source code.
-baseurl: "/spoon" # the subpath of your site, e.g. /blog/
+baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://inria.github.io" # the base hostname & protocol for your site
 github_username:  INRIA/spoon
 

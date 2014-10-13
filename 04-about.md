@@ -1,7 +1,7 @@
 ---
 layout: page
 title: About
-permalink: /about/
+permalink: /About/Main/
 ---
 
 Spoon is developed in the [LIFL](http://www.lifl.fr/) (Computer-Science Laboratory of Lille) in Lille, France.
