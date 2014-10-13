@@ -13,12 +13,12 @@ This is where Spoon was born (first window of the last floor, right side of the 
 
 ## Spooners
 
-![Spooners](http://spoon.gforge.inria.fr/pub/images/spoonTeam.jpg)
+![Spooners]({{ "/assets/spoonTeam.jpg" | prepend: site.baseurl }})
 
-From left to right: Renaud Pawlak (aka Master Yoda), [Nicolas Petitprez](http://npetitpr.free.fr/) (aka Little Padawan), and Carlos Noguera (aka Luke Spoonwalker)
+From left to right: [Renaud Pawlak](https://www.linkedin.com/pub/renaud-pawlak/6/ba8/b8a) (aka Master Yoda), [Nicolas Petitprez](https://www.linkedin.com/pub/nicolas-petitprez/32/26/8a4/en) (aka Little Padawan), and [Carlos Noguera](https://www.linkedin.com/pub/carlos-noguera/11/86a/383) (aka Luke Spoonwalker)
 
 ## Logos
 
-![Big logo](http://spoon.gforge.inria.fr/pub/images/spoon.jpg)
-![Big powered logo](http://spoon.gforge.inria.fr/pub/images/spoonpowered_big.jpg)
-![Small powered logo](http://spoon.gforge.inria.fr/pub/images/spoonpowered.jpg)
+![Big logo]({{ "/assets/spoon.jpg" | prepend: site.baseurl }})
+![Big powered logo]({{ "/assets/spoonpowered_big.jpg" | prepend: site.baseurl }})
+![Small powered logo]({{ "/assets/spoonpowered.jpg" | prepend: site.baseurl }})
