@@ -4,18 +4,36 @@ title: About
 permalink: /About/Main/
 ---
 
-Spoon is developed in the [LIFL](http://www.lifl.fr/) (Computer-Science Laboratory of Lille) in Lille, France.
+Spoon is developed at Inria Lille within at the [Spirals research group](https://team.inria.fr/spirals/).
 
-![Logo LIFL](http://www.lifl.fr/images/logos/lifl.jpg)
-![LIFL](http://www.lifl.fr/PHOTOS/misc/new2m3.gif)
-
-This is where Spoon was born (first window of the last floor, right side of the M3 building).
+![Lille]({{ "/assets/lille-grandplace.jpg" | prepend: site.baseurl }})
 
 ## Spooners
 
+Thanks for all contributors of the project:
+
+* Olivier Barais
+* David Bernard
+* Benoit Cornu
+* Didier Donsez
+* Favio DeMarco
+* Christophe Dufour
+* Sebastian Lamelas Marcote
+* Matias Martinez
+* Martin Monperrus
+* Carlos Noguera
+* Renaud Pawlak
+* Nicolas Pessemier
+* Nicolas Petitprez
+* Phillip Schichtel
+* Lionel Seinturier
+* Stefan Wolf
+
+And special thanks for original spooners:
+
 ![Spooners]({{ "/assets/spoonTeam.jpg" | prepend: site.baseurl }})
 
-From left to right: [Renaud Pawlak](https://www.linkedin.com/pub/renaud-pawlak/6/ba8/b8a) (aka Master Yoda), [Nicolas Petitprez](https://www.linkedin.com/pub/nicolas-petitprez/32/26/8a4/en) (aka Little Padawan), and [Carlos Noguera](https://www.linkedin.com/pub/carlos-noguera/11/86a/383) (aka Luke Spoonwalker)
+Spoon was originally created by [Renaud Pawlak](https://www.linkedin.com/pub/renaud-pawlak/6/ba8/b8a) (aka Master Yoda), [Nicolas Petitprez](https://www.linkedin.com/pub/nicolas-petitprez/32/26/8a4/en) (aka Little Padawan), and [Carlos Noguera](https://www.linkedin.com/pub/carlos-noguera/11/86a/383) (aka Luke Spoonwalker) in 2005-2006.
 
 ## Logos
 
