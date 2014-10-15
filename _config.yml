@@ -1,0 +1,11 @@
+# Site settings
+title: Spoon
+email: spoon-discuss@lists.gforge.inria.fr
+description: >
+  Transform and analyze your Java source code.
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://spoon.gforge.inria.fr/" # the base hostname & protocol for your site
+github_username:  INRIA/spoon
+
+# Build settings
+markdown: kramdown
