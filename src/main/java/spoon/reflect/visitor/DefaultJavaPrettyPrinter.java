@@ -18,14 +18,8 @@
 package spoon.reflect.visitor;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Stack;
-import java.util.TreeMap;
 
 import spoon.Launcher;
 import spoon.compiler.Environment;
@@ -109,120 +103,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	Map<Integer, Integer> lineNumberMapping = new HashMap<Integer, Integer>();
 
-	/**
-	 * A scanner that calculates the imports for a given model.
-	 */
-	private class ImportScanner extends CtScanner {
-		Map<String, CtTypeReference<?>> imports = new TreeMap<String, CtTypeReference<?>>();
-
-		/**
-		 * Adds a type to the imports.
-		 */
-		public <T> boolean addImport(CtTypeReference<T> ref) {
-			if (imports.containsKey(ref.getSimpleName())) {
-				return isImported(ref);
-			}
-			imports.put(ref.getSimpleName(), ref);
-			return true;
-		}
-
-		/**
-		 * Calculates needed imports for the given field access.
-		 */
-		@Override
-		public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-			enter(targetedAccess);
-			scan(targetedAccess.getVariable());
-			// scan(fieldAccess.getType());
-			scan(targetedAccess.getAnnotations());
-			scanReferences(targetedAccess.getTypeCasts());
-			scan(targetedAccess.getVariable());
-			scan(targetedAccess.getTarget());
-			exit(targetedAccess);
-		}
-
-		@Override
-		public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-			enterReference(reference);
-			scan(reference.getDeclaringType());
-			// scan(reference.getType());
-			exitReference(reference);
-		}
-
-		public <T> boolean isImported(CtTypeReference<T> ref) {
-			if (imports.containsKey(ref.getSimpleName())) {
-				CtTypeReference<?> exist = imports.get(ref.getSimpleName());
-				if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@Override
-		public <T> void visitCtExecutableReference(
-				CtExecutableReference<T> reference) {
-			enterReference(reference);
-			if (reference.getDeclaringType() != null
-					&& reference.getDeclaringType().getDeclaringType() == null) {
-				addImport(reference.getDeclaringType());
-			}
-			scanReferences(reference.getActualTypeArguments());
-			exitReference(reference);
-		}
-
-		@Override
-		public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-			// For a ctinvocation, we don't have to import declaring type
-			scan(invocation.getTarget());
-		}
-
-		@Override
-		public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-			if (!(reference instanceof CtArrayTypeReference)) {
-				if (reference.getDeclaringType() == null) {
-					addImport(reference);
-				} else {
-					addImport(reference.getDeclaringType());
-				}
-			}
-			super.visitCtTypeReference(reference);
-
-		}
-
-		@Override
-		public <A extends Annotation> void visitCtAnnotationType(
-				CtAnnotationType<A> annotationType) {
-			addImport(annotationType.getReference());
-			super.visitCtAnnotationType(annotationType);
-		}
-
-		@Override
-		public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
-			addImport(ctEnum.getReference());
-			super.visitCtEnum(ctEnum);
-		}
-
-		@Override
-		public <T> void visitCtInterface(CtInterface<T> intrface) {
-			addImport(intrface.getReference());
-			for (CtSimpleType<?> t : intrface.getNestedTypes()) {
-				addImport(t.getReference());
-			}
-			super.visitCtInterface(intrface);
-		}
-
-		@Override
-		public <T> void visitCtClass(CtClass<T> ctClass) {
-			addImport(ctClass.getReference());
-			for (CtSimpleType<?> t : ctClass.getNestedTypes()) {
-				addImport(t.getReference());
-			}
-			super.visitCtClass(ctClass);
-		}
-	}
-
-	public class Printingcontext {
+	public class PrintingContext {
 		boolean noTypeDecl = false;
 
 		Stack<CtTypeReference<?>> currentThis = new Stack<CtTypeReference<?>>();
@@ -281,22 +162,24 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * The tabulation string.
-	 */
-	// public static final String TAB = " ";
-	/**
 	 * The printing context.
 	 */
-	public Printingcontext context = new Printingcontext();
+	public PrintingContext context = new PrintingContext();
 
-	private ImportScanner importsContext = new ImportScanner();
+	/**
+	 * Handle imports of classes.
+	 */
+	private ImportScanner importsContext = new ImportScannerImpl();
 
 	/**
 	 * The string buffer in which the code is generated.
 	 */
 	private StringBuffer sbf = new StringBuffer();
 
-	Environment env;
+	/**
+	 * Environment which Spoon is executed.
+	 */
+	private Environment env;
 
 	/**
 	 * Creates a new code generator visitor.
@@ -372,13 +255,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	/**
-	 * Gets the imports.
-	 */
-	public Collection<CtTypeReference<?>> getImports() {
-		return importsContext.imports.values();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -387,8 +263,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public String getPackageDeclaration() {
 		StringBuffer bck = sbf;
 		sbf = new StringBuffer();
-		Map<String, CtTypeReference<?>> tmp = importsContext.imports;
-		importsContext.imports = new TreeMap<String, CtTypeReference<?>>();
 
 		for (CtAnnotation<?> a : context.currentTopLevel.getPackage()
 				.getAnnotations()) {
@@ -404,7 +278,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		String ret = sbf.toString();
 		sbf = bck;
 
-		importsContext.imports = tmp;
 		return ret;
 	}
 
@@ -440,12 +313,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public void makeImports(CtSimpleType<?> type) {
+	public Collection<CtTypeReference<?>> makeImports(CtSimpleType<?> type) {
 		if (env.isAutoImports()) {
 			context.currentTopLevel = type;
-			importsContext.addImport(context.currentTopLevel.getReference());
-			importsContext.scan(context.currentTopLevel);
+			return importsContext.computeImports(context.currentTopLevel);
 		}
+		return Collections.EMPTY_LIST;
 	}
 
 	/**
@@ -1335,9 +1208,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				try {
 					CtTypeReference<?> type = invocation.getExecutable()
 							.getDeclaringType();
-					if (env.isAutoImports()) {
-						importsContext.imports.remove(type.getSimpleName());
-					}
 					context.ignoreGenerics = true;
 					scan(type);
 					context.ignoreGenerics = false;
@@ -1559,7 +1429,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void reset() {
-		importsContext = new ImportScanner();
 		sbf = new StringBuffer();
 	}
 
@@ -2033,25 +1902,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Write the compilation unit header.
 	 */
-	public DefaultJavaPrettyPrinter writeHeader(List<CtSimpleType<?>> types) {
+	public DefaultJavaPrettyPrinter writeHeader(List<CtSimpleType<?>> types,
+			Collection<CtTypeReference<?>> imports) {
 		if (!types.isEmpty()) {
 			CtPackage pack = types.get(0).getPackage();
 			scan(pack).writeln().writeln().writeTabs();
 			if (env.isAutoImports()) {
-				for (CtTypeReference<?> ref : importsContext.imports.values()) {
-					// ignore non-top-level type
-					if (ref.getPackage() != null) {
-						// ignore java.lang package
-						if (!ref.getPackage().getSimpleName()
-								.equals("java.lang")) {
-							// ignore type in same package
-							if (!ref.getPackage().getSimpleName()
-									.equals(pack.getQualifiedName())) {
-								write("import " + ref.getQualifiedName() + ";")
-										.writeln().writeTabs();
-							}
-						}
-					}
+				for (CtTypeReference<?> ref : imports) {
+					write("import " + ref.getQualifiedName() + ";")
+							.writeln().writeTabs();
 				}
 			}
 			writeln().writeTabs();
@@ -2201,10 +2060,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void calculate(CompilationUnit sourceCompilationUnit,
 			List<CtSimpleType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
+		Collection<CtTypeReference<?>> imports = Collections.EMPTY_LIST;
 		for (CtSimpleType<?> t : types) {
-			makeImports(t);
+			imports = makeImports(t);
 		}
-		writeHeader(types);
+		writeHeader(types, imports);
 		for (CtSimpleType<?> t : types) {
 			scan(t);
 			writeln().writeln().writeTabs();
@@ -2215,7 +2075,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return lineNumberMapping;
 	}
 
-	public Printingcontext getContext() {
+	public PrintingContext getContext() {
 		return context;
 	}
 }
