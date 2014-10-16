@@ -1315,6 +1315,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 										.getQualifiedName())) {
 					write("this");
 				} else {
+					if (invocation.getTarget() != null) {
+						write(invocation.getTarget().getSignature() + '.');
+					}
 					write("super");
 				}
 			} catch (Exception e) {
