@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -38,8 +40,10 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 		final ICompilerRequestor r = super.getBatchRequestor();
 		return new ICompilerRequestor() {
 			public void acceptResult(CompilationResult compilationResult) {
-				if (compilationResult.hasErrors()) {
-					JDTBatchCompiler.this.jdtCompiler.probs.add(compilationResult.problems);
+				if (compilationResult.hasErrors()) {					
+					for (CategorizedProblem problem:compilationResult.problems) {
+						JDTBatchCompiler.this.jdtCompiler.reportProblem(problem);
+					}
 				}
 				r.acceptResult(compilationResult);
 			}

@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
 import spoon.reflect.declaration.CtExecutable;
@@ -61,12 +60,6 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtParameterReference(this);
-	}
-
-	@Override
-	protected AnnotatedElement getActualAnnotatedElement() {
-		// this is never available through reflection
-		return null;
 	}
 	
 }

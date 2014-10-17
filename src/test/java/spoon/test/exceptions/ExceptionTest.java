@@ -86,4 +86,19 @@ public class ExceptionTest {
 			// you're trying to give source code in the classpath, this should be given to addInputSource
 		}
 	}
+	
+	@Test(expected=ModelBuildingException.class)
+	public void testExceptionDuplicateClass() throws Exception {
+			Launcher spoon = new Launcher();
+			Factory factory = spoon.createFactory();
+			
+			// contains twice the same class in the same package
+			// an exception should be thrown, even in noclasspath mode
+			spoon.createCompiler(
+					factory,
+					SpoonResourceHelper
+							.resources("./src/test/resources/spoon/test/duplicateclasses/Foo.java", "./src/test/resources/spoon/test/duplicateclasses/Bar.java"))
+					.build();
+	}
+
 }
