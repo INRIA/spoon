@@ -76,7 +76,7 @@ public class FileSystemFolder implements SpoonFolder {
 		List<SpoonFolder> subFolders;
 		subFolders = new ArrayList<SpoonFolder>();
 		for (File f : file.listFiles()) {
-			if (!SpoonResourceHelper.isFile(f))
+			if (!(SpoonResourceHelper.isArchive(f) || f.isFile()))
 				try {
 					subFolders.add(SpoonResourceHelper.createFolder(f));
 				} catch (FileNotFoundException e) {
