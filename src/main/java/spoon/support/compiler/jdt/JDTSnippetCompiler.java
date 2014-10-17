@@ -115,7 +115,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 			unit.traverse(builder, unit.scope);
 		}
 
-		return probs.size() == 0;
+		return getProblems().size() == 0;
 	}
 
 	@Override
