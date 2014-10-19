@@ -1,11 +1,12 @@
 package spoon.test.template;
 
 import spoon.reflect.declaration.CtField;
+import spoon.template.ExtensionTemplate;
 import spoon.template.Local;
 import spoon.template.Parameter;
 import spoon.template.Template;
 
-public class ArrayResizeTemplate implements Template {
+public class ArrayResizeTemplate extends ExtensionTemplate {
 
 	@Parameter
 	int _poolSizeIncrement_;

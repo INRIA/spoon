@@ -14,7 +14,7 @@ public class ArrayResizeProcessor extends AbstractProcessor<CtField<?>> {
 		if ((field.getDeclaringType() instanceof CtClass)
 				&& field.getType() instanceof CtArrayTypeReference) {
 			Template t = new ArrayResizeTemplate(field, 10);
-			Substitution.insertAll((CtClass<?>) field.getDeclaringType(), t);
+			t.apply(field.getDeclaringType());
 		}
 	}
 
