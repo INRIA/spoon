@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import spoon.Launcher;
@@ -266,6 +267,38 @@ public abstract class Parameters {
 				return null;
 			}
 		};
+	}
+
+	/** returns all the runtime fields of a template representing a template parameter */
+	public static List<Field> getAllTemplateParameterFields(Class<? extends Template> clazz) {
+		if (!Template.class.isAssignableFrom(clazz)) {
+			throw new IllegalArgumentException();
+		}
+		
+		List<Field> result = new ArrayList<Field>();
+		for (Field f : RtHelper.getAllFields(clazz)) {
+			if (isParameterSource(f)) {
+				result.add(f);
+			}
+		}
+		
+		return result;		
+	}
+
+	/** returns all the compile_time fields of a template representing a template parameter */
+	public static List<CtField> getAllTemplateParameterFields(Class<? extends Template> clazz, Factory factory) {
+		CtClass c = factory.Class().get(clazz);
+		if (c==null) {
+			throw new IllegalArgumentException("Template not in template classpath");
+		}
+		
+		List<CtField> result = new ArrayList<CtField>();
+		
+		for (Field f : getAllTemplateParameterFields(clazz)) {
+			result.add(c.getField(f.getName()));			
+		}
+		
+		return result;		
 	}
 
 }
