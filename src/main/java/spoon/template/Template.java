@@ -17,13 +17,12 @@
 
 package spoon.template;
 
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 
 /**
- * This maker interface should be implemented by the classes containing some
- * template code, so that they can be used as template parameter values holder
- * for the {@link Substitution} methods.
- * 
  * <p>
  * A template code is simply a piece of code that uses a
  * {@link TemplateParameter}'s instance. It must then invoke the
@@ -81,5 +80,14 @@ import spoon.reflect.declaration.CtType;
  * </pre>
  * 
  */
-public interface Template {
+public interface Template<T extends CtElement> {
+	  /**
+	   * Returns the code which results from applying the template.
+	   * 
+	   * @param targetType
+	   *            the type that defines the context of the substitution.
+	   *            It may be null for templates with no context.
+	   */
+	  T apply(CtSimpleType<?> targetType);
+
 }
