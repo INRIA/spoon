@@ -20,6 +20,9 @@ package spoon.template;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.factory.Factory;
+import spoon.support.template.Parameters;
+import spoon.support.template.SubstitutionVisitor;
 
 /**
  * This class represents a template parameter that defines a statement list
@@ -31,8 +34,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * the Java statements. It corresponds to a
  * {@link spoon.reflect.code.CtStatementList}.
  */
-public abstract class StatementTemplate implements TemplateParameter<Void>,
-		Template {
+public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 
 	/**
 	 * Creates a new statement list template parameter.
@@ -40,18 +42,31 @@ public abstract class StatementTemplate implements TemplateParameter<Void>,
 	public StatementTemplate() {
 	}
 
-	public CtStatement getSubstitution(CtSimpleType<?> targetType) {
+	public CtStatement apply(CtSimpleType<?> targetType) {
 		CtClass<?> c;
-		c = targetType.getFactory().Class().get(this.getClass());
+		Factory factory;
+		
+		// we first need a factory
+		if (targetType != null) {
+			// if it's template with reference replacement
+			factory = targetType.getFactory();
+		} else {
+			// else we have at least one template parameter with a factory
+			factory = getFactory();
+		}
+		
+		c = factory.Class().get(this.getClass());
 		if (c == null) {
-			c = targetType.getFactory().Class().get(this.getClass());
+			c = factory.Class().get(this.getClass());
 		}
 		if (this instanceof Template) {
-			return Substitution.substitute(targetType, this,
-					c.getMethod("statement").getBody().getStatements().get(0));
+			// we substitute the first statement of method statement
+			CtStatement result = factory.Core().clone(c.getMethod("statement").getBody().getStatements().get(0));
+			new SubstitutionVisitor(factory, targetType, this)
+					.scan(result);
+			return result;
 		} else {
-			return targetType
-					.getFactory()
+			return factory
 					.Core()
 					.clone(c.getMethod("statement").getBody().getStatements()
 							.get(0));
