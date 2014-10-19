@@ -116,4 +116,46 @@ public class TemplateTest {
 
 	}
 
+	@Test
+	public void testCheckBoundTemplate() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources(
+						"./src/test/java/spoon/test/template/FooBound.java"),
+				SpoonResourceHelper
+						.resources(
+								"./src/test/java/spoon/test/template/CheckBoundTemplate.java"))
+				.build();
+
+		CtClass<?> c = factory.Class().get(FooBound.class);
+		
+		CtMethod<?> method = c.getMethodsByName("method").get(0);
+	
+		assertEquals(1, Parameters.getAllTemplateParameterFields(CheckBoundTemplate.class).size());
+		assertEquals(1, Parameters.getAllTemplateParameterFields(CheckBoundTemplate.class, factory).size());
+		
+		// creating a template instance
+		CheckBoundTemplate t = new CheckBoundTemplate();
+		assertTrue(t.isWellFormed());
+		assertFalse(t.isValid());
+		CtParameter<?> param = method.getParameters().get(0);
+		t.setVariable(param);
+		assertTrue(t.isValid());
+		
+		// getting the final AST
+		CtStatement injectedCode = (t.apply(null));
+
+		assertTrue(injectedCode instanceof CtIf);
+		
+		CtIf ifStmt = (CtIf)injectedCode;
+		
+		// contains the replaced code
+		assertEquals("(l.size()) > 10", ifStmt.getCondition().toString());
+		
+		// adds the bound check at the beginning of a method
+		method.getBody().insertBegin(injectedCode);		
+		assertEquals(injectedCode, method.getBody().getStatement(0));
+	}
 }
