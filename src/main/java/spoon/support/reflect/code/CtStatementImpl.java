@@ -99,6 +99,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
                 return;
 			} else {
 				CtBlock<?> block = target.getFactory().Core().createBlock();
+				target.setParent(block);
 				block.addStatement(stat);
 				if (inThen)
 					((CtIf) targetParent).setThenStatement(block);

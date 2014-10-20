@@ -1,8 +1,11 @@
 package spoon.test.intercession.insertBefore;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +19,12 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -144,4 +150,46 @@ public class InsertBeforeTest {
         }
     }
 
+    @Test
+    public void insertBeforeAndUpdateParent() throws Exception {
+    	/**
+    	 * if (condition)
+    	 *     while (loop_condition)
+    	 * 
+    	 * In this case the 'while' is not inside a block, but
+    	 * when we insert a new statement
+    	 * 
+    	 * if (condition) {
+    	 *     newStatement
+    	 *     while (loop_condition)
+    	 *     ...
+    	 * }
+    	 * 
+    	 * Now the while is inside a block.
+    	 */
+    	Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/spoon/test/intercession/insertBefore/InsertBeforeExample2.java")).build();
+		
+		// Get the 'while'
+		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<CtWhile>(CtWhile.class));
+		assertTrue(1 == elements.size());
+		CtWhile theWhile = elements.get(0);
+		
+		// We make sure the parent of the while is the CtIf and not the block
+		CtElement parent = theWhile.getParent();
+		assertTrue(CtIf.class.isInstance(parent));
+		CtIf ifParent = (CtIf) parent;
+		
+		// Create a new statement to be inserted before the while
+		CtStatement insert = factory.Code().createCodeSnippetStatement("System.out.println()");
+		
+		// Insertion of the new statement
+		theWhile.insertBefore(insert);
+		
+		// We make sure the parent of the while is updated
+		CtElement newParent = theWhile.getParent();
+		assertTrue(newParent != ifParent);
+		assertTrue(CtBlock.class.isInstance(newParent));
+    }
 }
