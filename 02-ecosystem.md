@@ -4,19 +4,19 @@ title: Ecosystem
 permalink: /Spoon/Contributions/
 ---
 
-## SpoonJDT
+## SpoonLabs
 
-SpoonJDT provides an Eclipse plugin that allows for tight integration of Spoon within the Eclipse environment. With SpoonJDT, a set of validations and transformations packaged as a Spoonlet can occur on the fly and the reports are well-integrated into the Eclipse JDT.
-
-SpoonJDT tutorial at EclipseCON 2007: download the files [here](http://spoon.gforge.inria.fr/temp/EclipseCON2007-Spoon-Tutorial.zip).
+[SpoonLabs](https://github.com/SpoonLabs) is a Github group for centralizing all projects and experiments that use Spoon.
 
 ## Spoon's Maven plugin
 
-Author: David Bernard
+Current one:
+[spoon-maven-plugin](https://github.com/SpoonLabs/spoon-maven-plugin) (authors: Cristophe Dufour, Gerard Palligot)
 
-Link of the project [here](http://alchim.sf.net/spoon-maven-plugin/).
 
-[![maven](http://alchim.sourceforge.net/spoon-maven-plugin/images/logos/maven-feather.png)](http://maven.apache.org/)
+Legacy one;
+[spoon-maven-plugin (old)](http://alchim.sf.net/spoon-maven-plugin/). (Author: David Bernard)
+
 
 ## SpoonLoader
 
@@ -26,6 +26,10 @@ Author: Brett Daniel
 
 Link of the project [here](http://mir.cs.illinois.edu/~bdaniel3/spoonloader/).
 
-## Spoonlets
 
-See [SubProjects.Main](http://spoon.gforge.inria.fr/SubProjects/Main).
+## Not maintained anymore:
+
+### SpoonJDT
+
+[legacy] SpoonJDT provides an Eclipse plugin that allows for tight integration of Spoon within the Eclipse environment. With SpoonJDT, a set of validations and transformations packaged as a Spoonlet can occur on the fly and the reports are well-integrated into the Eclipse JDT. [SpoonJDT tutorial at EclipseCON 2007](http://spoon.gforge.inria.fr/temp/EclipseCON2007-Spoon-Tutorial.zip).
+
