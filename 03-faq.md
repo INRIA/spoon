@@ -16,6 +16,35 @@ Go [here](http://gforge.inria.fr/scm/?group_id=73) and follow the instructions.
 
 ## Basics
 
+### How to run Spoon in Maven?
+
+Add the right plugin (exec-maven-plugin) and execute task exec:java
+
+{% highlight PowerShell %}
+mvn exec:java
+{% endhighlight %}
+
+{% highlight xml %}
+<build>
+  <plugins>
+      <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.2.1</version>
+          <configuration>
+              <mainClass>spoon.Launcher</mainClass>
+              <arguments>
+                  <argument>-i</argument>
+                  <argument>[SOURCE_FOLDER]</argument>
+                  <argument>-p</argument>
+                  <argument>[PROCESSOR]</argument>
+              </arguments>
+          </configuration>
+      </plugin>
+  </plugins>
+</build>
+{% endhighlight %}
+
 ### How to get a Spoon model programmatically?
 
 {% highlight java %}
