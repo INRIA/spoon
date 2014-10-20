@@ -4,6 +4,7 @@ title: Papers
 permalink: /Papers/Main/
 ---
 
+If you use Spoon, please cite:
 {% highlight latex %}
 @TECHREPORT{spoon,
   author = {R. Pawlak and C. Noguera and N. Petitprez},
@@ -13,6 +14,8 @@ permalink: /Papers/Main/
   number = {5901}
 }
 {% endhighlight %}
+
+### Articles that use Spoon
 
 **[Test Case Purification for Improving Fault Localization](https://hal.inria.fr/hal-01061911/PDF/main.pdf)** (Jifeng Xuan, [Martin Monperrus](http://www.monperrus.net/martin/)), In Proceedings of the International Symposium on the Foundations of Software Engineering, 2014.
 
