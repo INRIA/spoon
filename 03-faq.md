@@ -16,6 +16,23 @@ Go [here](http://gforge.inria.fr/scm/?group_id=73) and follow the instructions.
 
 ## Basics
 
+### How to get a Spoon model programmatically?
+
+{% highlight java %}
+Launcher spoon = new Launcher();
+spoon.addInputResource(new FileSystemFolder(new File("src/test/resources/spoon/test/api")));
+spoon.run();
+Factory factory = spoon.getFactory();
+// list all packages of the model
+for(CtPackage p : factory.Package().getAll()) {
+  System.out.println("package: "+p.getQualifiedName());
+}
+// list all classes of the model
+for(CtSimpleType s : factory.Class().getAll()) {
+  System.out.println("class: "+s.getQualifiedName());
+}
+{% endhighlight %}
+
 ### How to use Spoon in standalone mode
 
 You can download the Spoon standalone version (here) that includes the Eclipse JDT compiler and can be applied to any Java program using command-line style.
