@@ -1,6 +1,7 @@
 package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -37,5 +38,27 @@ public class DefaultPrettyPrinterTest {
 		assertEquals(3, elements.size());
 		CtInvocation<?> mathAbsInvocation = elements.get(1);
 		assertEquals("java.lang.Math.abs(message.length())", mathAbsInvocation.toString());
+	}
+	
+	@Test
+	public void superInvocationWithEnclosingInstance() throws Exception {
+		
+		/**
+		 * To extend a nested class an enclosing instance must be provided
+		 * to call the super constructor.
+		 */
+		
+		String sourcePath = "./src/test/resources/spoon/test/prettyprinter/NestedSuperCall.java";
+		List<SpoonResource> files = SpoonResourceHelper.resources(sourcePath);
+		assertEquals(1, files.size());
+		
+		SpoonCompiler comp = new Launcher().createCompiler();
+		comp.addInputSources(files);
+		comp.build();
+		
+		Factory factory = comp.getFactory();
+		CtSimpleType<?> theClass = factory.Type().get("spoon.test.prettyprinter.NestedSuperCall");
+		
+		assertTrue(theClass.toString().contains("nc.super(\"a\")"));
 	}
 }
