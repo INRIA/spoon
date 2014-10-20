@@ -6,11 +6,11 @@ permalink: /Doc/FAQ/
 
 ## Practical Information
 
-### How to subscribe to Spoon's mailing list
+### How to subscribe to Spoon's mailing list?
 
 Go [here](http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss) and fill the form.
 
-### How to access Spoon's repository
+### How to access Spoon's repository?
 
 Go [here](http://gforge.inria.fr/scm/?group_id=73) and follow the instructions.
 
@@ -33,7 +33,7 @@ for(CtSimpleType s : factory.Class().getAll()) {
 }
 {% endhighlight %}
 
-### How to use Spoon in standalone mode
+### How to use Spoon in standalone mode?
 
 You can download the Spoon standalone version (here) that includes the Eclipse JDT compiler and can be applied to any Java program using command-line style.
 
@@ -45,7 +45,7 @@ java -cp spoon-core-with-dependencies.jar spoon.Launcher -i sourceFolder -p Catc
 
 Optionally, if you use templates, you have to specify the location of your template source files.
 
-### How to use Spoon with Ant
+### How to use Spoon with Ant?
 
 First, get the Spoon standalone version.
 
@@ -72,7 +72,7 @@ You need to set the Spoon jar and the compiled processors in the classpath refer
 </spoon>
 {% endhighlight %}
 
-### How to use Spoon with the Java launcher
+### How to use Spoon with the Java launcher?
 
 First, get the Spoon standalone version.
 
@@ -114,11 +114,11 @@ Options :
         show spoon model after processing
 {% endhighlight %}
 
-### How to use Spoon as a Maven task
+### How to use Spoon as a Maven task?
 
 A Maven plugin by David Bernard is on its way! It is avalaible in beta at this [link](http://alchim.sf.net/spoon-maven-plugin/).
 
-### How to write your own processor(s)
+### How to write your own processor(s)?
 
 You need to get the standalone version Spoon jar ([here](http://spoon.gforge.inria.fr/Spoon/HomePage)) and add it to the build path of your Java project. Then you have to subclass the class [spoon.processing.AbstractProcessor](http://spoon.gforge.inria.fr/javadoc/spoon/spoon/processing/AbstractProcessor.html) and implement the process method. This class is parameterized by the type of program element you want to process. These types are those of the Spoon's Java metamodel defined in the [spoon.reflect.declaration package](http://spoon.gforge.inria.fr/javadoc/spoon/spoon/reflect/declaration/package-summary.html) and [spoon.reflect.code package](http://spoon.gforge.inria.fr/javadoc/spoon/spoon/reflect/code/package-summary.html). For example, to process all the Java program elements, you can write the following processor:
 
@@ -154,7 +154,7 @@ public class MyProcessor extends AbstractProcessor<CtMethod> {
 
 Once compiled, you can apply your processor direclty with the Java launcher or Ant (here), or you can package it in a Spoonlet in order to deploy it in Eclipse (here).
 
-### How to internationalize a Spoonlet
+### How to internationalize a Spoonlet?
 
 You can use a ResourceBundle named "spoonlet" in your code to internationalize your application. The processor attribute name and doc starting with '%' will be substitued by values found in your properties files with default locale.
 
@@ -185,7 +185,7 @@ ResourceBundle messages = ResourceBundle.getBundle("spoonlet",Locale.getDefault(
 System.out.println(messages.getString("Idiom"));
 {% endhighlight %}
 
-### How to process annotations like with APT or JSR 269
+### How to process annotations like with APT or JSR 269?
 
 Spoon is fully compatible with annotations and you can process any program element, including annotations. Even simpler, you can declare that you want to process a certain annotation type by subclassing the special kind of processor [spoon.processing.AbstractAnnotationProcessor](http://spoon.gforge.inria.fr/javadoc/spoon/spoon/processing/AbstractAnnotationProcessor.html). For instance, to process the methods annotated with `@SuppressWarnings`:
 
@@ -203,7 +203,7 @@ public class MyAnnotationProcessor extends
 
 ## Advanced
 
-### How to preserve the transformed source code formatting and one-line comments
+### How to preserve the transformed source code formatting and one-line comments?
 
 There is a way to preserve comments and formatting of the existing code. However, it requires to use the code fragment API.
 
@@ -232,7 +232,7 @@ public void process(CtExpression e) {
 
 You then just need to start Spoon with the -f option (--fragments). In this mode, all the chages in the AST will ignored and the source code will be changed only when code fragments are found on the compilation units. Note that this feature is not supported (yet) by the Eclipse plugin (so you need to run Spoon in standalone).
 
-### How to implement and deploy configurable processors
+### How to implement and deploy configurable processors?
 
 To create a configurable processor, you must define properties in your processors that Spoon will fill automatically with some values found in XML files. In processors, you define properties by annotating a field with @spoon.processing.Property. The field can be a primitive value (including java.lang.String), a reference, or a collection/array of those. To set the default value for the property, you can affect a value in the field declaration.
 
@@ -311,11 +311,11 @@ When using Spoonlets, the Spoonlet deployment descriptor would look like:
 </spoon>
 {% endhighlight %}
 
-### How to implement program transformations with well-typed Templates
+### How to implement program transformations with well-typed Templates?
 
 See the section Generative Programming with Spoon of the Tutorial.
 
-### How to prevent Annotation processors from consuming the annotations that they process
+### How to prevent Annotation processors from consuming the annotations that they process?
 
 By default, whenever an Annotation Processor processes a CtElement it will consume (delete) the processed annotation from it. If you want the annotation to be kept, override the init() method from the `AbstractAnnotationProcessor` class, and call the protected method `clearConsumedAnnotationTypes` like so:
 
@@ -327,7 +327,7 @@ public void init() {
 }
 {% endhighlight %}
 
-### How to compare and create type references in a type-safe way
+### How to compare and create type references in a type-safe way?
 
 Use actual classes instead of strings.
 
