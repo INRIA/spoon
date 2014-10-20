@@ -25,7 +25,7 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 	/**
 	 * 
 	 */
-	private JDTBasedSpoonCompiler jdtCompiler;
+	protected JDTBasedSpoonCompiler jdtCompiler;
 	private boolean useFactory;
 
 	public JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, boolean useFactory) {
