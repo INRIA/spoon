@@ -8,13 +8,17 @@ permalink: /Doc/FAQ/
 
 ### How to subscribe to Spoon's mailing list?
 
-Go [here](http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss) and fill the form.
+Go [here](http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss) and fill the form. 
 
-### How to access Spoon's repository?
+### How to access Spoon's source code repository?
 
-Go [here](http://gforge.inria.fr/scm/?group_id=73) and follow the instructions.
+See <https://github.com/INRIA/spoon/>.
 
 ## Basics
+
+### Where is the Spoon metamodel?
+
+The Spoon metamodel consists of all interfaces that are in packages `spoon.reflect.declaration` (structural part: classes, methods, etc.) and `spoon.reflect.code` (behavioral part: if, loops, etc.).
 
 ### How to run Spoon in Maven?
 
