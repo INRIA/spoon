@@ -44,6 +44,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		v.visitCtField(this);
 	}
 
+	@Override
 	public CtSimpleType<?> getDeclaringType() {
 		return (CtSimpleType<?>) parent;
 	}

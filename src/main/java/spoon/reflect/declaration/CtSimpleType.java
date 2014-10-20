@@ -31,7 +31,7 @@ import spoon.reflect.reference.CtTypeReference;
  * @param <T>
  *            the actual runtime type
  */
-public interface CtSimpleType<T> extends CtNamedElement {
+public interface CtSimpleType<T> extends CtNamedElement, CtTypeMember {
 
 	/**
 	 * Returns the types used by this type.
@@ -59,12 +59,14 @@ public interface CtSimpleType<T> extends CtNamedElement {
 	 * Includes enum constants.
 	 */
 	// List<CtField<?>> getAllFields();
+	
 	/**
 	 * Gets the type where this one is declared. If a declaring type is set, the
 	 * package corresponds to the declaring type's package.
 	 * 
 	 * @return declaring type or null
 	 */
+	@Override
 	CtSimpleType<?> getDeclaringType();
 
 	/**

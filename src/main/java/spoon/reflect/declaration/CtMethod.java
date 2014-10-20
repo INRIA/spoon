@@ -20,6 +20,6 @@ package spoon.reflect.declaration;
 /**
  * This element defines a method declaration.
  */
-public interface CtMethod<T> extends CtExecutable<T>, CtTypedElement<T> {
+public interface CtMethod<T> extends CtExecutable<T>, CtTypedElement<T>, CtTypeMember {
 
 }
