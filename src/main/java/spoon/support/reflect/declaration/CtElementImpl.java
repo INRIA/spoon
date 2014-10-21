@@ -239,9 +239,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public int hashCode() {
-		SignaturePrinter pr = new SignaturePrinter();
-		pr.scan(this);
-		return pr.getSignature().hashCode();
+		return getSignature().hashCode();
 	}
 
 	public void replace(CtElement element) {
