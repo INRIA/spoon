@@ -16,9 +16,11 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.visitor.SignaturePrinter;
 
 public class NoClasspathTest {
 
@@ -72,6 +74,22 @@ public class NoClasspathTest {
 			CtInvocation<?> c = invocations.get(0);
 			assertEquals("x.y.z.method()", method.getBody().getStatement(0).toString());
 		}
+	}
+	
+	@Test
+	public void testBug20141021() {
+		// 2014/10/21 NPE is noclasspath mode on a large open-source project
+
+		Launcher spoon = new Launcher();
+		Factory f = spoon.getFactory();
+		CtExecutableReference<Object> ref = f.Core().createExecutableReference();
+		ref.setSimpleName("foo");
+		
+		SignaturePrinter pr = new SignaturePrinter();
+		pr.scan(ref);
+		String s = pr.getSignature();	
+		
+		assertEquals("#foo()", s);
 	}
 	
 }

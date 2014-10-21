@@ -78,7 +78,7 @@ public interface CtExecutableReference<T> extends CtReference,
 	boolean removeParameterType(CtTypeReference<?> type);
 
 	/**
-	 * Gets the type of the executable.
+	 * Gets the return type of the executable (may be null in noclasspath mode).
 	 */
 	CtTypeReference<T> getType();
 
