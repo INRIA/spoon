@@ -253,9 +253,9 @@ public class SignaturePrinter implements CtVisitor {
 
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
-		write(reference.getType().getQualifiedName());
-		write(" ");
-		write(reference.getDeclaringType().getQualifiedName());
+		if (reference.getDeclaringType()!=null) { // null in noclasspath
+		  write(reference.getDeclaringType().getQualifiedName());
+		}
 		write(CtExecutable.EXECUTABLE_SEPARATOR);
 		write(reference.getSimpleName());
 		write("(");
