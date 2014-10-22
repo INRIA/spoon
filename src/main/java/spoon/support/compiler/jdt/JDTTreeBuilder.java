@@ -582,23 +582,29 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return ref;
 		}
 
-		@SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
+        public <T> CtFieldReference<T> getVariableReference(
+                FieldBinding varbin) {
+            CtFieldReference<T> ref = factory.Core().createFieldReference();
+            ref.setSimpleName(new String(varbin.name));
+            ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
+
+            if (((FieldBinding) varbin).declaringClass != null)
+                ref.setDeclaringType(getTypeReference(((FieldBinding) varbin).declaringClass));
+            else {
+                ref.setDeclaringType(ref.getType());
+            }
+            ref.setFinal(varbin.isFinal());
+            ref.setStatic((varbin.modifiers & ClassFileConstants.AccStatic) != 0);
+            return ref;
+        }
+
+            @SuppressWarnings("unchecked")
 		public <T> CtVariableReference<T> getVariableReference(
 				VariableBinding varbin) {
 
 			if (varbin instanceof FieldBinding) {
-				CtFieldReference<T> ref = factory.Core().createFieldReference();
-				ref.setSimpleName(new String(varbin.name));
-				ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
-
-				if (((FieldBinding) varbin).declaringClass != null)
-					ref.setDeclaringType(getTypeReference(((FieldBinding) varbin).declaringClass));
-				else {
-					ref.setDeclaringType(ref.getType());
-				}
-				ref.setFinal(varbin.isFinal());
-				ref.setStatic((varbin.modifiers & ClassFileConstants.AccStatic) != 0);
-				return ref;
+				return getVariableReference((FieldBinding) varbin );
 			} else if (varbin instanceof LocalVariableBinding) {
 				if (((LocalVariableBinding) varbin).declaration instanceof Argument
 						&& ((LocalVariableBinding) varbin).declaringScope instanceof MethodScope) {
@@ -2178,8 +2184,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 		long[] positions = qualifiedNameReference.sourcePositions;
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
 			CtFieldAccess<Object> fa = factory.Core().createFieldAccess();
-			fa.setVariable(references
-					.getVariableReference(qualifiedNameReference.fieldBinding()));
+
+            CtFieldReference ref = references.getVariableReference(qualifiedNameReference.fieldBinding());
+            ref.setDeclaringType((CtTypeReference) references.getTypeReference(qualifiedNameReference.actualReceiverType) );
+            fa.setVariable(ref);
 
 			if (qualifiedNameReference.otherBindings != null){
 				int i = 0; //positions index;
