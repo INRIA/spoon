@@ -145,6 +145,31 @@ public class AnnotationTest
 		assertEquals(3.14159, annot.d(), 0);
 		assertEquals(AnnotParamTypeEnum.G, annot.e());
 		assertEquals("dd", annot.ia().value());
+
+		// tests binary expressions
+		CtMethod<?> m3 = type.getElements(new NameFilter<CtMethod<?>>("m3")).get(0);
+
+		annotations = m3.getAnnotations();
+		assertEquals(1, annotations.size());
+
+		a = annotations.get(0);
+		annot = (AnnotParamTypes) a.getActualAnnotation();
+		assertEquals(45, annot.integer());
+		assertEquals(2, annot.integers().length);
+		assertEquals(40, annot.integers()[0]);
+		assertEquals(42*3, annot.integers()[1]);
+		assertEquals("Hello World!concatenated", annot.string());
+		assertEquals(2, annot.strings().length);
+		assertEquals("Helloconcatenated", annot.strings()[0]);
+		assertEquals("worldconcatenated", annot.strings()[1]);
+		assertEquals(true, annot.b());
+		assertEquals(42^1, annot.byt());
+		assertEquals((short) 42 / 2, annot.s());
+		assertEquals(43, annot.l());
+		assertEquals(3.14f * 2f, annot.f(), 0f);
+		assertEquals(3.14159d / 3d, annot.d(), 0);
+		assertEquals(AnnotParamTypeEnum.G, annot.e());
+		assertEquals("dddd", annot.ia().value());
 	}
 
 	@Test

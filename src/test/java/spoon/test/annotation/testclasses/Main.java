@@ -38,6 +38,14 @@ public class Main {
 		e=AnnotParamTypeEnum.G, ia=@InnerAnnot("dd"))
 	public void m2() {}
 
+	@AnnotParamTypes(
+			integer=INTEGER+3, integers={INTEGER-2, INTEGER*3},
+			string=STRING+"concatenated", strings={STRING1+"concatenated",STRING2+"concatenated"},
+			clazz=Integer.class, classes={Integer.class, String.class},
+			b=!BOOLEAN, byt=BYTE^1, c=CHAR|'d', s=SHORT/2, l=LONG+1, f=FLOAT*2f, d=DOUBLE/3d,
+			e=AnnotParamTypeEnum.G, ia=@InnerAnnot("dd" + "dd"))
+	public void m3() {}
+
 	@Override
 	public String toString()
 	{

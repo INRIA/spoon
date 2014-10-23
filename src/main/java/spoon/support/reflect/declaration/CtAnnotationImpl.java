@@ -225,11 +225,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 			PartialEvaluator eval = getFactory().Eval()
 					.createPartialEvaluator();
 			Object ret = eval.evaluate(null, (CtCodeElement) value);
-			if (!(ret instanceof CtCodeElement)) {
-				return convertValue(ret);
-			}
 
-			return ret;
+			return this.convertValue(ret);
 		} else if (value instanceof CtTypeReference) {
 			// Get RT class for References
 			return ((CtTypeReference<?>) value).getActualClass();
