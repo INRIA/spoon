@@ -145,7 +145,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// System.out.println("outputfiles: " + outputFiles);
 
 		int offset = outputDirectory.getAbsolutePath().length() + 1;
-		Collection<String> relativeOutputPaths = new ArrayList<>();
+		Collection<String> relativeOutputPaths = new ArrayList<String>();
 		for (File f : outputFiles) {
 			relativeOutputPaths.add(f.getAbsolutePath().substring(offset));
 		}
@@ -633,7 +633,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 				Collection<File> outputFiles = FileUtils.listFiles(
 						outputDirectory, new String[] { "java" }, true);
 				int offset = outputDirectory.getAbsolutePath().length() + 1;
-				Collection<String> relativeOutputPaths = new ArrayList<>();
+				Collection<String> relativeOutputPaths = new ArrayList<String>();
 				for (File f : outputFiles) {
 					relativeOutputPaths.add(f.getAbsolutePath().substring(
 							offset));
@@ -681,7 +681,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	Factory factory;
 
-	Map<String, char[]> loadedContent = new HashMap<>();
+	Map<String, char[]> loadedContent = new HashMap<String, char[]>();
 
 	boolean writePackageAnnotationFile = true;
 
@@ -930,7 +930,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		this.buildOnlyOutdatedFiles = buildOnlyOutdatedFiles;
 	}
 
-	List<SpoonResource> forceBuildList = new ArrayList<>();
+	List<SpoonResource> forceBuildList = new ArrayList<SpoonResource>();
 
 	@Override
 	public void forceBuild(SpoonResource source) {

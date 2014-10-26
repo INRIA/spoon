@@ -101,7 +101,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
 				.<CtTypeReference<?>> EMPTY_LIST()) {
-			actualTypeArguments = new ArrayList<>();
+			actualTypeArguments = new ArrayList<CtTypeReference<?>>();
 		}
 		return actualTypeArguments.add(actualTypeArgument);
 	}
@@ -119,7 +119,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 	@Override
 	public boolean addBound(CtTypeReference<?> bound) {
 		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			bounds = new ArrayList<>();
+			bounds = new ArrayList<CtTypeReference<?>>();
 		}
 		return bounds.add(bound);
 	}

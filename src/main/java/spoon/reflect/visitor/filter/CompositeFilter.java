@@ -73,7 +73,6 @@ public class CompositeFilter<T extends CtElement> implements Filter<T> {
 	 * @param filters
 	 *            the filters to be composed
 	 */
-	@SafeVarargs
 	public CompositeFilter(FilteringOperator operator, Filter<T>... filters) {
 		this.filters = filters;
 		this.operator = operator;

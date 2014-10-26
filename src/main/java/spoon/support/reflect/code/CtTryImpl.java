@@ -32,33 +32,33 @@ import spoon.support.reflect.declaration.CtElementImpl;
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
 
-	List<CtLocalVariable<? extends AutoCloseable>> resources = EMPTY_LIST();
+	List<CtLocalVariable<?>> resources = EMPTY_LIST();
 	List<CtCatch> catchers = EMPTY_LIST();
 
-	public List<CtLocalVariable<? extends AutoCloseable>> getResources() {
+	public List<CtLocalVariable<?>> getResources() {
 		return resources;
 	}
 
 	public void setResources(
-			List<CtLocalVariable<? extends AutoCloseable>> resources) {
+			List<CtLocalVariable<?>> resources) {
 		this.resources = resources;
 	}
 
 	@Override
-	public boolean addResource(CtLocalVariable<? extends AutoCloseable> resource) {
+	public boolean addResource(CtLocalVariable<?> resource) {
 		if (resources == CtElementImpl
-				.<CtLocalVariable<? extends AutoCloseable>> EMPTY_LIST()) {
-			resources = new ArrayList<>();
+				.<CtLocalVariable<?>> EMPTY_LIST()) {
+			resources = new ArrayList<CtLocalVariable<?>>();
 		}
 		return resources.add(resource);
 	}
 
 	@Override
 	public boolean removeResource(
-			CtLocalVariable<? extends AutoCloseable> resource) {
+			CtLocalVariable<?> resource) {
 		if (resources == CtElementImpl
-				.<CtLocalVariable<? extends AutoCloseable>> EMPTY_LIST()) {
-			resources = new ArrayList<>();
+				.<CtLocalVariable<?>> EMPTY_LIST()) {
+			resources = new ArrayList<CtLocalVariable<?>>();
 		}
 		return resources.remove(resource);
 	}
@@ -74,7 +74,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	@Override
 	public boolean addCatcher(CtCatch catcher) {
 		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
-			catchers = new ArrayList<>();
+			catchers = new ArrayList<CtCatch>();
 		}
 		return catchers.add(catcher);
 	}
@@ -82,7 +82,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	@Override
 	public boolean removeCatcher(CtCatch catcher) {
 		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
-			catchers = new ArrayList<>();
+			catchers = new ArrayList<CtCatch>();
 		}
 		return catchers.remove(catcher);
 	}

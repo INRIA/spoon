@@ -559,7 +559,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
 				.<CtTypeReference<?>> EMPTY_LIST()) {
-			actualTypeArguments = new ArrayList<>();
+			actualTypeArguments = new ArrayList<CtTypeReference<?>>();
 		}
 		return actualTypeArguments.add(actualTypeArgument);
 	}
