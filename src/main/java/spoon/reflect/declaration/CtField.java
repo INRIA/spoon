@@ -22,17 +22,12 @@ import spoon.reflect.reference.CtFieldReference;
 /**
  * This element defines a field declaration.
  */
-public interface CtField<T> extends CtNamedElement, CtVariable<T> {
+public interface CtField<T> extends CtNamedElement, CtVariable<T>, CtTypeMember {
 
 	/**
 	 * The separator for a string representation of a field.
 	 */
 	public static final String FIELD_SEPARATOR = "#";
-
-	/**
-	 * Gets the type that declares this field.
-	 */
-	CtSimpleType<?> getDeclaringType();
 
 	/*
 	 * (non-Javadoc)

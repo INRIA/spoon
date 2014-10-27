@@ -60,7 +60,8 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 		return modifiers;
 	}
 
-	public CtClass<?> getOwnerClass() {
+	@Override
+	public CtClass<?> getDeclaringType() {
 		return (CtClass<?>) parent;
 	}
 

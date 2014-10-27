@@ -48,6 +48,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		this.returnType = type;
 	}
 
+	@Override
 	public CtType<?> getDeclaringType() {
 		return (CtType<?>) parent;
 	}

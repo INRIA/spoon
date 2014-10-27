@@ -24,7 +24,7 @@ import spoon.reflect.code.CtBlock;
  * 
  * @see spoon.reflect.declaration.CtClass
  */
-public interface CtAnonymousExecutable extends CtElement, CtModifiable {
+public interface CtAnonymousExecutable extends CtElement, CtModifiable, CtTypeMember {
 
 	/**
 	 * Gets the executable block.
@@ -32,13 +32,6 @@ public interface CtAnonymousExecutable extends CtElement, CtModifiable {
 	 * @return the representation of this executable
 	 */
 	CtBlock<?> getBody();
-
-	/**
-	 * Gets the class that defines this element.
-	 * 
-	 * @return owner class
-	 */
-	CtClass<?> getOwnerClass();
 
 	/**
 	 * Sets the executable block.
