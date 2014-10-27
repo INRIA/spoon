@@ -325,7 +325,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	public boolean addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if ((List<?>) this.annotations == (List<?>) EMPTY_LIST()) {
-			this.annotations = new ArrayList<>();
+			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>();
 		}
 		if (!this.annotations.contains(annotation)) {
 			return this.annotations.add(annotation);

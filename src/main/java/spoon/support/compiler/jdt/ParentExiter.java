@@ -489,9 +489,9 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		} else if (child instanceof CtLocalVariable) {
 			if (tryBlock.getResources() == null) {
-				tryBlock.setResources(new ArrayList<CtLocalVariable<? extends AutoCloseable>>());
+				tryBlock.setResources(new ArrayList<CtLocalVariable<?>>());
 			}
-			tryBlock.addResource((CtLocalVariable<? extends AutoCloseable>) child);
+			tryBlock.addResource((CtLocalVariable<?>) child);
 		} else if (child instanceof CtCatch) {
 			tryBlock.addCatcher((CtCatch) child);
 			return;

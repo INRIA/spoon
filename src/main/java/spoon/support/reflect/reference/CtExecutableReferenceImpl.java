@@ -387,7 +387,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	@Override
 	public boolean addParameterType(CtTypeReference<?> type) {
 		if (parametersTypes == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			parametersTypes = new ArrayList<>();
+			parametersTypes = new ArrayList<CtTypeReference<?>>();
 		}
 		return parametersTypes.add(type);
 	}
@@ -404,7 +404,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
 				.<CtTypeReference<?>> EMPTY_LIST()) {
-			actualTypeArguments = new ArrayList<>();
+			actualTypeArguments = new ArrayList<CtTypeReference<?>>();
 		}
 		return actualTypeArguments.add(type);
 	}

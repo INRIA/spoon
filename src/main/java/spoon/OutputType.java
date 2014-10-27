@@ -33,15 +33,11 @@ public enum OutputType {
 	 * @see Launcher#printUsage()
 	 */
 	public static OutputType fromString(String string) {
-		switch (string) {
-		case "nooutput":
-			return NO_OUTPUT;
-		case "compilationunits":
-			return COMPILATION_UNITS;
-		case "classes":
-			return CLASSES;
-		default:
-			return null;
+		for (OutputType outputType : OutputType.values()) {
+			if (outputType.string.equals(string)) {
+				return outputType;
+			}
 		}
+		return null;
 	}
 }

@@ -154,7 +154,7 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 	@Override
 	public Set<CtMethod<?>> getMethodsAnnotatedWith(
 			CtTypeReference<?>... annotationTypes) {
-		Set<CtMethod<?>> result = new HashSet<>();
+		Set<CtMethod<?>> result = new HashSet<CtMethod<?>>();
 		for (CtMethod<?> m : methods) {
 			for (CtAnnotation<?> a : m.getAnnotations()) {
 				if (Arrays.asList(annotationTypes).contains(
@@ -168,7 +168,7 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 
 	@Override
 	public List<CtMethod<?>> getMethodsByName(String name) {
-		List<CtMethod<?>> result = new ArrayList<>();
+		List<CtMethod<?>> result = new ArrayList<CtMethod<?>>();
 		for (CtMethod<?> m : methods) {
 			if (name.equals(m.getSimpleName())) {
 				result.add(m);

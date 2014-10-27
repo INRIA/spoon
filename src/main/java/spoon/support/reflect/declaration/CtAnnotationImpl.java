@@ -162,7 +162,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 	}
 
 	@SuppressWarnings("unchecked")
-	private <E extends Enum<E>> Object convertValue(Object value) {
+	private Object convertValue(Object value) {
 		if (value instanceof CtFieldReference) {
 			Class<?> c = null;
 			try {
@@ -180,8 +180,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtElementImpl
 			CtField<?> field = ((CtFieldReference<?>) value).getDeclaration();
 			if (Enum.class.isAssignableFrom(c)) {
 				// Value references a Enum field
-				return Enum.valueOf((Class<E>) c,
-						((CtFieldReference<?>) value).getSimpleName());
+				return Enum.valueOf((Class<? extends Enum>) c, ((CtFieldReference<?>) value).getSimpleName());
 			}
 			// Value is a static final
 			if (field != null) {

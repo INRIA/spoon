@@ -56,7 +56,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	@Override
 	public boolean addCase(CtCase<? super S> c) {
 		if (cases == CtElementImpl.<CtCase<? super S>> EMPTY_LIST()) {
-			cases = new ArrayList<>();
+			cases = new ArrayList<CtCase<? super S>>();
 		}
 		return cases.add(c);
 	}

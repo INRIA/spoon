@@ -50,7 +50,7 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 		};
 	}
 
-	private Set<String> ignoredFiles = new HashSet<>();
+	private Set<String> ignoredFiles = new HashSet<String>();
 
 	public void ignoreFile(String filePath) {
 		ignoredFiles.add(filePath);
@@ -60,7 +60,7 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 	public CompilationUnit[] getCompilationUnits() {
 		CompilationUnit[] units = super.getCompilationUnits();
 		if (!ignoredFiles.isEmpty()) {
-			List<CompilationUnit> l = new ArrayList<>();
+			List<CompilationUnit> l = new ArrayList<CompilationUnit>();
 			for (CompilationUnit unit : units) {
 				if (!ignoredFiles.contains(new String(unit.getFileName()))) {
 					l.add(unit);
@@ -78,8 +78,8 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 	}
 
 	public CompilationUnit[] getCompilationUnits(List<SpoonFile> files) {
-		Set<String> fileNames = new HashSet<>();
-		List<SpoonFile> virtualFiles = new ArrayList<>();
+		Set<String> fileNames = new HashSet<String>();
+		List<SpoonFile> virtualFiles = new ArrayList<SpoonFile>();
 		for (SpoonFile f : files) {
 			if (!f.isActualFile()) {
 				virtualFiles.add(f);
@@ -88,7 +88,7 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 			}
 		}
 
-		List<CompilationUnit> culist = new ArrayList<>();
+		List<CompilationUnit> culist = new ArrayList<CompilationUnit>();
 		CompilationUnit[] units = getCompilationUnits();
 		for (CompilationUnit unit : units) {
 			if (fileNames.contains(new String(unit.getFileName()))) {
