@@ -2,8 +2,9 @@ Spoon-code is a library for analyzing and transforming Java source code.
 
 Pull requests are welcome!
 
-See <http://spoon.gforge.inria.fr/>
-See also the Spoon maven plugin by Christophe: <https://github.com/dooApp/spoon-maven-plugin>
+The official website is at <http://spoon.gforge.inria.fr/>.
+
+See <http://github.com/SpoonLabs> for software libraries and applications built on top of Spoon.
 
 Contributors (alphabetical order of last names):
 
