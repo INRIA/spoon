@@ -375,20 +375,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (exec == null) {
 				return null; 
 			}
+
 			CtExecutableReference<T> ref = factory.Core()
 					.createExecutableReference();
 			ref.setDeclaringType(getTypeReference(exec.declaringClass));
 			ref.setType((CtTypeReference<T>) getTypeReference(exec.returnType));
 			ref.setSimpleName(new String(exec.selector));
 			ref.setStatic(exec.isStatic());
-			if (exec.parameters != null) {
-				for (TypeBinding b : exec.parameters) {
-					ref.addParameterType(getTypeReference(b));
-				}
-			}
 			if (exec.typeVariables != null) {
-				for (TypeVariableBinding b : exec.typeVariables)
+				for (TypeVariableBinding b : exec.typeVariables) {
 					ref.addActualTypeArgument(getTypeReference(b));
+				}
 			}
 
 			return ref;
@@ -589,9 +586,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ref.setSimpleName(new String(varbin.name));
 			ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
 
-			if (((FieldBinding) varbin).declaringClass != null)
+			if (varbin.declaringClass != null)
 				ref.setDeclaringType(getTypeReference(
-						((FieldBinding) varbin).declaringClass));
+						varbin.declaringClass));
 			else {
 				ref.setDeclaringType(ref.getType());
 			}
@@ -1989,7 +1986,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					e.traverse(this, scope);
 				}
 			if (messageSend.genericTypeArguments != null)
-				inv.setGenericTypes(references
+				inv.getExecutable().setActualTypeArguments(references
 						.getBoundedTypesReferences(messageSend.genericTypeArguments));
 			context.popArgument(inv);
 			return false;
@@ -2189,7 +2186,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			CtFieldReference ref = references.getVariableReference(
 					qualifiedNameReference.fieldBinding());
-			ref.setDeclaringType((CtTypeReference) references.getTypeReference(
+			ref.setDeclaringType(references.getTypeReference(
 					qualifiedNameReference.actualReceiverType));
 			fa.setVariable(ref);
 

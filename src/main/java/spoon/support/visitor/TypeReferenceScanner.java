@@ -85,7 +85,7 @@ public class TypeReferenceScanner extends CtScanner {
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
 		enterReference(reference);
-		scanReferences(reference.getParameterTypes());
+		scanReferences(reference.getActualTypeArguments());
 		scanReferences(reference.getActualTypeArguments());
 		exitReference(reference);
 	}

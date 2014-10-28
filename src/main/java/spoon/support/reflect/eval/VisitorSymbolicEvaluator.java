@@ -401,7 +401,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	 */
 	boolean isGetter(CtExecutableReference<?> e) {
 		return e.getSimpleName().startsWith("get")
-				&& (e.getParameterTypes().size() == 0);
+				&& (e.getActualTypeArguments().size() == 0);
 	}
 
 	/**
@@ -409,7 +409,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 	 */
 	boolean isSetter(CtExecutableReference<?> e) {
 		return e.getSimpleName().startsWith("set")
-				&& (e.getParameterTypes().size() == 1);
+				&& (e.getActualTypeArguments().size() == 1);
 	}
 
 	boolean isStateFullExternal(CtTypeReference<?> type) {

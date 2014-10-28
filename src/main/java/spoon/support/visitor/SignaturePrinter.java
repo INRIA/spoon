@@ -259,11 +259,11 @@ public class SignaturePrinter implements CtVisitor {
 		write(CtExecutable.EXECUTABLE_SEPARATOR);
 		write(reference.getSimpleName());
 		write("(");
-		for (CtTypeReference<?> ref : reference.getParameterTypes()) {
+		for (CtTypeReference<?> ref : reference.getActualTypeArguments()) {
 			scan(ref);
 			write(",");
 		}
-		if (!reference.getParameterTypes().isEmpty())
+		if (!reference.getActualTypeArguments().isEmpty())
 			clearLast();
 		write(")");
 	}

@@ -49,8 +49,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 
 	CtTypeReference<?> declaringType;
 
-	List<CtTypeReference<?>> parametersTypes = CtElementImpl.EMPTY_LIST();
-
 	CtTypeReference<T> type;
 
 	public CtExecutableReferenceImpl() {
@@ -137,12 +135,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		}
 
 		CtExecutable<?> ret = typeDecl.getMethod(getSimpleName(),
-				parametersTypes.toArray(new CtTypeReference<?>[0]));
+				actualTypeArguments.toArray(new CtTypeReference<?>[0]));
 		if ((ret == null) && (typeDecl instanceof CtClass)
 				&& (getSimpleName().equals("<init>"))) {
 			try {
 				return (CtExecutable<T>) ((CtClass<?>) typeDecl)
-						.getConstructor(parametersTypes
+						.getConstructor(actualTypeArguments
 								.toArray(new CtTypeReference<?>[0]));
 			} catch (ClassCastException e) {
 				Launcher.logger.error(e.getMessage(), e);
@@ -153,10 +151,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 
 	public CtTypeReference<?> getDeclaringType() {
 		return declaringType;
-	}
-
-	public List<CtTypeReference<?>> getParameterTypes() {
-		return parametersTypes;
 	}
 
 	public CtTypeReference<T> getType() {
@@ -192,16 +186,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		if (!getSimpleName().equals(executable.getSimpleName())) {
 			return false;
 		}
-		List<CtTypeReference<?>> l1 = this.getParameterTypes();
-		List<CtTypeReference<?>> l2 = executable.getParameterTypes();
-		if (l1.size() != l2.size()) {
-			return false;
-		}
-		for (int i = 0; i < l1.size(); i++) {
-			if (!l1.get(i).isAssignableFrom(l2.get(i))) {
-				return false;
-			}
-		}
 		return true;
 	}
 
@@ -212,10 +196,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 
 	public void setDeclaringType(CtTypeReference<?> declaringType) {
 		this.declaringType = declaringType;
-	}
-
-	public void setParameterTypes(List<CtTypeReference<?>> parameterTypes) {
-		this.parametersTypes = parameterTypes;
 	}
 
 	public void setType(CtTypeReference<T> type) {
@@ -237,12 +217,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 			if (!m.getName().equals(getSimpleName())) {
 				continue;
 			}
-			if (m.getParameterTypes().length != getParameterTypes().size()) {
-				continue;
-			}
 			boolean matches = true;
 			for (int i = 0; i < m.getParameterTypes().length; i++) {
-				if (m.getParameterTypes()[i] != getParameterTypes().get(i)
+				if (m.getParameterTypes()[i] != getActualTypeArguments().get(i)
 						.getActualClass()) {
 					matches = false;
 					break;
@@ -258,12 +235,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	public Constructor<?> getActualConstructor() {
 		for (Constructor<?> c : getDeclaringType().getActualClass()
 				.getDeclaredConstructors()) {
-			if (c.getParameterTypes().length != getParameterTypes().size()) {
+			if (c.getParameterTypes().length != getActualTypeArguments().size()) {
 				continue;
 			}
 			boolean matches = true;
 			for (int i = 0; i < c.getParameterTypes().length; i++) {
-				if (c.getParameterTypes()[i] != getParameterTypes().get(i)
+				if (c.getParameterTypes()[i] != getActualTypeArguments().get(i)
 						.getActualClass()) {
 					matches = false;
 					break;
@@ -384,23 +361,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return getOverloadedExecutable(t.getSuperclass(), objectType);
 	}
 
-	@Override
-	public boolean addParameterType(CtTypeReference<?> type) {
-		if (parametersTypes == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			parametersTypes = new ArrayList<CtTypeReference<?>>();
-		}
-		return parametersTypes.add(type);
-	}
-
-	@Override
-	public boolean removeParameterType(CtTypeReference<?> type) {
-		if (parametersTypes == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			return false;
-		}
-		return parametersTypes.remove(type);
-	}
-
-	@Override
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
 				.<CtTypeReference<?>> EMPTY_LIST()) {
