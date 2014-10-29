@@ -7,7 +7,9 @@ categories: home
 
 Spoon enables you to transform (see below) and analyze Java source code (see example) . Spoon provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification. Spoon takes as input source code and produces transformed source code ready to be compiled.
 
-You can view a technical presentation [here](http://spoon.gforge.inria.fr/source-code-analysis-transformation-spoon.pdf) and slides [here](http://www.monperrus.net/martin/lecture-slides-source-code-analysis-and-transformation.pdf).
+For documentation, there is the [Spoon technical report](https://hal.inria.fr/hal-01078532) and slides [here](http://www.monperrus.net/martin/lecture-slides-source-code-analysis-and-transformation.pdf).
 
-Want to improve this site, pull requests on <https://github.com/INRIA/spoon/tree/website> are welcome!
+If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. "Spoon v2: Large Scale Source Code Analysis and Transformation for Java". Technical Report hal-01078532, Inria. 2014.
+
+Do you want to improve this site? pull requests on <https://github.com/INRIA/spoon/tree/website> are welcome!
 

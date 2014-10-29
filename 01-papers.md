@@ -7,11 +7,12 @@ permalink: /Papers/Main/
 If you use Spoon, please cite:
 {% highlight latex %}
 @TECHREPORT{spoon,
-  author = {R. Pawlak and C. Noguera and N. Petitprez},
-  title = {Spoon: Program Analysis and Transformation in Java},
+  author = {Renaud Pawlak and Martin Monperrus and Nicolas Petitprez and Carlos Noguera and Lionel Seinturier},
+  title = {Spoon v2: Large Scale Source Code Analysis and Transformation for Java},
   institution = {INRIA},
   year = {2006},
-  number = {5901}
+  number = {hal-01078532},
+  url = {https://hal.inria.fr/hal-01078532}
 }
 {% endhighlight %}
 
