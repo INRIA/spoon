@@ -11,7 +11,7 @@ For documentation, there is the [Spoon technical report](https://hal.inria.fr/ha
 
 If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. "Spoon v2: Large Scale Source Code Analysis and Transformation for Java". Technical Report hal-01078532, Inria. 2014.
 
-If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact Martin Monperrus for this).
+If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact [Martin Monperrus](http://www.monperrus.net/martin/) for this).
 
 Do you want to improve this site? pull requests on <https://github.com/INRIA/spoon/tree/website> are welcome!
 
