@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Usage
+title: Examples
 permalink: /Spoon/Examples/
 ---
 
