@@ -99,10 +99,6 @@ You need to set the Spoon jar and the compiled processors in the classpath refer
     ...
 </spoon>
 
-<!-- process some files with a spoonlet rather than a processors list -->
-<spoon classpathref= "classpath" verbose= "true" spoonlet="myspoonlet.jar">
-    <sourceSet dir= "${src}" includes= "x/y/z/src/" />
-</spoon>
 {% endhighlight %}
 
 ### How to use Spoon with the Java launcher?
@@ -123,8 +119,6 @@ Options :
         Generate all debugging info
   [--compliance <compliance>]
         set java compliance level (1,2,3,4,5 or 6) (default: 5)
-  [(-s|--spoonlet) <spoonlet>]
-        List of spoonlet files to load
   [(-i|--input) <input>]
         List of path to sources files
   [(-p|--processors) <processors>]
@@ -185,38 +179,7 @@ public class MyProcessor extends AbstractProcessor<CtMethod> {
 }
 {% endhighlight %}
 
-Once compiled, you can apply your processor direclty with the Java launcher or Ant (here), or you can package it in a Spoonlet in order to deploy it in Eclipse (here).
-
-### How to internationalize a Spoonlet?
-
-You can use a ResourceBundle named "spoonlet" in your code to internationalize your application. The processor attribute name and doc starting with '%' will be substitued by values found in your properties files with default locale.
-
-More information about java internationalization [here](http://docs.oracle.com/javase/tutorial/i18n/).
-
-Example:
-
-__spoonlet_en.properties file:__
-
-{% highlight PowerShell %}
-Idiom = Class implements Cloneable
-Idiom_doc = Class implements Cloneable but does not define or use clone method.
-{% endhighlight %}
-
-__extract of spoon.xml file:__
-
-{% highlight xml %}
-<processor active="true"
-	name="%Idiom"
-	class="spoon.vsuite.findbugs.am.Idiom"
-	doc="%Idiom_doc"/>
-{% endhighlight %}
-
-__Sample java code:__
-
-{% highlight java %}
-ResourceBundle messages = ResourceBundle.getBundle("spoonlet",Locale.getDefault());
-System.out.println(messages.getString("Idiom"));
-{% endhighlight %}
+Once compiled, you can apply your processor direclty with the Java launcher or Ant (here)
 
 ### How to process annotations like with APT or JSR 269?
 
@@ -265,86 +228,7 @@ public void process(CtExpression e) {
 
 You then just need to start Spoon with the -f option (--fragments). In this mode, all the chages in the AST will ignored and the source code will be changed only when code fragments are found on the compilation units. Note that this feature is not supported (yet) by the Eclipse plugin (so you need to run Spoon in standalone).
 
-### How to implement and deploy configurable processors?
-
-To create a configurable processor, you must define properties in your processors that Spoon will fill automatically with some values found in XML files. In processors, you define properties by annotating a field with @spoon.processing.Property. The field can be a primitive value (including java.lang.String), a reference, or a collection/array of those. To set the default value for the property, you can affect a value in the field declaration.
-
-__Properties files in standalone mode__
-
-In standalone mode (no Eclipse plugin), the properties can be stored in XML files (one for each processor) - see the DTD [here](http://spoon.gforge.inria.fr/pub/xml/properties.dtd). Property files should be named with the fully-qualified class name of processor (with the xml extension). You can configure the location of files with option `--properties` location in command-line or `<spoon properties="location">` with Ant.
-
-__Properties in Spoonlets__
-
-If you create a Spoonlet to package your processors, properties default values have to be defined in the 'spoon.xml' deployment descriptor. Note that Spoonlets can be used in standalone mode or with Eclipse or any other Spoonlet containers. Packaging Spoonlets for Eclipse is explained here.
-
-__Examples__
-
-This is a sample processor with properties:
-
-{% highlight java %}
-package test;
-
-import java.util.Arrays;
-import spoon.processing.AbstractManualProcessor;
-import spoon.processing.Property;
-
-public class Sample extends AbstractManualProcessor {
-  @Property
-  String[] spooners = new String[] { "none" };
-
-  @Property
-  double a;
-
-  public void process() {
-    System.out.println(Arrays.asList(spooners));
-    System.out.println(a);
-  }
-}
-{% endhighlight %}
-
-And its associated property file:
-
-{% highlight xml %}
-<?xml version="1.0"?>
-<!DOCTYPE note SYSTEM "http://spoon.gforge.inria.fr/pub/xml/properties.dtd">
-
-<properties>
-  <property name="spooners">
-    <value>Yoda</value>
-    <value>Padawan</value>
-  </property>
-  <property name="a" value="5.0" />
-</properties>
-{% endhighlight %}
-
-If you run this processor with Spoon in standalone mode by specifying the location of the property file, you should get:
-
-{% highlight PowerShell %}
-[Yoda, Padawan]
-5.0
-Done
-{% endhighlight %}
-
-When using Spoonlets, the Spoonlet deployment descriptor would look like:
-
-{% highlight xml %}
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE spoon SYSTEM "http://spoon.gforge.inria.fr/pub/xml/spoonlet.dtd" >
-
-<spoon>
-  <processor name="Properties test"
-     class="test.Sample" active="true"
-     doc="Prints out the contents of the properties.">
-    <property name="spooners">
-      <value>Yoda</value>
-      <value>Padawan</value>
-    </property>
-    <property name="a" value="5.0" />
-  </processor>
-</spoon>
-{% endhighlight %}
-
-### How to implement program transformations with well-typed Templates?
+### How to implement program transformations with well-typed templates?
 
 See the section Generative Programming with Spoon of the Tutorial.
 
