@@ -254,7 +254,7 @@ public class ExecutableFactory extends SubFactory {
 		StringTokenizer t = new StringTokenizer(parameters, ",");
 		while (t.hasMoreTokens()) {
 			String paramType = t.nextToken();
-			executableRef.getParameterTypes().add(
+			executableRef.addParameterType(
 					factory.Type().createReference(paramType));
 		}
 		return executableRef;
