@@ -353,6 +353,7 @@ public class SignaturePrinter implements CtVisitor {
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
 		if (literal.getValue() != null)
 			write(literal.getValue().toString());
+		else write("null");
 	}
 
 	public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
