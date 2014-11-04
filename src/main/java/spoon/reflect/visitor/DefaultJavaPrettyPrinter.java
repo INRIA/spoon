@@ -1065,7 +1065,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(reference.getSimpleName());
 		}
 		writeGenericsParameter(reference.getActualTypeArguments());
-		writeParameters(reference.getParameterTypes());
+		writeParameters(reference.getActualTypeArguments());
 	}
 
 	public <T> void visitCtField(CtField<T> f) {
@@ -1350,15 +1350,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				scan(invocation.getTarget());
 				context.exitTarget();
 				write(".");
-			} else if (invocation.getGenericTypes() != null
-					&& invocation.getGenericTypes().size() > 0) {
+			} else if (invocation.getExecutable().getActualTypeArguments() != null
+					&& invocation.getExecutable().getActualTypeArguments().size() > 0) {
 				write("this.");
 			}
 			boolean removeLastChar = false;
-			if (invocation.getGenericTypes() != null
-					&& invocation.getGenericTypes().size() > 0) {
+			if (invocation.getExecutable().getActualTypeArguments() != null
+					&& invocation.getExecutable().getActualTypeArguments().size() > 0) {
 				write("<");
-				for (CtTypeReference<?> ref : invocation.getGenericTypes()) {
+				for (CtTypeReference<?> ref : invocation.getExecutable().getActualTypeArguments()) {
 					context.isInvocation = true;
 					scan(ref);
 					context.isInvocation = false;

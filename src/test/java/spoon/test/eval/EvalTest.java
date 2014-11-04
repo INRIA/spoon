@@ -18,8 +18,6 @@ public class EvalTest {
 		CtBlock<?> b = type.getMethodsByName("testStrings").get(0).getBody();
 		assertEquals(4, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals(0, b.getStatements().size());
-
 		b = type.getMethodsByName("testInts").get(0).getBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();

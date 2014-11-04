@@ -306,11 +306,11 @@ public class SubstitutionVisitor extends CtScanner {
 								.getParent();
 						int i = inv.getArguments().indexOf(targetedAccess);
 						inv.getArguments().remove(i);
-						inv.getExecutable().getParameterTypes().remove(i);
+						inv.getExecutable().getActualTypeArguments().remove(i);
 						for (CtExpression<?> va : vas) {
 							va.setParent(targetedAccess.getParent());
 							inv.getArguments().add(i, va);
-							inv.getExecutable().getParameterTypes()
+							inv.getExecutable().getActualTypeArguments()
 									.add(i, va.getType());
 							i++;
 						}
@@ -540,11 +540,11 @@ public class SubstitutionVisitor extends CtScanner {
 								.getParent();
 						int i = inv.getArguments().indexOf(variableAccess);
 						inv.getArguments().remove(i);
-						inv.getExecutable().getParameterTypes().remove(i);
+						inv.getExecutable().getActualTypeArguments().remove(i);
 						for (CtExpression<?> va : vas) {
 							va.setParent(variableAccess.getParent());
 							inv.getArguments().add(i, va);
-							inv.getExecutable().getParameterTypes()
+							inv.getExecutable().getActualTypeArguments()
 									.add(i, va.getType());
 							i++;
 						}

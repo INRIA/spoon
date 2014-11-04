@@ -63,21 +63,6 @@ public interface CtExecutableReference<T> extends CtReference,
 	CtTypeReference<?> getDeclaringType();
 
 	/**
-	 * Gets the list of the executable's parameter types.
-	 */
-	List<CtTypeReference<?>> getParameterTypes();
-
-	/**
-	 * Adds a parameter type.
-	 */
-	boolean addParameterType(CtTypeReference<?> type);
-
-	/**
-	 * Removes a parameter type.
-	 */
-	boolean removeParameterType(CtTypeReference<?> type);
-
-	/**
 	 * Gets the return type of the executable (may be null in noclasspath mode).
 	 */
 	CtTypeReference<T> getType();
@@ -117,11 +102,6 @@ public interface CtExecutableReference<T> extends CtReference,
 	 * Sets the declaring type.
 	 */
 	void setDeclaringType(CtTypeReference<?> declaringType);
-
-	/**
-	 * Sets the list of the executable's parameters types.
-	 */
-	void setParameterTypes(List<CtTypeReference<?>> parameterTypes);
 
 	/**
 	 * Sets this executable reference to be static or not.

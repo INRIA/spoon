@@ -100,7 +100,7 @@ public abstract class RtHelper {
 		}
 		Class<?> c = i.getExecutable().getDeclaringType().getActualClass();
 		ArrayList<Class<?>> argTypes = new ArrayList<Class<?>>();
-		for (CtTypeReference<?> type : i.getExecutable().getParameterTypes()) {
+		for (CtTypeReference<?> type : i.getExecutable().getActualTypeArguments()) {
 			argTypes.add(type.getActualClass());
 		}
 		return (T) c.getMethod(i.getExecutable().getSimpleName(),

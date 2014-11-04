@@ -30,7 +30,4 @@ import spoon.reflect.reference.CtTypeReference;
 public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement,
 		CtTargetedExpression<T, CtExpression<?>> {
 
-	public void setGenericTypes(List<CtTypeReference<?>> list);
-	public List<CtTypeReference<?>> getGenericTypes();
-
 }
