@@ -135,7 +135,7 @@ public class ExecutableFactory extends SubFactory {
 		for (CtTypeReference<?> ref : parameterTypes) {
 			l.add(ref);
 		}
-		methodRef.setParameterTypes(l);
+		methodRef.setActualTypeArguments(l);
 		return methodRef;
 	}
 
@@ -167,7 +167,7 @@ public class ExecutableFactory extends SubFactory {
 		for (CtTypeReference<?> ref : parameterTypes) {
 			l.add(ref);
 		}
-		methodRef.setParameterTypes(l);
+		methodRef.setActualTypeArguments(l);
 		return methodRef;
 	}
 
@@ -199,7 +199,7 @@ public class ExecutableFactory extends SubFactory {
 		for (CtTypeReference<?> ref : parameterTypes) {
 			l.add(ref);
 		}
-		methodRef.setParameterTypes(l);
+		methodRef.setActualTypeArguments(l);
 		return methodRef;
 	}
 
@@ -227,7 +227,7 @@ public class ExecutableFactory extends SubFactory {
 		for (CtTypeReference<?> ref : parameterTypes) {
 			l.add(ref);
 		}
-		methodRef.setParameterTypes(l);
+		methodRef.setActualTypeArguments(l);
 		return methodRef;
 	}
 
@@ -254,8 +254,7 @@ public class ExecutableFactory extends SubFactory {
 		StringTokenizer t = new StringTokenizer(parameters, ",");
 		while (t.hasMoreTokens()) {
 			String paramType = t.nextToken();
-			executableRef.addParameterType(
-					factory.Type().createReference(paramType));
+			executableRef.addActualTypeArgument(factory.Type().createReference(paramType));
 		}
 		return executableRef;
 	}
