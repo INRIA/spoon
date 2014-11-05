@@ -325,16 +325,16 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtFor(CtFor forLoop) {
-		if (this.jdtTreeBuilder.context.forinit && child instanceof CtStatement) {
+		if (this.jdtTreeBuilder.context.forInit && child instanceof CtStatement) {
 			forLoop.addForInit((CtStatement) child);
 			return;
 		}
-		if (!this.jdtTreeBuilder.context.forupdate && forLoop.getExpression() == null
+		if (!this.jdtTreeBuilder.context.forUpdate && forLoop.getExpression() == null
 				&& child instanceof CtExpression) {
 			forLoop.setExpression((CtExpression<Boolean>) child);
 			return;
 		}
-		if (this.jdtTreeBuilder.context.forupdate && child instanceof CtStatement) {
+		if (this.jdtTreeBuilder.context.forUpdate && child instanceof CtStatement) {
 			forLoop.addForUpdate((CtStatement) child);
 			return;
 		}
@@ -481,8 +481,8 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void visitCtTry(CtTry tryBlock) {
 		if (child instanceof CtBlock) {
-			if (!this.jdtTreeBuilder.context.finallyzer.isEmpty()
-					&& this.jdtTreeBuilder.context.finallyzer.peek() == tryBlock)
+			if (!this.jdtTreeBuilder.context.finalizer.isEmpty()
+					&& this.jdtTreeBuilder.context.finalizer.peek() == tryBlock)
 				tryBlock.setFinalizer((CtBlock<?>) child);
 			else
 				tryBlock.setBody((CtBlock<?>) child);

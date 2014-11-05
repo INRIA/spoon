@@ -209,53 +209,59 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	private static final Logger logger = Logger.getLogger(JDTTreeBuilder.class);
 
-	public class ASTPair {
+	/**
+	 * A helper class which is used to store a CtElement with the related ASTNode
+	 * in a stack.
+	 */
+	public class ASTPair
+	{
 		public CtElement element;
-
 		public ASTNode node;
 
-		public ASTPair(CtElement element, ASTNode node) {
-			super();
+		public ASTPair(CtElement element, ASTNode node)
+		{
 			this.element = element;
 			this.node = node;
 		}
 
 		@Override
-		public String toString() {
-			return element.getClass().getSimpleName() + "-"
-					+ node.getClass().getSimpleName();
+		public String toString()
+		{
+			return element.getClass().getSimpleName() + "-" + node.getClass().getSimpleName();
 		}
 	}
 
-	public class BuilderContext {
-		Stack<String> annotationValueName = new Stack<String>();
+	public class BuilderContext
+	{
+		Stack<String> annotationValueName = new Stack<>();
 
-		Stack<CtElement> arguments = new Stack<CtElement>();
+		Stack<CtElement> arguments = new Stack<>();
 
-		List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>();
+		List<CtTypeReference<?>> casts = new ArrayList<>();
 
-		CompilationUnitDeclaration compilationunitdeclaration;
+		CompilationUnitDeclaration compilationUnitDeclaration;
 
-		List<CtSimpleType<?>> createdTypes = new ArrayList<CtSimpleType<?>>();
+		List<CtSimpleType<?>> createdTypes = new ArrayList<>();
 
-		Stack<CtTry> finallyzer = new Stack<CtTry>();
+		Stack<CtTry> finalizer = new Stack<>();
 
-		boolean forinit = false;
+		boolean forInit = false;
 
-		boolean forupdate = false;
+		boolean forUpdate = false;
 
-		Stack<String> label = new Stack<String>();
+		Stack<String> label = new Stack<>();
 
 		boolean selector = false;
 
 		/**
 		 * Stack of all parents elements
 		 */
-		Stack<ASTPair> stack = new Stack<ASTPair>();
+		Stack<ASTPair> stack = new Stack<>();
 
-		Stack<CtTargetedExpression<?, ?>> target = new Stack<CtTargetedExpression<?, ?>>();
+		Stack<CtTargetedExpression<?, ?>> target = new Stack<>();
 
-		public void addCreatedType(CtSimpleType<?> type) {
+		public void addCreatedType(CtSimpleType<?> type)
+		{
 			createdTypes.add(type);
 		}
 
@@ -264,20 +270,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 			int sourceStart = node.sourceStart;
 			int sourceEnd = node.sourceEnd;
 			CompilationUnit cu = factory.CompilationUnit().create(
-					new String(compilationunitdeclaration.getFileName()));
+					new String(compilationUnitDeclaration.getFileName()));
 			return cf
 					.createSourcePosition(
 							cu,
 							sourceStart,
 							sourceEnd,
-							compilationunitdeclaration.compilationResult.lineSeparatorPositions);
+							compilationUnitDeclaration.compilationResult.lineSeparatorPositions);
 		}
 
 		@SuppressWarnings("unchecked")
 		void enter(CtElement e, ASTNode node) {
 			stack.push(new ASTPair(e, node));
 			// aststack.push(node);
-			if (compilationunitdeclaration != null) {
+			if (compilationUnitDeclaration != null) {
 				CoreFactory cf = factory.Core();
 				int sourceStart = node.sourceStart;
 				int sourceEnd = node.sourceEnd;
@@ -287,13 +293,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 					sourceEnd = ((MethodDeclaration) node).bodyEnd;
 				}
 				CompilationUnit cu = factory.CompilationUnit().create(
-						new String(compilationunitdeclaration.getFileName()));
+						new String(compilationUnitDeclaration.getFileName()));
 				e.setPosition(cf
 						.createSourcePosition(
 								cu,
 								sourceStart,
 								sourceEnd,
-								compilationunitdeclaration.compilationResult.lineSeparatorPositions));
+								compilationUnitDeclaration.compilationResult.lineSeparatorPositions));
 			}
 			ASTPair pair = stack.peek();
 			CtElement current = pair.element;
@@ -758,62 +764,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	}
 
-	CtSimpleType<?> createType(TypeDeclaration typeDeclaration) {
-		CtSimpleType<?> type = null;
-		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
-			CtSimpleType<?> annotationType = factory.Core()
-					.<java.lang.annotation.Annotation> createAnnotationType();
-			type = annotationType;
-		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
-			CtEnum<?> e = factory.Core().createEnum();
-			if (typeDeclaration.superInterfaces != null) {
-				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					e.addSuperInterface(references
-							.getTypeReference(ref.resolvedType));
-				}
-			}
-			type = e;
-		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccInterface) != 0) {
-			CtInterface<?> interf = factory.Core().createInterface();
-			if (typeDeclaration.superInterfaces != null) {
-				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					interf.addSuperInterface(references
-							.getTypeReference(ref.resolvedType));
-				}
-			}
-			if (typeDeclaration.typeParameters != null)
-				for (TypeParameter p : typeDeclaration.typeParameters) {
-					interf.addFormalTypeParameter(references
-							.getBoundedTypeReference(p.binding));
-				}
-			type = interf;
-		} else {
-			CtClass<?> cl = factory.Core().createClass();
-			if (typeDeclaration.superclass != null) {
-				cl.setSuperclass(references
-						.getTypeReference(typeDeclaration.superclass.resolvedType));
-			}
-			if (typeDeclaration.superInterfaces != null) {
-				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					cl.addSuperInterface(references
-							.getTypeReference(ref.resolvedType));
-				}
-			}
-			if (typeDeclaration.typeParameters != null)
-				for (TypeParameter p : typeDeclaration.typeParameters) {
-					cl.addFormalTypeParameter(references
-							.getBoundedTypeReference(p.binding));
-				}
-			type = cl;
-		}
-		type.setSimpleName(new String(typeDeclaration.name));
-		// Setting modifiers
-		type.setModifiers(getModifiers(typeDeclaration.modifiers));
-		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
-
-		return type;
-	}
-
 	@Override
 	public void endVisit(AllocationExpression allocationExpression,
 			BlockScope scope) {
@@ -1233,7 +1183,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				&& context.stack.peek().node == typeDeclaration) {
 			context.exit(typeDeclaration);
 		}
-		context.compilationunitdeclaration = null;
+		context.compilationUnitDeclaration = null;
 	}
 
 	@Override
@@ -1345,20 +1295,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		logger.error("could not find declaration for local variable " + name
 				+ " at " + context.stack.peek().element.getPosition());
 
-		return null;
-	}
-
-	UnaryOperatorKind getUnaryOperator(int op) {
-		switch (op) {
-		case OperatorIds.PLUS:
-			return UnaryOperatorKind.POS;
-		case OperatorIds.MINUS:
-			return UnaryOperatorKind.NEG;
-		case OperatorIds.NOT:
-			return UnaryOperatorKind.NOT;
-		case OperatorIds.TWIDDLE:
-			return UnaryOperatorKind.COMPL;
-		}
 		return null;
 	}
 
@@ -1837,21 +1773,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(for1, forStatement);
 
 		if (forStatement.initializations != null) {
-			context.forinit = true;
+			context.forInit = true;
 			int initializationsLength = forStatement.initializations.length;
 			for (int i = 0; i < initializationsLength; i++)
 				forStatement.initializations[i].traverse(this, scope);
-			context.forinit = false;
+			context.forInit = false;
 		}
 		if (forStatement.condition != null)
 			forStatement.condition.traverse(this, scope);
 
 		if (forStatement.increments != null) {
-			context.forupdate = true;
+			context.forUpdate = true;
 			int incrementsLength = forStatement.increments.length;
 			for (int i = 0; i < incrementsLength; i++)
 				forStatement.increments[i].traverse(this, scope);
-			context.forupdate = false;
+			context.forUpdate = false;
 		}
 		if (forStatement.action != null)
 			forStatement.action.traverse(this, scope);
@@ -2202,14 +2138,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 						fa.setParent(other);
 						//set source position of fa;
 						CompilationUnit cu = factory.CompilationUnit().create(
-								new String(context.compilationunitdeclaration.getFileName()));
+								new String(context.compilationUnitDeclaration.getFileName()));
 						int sourceEnd = (int)(positions[i]);
 						fa.setPosition(factory.Core()
 								.createSourcePosition(
 										cu,
 										sourceStart,
 										sourceEnd,
-										context.compilationunitdeclaration.compilationResult.lineSeparatorPositions));
+										context.compilationUnitDeclaration.compilationResult.lineSeparatorPositions));
 						
 						fa = other;
 						i++;
@@ -2247,14 +2183,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 					va.setParent(fa);
 					//set source position of va;
 					CompilationUnit cu = factory.CompilationUnit().create(
-							new String(context.compilationunitdeclaration.getFileName()));
+							new String(context.compilationUnitDeclaration.getFileName()));
 					int sourceEnd = (int)(positions[i]);
 					va.setPosition(factory.Core()
 							.createSourcePosition(
 									cu,
 									sourceStart,
 									sourceEnd,
-									context.compilationunitdeclaration.compilationResult.lineSeparatorPositions));
+									context.compilationUnitDeclaration.compilationResult.lineSeparatorPositions));
 					va = fa;
 					i++;
 				}
@@ -2298,7 +2234,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	boolean skipTypeInAnnotation = false;
 
 	@Override
-	public boolean visit(SingleMemberAnnotation annotation, BlockScope scope) {
+	public boolean visit(SingleMemberAnnotation annotation, BlockScope scope)
+	{
 		return visitSingleMemberAnnotation(annotation, scope);
 	}
 
@@ -2533,9 +2470,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 		if (tryStatement.finallyBlock != null) {
-			context.finallyzer.push(t);
+			context.finalizer.push(t);
 			tryStatement.finallyBlock.traverse(this, scope);
-			context.finallyzer.pop();
+			context.finalizer.pop();
 		}
 		return false;
 	}
@@ -2578,109 +2515,234 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return true;
 	}
 
+	/**
+	 * Visits a type declaration inside a class.
+	 */
 	@Override
-	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
-		CtSimpleType<?> type = createType(memberTypeDeclaration);
-		type.setDocComment(getJavaDoc(memberTypeDeclaration.javadoc,
-				scope.referenceCompilationUnit()));
-		context.enter(type, memberTypeDeclaration);
+	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope)
+	{
+		CtSimpleType<?> type = this.createType(memberTypeDeclaration);
+		type.setDocComment(getJavaDoc(memberTypeDeclaration.javadoc, scope.referenceCompilationUnit()));
+
+		this.context.enter(type, memberTypeDeclaration);
 
 		// AST bug HACK
 		if (memberTypeDeclaration.annotations != null)
-			for (Annotation a : memberTypeDeclaration.annotations) {
+		{
+			for (Annotation a : memberTypeDeclaration.annotations)
+			{
 				a.traverse(this, (BlockScope) null);
 			}
+		}
 
 		return true;
 	}
 
+	/**
+	 * Visits a type declaration. A type is a class, enum, interface or annotation.
+	 * Also the package-info file is handled with that method.
+	 */
 	@Override
-	public boolean visit(TypeDeclaration typeDeclaration,
-			CompilationUnitScope scope) {
+	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope)
+	{
+		if (String.valueOf(typeDeclaration.name).equals("package-info"))
+		{
+			// found a package-info file, which gives special information about the package
 
-		if (new String(typeDeclaration.name).equals("package-info")) {
-			CtPackage pack = factory.Package()
-					.getOrCreate(
-							new String(typeDeclaration.binding.fPackage
-									.readableName()));
+			CtPackage pack = factory.Package().getOrCreate(String.valueOf(typeDeclaration.binding.fPackage.readableName()));
 			pack.setDocComment(this.getJavaDoc(typeDeclaration.javadoc, scope.referenceContext));
 
-			context.compilationunitdeclaration = scope.referenceContext;
-			context.enter(pack, typeDeclaration);
+			this.context.compilationUnitDeclaration = scope.referenceContext;
+			this.context.enter(pack, typeDeclaration);
 
 			// AST bug HACK
 			if (typeDeclaration.annotations != null)
-				for (Annotation a : typeDeclaration.annotations) {
-					a.traverse(this, (BlockScope) null);
+			{
+				for (Annotation annotation : typeDeclaration.annotations)
+				{
+					annotation.traverse(this, (BlockScope) null);
 				}
-			return true;
-		} else {
-			CtSimpleType<?> type = createType(typeDeclaration);
-
-			type.setDocComment(getJavaDoc(typeDeclaration.javadoc,
-					scope.referenceContext));
-
-			CtPackage pack = null;
-			if (typeDeclaration.binding.fPackage.shortReadableName() != null
-					&& typeDeclaration.binding.fPackage.shortReadableName().length > 0) {
-				pack = factory.Package().getOrCreate(
-						new String(typeDeclaration.binding.fPackage
-								.shortReadableName()));
-			} else {
-				pack = factory.Package().getOrCreate(
-						CtPackage.TOP_LEVEL_PACKAGE_NAME);
 			}
-			context.enter(pack, typeDeclaration);
-			context.compilationunitdeclaration = scope.referenceContext;
-			context.enter(type, typeDeclaration);
+
+			return true;
+		}
+		else
+		{
+			CtSimpleType<?> type = this.createType(typeDeclaration);
+			type.setDocComment(getJavaDoc(typeDeclaration.javadoc, scope.referenceContext));
+
+			// load package of the type declaration
+			CtPackage pack;
+			if (typeDeclaration.binding.fPackage.shortReadableName() != null && typeDeclaration.binding.fPackage.shortReadableName().length > 0)
+			{
+				// type declaration has a package definition
+				pack = this.factory.Package().getOrCreate(String.valueOf(typeDeclaration.binding.fPackage.shortReadableName()));
+			}
+			else
+			{
+				// type declaration doesn't have a special package definition.
+				pack = this.factory.Package().getOrCreate(CtPackage.TOP_LEVEL_PACKAGE_NAME);
+			}
+			this.context.enter(pack, typeDeclaration);
+
+			this.context.compilationUnitDeclaration = scope.referenceContext;
+			this.context.enter(type, typeDeclaration);
 
 			// AST bug HACK
 			if (typeDeclaration.annotations != null)
-				for (Annotation a : typeDeclaration.annotations) {
+			{
+				for (Annotation a : typeDeclaration.annotations)
+				{
 					a.traverse(this, (BlockScope) null);
 				}
+			}
 
-			if (typeDeclaration.memberTypes != null) {
+			if (typeDeclaration.memberTypes != null)
+			{
 				int length = typeDeclaration.memberTypes.length;
 				for (int i = 0; i < length; i++)
-					typeDeclaration.memberTypes[i].traverse(this,
-							typeDeclaration.scope);
+				{
+					typeDeclaration.memberTypes[i].traverse(this, typeDeclaration.scope);
+				}
 			}
-			if (typeDeclaration.fields != null) {
+
+			if (typeDeclaration.fields != null)
+			{
 				int length = typeDeclaration.fields.length;
-				for (int i = 0; i < length; i++) {
+				for (int i = 0; i < length; i++)
+				{
 					FieldDeclaration field;
-					if ((field = typeDeclaration.fields[i]).isStatic()) {
-						field.traverse(this,
-								typeDeclaration.staticInitializerScope);
-					} else {
+					if ((field = typeDeclaration.fields[i]).isStatic())
+					{
+						field.traverse(this, typeDeclaration.staticInitializerScope);
+					}
+					else
+					{
 						field.traverse(this, typeDeclaration.initializerScope);
 					}
 				}
 			}
-			if (typeDeclaration.methods != null) {
+
+			if (typeDeclaration.methods != null)
+			{
 				int length = typeDeclaration.methods.length;
 				for (int i = 0; i < length; i++)
-					typeDeclaration.methods[i].traverse(this,
-							typeDeclaration.scope);
+				{
+					typeDeclaration.methods[i].traverse(this, typeDeclaration.scope);
+				}
 			}
+
 			return false;
 		}
 	}
 
+	/**
+	 * Creates a new CtSimpleType from the specified type declaration.
+	 */
+	private CtSimpleType<?> createType(TypeDeclaration typeDeclaration)
+	{
+		CtSimpleType<?> type;
+		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0)
+		{
+			type = this.factory.Core().<java.lang.annotation.Annotation>createAnnotationType();
+		}
+		else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0)
+		{
+			CtEnum<?> e = this.factory.Core().createEnum();
+			if (typeDeclaration.superInterfaces != null)
+			{
+				for (TypeReference ref : typeDeclaration.superInterfaces)
+				{
+					e.addSuperInterface(this.references.getTypeReference(ref.resolvedType));
+				}
+			}
+			type = e;
+		}
+		else if ((typeDeclaration.modifiers & ClassFileConstants.AccInterface) != 0)
+		{
+			CtInterface<?> interf = this.factory.Core().createInterface();
+			if (typeDeclaration.superInterfaces != null)
+			{
+				for (TypeReference ref : typeDeclaration.superInterfaces)
+				{
+					interf.addSuperInterface(this.references.getTypeReference(ref.resolvedType));
+				}
+			}
+			if (typeDeclaration.typeParameters != null)
+			{
+				for (TypeParameter p : typeDeclaration.typeParameters)
+				{
+					interf.addFormalTypeParameter(this.references.getBoundedTypeReference(p.binding));
+				}
+			}
+			type = interf;
+		}
+		else
+		{
+			CtClass<?> clazz = this.factory.Core().createClass();
+			if (typeDeclaration.superclass != null)
+			{
+				clazz.setSuperclass(this.references.getTypeReference(typeDeclaration.superclass.resolvedType));
+			}
+			if (typeDeclaration.superInterfaces != null)
+			{
+				for (TypeReference ref : typeDeclaration.superInterfaces)
+				{
+					clazz.addSuperInterface(this.references.getTypeReference(ref.resolvedType));
+				}
+			}
+			if (typeDeclaration.typeParameters != null)
+			{
+				for (TypeParameter p : typeDeclaration.typeParameters)
+				{
+					clazz.addFormalTypeParameter(references.getBoundedTypeReference(p.binding));
+				}
+			}
+			type = clazz;
+		}
+		type.setSimpleName(String.valueOf(typeDeclaration.name));
+		// Setting modifiers
+		type.setModifiers(getModifiers(typeDeclaration.modifiers));
+		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
+
+		return type;
+	}
+
 	@Override
-	public boolean visit(UnaryExpression unaryExpression, BlockScope scope) {
+	public boolean visit(UnaryExpression unaryExpression, BlockScope scope)
+	{
 		CtUnaryOperator<?> op = factory.Core().createUnaryOperator();
 		op.setKind(getUnaryOperator((unaryExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
-		context.enter(op, unaryExpression);
+		this.context.enter(op, unaryExpression);
+
 		return true;
+	}
+
+	private UnaryOperatorKind getUnaryOperator(int op)
+	{
+		switch (op)
+		{
+			case OperatorIds.PLUS:
+				return UnaryOperatorKind.POS;
+
+			case OperatorIds.MINUS:
+				return UnaryOperatorKind.NEG;
+
+			case OperatorIds.NOT:
+				return UnaryOperatorKind.NOT;
+
+			case OperatorIds.TWIDDLE:
+				return UnaryOperatorKind.COMPL;
+		}
+		return null;
 	}
 
 	@Override
-	public boolean visit(WhileStatement whileStatement, BlockScope scope) {
+	public boolean visit(WhileStatement whileStatement, BlockScope scope)
+	{
 		CtWhile w = factory.Core().createWhile();
-		context.enter(w, whileStatement);
+		this.context.enter(w, whileStatement);
+
 		return true;
 	}
-
 }
