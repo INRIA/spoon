@@ -30,7 +30,7 @@ public class APITest {
 		for(CtPackage p : factory.Package().getAll()) {
 			System.out.println("package: "+p.getQualifiedName());
 		}
-		for(CtSimpleType s : factory.Class().getAll()) {
+		for(CtSimpleType<?> s : factory.Class().getAll()) {
 			System.out.println("class: "+s.getQualifiedName());
 		}
 	}

@@ -3,7 +3,6 @@ package spoon.test.staticFieldAccess;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.factory.Factory;
 import spoon.support.reflect.code.CtBlockImpl;
 
 /**

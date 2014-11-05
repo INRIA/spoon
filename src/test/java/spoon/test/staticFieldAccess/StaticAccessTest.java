@@ -1,20 +1,20 @@
 package spoon.test.staticFieldAccess;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-
-import java.io.File;
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
 
 
 public class StaticAccessTest {
@@ -40,8 +40,8 @@ public class StaticAccessTest {
     @Test
     public void testReferences() throws Exception {
 
-        CtType type = (CtType) factory.Type().get("spoon.test.staticFieldAccess.StaticAccessBug");
-        CtBlock block = type.getMethod("references").getBody();
+        CtType<?> type = (CtType<?>) factory.Type().get("spoon.test.staticFieldAccess.StaticAccessBug");
+        CtBlock<?> block = type.getMethod("references").getBody();
         assertTrue(block.getStatement(0).toString().contains("Extends.MY_STATIC_VALUE"));
         assertTrue(block.getStatement(1).toString().contains("Extends.MY_OTHER_STATIC_VALUE"));
     }
