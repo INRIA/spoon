@@ -17,9 +17,6 @@
 
 package spoon.reflect.code;
 
-import java.util.List;
-
-import spoon.reflect.reference.CtTypeReference;
 
 /**
  * This code element defines a concrete invocation.

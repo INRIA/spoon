@@ -172,7 +172,6 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -257,20 +256,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		public void addCreatedType(CtSimpleType<?> type) {
 			createdTypes.add(type);
-		}
-
-		private SourcePosition createSourcePosition(ASTNode node) {
-			CoreFactory cf = factory.Core();
-			int sourceStart = node.sourceStart;
-			int sourceEnd = node.sourceEnd;
-			CompilationUnit cu = factory.CompilationUnit().create(
-					new String(compilationunitdeclaration.getFileName()));
-			return cf
-					.createSourcePosition(
-							cu,
-							sourceStart,
-							sourceEnd,
-							compilationunitdeclaration.compilationResult.lineSeparatorPositions);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -403,7 +388,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// Map<TypeBinding, CtTypeReference<?>> bindingCache = new
 		// HashMap<TypeBinding, CtTypeReference<?>>();
 
-		@SuppressWarnings("unchecked")
 		public <T> CtTypeReference<T> getTypeReference(TypeBinding binding, TypeReference ref) {
 			CtTypeReference<T> ctRef = getTypeReference(binding);
 			if (ctRef != null) {
@@ -2184,7 +2168,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
 			CtFieldAccess<Object> fa = factory.Core().createFieldAccess();
 
-			CtFieldReference ref = references.getVariableReference(
+			CtFieldReference<Object> ref = references.getVariableReference(
 					qualifiedNameReference.fieldBinding());
 			ref.setDeclaringType(references.getTypeReference(
 					qualifiedNameReference.actualReceiverType));
@@ -2263,7 +2247,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return false;
 		} else {
 			CtVariableAccess<Object> va = factory.Core().createVariableAccess();
-			CtVariableReference<Object> varRef = new CtUnboundVariableReferenceImpl();
+			CtVariableReference<Object> varRef = new CtUnboundVariableReferenceImpl<Object>();
 			varRef.setSimpleName(qualifiedNameReference.toString());
 			va.setVariable(varRef);
 			context.enter(va, qualifiedNameReference);

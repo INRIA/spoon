@@ -247,8 +247,8 @@ public class AnnotationTest
 		Object element = annotation.getElementValues().get("ia");
 		assertNotNull(element);
 		assertTrue(element instanceof CtAnnotation);
-		assertTrue(((CtAnnotation) element).getAnnotatedElement().equals(annotation));
-		assertEquals(CtAnnotatedElementType.ANNOTATION_TYPE, ((CtAnnotation) element).getAnnotatedElementType());
+		assertTrue(((CtAnnotation<?>) element).getAnnotatedElement().equals(annotation));
+		assertEquals(CtAnnotatedElementType.ANNOTATION_TYPE, ((CtAnnotation<?>) element).getAnnotatedElementType());
 
 		// load enum AnnotParamTypeEnum and check the annotated element type of the annotation of the enum and of the fields
 		CtEnum<?> enumeration = pkg.getType("AnnotParamTypeEnum");

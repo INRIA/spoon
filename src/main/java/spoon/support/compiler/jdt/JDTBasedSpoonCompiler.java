@@ -64,7 +64,6 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.VirtualFolder;
-import spoon.support.gui.SpoonModelTree;
 
 public class JDTBasedSpoonCompiler implements SpoonCompiler {
 

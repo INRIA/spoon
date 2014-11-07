@@ -35,6 +35,7 @@ public class FactoryTest {
 	@Test
 	public void testFactoryOverriding()  throws Exception {
 
+		@SuppressWarnings("serial")
 		class MyCtMethod<T> extends CtMethodImpl<T>{};
 		
 		@SuppressWarnings("serial")
