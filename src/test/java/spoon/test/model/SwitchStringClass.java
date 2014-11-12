@@ -1,8 +1,5 @@
 package spoon.test.model;
 
-/**
- * Created by gerard on 07/11/2014.
- */
 public class SwitchStringClass {
 
 	public String getTypeOfDayWithSwitchStatement(String dayOfWeekArg) {

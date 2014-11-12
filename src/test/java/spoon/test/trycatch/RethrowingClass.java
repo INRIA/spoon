@@ -1,8 +1,5 @@
 package spoon.test.trycatch;
 
-/**
- * Created by gerard on 07/11/2014.
- */
 public class RethrowingClass {
 
 	static class FirstException extends Exception {

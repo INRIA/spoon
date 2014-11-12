@@ -8,16 +8,14 @@ import org.junit.Test;
 
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtTry;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
 
+import java.util.List;
 import java.util.Set;
 
 public class TryCatchTest {
@@ -128,5 +126,29 @@ public class TryCatchTest {
 		}
 	}
 
+	@Test
+	public void testTryWithOneResource() throws Exception {
+		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
 
+		CtMethod<?> method = clazz
+				.getMethodsByName("readFirstLineFromFile").get(0);
+		CtTry ctTry = method.getElements(new TypeFilter<CtTry>(CtTry.class))
+				.get(0);
+
+		// Checks try has only one resource.
+		assertTrue(ctTry.getResources().size() == 1);
+	}
+
+	@Test
+	public void testTryWithResources() throws Exception {
+		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
+
+		CtMethod<?> method = clazz
+				.getMethodsByName("writeToFileZipFileContents").get(0);
+		CtTry ctTry = method.getElements(new TypeFilter<CtTry>(CtTry.class))
+				.get(0);
+
+		// Checks try has more than one resource.
+		assertTrue(ctTry.getResources().size() > 1);
+	}
 }
