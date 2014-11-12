@@ -29,7 +29,7 @@ import spoon.reflect.reference.CtTypeReference;
  * constructor, or an anonymous block.
  */
 public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
-		CtTypedElement<R> {
+		CtTypedElement<R>, CtTypeMember {
 
 	/**
 	 * The separator for a string representation of an executable.
@@ -40,11 +40,6 @@ public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
 	 * Gets the body expression.
 	 */
 	<B extends R> CtBlock<B> getBody();
-
-	/**
-	 * Gets the declaring type
-	 */
-	CtType<?> getDeclaringType();
 
 	/**
 	 * Gets the parameters list.

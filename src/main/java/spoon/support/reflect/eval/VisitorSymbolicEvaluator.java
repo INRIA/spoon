@@ -78,6 +78,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtVariable;
@@ -1026,7 +1027,7 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 				executable.getDeclaringType().getReference(),
 				executable.getModifiers().contains(ModifierKind.STATIC));
 		// Seed the fields of the class
-		CtType<?> targetType = executable.getDeclaringType();
+		CtSimpleType<?> targetType = executable.getDeclaringType();
 		for (CtField<?> field : targetType.getFields()) {
 			if (!field.getModifiers().contains(ModifierKind.STATIC)
 					&& executable.getModifiers().contains(ModifierKind.STATIC)) {
