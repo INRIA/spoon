@@ -52,6 +52,7 @@ import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -337,6 +338,11 @@ public interface CoreFactory {
 	 * Creates a <code>try</code> block.
 	 */
 	CtTry createTry();
+
+	/**
+	 * Creates a <code>try</code> with resource block.
+	 */
+	CtTryWithResource createTryWithResource();
 
 	/**
 	 * Creates a type parameter.

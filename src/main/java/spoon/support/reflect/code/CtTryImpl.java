@@ -32,36 +32,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
 
-	List<CtLocalVariable<?>> resources = EMPTY_LIST();
 	List<CtCatch> catchers = EMPTY_LIST();
-
-	public List<CtLocalVariable<?>> getResources() {
-		return resources;
-	}
-
-	public void setResources(
-			List<CtLocalVariable<?>> resources) {
-		this.resources = resources;
-	}
-
-	@Override
-	public boolean addResource(CtLocalVariable<?> resource) {
-		if (resources == CtElementImpl
-				.<CtLocalVariable<?>> EMPTY_LIST()) {
-			resources = new ArrayList<CtLocalVariable<?>>();
-		}
-		return resources.add(resource);
-	}
-
-	@Override
-	public boolean removeResource(
-			CtLocalVariable<?> resource) {
-		if (resources == CtElementImpl
-				.<CtLocalVariable<?>> EMPTY_LIST()) {
-			resources = new ArrayList<CtLocalVariable<?>>();
-		}
-		return resources.remove(resource);
-	}
 
 	public List<CtCatch> getCatchers() {
 		return catchers;

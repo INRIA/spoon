@@ -55,6 +55,7 @@ import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -500,6 +501,20 @@ public class SignaturePrinter implements CtVisitor {
 			scan(c);
 		}
 		scan(tryBlock.getFinalizer());
+	}
+
+	@Override
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
+		write("try (");
+		for (CtLocalVariable<?> resource : tryWithResource.getResources()) {
+			scan(resource);
+		}
+		write(") {\n");
+		scan(tryWithResource.getBody());
+		for (CtCatch c : tryWithResource.getCatchers()) {
+			scan(c);
+		}
+		scan(tryWithResource.getFinalizer());
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {

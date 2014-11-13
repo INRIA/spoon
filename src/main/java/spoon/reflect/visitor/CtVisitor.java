@@ -51,6 +51,7 @@ import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -202,7 +203,7 @@ public interface CtVisitor {
 	 * Visits a this access.
 	 */
 	<T> void visitCtThisAccess(CtThisAccess<T> thisAccess);
-	
+
 	/**
 	 * Visits a reference to a field.
 	 */
@@ -318,6 +319,11 @@ public interface CtVisitor {
 	 * Visits a <code>try</code> statement.
 	 */
 	void visitCtTry(CtTry tryBlock);
+
+	/**
+	 * Visits a <code>try</code> with resource statement.
+	 */
+	void visitCtTryWithResource(CtTryWithResource tryWithResource);
 
 	/**
 	 * Visits a type parameter declaration.

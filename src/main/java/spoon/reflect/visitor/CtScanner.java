@@ -52,6 +52,7 @@ import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -574,11 +575,21 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtTry(CtTry tryBlock) {
 		enter(tryBlock);
 		scan(tryBlock.getAnnotations());
-		scan(tryBlock.getResources());
 		scan(tryBlock.getBody());
 		scan(tryBlock.getCatchers());
 		scan(tryBlock.getFinalizer());
 		exit(tryBlock);
+	}
+
+	@Override
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
+		enter(tryWithResource);
+		scan(tryWithResource.getAnnotations());
+		scan(tryWithResource.getResources());
+		scan(tryWithResource.getBody());
+		scan(tryWithResource.getCatchers());
+		scan(tryWithResource.getFinalizer());
+		exit(tryWithResource);
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {

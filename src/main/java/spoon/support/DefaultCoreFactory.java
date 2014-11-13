@@ -60,6 +60,7 @@ import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -121,6 +122,7 @@ import spoon.support.reflect.code.CtSynchronizedImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
 import spoon.support.reflect.code.CtThrowImpl;
 import spoon.support.reflect.code.CtTryImpl;
+import spoon.support.reflect.code.CtTryWithResourceImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableAccessImpl;
 import spoon.support.reflect.code.CtWhileImpl;
@@ -543,6 +545,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public CtTry createTry() {
 		CtTry e = new CtTryImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public CtTryWithResource createTryWithResource() {
+		CtTryWithResource e = new CtTryWithResourceImpl();
 		e.setFactory(getMainFactory());
 		return e;
 	}

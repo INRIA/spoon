@@ -34,6 +34,7 @@ import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -277,6 +278,10 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	public void visitCtTry(CtTry tryBlock) {
+
+	}
+
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 
 	}
 

@@ -2477,7 +2477,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TryStatement tryStatement, BlockScope scope) {
-		CtTry t = factory.Core().createTry();
+		CtTry t;
+		if (tryStatement.resources.length > 0) {
+			t = factory.Core().createTryWithResource();
+		} else {
+			t = factory.Core().createTry();
+		}
 		context.enter(t, tryStatement);
 		for (LocalDeclaration localDeclaration : tryStatement.resources) {
 			localDeclaration.traverse(this, scope);

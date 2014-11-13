@@ -61,6 +61,7 @@ import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -1665,16 +1666,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtTry(CtTry tryBlock) {
 		enterCtStatement(tryBlock);
 		write("try ");
-		if (tryBlock.getResources() != null
-				&& !tryBlock.getResources().isEmpty()) {
-			write("(");
-			for (CtLocalVariable<?> r : tryBlock.getResources()) {
-				scan(r);
-				write(";");
-			}
-			removeLastChar();
-			write(") ");
-		}
 		scan(tryBlock.getBody());
 		for (CtCatch c : tryBlock.getCatchers()) {
 			scan(c);
@@ -1683,6 +1674,31 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (tryBlock.getFinalizer() != null) {
 			write(" finally ");
 			scan(tryBlock.getFinalizer());
+		}
+	}
+
+	@Override
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
+		enterCtStatement(tryWithResource);
+		write("try ");
+		if (tryWithResource.getResources() != null
+				&& !tryWithResource.getResources().isEmpty()) {
+			write("(");
+			for (CtLocalVariable<?> r : tryWithResource.getResources()) {
+				scan(r);
+				write(";");
+			}
+			removeLastChar();
+			write(") ");
+		}
+		scan(tryWithResource.getBody());
+		for (CtCatch c : tryWithResource.getCatchers()) {
+			scan(c);
+		}
+
+		if (tryWithResource.getFinalizer() != null) {
+			write(" finally ");
+			scan(tryWithResource.getFinalizer());
 		}
 	}
 

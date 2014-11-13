@@ -27,28 +27,6 @@ import spoon.template.TemplateParameter;
 public interface CtTry extends CtStatement, TemplateParameter<Void> {
 
 	/**
-	 * Gets the auto-closeable resources of this <code>try</code>. Available
-	 * from Java 7 with the <i>try-with-resource</i> statement.
-	 */
-	List<CtLocalVariable<?>> getResources();
-
-	/**
-	 * Sets the auto-closeable resources of this <code>try</code>. Available
-	 * from Java 7 with the <i>try-with-resource</i> statement.
-	 */
-	void setResources(List<CtLocalVariable<?>> resources);
-
-	/**
-	 * Adds a resource.
-	 */
-	boolean addResource(CtLocalVariable<?> resource);
-
-	/**
-	 * Removes a resource.
-	 */
-	boolean removeResource(CtLocalVariable<?> resource);
-
-	/**
 	 * Gets the <i>catchers</i> of this <code>try</code>.
 	 */
 	List<CtCatch> getCatchers();

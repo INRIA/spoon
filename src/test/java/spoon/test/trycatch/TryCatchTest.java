@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -29,10 +30,8 @@ public class TryCatchTest {
 		assertNotNull(m);
 		assertEquals(2, m.getBody().getStatements().size());
 		assertTrue(m.getBody().getStatements().get(0) instanceof CtTry);
-		assertTrue(m.getBody().getStatements().get(1) instanceof CtTry);
-		CtTry t1 = m.getBody().getStatement(0);
-		assertTrue(t1.getResources().isEmpty());
-		CtTry t2 = m.getBody().getStatement(1);
+		assertTrue(m.getBody().getStatements().get(1) instanceof CtTryWithResource);
+		CtTryWithResource t2 = m.getBody().getStatement(1);
 		assertNotNull(t2.getResources());
 
 	}
@@ -128,27 +127,31 @@ public class TryCatchTest {
 
 	@Test
 	public void testTryWithOneResource() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
+		CtClass<?> clazz = build("spoon.test.trycatch",
+				"TryCatchResourceClass");
 
 		CtMethod<?> method = clazz
 				.getMethodsByName("readFirstLineFromFile").get(0);
-		CtTry ctTry = method.getElements(new TypeFilter<CtTry>(CtTry.class))
-				.get(0);
+		CtTryWithResource ctTryWithResource = method.getElements(
+				new TypeFilter<CtTryWithResource>(CtTryWithResource.class)).get(
+				0);
 
 		// Checks try has only one resource.
-		assertTrue(ctTry.getResources().size() == 1);
+		assertTrue(ctTryWithResource.getResources().size() == 1);
 	}
 
 	@Test
 	public void testTryWithResources() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
+		CtClass<?> clazz = build("spoon.test.trycatch",
+				"TryCatchResourceClass");
 
 		CtMethod<?> method = clazz
 				.getMethodsByName("writeToFileZipFileContents").get(0);
-		CtTry ctTry = method.getElements(new TypeFilter<CtTry>(CtTry.class))
+		CtTryWithResource ctTryWithResource = method.getElements(
+				new TypeFilter<CtTryWithResource>(CtTryWithResource.class))
 				.get(0);
 
 		// Checks try has more than one resource.
-		assertTrue(ctTry.getResources().size() > 1);
+		assertTrue(ctTryWithResource.getResources().size() > 1);
 	}
 }
