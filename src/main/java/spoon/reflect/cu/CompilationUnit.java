@@ -46,15 +46,6 @@ public interface CompilationUnit extends FactoryAccessor {
 
 	/**
 	 * Gets the source code fragments for this compilation unit.
-	 *
-	 * This method will be deleted in the future.
-	 * use {@link #getSourceCodeFragments()} instead.
-	 */
-	@Deprecated
-	List<SourceCodeFragment> getSourceCodeFraments();
-
-	/**
-	 * Gets the source code fragments for this compilation unit.
 	 */
 	List<SourceCodeFragment> getSourceCodeFragments();
 

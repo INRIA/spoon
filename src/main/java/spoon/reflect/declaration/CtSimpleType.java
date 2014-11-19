@@ -112,15 +112,6 @@ public interface CtSimpleType<T> extends CtNamedElement, CtTypeMember {
 	boolean isTopLevel();
 
 	/**
-	 * Sets the type's fields.
-	 * 
-	 * @deprecated use {@link #addField(CtField)} and
-	 *             {@link #removeField(CtField)} instead
-	 */
-	@Deprecated
-	void setFields(List<CtField<?>> fields);
-
-	/**
 	 * add a Field
 	 * 
 	 * @param field
@@ -135,15 +126,6 @@ public interface CtSimpleType<T> extends CtNamedElement, CtTypeMember {
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<F> boolean removeField(CtField<F> field);
-
-	/**
-	 * Sets some nested types.
-	 * 
-	 * @deprecated use {@link #addNestedType(CtSimpleType)} and
-	 *             {@link #removeNestedType(CtSimpleType)} instead
-	 */
-	@Deprecated
-	void setNestedTypes(Set<CtSimpleType<?>> nestedTypes);
 
 	/**
 	 * remove a nested type
