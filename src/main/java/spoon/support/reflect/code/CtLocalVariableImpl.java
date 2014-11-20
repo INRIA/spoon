@@ -17,19 +17,21 @@
 
 package spoon.support.reflect.code;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-public class CtLocalVariableImpl<T> extends CtStatementImpl implements
-		CtLocalVariable<T> {
+public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVariable<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<T> defaultExpression;
@@ -40,14 +42,16 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 
 	CtTypeReference<T> type;
 
+	List<CtTypeReference<?>> types = EMPTY_LIST();
+
 	public boolean addModifier(ModifierKind modifier) {
-        setMutable();
-        return modifiers.add(modifier);
+		setMutable();
+		return modifiers.add(modifier);
 	}
 
 	public boolean removeModifier(ModifierKind modifier) {
-        setMutable();
-        return modifiers.remove(modifier);
+		setMutable();
+		return modifiers.remove(modifier);
 	}
 
 	public void accept(CtVisitor visitor) {
@@ -108,18 +112,35 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements
 		this.type = type;
 	}
 
-    private void setMutable() {
-        if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-            modifiers = new TreeSet<ModifierKind>();
-        }
-    }
+	private void setMutable() {
+		if (modifiers == CtElementImpl.<ModifierKind>EMPTY_SET()) {
+			modifiers = new TreeSet<ModifierKind>();
+		}
+	}
 
 	public void setVisibility(ModifierKind visibility) {
-        setMutable();
+		setMutable();
 		getModifiers().remove(ModifierKind.PUBLIC);
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);
 		getModifiers().add(visibility);
 	}
 
+	@Override
+	public boolean addMultiType(CtTypeReference<?> ref) {
+		if (types == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
+			types = new ArrayList<CtTypeReference<?>>();
+		}
+		return types.add(ref);
+	}
+
+	@Override
+	public boolean removeMultiType(CtTypeReference<?> ref) {
+		return types.remove(ref);
+	}
+
+	@Override
+	public List<CtTypeReference<?>> getMultiTypes() {
+		return types;
+	}
 }

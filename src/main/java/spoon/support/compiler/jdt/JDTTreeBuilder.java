@@ -18,6 +18,7 @@
 package spoon.support.compiler.jdt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -2507,14 +2508,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 				// case 2: Java 7 multiple catch blocks
 				else if (jdtCatch.type instanceof UnionTypeReference) { 
 					UnionTypeReference utr = (UnionTypeReference)jdtCatch.type;
+
+					final List<CtTypeReference> refs = new ArrayList<CtTypeReference>();
 					for (TypeReference type : utr.typeReferences) {
-						CtTypeReference<Throwable> r = references
-								.getTypeReference(type.resolvedType);
-						createCtCatch(jdtCatch, r);					
-						tryStatement.catchBlocks[i].traverse(this, scope);
-						context.exit(jdtCatch);
+						CtTypeReference<Throwable> r = references.getTypeReference(type.resolvedType);
+						refs.add(r);
 					}
-				} 
+					CtTypeReference<Throwable> r = references.getTypeReference(jdtCatch.type.resolvedType);
+					createCtCatchJava7(jdtCatch, r, refs);
+					tryStatement.catchBlocks[i].traverse(this, scope);
+					context.exit(jdtCatch);
+				}
 				else { 
 					throw new RuntimeException("I don't know how to do this");
 				}
@@ -2538,6 +2542,24 @@ public class JDTTreeBuilder extends ASTVisitor {
 		var.setSimpleName(new String(
 				jdtCatch.name));
 		var.setType(r);
+		for (ModifierKind modifier : getModifiers(jdtCatch.modifiers)) {
+			var.addModifier(modifier);
+		}
+		context.exit(jdtCatch);
+		return c;
+	}
+
+	private CtCatch createCtCatchJava7(Argument jdtCatch, CtTypeReference<Throwable> r, List<CtTypeReference> refs) {
+		CtCatch c = factory.Core().createCatch();
+		CtLocalVariable<Throwable> var = factory.Core()
+				.createLocalVariable();
+		context.enter(c, jdtCatch);
+		context.enter(var, jdtCatch);
+		var.setSimpleName(new String(jdtCatch.name));
+		var.setType(r);
+		for (CtTypeReference<?> ref : refs) {
+			var.addMultiType(ref);
+		}
 		for (ModifierKind modifier : getModifiers(jdtCatch.modifiers)) {
 			var.addModifier(modifier);
 		}

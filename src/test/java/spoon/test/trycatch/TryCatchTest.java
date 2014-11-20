@@ -7,6 +7,7 @@ import static spoon.test.TestUtils.build;
 import org.junit.Test;
 
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.*;
@@ -86,20 +87,25 @@ public class TryCatchTest {
 								+ "};").compile();
 		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(
 				0);
+		System.err.println(tryStmt);
+		List<CtCatch> catchers = tryStmt.getCatchers();
+		assertEquals(1, catchers.size());
 
-		assertEquals(2, tryStmt.getCatchers().size());
+		assertEquals(
+				Throwable.class,
+				catchers.get(0).getParameter().getType().getActualClass());
+
+		assertEquals(2, catchers.get(0).getParameter().getMultiTypes().size());
 
 		assertEquals(
 				RuntimeException.class,
-				tryStmt.getCatchers().get(0).getParameter().getType().getActualClass());
-
+				catchers.get(0).getParameter().getMultiTypes().get(0).getActualClass());
 		assertEquals(
 				Error.class,
-				tryStmt.getCatchers().get(1).getParameter().getType().getActualClass());
+				catchers.get(0).getParameter().getMultiTypes().get(1).getActualClass());
 
 		// the code of the catch block is duplicated
-		assertEquals("java.lang.System.exit(0)", tryStmt.getCatchers().get(0).getBody().getStatement(0).toString());
-		assertEquals("java.lang.System.exit(0)", tryStmt.getCatchers().get(1).getBody().getStatement(0).toString());
+		assertEquals("java.lang.System.exit(0)", catchers.get(0).getBody().getStatement(0).toString());
 	}
 
 	@Test
