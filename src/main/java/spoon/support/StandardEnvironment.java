@@ -383,11 +383,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.tabulationSize = tabulationSize;
 	}
 
-	@Deprecated
-	public String getSourcePath() {
-		return ".";
-	}
-
 	@Override
 	public ClassLoader getClassLoader() {
 		if (classLoader == null) {

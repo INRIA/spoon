@@ -200,14 +200,6 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 		return (getDeclaringType() == null) && (getPackage() != null);
 	}
 
-	public void setFields(List<CtField<?>> fields) {
-		this.fields = fields;
-	}
-
-	public void setNestedTypes(Set<CtSimpleType<?>> nestedTypes) {
-		this.nestedTypes = nestedTypes;
-	}
-
 	public void compileAndReplaceSnippets() {
 		SnippetCompilationHelper.compileAndReplaceSnippetsIn(this);
 	}

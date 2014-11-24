@@ -215,11 +215,6 @@ public interface Environment {
 	void useTabulations(boolean b);
 
 	/**
-	 * Gets the current input path
-	 */
-	String getSourcePath();
-
-	/**
 	 * Tell to the Java printer to automatically generate imports and use simple
 	 * names instead of fully-qualified name.
 	 */

@@ -68,12 +68,6 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public List<SourceCodeFragment> getSourceCodeFraments()
-	{
-		return this.getSourceCodeFragments();
-	}
-
-	@Override
     public List<SourceCodeFragment> getSourceCodeFragments() {
 		return fragments;
 	}
