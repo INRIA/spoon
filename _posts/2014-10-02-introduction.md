@@ -5,7 +5,7 @@ date:   2014-10-06 16:29:03
 categories: home
 ---
 
-Spoon enables you to transform (see below) and analyze Java source code (see example) . Spoon provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification. Spoon takes as input source code and produces transformed source code ready to be compiled.
+Spoon is an open-source library that enables you to transform (see below) and analyze Java source code (see example) . Spoon provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification. Spoon takes as input source code and produces transformed source code ready to be compiled.
 
 For documentation, there is the [Spoon technical report](https://hal.inria.fr/hal-01078532) and slides [here](http://www.monperrus.net/martin/lecture-slides-source-code-analysis-and-transformation.pdf).
 
