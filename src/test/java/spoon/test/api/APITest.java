@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
+import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.support.JavaOutputProcessor;
@@ -38,10 +39,10 @@ public class APITest {
 	@Test
 	public void testOverrideOutputWriter() throws Exception {
 		// this test that we can correctly set the Java output processor
-		final List<Object> l = new ArrayList<>();
+		final List<Object> l = new ArrayList<Object>();
 		Launcher spoon = new Launcher() {
 			@Override
-			public JavaOutputProcessor createOutputWriter(File sourceOutputDir) {				
+			public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
 				return new JavaOutputProcessor() { 
 					@Override
 					public void process(CtSimpleType<?> e) {
