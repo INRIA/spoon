@@ -31,6 +31,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -74,6 +75,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -363,6 +365,16 @@ public class SignaturePrinter implements CtVisitor {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
+		scan(reference.getDeclaration());
+	}
+
+	@Override
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+		write(catchVariable.getSimpleName());
+	}
+
+	@Override
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
 		scan(reference.getDeclaration());
 	}
 

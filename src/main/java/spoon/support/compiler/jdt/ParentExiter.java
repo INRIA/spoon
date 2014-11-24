@@ -9,6 +9,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -266,9 +267,9 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtBlock) {
 			catchBlock.setBody((CtBlock<?>) child);
 			return;
-		} else if (child instanceof CtLocalVariable) {
+		} else if (child instanceof CtCatchVariable) {
 			catchBlock
-					.setParameter((CtLocalVariable<? extends Throwable>) child);
+					.setParameter((CtCatchVariable<? extends Throwable>) child);
 			return;
 		}
 		super.visitCtCatch(catchBlock);

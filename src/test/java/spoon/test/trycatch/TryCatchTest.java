@@ -1,30 +1,31 @@
 package spoon.test.trycatch;
 
-import static org.junit.Assert.*;
-import static spoon.test.TestUtils.*;
-import static spoon.test.TestUtils.build;
-
 import org.junit.Test;
-
-import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 
 import java.util.List;
 import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.test.TestUtils.build;
+import static spoon.test.TestUtils.createFactory;
 
 public class TryCatchTest {
 
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
-		CtClass<Main> type = build ("spoon.test.trycatch", "Main");
+		CtClass<Main> type = build("spoon.test.trycatch", "Main");
 		assertEquals("Main", type.getSimpleName());
 
 		CtMethod<Void> m = type.getMethod("test");
@@ -85,9 +86,7 @@ public class TryCatchTest {
 						"" + "class X {" + "public void foo() {"
 								+ " try{}catch(RuntimeException | Error e){System.exit(0);}" + "}"
 								+ "};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(
-				0);
-		System.err.println(tryStmt);
+		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 		List<CtCatch> catchers = tryStmt.getCatchers();
 		assertEquals(1, catchers.size());
 
@@ -122,7 +121,7 @@ public class TryCatchTest {
 		CtTry ctTry = clazz.getElements(new TypeFilter<CtTry>(CtTry.class))
 				.get(0);
 
-		Class<? extends CtLocalVariableReference> exceptionClass = ctTry
+		Class<? extends CtCatchVariableReference> exceptionClass = ctTry
 				.getCatchers().get(0).getParameter().getReference().getClass();
 
 		// Checks the exception in the catch isn't on the signature of the method.
@@ -133,14 +132,11 @@ public class TryCatchTest {
 
 	@Test
 	public void testTryWithOneResource() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch",
-				"TryCatchResourceClass");
+		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
 
-		CtMethod<?> method = clazz
-				.getMethodsByName("readFirstLineFromFile").get(0);
+		CtMethod<?> method = clazz.getMethodsByName("readFirstLineFromFile").get(0);
 		CtTryWithResource ctTryWithResource = method.getElements(
-				new TypeFilter<CtTryWithResource>(CtTryWithResource.class)).get(
-				0);
+				new TypeFilter<CtTryWithResource>(CtTryWithResource.class)).get(0);
 
 		// Checks try has only one resource.
 		assertTrue(ctTryWithResource.getResources().size() == 1);
@@ -148,14 +144,11 @@ public class TryCatchTest {
 
 	@Test
 	public void testTryWithResources() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch",
-				"TryCatchResourceClass");
+		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
 
-		CtMethod<?> method = clazz
-				.getMethodsByName("writeToFileZipFileContents").get(0);
+		CtMethod<?> method = clazz.getMethodsByName("writeToFileZipFileContents").get(0);
 		CtTryWithResource ctTryWithResource = method.getElements(
-				new TypeFilter<CtTryWithResource>(CtTryWithResource.class))
-				.get(0);
+				new TypeFilter<CtTryWithResource>(CtTryWithResource.class)).get(0);
 
 		// Checks try has more than one resource.
 		assertTrue(ctTryWithResource.getResources().size() > 1);

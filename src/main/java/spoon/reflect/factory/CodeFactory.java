@@ -26,6 +26,7 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
@@ -41,6 +42,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -190,7 +192,7 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a local variable declaration.
-	 * 
+	 *
 	 * @param <T>
 	 *            the local variable type
 	 * @param type
@@ -234,6 +236,36 @@ public class CodeFactory extends SubFactory {
 				.createLocalVariableReference();
 		ref.setType(type);
 		ref.setSimpleName(name);
+		return ref;
+	}
+
+	/**
+	 * Creates a catch variable declaration.
+	 *
+	 * @param <T>
+	 *            the catch variable type
+	 * @param type
+	 *            the reference to the type
+	 * @param name
+	 *            the name of the variable
+	 * @return a new catch variable declaration
+	 */
+	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name) {
+		CtCatchVariable<T> var = factory.Core().createCatchVariable();
+		var.setSimpleName(name);
+		var.setType(type);
+		return var;
+	}
+
+	/**
+	 * Creates a catch variable reference that points to an existing catch
+	 * variable (strong referencing).
+	 */
+	public <T> CtCatchVariableReference<T> createCatchVariableReference(CtCatchVariable<T> catchVariable) {
+		CtCatchVariableReference<T> ref = factory.Core().createCatchVariableReference();
+		ref.setType(catchVariable.getType());
+		ref.setSimpleName(catchVariable.getSimpleName());
+		ref.setDeclaration(catchVariable);
 		return ref;
 	}
 

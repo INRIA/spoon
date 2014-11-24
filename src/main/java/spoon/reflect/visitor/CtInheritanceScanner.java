@@ -31,6 +31,7 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -85,6 +86,7 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
@@ -433,6 +435,15 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
+		scanCtVariableReference(reference);
+	}
+
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+		scanCtVariable(catchVariable);
+		scanCtCodeElement(catchVariable);
+	}
+
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
 		scanCtVariableReference(reference);
 	}
 

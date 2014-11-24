@@ -36,6 +36,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -82,6 +83,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -99,6 +101,7 @@ import spoon.support.reflect.code.CtBlockImpl;
 import spoon.support.reflect.code.CtBreakImpl;
 import spoon.support.reflect.code.CtCaseImpl;
 import spoon.support.reflect.code.CtCatchImpl;
+import spoon.support.reflect.code.CtCatchVariableImpl;
 import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
 import spoon.support.reflect.code.CtCodeSnippetStatementImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
@@ -143,6 +146,7 @@ import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
+import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
 import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
@@ -461,6 +465,20 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtLocalVariableReference<T> createLocalVariableReference() {
 		CtLocalVariableReference<T> e = new CtLocalVariableReferenceImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtCatchVariable<T> createCatchVariable() {
+		CtCatchVariable<T> e = new CtCatchVariableImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtCatchVariableReference<T> createCatchVariableReference() {
+		CtCatchVariableReference<T> e = new CtCatchVariableReferenceImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

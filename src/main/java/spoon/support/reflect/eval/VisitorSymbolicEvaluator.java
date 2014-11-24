@@ -37,6 +37,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -93,6 +94,7 @@ import spoon.reflect.eval.SymbolicInstance;
 import spoon.reflect.eval.SymbolicStackFrame;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -826,6 +828,16 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
+		throw new RuntimeException("Not evaluable");
+	}
+
+	@Override
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+		stack.setVariableValue(catchVariable.getReference(), evaluate(catchVariable.getDefaultExpression()));
+	}
+
+	@Override
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
 		throw new RuntimeException("Not evaluable");
 	}
 

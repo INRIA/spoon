@@ -12,6 +12,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -221,6 +222,14 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
+
+	}
+
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+
+	}
+
+	public <T> void visitCtCatchVariableReference(CtCatchVariable<T> reference) {
 
 	}
 

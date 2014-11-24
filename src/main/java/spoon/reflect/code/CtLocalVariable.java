@@ -17,7 +17,6 @@
 
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtLocalVariableReference;
 
@@ -29,7 +28,7 @@ import spoon.reflect.reference.CtLocalVariableReference;
  *            type of the variable
  * @see spoon.reflect.declaration.CtExecutable
  */
-public interface CtLocalVariable<T> extends CtStatement, CtMultiTypedElement, CtVariable<T> {
+public interface CtLocalVariable<T> extends CtStatement, CtVariable<T> {
 	/*
 	 * (non-Javadoc)
 	 * 

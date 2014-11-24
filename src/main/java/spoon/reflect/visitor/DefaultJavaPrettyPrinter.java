@@ -34,6 +34,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -70,6 +71,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -724,7 +726,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public void visitCtCatch(CtCatch catchBlock) {
 		write(" catch (");
-		CtLocalVariable<? extends Throwable> parameter = catchBlock.getParameter();
+		CtCatchVariable<? extends Throwable> parameter = catchBlock.getParameter();
 		if (parameter.getMultiTypes().size() > 0) {
 			StringBuilder multiTypes = new StringBuilder();
 			for (int i = 0; i < parameter.getMultiTypes().size(); i++) {
@@ -1379,6 +1381,24 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
+		write(reference.getSimpleName());
+	}
+
+	@Override
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+		if (env.isPreserveLineNumbers()) {
+			adjustPosition(catchVariable);
+		}
+		if (!context.noTypeDecl) {
+			writeModifiers(catchVariable);
+			scan(catchVariable.getType());
+			write(" ");
+		}
+		write(catchVariable.getSimpleName());
+	}
+
+	@Override
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
 		write(reference.getSimpleName());
 	}
 
