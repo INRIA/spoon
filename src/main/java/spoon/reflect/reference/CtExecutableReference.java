@@ -19,6 +19,7 @@ package spoon.reflect.reference;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import spoon.reflect.declaration.CtExecutable;
 
@@ -65,6 +66,16 @@ public interface CtExecutableReference<T> extends CtReference,
 	 * Gets the return type of the executable (may be null in noclasspath mode).
 	 */
 	CtTypeReference<T> getType();
+
+	/**
+	 * Gets parameters of the executable.
+	 */
+	List<CtTypeReference<?>> getParameters();
+
+	/**
+	 * Sets parameters of the executable.
+	 */
+	void setParameters(List<CtTypeReference<?>> parameters);
 
 	/**
 	 * Returns <code>true</code> if this executable overrides the given

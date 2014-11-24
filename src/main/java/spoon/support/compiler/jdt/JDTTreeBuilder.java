@@ -367,10 +367,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ref.setType((CtTypeReference<T>) getTypeReference(exec.returnType));
 			ref.setSimpleName(new String(exec.selector));
 			ref.setStatic(exec.isStatic());
-			if (exec.typeVariables != null) {
-				for (TypeVariableBinding b : exec.typeVariables) {
-					ref.addActualTypeArgument(getTypeReference(b));
+
+			// original() method returns a result not null when the current method is generic.
+			if (exec.original() != null) {
+				final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>();
+				for (TypeBinding b : exec.original().parameters) {
+					parameters.add(getTypeReference(b));
 				}
+				ref.setParameters(parameters);
+			}
+			// This is a method without a generic argument.
+			else if (exec.parameters != null) {
+				final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>();
+				for (TypeBinding b : exec.parameters) {
+					parameters.add(getTypeReference(b));
+				}
+				ref.setParameters(parameters);
 			}
 
 			return ref;
