@@ -567,6 +567,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		public <T> CtFieldReference<T> getVariableReference(
 				FieldBinding varbin) {
 			CtFieldReference<T> ref = factory.Core().createFieldReference();
+			if (varbin == null) {
+				return ref;
+			}
 			ref.setSimpleName(new String(varbin.name));
 			ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
 
@@ -1775,7 +1778,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(FieldReference fieldReference, BlockScope scope) {
 		CtFieldAccess<Object> acc = factory.Core().createFieldAccess();
-		acc.setVariable(references.getVariableReference(fieldReference.binding));
+		CtFieldReference<Object> variableReference = references.getVariableReference(fieldReference.binding);
+		if (variableReference.getSimpleName()==null) {
+			variableReference.setSimpleName(new String(fieldReference.token));
+		}
+		acc.setVariable(variableReference);
 		acc.setType(references.getTypeReference(fieldReference.resolvedType));
 
 		// Hmmm Maybe this should not be commented, but I cannot see why we need
