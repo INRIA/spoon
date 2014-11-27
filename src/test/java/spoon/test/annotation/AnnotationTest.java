@@ -9,6 +9,8 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.gui.SpoonModelTree;
+import spoon.support.gui.SpoonTreeBuilder;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
 import spoon.test.annotation.testclasses.Bound;
@@ -284,5 +286,21 @@ public class AnnotationTest
 		assertEquals(1, annotations.size());
 		assertTrue(annotations.get(0).getAnnotatedElement().equals(annotationType));
 		assertEquals(CtAnnotatedElementType.ANNOTATION_TYPE, annotations.get(0).getAnnotatedElementType());
+	}
+
+	@Test
+	public void testAnnotationWithDefaultArrayValue() throws  Throwable{
+		final String res = "java.lang.Class<?>[] value() default {  };";
+
+		CtSimpleType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArrayInnerClass");
+		CtSimpleType<?> annotationInnerClass = type.getNestedType("Annotation");
+		assertEquals("Annotation", annotationInnerClass.getSimpleName());
+		assertEquals(1, annotationInnerClass.getAnnotations().size());
+		assertEquals(res, annotationInnerClass.getField("value").toString());
+
+		CtSimpleType<?> annotation = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArray");
+		assertEquals("AnnotArray", annotation.getSimpleName());
+		assertEquals(1, annotation.getAnnotations().size());
+		assertEquals(res, annotation.getField("value").toString());
 	}
 }
