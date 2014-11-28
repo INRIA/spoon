@@ -528,10 +528,27 @@ public class JDTTreeBuilder extends ASTVisitor {
 					ref.setSimpleName("");
 				} else {
 					ref.setSimpleName(new String(binding.sourceName()));
-					if (binding.enclosingType() != null)
-						ref.setDeclaringType(getTypeReference(binding
-								.enclosingType()));
-					else
+					if (binding.enclosingType() != null) {
+						// If we don't have access at the super class, we try to access it
+						// by the super class enclosing the current class (stack must to be
+						// not empty).
+						final CtTypeReference<?> enclosingType = getTypeReference(binding.enclosingType());
+						final Set<ModifierKind> modifiers = getModifiers(binding.enclosingType().modifiers);
+						if (modifiers.isEmpty()) {
+							if (!context.stack.isEmpty()) {
+								final CtElement clazz = context.stack.peek().element;
+								if (clazz instanceof CtClass<?>) {
+									ref.setDeclaringType(((CtClass<?>) clazz).getSuperclass());
+								} else {
+									ref.setDeclaringType(enclosingType);
+								}
+							} else {
+								ref.setDeclaringType(enclosingType);
+							}
+						} else {
+							ref.setDeclaringType(enclosingType);
+						}
+					} else
 						ref.setPackage(getPackageReference(binding.getPackage()));
 					// if(((SourceTypeBinding) binding).typeVariables!=null &&
 					// ((SourceTypeBinding) binding).typeVariables.length>0){
