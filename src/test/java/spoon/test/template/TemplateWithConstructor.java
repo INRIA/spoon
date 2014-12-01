@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.reference.CtTypeReference;
+import spoon.template.ExtensionTemplate;
 import spoon.template.Local;
 import spoon.template.Parameter;
 import spoon.template.Template;
 
-public class TemplateWithConstructor implements Template {
+public class TemplateWithConstructor extends ExtensionTemplate {
 
     @Parameter
     CtTypeReference<?> _Interf_;

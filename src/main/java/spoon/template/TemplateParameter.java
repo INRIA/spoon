@@ -31,19 +31,8 @@ public interface TemplateParameter<T> {
 	/**
 	 * Gets the type of the template parameter. This methods has no runtime
 	 * meaning (should return a <code>null</code> reference) but is used as a
-	 * marker in a template code. When generating a template code, each
-	 * invocation of this method will be substituted with the result of the
-	 * {@link #getSubstitution(CtSimpleType)} method.
+	 * marker in a template code.
 	 */
 	T S();
 
-	/**
-	 * Returns the code which must be substituted to this template parameter,
-	 * depending on its value.
-	 * 
-	 * @param targetType
-	 *            the type that defines the context of the substitution (for
-	 *            reference redirection).
-	 */
-	CtCodeElement getSubstitution(CtSimpleType<?> targetType);
 }

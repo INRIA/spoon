@@ -187,7 +187,7 @@ public class SubstitutionVisitor extends CtScanner {
 		 */
 		@Override
 		public <T> void visitCtClass(CtClass<T> ctClass) {
-			ctClass.removeSuperInterface(f.Type().createReference(
+			ctClass.removeSuperInterface(factory.Type().createReference(
 					Template.class));
 			for (CtMethod<?> m : new TreeSet<CtMethod<?>>(ctClass.getMethods())) {
 				if (m.getAnnotation(Local.class) != null) {
@@ -287,20 +287,20 @@ public class SubstitutionVisitor extends CtScanner {
 				}
 				if (!(value instanceof TemplateParameter)) {
 					if (value instanceof Class) {
-						toReplace.replace(f.Code().createClassAccess(
-								f.Type().createReference(
+						toReplace.replace(factory.Code().createClassAccess(
+								factory.Type().createReference(
 										((Class<?>) value).getName())));
 					} else if (value instanceof Enum) {
-						CtTypeReference<?> enumType = f.Type().createReference(
+						CtTypeReference<?> enumType = factory.Type().createReference(
 								value.getClass());
-						toReplace.replace(f.Code().createVariableAccess(
-								f.Field().createReference(enumType, enumType,
+						toReplace.replace(factory.Code().createVariableAccess(
+								factory.Field().createReference(enumType, enumType,
 										((Enum<?>) value).name()), true));
 					} else if (value instanceof List) {
 						// replace list of CtParameter for generic access to the
 						// parameters
 						List<CtParameter<?>> l = (List<CtParameter<?>>) value;
-						List<CtExpression<?>> vas = f.Code()
+						List<CtExpression<?>> vas = factory.Code()
 								.createVariableAccesses(l);
 						CtAbstractInvocation<?> inv = (CtAbstractInvocation<?>) targetedAccess
 								.getParent();
@@ -315,14 +315,13 @@ public class SubstitutionVisitor extends CtScanner {
 							i++;
 						}
 					} else if ((value != null) && value.getClass().isArray()) {
-						toReplace.replace(f.Code().createLiteralArray(
+						toReplace.replace(factory.Code().createLiteralArray(
 								(Object[]) value));
 					} else {
-						toReplace.replace(f.Code().createLiteral(value));
+						toReplace.replace(factory.Code().createLiteral(value));
 					}
 				} else {
-					toReplace.replace(((TemplateParameter<?>) value)
-							.getSubstitution(targetType));
+					factory.Core().clone(toReplace);
 				}
 				// do not visit if replaced
 				throw new SkipException(targetedAccess);
@@ -352,7 +351,7 @@ public class SubstitutionVisitor extends CtScanner {
 									.getSimpleName(), Parameters.getIndex(fa));
 					CtCodeElement r = null;
 					if (tparamValue != null) {
-						r = tparamValue.getSubstitution(targetType);
+						r = (CtCodeElement) factory.Core().clone(tparamValue);
 						// substitute in the replacement (for fixing type
 						// references
 						// and
@@ -387,7 +386,7 @@ public class SubstitutionVisitor extends CtScanner {
 					Object o = Parameters.getValue(template, t.getSimpleName(),
 							null);
 					if (o instanceof Class) {
-						t = f.Type().createReference(((Class<T>) o));
+						t = factory.Type().createReference(((Class<T>) o));
 					} else if (o instanceof CtTypeReference) {
 						t = (CtTypeReference<T>) o;
 						expression.getTypeCasts().set(i, t);
@@ -408,7 +407,7 @@ public class SubstitutionVisitor extends CtScanner {
 						Object o = Parameters.getValue(template,
 								t.getSimpleName(), null);
 						if (o instanceof Class) {
-							t = f.Type().createReference(((Class<T>) o));
+							t = factory.Type().createReference(((Class<T>) o));
 						} else if (o instanceof CtTypeReference) {
 							t = (CtTypeReference<T>) o;
 							lit.setValue(t);
@@ -434,7 +433,7 @@ public class SubstitutionVisitor extends CtScanner {
 						.getSimpleName(), null);
 				if (o instanceof Class) {
 					// TODO: CHECK THAT THIS IS STILL WORKING
-					o = f.Type().createReference(((Class<T>) o));
+					o = factory.Type().createReference(((Class<T>) o));
 				}
 				if (o instanceof CtTypeReference) {
 					if ((e.getType() instanceof CtArrayTypeReference)
@@ -492,7 +491,7 @@ public class SubstitutionVisitor extends CtScanner {
 				Object o = Parameters.getValue(template,
 						reference.getSimpleName(), null);
 				if (o instanceof Class) {
-					t = f.Type().createReference(((Class<?>) o));
+					t = factory.Type().createReference(((Class<?>) o));
 				} else if (o instanceof CtTypeReference) {
 					t = (CtTypeReference<?>) o;
 					reference
@@ -515,7 +514,7 @@ public class SubstitutionVisitor extends CtScanner {
 					reference.setSimpleName(sc.getSimpleName());
 				} else {
 					reference.setDeclaringType(null);
-					reference.setPackage(f.Package().createReference(
+					reference.setPackage(factory.Package().createReference(
 							"java.lang"));
 					reference.setSimpleName("Object");
 				}
@@ -534,7 +533,7 @@ public class SubstitutionVisitor extends CtScanner {
 						// replace list of CtParameter for generic access to the
 						// parameters
 						List<CtParameter<?>> l = (List<CtParameter<?>>) value;
-						List<CtExpression<?>> vas = f.Code()
+						List<CtExpression<?>> vas = factory.Code()
 								.createVariableAccesses(l);
 						CtAbstractInvocation<?> inv = (CtAbstractInvocation<?>) variableAccess
 								.getParent();
@@ -565,7 +564,7 @@ public class SubstitutionVisitor extends CtScanner {
 				Object o = Parameters.getValue(template,
 						reference.getSimpleName(), null);
 				if (o instanceof Class) {
-					t = f.Type().createReference(((Class<T>) o));
+					t = factory.Type().createReference(((Class<T>) o));
 				} else if (o instanceof CtTypeReference) {
 					t = (CtTypeReference<T>) o;
 					reference
@@ -581,7 +580,7 @@ public class SubstitutionVisitor extends CtScanner {
 
 	}
 
-	Factory f;
+	Factory factory;
 
 	InheritanceSustitutionScanner inheritanceScanner;
 
@@ -614,7 +613,7 @@ public class SubstitutionVisitor extends CtScanner {
 	public SubstitutionVisitor(Factory f, CtSimpleType<?> targetType,
 			Template template) {
 		inheritanceScanner = new InheritanceSustitutionScanner(this);
-		this.f = f;
+		this.factory = f;
 		this.template = template;
 		this.targetType = targetType;
 		S = f.Executable().createReference(
@@ -623,10 +622,12 @@ public class SubstitutionVisitor extends CtScanner {
 		templateRef = f.Type().createReference(template.getClass());
 		templateType = f.Class().get(templateRef.getQualifiedName());
 		parameterNames = Parameters.getNames(templateType);
-		targetRef = f.Type().createReference(targetType);
 		templateTypeRef = f.Type().createReference(Template.class);
-		// substitute target ref
-		targetRef.accept(this);
+		if (targetType != null) {
+		  targetRef = f.Type().createReference(targetType);
+		  // first substitute target ref
+		  targetRef.accept(this);
+		}
 
 	}
 

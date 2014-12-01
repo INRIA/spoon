@@ -31,8 +31,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * and implement the {@link #expression()} method, which actually defines the
  * Java expression. It corresponds to a {@link spoon.reflect.code.CtExpression}.
  */
-public abstract class ExpressionTemplate<T> implements TemplateParameter<T>,
-		Template {
+public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpression<T>> {
 
 	/**
 	 * Returns the expression.
@@ -64,7 +63,7 @@ public abstract class ExpressionTemplate<T> implements TemplateParameter<T>,
 	public abstract T expression() throws Throwable;
 
 	@SuppressWarnings("unchecked")
-	public CtExpression<T> getSubstitution(CtSimpleType<?> targetType) {
+	public CtExpression<T> apply(CtSimpleType<?> targetType) {
 		CtClass<? extends ExpressionTemplate<?>> c;
 		CtBlock<?> b;
 		c = targetType.getFactory().Class().get(this.getClass());
