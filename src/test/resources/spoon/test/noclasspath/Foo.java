@@ -17,4 +17,8 @@ public class Foo extends Unknown {
 		x.first().second().third();
 	}
 	
+	void m3(){
+		int x = first().field; // field after call
+	}
+
 }
