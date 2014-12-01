@@ -12,6 +12,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -35,6 +36,7 @@ import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -224,6 +226,14 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	}
 
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+
+	}
+
+	public <T> void visitCtCatchVariableReference(CtCatchVariable<T> reference) {
+
+	}
+
 	public <T> void visitCtMethod(CtMethod<T> m) {
 
 	}
@@ -278,6 +288,10 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	public void visitCtTry(CtTry tryBlock) {
+
+	}
+
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 
 	}
 

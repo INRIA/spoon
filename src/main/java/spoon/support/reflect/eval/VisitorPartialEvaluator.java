@@ -31,6 +31,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -57,6 +58,7 @@ import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -80,6 +82,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
@@ -628,6 +631,18 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
+	@Override
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+		CtCatchVariable<T> r = catchVariable.getFactory().Core().clone(catchVariable);
+		r.setDefaultExpression(evaluate(r, catchVariable.getDefaultExpression()));
+		setResult(r);
+	}
+
+	@Override
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
+		throw new RuntimeException("Unknow Element");
+	}
+
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		throw new RuntimeException("Unknow Element");
 	}
@@ -701,6 +716,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public void visitCtTry(CtTry tryBlock) {
 		setResult(tryBlock.getFactory().Core().clone(tryBlock));
+	}
+
+	@Override
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
+		visitCtTry(tryWithResource);
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {

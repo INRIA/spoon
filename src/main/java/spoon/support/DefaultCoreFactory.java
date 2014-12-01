@@ -36,6 +36,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -60,6 +61,7 @@ import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -81,6 +83,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -98,6 +101,7 @@ import spoon.support.reflect.code.CtBlockImpl;
 import spoon.support.reflect.code.CtBreakImpl;
 import spoon.support.reflect.code.CtCaseImpl;
 import spoon.support.reflect.code.CtCatchImpl;
+import spoon.support.reflect.code.CtCatchVariableImpl;
 import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
 import spoon.support.reflect.code.CtCodeSnippetStatementImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
@@ -121,6 +125,7 @@ import spoon.support.reflect.code.CtSynchronizedImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
 import spoon.support.reflect.code.CtThrowImpl;
 import spoon.support.reflect.code.CtTryImpl;
+import spoon.support.reflect.code.CtTryWithResourceImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableAccessImpl;
 import spoon.support.reflect.code.CtWhileImpl;
@@ -141,6 +146,7 @@ import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
+import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
 import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
@@ -463,6 +469,20 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
+	@Override
+	public <T> CtCatchVariable<T> createCatchVariable() {
+		CtCatchVariable<T> e = new CtCatchVariableImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtCatchVariableReference<T> createCatchVariableReference() {
+		CtCatchVariableReference<T> e = new CtCatchVariableReferenceImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
 	public <T> CtMethod<T> createMethod() {
 		CtMethod<T> e = new CtMethodImpl<T>();
 		e.setFactory(getMainFactory());
@@ -543,6 +563,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public CtTry createTry() {
 		CtTry e = new CtTryImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public CtTryWithResource createTryWithResource() {
+		CtTryWithResource e = new CtTryWithResourceImpl();
 		e.setFactory(getMainFactory());
 		return e;
 	}

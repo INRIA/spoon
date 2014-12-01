@@ -28,6 +28,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -52,6 +53,7 @@ import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -70,6 +72,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -263,6 +266,16 @@ public interface CoreFactory {
 	<T> CtLocalVariableReference<T> createLocalVariableReference();
 
 	/**
+	 * Creates a catch variable declaration statement.
+	 */
+	<T> CtCatchVariable<T> createCatchVariable();
+
+	/**
+	 * Creates a catch variable reference.
+	 */
+	<T> CtCatchVariableReference<T> createCatchVariableReference();
+
+	/**
 	 * Creates a method.
 	 */
 	<T> CtMethod<T> createMethod();
@@ -337,6 +350,11 @@ public interface CoreFactory {
 	 * Creates a <code>try</code> block.
 	 */
 	CtTry createTry();
+
+	/**
+	 * Creates a <code>try</code> with resource block.
+	 */
+	CtTryWithResource createTryWithResource();
 
 	/**
 	 * Creates a type parameter.

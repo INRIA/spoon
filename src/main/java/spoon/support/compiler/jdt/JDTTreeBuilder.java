@@ -117,6 +117,7 @@ import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.CaptureBinding;
+import org.eclipse.jdt.internal.compiler.lookup.CatchParameterBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
@@ -144,6 +145,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
@@ -189,6 +191,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -600,6 +603,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 					ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
 					ref.setDeclaringExecutable(getExecutableReference(((AbstractMethodDeclaration) ((MethodScope) ((LocalVariableBinding) varbin).declaringScope)
 							.referenceContext()).binding));
+					return ref;
+				} else if (((LocalVariableBinding) varbin).declaration.binding instanceof CatchParameterBinding) {
+					CtCatchVariableReference<T> ref = factory.Core().createCatchVariableReference();
+					ref.setSimpleName(new String(varbin.name));
+					CtTypeReference<T> ref2 = getTypeReference(varbin.type);
+					ref.setType(ref2);
+					ref.setDeclaration((CtCatchVariable<T>) getCatchVariableDeclaration(ref.getSimpleName()));
 					return ref;
 				} else {
 					CtLocalVariableReference<T> ref = factory.Core()
@@ -1330,6 +1340,34 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		// note: this happens when using the new try(vardelc) structure
 		logger.error("could not find declaration for local variable " + name
+				+ " at " + context.stack.peek().element.getPosition());
+
+		return null;
+	}
+
+	protected <T> CtCatchVariable<T> getCatchVariableDeclaration(
+			final String name) {
+		List<CtElement> reversedElements = new ArrayList<CtElement>();
+		for (ASTPair element : context.stack) {
+			reversedElements.add(0, element.element);
+		}
+
+		for (CtElement element : reversedElements) {
+			List<CtCatchVariable<T>> var = Query.getElements(element,
+					new TypeFilter<CtCatchVariable<T>>(CtCatchVariable.class) {
+						@Override
+						public boolean matches(CtCatchVariable<T> element) {
+							return name.equals(element.getSimpleName())
+									&& super.matches(element);
+						}
+					});
+
+			if (var.size() > 0) {
+				return var.get(0);
+			}
+		}
+		// note: this happens when using the new try(vardelc) structure
+		logger.error("could not find declaration for catch variable " + name
 				+ " at " + context.stack.peek().element.getPosition());
 
 		return null;
@@ -2484,7 +2522,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TryStatement tryStatement, BlockScope scope) {
-		CtTry t = factory.Core().createTry();
+		CtTry t;
+		if (tryStatement.resources.length > 0) {
+			t = factory.Core().createTryWithResource();
+		} else {
+			t = factory.Core().createTry();
+		}
 		context.enter(t, tryStatement);
 		for (LocalDeclaration localDeclaration : tryStatement.resources) {
 			localDeclaration.traverse(this, scope);
@@ -2509,14 +2552,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 				// case 2: Java 7 multiple catch blocks
 				else if (jdtCatch.type instanceof UnionTypeReference) { 
 					UnionTypeReference utr = (UnionTypeReference)jdtCatch.type;
+
+					final List<CtTypeReference> refs = new ArrayList<CtTypeReference>();
 					for (TypeReference type : utr.typeReferences) {
-						CtTypeReference<Throwable> r = references
-								.getTypeReference(type.resolvedType);
-						createCtCatch(jdtCatch, r);					
-						tryStatement.catchBlocks[i].traverse(this, scope);
-						context.exit(jdtCatch);
+						CtTypeReference<Throwable> r = references.getTypeReference(type.resolvedType);
+						refs.add(r);
 					}
-				} 
+					CtTypeReference<Throwable> r = references.getTypeReference(jdtCatch.type.resolvedType);
+					createCtCatchJava7(jdtCatch, r, refs);
+					tryStatement.catchBlocks[i].traverse(this, scope);
+					context.exit(jdtCatch);
+				}
 				else { 
 					throw new RuntimeException("I don't know how to do this");
 				}
@@ -2533,13 +2579,29 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	private CtCatch createCtCatch(Argument jdtCatch, CtTypeReference<Throwable> r) {
 		CtCatch c = factory.Core().createCatch();
-		CtLocalVariable<Throwable> var = factory.Core()
-				.createLocalVariable();
+		CtCatchVariable<Throwable> var = factory.Core().createCatchVariable();
 		context.enter(c, jdtCatch);
 		context.enter(var, jdtCatch);
 		var.setSimpleName(new String(
 				jdtCatch.name));
 		var.setType(r);
+		for (ModifierKind modifier : getModifiers(jdtCatch.modifiers)) {
+			var.addModifier(modifier);
+		}
+		context.exit(jdtCatch);
+		return c;
+	}
+
+	private CtCatch createCtCatchJava7(Argument jdtCatch, CtTypeReference<Throwable> r, List<CtTypeReference> refs) {
+		CtCatch c = factory.Core().createCatch();
+		CtCatchVariable<Throwable> var = factory.Core().createCatchVariable();
+		context.enter(c, jdtCatch);
+		context.enter(var, jdtCatch);
+		var.setSimpleName(new String(jdtCatch.name));
+		var.setType(r);
+		for (CtTypeReference<?> ref : refs) {
+			var.addMultiType(ref);
+		}
 		for (ModifierKind modifier : getModifiers(jdtCatch.modifiers)) {
 			var.addModifier(modifier);
 		}

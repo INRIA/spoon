@@ -31,6 +31,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -55,6 +56,7 @@ import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -73,6 +75,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -365,6 +368,16 @@ public class SignaturePrinter implements CtVisitor {
 		scan(reference.getDeclaration());
 	}
 
+	@Override
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+		write(catchVariable.getSimpleName());
+	}
+
+	@Override
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
+		scan(reference.getDeclaration());
+	}
+
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		if (!m.getFormalTypeParameters().isEmpty()) {
 			scan(m.getFormalTypeParameters());
@@ -500,6 +513,20 @@ public class SignaturePrinter implements CtVisitor {
 			scan(c);
 		}
 		scan(tryBlock.getFinalizer());
+	}
+
+	@Override
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
+		write("try (");
+		for (CtLocalVariable<?> resource : tryWithResource.getResources()) {
+			scan(resource);
+		}
+		write(") {\n");
+		scan(tryWithResource.getBody());
+		for (CtCatch c : tryWithResource.getCatchers()) {
+			scan(c);
+		}
+		scan(tryWithResource.getFinalizer());
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {

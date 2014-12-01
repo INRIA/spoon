@@ -29,6 +29,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -52,6 +53,7 @@ import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -69,6 +71,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -463,6 +466,19 @@ public abstract class CtScanner implements CtVisitor {
 		exitReference(reference);
 	}
 
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+		enter(catchVariable);
+		scan(catchVariable.getAnnotations());
+		scan(catchVariable.getType());
+		exit(catchVariable);
+	}
+
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
+		enterReference(reference);
+		scan(reference.getType());
+		exitReference(reference);
+	}
+
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		enter(m);
 		scan(m.getAnnotations());
@@ -574,11 +590,21 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtTry(CtTry tryBlock) {
 		enter(tryBlock);
 		scan(tryBlock.getAnnotations());
-		scan(tryBlock.getResources());
 		scan(tryBlock.getBody());
 		scan(tryBlock.getCatchers());
 		scan(tryBlock.getFinalizer());
 		exit(tryBlock);
+	}
+
+	@Override
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
+		enter(tryWithResource);
+		scan(tryWithResource.getAnnotations());
+		scan(tryWithResource.getResources());
+		scan(tryWithResource.getBody());
+		scan(tryWithResource.getCatchers());
+		scan(tryWithResource.getFinalizer());
+		exit(tryWithResource);
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {

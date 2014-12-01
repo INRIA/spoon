@@ -15,39 +15,19 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.support.reflect.code;
+package spoon.reflect.reference;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.visitor.CtVisitor;
 
-public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
-	private static final long serialVersionUID = 1L;
+/**
+ * This interface defines a reference to {@link spoon.reflect.code.CtCatchVariable}.
+ */
+public interface CtCatchVariableReference<T> extends CtVariableReference<T> {
+	CtCatchVariable<T> getDeclaration();
 
-	CtBlock<?> body;
-
-	CtCatchVariable<? extends Throwable> parameter;
-
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtCatch(this);
-	}
-
-	public CtBlock<?> getBody() {
-		return body;
-	}
-
-	public CtCatchVariable<? extends Throwable> getParameter() {
-		return parameter;
-	}
-
-	public void setBody(CtBlock<?> body) {
-		this.body = body;
-	}
-
-	public void setParameter(CtCatchVariable<? extends Throwable> parameter) {
-		this.parameter = parameter;
-	}
-
+	/**
+	 * Sets the catch variable declaration that corresponds to this catch
+	 * variable reference.
+	 */
+	void setDeclaration(CtCatchVariable<T> declaration);
 }

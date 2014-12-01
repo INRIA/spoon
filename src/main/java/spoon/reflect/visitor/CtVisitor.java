@@ -17,8 +17,6 @@
 
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
@@ -28,6 +26,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
@@ -51,6 +50,7 @@ import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -67,6 +67,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -74,6 +75,8 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the visitor for the Spoon metamodel, as defined in
@@ -202,7 +205,7 @@ public interface CtVisitor {
 	 * Visits a this access.
 	 */
 	<T> void visitCtThisAccess(CtThisAccess<T> thisAccess);
-	
+
 	/**
 	 * Visits a reference to a field.
 	 */
@@ -247,6 +250,16 @@ public interface CtVisitor {
 	 * Visits a reference to a local variable.
 	 */
 	<T> void visitCtLocalVariableReference(CtLocalVariableReference<T> reference);
+
+	/**
+	 * Visits a catch variable declaration.
+	 */
+	<T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable);
+
+	/**
+	 * Visits a reference to a catch variable.
+	 */
+	<T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference);
 
 	/**
 	 * Visits a method declaration.
@@ -318,6 +331,11 @@ public interface CtVisitor {
 	 * Visits a <code>try</code> statement.
 	 */
 	void visitCtTry(CtTry tryBlock);
+
+	/**
+	 * Visits a <code>try</code> with resource statement.
+	 */
+	void visitCtTryWithResource(CtTryWithResource tryWithResource);
 
 	/**
 	 * Visits a type parameter declaration.

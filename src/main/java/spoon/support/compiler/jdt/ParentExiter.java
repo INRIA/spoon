@@ -9,6 +9,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -27,6 +28,7 @@ import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -265,9 +267,9 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtBlock) {
 			catchBlock.setBody((CtBlock<?>) child);
 			return;
-		} else if (child instanceof CtLocalVariable) {
+		} else if (child instanceof CtCatchVariable) {
 			catchBlock
-					.setParameter((CtLocalVariable<? extends Throwable>) child);
+					.setParameter((CtCatchVariable<? extends Throwable>) child);
 			return;
 		}
 		super.visitCtCatch(catchBlock);
@@ -487,16 +489,32 @@ public class ParentExiter extends CtInheritanceScanner {
 			else
 				tryBlock.setBody((CtBlock<?>) child);
 			return;
-		} else if (child instanceof CtLocalVariable) {
-			if (tryBlock.getResources() == null) {
-				tryBlock.setResources(new ArrayList<CtLocalVariable<?>>());
-			}
-			tryBlock.addResource((CtLocalVariable<?>) child);
 		} else if (child instanceof CtCatch) {
 			tryBlock.addCatcher((CtCatch) child);
 			return;
 		}
 		super.visitCtTry(tryBlock);
+	}
+
+	@Override
+	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
+		if (child instanceof CtBlock) {
+			if (!this.jdtTreeBuilder.context.finallyzer.isEmpty()
+					&& this.jdtTreeBuilder.context.finallyzer.peek() == tryWithResource)
+				tryWithResource.setFinalizer((CtBlock<?>) child);
+			else
+				tryWithResource.setBody((CtBlock<?>) child);
+			return;
+		} else if (child instanceof CtLocalVariable) {
+			if (tryWithResource.getResources() == null) {
+				tryWithResource.setResources(new ArrayList<CtLocalVariable<?>>());
+			}
+			tryWithResource.addResource((CtLocalVariable<?>) child);
+		} else if (child instanceof CtCatch) {
+			tryWithResource.addCatcher((CtCatch) child);
+			return;
+		}
+		super.visitCtTry(tryWithResource);
 	}
 
 	@Override
