@@ -22,12 +22,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtSimpleType;
@@ -50,6 +52,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	CtTypeReference<?> declaringType;
 
 	CtTypeReference<T> type;
+
+	List<CtTypeReference<?>> parameters = CtElementImpl.EMPTY_LIST();
 
 	public CtExecutableReferenceImpl() {
 		super();
@@ -134,19 +138,20 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 			return null;
 		}
 
-		CtExecutable<?> ret = typeDecl.getMethod(getSimpleName(),
-				actualTypeArguments.toArray(new CtTypeReference<?>[0]));
-		if ((ret == null) && (typeDecl instanceof CtClass)
+		CtExecutable<T> method = typeDecl
+				.getMethod(getSimpleName(), parameters.toArray(
+						new CtTypeReferenceImpl<?>[parameters.size()]));
+		if ((method == null) && (typeDecl instanceof CtClass)
 				&& (getSimpleName().equals("<init>"))) {
 			try {
 				return (CtExecutable<T>) ((CtClass<?>) typeDecl)
-						.getConstructor(actualTypeArguments
-								.toArray(new CtTypeReference<?>[0]));
+						.getConstructor(parameters.toArray(
+								new CtTypeReferenceImpl<?>[parameters.size()]));
 			} catch (ClassCastException e) {
 				Launcher.logger.error(e.getMessage(), e);
 			}
 		}
-		return (CtExecutable<T>) ret;
+		return method;
 	}
 
 	public CtTypeReference<?> getDeclaringType() {
@@ -155,6 +160,19 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 
 	public CtTypeReference<T> getType() {
 		return type;
+	}
+
+	@Override
+	public List<CtTypeReference<?>> getParameters() {
+		return Collections.unmodifiableList(parameters);
+	}
+
+	@Override
+	public void setParameters(List<CtTypeReference<?>> parameters) {
+		if (this.parameters == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+			this.parameters = new ArrayList<CtTypeReference<?>>();
+			this.parameters.addAll(parameters);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -366,7 +384,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 				.<CtTypeReference<?>> EMPTY_LIST()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>();
 		}
-		return actualTypeArguments.add(type);
+		return actualTypeArguments.add(actualTypeArgument);
 	}
 
 	@Override
@@ -376,7 +394,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 				.<CtTypeReference<?>> EMPTY_LIST()) {
 			return false;
 		}
-		return actualTypeArguments.remove(type);
+		return actualTypeArguments.remove(actualTypeArgument);
 	}
 
 }
