@@ -1,6 +1,7 @@
 package spoon.test.secondaryclasses;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -62,6 +63,14 @@ public class ClassesTest {
 			y = z;
 		}
 
+		// names of anonymous classes
+		// classes should always have different names
+		CtClass<?> anonymousClass0 = x.getAnonymousClass();
+		CtClass<?> anonymousClass1 = y.getAnonymousClass();
+		assertEquals("spoon.test.model.AnonymousExecutableClass$0",anonymousClass0.getQualifiedName());
+		assertEquals("spoon.test.model.AnonymousExecutableClass$1",anonymousClass1.getQualifiedName());
+		assertNotNull(anonymousClass0.getActualClass());
+		
 		// ActionListner is not in the Spoon path
 		assertNull(x.getType().getDeclaration());
 
