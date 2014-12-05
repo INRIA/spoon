@@ -61,17 +61,18 @@ public class ComputeClasspathTest {
 		Assert.assertEquals(TEST_CLASSPATH, method.invoke(this.compiler));
 	}
 
-//	@Test
-//	public void testSourceClasspath()
-//			throws NoSuchMethodException, InvocationTargetException,
-//			IllegalAccessException {
-//
-//		Method method = this.compilerClass
-//				.getDeclaredMethod("computeJdtClassPath");
-//		method.setAccessible(true);
-//
-//		this.compiler.setSourceClasspath(this.systemClasspath);
-//
-//		Assert.assertEquals(TEST_CLASSPATH, method.invoke(this.compiler));
-//	}
+	@Test
+	public void testSourceClasspath()
+			throws NoSuchMethodException, InvocationTargetException,
+			IllegalAccessException {
+
+		// load protected method which computes the source classpath
+		Method method = this.compilerClass
+				.getDeclaredMethod("computeJdtClassPath");
+		method.setAccessible(true);
+
+		this.compiler.setSourceClasspath(this.systemClasspath);
+
+		Assert.assertEquals(TEST_CLASSPATH, method.invoke(this.compiler));
+	}
 }
