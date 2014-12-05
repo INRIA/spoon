@@ -10,3 +10,7 @@ github_username:  INRIA/spoon
 
 # Build settings
 markdown: kramdown
+
+# Spoon
+spoon_release: "2.4"
+spoon_snapshot: "3.0-SNAPSHOT"
