@@ -10,12 +10,18 @@ permalink: /Spoon/Contributions/
 
 ## Spoon's Maven plugin
 
-Current one:
-[spoon-maven-plugin](https://github.com/SpoonLabs/spoon-maven-plugin) (authors: Cristophe Dufour, Gerard Palligot)
+Maven plugin to run spoon on a target project with some processors if necessary. This project is available on SpoonLabs.
+
+Authors: Christophe Dufour, Gérard Paligot
+
+Link of the project [here](https://github.com/SpoonLabs/spoon-maven-plugin).
 
 
-Legacy one;
-[spoon-maven-plugin (old)](http://alchim.sf.net/spoon-maven-plugin/). (Author: David Bernard)
+## Not maintained anymore:
+
+### SpoonJDT
+
+[legacy] SpoonJDT provides an Eclipse plugin that allows for tight integration of Spoon within the Eclipse environment. With SpoonJDT, a set of validations and transformations packaged as a Spoonlet can occur on the fly and the reports are well-integrated into the Eclipse JDT.
 
 
 ## SpoonLoader
@@ -26,10 +32,10 @@ Author: Brett Daniel
 
 Link of the project [here](http://mir.cs.illinois.edu/~bdaniel3/spoonloader/).
 
+## Spoon's Maven plugin
 
-## Not maintained anymore:
+Old maven plugin to run spoon on a target maven project.
 
-### SpoonJDT
+Author: Author: David Bernard
 
-[legacy] SpoonJDT provides an Eclipse plugin that allows for tight integration of Spoon within the Eclipse environment. With SpoonJDT, a set of validations and transformations packaged as a Spoonlet can occur on the fly and the reports are well-integrated into the Eclipse JDT. [SpoonJDT tutorial at EclipseCON 2007](http://spoon.gforge.inria.fr/temp/EclipseCON2007-Spoon-Tutorial.zip).
-
+Link of the project [here](http://alchim.sf.net/spoon-maven-plugin/).
