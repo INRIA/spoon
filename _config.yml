@@ -12,5 +12,5 @@ github_username:  INRIA/spoon
 markdown: kramdown
 
 # Spoon
-spoon_release: "2.4"
-spoon_snapshot: "3.0-SNAPSHOT"
+spoon_release: "3.0"
+spoon_snapshot: "4.0-SNAPSHOT"
