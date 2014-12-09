@@ -4,7 +4,7 @@
 # To test the site locally before deploying run `jekyll serve`
 # in the website branch.
 
-REPO="https://github.com/GerardPaligot/spoon.git"
+REPO="https://github.com/INRIA/spoon.git"
 DIR=temp-spoon-clone
 
 WEBSITE_SERVER="scm.gforge.inria.fr"
