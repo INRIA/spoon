@@ -19,6 +19,7 @@ Contributors (alphabetical order of last names):
 * Martin Monperrus
 * Carlos Noguera
 * Renaud Pawlak
+* Gérard Paligot
 * Nicolas Pessemier
 * Nicolas Petitprez
 * Phillip Schichtel
