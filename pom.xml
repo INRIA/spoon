@@ -143,6 +143,12 @@
         <role>Contributor</role>
       </roles>
     </developer>
+    <developer>
+      <name>Gérard Paligot</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
   </developers>
 
   <scm>
