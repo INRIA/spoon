@@ -22,6 +22,7 @@ Thanks for all contributors of the project:
 * Matias Martinez
 * Martin Monperrus
 * Carlos Noguera
+* Gérard Paligot
 * Renaud Pawlak
 * Nicolas Pessemier
 * Nicolas Petitprez
