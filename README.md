@@ -18,8 +18,8 @@ Contributors (alphabetical order of last names):
 * Matias Martinez
 * Martin Monperrus
 * Carlos Noguera
-* Renaud Pawlak
 * Gérard Paligot
+* Renaud Pawlak
 * Nicolas Pessemier
 * Nicolas Petitprez
 * Phillip Schichtel
