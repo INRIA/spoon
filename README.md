@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/INRIA/spoon.svg?branch=master)](https://travis-ci.org/INRIA/spoon)
+
 Spoon-code is a library for analyzing and transforming Java source code.
 
 Pull requests are welcome!
