@@ -28,6 +28,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.NameFilter;
@@ -35,6 +37,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
 import spoon.test.annotation.testclasses.Bound;
+import spoon.test.annotation.testclasses.Foo.InnerAnnotation;
+import spoon.test.annotation.testclasses.Foo.MiddleAnnotation;
+import spoon.test.annotation.testclasses.Foo.OuterAnnotation;
 import spoon.test.annotation.testclasses.Main;
 import spoon.test.annotation.testclasses.TestInterface;
 
@@ -314,5 +319,49 @@ public class AnnotationTest
 		assertEquals("AnnotArray", annotation.getSimpleName());
 		assertEquals(1, annotation.getAnnotations().size());
 		assertEquals(res, annotation.getField("value").toString());
+	}
+
+	@Test
+	public void testInnerAnnotationsWithArray() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.Foo");
+		final CtMethod<?> testMethod = ctClass.getMethodsByName("test").get(0);
+		final List<CtAnnotation<? extends Annotation>> testMethodAnnotations = testMethod.getAnnotations();
+		assertEquals(1, testMethodAnnotations.size());
+
+		final CtAnnotation<? extends Annotation> firstAnnotation = testMethodAnnotations.get(0);
+		assertEquals(OuterAnnotation.class, getActualClassFromAnnotation(firstAnnotation));
+
+		final CtNewArray<?> arrayAnnotations = (CtNewArray) firstAnnotation.getElementValues().get("value");
+		assertEquals(2, arrayAnnotations.getElements().size());
+
+		final CtAnnotation<?> firstAnnotationInArray = getMiddleAnnotation(arrayAnnotations, 0);
+		assertEquals(MiddleAnnotation.class, getActualClassFromAnnotation(firstAnnotationInArray));
+
+		final CtAnnotation<?> secondAnnotationInArray = getMiddleAnnotation(arrayAnnotations, 1);
+		assertEquals(MiddleAnnotation.class, getActualClassFromAnnotation(secondAnnotationInArray));
+
+		final CtAnnotation<?> innerAnnotationInFirstMiddleAnnotation = getInnerAnnotation(firstAnnotationInArray);
+		assertEquals(InnerAnnotation.class, getActualClassFromAnnotation(innerAnnotationInFirstMiddleAnnotation));
+		assertEquals("hello", getLiteralValueInAnnotation(innerAnnotationInFirstMiddleAnnotation).getValue());
+
+		final CtAnnotation<?> innerAnnotationInSecondMiddleAnnotation = getInnerAnnotation(secondAnnotationInArray);
+		assertEquals(InnerAnnotation.class, getActualClassFromAnnotation(innerAnnotationInSecondMiddleAnnotation));
+		assertEquals("hello again", getLiteralValueInAnnotation(innerAnnotationInSecondMiddleAnnotation).getValue());
+	}
+
+	private Class<? extends Annotation> getActualClassFromAnnotation(CtAnnotation<? extends Annotation> annotation) {
+		return annotation.getAnnotationType().getActualClass();
+	}
+
+	private CtLiteral<?> getLiteralValueInAnnotation(CtAnnotation<?> annotation) {
+		return (CtLiteral<?>) annotation.getElementValues().get("value");
+	}
+
+	private CtAnnotation getInnerAnnotation(CtAnnotation<?> firstAnnotationInArray) {
+		return (CtAnnotation<?>) firstAnnotationInArray.getElementValues().get("value");
+	}
+
+	private CtAnnotation<?> getMiddleAnnotation(CtNewArray<?> arrayAnnotations, int index) {
+		return (CtAnnotation<?>) arrayAnnotations.getElements().get(index);
 	}
 }
