@@ -60,7 +60,7 @@ import spoon.support.util.RtHelper;
 public class TemplateMatcher {
 
 	private static List<CtInvocation<?>> getMethods(
-			CtClass<? extends Template> root) {
+			CtClass<? extends Template<?>> root) {
 		CtExecutableReference<?> methodRef = root
 				.getFactory()
 				.Executable()
@@ -76,7 +76,7 @@ public class TemplateMatcher {
 	}
 
 	private static List<String> getTemplateNameParameters(
-			CtClass<? extends Template> templateType) {
+			CtClass<? extends Template<?>> templateType) {
 		final List<String> ts = new ArrayList<String>();
 		final Collection<String> c = Parameters.getNames(templateType);
 		ts.addAll(c);
@@ -84,7 +84,7 @@ public class TemplateMatcher {
 	}
 
 	private static List<CtTypeReference<?>> getTemplateTypeParameters(
-			final CtClass<? extends Template> templateType) {
+			final CtClass<? extends Template<?>> templateType) {
 
 		final List<CtTypeReference<?>> ts = new ArrayList<CtTypeReference<?>>();
 		final Collection<String> c = Parameters.getNames(templateType);
@@ -109,7 +109,7 @@ public class TemplateMatcher {
 	}
 
 	private static List<CtFieldReference<?>> getVarargs(
-			CtClass<? extends Template> root, List<CtInvocation<?>> variables) {
+			CtClass<? extends Template<?>> root, List<CtInvocation<?>> variables) {
 		List<CtFieldReference<?>> fields = new ArrayList<CtFieldReference<?>>();
 		for (CtFieldReference<?> field : root.getReference().getAllFields()) {
 			if (field.getType().getActualClass() == CtStatementList.class) {
@@ -134,7 +134,7 @@ public class TemplateMatcher {
 
 	private List<String> names;
 
-	private CtClass<? extends Template> templateType;
+	private CtClass<? extends Template<?>> templateType;
 
 	private List<CtTypeReference<?>> typeVariables;
 
@@ -148,7 +148,7 @@ public class TemplateMatcher {
 	 * @param templateType
 	 *            the type of the template
 	 */
-	public TemplateMatcher(CtClass<? extends Template> templateType) {
+	public TemplateMatcher(CtClass<? extends Template<?>> templateType) {
 		if (templateType == null) {
 			throw new TemplateException(
 					"Template type is null. Use the template factory to access a template CtClass and check your template source path.");

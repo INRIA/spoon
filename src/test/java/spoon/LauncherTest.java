@@ -5,9 +5,8 @@ import java.io.File;
 import junit.framework.TestCase;
 
 import org.junit.Assert;
-
 import org.junit.Test;
-import spoon.compiler.Environment;
+
 import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;

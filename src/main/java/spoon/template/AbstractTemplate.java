@@ -41,7 +41,7 @@ public abstract class AbstractTemplate<T extends CtElement> implements Template<
 		} catch (Exception e) {
 			throw new SpoonException(e);
 		}
-		throw new TemplateException("no factory found is this template");
+		throw new TemplateException("no factory found in this template");
 	}
 
 	

@@ -11,7 +11,6 @@ import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;
 import spoon.test.TestUtils;
 
@@ -55,7 +54,7 @@ public class ExceptionTest {
 	public void testExceptionInSnippet() {
 		try {
 			Factory factory = TestUtils.createFactory();
-			CtClass<?> clazz = factory
+			factory
 					.Code()
 					.createCodeSnippetStatement(
 							"" + "class X {" + "public void foo() {"

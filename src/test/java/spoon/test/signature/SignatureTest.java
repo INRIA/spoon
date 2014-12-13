@@ -32,17 +32,17 @@ public class SignatureTest {
 				.createCodeSnippetStatement(
 						"" + "class X {" + "public Object foo() {"
 								+ " return null;" + "}};").compile();
-		CtReturn returnEl = (CtReturn) clazz.getElements(
+		CtReturn<?> returnEl = (CtReturn<?>) clazz.getElements(
 				new TypeFilter<>(CtReturn.class)).get(0);
-		CtExpression lit = returnEl.getReturnedExpression();
+		CtExpression<?> lit = returnEl.getReturnedExpression();
 		assertTrue(lit instanceof CtLiteral);
 		assertEquals("null", lit.toString());
 		assertEquals("null", lit.getSignature());
 
 		// since the signature is null, CtElement.equals throws an exception and
 		// should not
-		CtLiteral lit2 = (CtLiteral) factory.Core().clone(lit);
-		HashSet s = new HashSet();
+		CtLiteral<?> lit2 = (CtLiteral<?>) factory.Core().clone(lit);
+		HashSet<CtExpression<?>> s = new HashSet<CtExpression<?>>();
 		s.add(lit);
 		s.add(lit2);
 	}

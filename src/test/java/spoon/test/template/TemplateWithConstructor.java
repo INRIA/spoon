@@ -7,7 +7,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.template.ExtensionTemplate;
 import spoon.template.Local;
 import spoon.template.Parameter;
-import spoon.template.Template;
 
 public class TemplateWithConstructor extends ExtensionTemplate {
 

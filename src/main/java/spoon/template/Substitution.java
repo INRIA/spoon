@@ -59,7 +59,7 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	public static <T extends Template> void insertAll(CtType<?> targetType,
+	public static <T extends Template<?>> void insertAll(CtType<?> targetType,
 			T template) {
 
 		CtClass<T> templateClass = targetType.getFactory().Class()
@@ -155,9 +155,9 @@ public abstract class Substitution {
 	 *            the source template
 	 */
 	public static void insertAllSuperInterfaces(CtType<?> targetType,
-			Template template) {
+			Template<?> template) {
 
-		CtClass<? extends Template> sourceClass = targetType.getFactory()
+		CtClass<? extends Template<?>> sourceClass = targetType.getFactory()
 				.Class().get(template.getClass());
 		// insert all the interfaces
 		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
@@ -202,7 +202,7 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	public static void insertAllMethods(CtType<?> targetType, Template template) {
+	public static void insertAllMethods(CtType<?> targetType, Template<?> template) {
 
 		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
@@ -226,7 +226,7 @@ public abstract class Substitution {
 	 * @param template
 	 *            the source template
 	 */
-	public static void insertAllFields(CtType<?> targetType, Template template) {
+	public static void insertAllFields(CtType<?> targetType, Template<?> template) {
 
 		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
@@ -253,7 +253,7 @@ public abstract class Substitution {
 	 *            the source template
 	 */
 	public static void insertAllConstructors(CtType<?> targetType,
-			Template template) {
+			Template<?> template) {
 
 		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
@@ -292,7 +292,7 @@ public abstract class Substitution {
 	 * @return the generated method
 	 */
 	public static <T> CtConstructor<T> insertConstructor(
-			CtClass<T> targetClass, Template template, CtMethod<?> sourceMethod) {
+			CtClass<T> targetClass, Template<?> template, CtMethod<?> sourceMethod) {
 
 		if (targetClass instanceof CtInterface)
 			return null;
@@ -318,7 +318,7 @@ public abstract class Substitution {
 	 * @return the generated method
 	 */
 	public static <T> CtMethod<T> insertMethod(CtType<?> targetType,
-			Template template, CtMethod<T> sourceMethod) {
+			Template<?> template, CtMethod<T> sourceMethod) {
 
 		CtMethod<T> newMethod = substitute(targetType, template, sourceMethod);
 		if (targetType instanceof CtInterface)
@@ -343,7 +343,7 @@ public abstract class Substitution {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> CtConstructor<T> insertConstructor(
-			CtClass<T> targetClass, Template template,
+			CtClass<T> targetClass, Template<?> template,
 			CtConstructor<?> sourceConstructor) {
 
 		CtConstructor<T> newConstrutor = substitute(targetClass, template,
@@ -375,7 +375,7 @@ public abstract class Substitution {
 	 *         the template parameters substituted
 	 */
 	public static CtBlock<?> substituteMethodBody(CtClass<?> targetClass,
-			Template template, String executableName,
+			Template<?> template, String executableName,
 			CtTypeReference<?>... parameterTypes) {
 		CtClass<?> sourceClass = targetClass.getFactory().Class()
 				.get(template.getClass());
@@ -404,7 +404,7 @@ public abstract class Substitution {
 	 *         the template parameters substituted
 	 */
 	public static CtStatement substituteStatement(CtClass<?> targetClass,
-			Template template, int statementIndex, String executableName,
+			Template<?> template, int statementIndex, String executableName,
 			CtTypeReference<?>... parameterTypes) {
 		CtClass<?> sourceClass = targetClass.getFactory().Class()
 				.get(template.getClass());
@@ -431,7 +431,7 @@ public abstract class Substitution {
 	 */
 
 	public static CtExpression<?> substituteFieldDefaultExpression(
-			CtSimpleType<?> targetType, Template template, String fieldName) {
+			CtSimpleType<?> targetType, Template<?> template, String fieldName) {
 		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
 		CtField<?> sourceField = sourceClass.getField(fieldName);
@@ -452,7 +452,7 @@ public abstract class Substitution {
 	 *         by their values
 	 */
 	public static <E extends CtElement> E substitute(
-			CtSimpleType<?> targetType, Template template, E code) {
+			CtSimpleType<?> targetType, Template<?> template, E code) {
 		if (code == null)
 			return null;
 		if (targetType == null)
@@ -502,7 +502,7 @@ public abstract class Substitution {
 	 * @return a copy of the template type where all the parameters has been
 	 *         substituted
 	 */
-	public static <T extends CtSimpleType<?>> T substitute(Template template,
+	public static <T extends CtSimpleType<?>> T substitute(Template<?> template,
 			T templateType) {
 		T result = templateType.getFactory().Core().clone(templateType);
 		result.setPositions(null);
@@ -527,7 +527,7 @@ public abstract class Substitution {
 	 * @return the inserted field
 	 */
 	public static <T> CtField<T> insertField(CtType<?> targetType,
-			Template template, CtField<T> sourceField) {
+			Template<?> template, CtField<T> sourceField) {
 		CtField<T> field = substitute(targetType, template, sourceField);
 		targetType.addField(field);
 		// field.setParent(targetType);

@@ -17,8 +17,6 @@
 
 package spoon.template;
 
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtSimpleType;
 
 /**
  * This interface defines a typed template parameter. It is parameterized by

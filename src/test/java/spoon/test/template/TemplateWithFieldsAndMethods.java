@@ -3,7 +3,6 @@ package spoon.test.template;
 import spoon.template.ExtensionTemplate;
 import spoon.template.Local;
 import spoon.template.Parameter;
-import spoon.template.Template;
 import spoon.template.TemplateParameter;
 
 public class TemplateWithFieldsAndMethods extends ExtensionTemplate {

@@ -2565,7 +2565,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				else if (jdtCatch.type instanceof UnionTypeReference) { 
 					UnionTypeReference utr = (UnionTypeReference)jdtCatch.type;
 
-					final List<CtTypeReference> refs = new ArrayList<CtTypeReference>();
+					final List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>();
 					for (TypeReference type : utr.typeReferences) {
 						CtTypeReference<Throwable> r = references.getTypeReference(type.resolvedType);
 						refs.add(r);
@@ -2604,7 +2604,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return c;
 	}
 
-	private CtCatch createCtCatchJava7(Argument jdtCatch, CtTypeReference<Throwable> r, List<CtTypeReference> refs) {
+	private CtCatch createCtCatchJava7(Argument jdtCatch, CtTypeReference<Throwable> r, List<CtTypeReference<?>> refs) {
 		CtCatch c = factory.Core().createCatch();
 		CtCatchVariable<Throwable> var = factory.Core().createCatchVariable();
 		context.enter(c, jdtCatch);

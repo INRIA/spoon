@@ -13,11 +13,9 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
@@ -86,8 +84,8 @@ public class NoClasspathTest {
 			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
 			assertEquals(1, invocations.size());
 			invocations.get(0);
-			CtLocalVariable statement = method.getBody().getStatement(0);
-			CtFieldAccess  fa = (CtFieldAccess) statement.getDefaultExpression();
+			CtLocalVariable<?> statement = method.getBody().getStatement(0);
+			CtFieldAccess<?>  fa = (CtFieldAccess<?>) statement.getDefaultExpression();
 			assertTrue(fa.getTarget() instanceof CtInvocation);
 			assertEquals("field", fa.getVariable().getSimpleName());			
 			assertEquals("int x = first().field", statement.toString());

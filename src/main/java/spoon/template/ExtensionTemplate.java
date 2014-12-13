@@ -1,15 +1,8 @@
 package spoon.template;
 
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.support.template.Parameters;
 
 /**
  * Inserts all the methods, fields, constructors, initialization blocks (if
@@ -25,7 +18,7 @@ public class ExtensionTemplate extends AbstractTemplate<CtType<?>> {
 		if (!(target instanceof CtType)) {
 			throw new TemplateException();
 		}
-		CtClass targetType = (CtClass) target;
+		CtClass<?> targetType = (CtClass<?>) target;
 		Substitution.insertAll(targetType, this);
 		return targetType;
 	}

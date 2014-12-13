@@ -72,7 +72,7 @@ public abstract class Parameters {
 	/**
 	 * Gets a template field parameter value.
 	 */
-	public static Object getValue(Template template, String parameterName,
+	public static Object getValue(Template<?> template, String parameterName,
 			Integer index) {
 		Object tparamValue = null;
 		try {
@@ -103,10 +103,10 @@ public abstract class Parameters {
 		return tparamValue;
 	}
 
-	static Map<Template, Map<String, Object>> finals = new HashMap<Template, Map<String, Object>>();
+	static Map<Template<?>, Map<String, Object>> finals = new HashMap<Template<?>, Map<String, Object>>();
 
 	public static CtField<?> getParameterField(
-			CtClass<? extends Template> templateClass, String parameterName) {
+			CtClass<? extends Template<?>> templateClass, String parameterName) {
 		for (CtField<?> f : templateClass.getFields()) {
 			Parameter p = f.getAnnotation(Parameter.class);
 			if (p == null) {
@@ -126,7 +126,7 @@ public abstract class Parameters {
 	 * Sets a template field parameter value.
 	 */
 	@SuppressWarnings("null")
-	public static void setValue(Template template, String parameterName,
+	public static void setValue(Template<?> template, String parameterName,
 			Integer index, Object value) {
 		Object tparamValue = null;
 		try {
@@ -185,7 +185,7 @@ public abstract class Parameters {
 	 * (including the ones defined by the super types).
 	 */
 	public static Collection<String> getNames(
-			CtClass<? extends Template> templateType) {
+			CtClass<? extends Template<?>> templateType) {
 		Collection<String> params = new ArrayList<String>();
 		try {
 			for (CtFieldReference<?> f : templateType.getReference()
@@ -286,13 +286,13 @@ public abstract class Parameters {
 	}
 
 	/** returns all the compile_time fields of a template representing a template parameter */
-	public static List<CtField> getAllTemplateParameterFields(Class<? extends Template> clazz, Factory factory) {
-		CtClass c = factory.Class().get(clazz);
+	public static List<CtField<?>> getAllTemplateParameterFields(Class<? extends Template<?>> clazz, Factory factory) {
+		CtClass<?> c = factory.Class().get(clazz);
 		if (c==null) {
 			throw new IllegalArgumentException("Template not in template classpath");
 		}
 		
-		List<CtField> result = new ArrayList<CtField>();
+		List<CtField<?>> result = new ArrayList<CtField<?>>();
 		
 		for (Field f : getAllTemplateParameterFields(clazz)) {
 			result.add(c.getField(f.getName()));			

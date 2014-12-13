@@ -14,7 +14,7 @@ public class SampleImportClass {
 		this(j, 0);
 		new Thread() {
 		};
-		List emptyList = Collections.EMPTY_LIST;
+		List<?> emptyList = Collections.EMPTY_LIST;
 	}
 
 	public SampleImportClass(int j, int k) {
