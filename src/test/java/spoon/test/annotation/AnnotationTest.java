@@ -1,21 +1,8 @@
 package spoon.test.annotation;
 
-import org.junit.Before;
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
-import spoon.reflect.declaration.*;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.gui.SpoonModelTree;
-import spoon.support.gui.SpoonTreeBuilder;
-import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
-import spoon.test.annotation.testclasses.AnnotParamTypes;
-import spoon.test.annotation.testclasses.Bound;
-import spoon.test.annotation.testclasses.Main;
-import spoon.test.annotation.testclasses.TestInterface;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -24,7 +11,32 @@ import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
+import spoon.reflect.declaration.CtAnnotatedElementType;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
+import spoon.test.annotation.testclasses.AnnotParamTypes;
+import spoon.test.annotation.testclasses.Bound;
+import spoon.test.annotation.testclasses.Main;
+import spoon.test.annotation.testclasses.TestInterface;
 
 public class AnnotationTest
 {

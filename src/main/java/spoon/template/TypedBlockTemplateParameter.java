@@ -55,7 +55,7 @@ public abstract class TypedBlockTemplateParameter<R> implements
 		}
 		CtMethod<R> m = (CtMethod<R>) c.getMethod("block");
 		if (this instanceof Template) {
-			return Substitution.substitute(targetType, (Template) this,
+			return Substitution.substitute(targetType, (Template<?>) this,
 					m.getBody());
 		}
 		return targetType.getFactory().Core().clone(m.getBody());

@@ -17,7 +17,6 @@
 
 package spoon.template;
 
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;

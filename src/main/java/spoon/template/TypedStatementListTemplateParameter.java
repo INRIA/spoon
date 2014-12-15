@@ -52,7 +52,7 @@ public abstract class TypedStatementListTemplateParameter<R> implements
 		CtStatementList l = targetType.getFactory().Core()
 				.createStatementList();
 		if (this instanceof Template) {
-			b = Substitution.substitute(targetType, (Template) this, c
+			b = Substitution.substitute(targetType, (Template<?>) this, c
 					.getMethod("statements").getBody());
 		} else {
 			b = targetType.getFactory().Core()

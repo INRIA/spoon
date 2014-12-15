@@ -21,7 +21,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
-import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
 
 /**

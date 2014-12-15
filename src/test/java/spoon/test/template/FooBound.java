@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public class FooBound {
 
-	void method(Collection l) {
+	void method(Collection<?> l) {
 		
 	}
 }

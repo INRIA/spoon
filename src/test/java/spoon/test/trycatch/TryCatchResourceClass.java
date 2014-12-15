@@ -33,7 +33,7 @@ public class TryCatchResourceClass {
 
 			// Enumerate each entry
 
-			for (java.util.Enumeration entries = zf.entries(); entries
+			for (java.util.Enumeration<?> entries = zf.entries(); entries
 					.hasMoreElements(); ) {
 
 				// Get the entry name and write it to the output file

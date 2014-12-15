@@ -1,20 +1,17 @@
 package spoon.test.imports;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collection;
+
 import org.junit.Test;
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
-import spoon.compiler.SpoonResourceHelper;
+
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.test.TestUtils;
-
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by gerard on 14/10/2014.

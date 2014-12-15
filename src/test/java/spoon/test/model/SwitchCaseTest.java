@@ -14,7 +14,6 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -71,7 +70,7 @@ public class SwitchCaseTest {
 				ctSwitch.getSelector().getType().getActualClass());
 
 		// Checks all cases are strings.
-		for (CtCase aCase : ctSwitch.getCases()) {
+		for (CtCase<?> aCase : ctSwitch.getCases()) {
 			if (aCase.getCaseExpression() == null) {
 				// default case
 				continue;

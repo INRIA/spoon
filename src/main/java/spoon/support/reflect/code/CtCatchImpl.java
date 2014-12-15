@@ -20,7 +20,6 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {

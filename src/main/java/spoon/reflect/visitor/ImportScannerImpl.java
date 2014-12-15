@@ -132,7 +132,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		CtPackageReference pack = ((CtTypeReference<?>) imports
 				.get(simpleType.getSimpleName())).getPackage();
 		Collection<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>();
-		for (CtTypeReference ref : imports.values()) {
+		for (CtTypeReference<?> ref : imports.values()) {
 			// ignore non-top-level type
 			if (ref.getPackage() != null) {
 				// ignore java.lang package

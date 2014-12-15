@@ -590,13 +590,13 @@ public class SubstitutionVisitor extends CtScanner {
 
 	CtSimpleType<?> targetType;
 
-	Template template;
+	Template<?> template;
 
 	CtTypeReference<? extends Template> templateRef;
 
 	CtTypeReference<Template> templateTypeRef;
 
-	CtClass<? extends Template> templateType;
+	CtClass<? extends Template<?>> templateType;
 
 	Collection<String> parameterNames;
 
@@ -611,7 +611,7 @@ public class SubstitutionVisitor extends CtScanner {
 	 *            the template that holds the parameter values
 	 */
 	public SubstitutionVisitor(Factory f, CtSimpleType<?> targetType,
-			Template template) {
+			Template<?> template) {
 		inheritanceScanner = new InheritanceSustitutionScanner(this);
 		this.factory = f;
 		this.template = template;

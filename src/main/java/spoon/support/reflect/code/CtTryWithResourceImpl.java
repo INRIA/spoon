@@ -10,9 +10,11 @@ import java.util.List;
 
 public class CtTryWithResourceImpl extends CtTryImpl
 		implements CtTryWithResource {
+	private static final long serialVersionUID = 1L;
 
 	List<CtLocalVariable<?>> resources = EMPTY_LIST();
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtTryWithResource(this);
 	}
