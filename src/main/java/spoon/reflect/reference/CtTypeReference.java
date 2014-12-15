@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.ModifierKind;
 
 /**
  * This interface defines a reference to a
@@ -143,6 +144,11 @@ public interface CtTypeReference<T> extends CtReference,
 	 * Gets the super interfaces of this type.
 	 */
 	Set<CtTypeReference<?>> getSuperInterfaces();
+
+	/**
+	 * Gets modifiers of this type.
+	 */
+	Set<ModifierKind> getModifiers();
 
 	/**
 	 * Returns true if the reference refers to the super implementation
