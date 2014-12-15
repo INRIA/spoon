@@ -81,6 +81,7 @@ public interface CtTypeReference<T> extends CtReference,
 	/**
 	 * Return {@code true} if the referenced type is a anonymous type
 	 */
+	@Deprecated
 	boolean isAnonymous();
 
 	/**

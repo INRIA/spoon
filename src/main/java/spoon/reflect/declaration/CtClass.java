@@ -100,4 +100,8 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 */
 	void setSuperclass(CtTypeReference<?> classType);
 
+	/**
+	 * Return {@code true} if the referenced type is a anonymous type
+	 */
+	boolean isAnonymous();
 }

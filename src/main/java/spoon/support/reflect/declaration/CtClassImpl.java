@@ -142,6 +142,16 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		this.superClass = superClass;
 	}
 
+	@Override
+	public boolean isAnonymous() {
+		try {
+			Integer.parseInt(getSimpleName());
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
+
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		if ((getSuperclass() != null) && getSuperclass().isSubtypeOf(type)) {
 			return true;

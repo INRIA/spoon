@@ -250,6 +250,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean selector = false;
 
+		int counterAnonymousClassName;
+
 		/**
 		 * Stack of all parents elements
 		 */
@@ -814,8 +816,19 @@ public class JDTTreeBuilder extends ASTVisitor {
 							.getBoundedTypeReference(p.binding));
 				}
 			type = cl;
+
 		}
-		type.setSimpleName(new String(typeDeclaration.name));
+		if (type instanceof CtClass) {
+			if (typeDeclaration.binding.isAnonymousType()) {
+				type.setSimpleName(String.valueOf(context.counterAnonymousClassName++));
+			} else {
+				context.counterAnonymousClassName = 0;
+				type.setSimpleName(new String(typeDeclaration.name));
+			}
+		} else {
+			type.setSimpleName(new String(typeDeclaration.name));
+		}
+
 		// Setting modifiers
 		type.setModifiers(getModifiers(typeDeclaration.modifiers));
 		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
