@@ -253,14 +253,26 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		return res;
 	}
 
+	protected String computeTemplateClasspath() {
+		return this.computeClasspath(this.getTemplateClasspath());
+	}
+
 	protected String computeJdtClassPath() {
-		String jdtClasspath="";
-		String[] sourceClasspath = getSourceClasspath();
-		for (int i=0; i<=sourceClasspath.length-2; i++) {
-			jdtClasspath+=sourceClasspath[i]+File.pathSeparator;
+		return this.computeClasspath(this.getSourceClasspath());
+	}
+
+	private String computeClasspath(String[] classpath) {
+		if (classpath == null || classpath.length == 0) {
+			return "";
 		}
-		jdtClasspath+=sourceClasspath[sourceClasspath.length-1];
-		return jdtClasspath;
+
+		StringBuilder builder = new StringBuilder();
+		for (String entry : classpath) {
+			builder.append(entry);
+			builder.append(File.pathSeparatorChar);
+		}
+
+		return builder.toString();
 	}
 
 	protected void addClasspathToJDTArgs(List<String> args) {
@@ -311,10 +323,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		File f = null;
 
-		if (templateClasspath != null) {
-			String fullClasspath = templateClasspath + File.pathSeparator + ".";
+		if (this.templateClasspath != null) {
 			args.add("-cp");
-			args.add(fullClasspath);
+			args.add(this.computeTemplateClasspath());
+
 			// Set<String> paths = new HashSet<String>();
 			// String sourcePaths = "";
 			// for (SpoonFolder file : templates.getSubFolders()) {
@@ -414,16 +426,16 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	/** report a compilation problem (callback for JDT) */
 	public void reportProblem(CategorizedProblem pb) {
 		if (pb==null) {return;}
-		
+
 		// we can not accept this problem, even in noclasspath mode
 		// otherwise a nasty null pointer exception occurs later
 		if (pb.getID() == IProblem.DuplicateTypes) {
 			throw new ModelBuildingException(pb.getMessage());
 		}
-		
+
 		probs.add(pb);
 	}
-	
+
 	public final TreeBuilderRequestor requestor = new TreeBuilderRequestor(this);
 
 	/** returns the list of current problems */
@@ -494,9 +506,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
 		srcSuccess = buildSources();
-		
+
 		reportProblems(factory.getEnvironment());
-		
+
 		factory.getEnvironment().debugMessage(
 				"built in " + (System.currentTimeMillis() - t) + " ms");
 		factory.getEnvironment().debugMessage(
@@ -516,10 +528,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		File file = new File(new String(problem.getOriginatingFileName()));
 		String filename = file.getAbsolutePath();
-		
+
 		String message = problem.getMessage() + " at " + filename + ":"
 				+ problem.getSourceLineNumber();
-		
+
 		if (problem.isError()) {
 			if (!environment.getNoClasspath()) {
 				// by default, compilation errors are notified as exception
@@ -908,7 +920,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	public String[] getTemplateClasspath() {
 		return templateClasspath;
 	}
-	
+
 	@Override
 	public String[] getSourceClasspath() {
 		return getEnvironment().getSourceClasspath();

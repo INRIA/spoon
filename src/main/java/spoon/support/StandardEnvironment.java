@@ -434,8 +434,8 @@ public class StandardEnvironment implements Serializable, Environment {
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
 				if (javaFiles.size() > 0) {
-					throw new InvalidClassPathException(
-							"you're trying to give source code in the classpath, this should be given to addInputSource "
+					logger.warn(
+							"You're trying to give source code in the classpath, this should be given to addInputSource "
 									+ javaFiles);
 				}
 			}

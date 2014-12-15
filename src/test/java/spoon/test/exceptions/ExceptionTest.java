@@ -81,9 +81,9 @@ public class ExceptionTest {
 			Launcher spoon = new Launcher();
 			SpoonCompiler comp = spoon.createCompiler();
 			comp.setSourceClasspath("src");
-			fail();
 		} catch (InvalidClassPathException e) {
-			// you're trying to give source code in the classpath, this should be given to addInputSource
+			fail();
+			// you're trying to give source code in the classpath, this should be accepted but causes a warn log entry
 		}
 	}
 	
