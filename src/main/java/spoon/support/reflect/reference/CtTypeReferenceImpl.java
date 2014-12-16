@@ -30,8 +30,10 @@ import java.util.TreeSet;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -46,6 +48,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
@@ -177,9 +180,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	
 	@SuppressWarnings("unchecked")
 	public CtSimpleType<T> getDeclaration() {
-		if (!isPrimitive() && (getQualifiedName().length() > 0)) {
+		if (!isPrimitive() && !isAnonymous()) {
 			return (CtSimpleType<T>) getFactory().Type()
 					.get(getQualifiedName());
+		}
+		if (!isPrimitive() && isAnonymous()) {
+			final CtSimpleType<?> rootType = getFactory().Type().get(getDeclaringType().getQualifiedName());
+			final CtNewClass elements = rootType.getElements(new AbstractFilter<CtNewClass>(CtNewClass.class) {
+				@Override
+				public boolean matches(CtNewClass element) {
+					return getSimpleName().equals(element.getAnonymousClass().getSimpleName());
+				}
+			}).get(0);
+			return elements.getAnonymousClass();
 		}
 		return null;
 	}
@@ -543,8 +556,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return new TreeSet<CtTypeReference<?>>();
 	}
 
+	@Override
 	public boolean isAnonymous() {
-		return getSimpleName().length() == 0;
+		try {
+			Integer.parseInt(getSimpleName());
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
 	}
 
 	public boolean isSuperReference() {
