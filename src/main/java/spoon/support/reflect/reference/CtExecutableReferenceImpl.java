@@ -229,43 +229,41 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	}
 	
 	public Method getActualMethod() {
-		for (Method m : getDeclaringType().getActualClass()
-				.getDeclaredMethods()) {
+		List<CtTypeReference<?>> parameters = this.getParameters();
+		
+		method_loop:
+		for (Method m : getDeclaringType().getActualClass().getDeclaredMethods()) {
 			if (!m.getName().equals(getSimpleName())) {
 				continue;
 			}
-			boolean matches = true;
-			for (int i = 0; i < m.getParameterTypes().length; i++) {
-				if (m.getParameterTypes()[i] != getActualTypeArguments().get(i)
-						.getActualClass()) {
-					matches = false;
-					break;
+			if (m.getParameterTypes().length != parameters.size()) {
+				continue;
+			}
+			for (int i = 0; i < parameters.size(); i++) {
+				if (m.getParameterTypes()[i] != parameters.get(i).getActualClass()) {
+					continue method_loop;
 				}
 			}
-			if (matches) {
-				return m;
-			}
+			
+			return m;
 		}
 		return null;
 	}
 
 	public Constructor<?> getActualConstructor() {
-		for (Constructor<?> c : getDeclaringType().getActualClass()
-				.getDeclaredConstructors()) {
-			if (c.getParameterTypes().length != getActualTypeArguments().size()) {
+		List<CtTypeReference<?>> parameters = this.getParameters();
+		
+		constructor_loop:
+		for (Constructor<?> c : getDeclaringType().getActualClass().getDeclaredConstructors()) {
+			if (c.getParameterTypes().length != parameters.size()) {
 				continue;
 			}
-			boolean matches = true;
-			for (int i = 0; i < c.getParameterTypes().length; i++) {
-				if (c.getParameterTypes()[i] != getActualTypeArguments().get(i)
-						.getActualClass()) {
-					matches = false;
-					break;
+			for (int i = 0; i < parameters.size(); i++) {
+				if (c.getParameterTypes()[i] != parameters.get(i).getActualClass()) {
+					continue constructor_loop;
 				}
 			}
-			if (matches) {
-				return c;
-			}
+			return c;
 		}
 		return null;
 	}
