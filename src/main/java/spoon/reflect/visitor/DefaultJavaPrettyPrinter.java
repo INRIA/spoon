@@ -1468,7 +1468,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public DefaultJavaPrettyPrinter writeModifiers(CtModifiable m) {
 		for (ModifierKind mod : m.getModifiers()) {
-			write(mod.toString().toLowerCase() + " ");
+			write(mod.toString() + " ");
 		}
 		return this;
 	}
