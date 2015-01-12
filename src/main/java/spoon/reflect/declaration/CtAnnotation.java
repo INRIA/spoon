@@ -20,6 +20,7 @@ package spoon.reflect.declaration;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -28,7 +29,7 @@ import spoon.reflect.reference.CtTypeReference;
  * @param <A>
  *            type of represented annotation
  */
-public interface CtAnnotation<A extends Annotation> extends CtElement {
+public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
 
 	/**
 	 * Returns the actual annotation (a dynamic proxy for this element).
