@@ -7,9 +7,12 @@
 REPO="https://github.com/INRIA/spoon.git"
 DIR=temp-spoon-clone
 
-WEBSITE_SERVER="scm.gforge.inria.fr"
+USER_SERVER="paligot"
+WEBSITE_SERVER="${USER_SERVER}@scm.gforge.inria.fr"
 SOURCE="_site/"
-DESTINATION="/home/groups/spoon/htdocs/"
+HOST_DESTINATION="/home/groups/spoon/"
+FOLDER_DESTINATION="htdocs"
+DESTINATION="${HOST_DESTINATION}${FOLDER_DESTINATION}/"
 
 # Delete any existing previous temps spoon clone.
 rm -rf $DIR
@@ -30,10 +33,18 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
-# Delete existing website on the server.
-ssh $WEBSITE_SERVER 'rm -rf /home/groups/spoon/htdocs/*'
+# Back up the old website and create the folder for the new one.
+TIMESTAMP=$(date +%s)
+BACKUP_DESTINATION="${HOST_DESTINATION}${FOLDER_DESTINATION}-${TIMESTAMP}"
+ssh $WEBSITE_SERVER "mv ${DESTINATION} ${BACKUP_DESTINATION}"
 if [ "$?" -ne 0 ]; then
-    echo "Error when you tried to remove the old version of the website!"
+    echo "Error when you tried to back up the old website!"
+    exit 1
+fi
+
+ssh $WEBSITE_SERVER "mkdir ${DESTINATION}"
+if [ "$?" -ne 0 ]; then
+    echo "Error when you tried to create the folder of the new website!"
     exit 1
 fi
 
@@ -41,6 +52,13 @@ fi
 scp -r $SOURCE* $WEBSITE_SERVER:$DESTINATION
 if [ "$?" -ne 0 ]; then
     echo "Error when you tried to copy the new version on the server!"
+    exit 1
+fi
+
+# Retrieve repositories folder in the last backup.
+ssh $WEBSITE_SERVER "cp -r ${BACKUP_DESTINATION}/repositories ${DESTINATION}"
+if [ "$?" -ne 0 ]; then
+    echo "Error when you tried to retrieve the repositories folder!"
     exit 1
 fi
 
