@@ -54,6 +54,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -324,8 +325,9 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	}
 
-	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
+	}
 
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
 	}
 }
