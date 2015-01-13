@@ -271,28 +271,6 @@
       </plugin>
 
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <version>1.9</version>
-        <configuration>
-          <signature>
-            <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java16</artifactId>
-            <version>1.0</version>
-          </signature>
-        </configuration>
-        <executions>
-          <execution>
-            <id>ensure-java-1.6-class-library</id>
-            <phase>test</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.8.1</version>
@@ -322,20 +300,6 @@
             </manifest>
           </archive>
         </configuration>
-      </plugin>
-
-      <!-- clean coverage data before collecting -->
-      <plugin>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <groupId>org.codehaus.mojo</groupId>
-        <version>2.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -536,6 +500,68 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <id>animal-sniffer</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-maven-plugin</artifactId>
+            <version>1.9</version>
+            <configuration>
+              <signature>
+                <groupId>org.codehaus.mojo.signature</groupId>
+                <artifactId>java16</artifactId>
+                <version>1.0</version>
+              </signature>
+            </configuration>
+            <executions>
+              <execution>
+                <id>ensure-java-1.6-class-library</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coveralls</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eluder.coveralls</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
+            <version>3.1.0</version>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.7.1.201405082137</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>release</id>
       <build>
