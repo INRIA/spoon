@@ -4,20 +4,21 @@ package spoon.test.annotation.testclasses;
 public class Main {
 
 	@TestAnnotation
-	public Main()
-	{ }
+	public Main() {
+	}
 
 	public void m(@Bound(max = 8) int a) {
-	} 
+	}
 
 	@AnnotParamTypes(
-		integer=42, integers={42},
-		string="Hello World!", strings={"Hello","World"},
-		clazz=Integer.class, classes={Integer.class, String.class},
-		b=true, byt=42, c='c', s=(short)42, l=42, f=3.14f, d=3.14159,
-		e=AnnotParamTypeEnum.G, ia=@InnerAnnot("dd"))
-	public void m1() {}
-	
+			integer = 42, integers = { 42 },
+			string = "Hello World!", strings = { "Hello", "World" },
+			clazz = Integer.class, classes = { Integer.class, String.class },
+			b = true, byt = 42, c = 'c', s = (short) 42, l = 42, f = 3.14f, d = 3.14159,
+			e = AnnotParamTypeEnum.G, ia = @InnerAnnot("dd"))
+	public void m1() {
+	}
+
 	final public static int INTEGER = 42;
 	final public static String STRING = "Hello World!";
 	final public static String STRING1 = "Hello";
@@ -31,24 +32,33 @@ public class Main {
 	final public static double DOUBLE = 3.14159;
 
 	@AnnotParamTypes(
-		integer=INTEGER, integers={INTEGER},
-		string=STRING, strings={STRING1,STRING2},
-		clazz=Integer.class, classes={Integer.class, String.class},
-		b=BOOLEAN, byt=BYTE, c=CHAR, s=SHORT, l=LONG, f=FLOAT, d=DOUBLE,
-		e=AnnotParamTypeEnum.G, ia=@InnerAnnot("dd"))
-	public void m2() {}
+			integer = INTEGER, integers = { INTEGER },
+			string = STRING, strings = { STRING1, STRING2 },
+			clazz = Integer.class, classes = { Integer.class, String.class },
+			b = BOOLEAN, byt = BYTE, c = CHAR, s = SHORT, l = LONG, f = FLOAT, d = DOUBLE,
+			e = AnnotParamTypeEnum.G, ia = @InnerAnnot("dd"))
+	public void m2() {
+	}
 
 	@AnnotParamTypes(
-			integer=INTEGER+3, integers={INTEGER-2, INTEGER*3},
-			string=STRING+"concatenated", strings={STRING1+"concatenated",STRING2+"concatenated"},
-			clazz=Integer.class, classes={Integer.class, String.class},
-			b=!BOOLEAN, byt=BYTE^1, c=CHAR|'d', s=SHORT/2, l=LONG+1, f=FLOAT*2f, d=DOUBLE/3d,
-			e=AnnotParamTypeEnum.G, ia=@InnerAnnot("dd" + "dd"))
-	public void m3() {}
+			integer = INTEGER + 3, integers = { INTEGER - 2, INTEGER * 3 },
+			string = STRING + "concatenated", strings = { STRING1 + "concatenated", STRING2 + "concatenated" },
+			clazz = Integer.class, classes = { Integer.class, String.class },
+			b = !BOOLEAN, byt = BYTE ^ 1, c = CHAR | 'd', s = SHORT / 2, l = LONG + 1, f = FLOAT * 2f, d = DOUBLE / 3d,
+			e = AnnotParamTypeEnum.G, ia = @InnerAnnot("dd" + "dd"))
+	public void m3() {
+	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return super.toString();
+	}
+
+	@AnnotArray({ RuntimeException.class })
+	public void testValueWithArray() {
+	}
+
+	@AnnotArray(RuntimeException.class)
+	public void testValueWithoutArray() {
 	}
 }
