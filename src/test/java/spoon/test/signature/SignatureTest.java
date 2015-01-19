@@ -3,6 +3,7 @@ package spoon.test.signature;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -74,12 +75,12 @@ public class SignatureTest {
 		SpoonCompiler builder = new JDTSnippetCompiler(factory, content);
 		try {
 			builder.build();
+			Assert.fail();
 		} catch (Exception e) {
 			// Must fail due to the unbound element "Complex.I"
 		}
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
-		System.out.println();
-
+		
 		CtMethod<?> method = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
 
 		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getStatement(0);
