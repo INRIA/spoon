@@ -96,6 +96,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 
 /**
@@ -104,6 +105,8 @@ import spoon.reflect.reference.CtVariableReference;
  * (abstract) supertype scanning methods.
  */
 public abstract class CtInheritanceScanner implements CtVisitor {
+
+
 
 	/**
 	 * Default constructor.
@@ -544,4 +547,8 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtLoop(whileLoop);
 	}
 
+	public <T> void visitCtUnboundVariableReference(
+			CtUnboundVariableReference<T> reference) {
+		
+	}
 }

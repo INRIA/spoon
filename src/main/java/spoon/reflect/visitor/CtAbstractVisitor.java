@@ -63,6 +63,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 
 public abstract class CtAbstractVisitor implements CtVisitor {
 	/**
@@ -329,5 +330,10 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
+	}
+
+	
+	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
+		
 	}
 }

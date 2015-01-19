@@ -75,6 +75,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 
 import java.lang.annotation.Annotation;
 
@@ -211,6 +212,12 @@ public interface CtVisitor {
 	 */
 	<T> void visitCtFieldReference(CtFieldReference<T> reference);
 
+	
+	/**
+	 * Visits a reference to an unbound field
+	 */
+	<T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference);
+	
 	/**
 	 * Visits a <code>for</code> loop.
 	 */

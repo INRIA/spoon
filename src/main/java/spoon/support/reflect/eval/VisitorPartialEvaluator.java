@@ -92,6 +92,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.RtHelper;
@@ -812,6 +813,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 					conditional.getElseExpression()));
 			setResult(ifRes);
 		}
+	}
+
+	public <T> void visitCtUnboundVariableReference(
+			CtUnboundVariableReference<T> reference) {
+		throw new RuntimeException("Unknow Element");
+		
 	}
 
 }
