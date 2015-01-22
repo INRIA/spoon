@@ -17,17 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
@@ -48,6 +37,17 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		CtTypeReference<T> {
@@ -129,7 +129,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 		return findClass();
 	}
-	
+
 	/**
 	 * Finds the class requested in {@link #getActualClass()}, using the
 	 * {@code ClassLoader} of the {@code Environment}
@@ -137,14 +137,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
 		try {
-			return  (Class<T>)  getFactory().getEnvironment().getClassLoader().loadClass(getQualifiedName());
+			return (Class<T>) getFactory().getEnvironment().getClassLoader().loadClass(getQualifiedName());
 		} catch (ClassNotFoundException cnfe) {
 			throw new SpoonException("cannot load class: "
 					+ getQualifiedName() + " with class loader "
 					+ Thread.currentThread().getContextClassLoader(), cnfe);
 		}
 	}
-	
+
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return actualTypeArguments;
 	}
@@ -153,7 +153,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		A a = super.getAnnotation(annotationType);
 		if (a == null) { // Couldn't get annotation from CtModel, trying with RT
-							// reflection
+			// reflection
 			try {
 				return getActualClass().getAnnotation(annotationType);
 			} catch (RuntimeException e) {
@@ -174,7 +174,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	protected AnnotatedElement getActualAnnotatedElement() {
 		return getActualClass();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public CtSimpleType<T> getDeclaration() {
 		if (!isPrimitive() && (getQualifiedName().length() > 0)) {
@@ -198,7 +198,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 					+ CtSimpleType.INNERTTYPE_SEPARATOR + getSimpleName();
 		} else if (getPackage() != null
 				&& !getPackage().getSimpleName().equals(
-						CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+				CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 			return getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR
 					+ getSimpleName();
 		} else {
@@ -227,6 +227,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		if (type instanceof CtTypeParameterReference) {
+			return false;
+		}
+		if (NULL_TYPE_NAME.equals(getSimpleName()) || NULL_TYPE_NAME.equals(type.getSimpleName())) {
 			return false;
 		}
 		// anonymous types cannot be resolved
@@ -466,9 +469,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 					l.addAll(st.getAllExecutables());
 				}
 			}
-			if( t instanceof CtInterface ) {
+			if (t instanceof CtInterface) {
 				Set<CtTypeReference<?>> sups =
-					((CtInterface<?>) t).getSuperInterfaces();
+						((CtInterface<?>) t).getSuperInterfaces();
 				for (CtTypeReference<?> sup : sups) {
 					l.addAll(sup.getAllExecutables());
 				}
@@ -558,7 +561,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	@Override
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
-				.<CtTypeReference<?>> EMPTY_LIST()) {
+				.<CtTypeReference<?>>EMPTY_LIST()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>();
 		}
 		return actualTypeArguments.add(actualTypeArgument);
@@ -568,7 +571,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	public boolean removeActualTypeArgument(
 			CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
-				.<CtTypeReference<?>> EMPTY_LIST()) {
+				.<CtTypeReference<?>>EMPTY_LIST()) {
 			return false;
 		}
 		return actualTypeArguments.remove(actualTypeArgument);
