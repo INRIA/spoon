@@ -342,15 +342,15 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAccessAnnovationValue() throws Exception {
+	public void testAccessAnnotationValue() throws Exception {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.Main");
 		CtMethod<?> testMethod = ctClass.getMethodsByName("testValueWithArray").get(0);
 		Class[] value = testMethod.getAnnotation(AnnotArray.class).value();
-		assertEquals(new Class[] { RuntimeException.class }, value);
+		assertArrayEquals(new Class[] { RuntimeException.class }, value);
 
 		testMethod = ctClass.getMethodsByName("testValueWithoutArray").get(0);
 		value = testMethod.getAnnotation(AnnotArray.class).value();
-		assertEquals(new Class[] { RuntimeException.class }, value);
+		assertArrayEquals(new Class[] { RuntimeException.class }, value);
 	}
 
 	private Class<? extends Annotation> getActualClassFromAnnotation(CtAnnotation<? extends Annotation> annotation) {
