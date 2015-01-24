@@ -331,7 +331,7 @@ public class AnnotationTest
 		final CtAnnotation<? extends Annotation> firstAnnotation = testMethodAnnotations.get(0);
 		assertEquals(OuterAnnotation.class, getActualClassFromAnnotation(firstAnnotation));
 
-		final CtNewArray<?> arrayAnnotations = (CtNewArray) firstAnnotation.getElementValues().get("value");
+		final CtNewArray<?> arrayAnnotations = (CtNewArray<?>) firstAnnotation.getElementValues().get("value");
 		assertEquals(2, arrayAnnotations.getElements().size());
 
 		final CtAnnotation<?> firstAnnotationInArray = getMiddleAnnotation(arrayAnnotations, 0);
@@ -357,7 +357,7 @@ public class AnnotationTest
 		return (CtLiteral<?>) annotation.getElementValues().get("value");
 	}
 
-	private CtAnnotation getInnerAnnotation(CtAnnotation<?> firstAnnotationInArray) {
+	private CtAnnotation<?> getInnerAnnotation(CtAnnotation<?> firstAnnotationInArray) {
 		return (CtAnnotation<?>) firstAnnotationInArray.getElementValues().get("value");
 	}
 

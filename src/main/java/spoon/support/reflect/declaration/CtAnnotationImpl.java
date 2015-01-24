@@ -52,7 +52,6 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.code.CtExpressionImpl;
-import spoon.support.reflect.eval.VisitorPartialEvaluator;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotation}.
