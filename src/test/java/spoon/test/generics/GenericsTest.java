@@ -10,6 +10,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtLocalVariable;
@@ -18,6 +21,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
@@ -25,6 +29,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
@@ -49,7 +54,6 @@ public class GenericsTest {
 				.getActualTypeArguments().size());
 	}
 
-	
 	@Test
 	public void testModelBuildingTree() throws Exception {
 		CtClass<?> type = build("spoon.test.generics", "Tree");
@@ -132,34 +136,33 @@ public class GenericsTest {
 		CtClass<?> classThatDefinesANewTypeArgument = classThatBindsAGenericType.getPackage().getElements(new NameFilter<CtClass<?>>("ClassThatDefinesANewTypeArgument")).get(0);
 
 		CtTypeReference<?> tr1 = classThatBindsAGenericType.getSuperclass();
-        CtTypeReference<?> trExtends = tr1.getActualTypeArguments().get(0);
+		CtTypeReference<?> trExtends = tr1.getActualTypeArguments().get(0);
 		CtTypeReference<?> tr2 = classThatDefinesANewTypeArgument.getFormalTypeParameters().get(0);
-        CtTypeReference<?> tr3 = classThatDefinesANewTypeArgument.getMethodsByName("foo").get(0).getParameters().get(0).getReference().getType();
+		CtTypeReference<?> tr3 = classThatDefinesANewTypeArgument.getMethodsByName("foo").get(0).getParameters().get(0).getReference().getType();
 
-        // an bound type is not an TypeParameterRefernce
-        assertTrue(! (trExtends instanceof CtTypeParameterReference));
+		// an bound type is not an TypeParameterRefernce
+		assertTrue(!(trExtends instanceof CtTypeParameterReference));
 
-        // a declared type parameter is a CtTypeParameterReference
-        assertTrue(tr2 instanceof CtTypeParameterReference);
+		// a declared type parameter is a CtTypeParameterReference
+		assertTrue(tr2 instanceof CtTypeParameterReference);
 
-        // a used type parameter T is a CtTypeParameterReference
-        assertTrue(tr3 instanceof CtTypeParameterReference);
+		// a used type parameter T is a CtTypeParameterReference
+		assertTrue(tr3 instanceof CtTypeParameterReference);
 
 		assertEquals("File", trExtends.getSimpleName());
-        assertEquals(java.io.File.class, trExtends.getActualClass());
+		assertEquals(java.io.File.class, trExtends.getActualClass());
 		assertEquals("T", tr2.getSimpleName());
-        assertEquals("T", tr3.getSimpleName());
+		assertEquals("T", tr3.getSimpleName());
 	}
 
-    @Test
-    public void testGenericMethodCallWithExtend() throws Exception {
-        CtClass<?> type = build("spoon.test.generics", "GenericMethodCallWithExtend");
-        CtMethod<?> meth = type.getMethodsByName("methode").get(0);
+	@Test
+	public void testGenericMethodCallWithExtend() throws Exception {
+		CtClass<?> type = build("spoon.test.generics", "GenericMethodCallWithExtend");
+		CtMethod<?> meth = type.getMethodsByName("methode").get(0);
 
-        // an bound type is not an TypeParameterRefernce
-        assertEquals("E extends java.lang.Enum<E>", meth.getFormalTypeParameters().get(0).toString());
-    }
-
+		// an bound type is not an TypeParameterRefernce
+		assertEquals("E extends java.lang.Enum<E>", meth.getFormalTypeParameters().get(0).toString());
+	}
 
 	@Test
 	public void testBugCommonCollection() throws Exception {
@@ -247,16 +250,46 @@ public class GenericsTest {
 		}
 	}
 
+	@Test
+	public void testInstanceOfMapEntryGeneric() throws Exception {
+		CtClass<?> type = build("spoon.test.generics", "InstanceOfMapEntryGeneric");
+		CtMethod<?> meth = type.getMethodsByName("methode").get(0);
 
-    @Test
-    public void testInstanceOfMapEntryGeneric() throws Exception {
-        CtClass<?> type = build("spoon.test.generics", "InstanceOfMapEntryGeneric");
-        CtMethod<?> meth = type.getMethodsByName("methode").get(0);
+		CtBinaryOperator<?> instOf = (CtBinaryOperator<?>) ((CtLocalVariable<?>) meth.getBody().getStatement(0)).getDefaultExpression();
+		assertEquals(BinaryOperatorKind.INSTANCEOF, instOf.getKind());
+		assertEquals("o instanceof java.util.Map.Entry<?, ?>", instOf.toString());
+	}
 
-        CtBinaryOperator<?> instOf = (CtBinaryOperator<?>)((CtLocalVariable<?>)meth.getBody().getStatement(0)).getDefaultExpression();
-        assertEquals(BinaryOperatorKind.INSTANCEOF, instOf.getKind());
-        assertEquals("o instanceof java.util.Map.Entry<?, ?>", instOf.toString());
-    }
+	@Test
+	public void testAccessToGenerics() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
 
+		SpoonCompiler compiler = spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources(
+						"./src/test/java/spoon/test/generics/Foo.java",
+						"./src/test/java/spoon/test/generics/Bar.java"));
 
+		compiler.build();
+
+		CtClass<?> foo = (CtClass<?>) factory.Type().get(Foo.class);
+		CtInterface<?> bar = (CtInterface<?>) factory.Type().get(Bar.class);
+		final CtNewClass<?> anonymousBar = foo.getElements(new AbstractFilter<CtNewClass<?>>(CtNewClass.class) {
+			@Override
+			public boolean matches(CtNewClass<?> element) {
+				return element.getAnonymousClass().isAnonymous();
+			}
+		}).get(0);
+
+		final List<CtTypeReference<?>> barGenerics = bar.getFormalTypeParameters();
+		// For JDT, the type of an anonymous class is its super class.
+		final List<CtTypeReference<?>> newClassBarGenerics = anonymousBar.getAnonymousClass().getSuperclass().getActualTypeArguments();
+
+		assertEquals("Name of the first generic parameter in Bar interface must to be I.", "I", barGenerics.get(0).getSimpleName());
+		assertEquals("Name of the first generic parameter in Bar usage must to be K.", "K", newClassBarGenerics.get(0).getSimpleName());
+
+		assertEquals("Name of the second generic parameter in Bar interface must to be O.", "O", barGenerics.get(1).getSimpleName());
+		assertEquals("Name of the second generic parameter in Bar usage must to be V.", "V", newClassBarGenerics.get(1).getSimpleName());
+	}
 }
