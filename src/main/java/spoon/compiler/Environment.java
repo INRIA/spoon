@@ -307,4 +307,13 @@ public interface Environment {
 	/** Returns the value ot the option noclasspath */
 	public boolean getNoClasspath();
 
+	/**
+	 * Returns the value of the option copy-resources.
+	 */
+	boolean isCopyResources();
+
+	/**
+	 * Sets the option copy-resources to copy all resources in a project on the folder destination.
+	 */
+	void setCopyResources(boolean copyResources);
 }
