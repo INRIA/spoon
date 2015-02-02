@@ -7,6 +7,7 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtUnboundVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtUnboundVariableReference<T> {
 	private static final long serialVersionUID = -932423216089690817L;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		
 		visitor.visitCtUnboundVariableReference(this);

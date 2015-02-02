@@ -20,7 +20,7 @@ package spoon.reflect.reference;
 
 /**
  * This interface defines a reference to an unbound
- * {@link spoon.reflect.declaration.CtVariable.
+ * {@link spoon.reflect.declaration.CtVariable}.
  */
 public interface CtUnboundVariableReference<T> extends CtVariableReference<T> {
 		

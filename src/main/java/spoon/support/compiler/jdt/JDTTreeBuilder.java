@@ -653,7 +653,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					return ref;
 				}
 			} else {
-				// unknow VariableBinding, the caller must do something
+				// unknown VariableBinding, the caller must do something
 				return null;
 			}
 		}
@@ -1329,7 +1329,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		case OperatorIds.LESS:
 			return BinaryOperatorKind.LT;
 		case OperatorIds.QUESTIONCOLON:
-			throw new RuntimeException("Unknow operator");
+			throw new RuntimeException("Unknown operator");
 		case OperatorIds.EQUAL:
 			return BinaryOperatorKind.EQ;
 		}
