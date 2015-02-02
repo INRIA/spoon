@@ -302,6 +302,11 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 				ret = Short.parseShort(ret.toString());
 			}
 		}
+		if (type.isArray() && ret.getClass() != type) {
+			final Object array = Array.newInstance(ret.getClass(), 1);
+			((Object[]) array)[0] = ret;
+			ret = array;
+		}
 		return (T) ret;
 	}
 
