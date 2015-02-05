@@ -1,5 +1,6 @@
 package spoon.test.imports;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
@@ -15,7 +16,9 @@ import static org.junit.Assert.assertEquals;
 
 public class ImportTest {
 
+	// TODO This test is ignored because we have proposed a wrong fix for the issue #114 on GitHub.
 	@Test
+	@Ignore
 	public void testImportOfAnInnerClassInAClassPackage() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
