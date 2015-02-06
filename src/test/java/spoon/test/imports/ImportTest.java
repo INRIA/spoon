@@ -6,6 +6,8 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
@@ -19,7 +21,7 @@ public class ImportTest {
 	// TODO This test is ignored because we have proposed a wrong fix for the issue #114 on GitHub.
 	@Test
 	@Ignore
-	public void testImportOfAnInnerClassInAClassPackage() throws Exception {
+	public void testImportOfAnInnerClassInASuperClassPackage() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 
@@ -40,5 +42,25 @@ public class ImportTest {
 
 		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
 		assertEquals(expected, innerClass.getSuperclass().toString());
+	}
+
+	@Test
+	public void testImportOfAnInnerClassInAClassPackage() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+
+		SpoonCompiler compiler = spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources(
+						"./src/test/java/spoon/test/imports/testclasses/internal/PublicSuperClass.java",
+						"./src/test/java/spoon/test/imports/testclasses/DefaultClientClass.java"));
+
+		compiler.build();
+
+		final CtClass<?> client = (CtClass<?>) factory.Type().get("spoon.test.imports.testclasses.DefaultClientClass");
+		final CtMethod<?> methodVisit = client.getMethodsByName("visit").get(0);
+
+		final CtSimpleType<Object> innerClass = factory.Type().get("spoon.test.imports.testclasses.DefaultClientClass$InnerClass");
+		assertEquals("Type of the method must to be InnerClass accessed via DefaultClientClass.", innerClass, methodVisit.getType().getDeclaration());
 	}
 }
