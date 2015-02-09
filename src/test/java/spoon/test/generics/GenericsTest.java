@@ -2,6 +2,7 @@ package spoon.test.generics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
@@ -15,6 +16,7 @@ import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotation;
@@ -50,8 +52,7 @@ public class GenericsTest {
 				.get(1);
 
 		assertEquals(0, field.getType().getActualTypeArguments().size());
-		assertEquals(0, ((CtNewClass<?>) field.getDefaultExpression()).getType()
-				.getActualTypeArguments().size());
+		assertEquals(0, ((CtConstructorCall<?>) field.getDefaultExpression()).getType().getActualTypeArguments().size());
 	}
 
 	@Test
@@ -84,16 +85,14 @@ public class GenericsTest {
 
 	@Test
 	public void testDiamond2() throws Exception {
-		CtClass<GenericConstructor> type = build("spoon.test.generics",
-				"GenericConstructor");
+		CtClass<GenericConstructor> type = build("spoon.test.generics", "GenericConstructor");
 		assertEquals("GenericConstructor", type.getSimpleName());
 		CtConstructor<GenericConstructor> c = type.getConstructor();
 		CtLocalVariable<?> var = c.getBody().getStatement(1);
-		assertEquals("java.lang.Integer", var.getType()
-				.getActualTypeArguments().get(0).getQualifiedName());
-		CtNewClass<?> newClass = (CtNewClass<?>) var.getDefaultExpression();
+		assertEquals("java.lang.Integer", var.getType().getActualTypeArguments().get(0).getQualifiedName());
+		CtConstructorCall<?> constructorCall = (CtConstructorCall<?>) var.getDefaultExpression();
 		// diamond operator should have empty type arguments???
-		assertTrue(newClass.getExecutable().getActualTypeArguments().isEmpty());
+		assertTrue(constructorCall.getExecutable().getActualTypeArguments().isEmpty());
 	}
 
 	@Test
@@ -106,13 +105,11 @@ public class GenericsTest {
 								+ "	java.util.List<String> f = new java.util.ArrayList<>();\n"
 								+ "}").compile();
 		CtField<?> f = clazz.getFields().get(0);
-		CtNewClass<?> val = (CtNewClass<?>) f.getDefaultExpression();
+		CtConstructorCall<?> val = (CtConstructorCall<?>) f.getDefaultExpression();
 
 		// the diamond is resolved to String
-		assertEquals("java.lang.String", val.getType().getActualTypeArguments()
-				.get(0).toString());
-		assertEquals("new java.util.ArrayList<java.lang.String>()",
-				val.toString());
+		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).toString());
+		assertEquals("new java.util.ArrayList<java.lang.String>()",val.toString());
 	}
 
 	@Test
@@ -278,17 +275,15 @@ public class GenericsTest {
 		final CtNewClass<?> newAnonymousBar = foo.getElements(new AbstractFilter<CtNewClass<?>>(CtNewClass.class) {
 			@Override
 			public boolean matches(CtNewClass<?> element) {
-				return element.getAnonymousClass().isAnonymous();
+				return element.getAnonymousClass() != null && element.getAnonymousClass().isAnonymous();
 			}
 		}).get(0);
 
 		final List<CtTypeReference<?>> barGenerics = bar.getFormalTypeParameters();
 		final CtClass<?> anonymousBar = newAnonymousBar.getAnonymousClass();
 
-		assertEquals(1, anonymousBar.getSuperInterfaces().size());
-		assertEquals(Bar.class, anonymousBar.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualClass());
-
-		final List<CtTypeReference<?>> newClassBarGenerics = anonymousBar.getSuperclass().getActualTypeArguments();
+		final CtTypeReference barInterface = anonymousBar.getSuperInterfaces().toArray(new CtTypeReference[0])[0];
+		final List<CtTypeReference<?>> newClassBarGenerics = barInterface.getActualTypeArguments();
 		assertEquals("Name of the first generic parameter in Bar interface must to be I.", "I", barGenerics.get(0).getSimpleName());
 		assertEquals("Name of the first generic parameter in Bar usage must to be K.", "K", newClassBarGenerics.get(0).getSimpleName());
 

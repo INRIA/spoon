@@ -33,6 +33,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -499,6 +500,18 @@ public abstract class CtScanner implements CtVisitor {
 		scan(newArray.getElements());
 		scan(newArray.getDimensionExpressions());
 		exit(newArray);
+	}
+
+	@Override
+	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
+		enter(ctConstructorCall);
+		scan(ctConstructorCall.getAnnotations());
+		scan(ctConstructorCall.getType());
+		scanReferences(ctConstructorCall.getTypeCasts());
+		scan(ctConstructorCall.getExecutable());
+		scan(ctConstructorCall.getTarget());
+		scan(ctConstructorCall.getArguments());
+		exit(ctConstructorCall);
 	}
 
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {

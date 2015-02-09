@@ -30,6 +30,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -277,6 +278,11 @@ public interface CtVisitor {
 	 * Visits an array construction.
 	 */
 	<T> void visitCtNewArray(CtNewArray<T> newArray);
+
+	/**
+	 * Visits a call to a constructor.
+	 */
+	<T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall);
 
 	/**
 	 * Visits an anonymous class construction.

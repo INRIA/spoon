@@ -11,6 +11,7 @@ import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
@@ -400,15 +401,26 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
+	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
+		if (this.jdtTreeBuilder.context.isArgument(ctConstructorCall) && child instanceof CtExpression) {
+			ctConstructorCall.addArgument((CtExpression<?>) child);
+			return;
+		}
+		super.visitCtConstructorCall(ctConstructorCall);
+	}
+
+	@Override
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
 		if (this.jdtTreeBuilder.context.isArgument(newClass) && child instanceof CtExpression) {
 			newClass.addArgument((CtExpression<?>) child);
 			return;
 		} else if (child instanceof CtClass) {
 			newClass.setAnonymousClass((CtClass<?>) child);
-			// this can be an interface but we don't know it so we set it to
-			// the superclass
-			((CtClass<?>) child).setSuperclass(newClass.getType());
+			if (newClass.getType().isInterface()) {
+				((CtClass<?>) child).addSuperInterface(newClass.getType());
+			} else {
+				((CtClass<?>) child).setSuperclass(newClass.getType());
+			}
 			return;
 		}
 		super.visitCtNewClass(newClass);

@@ -39,6 +39,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -871,11 +872,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private void writeEnumField(CtField<?> f) {
 		write(f.getSimpleName());
 		if (f.getDefaultExpression() != null) {
-			CtNewClass<?> nc = (CtNewClass<?>) f.getDefaultExpression();
-			if (nc.getArguments().size() > 0) {
+			CtConstructorCall<?> constructorCall = (CtConstructorCall<?>) f.getDefaultExpression();
+			if (constructorCall.getArguments().size() > 0) {
 				write("(");
 				boolean first = true;
-				for (CtExpression<?> ctexpr : nc.getArguments()) {
+				for (CtExpression<?> ctexpr : constructorCall.getArguments()) {
 					if (first) {
 						first = false;
 					} else {
@@ -885,7 +886,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 				write(")");
 			}
-			scan(nc.getAnonymousClass());
+			if (constructorCall instanceof CtNewClass) {
+				scan(((CtNewClass) constructorCall).getAnonymousClass());
+			}
 		}
 	}
 
@@ -1539,6 +1542,38 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(newArray);
 	}
 
+	@Override
+	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
+		enterCtStatement(ctConstructorCall);
+		enterCtExpression(ctConstructorCall);
+
+		if (ctConstructorCall.getTarget() != null) {
+			scan(ctConstructorCall.getTarget()).write(".");
+		}
+
+		if (ctConstructorCall.getTarget() != null) {
+			context.ignoreEnclosingClass = true;
+		}
+
+		write("new ").scan(ctConstructorCall.getType());
+		context.ignoreEnclosingClass = false;
+
+		write("(");
+		boolean remove = false;
+		for (CtCodeElement e : ctConstructorCall.getArguments()) {
+			scan(e);
+			write(" , ");
+			remove = true;
+		}
+		if (remove) {
+			removeLastChar();
+		}
+
+		write(")");
+
+		exitCtExpression(ctConstructorCall);
+	}
+
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
 		enterCtStatement(newClass);
 		enterCtExpression(newClass);
@@ -1547,52 +1582,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(newClass.getTarget()).write(".");
 		}
 
-		if (newClass.getAnonymousClass() != null) {
-			write("new ");
-			if (newClass.getAnonymousClass().getSuperclass() != null) {
-				scan(newClass.getAnonymousClass().getSuperclass());
-			} else if (newClass.getAnonymousClass().getSuperInterfaces().size() > 0) {
-				for (CtTypeReference<?> ref : newClass.getAnonymousClass()
-						.getSuperInterfaces()) {
-					scan(ref);
-				}
+		write("new ");
+		if (newClass.getAnonymousClass().getSuperclass() != null) {
+			scan(newClass.getAnonymousClass().getSuperclass());
+		} else if (newClass.getAnonymousClass().getSuperInterfaces().size() > 0) {
+			for (CtTypeReference<?> ref : newClass.getAnonymousClass()
+					.getSuperInterfaces()) {
+				scan(ref);
 			}
-			write("(");
-			for (CtExpression<?> exp : newClass.getArguments()) {
-				scan(exp);
-				write(", ");
-			}
-			if (newClass.getArguments().size() > 0) {
-				removeLastChar();
-			}
-			write(")");
-			scan(newClass.getAnonymousClass());
-		} else {
-			if (newClass.getTarget() != null) {
-				context.ignoreEnclosingClass = true;
-			}
-
-			write("new ").scan(newClass.getType());
-			context.ignoreEnclosingClass = false;
-
-			// if ((newClass.getExecutable() != null)
-			// && (newClass.getExecutable().getActualTypeArguments() != null)) {
-			// writeGenericsParameter(newClass.getExecutable()
-			// .getActualTypeArguments());
-			// }
-			write("(");
-			boolean remove = false;
-			for (CtCodeElement e : newClass.getArguments()) {
-				scan(e);
-				write(" , ");
-				remove = true;
-			}
-			if (remove) {
-				removeLastChar();
-			}
-
-			write(")");
 		}
+		write("(");
+		for (CtExpression<?> exp : newClass.getArguments()) {
+			scan(exp);
+			write(", ");
+		}
+		if (newClass.getArguments().size() > 0) {
+			removeLastChar();
+		}
+		write(")");
+		scan(newClass.getAnonymousClass());
 		exitCtExpression(newClass);
 	}
 

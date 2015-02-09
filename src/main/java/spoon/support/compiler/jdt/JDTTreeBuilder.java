@@ -17,14 +17,6 @@
 
 package spoon.support.compiler.jdt;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
@@ -134,7 +126,6 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
-
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -147,6 +138,7 @@ import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -158,7 +150,6 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
-import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -203,6 +194,14 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -1421,50 +1420,46 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(AllocationExpression allocationExpression,
 			BlockScope scope) {
-		CtNewClass<Object> c = factory.Core().createNewClass();
+		buildCommonPartForCtNewClassAndCtConstructorCall(allocationExpression, scope, factory.Core().createConstructorCall());
+		return false;
+	}
+
+	private <T extends CtConstructorCall<Object>> T buildCommonPartForCtNewClassAndCtConstructorCall(AllocationExpression allocationExpression, BlockScope scope, T constructorCall) {
 		if (allocationExpression.type != null) {
 			if (allocationExpression.type.resolvedType instanceof ParameterizedTypeBinding) {
-				CtTypeReference<Object> res = references
-						.getTypeReference(((ParameterizedTypeBinding) allocationExpression.type.resolvedType)
-								.genericType());
+				CtTypeReference<Object> res = references.getTypeReference(((ParameterizedTypeBinding) allocationExpression.type.resolvedType).genericType());
 				ParameterizedTypeBinding paramType = ((ParameterizedTypeBinding) allocationExpression.type.resolvedType);
-				if (paramType.arguments != null
-						&& paramType.isBoundParameterizedType()
-						) {
+				if (paramType.arguments != null && paramType.isBoundParameterizedType()) {
 					for (TypeBinding b : ((ParameterizedTypeBinding) allocationExpression.type.resolvedType).arguments) {
-						res.addActualTypeArgument(references
-								.getTypeReference(b));
+						res.addActualTypeArgument(references.getTypeReference(b));
 					}
 				}
-				c.setType(res);
+				constructorCall.setType(res);
 			} else
-				c.setType(references
-						.getTypeReference(allocationExpression.type.resolvedType));
+				constructorCall.setType(references.getTypeReference(allocationExpression.type.resolvedType));
 		}
-		c.setExecutable(references
-				.getExecutableReference(allocationExpression.binding));
-		if (c.getExecutable() == null) {
-			// "null executable ref 
+		constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
+		if (constructorCall.getExecutable() == null) {
+			// "null executable ref
 		} else {
-			c.getExecutable().setType(
-					(CtTypeReference<Object>) c.getExecutable()
-							.getDeclaringType());
+			constructorCall.getExecutable().setType((CtTypeReference<Object>) constructorCall.getExecutable().getDeclaringType());
 		}
-		context.enter(c, allocationExpression);
+		context.enter(constructorCall, allocationExpression);
 
 		if (allocationExpression.enclosingInstance() != null) {
-			context.target.push(c);
+			context.target.push(constructorCall);
 			allocationExpression.enclosingInstance().traverse(this, scope);
 			context.target.pop();
 		}
 
-		context.pushArgument(c);
+		context.pushArgument(constructorCall);
 		if (allocationExpression.arguments != null) {
-			for (Expression e : allocationExpression.arguments)
+			for (Expression e : allocationExpression.arguments) {
 				e.traverse(this, scope);
+			}
 		}
-		context.popArgument(c);
-		return false;
+		context.popArgument(constructorCall);
+		return constructorCall;
 	}
 
 	@Override
@@ -2225,15 +2220,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(
 			QualifiedAllocationExpression qualifiedAllocationExpression,
 			BlockScope scope) {
-		boolean ret = visit(
-				(AllocationExpression) qualifiedAllocationExpression, scope);
+		buildCommonPartForCtNewClassAndCtConstructorCall(qualifiedAllocationExpression, scope, factory.Core().createNewClass());
 		if (qualifiedAllocationExpression.enclosingInstance != null)
 			qualifiedAllocationExpression.enclosingInstance.traverse(this,
 					scope);
 		if (qualifiedAllocationExpression.anonymousType != null)
 			qualifiedAllocationExpression.anonymousType.traverse(this, scope);
 
-		return ret;
+		return false;
 	}
 
 	@Override
