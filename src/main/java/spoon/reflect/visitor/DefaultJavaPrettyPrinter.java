@@ -267,6 +267,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
+	private void printTypeAnnotations(CtTypeReference<?> r) {
+/*
+		if (r.hasTypeAnnotations()) {
+			for (CtTypeReference<?> typeAnnotation : r.getTypeAnnotations()) {
+				write("@");
+				scan(typeAnnotation);
+			}
+			write(" ");
+		}
+*/
+		if (!r.getTypeAnnotations().isEmpty()) {
+			for (CtAnnotation<? extends Annotation> annotation : r.getTypeAnnotations()) {
+				scan(annotation);
+			}
+		}
+	}
+
 	/**
 	 * Enters a statement.
 	 */
@@ -1789,6 +1806,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
+		printTypeAnnotations(ref);
 		if (importsContext.isImported(ref)) {
 			write(ref.getSimpleName());
 		} else {
@@ -1817,6 +1835,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 			return;
 		}
+		printTypeAnnotations(ref);
 		if (!context.ignoreImport
 				&& (importsContext.isImported(ref) && ref.getPackage() != null)) {
 			write(ref.getSimpleName());

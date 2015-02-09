@@ -17,12 +17,24 @@
 
 package spoon.support.reflect.reference;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -41,22 +53,13 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.EMPTY_LIST();
+
+	List<CtAnnotation<? extends Annotation>> annotations = CtElementImpl.EMPTY_LIST();
 
 	CtTypeReference<?> declaringType;
 
@@ -606,4 +609,48 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public <A extends Annotation> A getTypeAnnotation(Class<A> annotationType) {
+		for (CtAnnotation<? extends Annotation> a : getTypeAnnotations()) {
+			if (a.getAnnotationType().toString().equals(annotationType.getName())) {
+				return ((CtAnnotation<A>) a).getActualAnnotation();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <A extends Annotation> CtAnnotation<A> getTypeAnnotation(CtTypeReference<A> annotationType) {
+		for (CtAnnotation<? extends Annotation> a : getTypeAnnotations()) {
+			if (a.getAnnotationType().equals(annotationType)) {
+				return (CtAnnotation<A>) a;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public List<CtAnnotation<? extends Annotation>> getTypeAnnotations() {
+		return Collections.unmodifiableList(annotations);
+	}
+
+	@Override
+	public void setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
+		this.annotations = annotations;
+	}
+
+	@Override
+	public boolean addTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
+		if ((List<?>) this.annotations == (List<?>) CtElementImpl.EMPTY_LIST()) {
+			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>();
+		}
+		return !this.annotations.contains(annotation) && this.annotations.add(annotation);
+	}
+
+	@Override
+	public boolean removeTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
+		return this.annotations.remove(annotation);
+	}
 }

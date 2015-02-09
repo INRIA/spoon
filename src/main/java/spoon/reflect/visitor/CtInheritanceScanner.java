@@ -96,6 +96,7 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeAnnotationReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
@@ -279,6 +280,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract typed element.
 	 */
 	public <T> void scanCtTypedElement(CtTypedElement<T> e) {
+	}
+
+	/**
+	 * Scans a type annotation.
+	 */
+	public void scanCtTypeAnnotationReference(CtTypeAnnotationReference e) {
 	}
 
 	/**
@@ -703,6 +710,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtTypeReference(CtTypeReference<T> e) {
 		scanCtReference(e);
 		scanCtGenericElementReference(e);
+		scanCtTypeAnnotationReference(e);
 		scanCtVisitable(e);
 	}
 
