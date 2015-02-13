@@ -6,11 +6,13 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -20,6 +22,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotArray;
@@ -40,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static spoon.test.TestUtils.build;
 
 public class AnnotationTest {
 	private Factory factory;
@@ -49,9 +53,11 @@ public class AnnotationTest {
 		final File testDirectory = new File("./src/test/java/spoon/test/annotation/testclasses/");
 
 		Launcher launcher = new Launcher();
-		this.factory = launcher.createFactory();
 
+		this.factory = launcher.createFactory();
+		factory.getEnvironment().setComplianceLevel(8);
 		SpoonCompiler compiler = launcher.createCompiler(this.factory);
+
 		compiler.addInputSource(testDirectory);
 		compiler.build();
 	}

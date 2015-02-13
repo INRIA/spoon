@@ -1162,7 +1162,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(")");
 		if (ifElement.getThenStatement() instanceof CtBlock) {
 			write(" ");
-			scan(ifElement.getThenStatement());
+			scan((CtStatement) ifElement.getThenStatement());
 			write(" ");
 		} else {
 			incTab().writeln().writeTabs();
@@ -1177,10 +1177,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("else");
 			if (ifElement.getElseStatement() instanceof CtIf) {
 				write(" ");
-				scan(ifElement.getElseStatement());
+				scan((CtStatement) ifElement.getElseStatement());
 			} else if (ifElement.getElseStatement() instanceof CtBlock) {
 				write(" ");
-				scan(ifElement.getElseStatement());
+				scan((CtStatement) ifElement.getElseStatement());
 			} else {
 				incTab().writeln().writeTabs();
 				writeStatement(ifElement.getElseStatement());

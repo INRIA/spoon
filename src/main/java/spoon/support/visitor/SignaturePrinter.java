@@ -340,9 +340,9 @@ public class SignaturePrinter implements CtVisitor {
 		write("if (");
 		scan(ifElement.getCondition());
 		write(") then ");
-		scan(ifElement.getThenStatement());
+		scan((CtStatement) ifElement.getThenStatement());
 		write(" else ");
-		scan(ifElement.getElseStatement());
+		scan((CtStatement) ifElement.getElseStatement());
 	}
 
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
