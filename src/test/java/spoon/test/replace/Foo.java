@@ -12,7 +12,20 @@ class Foo {
 	void bar() {
 		int y = 4;
 	}
-	
+
+
+
+	public void retry() {
+
+		new Foo();
+
+	}
+
+
+	private void statements() {
+		String a = "";
+		System.out.println(a.toLowerCase());
+	}
 }
 
 class Bar {
