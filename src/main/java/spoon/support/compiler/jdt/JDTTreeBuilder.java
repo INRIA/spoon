@@ -2698,12 +2698,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 				scope.referenceCompilationUnit()));
 		context.enter(type, memberTypeDeclaration);
 
-		// AST bug HACK
-		if (memberTypeDeclaration.annotations != null)
-			for (Annotation a : memberTypeDeclaration.annotations) {
-				a.traverse(this, (BlockScope) null);
-			}
-
 		return true;
 	}
 
@@ -2721,11 +2715,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.compilationunitdeclaration = scope.referenceContext;
 			context.enter(pack, typeDeclaration);
 
-			// AST bug HACK
-			if (typeDeclaration.annotations != null)
-				for (Annotation a : typeDeclaration.annotations) {
-					a.traverse(this, (BlockScope) null);
-				}
 			return true;
 		} else {
 			CtSimpleType<?> type = createType(typeDeclaration);

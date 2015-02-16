@@ -9,6 +9,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtAnnotatedElementType;
@@ -32,6 +33,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
+import spoon.test.annotation.testclasses.AnnotationRepeated;
+import spoon.test.annotation.testclasses.AnnotationsRepeated;
 import spoon.test.annotation.testclasses.Bound;
 import spoon.test.annotation.testclasses.Foo.InnerAnnotation;
 import spoon.test.annotation.testclasses.Foo.MiddleAnnotation;
@@ -207,7 +210,7 @@ public class AnnotationTest {
 
 		// check annotated element type of the package annotation
 		List<CtAnnotation<?>> annotations = pkg.getAnnotations();
-		assertEquals(1, annotations.size());
+		assertEquals(2, annotations.size());
 		assertTrue(annotations.get(0).getAnnotatedElement().equals(pkg));
 		assertEquals(CtAnnotatedElementType.PACKAGE, annotations.get(0).getAnnotatedElementType());
 
@@ -562,6 +565,102 @@ public class AnnotationTest {
 		} catch (Exception e) {
 			fail("Type annotation must be compiled by Spoon.");
 		}
+	}
+
+	@Test
+	public void testRepeatSameAnnotationOnClass() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+
+		final List<CtAnnotation<? extends Annotation>> annotations = ctClass.getAnnotations();
+		assertEquals("Class must to have multi annotation of the same type", 2, annotations.size());
+		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Type of the second annotation is AnnotationRepeated",  AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertEquals("Argument of the first annotation is \"First\"", "First", annotations.get(0).getElementValue("value"));
+		assertEquals("Argument of the second annotation is \"Second\"", "Second", annotations.get(1).getElementValue("value"));
+	}
+
+	@Test
+	public void testRepeatSameAnnotationOnField() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final CtField<?> field = ctClass.getField("field");
+
+		final List<CtAnnotation<? extends Annotation>> annotations = field.getAnnotations();
+		assertEquals("Field must to have multi annotation of the same type", 2, annotations.size());
+		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Type of the second annotation is AnnotationRepeated",  AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertEquals("Argument of the first annotation is \"Field 1\"", "Field 1", annotations.get(0).getElementValue("value"));
+		assertEquals("Argument of the second annotation is \"Field 2\"", "Field 2", annotations.get(1).getElementValue("value"));
+	}
+
+	@Test
+	public void testRepeatSameAnnotationOnMethod() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final CtMethod<?> method = ctClass.getMethodsByName("method").get(0);
+
+		final List<CtAnnotation<? extends Annotation>> annotations = method.getAnnotations();
+		assertEquals("Method must to have multi annotation of the same type", 2, annotations.size());
+		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Type of the second annotation is AnnotationRepeated",  AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertEquals("Argument of the first annotation is \"Method 1\"", "Method 1", annotations.get(0).getElementValue("value"));
+		assertEquals("Argument of the second annotation is \"Method 2\"", "Method 2", annotations.get(1).getElementValue("value"));
+	}
+
+	@Test
+	public void testRepeatSameAnnotationOnConstructor() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final CtConstructor<?> ctConstructor = ctClass.getConstructors().toArray(new CtConstructor<?>[0])[0];
+
+		final List<CtAnnotation<? extends Annotation>> annotations = ctConstructor.getAnnotations();
+		assertEquals("Constructor must to have multi annotation of the same type", 2, annotations.size());
+		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Type of the second annotation is AnnotationRepeated",  AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertEquals("Argument of the first annotation is \"Constructor 1\"", "Constructor 1", annotations.get(0).getElementValue("value"));
+		assertEquals("Argument of the second annotation is \"Constructor 2\"", "Constructor 2", annotations.get(1).getElementValue("value"));
+	}
+
+	@Test
+	public void testRepeatSameAnnotationOnParameter() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final CtMethod<?> method = ctClass.getMethodsByName("methodWithParameter").get(0);
+		final CtParameter<?> ctParameter = method.getParameters().get(0);
+
+		final List<CtAnnotation<? extends Annotation>> annotations = ctParameter.getAnnotations();
+		assertEquals("Parameter must to have multi annotation of the same type", 2, annotations.size());
+		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Type of the second annotation is AnnotationRepeated",  AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertEquals("Argument of the first annotation is \"Param 1\"", "Param 1", annotations.get(0).getElementValue("value"));
+		assertEquals("Argument of the second annotation is \"Param 2\"", "Param 2", annotations.get(1).getElementValue("value"));
+	}
+
+	@Test
+	public void testRepeatSameAnnotationOnLocalVariable() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final CtMethod<?> method = ctClass.getMethodsByName("methodWithLocalVariable").get(0);
+		final CtLocalVariable<?> ctLocalVariable = method.getBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
+			@Override
+			public boolean matches(CtLocalVariable<?> element) {
+				return true;
+			}
+		}).get(0);
+
+		final List<CtAnnotation<? extends Annotation>> annotations = ctLocalVariable.getAnnotations();
+		assertEquals("Local variable must to have multi annotation of the same type", 2, annotations.size());
+		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Type of the second annotation is AnnotationRepeated",  AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertEquals("Argument of the first annotation is \"Local 1\"", "Local 1", annotations.get(0).getElementValue("value"));
+		assertEquals("Argument of the second annotation is \"Local 2\"", "Local 2", annotations.get(1).getElementValue("value"));
+	}
+
+	@Test
+	public void testRepeatSameAnnotationOnPackage() throws Exception {
+		final CtPackage pkg = this.factory.Package().get("spoon.test.annotation.testclasses");
+
+		final List<CtAnnotation<? extends Annotation>> annotations = pkg.getAnnotations();
+		assertEquals("Local variable must to have multi annotation of the same type", 2, annotations.size());
+		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Type of the second annotation is AnnotationRepeated",  AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertEquals("Argument of the first annotation is \"Package 1\"", "Package 1", annotations.get(0).getElementValue("value"));
+		assertEquals("Argument of the second annotation is \"Package 2\"", "Package 2", annotations.get(1).getElementValue("value"));
 	}
 
 	private Class<? extends Annotation> getActualClassFromAnnotation(CtAnnotation<? extends Annotation> annotation) {
