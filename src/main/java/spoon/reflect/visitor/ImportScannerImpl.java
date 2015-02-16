@@ -1,5 +1,7 @@
 package spoon.reflect.visitor;
 
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.declaration.*;
@@ -97,6 +99,14 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			addImport(t.getReference());
 		}
 		super.visitCtClass(ctClass);
+	}
+
+	@Override
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+		for(CtTypeReference type : catchVariable.getMultiTypes()) {
+			addImport(type);
+		}
+		super.visitCtCatchVariable(catchVariable);
 	}
 
 	@Override

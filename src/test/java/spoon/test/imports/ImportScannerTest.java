@@ -1,16 +1,25 @@
 package spoon.test.imports;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.security.AccessControlException;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.Test;
 
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
+import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.test.TestUtils;
 
 /**
@@ -32,5 +41,26 @@ public class ImportScannerTest {
 				.computeImports(theClass);
 
 		assertEquals(2, imports.size());
+	}
+
+
+	@Test
+	public void testMultiCatchImport() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+
+		SpoonCompiler compiler = spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources(
+						"./src/test/java/spoon/test/imports/testclasses/MultiCatch.java"));
+
+		compiler.build();
+
+		final List<CtClass<?>> classes = Query.getElements(factory, new NameFilter<CtClass<?>>("MultiCatch"));
+
+		ImportScanner importScanner = new ImportScannerImpl();
+		importScanner.computeImports(classes.get(0));
+		assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
+		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
 	}
 }
