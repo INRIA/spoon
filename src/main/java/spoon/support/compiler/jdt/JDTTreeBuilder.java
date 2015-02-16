@@ -250,8 +250,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean selector = false;
 
-		int counterAnonymousClassName;
-
 		/**
 		 * Stack of all parents elements
 		 */
@@ -512,9 +510,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref = reference;
 			} else if (binding instanceof LocalTypeBinding) {
 				ref = factory.Core().createTypeReference();
-				if (binding.isAnonymousType())
-					ref.setSimpleName("");
-				else {
+				if (binding.isAnonymousType()) {
+					ref.setSimpleName(computeAnonymousName((SourceTypeBinding) binding));
+					ref.setDeclaringType(getTypeReference((binding.enclosingType())));
+				} else {
 					ref.setSimpleName(new String(binding.sourceName()));
 					if (((LocalTypeBinding) binding).enclosingMethod == null
 							&& binding.enclosingType() != null
@@ -525,7 +524,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else if (binding instanceof SourceTypeBinding) {
 				ref = factory.Core().createTypeReference();
 				if (binding.isAnonymousType()) {
-					ref.setSimpleName("");
+					ref.setSimpleName(computeAnonymousName((SourceTypeBinding) binding));
+					ref.setDeclaringType(getTypeReference((binding.enclosingType())));
 				} else {
 					ref.setSimpleName(new String(binding.sourceName()));
 					if (binding.enclosingType() != null)
@@ -820,9 +820,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		if (type instanceof CtClass) {
 			if (typeDeclaration.binding.isAnonymousType()) {
-				type.setSimpleName(String.valueOf(context.counterAnonymousClassName++));
+				type.setSimpleName(computeAnonymousName(typeDeclaration.binding));
 			} else {
-				context.counterAnonymousClassName = 0;
 				type.setSimpleName(new String(typeDeclaration.name));
 			}
 		} else {
@@ -834,6 +833,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
 
 		return type;
+	}
+
+	private String computeAnonymousName(SourceTypeBinding binding) {
+		final String poolName = String.valueOf(binding.constantPoolName());
+		final int lastIndexSeparator = poolName.lastIndexOf(CtSimpleType.INNERTTYPE_SEPARATOR);
+		return poolName.substring(lastIndexSeparator + 1, lastIndexSeparator + 2);
 	}
 
 	@Override

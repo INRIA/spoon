@@ -72,11 +72,11 @@ public class ClassesTest {
 		CtClass<?> anonymousClass0 = x.getAnonymousClass();
 		CtClass<?> anonymousClass1 = y.getAnonymousClass();
 
-		assertEquals("0",anonymousClass0.getSimpleName());
-		assertEquals("1",anonymousClass1.getSimpleName());
+		assertEquals("1",anonymousClass0.getSimpleName());
+		assertEquals("2",anonymousClass1.getSimpleName());
 
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$0",anonymousClass0.getQualifiedName());
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1",anonymousClass1.getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1",anonymousClass0.getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2",anonymousClass1.getQualifiedName());
 
 		// ActionListner is not in the Spoon path
 		assertNull(x.getType().getDeclaration());
@@ -86,7 +86,7 @@ public class ClassesTest {
 
 		assertNotNull(y.getType().getDeclaration());
 
-		assertEquals(".", y.getExecutable().toString());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass.2.2", y.getExecutable().toString());
 
 		// the superclass of an anonymous class can be an interface (the one
 		// from which it is built)
@@ -109,8 +109,8 @@ public class ClassesTest {
 		assertTrue(anonymousClass.get(0).isAnonymous());
 		assertTrue(anonymousClass.get(1).isAnonymous());
 		assertEquals(2, anonymousClass.size());
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1", anonymousClass.get(0).getQualifiedName());
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$0", anonymousClass.get(1).getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2", anonymousClass.get(0).getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1", anonymousClass.get(1).getQualifiedName());
 	}
 
 	@Test
