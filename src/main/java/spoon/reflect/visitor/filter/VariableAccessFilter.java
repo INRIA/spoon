@@ -19,11 +19,12 @@ package spoon.reflect.visitor.filter;
 
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.visitor.Filter;
 
 /**
  * This simple filter matches all the accesses to a given field.
  */
-public class VariableAccessFilter extends AbstractFilter<CtVariableAccess<?>> {
+public class VariableAccessFilter<T extends CtVariableAccess<?>> implements Filter<T> {
 	CtVariableReference<?> variable;
 
 	/**
@@ -33,11 +34,12 @@ public class VariableAccessFilter extends AbstractFilter<CtVariableAccess<?>> {
 	 *            the accessed variable
 	 */
 	public VariableAccessFilter(CtVariableReference<?> variable) {
-		super(CtVariableAccess.class);
 		this.variable = variable;
 	}
 
-	public boolean matches(CtVariableAccess<?> variableAccess) {
+	@Override
+	public boolean matches(T variableAccess) {
 		return variableAccess.getVariable().equals(variable);
 	}
+
 }

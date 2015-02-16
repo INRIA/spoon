@@ -79,10 +79,11 @@ public class CompositeFilter<T extends CtElement> implements Filter<T> {
 	}
 
 	private boolean hasMatch(Filter<T> filter, T element) {
-		if (filter.getType().isAssignableFrom(element.getClass())) {
+		try {
 			return filter.matches(element);
+		} catch (ClassCastException e) {
+			return false;
 		}
-		return false;
 	}
 	
 	@SuppressWarnings("unchecked")

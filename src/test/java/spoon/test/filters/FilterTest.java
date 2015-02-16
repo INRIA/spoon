@@ -11,18 +11,27 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
+import spoon.reflect.visitor.filter.FieldAccessFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
+import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.RegexFilter;
+import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.TestUtils;
@@ -44,6 +53,40 @@ public class FilterTest {
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<CtExpression<?>>(".* = .*"));
 		assertEquals(2, expressions.size());
+	}
+
+	@Test
+	public void testReturnOrThrowFilter() throws Exception {
+		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		assertEquals("Foo", foo.getSimpleName());
+		List<CtCFlowBreak> expressions = foo.getElements(new ReturnOrThrowFilter());
+		assertEquals(2, expressions.size());
+	}
+
+
+	@Test
+	public void testFieldAccessFilter() throws Exception {
+		// also specifies VariableAccessFilter since FieldAccessFilter is only a VariableAccessFilter with additional static typing
+		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		assertEquals("Foo", foo.getSimpleName());
+
+		List<CtNamedElement> elements = foo.getElements(new NameFilter<>("i"));
+		assertEquals(1, elements.size());
+		
+		CtFieldReference ref = (CtFieldReference)(elements.get(0)).getReference();
+		List<CtFieldAccess<?>> expressions = foo.getElements(new FieldAccessFilter(ref));
+		assertEquals(2, expressions.size());
+	}
+
+
+	@Test
+	public void testAnnotationFilter() throws Exception {
+		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		assertEquals("Foo", foo.getSimpleName());
+		List<CtElement> expressions = foo.getElements(new AnnotationFilter<>(SuppressWarnings.class));
+		assertEquals(2, expressions.size());
+		List<CtMethod> methods = foo.getElements(new AnnotationFilter<>(CtMethod.class, SuppressWarnings.class));
+		assertEquals(1, methods.size());
 	}
 
 	@SuppressWarnings("rawtypes")

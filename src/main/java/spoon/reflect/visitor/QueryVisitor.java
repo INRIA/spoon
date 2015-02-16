@@ -49,12 +49,14 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void scan(CtElement element) {
-		if (element == null)
+		if (element == null) 
 			return;
-		if (filter.getType().isAssignableFrom(element.getClass())) {
+		try {
 			if (filter.matches((T) element)) {
 				result.add((T) element);
 			}
+		} catch (ClassCastException e) {
+			// expected, some elements are not of type T
 		}
 		super.scan(element);
 	}

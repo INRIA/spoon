@@ -32,12 +32,4 @@ public interface Filter<T extends CtElement> {
 	 */
 	boolean matches(T element);
 
-	/**
-	 * Gets the runtime type that corresponds to the <code>T</code> parameter
-	 * (the type of the filtered elements). Any element assignable from this
-	 * type is a potential match and is tested using the
-	 * {@link #matches(CtElement)} method, while other elements are never a
-	 * match.
-	 */
-	Class<?> getType();
 }
