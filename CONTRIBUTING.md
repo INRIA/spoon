@@ -19,3 +19,4 @@ Notes:
 1. Commit messages start with a verb: "adds support", "fixes bug", ...
 1. We encourage long commit messages.
 1. G2 is specified in SpoonFormatterPrefs.xml.
+1. If there is no activity on an issue or on a pull request for 3 months it's closed.

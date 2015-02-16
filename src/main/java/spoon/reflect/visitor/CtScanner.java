@@ -80,6 +80,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 
 /**
  * This visitor implements a deep-search scan on the metamodel.
@@ -662,6 +663,12 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
+	}
+
+
+	public <T> void visitCtUnboundVariableReference(
+			CtUnboundVariableReference<T> reference) {
+		
 	}
 
 }

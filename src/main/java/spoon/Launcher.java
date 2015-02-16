@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -364,12 +367,19 @@ public class Launcher {
 			sw1.setHelp("Does not assume a full classpath");
 			jsap.registerParameter(sw1);
 
-
 			// show GUI
 			sw1 = new Switch("gui");
 			sw1.setShortFlag('g');
 			sw1.setLongFlag("gui");
 			sw1.setHelp("Show spoon model after processing");
+			jsap.registerParameter(sw1);
+
+			// Disable copy of resources.
+			sw1 = new Switch("no-copy-resources");
+			sw1.setShortFlag('r');
+			sw1.setLongFlag("no-copy-resources");
+			sw1.setHelp("Disable the copy of resources from source to destination folder.");
+			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
 			return jsap;
@@ -415,6 +425,7 @@ public class Launcher {
 			environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 			environment.useSourceCodeFragments(jsapActualArgs
 					.getBoolean("fragments"));
+			environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
 
 			if (getArguments().getString("input") != null) {
 				for (String s : getArguments().getString("input").split(
@@ -889,6 +900,23 @@ public class Launcher {
 		env.debugMessage("source generated in "
 				+ (System.currentTimeMillis() - t) + " ms");
 
+		if (env.isCopyResources()) {
+			t = System.currentTimeMillis();
+			for (SpoonResource dirInputSource : inputSources) {
+				if (dirInputSource.toFile().isDirectory()) {
+					final Collection resources = FileUtils.listFiles(dirInputSource.toFile(), RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
+					for (Object resource : resources) {
+						final String resourceParentPath = ((File) resource).getParent();
+						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());
+						final String targetDirectory = compiler.getOutputDirectory() + packageDir;
+						FileUtils.copyFileToDirectory((File) resource, new File(targetDirectory));
+					}
+				}
+			}
+			env.debugMessage("resources generated in "
+					+ (System.currentTimeMillis() - t) + " ms");
+		}
+
 		t = System.currentTimeMillis();
 		if (compile) {
 			compiler.compile();
@@ -959,4 +987,27 @@ public class Launcher {
 		return "Spoon version "+ResourceBundle.getBundle("spoon").getString("application.version");
 	}
 
+	public static final IOFileFilter RESOURCES_FILE_FILTER = new IOFileFilter() {
+		@Override
+		public boolean accept(File file) {
+			return !file.getName().endsWith(".java");
+		}
+
+		@Override
+		public boolean accept(File file, String s) {
+			return false;
+		}
+	};
+
+	public static final IOFileFilter ALL_DIR_FILTER = new IOFileFilter() {
+		@Override
+		public boolean accept(File file) {
+			return true;
+		}
+
+		@Override
+		public boolean accept(File file, String s) {
+			return false;
+		}
+	};
 }

@@ -84,6 +84,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class SignaturePrinter implements CtVisitor {
@@ -557,6 +558,11 @@ public class SignaturePrinter implements CtVisitor {
 		scan(whileLoop.getLoopingExpression());
 		write(")");
 		scan(whileLoop.getBody());
+	}
+
+	public <T> void visitCtUnboundVariableReference(
+			CtUnboundVariableReference<T> reference) {
+		write(reference.getSimpleName());
 	}
 
 }

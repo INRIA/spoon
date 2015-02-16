@@ -102,6 +102,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Query;
@@ -1060,5 +1061,8 @@ public class VisitorSymbolicEvaluator implements CtVisitor, SymbolicEvaluator {
 		getHeap().store(target);
 		invoke(target, executable, args);
 
+	}
+	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) { 
+		throw new RuntimeException("Not evaluable");
 	}
 }

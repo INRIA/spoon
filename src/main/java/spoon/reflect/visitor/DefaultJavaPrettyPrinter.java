@@ -80,6 +80,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
@@ -2125,5 +2126,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public PrintingContext getContext() {
 		return context;
+	}
+
+	public <T> void visitCtUnboundVariableReference(
+			CtUnboundVariableReference<T> reference) {
+		write(reference.getSimpleName());
 	}
 }

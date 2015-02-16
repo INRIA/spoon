@@ -127,8 +127,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			return false;
 		String current = getSignature();
 		String other = ((CtElement) o).getSignature();
-		if (current.length() <= 0 || other.length() <= 0)
-			throw new CtUncomparableException("Unable to compare elements");
 		return current.equals(other);
 	}
 

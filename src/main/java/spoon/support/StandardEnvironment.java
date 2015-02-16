@@ -93,6 +93,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean preserveLineNumbers = false;
 
+	private boolean copyResources = true;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -488,4 +490,13 @@ public class StandardEnvironment implements Serializable, Environment {
 		return noclasspath;
 	}
 
+	@Override
+	public boolean isCopyResources() {
+		return copyResources;
+	}
+
+	@Override
+	public void setCopyResources(boolean copyResources) {
+		this.copyResources = copyResources;
+	}
 }
