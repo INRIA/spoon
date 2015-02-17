@@ -37,6 +37,10 @@ public class AnnotationsAppliedOnAnyTypeInAClass {
 		List<@TypeAnnotation(inceptions={@Inception(value = @InnerAnnot(""), values={@InnerAnnot("")})}) T> list11;
 	}
 
+	public void m6(@TypeAnnotation String param) {
+		@TypeAnnotation String s = "";
+	}
+
 	public enum DummyEnum implements @TypeAnnotation BasicAnnotation {
 	}
 

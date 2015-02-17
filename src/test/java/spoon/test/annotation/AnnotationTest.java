@@ -34,6 +34,7 @@ import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
 import spoon.test.annotation.testclasses.AnnotationRepeated;
+import spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass;
 import spoon.test.annotation.testclasses.AnnotationsRepeated;
 import spoon.test.annotation.testclasses.Bound;
 import spoon.test.annotation.testclasses.Foo.InnerAnnotation;
@@ -421,9 +422,7 @@ public class AnnotationTest {
 				method.toString());
 	}
 
-	// TODO This test is ignored because there is a bug in JDT compiler : https://bugs.eclipse.org/bugs/show_bug.cgi?id=459528
 	@Test
-	@Ignore
 	public void testUsageOfTypeAnnotationInReturnTypeInMethod() throws Exception {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
@@ -433,7 +432,40 @@ public class AnnotationTest {
 
 		assertEquals("Return type with a type annotation must have it in its model", 1, typeAnnotations.size());
 		assertEquals("Type annotation with the return type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
-		assertEquals("Return type with an type annotation must be well printed", "public @spoon.test.annotation.testclasses.TypeAnnotation\nString m() {\n\treturn \"\";\n}", method.toString());
+		assertEquals("Return type with an type annotation must be well printed", "public @spoon.test.annotation.testclasses.TypeAnnotation\njava.lang.String m3() {\n    return \"\";\n}", method.toString());
+	}
+
+	@Test
+	public void testUsageOfTypeAnnotationOnParameterInMethod() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsAppliedOnAnyTypeInAClass.class);
+
+		final CtMethod<?> method = ctClass.getMethodsByName("m6").get(0);
+		final CtParameter<?> ctParameter = method.getParameters().get(0);
+		final CtTypeReference<?> parameterType = ctParameter.getType();
+		final List<CtAnnotation<? extends Annotation>> typeAnnotations = parameterType.getTypeAnnotations();
+
+		assertEquals("Parameter type with a type annotation must have it in its model", 1, typeAnnotations.size());
+		assertEquals("Type annotation with the parameter type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Parameter type with an type annotation must be well printed", "@spoon.test.annotation.testclasses.TypeAnnotation\njava.lang.String param", ctParameter.toString());
+	}
+
+	@Test
+	public void testUsageOfTypeAnnotationOnLocalVariableInMethod() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsAppliedOnAnyTypeInAClass.class);
+
+		final CtMethod<?> method = ctClass.getMethodsByName("m6").get(0);
+		final CtLocalVariable<?> ctLocalVariable = method.getBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
+			@Override
+			public boolean matches(CtLocalVariable<?> element) {
+				return true;
+			}
+		}).get(0);
+		final CtTypeReference<?> localVariableType = ctLocalVariable.getType();
+		final List<CtAnnotation<? extends Annotation>> typeAnnotations = localVariableType.getTypeAnnotations();
+
+		assertEquals("Local variable type with a type annotation must have it in its model", 1, typeAnnotations.size());
+		assertEquals("Type annotation with the local variable type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertEquals("Local variable type with an type annotation must be well printed", "@spoon.test.annotation.testclasses.TypeAnnotation\njava.lang.String s = \"\"", ctLocalVariable.toString());
 	}
 
 	@Test

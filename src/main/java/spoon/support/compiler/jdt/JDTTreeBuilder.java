@@ -198,6 +198,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -1542,9 +1543,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (argument.initialization != null)
 			argument.initialization.traverse(this, scope);
 
-		if (argument.annotations != null)
-			for (Annotation a : argument.annotations)
-				a.traverse(this, scope);
+		if (argument.annotations != null) {
+			for (Annotation a : argument.annotations) {
+				// TODO Sorry for that but there is a bug in JDT : https://bugs.eclipse.org/bugs/show_bug.cgi?id=459528
+				if (isContainsInTypeAnnotation(argument.type.resolvedType, a)) {
+					a.traverse(this, scope);
+				}
+			}
+		}
 		return false;
 	}
 
@@ -2013,9 +2019,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.arguments.pop();
 		}
 
-		if (localDeclaration.annotations != null)
-			for (Annotation a : localDeclaration.annotations)
-				a.traverse(this, scope);
+		if (localDeclaration.annotations != null) {
+			for (Annotation a : localDeclaration.annotations) {
+				// TODO Sorry for that but there is a bug in JDT : https://bugs.eclipse.org/bugs/show_bug.cgi?id=459528
+				if (isContainsInTypeAnnotation(localDeclaration.type.resolvedType, a)) {
+					a.traverse(this, scope);
+				}
+			}
+		}
 
 		return false;
 	}
@@ -2132,9 +2143,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		context.enter(m, methodDeclaration);
 
-		if (methodDeclaration.annotations != null)
-			for (Annotation a : methodDeclaration.annotations)
-				a.traverse(this, methodDeclaration.scope);
+		if (methodDeclaration.annotations != null) {
+			for (Annotation a : methodDeclaration.annotations) {
+				// TODO Sorry for that but there is a bug in JDT : https://bugs.eclipse.org/bugs/show_bug.cgi?id=459528
+				if (isContainsInTypeAnnotation(methodDeclaration.returnType.resolvedType, a)) {
+					a.traverse(this, methodDeclaration.scope);
+				}
+			}
+		}
 
 		if (methodDeclaration.arguments != null)
 			for (Argument a : methodDeclaration.arguments)
@@ -2150,6 +2166,19 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (methodDeclaration.statements != null) {
 			for (Statement s : methodDeclaration.statements)
 				s.traverse(this, methodDeclaration.scope);
+		}
+		return false;
+	}
+
+	private boolean isContainsInTypeAnnotation(TypeBinding binding, Annotation a) {
+		return !binding.hasTypeAnnotations() || !containsInTypeAnnotation(a, binding.getTypeAnnotations());
+	}
+
+	private boolean containsInTypeAnnotation(Annotation a, AnnotationBinding[] typeAnnotations) {
+		for (AnnotationBinding typeAnnotation : typeAnnotations) {
+			if (typeAnnotation.getAnnotationType().equals(a.resolvedType)) {
+				return true;
+			}
 		}
 		return false;
 	}
