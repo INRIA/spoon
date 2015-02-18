@@ -166,8 +166,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		Stack<CtExpression<?>> parenthesedExpression = new Stack<CtExpression<?>>();
 
-		boolean printDocs = true;
-
 		boolean isInvocation = false;
 
 		boolean skipArray = false;
@@ -1525,7 +1523,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public void visitCtNamedElement(CtNamedElement e) {
 		// Write comments
-		if (!env.isPreserveLineNumbers() && context.printDocs
+		if (!env.isPreserveLineNumbers() && env.isGenerateJavadoc()
 				&& (e.getDocComment() != null)) {
 			write("/** ").writeln().writeTabs();
 			String[] lines = e.getDocComment().split("\n");
