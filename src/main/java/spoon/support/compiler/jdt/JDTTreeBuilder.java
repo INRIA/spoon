@@ -2117,6 +2117,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		m.setSimpleName(new String(methodDeclaration.selector));
 		m.setType(references.getTypeReference(methodDeclaration.returnType.resolvedType));
 		m.setModifiers(getModifiers(methodDeclaration.modifiers));
+		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
 		if (methodDeclaration.thrownExceptions != null) {
 			for (TypeReference r : methodDeclaration.thrownExceptions) {
 				CtTypeReference<? extends Throwable> tr = references.getTypeReference(r.resolvedType);

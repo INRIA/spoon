@@ -32,6 +32,8 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	CtTypeReference<T> returnType;
 
+	boolean defaultMethod = false;
+
 	public CtMethodImpl() {
 		super();
 	}
@@ -53,4 +55,13 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		return (CtType<?>) parent;
 	}
 
+	@Override
+	public boolean isDefaultMethod() {
+		return defaultMethod;
+	}
+
+	@Override
+	public void setDefaultMethod(boolean defaultMethod) {
+		this.defaultMethod = defaultMethod;
+	}
 }

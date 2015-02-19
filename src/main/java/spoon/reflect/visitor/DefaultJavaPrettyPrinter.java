@@ -1479,6 +1479,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		visitCtNamedElement(m);
+		if (m.isDefaultMethod()) {
+			write("default ");
+		}
 		writeGenericsParameter(m.getFormalTypeParameters());
 		scan(m.getType());
 		write(" ");
