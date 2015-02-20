@@ -17,12 +17,9 @@
 
 package spoon.reflect.reference;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
 
@@ -31,7 +28,7 @@ import spoon.reflect.declaration.ModifierKind;
  * {@link spoon.reflect.declaration.CtType} or sub-type.
  */
 public interface CtTypeReference<T> extends CtReference,
-		CtGenericElementReference, CtTypeAnnotationReference {
+		CtGenericElementReference, CtTypeAnnotableReference {
 
 	/**
 	 * The name of the null type ("&lt;nulltype&gt;").

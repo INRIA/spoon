@@ -17,30 +17,7 @@ import java.util.List;
  *     }
  * </code>
  */
-public interface CtTypeAnnotationReference {
-	/**
-	 * Searches for an type annotation of the given class that annotates the
-	 * current type.
-	 *
-	 * @param <A>
-	 * 		the annotation's type
-	 * @param annotationType
-	 * 		the annotation's class
-	 * @return if found, returns an Annotation
-	 */
-	<A extends Annotation> A getTypeAnnotation(Class<A> annotationType);
-
-	/**
-	 * Searches for an type annotation of the given type reference that annotates the
-	 * current type.
-	 *
-	 * @param <A>
-	 * 		the annotation's type
-	 * @param annotationType
-	 * 		the annotation's type
-	 * @return if found, returns an Annotation
-	 */
-	<A extends Annotation> CtAnnotation<A> getTypeAnnotation(CtTypeReference<A> annotationType);
+public interface CtTypeAnnotableReference {
 
 	/**
 	 * Returns the type annotations that are present on this type.

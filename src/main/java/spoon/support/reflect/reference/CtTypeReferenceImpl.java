@@ -610,28 +610,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <A extends Annotation> A getTypeAnnotation(Class<A> annotationType) {
-		for (CtAnnotation<? extends Annotation> a : getTypeAnnotations()) {
-			if (a.getAnnotationType().toString().equals(annotationType.getName())) {
-				return ((CtAnnotation<A>) a).getActualAnnotation();
-			}
-		}
-		return null;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <A extends Annotation> CtAnnotation<A> getTypeAnnotation(CtTypeReference<A> annotationType) {
-		for (CtAnnotation<? extends Annotation> a : getTypeAnnotations()) {
-			if (a.getAnnotationType().equals(annotationType)) {
-				return (CtAnnotation<A>) a;
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public List<CtAnnotation<? extends Annotation>> getTypeAnnotations() {
 		return Collections.unmodifiableList(annotations);
 	}
@@ -643,6 +621,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	@Override
 	public boolean addTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
+		if (annotation == null) {
+			return false;
+		}
 		if ((List<?>) this.annotations == (List<?>) CtElementImpl.EMPTY_LIST()) {
 			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>();
 		}
@@ -651,6 +632,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	@Override
 	public boolean removeTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
+		if (annotation == null) {
+			return false;
+		}
 		return this.annotations.remove(annotation);
 	}
 }

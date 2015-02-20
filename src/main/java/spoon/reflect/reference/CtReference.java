@@ -74,6 +74,7 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference>, C
 	 *            the annotation's class
 	 * @return if found, returns a proxy for this annotation
 	 */
+	@Deprecated
 	<A extends Annotation> A getAnnotation(Class<A> annotationType);
 
 	/**
@@ -84,12 +85,14 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference>, C
 	 * @return the annotation if this element is annotated by one annotation of
 	 *         the given type
 	 */
+	@Deprecated
 	<A extends Annotation> CtAnnotation<A> getAnnotation(
 			CtTypeReference<A> annotationType);
 
 	/**
 	 * Returns the annotations that are present on this element.
 	 */
+	@Deprecated
 	List<Annotation> getAnnotations();
 
 }
