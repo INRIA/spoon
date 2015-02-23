@@ -42,6 +42,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -517,6 +518,18 @@ public abstract class CtScanner implements CtVisitor {
 		scan(newClass.getArguments());
 		scan(newClass.getAnonymousClass());
 		exit(newClass);
+	}
+
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+		enter(lambda);
+		scan(lambda.getAnnotations());
+		scan(lambda.getType());
+		scanReferences(lambda.getTypeCasts());
+		scan(lambda.getParameters());
+		scan(lambda.getBody());
+		scan(lambda.getExpression());
+		exit(lambda);
 	}
 
 	public <T, A extends T> void visitCtOperatorAssignment(

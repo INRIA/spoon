@@ -29,9 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
- * 
+ *
  * @author Renaud Pawlak
  */
 public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> {

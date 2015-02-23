@@ -22,12 +22,14 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
@@ -430,6 +432,20 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtNewClass(newClass);
+	}
+
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+		if (child instanceof CtParameter) {
+			lambda.addParameter((CtParameter<?>) child);
+			return;
+		} else if (child instanceof CtBlock) {
+			lambda.setBody((CtBlock) child);
+			return;
+		} else if (child instanceof CtExpression) {
+			lambda.setExpression((CtExpression<T>) child);
+		}
+		super.visitCtLambda(lambda);
 	}
 
 	@Override

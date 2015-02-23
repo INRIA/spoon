@@ -22,6 +22,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -285,8 +286,12 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	@Override
-	public <T, A extends T> void visitCtOperatorAssignment(
-			CtOperatorAssignment<T, A> assignment) {
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+
+	}
+
+	@Override
+	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
 
 	}
 

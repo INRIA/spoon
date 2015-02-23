@@ -41,6 +41,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -295,6 +296,11 @@ public interface CoreFactory {
 	 * Creates a new anonymous class expression.
 	 */
 	<T> CtNewClass<T> createNewClass();
+
+	/**
+	 * Creates a new anonymous method expression.
+	 */
+	<T> CtLambda<T> createLambda();
 
 	/**
 	 * Creates a new operator assignment (like +=).

@@ -49,6 +49,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -114,6 +115,7 @@ import spoon.support.reflect.code.CtForEachImpl;
 import spoon.support.reflect.code.CtForImpl;
 import spoon.support.reflect.code.CtIfImpl;
 import spoon.support.reflect.code.CtInvocationImpl;
+import spoon.support.reflect.code.CtLambdaImpl;
 import spoon.support.reflect.code.CtLiteralImpl;
 import spoon.support.reflect.code.CtLocalVariableImpl;
 import spoon.support.reflect.code.CtNewArrayImpl;
@@ -506,6 +508,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtNewClass<T> createNewClass() {
 		CtNewClass<T> e = new CtNewClassImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtLambda<T> createLambda() {
+		CtLambda<T> e = new CtLambdaImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

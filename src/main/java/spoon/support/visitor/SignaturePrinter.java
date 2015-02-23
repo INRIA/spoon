@@ -44,6 +44,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -450,6 +451,21 @@ public class SignaturePrinter implements CtVisitor {
 		write("new ");
 		scan(newClass.getExecutable());
 		scan(newClass.getAnonymousClass());
+	}
+
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+		write("(");
+		scan(lambda.getType());
+		write(") (");
+		if (!lambda.getParameters().isEmpty()) {
+			for (CtParameter parameter : lambda.getParameters()) {
+				scan(parameter);
+				write(",");
+			}
+			clearLast();
+		}
+		write(")");
 	}
 
 	public <T> void visitCtCodeSnippetExpression(

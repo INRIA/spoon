@@ -34,12 +34,9 @@ import java.util.TreeSet;
  * @author Renaud Pawlak
  */
 public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements CtExecutable<R> {
-
 	private static final long serialVersionUID = 1L;
 
 	CtBlock<?> body;
-
-	List<CtTypeReference<?>> formalTypeParameters = EMPTY_LIST();
 
 	List<CtParameter<?>> parameters = EMPTY_LIST();
 
@@ -73,27 +70,9 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		return thrownTypes.remove(throwType);
 	}
 
-	public boolean addFormalTypeParameter(
-			CtTypeReference<?> formalTypeParameter) {
-		if (formalTypeParameters == CtElementImpl
-				.<CtTypeReference<?>> EMPTY_LIST()) {
-			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
-		}
-		return formalTypeParameters.add(formalTypeParameter);
-	}
-
-	public boolean removeFormalTypeParameter(
-			CtTypeReference<?> formalTypeParameter) {
-		return formalTypeParameters.remove(formalTypeParameter);
-	}
-
 	@SuppressWarnings("unchecked")
 	public <B extends R> CtBlock<B> getBody() {
 		return (CtBlock<B>) body;
-	}
-
-	public List<CtTypeReference<?>> getFormalTypeParameters() {
-		return formalTypeParameters;
 	}
 
 	public List<CtParameter<?>> getParameters() {
@@ -106,11 +85,6 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	public <B extends R> void setBody(CtBlock<B> body) {
 		this.body = body;
-	}
-
-	public void setFormalTypeParameters(
-			List<CtTypeReference<?>> formalTypeParameters) {
-		this.formalTypeParameters = formalTypeParameters;
 	}
 
 	public void setParameters(List<CtParameter<?>> parameters) {

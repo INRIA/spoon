@@ -62,6 +62,7 @@ import org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
 import org.eclipse.jdt.internal.compiler.ast.IntLiteral;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.LabeledStatement;
+import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LongLiteral;
 import org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
@@ -103,6 +104,7 @@ import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.WhileStatement;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BaseTypeBinding;
@@ -149,6 +151,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -650,16 +653,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (varbin instanceof FieldBinding) {
 				return getVariableReference((FieldBinding) varbin);
 			} else if (varbin instanceof LocalVariableBinding) {
-				if (((LocalVariableBinding) varbin).declaration instanceof Argument
-						&& ((LocalVariableBinding) varbin).declaringScope instanceof MethodScope) {
+				final LocalVariableBinding localVariableBinding = (LocalVariableBinding) varbin;
+				if (localVariableBinding.declaration instanceof Argument
+						&& localVariableBinding.declaringScope instanceof MethodScope) {
 					CtParameterReference<T> ref = factory.Core()
 							.createParameterReference();
 					ref.setSimpleName(new String(varbin.name));
 					ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
-					ref.setDeclaringExecutable(getExecutableReference(((AbstractMethodDeclaration) ((MethodScope) ((LocalVariableBinding) varbin).declaringScope)
-							.referenceContext()).binding));
+					final ReferenceContext referenceContext = localVariableBinding.declaringScope.referenceContext();
+					if (referenceContext instanceof LambdaExpression) {
+						ref.setDeclaringExecutable(getExecutableReference(((LambdaExpression) referenceContext).binding));
+					} else {
+						ref.setDeclaringExecutable(getExecutableReference(((AbstractMethodDeclaration) referenceContext).binding));
+					}
 					return ref;
-				} else if (((LocalVariableBinding) varbin).declaration.binding instanceof CatchParameterBinding) {
+				} else if (localVariableBinding.declaration.binding instanceof CatchParameterBinding) {
 					CtCatchVariableReference<T> ref = factory.Core().createCatchVariableReference();
 					ref.setSimpleName(new String(varbin.name));
 					CtTypeReference<T> ref2 = getTypeReference(varbin.type);
@@ -1450,6 +1458,36 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return UnaryOperatorKind.COMPL;
 		}
 		return null;
+	}
+
+	@Override
+	public boolean visit(LambdaExpression lambdaExpression, BlockScope blockScope) {
+		CtLambda<?> lambda = factory.Core().createLambda();
+
+		final MethodBinding methodBinding = lambdaExpression.getMethodBinding();
+		if (methodBinding != null) {
+			lambda.setSimpleName(String.valueOf(methodBinding.constantPoolName()));
+		}
+
+		context.enter(lambda, lambdaExpression);
+
+		final Argument[] arguments = lambdaExpression.arguments();
+		if (arguments != null && arguments.length > 0) {
+			for (Argument e : arguments) {
+				e.traverse(this, blockScope);
+			}
+		}
+
+		if (lambdaExpression.body() != null) {
+			lambdaExpression.body().traverse(this, blockScope);
+		}
+
+		return false;
+	}
+
+	@Override
+	public void endVisit(LambdaExpression lambdaExpression, BlockScope blockScope) {
+		context.exit(lambdaExpression);
 	}
 
 	@SuppressWarnings("unchecked")

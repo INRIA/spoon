@@ -44,6 +44,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -1653,8 +1654,29 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(newClass);
 	}
 
-	public <T, A extends T> void visitCtOperatorAssignment(
-			CtOperatorAssignment<T, A> assignment) {
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+		enterCtExpression(lambda);
+
+		write("(");
+		if (lambda.getParameters().size() > 0) {
+			for (CtParameter<?> parameter : lambda.getParameters()) {
+				scan(parameter);
+				write(",");
+			}
+			removeLastChar();
+		}
+		write(") -> ");
+
+		if (lambda.getBody() != null) {
+			scan(lambda.getBody());
+		} else {
+			scan(lambda.getExpression());
+		}
+		exitCtExpression(lambda);
+	}
+
+	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
 		enterCtStatement(assignment);
 		enterCtExpression(assignment);
 		scan(assignment.getAssigned());

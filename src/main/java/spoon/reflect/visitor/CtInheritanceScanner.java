@@ -42,6 +42,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
@@ -616,6 +617,17 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtNewClass(CtNewClass<T> e) {
 		visitCtConstructorCall(e);
+	}
+
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtExecutable(e);
+		scanCtNamedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	public <T, A extends T> void visitCtOperatorAssignement(

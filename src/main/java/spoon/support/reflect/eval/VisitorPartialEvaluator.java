@@ -41,6 +41,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -667,6 +668,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
 		setResult(newClass.getFactory().Core().clone(newClass));
+	}
+
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+		setResult(lambda.getFactory().Core().clone(lambda));
 	}
 
 	public <T, A extends T> void visitCtOperatorAssignment(
