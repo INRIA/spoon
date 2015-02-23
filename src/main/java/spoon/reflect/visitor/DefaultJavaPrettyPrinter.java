@@ -871,6 +871,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtConstructor(CtConstructor<T> c) {
 		visitCtNamedElement(c);
+		writeModifiers(c);
 		writeGenericsParameter(c.getFormalTypeParameters());
 		write(c.getDeclaringType().getSimpleName());
 		write("(");
@@ -1006,6 +1007,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtField(CtField<T> f) {
 		visitCtNamedElement(f);
+		writeModifiers(f);
 		scan(f.getType());
 		write(" ");
 		write(f.getSimpleName());
@@ -1479,6 +1481,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		visitCtNamedElement(m);
+		writeModifiers(m);
 		if (m.isDefaultMethod()) {
 			write("default ");
 		}
@@ -1548,7 +1551,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (env.isPreserveLineNumbers()) {
 			adjustPosition(e);
 		}
-		writeModifiers(e);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -1711,6 +1713,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			context.currentTopLevel = type;
 		}
 		visitCtNamedElement(type);
+		writeModifiers(type);
 	}
 
 	public <R> void visitCtStatementList(CtStatementList statements) {

@@ -24,22 +24,26 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.delegate.ModifiableDelegate;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
+import spoon.support.delegate.ModifiableDelegateImpl;
 
-public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
-		CtSimpleType<T> {
+public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements CtSimpleType<T> {
 
 	private static final long serialVersionUID = 1L;
+
+	ModifiableDelegate modifiableDelegate = new ModifiableDelegateImpl();
 
 	public <F> boolean addField(CtField<F> field) {
 		if (!this.fields.contains(field)) {
@@ -214,6 +218,41 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements
 			types.add(this);
 			//pack.setTypes(types);
 		}
+	}
+
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		return modifiableDelegate.getModifiers();
+	}
+
+	@Override
+	public boolean hasModifier(ModifierKind modifier) {
+		return modifiableDelegate.hasModifier(modifier);
+	}
+
+	@Override
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		modifiableDelegate.setModifiers(modifiers);
+	}
+
+	@Override
+	public boolean addModifier(ModifierKind modifier) {
+		return modifiableDelegate.addModifier(modifier);
+	}
+
+	@Override
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiableDelegate.removeModifier(modifier);
+	}
+
+	@Override
+	public void setVisibility(ModifierKind visibility) {
+		modifiableDelegate.setVisibility(visibility);
+	}
+
+	@Override
+	public ModifierKind getVisibility() {
+		return modifiableDelegate.getVisibility();
 	}
 
 }

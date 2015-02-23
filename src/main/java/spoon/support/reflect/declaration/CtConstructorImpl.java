@@ -17,14 +17,24 @@
 
 package spoon.support.reflect.declaration;
 
+import spoon.delegate.ModifiableDelegate;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.delegate.ModifiableDelegateImpl;
 
-public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements
-		CtConstructor<T> {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConstructor<T> {
 	private static final long serialVersionUID = 1L;
+
+	List<CtTypeReference<?>> formalTypeParameters = EMPTY_LIST();
+
+	ModifiableDelegate modifiableDelegate = new ModifiableDelegateImpl();
 
 	@Override
 	public void setSimpleName(String simpleName) {
@@ -40,10 +50,6 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements
 		visitor.visitCtConstructor(this);
 	}
 
-	// public CtType<T> getDeclaringType() {
-	// return super.getDeclaringType();
-	// }
-
 	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaringType() {
 		return (CtType<T>) parent;
@@ -58,4 +64,64 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements
 	public void setType(CtTypeReference<T> type) {
 	}
 
+	@Override
+	public List<CtTypeReference<?>> getFormalTypeParameters() {
+		return formalTypeParameters;
+	}
+
+	@Override
+	public boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+		if (formalTypeParameter == null) {
+			return false;
+		}
+		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+		}
+		return formalTypeParameters.add(formalTypeParameter);
+	}
+
+	@Override
+	public void setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
+		this.formalTypeParameters = formalTypeParameters;
+	}
+
+	@Override
+	public boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+		return formalTypeParameter != null && formalTypeParameters.remove(formalTypeParameter);
+	}
+
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		return modifiableDelegate.getModifiers();
+	}
+
+	@Override
+	public boolean hasModifier(ModifierKind modifier) {
+		return modifiableDelegate.hasModifier(modifier);
+	}
+
+	@Override
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		modifiableDelegate.setModifiers(modifiers);
+	}
+
+	@Override
+	public boolean addModifier(ModifierKind modifier) {
+		return modifiableDelegate.addModifier(modifier);
+	}
+
+	@Override
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiableDelegate.removeModifier(modifier);
+	}
+
+	@Override
+	public void setVisibility(ModifierKind visibility) {
+		modifiableDelegate.setVisibility(visibility);
+	}
+
+	@Override
+	public ModifierKind getVisibility() {
+		return modifiableDelegate.getVisibility();
+	}
 }

@@ -22,7 +22,7 @@ import spoon.reflect.reference.CtReference;
 /**
  * This element defines a simple (relative) name.
  */
-public interface CtNamedElement extends CtElement, CtModifiable {
+public interface CtNamedElement extends CtElement {
 
 	/**
 	 * Returns the simple (unqualified) name of this element.

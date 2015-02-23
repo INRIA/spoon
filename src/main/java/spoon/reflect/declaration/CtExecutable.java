@@ -28,8 +28,7 @@ import spoon.reflect.reference.CtTypeReference;
  * This element represents an executable element such as a method, a
  * constructor, or an anonymous block.
  */
-public interface CtExecutable<R> extends CtNamedElement, CtGenericElement,
-		CtTypedElement<R>, CtTypeMember {
+public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 
 	/**
 	 * The separator for a string representation of an executable.

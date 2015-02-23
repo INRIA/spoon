@@ -24,29 +24,11 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtReference;
 
-public abstract class CtNamedElementImpl extends CtElementImpl implements
-		CtNamedElement {
+public abstract class CtNamedElementImpl extends CtElementImpl implements CtNamedElement {
 
 	private static final long serialVersionUID = 1L;
 
-	Set<ModifierKind> modifiers = EMPTY_SET();
-
 	String simpleName;
-
-	public Set<ModifierKind> getModifiers() {
-		return modifiers;
-	}
-
-	public boolean addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			this.modifiers = new TreeSet<ModifierKind>();
-		}
-		return modifiers.add(modifier);
-	}
-
-	public boolean removeModifier(ModifierKind modifier) {
-		return modifiers.remove(modifier);
-	}
 
 	public CtReference getReference() {
 		return null;
@@ -56,36 +38,7 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements
 		return simpleName;
 	}
 
-	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC))
-			return ModifierKind.PUBLIC;
-		if (getModifiers().contains(ModifierKind.PROTECTED))
-			return ModifierKind.PROTECTED;
-		if (getModifiers().contains(ModifierKind.PRIVATE))
-			return ModifierKind.PRIVATE;
-		return null;
-	}
-
-	public boolean hasModifier(ModifierKind modifier) {
-		return getModifiers().contains(modifier);
-	}
-
-	public void setModifiers(Set<ModifierKind> modifiers) {
-		this.modifiers = modifiers;
-	}
-
 	public void setSimpleName(String simpleName) {
 		this.simpleName = simpleName;
 	}
-
-	public void setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			this.modifiers = new TreeSet<ModifierKind>();
-		}
-		getModifiers().remove(ModifierKind.PUBLIC);
-		getModifiers().remove(ModifierKind.PROTECTED);
-		getModifiers().remove(ModifierKind.PRIVATE);
-		getModifiers().add(visibility);
-	}
-
 }

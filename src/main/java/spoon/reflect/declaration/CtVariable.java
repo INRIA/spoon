@@ -23,7 +23,7 @@ import spoon.reflect.reference.CtVariableReference;
 /**
  * This abstract element defines a variable declaration.
  */
-public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T> {
+public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModifiable {
 
 	/**
 	 * Gets the initialization expression assigned to the variable (also known

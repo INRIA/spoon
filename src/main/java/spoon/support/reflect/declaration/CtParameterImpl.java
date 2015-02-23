@@ -17,25 +17,31 @@
 
 package spoon.support.reflect.declaration;
 
+import spoon.delegate.ModifiableDelegate;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.delegate.ModifiableDelegateImpl;
+
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtParameter}.
  * 
  * @author Renaud Pawlak
  */
-public class CtParameterImpl<T> extends CtNamedElementImpl implements
-		CtParameter<T> {
+public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParameter<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<T> defaultExpression;
 
 	CtTypeReference<T> type;
+
+	ModifiableDelegate modifiableDelegate = new ModifiableDelegateImpl();
 
 	boolean varArgs = false;
 
@@ -82,4 +88,38 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements
 		this.varArgs = varArgs;
 	}
 
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		return modifiableDelegate.getModifiers();
+	}
+
+	@Override
+	public boolean hasModifier(ModifierKind modifier) {
+		return modifiableDelegate.hasModifier(modifier);
+	}
+
+	@Override
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		modifiableDelegate.setModifiers(modifiers);
+	}
+
+	@Override
+	public boolean addModifier(ModifierKind modifier) {
+		return modifiableDelegate.addModifier(modifier);
+	}
+
+	@Override
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiableDelegate.removeModifier(modifier);
+	}
+
+	@Override
+	public void setVisibility(ModifierKind visibility) {
+		modifiableDelegate.setVisibility(visibility);
+	}
+
+	@Override
+	public ModifierKind getVisibility() {
+		return modifiableDelegate.getVisibility();
+	}
 }

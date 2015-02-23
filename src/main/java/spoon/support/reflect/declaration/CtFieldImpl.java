@@ -17,12 +17,17 @@
 
 package spoon.support.reflect.declaration;
 
+import spoon.delegate.ModifiableDelegate;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.delegate.ModifiableDelegateImpl;
+
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtField}.
@@ -35,6 +40,8 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	CtExpression<T> defaultExpression;
 
 	CtTypeReference<T> type;
+
+	ModifiableDelegate modifiableDelegate = new ModifiableDelegateImpl();
 
 	public CtFieldImpl() {
 		super();
@@ -70,4 +77,38 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		this.type = type;
 	}
 
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		return modifiableDelegate.getModifiers();
+	}
+
+	@Override
+	public boolean hasModifier(ModifierKind modifier) {
+		return modifiableDelegate.hasModifier(modifier);
+	}
+
+	@Override
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		modifiableDelegate.setModifiers(modifiers);
+	}
+
+	@Override
+	public boolean addModifier(ModifierKind modifier) {
+		return modifiableDelegate.addModifier(modifier);
+	}
+
+	@Override
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiableDelegate.removeModifier(modifier);
+	}
+
+	@Override
+	public void setVisibility(ModifierKind visibility) {
+		modifiableDelegate.setVisibility(visibility);
+	}
+
+	@Override
+	public ModifierKind getVisibility() {
+		return modifiableDelegate.getVisibility();
+	}
 }

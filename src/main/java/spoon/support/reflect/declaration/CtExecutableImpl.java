@@ -17,24 +17,23 @@
 
 package spoon.support.reflect.declaration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * The implementation for {@link spoon.reflect.declaration.CtExecutable}.
  * 
  * @author Renaud Pawlak
  */
-public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements
-		CtExecutable<R> {
+public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements CtExecutable<R> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -127,5 +126,4 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements
 	public CtExecutableReference<R> getReference() {
 		return getFactory().Executable().createReference(this);
 	}
-
 }

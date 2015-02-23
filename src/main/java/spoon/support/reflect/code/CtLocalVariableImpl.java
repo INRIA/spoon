@@ -17,12 +17,14 @@
 
 package spoon.support.reflect.code;
 
+import spoon.delegate.ModifiableDelegate;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.delegate.ModifiableDelegateImpl;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.Set;
@@ -33,21 +35,11 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	CtExpression<T> defaultExpression;
 
-	Set<ModifierKind> modifiers = EMPTY_SET();
-
 	String name;
 
 	CtTypeReference<T> type;
 
-	public boolean addModifier(ModifierKind modifier) {
-		setMutable();
-		return modifiers.add(modifier);
-	}
-
-	public boolean removeModifier(ModifierKind modifier) {
-		setMutable();
-		return modifiers.remove(modifier);
-	}
+	ModifiableDelegate modifiableDelegate = new ModifiableDelegateImpl();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtLocalVariable(this);
@@ -55,10 +47,6 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	public CtExpression<T> getDefaultExpression() {
 		return defaultExpression;
-	}
-
-	public Set<ModifierKind> getModifiers() {
-		return modifiers;
 	}
 
 	public CtLocalVariableReference<T> getReference() {
@@ -73,30 +61,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		return type;
 	}
 
-	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC)) {
-			return ModifierKind.PUBLIC;
-		}
-		if (getModifiers().contains(ModifierKind.PROTECTED)) {
-			return ModifierKind.PROTECTED;
-		}
-		if (getModifiers().contains(ModifierKind.PRIVATE)) {
-			return ModifierKind.PRIVATE;
-		}
-		return null;
-	}
-
-	public boolean hasModifier(ModifierKind modifier) {
-		return modifiers.contains(modifier);
-	}
-
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
 		this.defaultExpression = defaultExpression;
 		this.defaultExpression.setParent(this);
-	}
-
-	public void setModifiers(Set<ModifierKind> modifiers) {
-		this.modifiers = modifiers;
 	}
 
 	public void setSimpleName(String simpleName) {
@@ -107,17 +74,38 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		this.type = type;
 	}
 
-	private void setMutable() {
-		if (modifiers == CtElementImpl.<ModifierKind>EMPTY_SET()) {
-			modifiers = new TreeSet<ModifierKind>();
-		}
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		return modifiableDelegate.getModifiers();
 	}
 
+	@Override
+	public boolean hasModifier(ModifierKind modifier) {
+		return modifiableDelegate.hasModifier(modifier);
+	}
+
+	@Override
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		modifiableDelegate.setModifiers(modifiers);
+	}
+
+	@Override
+	public boolean addModifier(ModifierKind modifier) {
+		return modifiableDelegate.addModifier(modifier);
+	}
+
+	@Override
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiableDelegate.removeModifier(modifier);
+	}
+
+	@Override
 	public void setVisibility(ModifierKind visibility) {
-		setMutable();
-		getModifiers().remove(ModifierKind.PUBLIC);
-		getModifiers().remove(ModifierKind.PROTECTED);
-		getModifiers().remove(ModifierKind.PRIVATE);
-		getModifiers().add(visibility);
+		modifiableDelegate.setVisibility(visibility);
+	}
+
+	@Override
+	public ModifierKind getVisibility() {
+		return modifiableDelegate.getVisibility();
 	}
 }
