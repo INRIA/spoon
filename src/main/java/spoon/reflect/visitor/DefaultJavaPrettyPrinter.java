@@ -38,6 +38,7 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
@@ -61,6 +62,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -267,15 +269,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void printTypeAnnotations(CtTypeReference<?> r) {
-/*
-		if (r.hasTypeAnnotations()) {
-			for (CtTypeReference<?> typeAnnotation : r.getTypeAnnotations()) {
-				write("@");
-				scan(typeAnnotation);
-			}
-			write(" ");
-		}
-*/
 		if (!r.getTypeAnnotations().isEmpty()) {
 			for (CtAnnotation<? extends Annotation> annotation : r.getTypeAnnotations()) {
 				scan(annotation);
@@ -1676,6 +1669,19 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(lambda);
 	}
 
+	@Override
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
+		enterCtExpression(expression);
+		scan(expression.getTarget());
+		write("::");
+		if (expression.getExecutable().isConstructor()) {
+			write("new");
+		} else {
+			write(expression.getExecutable().getSimpleName());
+		}
+		exitCtExpression(expression);
+	}
+
 	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
 		enterCtStatement(assignment);
 		enterCtExpression(assignment);
@@ -1888,6 +1894,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
+	}
+
+	@Override
+	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+		scan(typeAccess.getType());
 	}
 
 	public void visitCtTypeReferenceWithoutGenerics(CtTypeReference<?> ref) {

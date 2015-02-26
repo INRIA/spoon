@@ -16,6 +16,7 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
@@ -37,6 +38,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -291,6 +293,11 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	@Override
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
+
+	}
+
+	@Override
 	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
 
 	}
@@ -366,6 +373,10 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	@Override
+	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+
+	}
+
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 
 	}

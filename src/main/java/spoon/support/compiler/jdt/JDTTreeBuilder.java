@@ -82,6 +82,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedSuperReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -119,6 +120,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ElementValuePair;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
@@ -145,6 +147,7 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
@@ -165,6 +168,7 @@ import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -201,7 +205,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -1461,6 +1464,28 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public boolean visit(ReferenceExpression referenceExpression, BlockScope blockScope) {
+		CtExecutableReferenceExpression<?, ?> executableRef = createExecutableReferenceExpression(referenceExpression);
+
+		context.enter(executableRef, referenceExpression);
+
+		return true;
+	}
+
+	private <T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression(ReferenceExpression referenceExpression) {
+		CtExecutableReferenceExpression<T, E> executableRef = factory.Core().createExecutableReferenceExpression();
+		final CtExecutableReference<T> executableReference = references.getExecutableReference(referenceExpression.binding);
+		executableReference.setType((CtTypeReference<T>) executableReference.getDeclaringType());
+		executableRef.setExecutable(executableReference);
+		return executableRef;
+	}
+
+	@Override
+	public void endVisit(ReferenceExpression referenceExpression, BlockScope blockScope) {
+		context.exit(referenceExpression);
+	}
+
+	@Override
 	public boolean visit(LambdaExpression lambdaExpression, BlockScope blockScope) {
 		CtLambda<?> lambda = factory.Core().createLambda();
 
@@ -2486,6 +2511,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			va = factory.Core().createVariableAccess();
 			va.setVariable(references
 					.getVariableReference((VariableBinding) singleNameReference.binding));
+		} else if (singleNameReference.binding instanceof TypeBinding) {
+			CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
+			ta.setType(references.getTypeReference((TypeBinding) singleNameReference.binding));
+			context.enter(ta, singleNameReference);
 		}
 		if (va != null)
 			context.enter(va, singleNameReference);

@@ -36,6 +36,7 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
@@ -61,6 +62,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -630,6 +632,16 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVisitable(e);
 	}
 
+	@Override
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> e) {
+		scanCtTargetedExpression(e);
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
+	}
+
 	public <T, A extends T> void visitCtOperatorAssignement(
 			CtOperatorAssignment<T, A> assignment) {
 	}
@@ -721,6 +733,15 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtReference(e);
 		scanCtGenericElementReference(e);
 		scanCtTypeAnnotableReference(e);
+		scanCtVisitable(e);
+	}
+
+	@Override
+	public <T> void visitCtTypeAccess(CtTypeAccess<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
 	}
 

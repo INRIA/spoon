@@ -9,6 +9,9 @@ import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 
+import java.io.File;
+import java.io.IOException;
+
 public class TestUtils {
 
 	public static Factory createFactory() {		
@@ -48,6 +51,19 @@ public class TestUtils {
         }
 		comp.build();
 		return comp.getFactory();
+	}
+
+	public static boolean canBeBuild(File testDirectory, int complianceLevel) throws IOException {
+		final Launcher launcher = new Launcher();
+		final Factory factory = launcher.createFactory();
+		factory.getEnvironment().setComplianceLevel(complianceLevel);
+		final SpoonCompiler compiler = launcher.createCompiler(factory);
+		compiler.addInputSource(testDirectory);
+		try {
+			return compiler.build();
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }

@@ -12,6 +12,7 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.test.TestUtils;
 import spoon.test.lambda.testclasses.Foo;
 
 import java.io.File;
@@ -159,20 +160,7 @@ public class LambdaTest {
 
 	@Test
 	public void testCompileLambdaGeneratedBySpoon() throws Exception {
-		final File testDirectory = new File("./target/spooned/spoon/test/lambda/testclasses/");
-
-		Launcher launcher = new Launcher();
-
-		Factory factory = launcher.createFactory();
-		factory.getEnvironment().setComplianceLevel(8);
-		SpoonCompiler compiler = launcher.createCompiler(factory);
-
-		compiler.addInputSource(testDirectory);
-		try {
-			assertTrue(compiler.build());
-		} catch (Exception e) {
-			fail();
-		}
+		assertTrue(TestUtils.canBeBuild(new File("./target/spooned/spoon/test/lambda/testclasses/"), 8));
 	}
 
 	private void assertParameterTyped(CtParameter parameter, Class<Foo.Person> expectedType, String name) {
