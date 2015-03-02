@@ -2,7 +2,9 @@ package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
@@ -16,19 +18,28 @@ import java.util.*;
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private Map<String, CtTypeReference<?>> imports = new TreeMap<String, CtTypeReference<?>>();
 
-	/**
-	 * Calculates needed imports for the given field access.
-	 */
 	@Override
-	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-		enter(targetedAccess);
-		scan(targetedAccess.getVariable());
+	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
+		enter(f);
+		scan(f.getVariable());
 		// scan(fieldAccess.getType());
-		scan(targetedAccess.getAnnotations());
-		scanReferences(targetedAccess.getTypeCasts());
-		scan(targetedAccess.getVariable());
-		scan(targetedAccess.getTarget());
-		exit(targetedAccess);
+		scan(f.getAnnotations());
+		scanReferences(f.getTypeCasts());
+		scan(f.getVariable());
+		scan(f.getTarget());
+		exit(f);
+	}
+
+	@Override
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+		enter(f);
+		scan(f.getVariable());
+		// scan(fieldAccess.getType());
+		scan(f.getAnnotations());
+		scanReferences(f.getTypeCasts());
+		scan(f.getVariable());
+		scan(f.getTarget());
+		exit(f);
 	}
 
 	@Override

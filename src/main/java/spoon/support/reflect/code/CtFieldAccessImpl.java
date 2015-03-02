@@ -18,10 +18,16 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.visitor.CtVisitor;
 
 public class CtFieldAccessImpl<T> extends CtTargetedAccessImpl<T> implements
 		CtFieldAccess<T> {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	@Override
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtFieldAccess(this);
+	}
+
 }

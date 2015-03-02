@@ -25,6 +25,7 @@ import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ReferenceFilter;
@@ -35,14 +36,7 @@ import spoon.reflect.visitor.Root;
  * element).
  */
 @Root
-public interface CtElement extends FactoryAccessor, Comparable<CtElement> {
-	/**
-	 * Accepts a visitor.
-	 * 
-	 * @param visitor
-	 *            to accept
-	 */
-	void accept(CtVisitor visitor);
+public interface CtElement extends FactoryAccessor, Comparable<CtElement>,CtVisitable {
 
 	/**
 	 * Searches for an annotation (proxy) of the given class that annotates the

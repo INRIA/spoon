@@ -1,8 +1,5 @@
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
@@ -20,6 +17,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -31,9 +29,9 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -66,6 +64,9 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+
 public abstract class CtAbstractVisitor implements CtVisitor {
 	/**
 	 * Generically scans a collection of meta-model elements.
@@ -82,165 +83,193 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	 * Generically scans a meta-model element.
 	 */
 	public void scan(CtElement element) {
-		if (element != null)
+		if (element != null) {
 			element.accept(this);
+		}
 	}
 
 	/**
 	 * Generically scans a meta-model element reference.
 	 */
 	public void scan(CtReference reference) {
-		if (reference != null)
+		if (reference != null) {
 			reference.accept(this);
+		}
 	}
 
+	@Override
 	public <A extends Annotation> void visitCtAnnotation(
 			CtAnnotation<A> annotation) {
 
 	}
 
+	@Override
 	public <T> void visitCtCodeSnippetExpression(
 			CtCodeSnippetExpression<T> expression) {
 
 	}
 
+	@Override
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
 
 	}
 
+	@Override
 	public <A extends Annotation> void visitCtAnnotationType(
 			CtAnnotationType<A> annotationType) {
 
 	}
 
+	@Override
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable anonymousExec) {
 
 	}
 
+	@Override
 	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
 			CtArrayAccess<T, E> arrayAccess) {
 
 	}
 
+	@Override
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
 
 	}
 
+	@Override
 	public <T> void visitCtAssert(CtAssert<T> asserted) {
 
 	}
 
+	@Override
 	public <T, A extends T> void visitCtAssignment(
 			CtAssignment<T, A> assignement) {
 
 	}
 
+	@Override
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 
 	}
 
+	@Override
 	public <R> void visitCtBlock(CtBlock<R> block) {
 
 	}
 
+	@Override
 	public void visitCtBreak(CtBreak breakStatement) {
 
 	}
 
+	@Override
 	public <S> void visitCtCase(CtCase<S> caseStatement) {
 
 	}
 
+	@Override
 	public void visitCtCatch(CtCatch catchBlock) {
 
 	}
 
+	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 
 	}
 
+	@Override
 	public <T> void visitCtConditional(CtConditional<T> conditional) {
 
 	}
 
+	@Override
 	public <T> void visitCtConstructor(CtConstructor<T> c) {
 
 	}
 
+	@Override
 	public void visitCtContinue(CtContinue continueStatement) {
 
 	}
 
+	@Override
 	public void visitCtDo(CtDo doLoop) {
 
 	}
 
+	@Override
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 
 	}
 
+	@Override
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
 
 	}
 
+	@Override
 	public <T> void visitCtField(CtField<T> f) {
 
 	}
 
-	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-
-	}
-
+	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 
 	}
 
+	@Override
 	public void visitCtFor(CtFor forLoop) {
 
 	}
 
+	@Override
 	public void visitCtForEach(CtForEach foreach) {
 
 	}
 
+	@Override
 	public void visitCtIf(CtIf ifElement) {
 
 	}
 
+	@Override
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
 
 	}
 
+	@Override
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 
 	}
 
+	@Override
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
 
 	}
 
+	@Override
 	public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
 
 	}
 
+	@Override
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
 
 	}
 
+	@Override
 	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
 
 	}
 
-	public <T> void visitCtCatchVariableReference(CtCatchVariable<T> reference) {
-
-	}
-
+	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
 
 	}
 
+	@Override
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 
 	}
@@ -250,96 +279,128 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	}
 
+	@Override
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
 
 	}
 
-	public <T, A extends T> void visitCtOperatorAssignement(
+	@Override
+	public <T, A extends T> void visitCtOperatorAssignment(
 			CtOperatorAssignment<T, A> assignment) {
 
 	}
 
+	@Override
 	public void visitCtPackage(CtPackage ctPackage) {
 
 	}
 
+	@Override
 	public void visitCtPackageReference(CtPackageReference reference) {
 
 	}
 
+	@Override
 	public <T> void visitCtParameter(CtParameter<T> parameter) {
 
 	}
 
+	@Override
 	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
 
 	}
 
+	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 
 	}
 
+	@Override
 	public <R> void visitCtStatementList(CtStatementList statements) {
 
 	}
 
+	@Override
 	public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
 
 	}
 
+	@Override
 	public void visitCtSynchronized(CtSynchronized synchro) {
 
 	}
 
+	@Override
 	public void visitCtThrow(CtThrow throwStatement) {
 
 	}
 
+	@Override
 	public void visitCtTry(CtTry tryBlock) {
 
 	}
 
+	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 
 	}
 
+	@Override
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
 
 	}
 
+	@Override
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 
 	}
 
+	@Override
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 
 	}
 
+	@Override
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 
 	}
 
+	@Override
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 
 	}
 
+	@Override
 	public void visitCtWhile(CtWhile whileLoop) {
 
 	}
 
+	@Override
 	public <T> void visitCtAnnotationFieldAccess(
 			CtAnnotationFieldAccess<T> annotationFieldAccess) {
 
 	}
 
+	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 	}
 
+	@Override
 	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
 	}
 
-	
+	@Override
 	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
-		
+
+	}
+
+	@Override
+	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
+
+	}
+
+	@Override
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+
 	}
 }

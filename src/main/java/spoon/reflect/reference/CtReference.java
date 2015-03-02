@@ -23,6 +23,7 @@ import java.util.List;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Root;
 
@@ -36,7 +37,7 @@ import spoon.reflect.visitor.Root;
  * @see spoon.reflect.declaration.CtElement
  */
 @Root
-public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
+public interface CtReference extends FactoryAccessor, Comparable<CtReference>, CtVisitable {
 
 	/**
 	 * Gets the simple name of referenced element.
@@ -55,10 +56,7 @@ public interface CtReference extends FactoryAccessor, Comparable<CtReference> {
 	 */
 	CtElement getDeclaration();
 
-	/**
-	 * Accepts a visitor
-	 */
-	void accept(CtVisitor visitor);
+
 
 	/**
 	 * Searches for an annotation (proxy) of the given class that annotates the

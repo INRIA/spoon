@@ -29,7 +29,7 @@ public class CtOperatorAssignmentImpl<T, A extends T> extends
 
 	@Override
 	public void accept(CtVisitor visitor) {
-		visitor.visitCtOperatorAssignement(this);
+		visitor.visitCtOperatorAssignment(this);
 	}
 
 	public BinaryOperatorKind getKind() {

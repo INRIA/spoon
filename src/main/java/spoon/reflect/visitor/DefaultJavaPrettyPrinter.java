@@ -17,10 +17,6 @@
 
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.*;
-import java.util.Map.Entry;
-
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.processing.Severity;
@@ -56,9 +52,9 @@ import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -69,7 +65,26 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
@@ -84,6 +99,16 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.util.SortedList;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Stack;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -123,14 +148,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return ignoreGenerics;
 		}
 
-		/** if false, no import are output */
+		/**
+		 * if false, no import are output
+		 */
 		boolean ignoreImport = false;
 
 		public boolean getIgnoreImport() {
 			return ignoreImport;
 		}
 
-		/** Layout variables */
+		/**
+		 * Layout variables
+		 */
 		int jumped = 0;
 
 		int nbTabs = 0;
@@ -406,9 +435,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 										+ parent.getClass().getSimpleName()
 										+ " != "
 										+ e.getParent().getClass()
-												.getSimpleName() + ")"
+										.getSimpleName() + ")"
 										+ e.getPosition()
-										);
+						);
 					}
 				} else {
 					e.setParent(parent);
@@ -484,7 +513,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				System.out.print("\\'"); //$NON-NLS-1$
 				break;
 			case '\\': // take care not to display the escape as a potential
-						// real char
+				// real char
 				System.out.println("\\\\"); //$NON-NLS-1$
 				break;
 			default:
@@ -544,22 +573,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (e.getTypeCasts().size() != 0) {
 			return true;
 		}
-        try {
-            if ((e.getParent() instanceof CtBinaryOperator)
-                    || (e.getParent() instanceof CtUnaryOperator)) {
-                return (e instanceof CtTargetedExpression)
-                        || (e instanceof CtAssignment)
-                        || (e instanceof CtConditional)
-                        || (e instanceof CtUnaryOperator);
-            }
-            if (e.getParent() instanceof CtTargetedExpression) {
-                return (e instanceof CtBinaryOperator)
-                        || (e instanceof CtAssignment)
-                        || (e instanceof CtConditional);
-            }
-        } catch (ParentNotInitializedException ex) {
-            // nothing we accept not to have a parent
-        }
+		try {
+			if ((e.getParent() instanceof CtBinaryOperator)
+					|| (e.getParent() instanceof CtUnaryOperator)) {
+				return (e instanceof CtTargetedExpression)
+						|| (e instanceof CtAssignment)
+						|| (e instanceof CtConditional)
+						|| (e instanceof CtUnaryOperator);
+			}
+			if (e.getParent() instanceof CtTargetedExpression) {
+				return (e instanceof CtBinaryOperator)
+						|| (e instanceof CtAssignment)
+						|| (e instanceof CtConditional);
+			}
+		} catch (ParentNotInitializedException ex) {
+			// nothing we accept not to have a parent
+		}
 		return false;
 	}
 
@@ -655,11 +684,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		enterCtExpression(operator);
 		boolean paren = false;
-        try { paren = (operator.getParent() instanceof CtBinaryOperator)
-				|| (operator.getParent() instanceof CtUnaryOperator);
-        } catch (ParentNotInitializedException ex) {
-            // nothing if we have no parent
-        }
+		try {
+			paren = (operator.getParent() instanceof CtBinaryOperator)
+					|| (operator.getParent() instanceof CtUnaryOperator);
+		} catch (ParentNotInitializedException ex) {
+			// nothing if we have no parent
+		}
 		if (paren) {
 			write("(");
 		}
@@ -704,12 +734,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			// writing enum case expression
 			if ((caseStatement.getCaseExpression() instanceof CtFieldAccess)
 					&& ((CtFieldAccess) caseStatement.getCaseExpression())
-							.getVariable()
-							.getType()
-							.getQualifiedName()
-							.equals(((CtFieldAccess) caseStatement
-									.getCaseExpression()).getVariable()
-									.getDeclaringType().getQualifiedName())) {
+					.getVariable()
+					.getType()
+					.getQualifiedName()
+					.equals(((CtFieldAccess) caseStatement
+							.getCaseExpression()).getVariable()
+							.getDeclaringType().getQualifiedName())) {
 				write(((CtFieldAccess) caseStatement.getCaseExpression())
 						.getVariable().getSimpleName());
 			} else {
@@ -967,7 +997,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if ((!f.isParentInitialized())
 				|| !CtAnnotationType.class.isAssignableFrom(f.getParent()
-						.getClass())
+				.getClass())
 				|| f.getModifiers().contains(ModifierKind.STATIC)) {
 			if (f.getDefaultExpression() != null) {
 				write(" = ");
@@ -983,19 +1013,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(";");
 	}
 
-	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-		enterCtExpression(targetedAccess);
-		if (targetedAccess.getTarget() != null) {
-			scan(targetedAccess.getTarget());
+	@Override
+	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
+		enterCtExpression(f);
+		if (f.getTarget() != null) {
+			scan(f.getTarget());
 			write(".");
 			context.ignoreStaticAccess = true;
 		}
 		context.ignoreGenerics = true;
-		scan(targetedAccess.getVariable());
+		scan(f.getVariable());
 
 		context.ignoreGenerics = false;
 		context.ignoreStaticAccess = false;
-		exitCtExpression(targetedAccess);
+		exitCtExpression(f);
 	}
 
 	@Override
@@ -1196,11 +1227,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		enterCtStatement(invocation);
 		enterCtExpression(invocation);
-//BCUTAG ???
-//		if (invocation.getExecutable() ==null || invocation.getExecutable().getSimpleName() == null){
-//			exitCtExpression(invocation);
-//			return;
-//		}
+		//BCUTAG ???
+		//		if (invocation.getExecutable() ==null || invocation.getExecutable().getSimpleName() == null){
+		//			exitCtExpression(invocation);
+		//			return;
+		//		}
 		if (invocation.getExecutable().getSimpleName().equals("<init>")) {
 			// It's a constructor (super or this)
 			try {
@@ -1208,8 +1239,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if ((parentType != null)
 						&& (parentType.getQualifiedName() != null)
 						&& parentType.getQualifiedName().equals(
-								invocation.getExecutable().getDeclaringType()
-										.getQualifiedName())) {
+						invocation.getExecutable().getDeclaringType()
+								.getQualifiedName())) {
 					write("this");
 				} else {
 					if (invocation.getTarget() != null) {
@@ -1320,7 +1351,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write("\\'"); //$NON-NLS-1$
 				break;
 			case '\\': // take care not to display the escape as a potential
-						// real char
+				// real char
 				write("\\\\"); //$NON-NLS-1$
 				break;
 			default:
@@ -1448,8 +1479,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (m.getBody().getPosition().getCompilationUnit() == sourceCompilationUnit) {
 					if (m.getBody().getStatements().isEmpty()
 							|| !(m.getBody()
-									.getStatements()
-									.get(m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
+							.getStatements()
+							.get(m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
 						lineNumberMapping.put(line, m.getBody().getPosition()
 								.getEndLine());
 					}
@@ -1602,7 +1633,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(newClass);
 	}
 
-	public <T, A extends T> void visitCtOperatorAssignement(
+	public <T, A extends T> void visitCtOperatorAssignment(
 			CtOperatorAssignment<T, A> assignment) {
 		enterCtStatement(assignment);
 		enterCtExpression(assignment);
@@ -1767,7 +1798,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				&& !(ref.getBounds() == null)
 				&& !ref.getBounds().isEmpty()
 				&& !((ref.getBounds().size() == 1) && ref.getBounds().get(0)
-						.getQualifiedName().equals("java.lang.Object"))) {
+				.getQualifiedName().equals("java.lang.Object"))) {
 			if (ref.isUpper()) {
 				write(" extends ");
 			} else {
@@ -1793,11 +1824,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (ref.getDeclaringType() != null) {
 				if (!context.currentThis.contains(ref.getDeclaringType())) {
 					if (!context.ignoreEnclosingClass) {
-//						boolean ign = context.ignoreGenerics;
-//						context.ignoreGenerics = false;
+						//						boolean ign = context.ignoreGenerics;
+						//						context.ignoreGenerics = false;
 						scan(ref.getDeclaringType());
 						write(".");
-//						context.ignoreGenerics = ign;
+						//						context.ignoreGenerics = ign;
 					}
 				}
 				write(ref.getSimpleName());
@@ -2137,5 +2168,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtUnboundVariableReference(
 			CtUnboundVariableReference<T> reference) {
 		write(reference.getSimpleName());
+	}
+
+	@Override
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+
+		enterCtExpression(f);
+		if (f.getTarget() != null) {
+			scan(f.getTarget());
+			write(".");
+			context.ignoreStaticAccess = true;
+		}
+		context.ignoreGenerics = true;
+		scan(f.getVariable());
+
+		context.ignoreGenerics = false;
+		context.ignoreStaticAccess = false;
+		exitCtExpression(f);
+
 	}
 }

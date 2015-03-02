@@ -23,16 +23,11 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T> implements
+public abstract class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T> implements
 		CtTargetedAccess<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<?> target;
-
-	@Override
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtTargetedAccess(this);
-	}
 
 	public CtExpression<?> getTarget() {
 		return target;
