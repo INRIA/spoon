@@ -1,7 +1,9 @@
 package spoon.reflect.visitor;
 
 /**
- * Created by nicolas on 27/02/2015.
+ * Define a visitable element in spoon.
+ * 
+ * @see http://en.wikipedia.org/wiki/Visitor_pattern
  */
 public interface CtVisitable {
 	/**
