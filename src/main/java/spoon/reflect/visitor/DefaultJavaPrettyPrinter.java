@@ -729,16 +729,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(" catch (");
 		CtCatchVariable<? extends Throwable> parameter = catchBlock.getParameter();
 		if (parameter.getMultiTypes().size() > 0) {
-			StringBuilder multiTypes = new StringBuilder();
 			for (int i = 0; i < parameter.getMultiTypes().size(); i++) {
 				CtTypeReference<?> type = parameter.getMultiTypes().get(i);
-				multiTypes.append(type.getSimpleName());
+				scan(type);
 				if (i < parameter.getMultiTypes().size() - 1) {
-					multiTypes.append(" | ");
+					write(" | ");
 				}
 			}
-			multiTypes.append(String.format(" %s", parameter.getSimpleName()));
-			write(multiTypes.toString());
+			write(" "+parameter.getSimpleName());
 		} else {
 			scan(parameter);
 		}

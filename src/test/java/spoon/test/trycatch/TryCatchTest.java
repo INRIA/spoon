@@ -1,16 +1,23 @@
 package spoon.test.trycatch;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.trycatch.testclasses.Foo;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.test.TestUtils.build;
 import static spoon.test.TestUtils.createFactory;
 
@@ -152,5 +160,44 @@ public class TryCatchTest {
 
 		// Checks try has more than one resource.
 		assertTrue(ctTryWithResource.getResources().size() > 1);
+	}
+
+	@Test
+	public void testMultiTryCatchWithCustomExceptions() throws Exception {
+		final Launcher launcher = new Launcher();
+		Factory factory = launcher.createFactory();
+		final SpoonCompiler compiler = launcher.createCompiler(factory);
+		compiler.addInputSource(new File("./src/test/java/spoon/test/trycatch/testclasses/"));
+		compiler.build();
+
+		final CtClass<?> foo = (CtClass<?>) factory.Type().get(Foo.class);
+		final CtCatch ctCatch = foo.getElements(new AbstractFilter<CtCatch>(CtCatch.class) {
+			@Override
+			public boolean matches(CtCatch element) {
+				return true;
+			}
+		}).get(0);
+
+		final String expected = " catch (spoon.test.trycatch.testclasses.internal.MyException | spoon.test.trycatch.testclasses.internal.MyException2 ignore) {\n}";
+		assertEquals(expected, ctCatch.toString());
+	}
+
+	@Test
+	public void testCompileMultiTryCatchWithCustomExceptions() throws Exception {
+		spoon.Launcher.main(new String[] {
+				"-i", "src/test/java/spoon/test/trycatch/testclasses",
+				"-o", "target/spooned",
+				"--compile"
+		});
+
+		final Launcher launcher = new Launcher();
+		Factory factory = launcher.createFactory();
+		final SpoonCompiler newCompiler = launcher.createCompiler(factory);
+		newCompiler.addInputSource(new File("./target/spooned/spoon/test/trycatch/testclasses/"));
+		try {
+			assertTrue(newCompiler.build());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 }
