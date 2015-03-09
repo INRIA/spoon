@@ -48,6 +48,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 
 	/**
 	 * Create the list of method we have to call for a class
+	 *
 	 * @param entry
 	 * @return
 	 * @throws Exception
@@ -67,6 +68,14 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			Method mth;
 			try {
 				mth = CtInheritanceScanner.class.getDeclaredMethod("visit" + intf.getSimpleName(), intf);
+
+				// we should not have a scan method
+				try {
+					CtInheritanceScanner.class.getDeclaredMethod("scan" + intf.getSimpleName(), intf);
+					Assert.fail("should not have both visit" + intf.getSimpleName() + " and scan" + intf.getSimpleName()
+							+ " method");
+				} catch (NoSuchMethodException ex) {
+				}
 			} catch (NoSuchMethodException ex) {
 				mth = CtInheritanceScanner.class.getDeclaredMethod("scan" + intf.getSimpleName(), intf);
 			}
