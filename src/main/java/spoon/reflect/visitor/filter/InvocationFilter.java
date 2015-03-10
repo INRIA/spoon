@@ -19,13 +19,15 @@ package spoon.reflect.visitor.filter;
 
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.Filter;
 
 /**
  * This simple filter matches all the accesses to a given executable or any
  * executable that overrides it.
  */
-public class InvocationFilter extends AbstractFilter<CtInvocation<?>> {
-	CtExecutableReference<?> executable;
+public class InvocationFilter implements Filter<CtInvocation<?>> {
+	
+	private CtExecutableReference<?> executable;
 
 	/**
 	 * Creates a new invocation filter.
@@ -34,10 +36,10 @@ public class InvocationFilter extends AbstractFilter<CtInvocation<?>> {
 	 *            the executable to be tested for being invoked
 	 */
 	public InvocationFilter(CtExecutableReference<?> executable) {
-		super(CtInvocation.class);
 		this.executable = executable;
 	}
 
+	@Override
 	public boolean matches(CtInvocation<?> invocation) {
 		return invocation.getExecutable().isOverriding(executable);
 	}

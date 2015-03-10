@@ -244,7 +244,7 @@ public class SubstitutionVisitor extends CtScanner {
 					for (Object element : value) {
 						CtStatement b = foreach.getFactory().Core().clone(body);
 						for (CtVariableAccess<?> va : Query.getElements(b,
-								new VariableAccessFilter(foreach.getVariable()
+								new VariableAccessFilter<CtVariableAccess<?>>(foreach.getVariable()
 										.getReference()))) {
 							va.replace((CtElement) element);
 						}

@@ -23,9 +23,8 @@ import spoon.reflect.reference.CtFieldReference;
 /**
  * This simple filter matches all the accesses to a given field.
  */
-public class FieldAccessFilter extends AbstractFilter<CtFieldAccess<?>> {
-	CtFieldReference<?> field;
-
+public class FieldAccessFilter extends VariableAccessFilter<CtFieldAccess<?>> {
+	
 	/**
 	 * Creates a new field access filter.
 	 * 
@@ -33,11 +32,7 @@ public class FieldAccessFilter extends AbstractFilter<CtFieldAccess<?>> {
 	 *            the accessed field
 	 */
 	public FieldAccessFilter(CtFieldReference<?> field) {
-		super(CtFieldAccess.class);
-		this.field = field;
+		super(field);
 	}
 
-	public boolean matches(CtFieldAccess<?> fieldAccess) {
-		return fieldAccess.getVariable().equals(field);
-	}
 }

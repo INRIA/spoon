@@ -21,26 +21,25 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 
 /**
- * This class defines an abstract filter that needs to be subclassed in order to
- * define the matching criteria.
+ * Defines an abstract filter based on matching on the element types.
  * 
- * @see spoon.reflect.visitor.Filter#matches(CtElement)
+ * Not necessary in simple cases thanks to the use of runtime reflection.
  */
 public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 
-	Class<T> type;
+	private Class<T> type;
 
 	/**
 	 * Creates a filter with the type of the potentially matching elements.
 	 */
-	// TODO: INFER TYPE BY INTROSPECTION
 	@SuppressWarnings("unchecked")
 	public AbstractFilter(Class<?> type) {
 		this.type = (Class<T>) type;
 	}
 
-	public Class<T> getType() {
-		return type;
+	@Override
+	public boolean matches(T element) {
+		return type.isAssignableFrom(element.getClass());
 	}
 
 }

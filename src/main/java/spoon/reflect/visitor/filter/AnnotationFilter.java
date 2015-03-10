@@ -20,12 +20,14 @@ package spoon.reflect.visitor.filter;
 import java.lang.annotation.Annotation;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.Filter;
 
 /**
  * This filter matches all the elements annotated with a given annotation type.
  */
-public class AnnotationFilter<E extends CtElement> extends AbstractFilter<E> {
-	Class<? extends Annotation> annotationType;
+public class AnnotationFilter<E extends CtElement> extends TypeFilter<E> {
+	
+	private Class<? extends Annotation> annotationType;
 
 	/**
 	 * Creates the filter.
@@ -47,7 +49,8 @@ public class AnnotationFilter<E extends CtElement> extends AbstractFilter<E> {
 		this.annotationType = annotationType;
 	}
 
+	@Override
 	public boolean matches(E element) {
-		return element.getAnnotation(annotationType) != null;
+		return super.matches(element) && element.getAnnotation(annotationType) != null;
 	}
 }

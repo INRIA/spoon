@@ -20,20 +20,15 @@ package spoon.reflect.visitor.filter;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.visitor.Filter;
 
 /**
  * This simple filter matches all the occurrences of a return or a throw
  * statement (end of execution flow).
  */
-public class ReturnOrThrowFilter extends AbstractFilter<CtCFlowBreak> {
+public class ReturnOrThrowFilter implements Filter<CtCFlowBreak> {
 
-	/**
-	 * Creates a filter.
-	 */
-	public ReturnOrThrowFilter() {
-		super(CtCFlowBreak.class);
-	}
-
+	@Override
 	public boolean matches(CtCFlowBreak cflowBreak) {
 		return (cflowBreak instanceof CtReturn)
 				|| (cflowBreak instanceof CtThrow);

@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
@@ -243,7 +244,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtConstructor<?>> getConstructorsByClass(final String myClass) {
-		return Query.getElements(factory, new AbstractFilter<CtConstructor<?>>(CtConstructor.class) {
+		return Query.getElements(factory, new Filter<CtConstructor<?>>() {
 			@Override
 			public boolean matches(CtConstructor<?> element) {
 				return myClass.equals(((CtClass<?>) element.getParent()).getSimpleName());
@@ -261,7 +262,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private CtClass<?> getCtClassByName(final String name) {
-		return Query.getElements(factory, new AbstractFilter<CtClass<?>>(CtClass.class) {
+		return Query.getElements(factory, new Filter<CtClass<?>>() {
 			@Override
 			public boolean matches(CtClass<?> element) {
 				return name.equals(element.getSimpleName());

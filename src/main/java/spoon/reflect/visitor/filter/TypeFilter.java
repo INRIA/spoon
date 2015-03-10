@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtElement;
 
 /**
  * This simple filter matches all the elements of a given type.
+ * 
  */
 public class TypeFilter<T extends CtElement> extends AbstractFilter<T> {
 
@@ -34,7 +35,4 @@ public class TypeFilter<T extends CtElement> extends AbstractFilter<T> {
 		super(type);
 	}
 
-	public boolean matches(T element) {
-		return true;
-	}
 }
