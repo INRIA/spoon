@@ -34,6 +34,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -45,6 +46,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
@@ -199,11 +201,6 @@ public interface CtVisitor {
 	<T> void visitCtField(CtField<T> f);
 
 	/**
-	 * Visits a field access.
-	 */
-	<T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess);
-
-	/**
 	 * Visits a this access.
 	 */
 	<T> void visitCtThisAccess(CtThisAccess<T> thisAccess);
@@ -213,12 +210,11 @@ public interface CtVisitor {
 	 */
 	<T> void visitCtFieldReference(CtFieldReference<T> reference);
 
-	
 	/**
 	 * Visits a reference to an unbound field
 	 */
 	<T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference);
-	
+
 	/**
 	 * Visits a <code>for</code> loop.
 	 */
@@ -292,7 +288,7 @@ public interface CtVisitor {
 	/**
 	 * Visits an operator assignment.
 	 */
-	<T, A extends T> void visitCtOperatorAssignement(
+	<T, A extends T> void visitCtOperatorAssignment(
 			CtOperatorAssignment<T, A> assignment);
 
 	/**
@@ -383,4 +379,7 @@ public interface CtVisitor {
 	<T> void visitCtAnnotationFieldAccess(
 			CtAnnotationFieldAccess<T> annotationFieldAccess);
 
+	<T> void visitCtFieldAccess(CtFieldAccess<T> f);
+
+	<T> void visitCtSuperAccess(CtSuperAccess<T> f);
 }

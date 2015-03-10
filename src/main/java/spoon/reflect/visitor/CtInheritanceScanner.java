@@ -17,9 +17,6 @@
 
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -40,6 +37,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -53,6 +51,7 @@ import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
@@ -68,6 +67,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -77,15 +77,16 @@ import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -100,14 +101,15 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+
 /**
  * This class provides an abstract implementation of the visitor that allows its
  * subclasses to scans the metamodel elements by recursively using their
  * (abstract) supertype scanning methods.
  */
 public abstract class CtInheritanceScanner implements CtVisitor {
-
-
 
 	/**
 	 * Default constructor.
@@ -116,10 +118,21 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtCodeSnippetExpression(
-			CtCodeSnippetExpression<T> expression) {
+			CtCodeSnippetExpression<T> e) {
+		scanCtCodeSnippet(e);
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
+	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement e) {
+		scanCtCodeSnippet(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	/**
@@ -137,16 +150,18 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Generically scans a meta-model element.
 	 */
 	public void scan(CtElement element) {
-		if (element != null)
+		if (element != null) {
 			element.accept(this);
+		}
 	}
 
 	/**
 	 * Generically scans a meta-model element reference.
 	 */
 	public void scan(CtReference reference) {
-		if (reference != null)
+		if (reference != null) {
 			reference.accept(this);
+		}
 	}
 
 	/**
@@ -159,14 +174,16 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract control flow break.
 	 */
 	public void scanCtCFlowBreak(CtCFlowBreak flowBreak) {
-		scanCtCodeElement(flowBreak);
 	}
 
 	/**
 	 * Scans an abstract code element.
 	 */
 	public void scanCtCodeElement(CtCodeElement e) {
-		scanCtElement(e);
+
+	}
+
+	public void scanCtTypeMember(CtTypeMember e) {
 	}
 
 	/**
@@ -179,23 +196,23 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract executable.
 	 */
 	public <R> void scanCtExecutable(CtExecutable<R> e) {
-		scanCtGenericElement(e);
-		scanCtNamedElement(e);
 	}
 
 	/**
 	 * Scans an abstract expression.
 	 */
 	public <T> void scanCtExpression(CtExpression<T> expression) {
-		scanCtCodeElement(expression);
-		scanCtTypedElement(expression);
 	}
 
 	/**
 	 * Scans an abstract generic element.
 	 */
 	public void scanCtGenericElement(CtGenericElement e) {
-		scanCtElement(e);
+
+	}
+
+	public void scanCtVisitable(CtVisitable e) {
+
 	}
 
 	/**
@@ -209,30 +226,21 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract loop.
 	 */
 	public void scanCtLoop(CtLoop loop) {
-		scanCtStatement(loop);
+
 	}
 
 	/**
 	 * Scans an abstract modifiable element.
 	 */
 	public void scanCtModifiable(CtModifiable m) {
-		for (ModifierKind modifier : m.getModifiers()) {
-			scanCtModifier(modifier);
-		}
-	}
 
-	/**
-	 * Scans a modifier (enumeration).
-	 */
-	public void scanCtModifier(ModifierKind m) {
 	}
 
 	/**
 	 * Scans an abstract named element.
 	 */
 	public void scanCtNamedElement(CtNamedElement e) {
-		scanCtElement(e);
-		scanCtModifiable(e);
+
 	}
 
 	/**
@@ -246,14 +254,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract simple type.
 	 */
 	public <T> void scanCtSimpleType(CtSimpleType<T> t) {
-		scanCtNamedElement(t);
 	}
 
 	/**
 	 * Scans an abstract statement.
 	 */
 	public void scanCtStatement(CtStatement s) {
-		scanCtCodeElement(s);
 	}
 
 	/**
@@ -261,15 +267,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 */
 	public <T, E extends CtExpression<?>> void scanCtTargetedExpression(
 			CtTargetedExpression<T, E> targetedExpression) {
-		scanCtExpression(targetedExpression);
 	}
 
 	/**
 	 * Scans an abstract type.
 	 */
 	public <T> void scanCtType(CtType<T> type) {
-		scanCtSimpleType(type);
-		scanCtGenericElement(type);
 	}
 
 	/**
@@ -282,281 +285,463 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract variable declaration.
 	 */
 	public <T> void scanCtVariable(CtVariable<T> v) {
-		scanCtNamedElement(v);
-		scanCtTypedElement(v);
+	}
+
+	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
+		visitCtVariableAccess(f);
+		scanCtTargetedAccess(f);
+		scanCtTargetedExpression(f);
+	}
+
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+		scanCtTargetedAccess(f);
+		visitCtVariableAccess(f);
+		scanCtTargetedExpression(f);
+	}
+
+	public void scanCtMultiTypedElement(CtMultiTypedElement f) {
+	}
+
+	public <T, A extends T> void visitCtOperatorAssignment(
+			CtOperatorAssignment<T, A> e) {
+		visitCtAssignment(e);
 	}
 
 	/**
 	 * Scans an abstract variable reference.
 	 */
 	public <T> void scanCtVariableReference(CtVariableReference<T> reference) {
-		scanCtReference(reference);
-	}
-
-	/**
-	 * Generically scans a collection of meta-model references.
-	 */
-	public void scanReferences(Collection<? extends CtReference> references) {
-		if (references != null) {
-			for (CtReference r : references) {
-				scan(r);
-			}
-		}
 	}
 
 	public <A extends Annotation> void visitCtAnnotation(
-			CtAnnotation<A> annotation) {
-		scanCtElement(annotation);
+			CtAnnotation<A> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	public <A extends Annotation> void visitCtAnnotationType(
-			CtAnnotationType<A> annotationType) {
-		scanCtSimpleType(annotationType);
+			CtAnnotationType<A> e) {
+		scanCtSimpleType(e);
+		scanCtNamedElement(e);
+		scanCtTypeMember(e);
+		scanCtModifiable(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable e) {
 		scanCtElement(e);
 		scanCtModifiable(e);
+		scanCtTypeMember(e);
+		scanCtVisitable(e);
+
 	}
 
 	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
-			CtArrayAccess<T, E> arrayAccess) {
-		scanCtTargetedExpression(arrayAccess);
+			CtArrayAccess<T, E> e) {
+		scanCtTargetedExpression(e);
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
-		visitCtTypeReference(reference);
+	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> e) {
+		visitCtTypeReference(e);
 	}
 
-	public <T> void visitCtAssert(CtAssert<T> asserted) {
-		scanCtStatement(asserted);
+	public <T> void visitCtAssert(CtAssert<T> e) {
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	public <T, A extends T> void visitCtAssignment(
-			CtAssignment<T, A> assignement) {
-		scanCtExpression(assignement);
-		scanCtStatement(assignement);
+			CtAssignment<T, A> e) {
+		scanCtStatement(e);
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
-		scanCtExpression(operator);
+	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <R> void visitCtBlock(CtBlock<R> block) {
-		scanCtStatement(block);
+	public <R> void visitCtBlock(CtBlock<R> e) {
+		scanCtStatement(e);
+		visitCtStatementList(e);
 	}
 
-	public void visitCtBreak(CtBreak breakStatement) {
-		scanCtCFlowBreak(breakStatement);
+	public void visitCtBreak(CtBreak e) {
+		scanCtCFlowBreak(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <E> void visitCtCase(CtCase<E> caseStatement) {
-		scanCtStatement(caseStatement);
+	public <E> void visitCtCase(CtCase<E> e) {
+		scanCtStatement(e);
+		visitCtStatementList(e);
 	}
 
-	public void visitCtCatch(CtCatch catchBlock) {
-		scanCtCodeElement(catchBlock);
+	public void visitCtCatch(CtCatch e) {
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtClass(CtClass<T> ctClass) {
-		scanCtType(ctClass);
+	public <T> void visitCtClass(CtClass<T> e) {
+		scanCtType(e);
+		scanCtStatement(e);
+		scanCtSimpleType(e);
+		scanCtGenericElement(e);
+		scanCtCodeElement(e);
+		scanCtNamedElement(e);
+		scanCtTypeMember(e);
+		scanCtElement(e);
+		scanCtModifiable(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtConditional(CtConditional<T> conditional) {
-		scanCtExpression(conditional);
+	public <T> void visitCtConditional(CtConditional<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtConstructor(CtConstructor<T> c) {
-		scanCtExecutable(c);
+	public <T> void visitCtConstructor(CtConstructor<T> e) {
+		scanCtExecutable(e);
+		scanCtNamedElement(e);
+		scanCtGenericElement(e);
+		scanCtTypedElement(e);
+		scanCtTypeMember(e);
+		scanCtModifiable(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtContinue(CtContinue continueStatement) {
-		scanCtCFlowBreak(continueStatement);
+	public void visitCtContinue(CtContinue e) {
+		scanCtCFlowBreak(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtDo(CtDo doLoop) {
-		scanCtLoop(doLoop);
+	public void visitCtDo(CtDo e) {
+		scanCtLoop(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
-		visitCtClass(ctEnum);
+	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> e) {
+		visitCtClass(e);
 	}
 
 	public <T> void visitCtExecutableReference(
-			CtExecutableReference<T> reference) {
-		scanCtReference(reference);
-		scanCtGenericElementReference(reference);
+			CtExecutableReference<T> e) {
+		scanCtReference(e);
+		scanCtGenericElementReference(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtField(CtField<T> f) {
-		scanCtNamedElement(f);
-		scanCtVariable(f);
+	public <T> void visitCtField(CtField<T> e) {
+		scanCtNamedElement(e);
+		scanCtVariable(e);
+		scanCtTypeMember(e);
+		scanCtModifiable(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-		scanCtTargetedExpression(targetedAccess);
-		visitCtVariableAccess(targetedAccess);
+	public <T> void scanCtTargetedAccess(CtTargetedAccess<T> e) {
 	}
 
-	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
-		scanCtExpression(thisAccess);
+	public <T> void visitCtThisAccess(CtThisAccess<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		scanCtVariableReference(reference);
+	public <T> void visitCtFieldReference(CtFieldReference<T> e) {
+		scanCtVariableReference(e);
+		scanCtReference(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtFor(CtFor forLoop) {
-		scanCtLoop(forLoop);
+	public void visitCtFor(CtFor e) {
+		scanCtLoop(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtForEach(CtForEach foreach) {
-		scanCtLoop(foreach);
+	public void visitCtForEach(CtForEach e) {
+		scanCtLoop(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtIf(CtIf ifElement) {
-		scanCtStatement(ifElement);
+	public void visitCtIf(CtIf e) {
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtInterface(CtInterface<T> intrface) {
-		scanCtType(intrface);
+	public <T> void visitCtInterface(CtInterface<T> e) {
+		scanCtType(e);
+		scanCtSimpleType(e);
+		scanCtGenericElement(e);
+		scanCtNamedElement(e);
+		scanCtTypeMember(e);
+		scanCtElement(e);
+		scanCtModifiable(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-		scanCtTargetedExpression(invocation);
-		scanCtStatement(invocation);
-		scanCtAbstractInvocation(invocation);
+	public <T> void visitCtInvocation(CtInvocation<T> e) {
+		scanCtAbstractInvocation(e);
+		scanCtStatement(e);
+		scanCtTargetedExpression(e);
+		scanCtElement(e);
+		scanCtCodeElement(e);
+		scanCtExpression(e);
+		scanCtVisitable(e);
+		scanCtTypedElement(e);
 	}
 
-	public <T> void visitCtLiteral(CtLiteral<T> literal) {
-		scanCtExpression(literal);
+	public <T> void visitCtLiteral(CtLiteral<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-		scanCtVariable(localVariable);
-		scanCtStatement(localVariable);
+	public <T> void visitCtLocalVariable(CtLocalVariable<T> e) {
+		scanCtStatement(e);
+		scanCtVariable(e);
+		scanCtCodeElement(e);
+		scanCtNamedElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtModifiable(e);
+		scanCtVisitable(e);
 	}
 
 	public <T> void visitCtLocalVariableReference(
-			CtLocalVariableReference<T> reference) {
-		scanCtVariableReference(reference);
+			CtLocalVariableReference<T> e) {
+		scanCtVariableReference(e);
+		scanCtReference(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
-		scanCtVariable(catchVariable);
-		scanCtCodeElement(catchVariable);
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> e) {
+		scanCtVariable(e);
+		scanCtMultiTypedElement(e);
+		scanCtCodeElement(e);
+		scanCtNamedElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtModifiable(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
-		scanCtVariableReference(reference);
+	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> e) {
+		scanCtVariableReference(e);
+		scanCtReference(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtMethod(CtMethod<T> m) {
-		scanCtExecutable(m);
-		scanCtTypedElement(m);
+	public <T> void visitCtMethod(CtMethod<T> e) {
+		scanCtExecutable(e);
+		scanCtTypedElement(e);
+		scanCtNamedElement(e);
+		scanCtGenericElement(e);
+		scanCtTypeMember(e);
+		scanCtElement(e);
+		scanCtModifiable(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
-		scanCtExpression(newArray);
+	public <T> void visitCtNewArray(CtNewArray<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	@Override
-	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-		scanCtAbstractInvocation(ctConstructorCall);
-		scanCtTypedElement(ctConstructorCall);
-		scanCtTargetedExpression(ctConstructorCall);
+	public <T> void visitCtConstructorCall(CtConstructorCall<T> e) {
+		scanCtTargetedExpression(e);
+		scanCtAbstractInvocation(e);
+		scanCtStatement(e);
+		scanCtExpression(e);
+		scanCtElement(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
-		scanCtAbstractInvocation(newClass);
-		scanCtTypedElement(newClass);
-		scanCtTargetedExpression(newClass);
+	public <T> void visitCtNewClass(CtNewClass<T> e) {
+		visitCtConstructorCall(e);
 	}
 
 	public <T, A extends T> void visitCtOperatorAssignement(
 			CtOperatorAssignment<T, A> assignment) {
-		visitCtAssignment(assignment);
 	}
 
-	public void visitCtPackage(CtPackage ctPackage) {
-		scanCtNamedElement(ctPackage);
+	public void visitCtPackage(CtPackage e) {
+		scanCtNamedElement(e);
+		scanCtModifiable(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtPackageReference(CtPackageReference reference) {
-		scanCtReference(reference);
+	public void visitCtPackageReference(CtPackageReference e) {
+		scanCtReference(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtParameter(CtParameter<T> parameter) {
-		scanCtNamedElement(parameter);
-		scanCtVariable(parameter);
+	public <T> void visitCtParameter(CtParameter<T> e) {
+		scanCtNamedElement(e);
+		scanCtVariable(e);
+		scanCtModifiable(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
-		scanCtVariableReference(reference);
+	public <T> void visitCtParameterReference(CtParameterReference<T> e) {
+		scanCtVariableReference(e);
+		scanCtReference(e);
+		scanCtVisitable(e);
 	}
 
-	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
-		scanCtCFlowBreak(returnStatement);
+	public <R> void visitCtReturn(CtReturn<R> e) {
+		scanCtCFlowBreak(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <R> void visitCtStatementList(CtStatementList statements) {
-		scanCtCodeElement(statements);
+	public <R> void visitCtStatementList(CtStatementList e) {
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
-		scanCtStatement(switchStatement);
+	public <E> void visitCtSwitch(CtSwitch<E> e) {
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtSynchronized(CtSynchronized synchro) {
-		scanCtStatement(synchro);
+	public void visitCtSynchronized(CtSynchronized e) {
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtThrow(CtThrow throwStatement) {
-		scanCtCFlowBreak(throwStatement);
+	public void visitCtThrow(CtThrow e) {
+		scanCtCFlowBreak(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtTry(CtTry tryBlock) {
-		scanCtStatement(tryBlock);
+	public void visitCtTry(CtTry e) {
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	@Override
-	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
-		scanCtStatement(tryWithResource);
+	public void visitCtTryWithResource(CtTryWithResource e) {
+		visitCtTry(e);
 	}
 
-	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		scanCtElement(typeParameter);
+	public void visitCtTypeParameter(CtTypeParameter e) {
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		visitCtTypeReference(ref);
+	public void visitCtTypeParameterReference(CtTypeParameterReference e) {
+		visitCtTypeReference(e);
 	}
 
-	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-		scanCtGenericElementReference(reference);
-		scanCtReference(reference);
+	public <T> void visitCtTypeReference(CtTypeReference<T> e) {
+		scanCtReference(e);
+		scanCtGenericElementReference(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
-		scanCtExpression(operator);
+	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> e) {
+		scanCtExpression(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
-		scanCtExpression(variableAccess);
+	public <T> void visitCtVariableAccess(CtVariableAccess<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(
-			CtAnnotationFieldAccess<T> annotationFieldAccess) {
-		scanCtTargetedExpression(annotationFieldAccess);
-		visitCtVariableAccess(annotationFieldAccess);
+			CtAnnotationFieldAccess<T> e) {
+		visitCtVariableAccess(e);
+		scanCtTargetedExpression(e);
 	}
 
-	public void visitCtWhile(CtWhile whileLoop) {
-		scanCtLoop(whileLoop);
+	public void visitCtWhile(CtWhile e) {
+		scanCtLoop(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	public <T> void visitCtUnboundVariableReference(
 			CtUnboundVariableReference<T> reference) {
-		
+
+	}
+
+	public void scanCtCodeSnippet(CtCodeSnippet snippet) {
 	}
 }

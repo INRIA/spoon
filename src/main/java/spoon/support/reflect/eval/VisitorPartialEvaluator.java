@@ -17,10 +17,6 @@
 
 package spoon.support.reflect.eval;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -40,6 +36,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -52,6 +49,7 @@ import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
@@ -97,6 +95,10 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.RtHelper;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This visitor implements a simple partial evaluator for the program
@@ -417,6 +419,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
+	@Override
+	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
+		visitCtTargetedAccess(f);
+	}
+
 	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
 		if (targetedAccess.getVariable().getSimpleName().equals("class")) {
 			Class<?> c = targetedAccess.getVariable().getDeclaringType()
@@ -566,12 +573,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			if ((executable != null)
 					&& (invocation.getType() != null)
 					&& invocation
-							.getExecutable()
-							.getDeclaringType()
-							.isAssignableFrom(
-									((CtSimpleType<?>) invocation
-											.getParent(CtSimpleType.class))
-											.getReference())) {
+					.getExecutable()
+					.getDeclaringType()
+					.isAssignableFrom(
+							((CtSimpleType<?>) invocation
+									.getParent(CtSimpleType.class))
+									.getReference())) {
 				CtBlock<?> b = evaluate(invocation.getParent(),
 						executable.getBody());
 				flowEnded = false;
@@ -662,7 +669,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(newClass.getFactory().Core().clone(newClass));
 	}
 
-	public <T, A extends T> void visitCtOperatorAssignement(
+	public <T, A extends T> void visitCtOperatorAssignment(
 			CtOperatorAssignment<T, A> assignment) {
 		setResult(assignment.getFactory().Core().clone(assignment));
 	}
@@ -742,7 +749,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {		
+	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 		CtExpression<?> operand = evaluate(operator, operator.getOperand());
 		if (operand instanceof CtLiteral) {
 			Object object = ((CtLiteral<?>) operand).getValue();
@@ -791,7 +798,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		// If lopping Expression always false
 		if ((whileLoop.getLoopingExpression() instanceof CtLiteral)
 				&& !((CtLiteral<Boolean>) whileLoop.getLoopingExpression())
-						.getValue()) {
+				.getValue()) {
 			setResult(null);
 			return;
 		}
@@ -824,7 +831,10 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	public <T> void visitCtUnboundVariableReference(
 			CtUnboundVariableReference<T> reference) {
 		throw new RuntimeException("Unknow Element");
-		
 	}
 
+	@Override
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+		visitCtTargetedAccess(f);
+	}
 }

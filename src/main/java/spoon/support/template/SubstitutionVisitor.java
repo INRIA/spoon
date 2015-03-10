@@ -35,6 +35,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
@@ -256,12 +257,21 @@ public class SubstitutionVisitor extends CtScanner {
 			super.visitCtForEach(foreach);
 		}
 
+		@Override
+		public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
+			visitCtTargetedAccess(f);
+		}
+
+		@Override
+		public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+			visitCtTargetedAccess(f);
+		}
+
 		/**
 		 * Replaces direct field parameter accesses.
 		 */
 		@SuppressWarnings("unchecked")
-		@Override
-		public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
+		private <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
 			CtFieldReference<?> ref = targetedAccess.getVariable();
 			if ("length".equals(ref.getSimpleName())) {
 				if (targetedAccess.getTarget() instanceof CtFieldAccess) {
@@ -326,7 +336,6 @@ public class SubstitutionVisitor extends CtScanner {
 				// do not visit if replaced
 				throw new SkipException(targetedAccess);
 			}
-			super.visitCtTargetedAccess(targetedAccess);
 		}
 
 		/**

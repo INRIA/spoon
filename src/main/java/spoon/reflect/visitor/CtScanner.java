@@ -37,6 +37,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -48,6 +49,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedAccess;
@@ -359,16 +361,6 @@ public abstract class CtScanner implements CtVisitor {
 		exit(f);
 	}
 
-	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-		enter(targetedAccess);
-		scan(targetedAccess.getAnnotations());
-		scan(targetedAccess.getType());
-		scanReferences(targetedAccess.getTypeCasts());
-		scan(targetedAccess.getTarget());
-		scan(targetedAccess.getVariable());
-		exit(targetedAccess);
-	}
-
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		enter(thisAccess);
@@ -526,7 +518,7 @@ public abstract class CtScanner implements CtVisitor {
 		exit(newClass);
 	}
 
-	public <T, A extends T> void visitCtOperatorAssignement(
+	public <T, A extends T> void visitCtOperatorAssignment(
 			CtOperatorAssignment<T, A> assignment) {
 		enter(assignment);
 		scan(assignment.getAnnotations());
@@ -684,4 +676,25 @@ public abstract class CtScanner implements CtVisitor {
 		
 	}
 
+	@Override
+	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
+		enter(f);
+		scan(f.getAnnotations());
+		scan(f.getType());
+		scanReferences(f.getTypeCasts());
+		scan(f.getTarget());
+		scan(f.getVariable());
+		exit(f);
+	}
+
+	@Override
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+		enter(f);
+		scan(f.getAnnotations());
+		scan(f.getType());
+		scanReferences(f.getTypeCasts());
+		scan(f.getTarget());
+		scan(f.getVariable());
+		exit(f);
+	}
 }
