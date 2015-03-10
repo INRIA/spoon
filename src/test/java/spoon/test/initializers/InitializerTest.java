@@ -6,6 +6,7 @@ import static spoon.test.TestUtils.build;
 
 import org.junit.Test;
 
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -43,10 +44,10 @@ public class InitializerTest {
 		assertEquals("InstanceInitializers", type.getSimpleName());
 
 		CtField<?> k = type.getElements(new NameFilter<CtField<?>>("k")).get(0);
-		assertTrue(k.getDefaultExpression() instanceof CtNewClass);
+		assertTrue(k.getDefaultExpression() instanceof CtConstructorCall);
 
 		CtField<?> l = type.getElements(new NameFilter<CtField<?>>("l")).get(0);
-		assertTrue(l.getDefaultExpression() instanceof CtNewClass);
+		assertTrue(l.getDefaultExpression() instanceof CtConstructorCall);
 
 		CtField<?> x = type.getElements(new NameFilter<CtField<?>>("x")).get(0);
 		assertTrue(x.getDefaultExpression() == null);

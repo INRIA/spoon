@@ -36,6 +36,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -457,6 +458,13 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		scanCtExpression(newArray);
+	}
+
+	@Override
+	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
+		scanCtAbstractInvocation(ctConstructorCall);
+		scanCtTypedElement(ctConstructorCall);
+		scanCtTargetedExpression(ctConstructorCall);
 	}
 
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {

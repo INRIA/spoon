@@ -25,9 +25,7 @@ import spoon.reflect.declaration.CtClass;
  * @param <T>
  *            created type
  */
-public interface CtNewClass<T> extends
-		CtTargetedExpression<T, CtExpression<?>>, CtAbstractInvocation<T>,
-		CtStatement {
+public interface CtNewClass<T> extends CtConstructorCall<T> {
 
 	/**
 	 * Gets the created class.

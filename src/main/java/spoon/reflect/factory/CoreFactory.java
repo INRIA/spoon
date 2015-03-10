@@ -32,6 +32,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -284,6 +285,11 @@ public interface CoreFactory {
 	 * Creates a new array expression.
 	 */
 	<T> CtNewArray<T> createNewArray();
+
+	/**
+	 * Creates a constructor call expression.
+	 */
+	<T>CtConstructorCall<T> createConstructorCall();
 
 	/**
 	 * Creates a new anonymous class expression.

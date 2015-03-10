@@ -32,7 +32,7 @@ public class ExecutableRefTest {
     @Test
     public void constructorTest() throws Exception {
         CtAbstractInvocation<?> ctAbstractInvocation = this.getInvocationFromMethod("testConstructor");
-        Assert.assertTrue(ctAbstractInvocation instanceof CtNewClass<?>);
+        Assert.assertTrue(ctAbstractInvocation instanceof CtConstructorCall<?>);
 
         CtExecutableReference<?> executableReference = ctAbstractInvocation.getExecutable();
         Assert.assertNotNull(executableReference);

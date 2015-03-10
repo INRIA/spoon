@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -88,10 +89,7 @@ public class ClassesTest {
 
 		assertEquals("spoon.test.secondaryclasses.AnonymousClass.2.2", y.getExecutable().toString());
 
-		// the superclass of an anonymous class can be an interface (the one
-		// from which it is built)
-		assertEquals(type.getFactory().Type().createReference(I.class), y
-				.getAnonymousClass().getSuperclass());
+		assertEquals(type.getFactory().Type().createReference(I.class), y.getAnonymousClass().getSuperInterfaces().toArray(new CtTypeReference[0])[0]);
 
 	}
 

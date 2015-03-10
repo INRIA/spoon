@@ -40,6 +40,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -105,6 +106,7 @@ import spoon.support.reflect.code.CtCatchVariableImpl;
 import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
 import spoon.support.reflect.code.CtCodeSnippetStatementImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
+import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtContinueImpl;
 import spoon.support.reflect.code.CtDoImpl;
 import spoon.support.reflect.code.CtFieldAccessImpl;
@@ -491,6 +493,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtNewArray<T> createNewArray() {
 		CtNewArray<T> e = new CtNewArrayImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtConstructorCall<T> createConstructorCall() {
+		CtConstructorCall<T> e = new CtConstructorCallImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
