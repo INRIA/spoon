@@ -6,18 +6,23 @@ import org.junit.Test;
 import java.io.File;
 
 import spoon.Launcher;
+import spoon.OutputType;
+import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
+import spoon.test.TestUtils;
 import spoon.test.pkg.name.PackageTestClass;
+import spoon.test.pkg.testclasses.Foo;
 
-public class PackageTest
-{
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class PackageTest {
 	@Test
-	public void testPackage() throws Exception
-	{
+	public void testPackage() throws Exception {
 		final String classFilePath = "./src/test/java/spoon/test/pkg/name/PackageTestClass.java";
 		final String packageInfoFilePath = "./src/test/java/spoon/test/pkg/package-info.java";
 		final File packageInfoFile = new File(packageInfoFilePath);
@@ -33,7 +38,7 @@ public class PackageTest
 		Assert.assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
 		Assert.assertNull(ctPackage.getPosition());
 		Assert.assertNull(ctPackage.getDocComment());
-		Assert.assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
+		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		Assert.assertEquals("spoon.test.pkg", ctPackage.getQualifiedName());
@@ -48,11 +53,34 @@ public class PackageTest
 		Assert.assertEquals(packageInfoFile.getCanonicalPath(), annotation.getPosition().getFile().getCanonicalPath());
 		Assert.assertEquals(5, annotation.getPosition().getLine());
 
-		Assert.assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
+		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		Assert.assertEquals("spoon.test", ctPackage.getQualifiedName());
 		Assert.assertNull(ctPackage.getPosition());
 		Assert.assertNull(ctPackage.getDocComment());
+	}
+
+	@Test
+	public void testAnnotationOnPackage() throws Exception {
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.createFactory();
+
+		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(new File("./target/spooned/"), factory.getEnvironment()));
+		factory.getEnvironment().setAutoImports(false);
+		SpoonCompiler compiler = launcher.createCompiler(factory);
+		compiler.addInputSource(new File("./src/test/java/spoon/test/pkg/testclasses/"));
+		compiler.setOutputDirectory(new File("./target/spooned/"));
+		compiler.build();
+		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
+
+		final SpoonCompiler newCompiler = launcher.createCompiler(launcher.createFactory());
+		newCompiler.addInputSource(new File("./target/spooned/spoon/test/pkg/testclasses/"));
+
+		try {
+			assertTrue(newCompiler.build());
+		} catch (Exception ignore) {
+			fail();
+		}
 	}
 }

@@ -1646,13 +1646,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtPackage(CtPackage ctPackage) {
-		if (!ctPackage.getQualifiedName().equals(
-				CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
-			if (context.currentTopLevel == null) {
-				for (CtAnnotation<?> a : ctPackage.getAnnotations()) {
-					scan(a);
-				}
-			}
+		if (!ctPackage.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 			write("package " + ctPackage.getQualifiedName() + ";");
 		} else {
 			write("// default package (CtPackage.TOP_LEVEL_PACKAGE_NAME in Spoon= unnamed package)\n");
