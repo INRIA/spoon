@@ -4,10 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
-import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
@@ -24,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class LambdaTest {
 	private Factory factory;
@@ -53,6 +50,7 @@ public class LambdaTest {
 		assertExpressionBody(lambda);
 
 		assertPrintLambda(lambda, "((spoon.test.lambda.testclasses.Foo.Check)(() -> false))");
+		System.err.println(foo.toString());
 	}
 
 	@Test
@@ -61,10 +59,10 @@ public class LambdaTest {
 
 		assertType(lambda, Predicate.class);
 		assertParametersSize(1, lambda.getParameters());
-		assertParameterWithNoType((CtParameter<?>) lambda.getParameters().get(0), "p");
+		assertParameterTyped((CtParameter<?>) lambda.getParameters().get(0), Foo.Person.class, "p");
 		assertExpressionBody(lambda);
 
-		assertPrintLambda(lambda, "((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)(( p) -> (p.age) > 10))");
+		assertPrintLambda(lambda, "((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))");
 	}
 
 	@Test
@@ -73,11 +71,12 @@ public class LambdaTest {
 
 		assertType(lambda, Foo.CheckPersons.class);
 		assertParametersSize(2, lambda.getParameters());
-		assertParameterWithNoType((CtParameter<?>) lambda.getParameters().get(0), "p1");
-		assertParameterWithNoType((CtParameter<?>) lambda.getParameters().get(1), "p2");
+		assertParameterTyped((CtParameter) lambda.getParameters().get(0), Foo.Person.class, "p1");
+		assertParameterTyped((CtParameter) lambda.getParameters().get(1), Foo.Person.class, "p2");
 		assertExpressionBody(lambda);
 
-		assertPrintLambda(lambda, "((spoon.test.lambda.testclasses.Foo.CheckPersons)(( p1, p2) -> ((p1.age) - (p2.age)) > 0))");
+		assertPrintLambda(lambda,
+				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))");
 	}
 
 	@Test
@@ -102,7 +101,8 @@ public class LambdaTest {
 		assertParameterTyped((CtParameter) lambda.getParameters().get(1), Foo.Person.class, "p2");
 		assertExpressionBody(lambda);
 
-		assertPrintLambda(lambda, "((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))");
+		assertPrintLambda(lambda,
+				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))");
 	}
 
 	@Test
@@ -125,10 +125,10 @@ public class LambdaTest {
 
 		assertType(lambda, Predicate.class);
 		assertParametersSize(1, lambda.getParameters());
-		assertParameterWithNoType((CtParameter) lambda.getParameters().get(0), "p");
+		assertParameterTyped((CtParameter) lambda.getParameters().get(0), Foo.Person.class, "p");
 		assertStatementBody(lambda);
 
-		assertPrintLambda(lambda, "((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)(( p) -> {\n"
+		assertPrintLambda(lambda, "((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> {\n"
 				+ "    p.doSomething();\n"
 				+ "    return (p.age) > 10;\n"
 				+ "}))");
@@ -140,7 +140,7 @@ public class LambdaTest {
 
 		assertType(lambda, Predicate.class);
 		assertParametersSize(1, lambda.getParameters());
-		assertParameterWithNoType((CtParameter<?>) lambda.getParameters().get(0), "p");
+		assertParameterTyped((CtParameter<?>) lambda.getParameters().get(0), Foo.Person.class, "p");
 		assertExpressionBody(lambda);
 
 		final CtMethod method = foo.getElements(new NameFilter<CtMethod>("m8")).get(0);
@@ -150,9 +150,10 @@ public class LambdaTest {
 				return true;
 			}
 		}).get(0);
-		final String expected = "if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)(( p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {\n"
-				+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");\n"
-				+ "} ";
+		final String expected =
+				"if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {\n"
+						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");\n"
+						+ "} ";
 		assertEquals("Condition must be well printed", expected, condition.toString());
 	}
 
@@ -182,11 +183,6 @@ public class LambdaTest {
 
 	private void assertNameParameter(CtParameter parameter, String name) {
 		assertEquals("Lambda has a parameter with a name", name, parameter.getSimpleName());
-	}
-
-	private void assertParameterWithNoType(CtParameter<?> parameter, String name) {
-		assertNull("Lambda has a parameter without type", parameter.getType());
-		assertNameParameter(parameter, name);
 	}
 
 	private void assertPrintLambda(CtLambda lambda, String expected) {

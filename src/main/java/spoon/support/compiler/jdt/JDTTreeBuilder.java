@@ -1575,8 +1575,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 		p.setSimpleName(new String(argument.name));
 		p.setVarArgs(argument.isVarArgs());
 		p.setModifiers(getModifiers(argument.modifiers));
-		if (argument.type != null)
+		if (argument.type != null) {
 			p.setType(references.getTypeReference(argument.type.resolvedType));
+		} else if (argument.binding != null && argument.binding.type != null) {
+			p.setType(references.getTypeReference((argument.binding.type)));
+		}
 		context.enter(p, argument);
 		if (argument.initialization != null)
 			argument.initialization.traverse(this, scope);
