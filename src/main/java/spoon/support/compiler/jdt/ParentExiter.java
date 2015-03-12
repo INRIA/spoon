@@ -2,6 +2,10 @@ package spoon.support.compiler.jdt;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -416,7 +420,9 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		} else if (child instanceof CtClass) {
 			newClass.setAnonymousClass((CtClass<?>) child);
-			if (newClass.getType().isInterface()) {
+			final QualifiedAllocationExpression node = (QualifiedAllocationExpression) jdtTreeBuilder.context.stack.peek().node;
+			final ReferenceBinding[] referenceBindings = ((LocalTypeBinding) node.resolvedType).superInterfaces();
+			if (referenceBindings != null && referenceBindings.length > 0) {
 				((CtClass<?>) child).addSuperInterface(newClass.getType());
 			} else {
 				((CtClass<?>) child).setSuperclass(newClass.getType());

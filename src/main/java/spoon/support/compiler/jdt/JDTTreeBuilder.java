@@ -1437,6 +1437,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				constructorCall.setType(res);
 			} else
 				constructorCall.setType(references.getTypeReference(allocationExpression.type.resolvedType));
+		} else if (allocationExpression.expectedType() != null) {
+			constructorCall.setType(references.getTypeReference(allocationExpression.expectedType()));
 		}
 		constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
 		if (constructorCall.getExecutable() == null) {
