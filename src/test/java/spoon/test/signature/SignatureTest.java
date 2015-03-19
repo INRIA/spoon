@@ -9,6 +9,7 @@ import java.util.HashSet;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -104,12 +105,23 @@ public class SignatureTest {
 	public void testLiteralSignature(){
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
 				new StandardEnvironment());
-		CtStatement sta1 = (factory).Code().createCodeSnippetStatement("System.out.println(\"hello\")")
+		String stConstant = "\"hello\"";
+		CtStatement sta1 = (factory).Code().createCodeSnippetStatement("System.out.println("+stConstant+")")
 				.compile();
 	
+		CtStatement sta2 = (factory).Code().createCodeSnippetStatement("String hello =\"t1\"; System.out.println(hello)")
+				.compile();
+				
+		CtStatement sta2bis = ((CtBlock<?>)sta2.getParent()).getStatement(1);
+		
+		String signature1 = sta1.getSignature();
+		String signature2 = sta2bis.getSignature();
+				
+		assertFalse(signature1.equals(signature2));
+		assertFalse(sta1.equals(sta2bis));
 		
 		String signatureParameterWithQuotes = ((CtInvocation<?>)sta1).getArguments().get(0).getSignature();
-		assertEquals("\"hello\"",signatureParameterWithQuotes);
+		assertEquals(stConstant,signatureParameterWithQuotes);
 		
 		CtStatement stb1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(20)")
 				.compile();
@@ -118,4 +130,42 @@ public class SignatureTest {
 		assertEquals("20",signatureParameterWithoutQuotes);
 	}
 	
+	@Test
+	public void testMethodInvocationSignature(){
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
+				new StandardEnvironment());
+		CtStatement sta1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(Integer.MAX_VALUE)")
+				.compile();
+		
+		CtStatement sta2 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(Integer.MIN_VALUE)")
+				.compile();
+				
+		String signature1 = sta1.getSignature();
+		String signature2 = sta2.getSignature();
+				
+		assertFalse(signature1.equals(signature2));
+		assertFalse(sta1.equals(sta2));
+		
+		
+		CtStatement stb1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(20)")
+				.compile();
+		
+		CtStatement stb2 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(30)")
+				.compile();
+	
+		assertFalse(stb1.equals(stb2));
+		assertFalse(sta1.getSignature().equals(sta2.getSignature()));
+	
+		
+		CtStatement stc1 = (factory).Code().createCodeSnippetStatement("String.format(\"format1\",\"f2\" )")
+				.compile();
+		
+		CtStatement stc2 = (factory).Code().createCodeSnippetStatement("String.format(\"format2\",\"f2\" )")
+				.compile();
+	
+		assertFalse(stc2.equals(stc1));
+		assertFalse(stc2.getSignature().equals(stc1.getSignature()));
+		
+	}
+
 }

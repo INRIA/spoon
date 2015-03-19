@@ -353,7 +353,15 @@ public class SignaturePrinter implements CtVisitor {
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		write("(");
 		scan(invocation.getExecutable());
-		write("(...)");
+		write("(");
+		for(int i = 0; i < invocation.getArguments().size();i++){
+			CtExpression<?> arg_i = invocation.getArguments().get(i);
+			scan(arg_i);
+			if(i != (invocation.getArguments().size() -1) ){
+				write(",");
+			}
+		}
+		write(")");
 		write(")");
 	}
 
