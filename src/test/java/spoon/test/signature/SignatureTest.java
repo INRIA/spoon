@@ -1,7 +1,6 @@
 package spoon.test.signature;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,10 +13,14 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 public class SignatureTest {
@@ -96,5 +99,23 @@ public class SignatureTest {
 		assertTrue(unboundVarAccess.equals(toStringUnbound));
 
 	}
-
+	
+	@Test
+	public void testLiteralSignature(){
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
+				new StandardEnvironment());
+		CtStatement sta1 = (factory).Code().createCodeSnippetStatement("System.out.println(\"hello\")")
+				.compile();
+	
+		
+		String signatureParameterWithQuotes = ((CtInvocation<?>)sta1).getArguments().get(0).getSignature();
+		assertEquals("\"hello\"",signatureParameterWithQuotes);
+		
+		CtStatement stb1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(20)")
+				.compile();
+		
+		String signatureParameterWithoutQuotes = ((CtInvocation<?>)stb1).getArguments().get(0).getSignature();
+		assertEquals("20",signatureParameterWithoutQuotes);
+	}
+	
 }
