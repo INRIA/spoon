@@ -131,7 +131,7 @@ public class SignatureTest {
 	}
 	
 	@Test
-	public void testMethodInvocationSignature(){
+	public void testMethodInvocationSignatureStaticFieldsVariables(){
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
 				new StandardEnvironment());
 		CtStatement sta1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(Integer.MAX_VALUE)")
@@ -165,6 +165,85 @@ public class SignatureTest {
 	
 		assertFalse(stc2.equals(stc1));
 		assertFalse(stc2.getSignature().equals(stc1.getSignature()));
+		
+	}
+	@Test
+	public void testMethodInvocationSignatureWithVariableAccess() throws Exception{
+		
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
+				new StandardEnvironment());
+
+
+		factory.getEnvironment().setNoClasspath(true);
+
+		String content = "" + "class PR {"
+				+ "static String PRS = null;"
+				
+				+ "public Object foo(String p) {"
+				+ " int s = 0; 	"
+				+ " this.foo(s);"
+				+ "this.foo(p);"
+				+ " return null;" 
+				+ "}"
+				+ " public Object foo(int p) {"
+				+ " String s = null;"
+				+ " this.foo(s);"
+				+ "this.foo(p);"
+				+ "return null;"
+				+ "}"
+				+ "};";
+
+		SpoonCompiler builder = new JDTSnippetCompiler(factory, content);
+
+		builder.build();
+				
+		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
+		assertNotNull(clazz1);
+		
+		//**FIRST PART: passing local variable access.
+		///--------From the first method we take the method invocations
+		CtMethod<?> methodString = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+
+		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodString.getBody().getStatement(1);
+		String signatureInvoToInt = invoToInt1.getSignature();
+		CtExpression<?> argumentToInt1 = (CtExpression<?>) invoToInt1.getArguments().get(0);
+			
+		//----------From the second method we take the Method Inv
+		CtMethod<?> methodInt = (CtMethod<?>) clazz1.getAllMethods().toArray()[1];
+		CtInvocation<?> invoToString = (CtInvocation<?>) methodInt.getBody().getStatement(1);
+		CtExpression<?> argumentToString = (CtExpression<?>) invoToString.getArguments().get(0);
+		
+		String signatureInvoToString = invoToString.getSignature();
+		//we compare the signatures of " this.foo(s);"	from both methods	
+		assertNotEquals(signatureInvoToInt, signatureInvoToString);
+	
+		
+		//Now we check that we have two invocation to "foo(s)",
+		//but one invocation is with var 's' type integer, the other var 's' type int 
+		String sigArgToInt1 = argumentToInt1.getSignature();
+		String sigArgToString1 = argumentToString.getSignature();
+		
+		assertNotEquals(sigArgToInt1, sigArgToString1);
+		
+		/// ***SECOND PART, passing Parameters
+		CtInvocation<?> invoToString2 = (CtInvocation<?>) methodString.getBody().getStatement(2);
+		CtExpression<?> argumentToString2 = (CtExpression<?>) invoToString2.getArguments().get(0);
+		String signatureInvoToString2 = argumentToString2.getSignature();
+		
+		
+		CtInvocation<?> invoToInt2 = (CtInvocation<?>) methodInt.getBody().getStatement(2);
+		CtExpression<?> argumentToInt2 = (CtExpression<?>) invoToInt2.getArguments().get(0);
+		String signatureInvoToInt2 = argumentToInt2.getSignature();
+		///
+		
+		String sigParString = invoToString2.getSignature();
+		String sigParInteger =  invoToInt2.getSignature();
+		
+		//Compare the method invo signature (same real argument's name, different type)
+		assertNotEquals(sigParString,sigParInteger);
+		//Compare signature of parameters (same var name, different type)
+		assertNotEquals(signatureInvoToString2,signatureInvoToInt2);
+		
 		
 	}
 

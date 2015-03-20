@@ -377,7 +377,13 @@ public class SignaturePrinter implements CtVisitor {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
-		scan(reference.getDeclaration());
+		try {
+			write(reference.getType().getQualifiedName()).write(" ");
+			write(reference.getSimpleName());
+		} catch (NullPointerException npe) {
+			System.err
+					.println("Null Pointer Exception in SignaturePrinter.visitCtFieldReference()");
+		}
 	}
 
 	@Override
@@ -489,7 +495,13 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
-		write(reference.getSimpleName());
+		try {
+			write(reference.getType().getQualifiedName()).write(" ");
+			write(reference.getSimpleName());
+		} catch (NullPointerException npe) {
+			System.err
+					.println("Null Pointer Exception in SignaturePrinter.visitCtFieldReference()");
+		}
 	}
 
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
