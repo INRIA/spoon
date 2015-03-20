@@ -10,6 +10,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.test.TestUtils;
@@ -46,103 +47,118 @@ public class LambdaTest {
 	public void testLambdaExpressionWithExpressionBodyAndWithoutParameter() throws Exception {
 		final CtLambda lambda = getLambdaByName("lambda$1");
 
-		assertType(lambda, Foo.Check.class);
-		assertParametersSize(0, lambda.getParameters());
-		assertExpressionBody(lambda);
+		assertTypedBy(Foo.Check.class, lambda.getType());
+		assertParametersSizeIs(0, lambda.getParameters());
+		assertHasExpressionBody(lambda);
 
-		assertPrintLambda(lambda, "((spoon.test.lambda.testclasses.Foo.Check)(() -> false))");
-		System.err.println(foo.toString());
+		assertIsWellPrinted("((spoon.test.lambda.testclasses.Foo.Check)(() -> false))", lambda);
 	}
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithoutTypeForParameter() throws Exception {
 		final CtLambda lambda = getLambdaByName("lambda$2");
 
-		assertType(lambda, Predicate.class);
-		assertParametersSize(1, lambda.getParameters());
-		assertParameterTyped((CtParameter<?>) lambda.getParameters().get(0), Foo.Person.class, "p");
-		assertExpressionBody(lambda);
+		assertTypedBy(Predicate.class, lambda.getType());
+		assertParametersSizeIs(1, lambda.getParameters());
+		final CtParameter parameter = (CtParameter) lambda.getParameters().get(0);
+		assertParameterTypedBy(Foo.Person.class, parameter);
+		assertParameterIsNamedBy("p", parameter);
+		assertHasExpressionBody(lambda);
 
-		assertPrintLambda(lambda, "((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))");
+		assertIsWellPrinted("((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))", lambda);
 	}
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithMultiParameters() throws Exception {
 		final CtLambda lambda = getLambdaByName("lambda$3");
 
-		assertType(lambda, Foo.CheckPersons.class);
-		assertParametersSize(2, lambda.getParameters());
-		assertParameterTyped((CtParameter) lambda.getParameters().get(0), Foo.Person.class, "p1");
-		assertParameterTyped((CtParameter) lambda.getParameters().get(1), Foo.Person.class, "p2");
-		assertExpressionBody(lambda);
+		assertTypedBy(Foo.CheckPersons.class, lambda.getType());
+		assertParametersSizeIs(2, lambda.getParameters());
+		final CtParameter parameter1 = (CtParameter) lambda.getParameters().get(0);
+		assertParameterTypedBy(Foo.Person.class, parameter1);
+		assertParameterIsNamedBy("p1", parameter1);
+		final CtParameter parameter2 = (CtParameter) lambda.getParameters().get(1);
+		assertParameterTypedBy(Foo.Person.class, parameter2);
+		assertParameterIsNamedBy("p2", parameter2);
+		assertHasExpressionBody(lambda);
 
-		assertPrintLambda(lambda,
-				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))");
+		assertIsWellPrinted(
+				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))", lambda);
 	}
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithParameterTyped() throws Exception {
 		final CtLambda lambda = getLambdaByName("lambda$4");
 
-		assertType(lambda, Predicate.class);
-		assertParametersSize(1, lambda.getParameters());
-		assertParameterTyped((CtParameter) lambda.getParameters().get(0), Foo.Person.class, "p");
-		assertExpressionBody(lambda);
+		assertTypedBy(Predicate.class, lambda.getType());
+		assertParametersSizeIs(1, lambda.getParameters());
+		final CtParameter parameter = (CtParameter) lambda.getParameters().get(0);
+		assertParameterTypedBy(Foo.Person.class, parameter);
+		assertParameterIsNamedBy("p", parameter);
+		assertHasExpressionBody(lambda);
 
-		assertPrintLambda(lambda, "((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))");
+		assertIsWellPrinted("((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))", lambda);
 	}
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithMultiParametersTyped() throws Exception {
 		final CtLambda lambda = getLambdaByName("lambda$5");
 
-		assertType(lambda, Foo.CheckPersons.class);
-		assertParametersSize(2, lambda.getParameters());
-		assertParameterTyped((CtParameter) lambda.getParameters().get(0), Foo.Person.class, "p1");
-		assertParameterTyped((CtParameter) lambda.getParameters().get(1), Foo.Person.class, "p2");
-		assertExpressionBody(lambda);
+		assertTypedBy(Foo.CheckPersons.class, lambda.getType());
+		assertParametersSizeIs(2, lambda.getParameters());
+		final CtParameter parameter1 = (CtParameter) lambda.getParameters().get(0);
+		assertParameterTypedBy(Foo.Person.class, parameter1);
+		assertParameterIsNamedBy("p1", parameter1);
+		final CtParameter parameter2 = (CtParameter) lambda.getParameters().get(1);
+		assertParameterTypedBy(Foo.Person.class, parameter2);
+		assertParameterIsNamedBy("p2", parameter2);
+		assertHasExpressionBody(lambda);
 
-		assertPrintLambda(lambda,
-				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))");
+		assertIsWellPrinted(
+				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))", lambda);
 	}
 
 	@Test
 	public void testLambdaExpressionWithStatementBodyAndWithoutParameters() throws Exception {
 		final CtLambda lambda = getLambdaByName("lambda$6");
 
-		assertType(lambda, Foo.Check.class);
-		assertParametersSize(0, lambda.getParameters());
+		assertTypedBy(Foo.Check.class, lambda.getType());
+		assertParametersSizeIs(0, lambda.getParameters());
 		assertStatementBody(lambda);
 
-		assertPrintLambda(lambda, "((spoon.test.lambda.testclasses.Foo.Check)(() -> {\n"
+		assertIsWellPrinted("((spoon.test.lambda.testclasses.Foo.Check)(() -> {\n"
 				+ "    java.lang.System.err.println(\"\");\n"
 				+ "    return false;\n"
-				+ "}))");
+				+ "}))", lambda);
 	}
 
 	@Test
 	public void testLambdaExpressionWithStatementBodyAndWithParameter() throws Exception {
 		final CtLambda lambda = getLambdaByName("lambda$7");
 
-		assertType(lambda, Predicate.class);
-		assertParametersSize(1, lambda.getParameters());
-		assertParameterTyped((CtParameter) lambda.getParameters().get(0), Foo.Person.class, "p");
+		assertTypedBy(Predicate.class, lambda.getType());
+		assertParametersSizeIs(1, lambda.getParameters());
+		final CtParameter parameter = (CtParameter) lambda.getParameters().get(0);
+		assertParameterTypedBy(Foo.Person.class, parameter);
+		assertParameterIsNamedBy("p", parameter);
 		assertStatementBody(lambda);
 
-		assertPrintLambda(lambda, "((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> {\n"
+		assertIsWellPrinted("((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> {\n"
 				+ "    p.doSomething();\n"
 				+ "    return (p.age) > 10;\n"
-				+ "}))");
+				+ "}))", lambda);
 	}
 
 	@Test
 	public void testLambdaExpressionInIfConditional() throws Exception {
 		final CtLambda lambda = getLambdaByName("lambda$8");
 
-		assertType(lambda, Predicate.class);
-		assertParametersSize(1, lambda.getParameters());
-		assertParameterTyped((CtParameter<?>) lambda.getParameters().get(0), Foo.Person.class, "p");
-		assertExpressionBody(lambda);
+		assertTypedBy(Predicate.class, lambda.getType());
+		assertParametersSizeIs(1, lambda.getParameters());
+		final CtParameter parameter = (CtParameter) lambda.getParameters().get(0);
+		assertParameterTypedBy(Foo.Person.class, parameter);
+		assertParameterIsNamedBy("p", parameter);
+		assertHasExpressionBody(lambda);
 
 		final CtMethod method = foo.getElements(new NameFilter<CtMethod>("m8")).get(0);
 		final CtIf condition = method.getElements(new AbstractFilter<CtIf>(CtIf.class) {
@@ -160,24 +176,14 @@ public class LambdaTest {
 
 	@Test
 	public void testCompileLambdaGeneratedBySpoon() throws Exception {
-		assertTrue(TestUtils.canBeBuild(new File("./target/spooned/spoon/test/lambda/testclasses/"), 8));
+		TestUtils.canBeBuild(new File("./target/spooned/spoon/test/lambda/testclasses/"), 8);
 	}
 
-	private void assertParameterTyped(CtParameter parameter, Class<Foo.Person> expectedType, String name) {
-		assertNotNull("Lambda has a parameter typed", parameter.getType());
-		assertEquals("Lambda has a parameter typed by", expectedType, parameter.getType().getActualClass());
-		assertNameParameter(parameter, name);
+	private void assertTypedBy(Class<?> expectedType, CtTypeReference type) {
+		assertEquals("Lambda must be typed", expectedType, type.getActualClass());
 	}
 
-	private void assertNameParameter(CtParameter parameter, String name) {
-		assertEquals("Lambda has a parameter with a name", name, parameter.getSimpleName());
-	}
-
-	private void assertPrintLambda(CtLambda lambda, String expected) {
-		assertEquals("Lambda must be well printed", expected, lambda.toString());
-	}
-
-	private void assertParametersSize(int nbParameters, List<CtParameter<?>> parameters) {
+	private void assertParametersSizeIs(int nbParameters, List<CtParameter<?>> parameters) {
 		if (nbParameters == 0) {
 			assertEquals("Lambda hasn't parameters", nbParameters, parameters.size());
 		} else {
@@ -185,7 +191,12 @@ public class LambdaTest {
 		}
 	}
 
-	private void assertExpressionBody(CtLambda lambda) {
+	private void assertParameterTypedBy(Class<?> expectedType, CtParameter parameter) {
+		assertNotNull("Lambda has a parameter typed", parameter.getType());
+		assertEquals("Lambda has a parameter typed by", expectedType, parameter.getType().getActualClass());
+	}
+
+	private void assertHasExpressionBody(CtLambda lambda) {
 		assertNotNull("Lambda has an expression for its body.", lambda.getExpression());
 		assertNull("Lambda don't have a list of statements (body) for its body", lambda.getBody());
 	}
@@ -195,8 +206,12 @@ public class LambdaTest {
 		assertNull("Lambda don't have an expression for its body", lambda.getExpression());
 	}
 
-	private void assertType(CtLambda lambda, Class<?> expectedType) {
-		assertEquals("Lambda must be typed", expectedType, lambda.getType().getActualClass());
+	private void assertParameterIsNamedBy(String name, CtParameter<?> parameter) {
+		assertEquals("Lambda has a parameter with a name", name, parameter.getSimpleName());
+	}
+
+	private void assertIsWellPrinted(String expected, CtLambda lambda) {
+		assertEquals("Lambda must be well printed", expected, lambda.toString());
 	}
 
 	private CtLambda getLambdaByName(String name) {

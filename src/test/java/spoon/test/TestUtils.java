@@ -53,16 +53,16 @@ public class TestUtils {
 		return comp.getFactory();
 	}
 
-	public static boolean canBeBuild(File testDirectory, int complianceLevel) throws IOException {
+	public static void canBeBuild(File testDirectory, int complianceLevel) throws IOException {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(complianceLevel);
 		final SpoonCompiler compiler = launcher.createCompiler(factory);
 		compiler.addInputSource(testDirectory);
 		try {
-			return compiler.build();
+			compiler.build();
 		} catch (Exception e) {
-			return false;
+			throw new AssertionError("Can't compile " + testDirectory.getName(), e);
 		}
 	}
 

@@ -140,7 +140,7 @@ public class MethodReferenceTest {
 
 	@Test
 	public void testCompileMethodReferenceGeneratedBySpoon() throws Exception {
-		assertTrue(TestUtils.canBeBuild(new File("./target/spooned/spoon/test/methodreference/testclasses/"), 8));
+		TestUtils.canBeBuild(new File("./target/spooned/spoon/test/methodreference/testclasses/"), 8);
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference type) {
