@@ -17,14 +17,6 @@
 
 package spoon.support.reflect.declaration;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import spoon.delegate.ModifiableDelegate;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -37,13 +29,19 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
-import spoon.support.delegate.ModifiableDelegateImpl;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements CtSimpleType<T> {
 
 	private static final long serialVersionUID = 1L;
 
-	ModifiableDelegate modifiableDelegate = new ModifiableDelegateImpl();
+	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
 
 	public <F> boolean addField(CtField<F> field) {
 		if (!this.fields.contains(field)) {
@@ -222,37 +220,52 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements 
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		return modifiableDelegate.getModifiers();
+		return modifiers;
 	}
 
 	@Override
 	public boolean hasModifier(ModifierKind modifier) {
-		return modifiableDelegate.hasModifier(modifier);
+		return getModifiers().contains(modifier);
 	}
 
 	@Override
 	public void setModifiers(Set<ModifierKind> modifiers) {
-		modifiableDelegate.setModifiers(modifiers);
+		this.modifiers = modifiers;
 	}
 
 	@Override
 	public boolean addModifier(ModifierKind modifier) {
-		return modifiableDelegate.addModifier(modifier);
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		return modifiers.add(modifier);
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		return modifiableDelegate.removeModifier(modifier);
+		return modifiers.remove(modifier);
 	}
 
 	@Override
 	public void setVisibility(ModifierKind visibility) {
-		modifiableDelegate.setVisibility(visibility);
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		getModifiers().remove(ModifierKind.PUBLIC);
+		getModifiers().remove(ModifierKind.PROTECTED);
+		getModifiers().remove(ModifierKind.PRIVATE);
+		getModifiers().add(visibility);
 	}
 
 	@Override
 	public ModifierKind getVisibility() {
-		return modifiableDelegate.getVisibility();
+		if (getModifiers().contains(ModifierKind.PUBLIC))
+			return ModifierKind.PUBLIC;
+		if (getModifiers().contains(ModifierKind.PROTECTED))
+			return ModifierKind.PROTECTED;
+		if (getModifiers().contains(ModifierKind.PRIVATE))
+			return ModifierKind.PRIVATE;
+		return null;
 	}
 
 }

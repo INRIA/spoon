@@ -1,13 +1,11 @@
 package spoon.support.reflect.code;
 
-import spoon.delegate.ModifiableDelegate;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.delegate.ModifiableDelegateImpl;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	List<CtTypeReference<?>> types = EMPTY_LIST();
 
-	ModifiableDelegate modifiableDelegate = new ModifiableDelegateImpl();
+	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCatchVariable(this);
@@ -81,36 +79,51 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		return modifiableDelegate.getModifiers();
+		return modifiers;
 	}
 
 	@Override
 	public boolean hasModifier(ModifierKind modifier) {
-		return modifiableDelegate.hasModifier(modifier);
+		return getModifiers().contains(modifier);
 	}
 
 	@Override
 	public void setModifiers(Set<ModifierKind> modifiers) {
-		modifiableDelegate.setModifiers(modifiers);
+		this.modifiers = modifiers;
 	}
 
 	@Override
 	public boolean addModifier(ModifierKind modifier) {
-		return modifiableDelegate.addModifier(modifier);
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		return modifiers.add(modifier);
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		return modifiableDelegate.removeModifier(modifier);
+		return modifiers.remove(modifier);
 	}
 
 	@Override
 	public void setVisibility(ModifierKind visibility) {
-		modifiableDelegate.setVisibility(visibility);
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		getModifiers().remove(ModifierKind.PUBLIC);
+		getModifiers().remove(ModifierKind.PROTECTED);
+		getModifiers().remove(ModifierKind.PRIVATE);
+		getModifiers().add(visibility);
 	}
 
 	@Override
 	public ModifierKind getVisibility() {
-		return modifiableDelegate.getVisibility();
+		if (getModifiers().contains(ModifierKind.PUBLIC))
+			return ModifierKind.PUBLIC;
+		if (getModifiers().contains(ModifierKind.PROTECTED))
+			return ModifierKind.PROTECTED;
+		if (getModifiers().contains(ModifierKind.PRIVATE))
+			return ModifierKind.PRIVATE;
+		return null;
 	}
 }

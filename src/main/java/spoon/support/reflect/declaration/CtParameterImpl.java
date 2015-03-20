@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.declaration;
 
-import spoon.delegate.ModifiableDelegate;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
@@ -25,9 +24,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.delegate.ModifiableDelegateImpl;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtParameter}.
@@ -41,9 +40,9 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 
 	CtTypeReference<T> type;
 
-	ModifiableDelegate modifiableDelegate = new ModifiableDelegateImpl();
-
 	boolean varArgs = false;
+
+	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
 
 	public CtParameterImpl() {
 		super();
@@ -90,36 +89,51 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		return modifiableDelegate.getModifiers();
+		return modifiers;
 	}
 
 	@Override
 	public boolean hasModifier(ModifierKind modifier) {
-		return modifiableDelegate.hasModifier(modifier);
+		return getModifiers().contains(modifier);
 	}
 
 	@Override
 	public void setModifiers(Set<ModifierKind> modifiers) {
-		modifiableDelegate.setModifiers(modifiers);
+		this.modifiers = modifiers;
 	}
 
 	@Override
 	public boolean addModifier(ModifierKind modifier) {
-		return modifiableDelegate.addModifier(modifier);
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		return modifiers.add(modifier);
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		return modifiableDelegate.removeModifier(modifier);
+		return modifiers.remove(modifier);
 	}
 
 	@Override
 	public void setVisibility(ModifierKind visibility) {
-		modifiableDelegate.setVisibility(visibility);
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		getModifiers().remove(ModifierKind.PUBLIC);
+		getModifiers().remove(ModifierKind.PROTECTED);
+		getModifiers().remove(ModifierKind.PRIVATE);
+		getModifiers().add(visibility);
 	}
 
 	@Override
 	public ModifierKind getVisibility() {
-		return modifiableDelegate.getVisibility();
+		if (getModifiers().contains(ModifierKind.PUBLIC))
+			return ModifierKind.PUBLIC;
+		if (getModifiers().contains(ModifierKind.PROTECTED))
+			return ModifierKind.PROTECTED;
+		if (getModifiers().contains(ModifierKind.PRIVATE))
+			return ModifierKind.PRIVATE;
+		return null;
 	}
 }

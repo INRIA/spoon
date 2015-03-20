@@ -17,12 +17,12 @@
 
 package spoon.reflect.declaration;
 
-import java.util.List;
-import java.util.Set;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * This element represents an executable element such as a method, a
@@ -35,33 +35,27 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 	 */
 	public static final String EXECUTABLE_SEPARATOR = "#";
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
+	 */
+	CtExecutableReference<R> getReference();
+
 	/**
 	 * Gets the body expression.
 	 */
 	<B extends R> CtBlock<B> getBody();
 
 	/**
-	 * Gets the parameters list.
-	 */
-	List<CtParameter<?>> getParameters();
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
-	 */
-	CtExecutableReference<R> getReference();
-
-	/**
-	 * Returns the exceptions and other throwables listed in this method or
-	 * constructor's <tt>throws</tt> clause.
-	 */
-	Set<CtTypeReference<? extends Throwable>> getThrownTypes();
-
-	/**
 	 * Sets the body expression.
 	 */
 	<B extends R> void setBody(CtBlock<B> body);
+
+	/**
+	 * Gets the parameters list.
+	 */
+	List<CtParameter<?>> getParameters();
 
 	/**
 	 * Sets the parameters.
@@ -70,7 +64,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 
 	/**
 	 * Add a parameter for this executable
-	 * 
+	 *
 	 * @param parameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
@@ -78,11 +72,17 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 
 	/**
 	 * Remove a parameter for this executable
-	 * 
+	 *
 	 * @param parameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeParameter(CtParameter<?> parameter);
+
+	/**
+	 * Returns the exceptions and other throwables listed in this method or
+	 * constructor's <tt>throws</tt> clause.
+	 */
+	Set<CtTypeReference<? extends Throwable>> getThrownTypes();
 
 	/**
 	 * Sets the thrown types.
@@ -91,7 +91,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 
 	/**
 	 * add a thrown type.
-	 * 
+	 *
 	 * @param throwType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
@@ -99,10 +99,9 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 
 	/**
 	 * remove a thrown type.
-	 * 
+	 *
 	 * @param throwType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeThrownType(CtTypeReference<? extends Throwable> throwType);
-
 }
