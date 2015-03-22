@@ -1,6 +1,6 @@
 package spoon.test.parent;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +16,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.NameFilter;
 
@@ -75,4 +76,17 @@ public class ParentTest {
 		assertEquals(assignment, newLit2.getParent());
 				
 	}
+	
+	@Test
+	public void testParentPackage() throws Exception {
+		// addType should set Parent
+		CtClass clazz = factory.Core().createClass();
+		clazz.setSimpleName("Foo");
+		CtPackage pack = factory.Core().createPackage();
+		pack.setSimpleName("bar");
+		pack.addType(clazz);
+		assertTrue(pack.getTypes().contains(clazz));
+		assertEquals(pack, clazz.getParent());
+	}
+
 }
