@@ -9,6 +9,7 @@ import java.util.HashSet;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -246,5 +247,48 @@ public class SignatureTest {
 		
 		
 	}
+	
+	@Test
+	public void testUnboundFieldSignature(){
+		
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
+				new StandardEnvironment());
+		factory.getEnvironment().setNoClasspath(true);
 
+		
+		String content = "" + "class PR {"
+				+ "public Object foo(String p) {"
+				+ " this.mfield = p; 	"
+				+ " return null;" 
+				+ "}"
+				+ "};";
+
+		SpoonCompiler builder = new JDTSnippetCompiler(factory, content);
+		try{
+		builder.build();
+		fail();
+		}
+		catch(Exception e){
+			//must fail
+		}
+		
+		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
+		assertNotNull(clazz1);
+		
+		//**FIRST PART: passing local variable access.
+		///--------From the first method we take the method invocations
+		CtMethod<?> methodString = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+
+		CtAssignment invoToInt1 = (CtAssignment) methodString.getBody().getStatement(0);
+	
+		String sigAssign = invoToInt1.getSignature();
+		
+		CtExpression<?> left = invoToInt1.getAssigned();
+		String sigleft = left.getSignature();
+		assertNotEquals("",sigleft.trim());
+	
+		assertTrue(sigAssign.contains("<no type>"));
+	
+	}
+	
 }

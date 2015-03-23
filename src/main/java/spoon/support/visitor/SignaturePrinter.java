@@ -294,16 +294,14 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		// TODO: Fix this null pointer catch
-		try {
-			write(reference.getType().getQualifiedName()).write(" ");
-			write(reference.getDeclaringType().getQualifiedName());
-			write(CtField.FIELD_SEPARATOR);
-			write(reference.getSimpleName());
-		} catch (NullPointerException npe) {
-			System.err
-					.println("Null Pointer Exception in SignaturePrinter.visitCtFieldReference()");
-		}
+		if(reference.getType() != null)
+			write(reference.getType().getQualifiedName());
+		else
+			write("<no type>");
+		write(" ");
+		write(reference.getDeclaringType().getQualifiedName());
+		write(CtField.FIELD_SEPARATOR);
+		write(reference.getSimpleName());
 	}
 
 	public void visitCtFor(CtFor forLoop) {
@@ -377,13 +375,9 @@ public class SignaturePrinter implements CtVisitor {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
-		try {
-			write(reference.getType().getQualifiedName()).write(" ");
-			write(reference.getSimpleName());
-		} catch (NullPointerException npe) {
-			System.err
-					.println("Null Pointer Exception in SignaturePrinter.visitCtFieldReference()");
-		}
+		write(reference.getType().getQualifiedName()).write(" ");
+		write(reference.getSimpleName());
+		
 	}
 
 	@Override
@@ -495,13 +489,8 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
-		try {
-			write(reference.getType().getQualifiedName()).write(" ");
-			write(reference.getSimpleName());
-		} catch (NullPointerException npe) {
-			System.err
-					.println("Null Pointer Exception in SignaturePrinter.visitCtFieldReference()");
-		}
+		write(reference.getType().getQualifiedName()).write(" ");
+		write(reference.getSimpleName());
 	}
 
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
