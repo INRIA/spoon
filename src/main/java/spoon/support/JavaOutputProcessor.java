@@ -62,6 +62,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 		this.printer = printer;
 	}
 
+	/** usedful for testing */
 	public JavaOutputProcessor() {
 	}
 

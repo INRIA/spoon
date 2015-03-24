@@ -31,8 +31,8 @@ public class NoClasspathTest {
 	public void test() throws Exception {
 		// do we still have a correct model when the complete classpath is not given as input?
 		Launcher spoon = new Launcher();
-		spoon.getFactory().getEnvironment().setNoClasspath(true);
-		spoon.addInputResource(new FileSystemFolder(new File("./src/test/resources/spoon/test/noclasspath")));
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath");
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		CtClass<Object> clazz = factory.Class().get("Foo"); 

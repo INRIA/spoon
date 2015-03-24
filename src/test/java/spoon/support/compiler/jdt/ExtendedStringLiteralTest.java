@@ -10,6 +10,7 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonAPI;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonResourceHelper;
@@ -24,13 +25,13 @@ public class ExtendedStringLiteralTest {
 	public void testExtendedStringLiteral() throws Exception {
 		Launcher launcher = new Launcher() {
 			@Override
-			public SpoonCompiler createCompiler(Factory factory) {
-				return new JDTBasedSpoonCompiler(factory) {
+			public SpoonCompiler createCompiler() {
+				return new JDTBasedSpoonCompiler(getFactory()) {
 					@Override
 					protected JDTBatchCompiler createBatchCompiler(boolean useFactory) {
 						return new JDTBatchCompiler(this, useFactory) {
-							public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files)
-									throws Exception {
+							@Override
+							public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files) {
 								startTime = System.currentTimeMillis();
 								INameEnvironment environment = this.jdtCompiler.environment;
 								if (environment == null) {

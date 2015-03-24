@@ -7,6 +7,7 @@ import static spoon.test.TestUtils.build;
 import org.junit.Assert;
 import org.junit.Test;
 
+import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.CoreFactory;
@@ -39,16 +40,21 @@ public class FactoryTest {
 		class MyCtMethod<T> extends CtMethodImpl<T>{};
 		
 		@SuppressWarnings("serial")
-		CoreFactory cf = new DefaultCoreFactory() {
+		final CoreFactory specialCoreFactory = new DefaultCoreFactory() {
 			@Override
 			public <T> CtMethod<T> createMethod() {
 				return new MyCtMethod<T>();				
 			}
 		};
 		
-		Factory myFactory = new FactoryImpl(cf, new StandardEnvironment());
+		Launcher launcher = new Launcher() {
+			@Override
+			public Factory createFactory() {
+				return new FactoryImpl(specialCoreFactory, new StandardEnvironment());
+			}
+		};
 		
-		CtClass<?> type = TestUtils.build("spoon.test", "SampleClass", myFactory);
+		CtClass<?> type = TestUtils.build("spoon.test", "SampleClass", launcher.getFactory());
 		
 		CtMethod<?> m = type.getMethodsByName("method3").get(0);
 		

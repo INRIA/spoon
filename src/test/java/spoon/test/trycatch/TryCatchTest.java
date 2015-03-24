@@ -46,10 +46,9 @@ public class TryCatchTest {
 
 	}
 
-	Factory factory = createFactory();
-
 	@Test
 	public void testFullyQualifiedException() {
+		Factory factory = createFactory();
 		// test the order of the model
 		CtClass<?> clazz = factory
 				.Code()
@@ -64,6 +63,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testCatchOrder() {
+		Factory factory = createFactory();
 		// test the order of the model
 		CtClass<?> clazz = factory
 				.Code()
@@ -88,6 +88,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testExceptionJava7() {
+		Factory factory = createFactory();
 		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
@@ -165,10 +166,10 @@ public class TryCatchTest {
 	@Test
 	public void testMultiTryCatchWithCustomExceptions() throws Exception {
 		final Launcher launcher = new Launcher();
-		Factory factory = launcher.createFactory();
-		final SpoonCompiler compiler = launcher.createCompiler(factory);
+		final SpoonCompiler compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/trycatch/testclasses/"));
 		compiler.build();
+		Factory factory = compiler.getFactory();
 
 		final CtClass<?> foo = (CtClass<?>) factory.Type().get(Foo.class);
 		final CtCatch ctCatch = foo.getElements(new AbstractFilter<CtCatch>(CtCatch.class) {
@@ -191,8 +192,7 @@ public class TryCatchTest {
 		});
 
 		final Launcher launcher = new Launcher();
-		Factory factory = launcher.createFactory();
-		final SpoonCompiler newCompiler = launcher.createCompiler(factory);
+		final SpoonCompiler newCompiler = launcher.createCompiler();
 		newCompiler.addInputSource(new File("./target/spooned/spoon/test/trycatch/testclasses/"));
 		try {
 			assertTrue(newCompiler.build());

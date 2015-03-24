@@ -105,8 +105,7 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 		return culist.toArray(new CompilationUnit[0]);
 	}
 
-	public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files)
-			throws Exception {
+	public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files) {
 		startTime = System.currentTimeMillis();
 		INameEnvironment environment = this.jdtCompiler.environment;
 		if (environment == null) {

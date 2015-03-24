@@ -5,11 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
+
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.test.TestUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(Parameterized.class)
 public class CtInheritanceScannerTest<T extends CtVisitable> {
 
-	private static Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+	private static Factory factory = TestUtils.createFactory();
 
 	@Parameterized.Parameters(name = "{0}")
 	public static Collection<Object[]> data() throws Exception {

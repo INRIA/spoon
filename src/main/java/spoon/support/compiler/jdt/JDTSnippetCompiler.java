@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationError;
@@ -23,9 +24,9 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 	}
 
 	@Override
-	public boolean build() throws Exception {
+	public boolean build() {
 		if (factory == null) {
-			throw new Exception("Factory not initialized");
+			throw new SpoonException("Factory not initialized");
 		}
 
 		boolean srcSuccess;
@@ -42,7 +43,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 	}
 
 	@Override
-	protected boolean buildSources() throws Exception {
+	protected boolean buildSources() {
 		if (sources.getAllJavaFiles().isEmpty())
 			return true;
 		// long t=System.currentTimeMillis();
@@ -94,14 +95,8 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		args.add(f.getPath());
 		getFactory().getEnvironment().debugMessage("build args: " + args);
 
-		try {
-			batchCompiler.configure(args.toArray(new String[0]));
-		} catch (Exception e) {
-			Launcher.logger.error("build args: " + args);
-			Launcher.logger.error("sources: " + sources.getAllJavaFiles());
-			Launcher.logger.error(e.getMessage(), e);
-			throw e;
-		}
+		batchCompiler.configure(args.toArray(new String[0]));
+		
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources
 				.getAllJavaFiles());
 

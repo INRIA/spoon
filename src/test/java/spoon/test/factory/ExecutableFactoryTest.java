@@ -14,14 +14,13 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.test.TestUtils;
 
 public class ExecutableFactoryTest {
 
 	@Test
 	public void testCreateReference() {
-		CoreFactory cf = new DefaultCoreFactory();
-		Environment e = new StandardEnvironment();
-		Factory f = new FactoryImpl(cf,e);
+		Factory f = TestUtils.createFactory();
 		ExecutableFactory ef = f.Executable();
 		String signature = "boolean Object#equals(Object)";
 		CtExecutableReference<Object> eref = ef.createReference(signature);
