@@ -60,6 +60,11 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 		public void accept(spoon.reflect.visitor.CtVisitor visitor) {
 		};
+		
+		@Override
+		public CtElement getParent() throws ParentNotInitializedException {
+			return null;
+		};
 	};
 
 	private static final List<Object> EMPTY_LIST = Collections
@@ -111,6 +116,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	public CtElementImpl() {
 		super();
+		setParent(this.ROOT_ELEMENT);
 	}
 
 	public int compareTo(CtElement o) {
@@ -185,9 +191,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 										: " (?)"));
 			}
             throw new ParentNotInitializedException(exceptionMsg);
-		}
-		if (parent == ROOT_ELEMENT) {
-			return null;
 		}
 		return parent;
 	}

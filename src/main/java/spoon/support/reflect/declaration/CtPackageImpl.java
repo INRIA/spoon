@@ -21,8 +21,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -60,7 +62,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		}
 		return getParent(CtPackage.class);
 	}
-
+	
 	public CtPackage getPackage(String name) {
 		for (CtPackage p : packs) {
 			if (p.getSimpleName().equals(name))
@@ -109,6 +111,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	@Override
 	public void addType(CtSimpleType<?> type) {
 		types.add(type);
+		type.setParent(this);
 	}
 
 	@Override
