@@ -28,7 +28,7 @@ import spoon.reflect.declaration.ModifierKind;
  * {@link spoon.reflect.declaration.CtType} or sub-type.
  */
 public interface CtTypeReference<T> extends CtReference,
-		CtGenericElementReference {
+		CtGenericElementReference, CtTypeAnnotableReference {
 
 	/**
 	 * The name of the null type ("&lt;nulltype&gt;").
@@ -164,5 +164,4 @@ public interface CtTypeReference<T> extends CtReference,
 	 * Returns true if this type is an interface.
 	 */
 	boolean isInterface();
-	
 }

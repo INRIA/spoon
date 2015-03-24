@@ -29,6 +29,7 @@ import java.util.TreeSet;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtSimpleType;
@@ -321,19 +322,26 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	public boolean isFinal() {
 		CtExecutable<T> e = getDeclaration();
 		if (e != null) {
-			return e.hasModifier(ModifierKind.FINAL);
+			if (e instanceof CtMethod) {
+				return ((CtMethod) e).hasModifier(ModifierKind.FINAL);
+			} else if (e instanceof CtConstructor) {
+				return ((CtConstructor) e).hasModifier(ModifierKind.FINAL);
+			}
+			return false;
 		}
 		Method m = getActualMethod();
-		if (m != null) {
-			return Modifier.isFinal(m.getModifiers());
-		}
-		return false;
+		return m != null && Modifier.isFinal(m.getModifiers());
 	}
 
 	public Set<ModifierKind> getModifiers() {
 		CtExecutable<T> e = getDeclaration();
 		if (e != null) {
-			return e.getModifiers();
+			if (e instanceof CtMethod) {
+				return ((CtMethod) e).getModifiers();
+			} else if (e instanceof CtConstructor) {
+				return ((CtConstructor) e).getModifiers();
+			}
+			return CtElementImpl.EMPTY_SET();
 		}
 		Method m = getActualMethod();
 		if (m != null) {

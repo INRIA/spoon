@@ -38,12 +38,14 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -60,6 +62,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -340,9 +343,9 @@ public class SignaturePrinter implements CtVisitor {
 		write("if (");
 		scan(ifElement.getCondition());
 		write(") then ");
-		scan(ifElement.getThenStatement());
+		scan((CtStatement) ifElement.getThenStatement());
 		write(" else ");
-		scan(ifElement.getElseStatement());
+		scan((CtStatement) ifElement.getElseStatement());
 	}
 
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
@@ -452,6 +455,26 @@ public class SignaturePrinter implements CtVisitor {
 		scan(newClass.getAnonymousClass());
 	}
 
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+		write("(");
+		scan(lambda.getType());
+		write(") (");
+		if (!lambda.getParameters().isEmpty()) {
+			for (CtParameter parameter : lambda.getParameters()) {
+				scan(parameter);
+				write(",");
+			}
+			clearLast();
+		}
+		write(")");
+	}
+
+	@Override
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
+		write(expression.toString());
+	}
+
 	public <T> void visitCtCodeSnippetExpression(
 			CtCodeSnippetExpression<T> expression) {
 		write(expression.getValue());
@@ -551,6 +574,11 @@ public class SignaturePrinter implements CtVisitor {
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 		write(reference.getQualifiedName());
+	}
+
+	@Override
+	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+		scan(typeAccess.getType());
 	}
 
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {

@@ -36,12 +36,14 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
@@ -60,6 +62,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -96,6 +99,7 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeAnnotableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
@@ -240,7 +244,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract named element.
 	 */
 	public void scanCtNamedElement(CtNamedElement e) {
-
 	}
 
 	/**
@@ -279,6 +282,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract typed element.
 	 */
 	public <T> void scanCtTypedElement(CtTypedElement<T> e) {
+	}
+
+	/**
+	 * Scans a type annotation.
+	 */
+	public void scanCtTypeAnnotableReference(CtTypeAnnotableReference e) {
 	}
 
 	/**
@@ -612,13 +621,33 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		visitCtConstructorCall(e);
 	}
 
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtExecutable(e);
+		scanCtNamedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
+	}
+
+	@Override
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> e) {
+		scanCtTargetedExpression(e);
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
+	}
+
 	public <T, A extends T> void visitCtOperatorAssignement(
 			CtOperatorAssignment<T, A> assignment) {
 	}
 
 	public void visitCtPackage(CtPackage e) {
 		scanCtNamedElement(e);
-		scanCtModifiable(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
@@ -703,6 +732,16 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtTypeReference(CtTypeReference<T> e) {
 		scanCtReference(e);
 		scanCtGenericElementReference(e);
+		scanCtTypeAnnotableReference(e);
+		scanCtVisitable(e);
+	}
+
+	@Override
+	public <T> void visitCtTypeAccess(CtTypeAccess<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
 	}
 

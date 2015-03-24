@@ -24,7 +24,7 @@ import spoon.reflect.reference.CtParameterReference;
  * 
  * @see CtExecutable
  */
-public interface CtParameter<T> extends CtNamedElement, CtVariable<T> {
+public interface CtParameter<T> extends CtVariable<T> {
 
 	/**
 	 * Gets the executable that is the parent declaration of this parameter

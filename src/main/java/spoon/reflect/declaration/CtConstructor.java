@@ -22,7 +22,7 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * This element defines a constructor declaration.
  */
-public interface CtConstructor<T> extends CtExecutable<T> {
+public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtGenericElement {
 
 	/**
 	 * This operation is not allowed.

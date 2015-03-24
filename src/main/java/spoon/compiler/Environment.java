@@ -316,4 +316,14 @@ public interface Environment {
 	 * Sets the option copy-resources to copy all resources in a project on the folder destination.
 	 */
 	void setCopyResources(boolean copyResources);
+
+	/**
+	 * Returns the value of the option generate-javadoc.
+	 */
+	boolean isGenerateJavadoc();
+
+	/**
+	 * Sets the option generate-javadoc to generate javadoc of the project on the source generated.
+	 */
+	void setGenerateJavadoc(boolean generateJavadoc);
 }

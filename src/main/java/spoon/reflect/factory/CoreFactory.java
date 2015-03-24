@@ -35,12 +35,14 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -55,6 +57,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -297,6 +300,16 @@ public interface CoreFactory {
 	<T> CtNewClass<T> createNewClass();
 
 	/**
+	 * Creates a new anonymous method expression.
+	 */
+	<T> CtLambda<T> createLambda();
+
+	/**
+	 * Creates a new executable reference expression.
+	 */
+	<T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression();
+
+	/**
 	 * Creates a new operator assignment (like +=).
 	 */
 	<T, A extends T> CtOperatorAssignment<T, A> createOperatorAssignment();
@@ -376,6 +389,11 @@ public interface CoreFactory {
 	 * Creates a type reference.
 	 */
 	<T> CtTypeReference<T> createTypeReference();
+
+	/**
+	 * Creates a type access expression.
+	 */
+	<T> CtTypeAccess<T> createTypeAccess();
 
 	/**
 	 * Creates a unary operator expression.

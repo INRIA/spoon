@@ -160,7 +160,7 @@
 
   <properties>
     <java.src.version>1.6</java.src.version>
-    <java.test.version>1.7</java.test.version>
+    <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -186,7 +186,7 @@
     <dependency>
       <groupId>org.eclipse.jdt.core.compiler</groupId>
       <artifactId>ecj</artifactId>
-      <version>4.2.2</version>
+      <version>4.4</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

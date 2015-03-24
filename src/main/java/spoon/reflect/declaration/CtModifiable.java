@@ -24,7 +24,7 @@ import spoon.processing.FactoryAccessor;
 /**
  * This interface defines an element that accepts modifiers.
  */
-public interface CtModifiable extends CtElement, FactoryAccessor {
+public interface CtModifiable extends CtElement {
 	/**
 	 * Returns the modifiers of this element, excluding annotations. Implicit
 	 * modifiers, such as the {@code public} and {@code static} modifiers of

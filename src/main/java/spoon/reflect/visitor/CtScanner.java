@@ -36,18 +36,21 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
@@ -57,6 +60,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -410,8 +414,8 @@ public abstract class CtScanner implements CtVisitor {
 		enter(ifElement);
 		scan(ifElement.getAnnotations());
 		scan(ifElement.getCondition());
-		scan(ifElement.getThenStatement());
-		scan(ifElement.getElseStatement());
+		scan((CtStatement) ifElement.getThenStatement());
+		scan((CtStatement) ifElement.getElseStatement());
 		exit(ifElement);
 	}
 
@@ -518,8 +522,29 @@ public abstract class CtScanner implements CtVisitor {
 		exit(newClass);
 	}
 
-	public <T, A extends T> void visitCtOperatorAssignment(
-			CtOperatorAssignment<T, A> assignment) {
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+		enter(lambda);
+		scan(lambda.getAnnotations());
+		scan(lambda.getType());
+		scanReferences(lambda.getTypeCasts());
+		scan(lambda.getParameters());
+		scan(lambda.getBody());
+		scan(lambda.getExpression());
+		exit(lambda);
+	}
+
+	@Override
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
+		enter(expression);
+		scan(expression.getType());
+		scanReferences(expression.getTypeCasts());
+		scan(expression.getExecutable());
+		scan(expression.getTarget());
+		exit(expression);
+	}
+
+	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
 		enter(assignment);
 		scan(assignment.getAnnotations());
 		scan(assignment.getType());
@@ -635,6 +660,15 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getDeclaringType());
 		scanReferences(reference.getActualTypeArguments());
 		exitReference(reference);
+	}
+
+	@Override
+	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+		enter(typeAccess);
+		scan(typeAccess.getAnnotations());
+		scan(typeAccess.getType());
+		scanReferences(typeAccess.getTypeCasts());
+		exit(typeAccess);
 	}
 
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {

@@ -43,12 +43,14 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -63,6 +65,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -109,11 +112,13 @@ import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtContinueImpl;
 import spoon.support.reflect.code.CtDoImpl;
+import spoon.support.reflect.code.CtExecutableReferenceExpressionImpl;
 import spoon.support.reflect.code.CtFieldAccessImpl;
 import spoon.support.reflect.code.CtForEachImpl;
 import spoon.support.reflect.code.CtForImpl;
 import spoon.support.reflect.code.CtIfImpl;
 import spoon.support.reflect.code.CtInvocationImpl;
+import spoon.support.reflect.code.CtLambdaImpl;
 import spoon.support.reflect.code.CtLiteralImpl;
 import spoon.support.reflect.code.CtLocalVariableImpl;
 import spoon.support.reflect.code.CtNewArrayImpl;
@@ -128,6 +133,7 @@ import spoon.support.reflect.code.CtThisAccessImpl;
 import spoon.support.reflect.code.CtThrowImpl;
 import spoon.support.reflect.code.CtTryImpl;
 import spoon.support.reflect.code.CtTryWithResourceImpl;
+import spoon.support.reflect.code.CtTypeAccessImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableAccessImpl;
 import spoon.support.reflect.code.CtWhileImpl;
@@ -510,6 +516,20 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
+	@Override
+	public <T> CtLambda<T> createLambda() {
+		CtLambda<T> e = new CtLambdaImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression() {
+		CtExecutableReferenceExpression<T, E> e = new CtExecutableReferenceExpressionImpl<T, E>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
 	public <T, A extends T> CtOperatorAssignment<T, A> createOperatorAssignment() {
 		CtOperatorAssignment<T, A> e = new CtOperatorAssignmentImpl<T, A>();
 		e.setFactory(getMainFactory());
@@ -597,6 +617,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtTypeReference<T> createTypeReference() {
 		CtTypeReference<T> e = new CtTypeReferenceImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtTypeAccess<T> createTypeAccess() {
+		CtTypeAccess<T> e = new CtTypeAccessImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

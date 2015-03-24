@@ -17,13 +17,12 @@
 
 package spoon.reflect.declaration;
 
-import spoon.processing.FactoryAccessor;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
  * This abstract element defines a typed element.
  */
-public interface CtTypedElement<T> extends CtElement, FactoryAccessor {
+public interface CtTypedElement<T> extends CtElement {
 	/**
 	 * Gets this element's type.
 	 */

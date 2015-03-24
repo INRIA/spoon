@@ -17,11 +17,13 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
@@ -34,6 +36,7 @@ import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -430,6 +433,28 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtNewClass(newClass);
+	}
+
+	@Override
+	public <T> void visitCtLambda(CtLambda<T> lambda) {
+		if (child instanceof CtParameter) {
+			lambda.addParameter((CtParameter<?>) child);
+			return;
+		} else if (child instanceof CtBlock) {
+			lambda.setBody((CtBlock) child);
+			return;
+		} else if (child instanceof CtExpression) {
+			lambda.setExpression((CtExpression<T>) child);
+		}
+		super.visitCtLambda(lambda);
+	}
+
+	@Override
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
+		if (child instanceof CtExpression) {
+			expression.setTarget((E) child);
+		}
+		super.visitCtExecutableReferenceExpression(expression);
 	}
 
 	@Override

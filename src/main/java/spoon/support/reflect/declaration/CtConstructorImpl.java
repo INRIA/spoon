@@ -19,12 +19,21 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements
-		CtConstructor<T> {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConstructor<T> {
 	private static final long serialVersionUID = 1L;
+
+	List<CtTypeReference<?>> formalTypeParameters = EMPTY_LIST();
+
+	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
 
 	@Override
 	public void setSimpleName(String simpleName) {
@@ -40,10 +49,6 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements
 		visitor.visitCtConstructor(this);
 	}
 
-	// public CtType<T> getDeclaringType() {
-	// return super.getDeclaringType();
-	// }
-
 	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaringType() {
 		return (CtType<T>) parent;
@@ -58,4 +63,79 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements
 	public void setType(CtTypeReference<T> type) {
 	}
 
+	@Override
+	public List<CtTypeReference<?>> getFormalTypeParameters() {
+		return formalTypeParameters;
+	}
+
+	@Override
+	public boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+		if (formalTypeParameter == null) {
+			return false;
+		}
+		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+		}
+		return formalTypeParameters.add(formalTypeParameter);
+	}
+
+	@Override
+	public void setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
+		this.formalTypeParameters = formalTypeParameters;
+	}
+
+	@Override
+	public boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+		return formalTypeParameter != null && formalTypeParameters.remove(formalTypeParameter);
+	}
+
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		return modifiers;
+	}
+
+	@Override
+	public boolean hasModifier(ModifierKind modifier) {
+		return getModifiers().contains(modifier);
+	}
+
+	@Override
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		this.modifiers = modifiers;
+	}
+
+	@Override
+	public boolean addModifier(ModifierKind modifier) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		return modifiers.add(modifier);
+	}
+
+	@Override
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiers.remove(modifier);
+	}
+
+	@Override
+	public void setVisibility(ModifierKind visibility) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		getModifiers().remove(ModifierKind.PUBLIC);
+		getModifiers().remove(ModifierKind.PROTECTED);
+		getModifiers().remove(ModifierKind.PRIVATE);
+		getModifiers().add(visibility);
+	}
+
+	@Override
+	public ModifierKind getVisibility() {
+		if (getModifiers().contains(ModifierKind.PUBLIC))
+			return ModifierKind.PUBLIC;
+		if (getModifiers().contains(ModifierKind.PROTECTED))
+			return ModifierKind.PROTECTED;
+		if (getModifiers().contains(ModifierKind.PRIVATE))
+			return ModifierKind.PRIVATE;
+		return null;
+	}
 }

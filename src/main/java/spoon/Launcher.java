@@ -221,7 +221,7 @@ public class Launcher {
 			// java compliance
 			opt2 = new FlaggedOption("compliance");
 			opt2.setLongFlag("compliance");
-			opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6 or 7).");
+			opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6, 7 or 8).");
 			opt2.setStringParser(JSAP.INTEGER_PARSER);
 			opt2.setDefault("7");
 			jsap.registerParameter(opt2);
@@ -382,6 +382,14 @@ public class Launcher {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
+			// Enable generation of javadoc.
+			sw1 = new Switch("generate-javadoc");
+			sw1.setShortFlag('j');
+			sw1.setLongFlag("generate-javadoc");
+			sw1.setHelp("Enable the generation of the javadoc.");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+
 			return jsap;
 		} catch (JSAPException e) {
 			throw new SpoonException(e.getMessage(),e);
@@ -412,20 +420,17 @@ public class Launcher {
 							"output"), environment);
 			environment.setDefaultFileGenerator(printer);
 
-			environment.setVerbose(jsapActualArgs.getBoolean("verbose")
-					|| debug);
+			environment.setVerbose(jsapActualArgs.getBoolean("verbose") || debug);
 			environment.setDebug(debug);
 			environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
-			environment
-					.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
-			environment.setPreserveLineNumbers(jsapActualArgs
-					.getBoolean("lines"));
+			environment.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
+			environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
 
 			environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 			environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
-			environment.useSourceCodeFragments(jsapActualArgs
-					.getBoolean("fragments"));
+			environment.useSourceCodeFragments(jsapActualArgs.getBoolean("fragments"));
 			environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
+			environment.setGenerateJavadoc(jsapActualArgs.getBoolean("generate-javadoc"));
 
 			if (getArguments().getString("input") != null) {
 				for (String s : getArguments().getString("input").split(

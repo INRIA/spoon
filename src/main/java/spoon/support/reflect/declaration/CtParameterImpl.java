@@ -20,17 +20,20 @@ package spoon.support.reflect.declaration;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtParameter}.
  * 
  * @author Renaud Pawlak
  */
-public class CtParameterImpl<T> extends CtNamedElementImpl implements
-		CtParameter<T> {
+public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParameter<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<T> defaultExpression;
@@ -38,6 +41,8 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements
 	CtTypeReference<T> type;
 
 	boolean varArgs = false;
+
+	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
 
 	public CtParameterImpl() {
 		super();
@@ -82,4 +87,53 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements
 		this.varArgs = varArgs;
 	}
 
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		return modifiers;
+	}
+
+	@Override
+	public boolean hasModifier(ModifierKind modifier) {
+		return getModifiers().contains(modifier);
+	}
+
+	@Override
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		this.modifiers = modifiers;
+	}
+
+	@Override
+	public boolean addModifier(ModifierKind modifier) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		return modifiers.add(modifier);
+	}
+
+	@Override
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiers.remove(modifier);
+	}
+
+	@Override
+	public void setVisibility(ModifierKind visibility) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		getModifiers().remove(ModifierKind.PUBLIC);
+		getModifiers().remove(ModifierKind.PROTECTED);
+		getModifiers().remove(ModifierKind.PRIVATE);
+		getModifiers().add(visibility);
+	}
+
+	@Override
+	public ModifierKind getVisibility() {
+		if (getModifiers().contains(ModifierKind.PUBLIC))
+			return ModifierKind.PUBLIC;
+		if (getModifiers().contains(ModifierKind.PROTECTED))
+			return ModifierKind.PROTECTED;
+		if (getModifiers().contains(ModifierKind.PRIVATE))
+			return ModifierKind.PRIVATE;
+		return null;
+	}
 }

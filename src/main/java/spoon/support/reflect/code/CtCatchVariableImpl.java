@@ -18,23 +18,13 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	CtExpression<T> defaultExpression;
 
-	Set<ModifierKind> modifiers = EMPTY_SET();
-
 	String name;
 
 	CtTypeReference<T> type;
 
 	List<CtTypeReference<?>> types = EMPTY_LIST();
 
-	public boolean addModifier(ModifierKind modifier) {
-		setMutable();
-		return modifiers.add(modifier);
-	}
-
-	public boolean removeModifier(ModifierKind modifier) {
-		setMutable();
-		return modifiers.remove(modifier);
-	}
+	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCatchVariable(this);
@@ -42,10 +32,6 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	public CtExpression<T> getDefaultExpression() {
 		return defaultExpression;
-	}
-
-	public Set<ModifierKind> getModifiers() {
-		return modifiers;
 	}
 
 	public CtCatchVariableReference<T> getReference() {
@@ -60,30 +46,9 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		return type;
 	}
 
-	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC)) {
-			return ModifierKind.PUBLIC;
-		}
-		if (getModifiers().contains(ModifierKind.PROTECTED)) {
-			return ModifierKind.PROTECTED;
-		}
-		if (getModifiers().contains(ModifierKind.PRIVATE)) {
-			return ModifierKind.PRIVATE;
-		}
-		return null;
-	}
-
-	public boolean hasModifier(ModifierKind modifier) {
-		return modifiers.contains(modifier);
-	}
-
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
 		this.defaultExpression = defaultExpression;
 		this.defaultExpression.setParent(this);
-	}
-
-	public void setModifiers(Set<ModifierKind> modifiers) {
-		this.modifiers = modifiers;
 	}
 
 	public void setSimpleName(String simpleName) {
@@ -92,20 +57,6 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	public void setType(CtTypeReference<T> type) {
 		this.type = type;
-	}
-
-	private void setMutable() {
-		if (modifiers == CtElementImpl.<ModifierKind>EMPTY_SET()) {
-			modifiers = new TreeSet<ModifierKind>();
-		}
-	}
-
-	public void setVisibility(ModifierKind visibility) {
-		setMutable();
-		getModifiers().remove(ModifierKind.PUBLIC);
-		getModifiers().remove(ModifierKind.PROTECTED);
-		getModifiers().remove(ModifierKind.PRIVATE);
-		getModifiers().add(visibility);
 	}
 
 	@Override
@@ -124,5 +75,55 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	@Override
 	public List<CtTypeReference<?>> getMultiTypes() {
 		return types;
+	}
+
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		return modifiers;
+	}
+
+	@Override
+	public boolean hasModifier(ModifierKind modifier) {
+		return getModifiers().contains(modifier);
+	}
+
+	@Override
+	public void setModifiers(Set<ModifierKind> modifiers) {
+		this.modifiers = modifiers;
+	}
+
+	@Override
+	public boolean addModifier(ModifierKind modifier) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		return modifiers.add(modifier);
+	}
+
+	@Override
+	public boolean removeModifier(ModifierKind modifier) {
+		return modifiers.remove(modifier);
+	}
+
+	@Override
+	public void setVisibility(ModifierKind visibility) {
+		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+			this.modifiers = new TreeSet<ModifierKind>();
+		}
+		getModifiers().remove(ModifierKind.PUBLIC);
+		getModifiers().remove(ModifierKind.PROTECTED);
+		getModifiers().remove(ModifierKind.PRIVATE);
+		getModifiers().add(visibility);
+	}
+
+	@Override
+	public ModifierKind getVisibility() {
+		if (getModifiers().contains(ModifierKind.PUBLIC))
+			return ModifierKind.PUBLIC;
+		if (getModifiers().contains(ModifierKind.PROTECTED))
+			return ModifierKind.PROTECTED;
+		if (getModifiers().contains(ModifierKind.PRIVATE))
+			return ModifierKind.PRIVATE;
+		return null;
 	}
 }

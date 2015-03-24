@@ -95,6 +95,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean copyResources = true;
 
+	private boolean generateJavadoc = false;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -498,5 +500,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setCopyResources(boolean copyResources) {
 		this.copyResources = copyResources;
+	}
+
+	@Override
+	public boolean isGenerateJavadoc() {
+		return generateJavadoc;
+	}
+
+	@Override
+	public void setGenerateJavadoc(boolean generateJavadoc) {
+		this.generateJavadoc = generateJavadoc;
 	}
 }
