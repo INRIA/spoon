@@ -104,14 +104,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	public StandardEnvironment() {
 	}
 
-	/**
-	 * Creates a new environment.
-	 */
-	public StandardEnvironment(
-			FileGenerator<? extends CtElement> defaultFileGenerator) {
-		this.defaultFileGenerator = defaultFileGenerator;
-	}
-
 	public void debugMessage(String message) {
 		if (isDebug()) {
 			logger.debug(message);

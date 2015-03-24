@@ -52,16 +52,15 @@ public class StaticAccessTest {
         compiler.process(Arrays.asList(InsertBlockProcessor.class.getName()));
 
         // generate files
-        File tmpdir = new File("build/test_tmp");
+        File tmpdir = new File("test_tmp");
+        tmpdir.mkdirs();
         //    tmpdir.deleteOnExit();
-        compiler.setOutputDirectory(tmpdir);
+        compiler.setDestinationDirectory(tmpdir);
         compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 
         // try to reload generated datas
         spoon = new Launcher();
-        factory = spoon.createFactory();
         compiler = spoon.createCompiler(
-                factory,
                 SpoonResourceHelper
                         .resources(tmpdir.getAbsolutePath()));
         assertTrue(compiler.build());

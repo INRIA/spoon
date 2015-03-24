@@ -25,7 +25,7 @@ public class APITest {
 		// this test shows a basic usage of the Launcher API without command line
 		// and asserts there is no exception
 		Launcher spoon = new Launcher();
-		spoon.addInputResource(new FileSystemFolder(new File("src/test/resources/spoon/test/api")));
+		spoon.addInputResource("src/test/resources/spoon/test/api");
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		for(CtPackage p : factory.Package().getAll()) {
@@ -57,11 +57,10 @@ public class APITest {
 			}
 			
 		};
-		spoon.setArgs(new String[] {
+		spoon.run(new String[] {
 						"-i", "src/test/resources/spoon/test/api/",
 						"-o","target/spooned-apitest"
 						});
-		spoon.run();
 		Assert.assertEquals(2, l.size());
 	}
 	
@@ -77,12 +76,11 @@ public class APITest {
 			// this is later use by FileSystemFile
 			assertTrue(new File(duplicateEntry).getCanonicalFile().equals(new File("./"+duplicateEntry).getCanonicalFile()));
 			
-			spoon.setArgs(new String[] {
+			spoon.main(new String[] {
 					"-i",
 					// note the nasty ./
 					duplicateEntry + File.pathSeparator + "./"+duplicateEntry,
 					"-o", "target/spooned-apitest" });
-			spoon.run();
 		} catch (IllegalArgumentException e) // from JDT
 		{
 			fail();
@@ -94,13 +92,11 @@ public class APITest {
 		// it's possible to pass twice the same folder as parameter
 		// the virtual folder removes the duplicate before passing to JDT
 		try {
-			Launcher spoon = new Launcher();
 			String duplicateEntry = "src/test/resources/spoon/test/api/";
-			spoon.setArgs(new String[] {
+			Launcher.main(new String[] {
 					"-i",
 					duplicateEntry+ File.pathSeparator +"./"+duplicateEntry,
 					"-o", "target/spooned-apitest" });
-			spoon.run();
 		} catch (IllegalArgumentException e) // from JDT
 		{
 			fail();
@@ -112,11 +108,10 @@ public class APITest {
 		// more complex case: a file is given, together with the enclosing folder
 		try {
 			Launcher spoon = new Launcher();
-			spoon.setArgs(new String[] {
+			spoon.main(new String[] {
 					"-i",
 					"src/test/resources/spoon/test/api/" + File.pathSeparator + "src/test/resources/spoon/test/api/Foo.java",
 					"-o", "target/spooned-apitest" });
-			spoon.run();
 		} catch (IllegalArgumentException e) // from JDT
 		{
 			fail();
@@ -127,11 +122,10 @@ public class APITest {
 	public void testNotValidInput() throws Exception {
 		Launcher spoon = new Launcher();
 		String invalidEntry = "does/not/exists//Foo.java";
-		spoon.setArgs(new String[] { "-i",
+		spoon.main(new String[] { "-i",
 				invalidEntry, 
 				"-o",
 				"target/spooned-apitest" });
-		spoon.run();
 	}
 
 }

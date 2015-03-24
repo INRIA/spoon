@@ -28,7 +28,7 @@ public class TemplateTest {
 	@Test
 	public void testTemplateInheritance() throws Exception {
 		Launcher spoon = new Launcher();
-		Factory factory = spoon.createFactory();
+		Factory factory = spoon.getFactory();
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(

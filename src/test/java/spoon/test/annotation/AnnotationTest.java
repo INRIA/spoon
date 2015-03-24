@@ -66,12 +66,10 @@ public class AnnotationTest {
 		final File testDirectory = new File("./src/test/java/spoon/test/annotation/testclasses/");
 
 		Launcher launcher = new Launcher();
-
-		this.factory = launcher.createFactory();
-		factory.getEnvironment().setComplianceLevel(8);
-		SpoonCompiler compiler = launcher.createCompiler(this.factory);
-
-		compiler.setDestinationDirectory(new File("./target/spooned/"));
+		factory = launcher.getFactory();
+    SpoonCompiler compiler = launcher.createCompiler();
+    compiler.setDestinationDirectory(new File("./target/spooned/"));
+    factory.getEnvironment().setComplianceLevel(8);
 		compiler.addInputSource(testDirectory);
 		compiler.build();
 		compiler.compileInputSources();

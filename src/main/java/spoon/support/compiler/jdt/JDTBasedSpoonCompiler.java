@@ -46,6 +46,8 @@ import org.eclipse.jdt.internal.compiler.util.Util;
 
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.SpoonAPI;
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
@@ -71,9 +73,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	public int javaCompliance = 7;
 
-	private String[] templateClasspath = null;
+	private String[] templateClasspath = new String[0];
 
-	File outputDirectory;
+	/** output directory for source code .java file */
+	File outputDirectory = new File(Launcher.OUTPUTDIR);
 
 	boolean buildOnlyOutdatedFiles = false;
 
@@ -83,10 +86,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public void setOutputDirectory(File outputDirectory) throws IOException {
+	public void setOutputDirectory(File outputDirectory) {
 		this.outputDirectory = outputDirectory;
 	}
 
+	/** output directory for binary code .class file */
 	File destinationDirectory;
 
 	@Override
@@ -95,25 +99,16 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public void setDestinationDirectory(File destinationDirectory)
-			throws IOException {
+	public void setDestinationDirectory(File destinationDirectory) {
 		this.destinationDirectory = destinationDirectory;
 	}
 
-	public JDTBasedSpoonCompiler(Factory factory, PrintWriter outWriter,
-			PrintWriter errWriter) {
-		// super(outWriter, errWriter, false, null, null);
-		this.factory = factory;
-	}
-
+	/** Default constructor */
 	public JDTBasedSpoonCompiler(Factory factory) {
-		// super(new PrintWriter(System.out), new PrintWriter(System.err),
-		// false,
-		// null, null);
 		this.factory = factory;
 	}
 
-	// example usage (please do not use directly, use instead the spoon.Spoon
+	// example usage (please do not use directly, use instead the spoon.Launcher
 	// API to create the factory)
 	public static void main(String[] args) throws Exception {
 		Launcher main = new Launcher();
@@ -165,7 +160,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// System.out.println("filtered: " + files);
 	}
 
-	protected boolean buildSources() throws Exception {
+	protected boolean buildSources() {
 		if (sources.getAllJavaFiles().isEmpty())
 			return true;
 		initInputClassLoader();
@@ -214,13 +209,8 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		getFactory().getEnvironment().debugMessage("build args: " + args);
 
-		try {
-			batchCompiler.configure(args.toArray(new String[0]));
-		} catch (Exception e) {
-			System.err.println("build args: " + args);
-			System.err.println("sources: " + sources.getAllFiles());
-			throw e;
-		}
+		batchCompiler.configure(args.toArray(new String[0]));
+		
 		List<SpoonFile> filesToBuild = sources.getAllJavaFiles();
 		if (buildOnlyOutdatedFiles) {
 			if (outputDirectory.exists()) {
@@ -302,7 +292,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 	}
 
-	protected boolean buildTemplates() throws Exception {
+	protected boolean buildTemplates() {
 		if (templates.getAllJavaFiles().isEmpty())
 			return true;
 		JDTBatchCompiler batchCompiler = createBatchCompiler();
@@ -323,7 +313,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		File f = null;
 
-		if (this.templateClasspath != null) {
+		if (this.templateClasspath != null && this.templateClasspath.length > 0 ) {
 			args.add("-cp");
 			args.add(this.computeTemplateClasspath());
 
@@ -470,11 +460,15 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			this.sources.addFolder((SpoonFolder) source);
 	}
 
-	public void addInputSource(File source) throws IOException {
-		if (SpoonResourceHelper.isFile(source))
-			this.sources.addFile(SpoonResourceHelper.createFile(source));
-		else
-			this.sources.addFolder(SpoonResourceHelper.createFolder(source));
+	public void addInputSource(File source) {
+		try {
+			if (SpoonResourceHelper.isFile(source))
+				this.sources.addFile(SpoonResourceHelper.createFile(source));
+			else
+				this.sources.addFolder(SpoonResourceHelper.createFolder(source));
+		} catch (Exception e) {
+			throw new SpoonException(e);
+		}
 	}
 
 	public void addTemplateSource(SpoonResource source) {
@@ -484,19 +478,24 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			this.templates.addFolder((SpoonFolder) source);
 	}
 
-	public void addTemplateSource(File source) throws IOException {
-		if (SpoonResourceHelper.isFile(source))
-			this.templates.addFile(SpoonResourceHelper.createFile(source));
-		else
-			this.templates.addFolder(SpoonResourceHelper.createFolder(source));
+	public void addTemplateSource(File source) {
+		try {
+			if (SpoonResourceHelper.isFile(source))
+				this.templates.addFile(SpoonResourceHelper.createFile(source));
+			else
+				this.templates.addFolder(SpoonResourceHelper.createFolder(source));
+		} catch (Exception e) {
+			throw new SpoonException(e);
+		}
+
 	}
 
-	public boolean build() throws Exception {
+	public boolean build() {
 		if (factory == null) {
-			throw new Exception("Factory not initialized");
+			throw new SpoonException("Factory not initialized");
 		}
 		if (build) {
-			throw new Exception("Model already built");
+			throw new SpoonException("Model already built");
 		}
 		build = true;
 
@@ -668,7 +667,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 				}
 			}
 
-			args.add(getOutputDirectory().getAbsolutePath());
+			args.add(getDestinationDirectory().getAbsolutePath());
 
 		} else {
 			args.addAll(toStringList(sources.getAllJavaFiles()));
@@ -697,8 +696,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	boolean writePackageAnnotationFile = true;
 
 	@Override
-	public void generateProcessedSourceFiles(OutputType outputType)
-			throws Exception {
+	public void generateProcessedSourceFiles(OutputType outputType) {
 		initInputClassLoader();
 		switch (outputType) {
 		case CLASSES:
@@ -714,7 +712,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 	}
 
-	protected void generateProcessedSourceFilesUsingTypes() throws Exception {
+	protected void generateProcessedSourceFilesUsingTypes() {
 		if (factory.getEnvironment().getDefaultFileGenerator() != null) {
 			factory.getEnvironment().debugMessage(
 					"Generating source using types...");
@@ -725,7 +723,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 	}
 
-	protected void generateProcessedSourceFilesUsingCUs() throws Exception {
+	protected void generateProcessedSourceFilesUsingCUs() {
 
 		factory.getEnvironment().debugMessage(
 				"Generating source using compilation units...");
@@ -740,7 +738,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			if (!outputDirectory.mkdirs())
 				throw new RuntimeException("Error creating output directory");
 		}
-		outputDirectory = outputDirectory.getCanonicalFile();
+		
+		try {
+			outputDirectory = outputDirectory.getCanonicalFile();
+		} catch (IOException e1) {
+			throw new SpoonException(e1);
+		}
 
 		factory.getEnvironment().debugMessage(
 				"Generating source files to: " + outputDirectory);
@@ -844,12 +847,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public void setFactory(Factory factory) {
-		this.factory = factory;
-	}
-
-	@Override
-	public boolean compileInputSources() throws Exception {
+	public boolean compileInputSources() {
 		initInputClassLoader();
 		factory.getEnvironment().debugMessage(
 				"compiling input sources: " + sources.getAllJavaFiles());
@@ -948,7 +946,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		forceBuildList.add(source);
 	}
 
-	protected String encoding = null;
+	protected String encoding;
 
 	@Override
 	public String getEncoding() {

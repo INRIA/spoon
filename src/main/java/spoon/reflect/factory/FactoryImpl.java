@@ -235,30 +235,11 @@ public class FactoryImpl implements Factory, Serializable {
 		return Type;
 	}
 
-	private FactoryImpl() {
-		if (launchingFactory == null)
-			launchingFactory = this;
-	}
-
-	static Factory launchingFactory;
-
-	/**
-	 * Gets the factory that was created at launching time (the firstly created
-	 * factory). This factory is automatically initialized when a factory is
-	 * constructed for the first time. Any subsequent constructions will not
-	 * affect the launching factory and references to other factories have to be
-	 * handled manually, if ever needed.
-	 */
-	public static Factory getLauchingFactory() {
-		return launchingFactory;
-	}
-
 	/**
 	 * A constructor that takes the parent factory
 	 */
 	public FactoryImpl(CoreFactory coreFactory, Environment environment,
 			Factory parentFactory) {
-		this();
 		this.Environment = environment;
 		this.Core = coreFactory;
 		this.Core.setMainFactory(this);
@@ -266,7 +247,7 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	/**
-	 * The constructor.
+	 * Should not be called directly. Use {@link spoon.Launcher#createFactory()} instead.
 	 */
 	public FactoryImpl(CoreFactory coreFactory, Environment environment) {
 		this(coreFactory, environment, null);
