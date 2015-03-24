@@ -297,16 +297,14 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		// TODO: Fix this null pointer catch
-		try {
-			write(reference.getType().getQualifiedName()).write(" ");
-			write(reference.getDeclaringType().getQualifiedName());
-			write(CtField.FIELD_SEPARATOR);
-			write(reference.getSimpleName());
-		} catch (NullPointerException npe) {
-			System.err
-					.println("Null Pointer Exception in SignaturePrinter.visitCtFieldReference()");
-		}
+		if(reference.getType() != null)
+			write(reference.getType().getQualifiedName());
+		else
+			write("<no type>");
+		write(" ");
+		write(reference.getDeclaringType().getQualifiedName());
+		write(CtField.FIELD_SEPARATOR);
+		write(reference.getSimpleName());
 	}
 
 	public void visitCtFor(CtFor forLoop) {
@@ -356,13 +354,21 @@ public class SignaturePrinter implements CtVisitor {
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		write("(");
 		scan(invocation.getExecutable());
-		write("(...)");
+		write("(");
+		for(int i = 0; i < invocation.getArguments().size();i++){
+			CtExpression<?> arg_i = invocation.getArguments().get(i);
+			scan(arg_i);
+			if(i != (invocation.getArguments().size() -1) ){
+				write(",");
+			}
+		}
+		write(")");
 		write(")");
 	}
 
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
 		if (literal.getValue() != null)
-			write(literal.getValue().toString());
+			write(literal.toString());
 		else write("null");
 	}
 
@@ -372,7 +378,9 @@ public class SignaturePrinter implements CtVisitor {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
-		scan(reference.getDeclaration());
+		write(reference.getType().getQualifiedName()).write(" ");
+		write(reference.getSimpleName());
+		
 	}
 
 	@Override
@@ -504,6 +512,7 @@ public class SignaturePrinter implements CtVisitor {
 	}
 
 	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
+		write(reference.getType().getQualifiedName()).write(" ");
 		write(reference.getSimpleName());
 	}
 

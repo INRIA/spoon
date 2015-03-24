@@ -44,14 +44,14 @@ public class EqualTest {
 
 		String signatureArg1= argument1.getSignature();
 		
-		assertEquals("", signatureArg1);
+		assertEquals(realParam1 , signatureArg1);
 		
 		
 		CtReturn<?> returnStatement = (CtReturn<?>) method.getBody().getStatement(1);
 		
 		CtLiteral<?> returnExp = (CtLiteral<?>) returnStatement.getReturnedExpression();
 		
-		assertEquals("", returnExp.getSignature() );
+		assertEquals(realParam1 , returnExp.getSignature() );
 		
 		try{
 			assertEquals(argument1, returnExp);
