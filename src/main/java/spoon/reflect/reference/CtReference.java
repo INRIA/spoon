@@ -37,7 +37,7 @@ import spoon.reflect.visitor.Root;
  * @see spoon.reflect.declaration.CtElement
  */
 @Root
-public interface CtReference extends FactoryAccessor, Comparable<CtReference>, CtVisitable {
+public interface CtReference extends FactoryAccessor, CtVisitable {
 
 	/**
 	 * Gets the simple name of referenced element.

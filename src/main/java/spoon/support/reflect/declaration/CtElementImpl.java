@@ -50,7 +50,12 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 
-public abstract class CtElementImpl implements CtElement, Serializable {
+/** 
+ * Contains the default implementation of most CtElement methods.
+ * 
+ * Implements Comparable for being used in TreeSet
+ */
+public abstract class CtElementImpl implements CtElement, Serializable , Comparable<CtElement>{
 
 	protected static final Logger logger = Logger
 			.getLogger(CtElementImpl.class);
