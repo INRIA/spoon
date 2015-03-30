@@ -81,7 +81,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean verbose = false;
 
-	private boolean autoImports = true;
+	private boolean autoImports = false;
 
 	private int warningCount = 0;
 

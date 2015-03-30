@@ -356,12 +356,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public Collection<CtTypeReference<?>> makeImports(CtSimpleType<?> type) {
+	public Collection<CtTypeReference<?>> computeImports(CtSimpleType<?> type) {
 		if (env.isAutoImports()) {
 			context.currentTopLevel = type;
 			return importsContext.computeImports(context.currentTopLevel);
 		}
 		return Collections.EMPTY_LIST;
+	}
+
+	/**
+	 * Make the imports for all elements.
+	 */
+	public void computeImports(CtElement element) {
+		if (env.isAutoImports()) {
+			importsContext.computeImports(element);
+		}
 	}
 
 	/**
@@ -2199,7 +2208,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.sourceCompilationUnit = sourceCompilationUnit;
 		Collection<CtTypeReference<?>> imports = Collections.EMPTY_LIST;
 		for (CtSimpleType<?> t : types) {
-			imports = makeImports(t);
+			imports = computeImports(t);
 		}
 		writeHeader(types, imports);
 		for (CtSimpleType<?> t : types) {
