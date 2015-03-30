@@ -36,7 +36,7 @@ import spoon.reflect.visitor.Root;
  * element).
  */
 @Root
-public interface CtElement extends FactoryAccessor, Comparable<CtElement>,CtVisitable {
+public interface CtElement extends FactoryAccessor, CtVisitable {
 
 	/**
 	 * Searches for an annotation (proxy) of the given class that annotates the

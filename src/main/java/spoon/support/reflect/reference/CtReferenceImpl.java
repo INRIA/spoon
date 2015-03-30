@@ -35,7 +35,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.visitor.SignaturePrinter;
 
-public abstract class CtReferenceImpl implements CtReference, Serializable {
+public abstract class CtReferenceImpl implements CtReference, Serializable, Comparable<CtReference> {
 
 	private static final long serialVersionUID = 1L;
 
