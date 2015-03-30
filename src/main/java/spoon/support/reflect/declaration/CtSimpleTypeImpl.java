@@ -17,25 +17,31 @@
 
 package spoon.support.reflect.declaration;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements CtSimpleType<T> {
 
@@ -51,7 +57,7 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements 
 		// field already exists
 		return false;
 	}
-
+	
 	public <F> boolean removeField(CtField<F> field) {
 		return this.fields.remove(field);
 	}
@@ -268,4 +274,62 @@ public abstract class CtSimpleTypeImpl<T> extends CtNamedElementImpl implements 
 		return null;
 	}
 
+	@Override
+	public boolean isPrimitive() {
+		return false;
+	}
+	
+	@Override
+	public boolean isAnonymous() {
+		return false;
+	}
+	
+	@Override
+	public CtTypeReference<?> getSuperclass() {
+		return null;
+	}
+	
+	@Override
+	public boolean isInterface() {
+		return false;
+	}
+	
+	@Override
+	public List<CtFieldReference<?>> getAllFields() {
+		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
+		for (CtField<?> f: getFields()) {
+			l.add(f.getReference());
+		}
+		if (this instanceof CtClass) {
+			CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
+			if (st != null) {
+				l.addAll(st.getAllFields());
+			}
+		}
+		return l;
+	}
+
+
+	@Override
+	public Collection<CtFieldReference<?>> getDeclaredFields() {
+		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
+		for (CtField<?> f : getFields()) {
+			l.add(f.getReference());
+		}
+		return Collections.unmodifiableCollection(l);
+	}
+		
+	/**
+	 * Tells if this type is a subtype of the given type.
+	 */
+	@Override
+	public boolean isSubtypeOf(CtTypeReference<?> type) {
+		return type.isSubtypeOf(getReference());
+	}
+	
+	@Override
+	public boolean isAssignableFrom(CtTypeReference<?> type) {
+		return isSubtypeOf(type);
+	}
+	
 }

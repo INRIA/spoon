@@ -17,12 +17,18 @@
 
 package spoon.support.reflect.declaration;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -41,6 +47,7 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 	// return ret;
 	// }
 
+	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> ret = new TreeSet<CtMethod<?>>();
 		ret.addAll(getMethods());
@@ -58,6 +65,7 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 		visitor.visitCtInterface(this);
 	}
 
+	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		for (CtTypeReference<?> ref : getSuperInterfaces()) {
 			if (ref.isSubtypeOf(type))
@@ -65,4 +73,19 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 		}
 		return false;
 	}
+	
+	@Override
+	public boolean isInterface() {
+		return true;
+	}
+
+	@Override
+	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
+		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(super.getDeclaredExecutables());
+		for (CtTypeReference<?> sup : getSuperInterfaces()) {
+			l.addAll(sup.getAllExecutables());
+		}
+		return Collections.unmodifiableCollection(l);
+	}
+
 }

@@ -19,14 +19,19 @@ package spoon.support.reflect.declaration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -206,4 +211,40 @@ public abstract class CtTypeImpl<T> extends CtSimpleTypeImpl<T> implements
 		this.interfaces = interfaces;
 	}
 
+	/**
+	 * Gets the executables declared by this type if applicable.
+	 */
+	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
+		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
+		for (CtExecutable<?> m : getMethods()) {
+			l.add(m.getReference());
+		}
+		return Collections.unmodifiableCollection(l);
+	}
+
+	/**
+	 * Gets the executables declared by this type and by all its supertypes if
+	 * applicable.
+	 */
+	public Collection<CtExecutableReference<?>> getAllExecutables() {
+		HashSet<CtExecutableReference<?>> l = new HashSet<CtExecutableReference<?>>(getDeclaredExecutables());
+		if (this instanceof CtClass) {
+			CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
+			if (st != null) {
+				l.addAll(st.getAllExecutables());
+			}
+		}
+		return l;		
+	}
+	
+	@Override
+	public Set<CtMethod<?>> getAllMethods() {
+		Set<CtMethod<?>> l = new HashSet<CtMethod<?>>(getMethods());
+		CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
+		if (st != null) {
+			l.addAll(((CtType) st).getAllMethods());
+		}
+		return l;		
+
+	}
 }
