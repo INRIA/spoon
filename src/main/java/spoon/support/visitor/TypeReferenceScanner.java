@@ -108,10 +108,7 @@ public class TypeReferenceScanner extends CtScanner {
 	@Override
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 		if (!(reference instanceof CtArrayTypeReference)) {
-			if (reference.getDeclaringType() == null)
-				addReference(reference);
-			else
-				addReference(reference.getDeclaringType());
+			addReference(reference);
 		}
 		super.visitCtTypeReference(reference);
 
