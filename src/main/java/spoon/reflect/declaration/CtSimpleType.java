@@ -22,6 +22,7 @@ import java.util.Set;
 
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -31,7 +32,7 @@ import spoon.reflect.reference.CtTypeReference;
  * @param <T>
  *            the actual runtime type
  */
-public interface CtSimpleType<T> extends CtNamedElement, CtTypeMember {
+public interface CtSimpleType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember {
 
 	/**
 	 * Returns the types used by this type.
@@ -53,21 +54,6 @@ public interface CtSimpleType<T> extends CtNamedElement, CtTypeMember {
 	 * @return the runtime class, null if is not accessible or does not exist
 	 */
 	Class<T> getActualClass();
-
-	/**
-	 * Returns the fields that are directly declared by this class or interface.
-	 * Includes enum constants.
-	 */
-	// List<CtField<?>> getAllFields();
-	
-	/**
-	 * Gets the type where this one is declared. If a declaring type is set, the
-	 * package corresponds to the declaring type's package.
-	 * 
-	 * @return declaring type or null
-	 */
-	@Override
-	CtSimpleType<?> getDeclaringType();
 
 	/**
 	 * Gets a field from its name.
@@ -98,11 +84,10 @@ public interface CtSimpleType<T> extends CtNamedElement, CtTypeMember {
 	 */
 	CtPackage getPackage();
 
-	/**
-	 * Returns the fully qualified name of this type declaration.
+	/** Returns the corresponding type reference.
+	 * 
+	 * Overrides the return type.
 	 */
-	String getQualifiedName();
-
 	CtTypeReference<T> getReference();
 
 	/**

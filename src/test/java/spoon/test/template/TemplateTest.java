@@ -79,7 +79,8 @@ public class TemplateTest {
 
 		// the actual substitution
 		new TemplateWithConstructor(factory.Type()
-				.createReference(Date.class)).apply(c1);
+				.createReference(Date.class))
+				.apply(c1);
 
 		// after template: 3 constructors
 		// System.out.println("==>"+c1.getConstructors());

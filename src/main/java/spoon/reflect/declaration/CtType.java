@@ -67,11 +67,6 @@ public interface CtType<T> extends CtSimpleType<T>, CtGenericElement {
 	 */
 	List<CtMethod<?>> getMethodsByName(String name);
 	
-	/**
-	 * Returns the interface types directly implemented by this class or
-	 * extended by this interface.
-	 */
-	Set<CtTypeReference<?>> getSuperInterfaces();
 
 	/**
 	 * Sets the methods of this type.
@@ -106,10 +101,5 @@ public interface CtType<T> extends CtSimpleType<T>, CtGenericElement {
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<S> boolean removeSuperInterface(CtTypeReference<S> interfac);
-
-	/**
-	 * Tells if this type is a subtype of the given type.
-	 */
-	boolean isSubtypeOf(CtTypeReference<?> type);
 
 }

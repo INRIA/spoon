@@ -56,8 +56,6 @@ public interface CtReference extends FactoryAccessor, CtVisitable {
 	 */
 	CtElement getDeclaration();
 
-
-
 	/**
 	 * Searches for an annotation (proxy) of the given class that annotates the
 	 * current referenced element.

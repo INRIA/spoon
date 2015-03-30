@@ -46,6 +46,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		super();
 	}
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtFieldReference(this);
 	}
@@ -124,9 +125,10 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 	// return null;
 	// }
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public CtField<T> getDeclaration() {
-		CtSimpleType<?> type = declaringType.getDeclaration();
+		CtSimpleType<?> type = (CtSimpleType<?>) declaringType.getDeclaration();
 		if ((declaringType != null) && (type != null)) {
 			return (CtField<T>) type.getField(getSimpleName());
 		}
