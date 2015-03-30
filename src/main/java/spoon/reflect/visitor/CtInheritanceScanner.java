@@ -86,6 +86,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
@@ -322,6 +323,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void scanCtVariableReference(CtVariableReference<T> reference) {
 	}
 
+	/**
+	 * Scans an abstract variable reference.
+	 */
+	public <T> void scanCtTypeInformation(CtTypeInformation typeInfo) {
+	}
+
 	public <A extends Annotation> void visitCtAnnotation(
 			CtAnnotation<A> e) {
 		scanCtExpression(e);
@@ -334,6 +341,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <A extends Annotation> void visitCtAnnotationType(
 			CtAnnotationType<A> e) {
 		scanCtSimpleType(e);
+		scanCtTypeInformation(e);
 		scanCtNamedElement(e);
 		scanCtTypeMember(e);
 		scanCtModifiable(e);
@@ -416,6 +424,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtType(e);
 		scanCtStatement(e);
 		scanCtSimpleType(e);
+		scanCtTypeInformation(e);
 		scanCtGenericElement(e);
 		scanCtCodeElement(e);
 		scanCtNamedElement(e);
@@ -524,6 +533,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtInterface(CtInterface<T> e) {
 		scanCtType(e);
 		scanCtSimpleType(e);
+		scanCtTypeInformation(e);
 		scanCtGenericElement(e);
 		scanCtNamedElement(e);
 		scanCtTypeMember(e);
@@ -731,6 +741,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> e) {
 		scanCtReference(e);
+		scanCtTypeInformation(e);
 		scanCtGenericElementReference(e);
 		scanCtTypeAnnotableReference(e);
 		scanCtVisitable(e);

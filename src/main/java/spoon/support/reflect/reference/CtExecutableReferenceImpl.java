@@ -181,7 +181,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		if ((subType == null) || subType.equals(getDeclaringType())) {
 			return null;
 		}
-		CtSimpleType<?> t = subType.getDeclaration();
+		CtSimpleType<?> t = (CtSimpleType<?>) subType.getDeclaration();
 		if (t == null) {
 			return null;
 		}

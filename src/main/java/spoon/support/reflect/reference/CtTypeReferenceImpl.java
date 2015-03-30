@@ -254,7 +254,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		if (isPrimitive() || type.isPrimitive()) {
 			return equals(type);
 		}
-		CtSimpleType<?> superTypeDecl = type.getDeclaration();
+		CtSimpleType<?> superTypeDecl = (CtSimpleType<?>) type.getDeclaration();
 		CtSimpleType<?> subTypeDecl = getDeclaration();
 		if ((subTypeDecl == null) && (superTypeDecl == null)) {
 			try {
@@ -390,65 +390,28 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			}
 
 		} else {
-			for (CtField<?> f : t.getFields()) {
-				l.add(f.getReference());
-			}
+			return t.getDeclaredFields();
 		}
 		return l;
 	}
-
+	
+	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
-		Collection<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
 		CtSimpleType<T> t = getDeclaration();
 		if (t == null) {
-			for (Method m : getActualClass().getDeclaredMethods()) {
-				l.add(getFactory().Method().createReference(m));
-			}
-			for (Constructor<?> c : getActualClass().getDeclaredConstructors()) {
-				l.add(getFactory().Constructor().createReference(c));
-			}
+			return RtHelper.getAllExecutables(getActualClass(), getFactory());
 		} else {
-			if (t instanceof CtType) {
-				for (CtMethod<?> m : ((CtType<?>) t).getMethods()) {
-					l.add(m.getReference());
-				}
-			}
-			if (t instanceof CtClass) {
-				for (CtConstructor<T> c : ((CtClass<T>) t).getConstructors()) {
-					l.add(c.getReference());
-				}
-			}
+			return t.getDeclaredExecutables();
 		}
-		return l;
 	}
 
 	public Collection<CtFieldReference<?>> getAllFields() {
-		Collection<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
 		CtSimpleType<?> t = getDeclaration();
 		if (t == null) {
-			Class<?> c = getActualClass();
-			if (c != null) {
-				for (Field f : c.getDeclaredFields()) {
-					l.add(getFactory().Field().createReference(f));
-				}
-				Class<?> sc = c.getSuperclass();
-				if (sc != null) {
-					l.addAll(getFactory().Type().createReference(sc)
-							.getAllFields());
-				}
-			}
+			return RtHelper.getAllFields(getActualClass(), getFactory());
 		} else {
-			for (CtField<?> f : t.getFields()) {
-				l.add(f.getReference());
-			}
-			if (t instanceof CtClass) {
-				CtTypeReference<?> st = ((CtClass<?>) t).getSuperclass();
-				if (st != null) {
-					l.addAll(st.getAllFields());
-				}
-			}
+			return t.getAllFields();
 		}
-		return l;
 	}
 
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
@@ -465,49 +428,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 				l.add(consRef);
 			}
 			Class<?> sc = c.getSuperclass();
-			if (sc != null) {
-				l.addAll(getFactory().Type().createReference(sc)
+			l.addAll(getFactory().Type().createReference(sc)
 						.getAllExecutables());
-			}
 		} else {
-			if (t instanceof CtType) {
-				for (CtMethod<?> m : ((CtType<?>) t).getMethods()) {
-					l.add(m.getReference());
-				}
-			}
-			if (t instanceof CtClass) {
-				for (CtConstructor<T> c : ((CtClass<T>) t).getConstructors()) {
-					l.add(c.getReference());
-				}
-				CtTypeReference<?> st = ((CtClass<?>) t).getSuperclass();
-				if (st != null) {
-					l.addAll(st.getAllExecutables());
-				}
-			}
-			if (t instanceof CtInterface) {
-				Set<CtTypeReference<?>> sups =
-						((CtInterface<?>) t).getSuperInterfaces();
-				for (CtTypeReference<?> sup : sups) {
-					l.addAll(sup.getAllExecutables());
-				}
-			}
+			return t.getAllExecutables();
 		}
 		return l;
 	}
-
-	//
-	// public Set<CtMethod<?>> getAllMethods() {
-	// Set<CtMethod<?>> ret = new TreeSet<CtMethod<?>>();
-	// ret.addAll(getMethods());
-	//
-	// for (CtTypeReference<?> ref : getSuperInterfaces()) {
-	// if (ref.getDeclaration() != null) {
-	// CtType<?> t = (CtType<?>) ref.getDeclaration();
-	// ret.addAll(t.getAllMethods());
-	// }
-	// }
-	// return ret;
-	// }
 
 	public Set<ModifierKind> getModifiers() {
 		CtSimpleType<T> t = getDeclaration();
@@ -515,47 +442,33 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			return t.getModifiers();
 		}
 		Class<T> c = getActualClass();
-		if (c != null) {
-			return RtHelper.getModifiers(c.getModifiers());
-		}
-		return new TreeSet<ModifierKind>();
+		return RtHelper.getModifiers(c.getModifiers());
 	}
 
 	public CtTypeReference<?> getSuperclass() {
 		CtSimpleType<T> t = getDeclaration();
 		if (t != null) {
-			if (t instanceof CtClass) {
-				return ((CtClass<T>) t).getSuperclass();
-			}
+			return ((CtClass<T>) t).getSuperclass();
 		} else {
 			Class<T> c = getActualClass();
-			if (c != null) {
-				Class<?> sc = c.getSuperclass();
-				if (sc != null) {
-					return getFactory().Type().createReference(sc);
-				}
-			}
+			Class<?> sc = c.getSuperclass();
+			return getFactory().Type().createReference(sc);
 		}
-		return null;
 	}
 
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
 		CtSimpleType<?> t = getDeclaration();
 		if (t != null) {
-			if (t instanceof CtType) {
-				return ((CtType<?>) t).getSuperInterfaces();
-			}
+			return t.getSuperInterfaces();
 		} else {
 			Class<?> c = getActualClass();
-			if (c != null) {
-				Class<?>[] sis = c.getInterfaces();
-				if ((sis != null) && (sis.length > 0)) {
-					Set<CtTypeReference<?>> set = new TreeSet<CtTypeReference<?>>();
-					for (Class<?> si : sis) {
-						set.add(getFactory().Type().createReference(si));
-					}
-					return set;
+			Class<?>[] sis = c.getInterfaces();
+			if ((sis != null) && (sis.length > 0)) {
+				Set<CtTypeReference<?>> set = new TreeSet<CtTypeReference<?>>();
+				for (Class<?> si : sis) {
+					set.add(getFactory().Type().createReference(si));
 				}
+				return set;
 			}
 		}
 		return new TreeSet<CtTypeReference<?>>();
@@ -604,7 +517,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		if (t == null) {
 			return getActualClass().isInterface();
 		} else {
-			return (t instanceof CtInterface);
+			return t.isInterface();
 		}
 	}
 
@@ -636,4 +549,5 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 		return this.annotations.remove(annotation);
 	}
+	
 }

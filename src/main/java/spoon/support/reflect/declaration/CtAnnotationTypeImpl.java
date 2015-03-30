@@ -18,8 +18,13 @@
 package spoon.support.reflect.declaration;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
 /**
@@ -36,4 +41,26 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends
 		v.visitCtAnnotationType(this);
 	}
 
+
+	@Override
+	public Set<CtTypeReference<?>> getSuperInterfaces() {
+		return Collections.emptySet();
+	}
+
+	@Override
+	public boolean isSubtypeOf(CtTypeReference<?> type) {
+		return false;
+	}
+
+
+	@Override
+	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
+		return Collections.emptyList();
+	}
+
+
+	@Override
+	public Collection<CtExecutableReference<?>> getAllExecutables() {
+		return Collections.emptyList();
+	}
 }

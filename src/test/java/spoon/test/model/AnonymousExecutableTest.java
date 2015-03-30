@@ -15,8 +15,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 public class AnonymousExecutableTest {
 
 	@Test
-	public void testStatements() throws Exception {
-		
+	public void testStatements() throws Exception {		
 		CtSimpleType<?> type = build("spoon.test.model", "AnonymousExecutableClass");
 		CtAnonymousExecutable anonexec =
 			type.
