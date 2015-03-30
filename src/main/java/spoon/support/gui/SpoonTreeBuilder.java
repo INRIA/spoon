@@ -42,15 +42,20 @@ public class SpoonTreeBuilder extends CtScanner {
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(o) {
 			private static final long serialVersionUID = 1L;
 
+			private String getASTNodeName() {
+				// the end user needs to know the interface, not the implementation
+				return getUserObject().getClass().getSimpleName().replaceAll("Impl$", "");
+			}
+
 			@Override
 			public String toString() {
 				if (getUserObject() instanceof CtNamedElement) {
-					return getUserObject().getClass().getSimpleName()
+					return getASTNodeName()
 							+ " - "
 							+ ((CtNamedElement) getUserObject())
 									.getSimpleName();
 				}
-				return getUserObject().getClass().getSimpleName() + " - "
+				return getASTNodeName() + " - "
 						+ getUserObject().toString();
 			}
 		};
