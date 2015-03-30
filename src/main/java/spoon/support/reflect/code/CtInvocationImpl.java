@@ -20,6 +20,7 @@ package spoon.support.reflect.code;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -31,19 +32,20 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-public class CtInvocationImpl<T> extends
-		CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
+public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
 
 	List<CtExpression<?>> arguments = EMPTY_LIST();
-
-	CtBlock<?> block;
 
 	CtExecutableReference<T> executable;
 
 	List<CtExpression<Integer>> indexExpressions = EMPTY_LIST();
 
 	List<CtTypeReference<?>> genericTypes = EMPTY_LIST();
+
+	boolean isThisInvocation = false;
+
+	boolean isSuperInvocation = false;
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtInvocation(this);
@@ -141,4 +143,29 @@ public class CtInvocationImpl<T> extends
 		this.label = label;
 	}
 
+	@Override
+	public boolean isThisInvocation() {
+		return isThisInvocation;
+	}
+
+	@Override
+	public void setThisInvocation(boolean isThisInvocation) {
+		if (isSuperInvocation() && isThisInvocation) {
+			throw new SpoonException("An invocation cannot be this and super.");
+		}
+		this.isThisInvocation = isThisInvocation;
+	}
+
+	@Override
+	public boolean isSuperInvocation() {
+		return isSuperInvocation;
+	}
+
+	@Override
+	public void setSuperInvocation(boolean isSuperInvocation) {
+		if (isThisInvocation() && isSuperInvocation) {
+			throw new SpoonException("An invocation cannot be this and super.");
+		}
+		this.isSuperInvocation = isSuperInvocation;
+	}
 }

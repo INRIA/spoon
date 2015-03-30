@@ -1874,9 +1874,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(ExplicitConstructorCall explicitConstructor,
 			BlockScope scope) {
 		CtInvocation<Object> inv = factory.Core().createInvocation();
-		if (explicitConstructor.isImplicitSuper()) {
-			inv.setImplicit(true);
-		}
+		inv.setImplicit(explicitConstructor.isImplicitSuper());
+		inv.setThisInvocation(explicitConstructor.accessMode == ExplicitConstructorCall.This);
+		inv.setSuperInvocation(explicitConstructor.accessMode == ExplicitConstructorCall.Super);
 		CtExecutableReference<Object> er = references
 				.getExecutableReference(explicitConstructor.binding);
 		inv.setExecutable(er);

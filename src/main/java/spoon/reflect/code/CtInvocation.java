@@ -17,14 +17,31 @@
 
 package spoon.reflect.code;
 
-
 /**
  * This code element defines a concrete invocation.
- * 
+ *
  * @param <T>
- *            Return type of this invocation
+ * 		Return type of this invocation
  */
 public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement,
 		CtTargetedExpression<T, CtExpression<?>> {
+	/**
+	 * Checks if the invocation is a this invocation.
+	 */
+	boolean isThisInvocation();
 
+	/**
+	 * Sets type of the invocation for this invocation.
+	 */
+	void setThisInvocation(boolean isThisInvocation);
+
+	/**
+	 * Checks if the invocation is a super invocation.
+	 */
+	boolean isSuperInvocation();
+
+	/**
+	 * Sets type of the invocation for super invocation.
+	 */
+	void setSuperInvocation(boolean isSuperInvocation);
 }
