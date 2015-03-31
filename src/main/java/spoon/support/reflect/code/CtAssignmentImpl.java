@@ -23,7 +23,7 @@ import java.util.List;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -52,7 +52,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		return assignment;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+	public CtCodeElement getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

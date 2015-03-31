@@ -33,7 +33,7 @@ import spoon.reflect.visitor.CtVisitor;
  * @author Renaud Pawlak
  */
 public class CtAnnotationTypeImpl<T extends Annotation> extends
-		CtSimpleTypeImpl<T> implements CtAnnotationType<T> {
+		CtTypeImpl<T> implements CtAnnotationType<T> {
 	private static final long serialVersionUID = 1L;
 
 	

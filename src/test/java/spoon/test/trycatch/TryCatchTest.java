@@ -9,7 +9,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;

@@ -24,7 +24,7 @@ import java.util.List;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -50,7 +50,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		return null;
 	}
 
-	public CtStatementList getSubstitution(CtSimpleType<?> targetType) {
+	public CtStatementList getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

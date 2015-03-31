@@ -13,7 +13,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
 import spoon.compiler.Environment;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.FileSystemFolder;
@@ -31,7 +31,7 @@ public class APITest {
 		for(CtPackage p : factory.Package().getAll()) {
 			System.out.println("package: "+p.getQualifiedName());
 		}
-		for(CtSimpleType<?> s : factory.Class().getAll()) {
+		for(CtType<?> s : factory.Class().getAll()) {
 			System.out.println("class: "+s.getQualifiedName());
 		}
 	}
@@ -45,7 +45,7 @@ public class APITest {
 			public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
 				return new JavaOutputProcessor() { 
 					@Override
-					public void process(CtSimpleType<?> e) {
+					public void process(CtType<?> e) {
 						l.add(e);
 					}
 					@Override

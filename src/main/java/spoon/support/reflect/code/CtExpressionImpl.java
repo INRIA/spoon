@@ -22,7 +22,7 @@ import java.util.List;
 
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -33,7 +33,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 
 	List<CtTypeReference<?>> typeCasts = EMPTY_LIST();
 
-	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+	public CtCodeElement getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

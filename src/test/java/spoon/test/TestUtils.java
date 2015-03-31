@@ -3,7 +3,7 @@ package spoon.test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
@@ -19,7 +19,7 @@ public class TestUtils {
 				new StandardEnvironment());
 	}
 	
-	public static <T extends CtSimpleType<?>> T build(String packageName,
+	public static <T extends CtType<?>> T build(String packageName,
 			String className) throws Exception {
 		SpoonCompiler comp = new Launcher().createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/"
@@ -28,7 +28,7 @@ public class TestUtils {
 		return comp.getFactory().Package().get(packageName).getType(className);
 	}
 
-	public static <T extends CtSimpleType<?>> T build(String packageName,
+	public static <T extends CtType<?>> T build(String packageName,
 			String className, final Factory f) throws Exception {
 		Launcher launcher = new Launcher() {
 			@Override

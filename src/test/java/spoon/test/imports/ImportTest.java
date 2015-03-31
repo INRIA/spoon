@@ -9,7 +9,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -64,7 +64,7 @@ public class ImportTest {
 		final CtClass<?> client = (CtClass<?>) factory.Type().get("spoon.test.imports.testclasses.DefaultClientClass");
 		final CtMethod<?> methodVisit = client.getMethodsByName("visit").get(0);
 
-		final CtSimpleType<Object> innerClass = factory.Type().get("spoon.test.imports.testclasses.DefaultClientClass$InnerClass");
+		final CtType<Object> innerClass = factory.Type().get("spoon.test.imports.testclasses.DefaultClientClass$InnerClass");
 		assertEquals("Type of the method must to be InnerClass accessed via DefaultClientClass.", innerClass, methodVisit.getType().getDeclaration());
 	}
 

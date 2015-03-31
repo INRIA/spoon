@@ -7,7 +7,7 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -79,7 +79,7 @@ public class TypeReferenceTest {
 		comp.build();
 
 		// we can get the model of ReferecingClass
-		CtSimpleType<?> theClass = factory.Type().get(qualifiedName);
+		CtType<?> theClass = factory.Type().get(qualifiedName);
 
 		// now we retrieve the reference to ReferencedClass
 		CtTypeReference referencedType = null;
@@ -136,7 +136,7 @@ public class TypeReferenceTest {
 		comp.build();
 
 		// we can get the model of ClassA
-		CtSimpleType<?> theClass = factory.Type().get(qualifiedName);
+		CtType<?> theClass = factory.Type().get(qualifiedName);
 
 		// we get ClassA's field of type ClassB
 		List<CtField<?>> fields = theClass.getFields();

@@ -46,7 +46,7 @@ import spoon.processing.Severity;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
@@ -233,8 +233,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 		// Add sourceposition (javac format)
 		try {
-			CtSimpleType<?> type = (element instanceof CtSimpleType) ? (CtSimpleType<?>) element
-					: element.getParent(CtSimpleType.class);
+			CtType<?> type = (element instanceof CtType) ? (CtType<?>) element
+					: element.getParent(CtType.class);
 			SourcePosition sp = element.getPosition();
 
 			if (sp == null) {

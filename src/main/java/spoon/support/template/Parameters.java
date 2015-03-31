@@ -32,7 +32,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -249,7 +249,7 @@ public abstract class Parameters {
 	public static <T> TemplateParameter<T> NIL(Class<? extends T> type) {
 		if (Number.class.isAssignableFrom(type)) {
 			return (TemplateParameter<T>) new TemplateParameter<Number>() {
-				public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+				public CtCodeElement getSubstitution(CtType<?> targetType) {
 					return null;
 				}
 
@@ -259,7 +259,7 @@ public abstract class Parameters {
 			};
 		}
 		return new TemplateParameter<T>() {
-			public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+			public CtCodeElement getSubstitution(CtType<?> targetType) {
 				return null;
 			}
 
