@@ -52,7 +52,7 @@ public class ExecutableRefTest {
 
 	@Test
 	public void testGetActualClassTest() throws Exception {
-		Factory factory = TestUtils.build(ExecutableRefTestSource.class);
+		Factory factory = TestUtils.build(ExecutableRefTestSource.class, MyIntf.class);
 
 		CtMethod method = factory.Class().get(ExecutableRefTestSource.class).getMethod("myMethod");
 		CtExecutableReference ref = method.getReference();
@@ -63,7 +63,7 @@ public class ExecutableRefTest {
 	}
 
 	private CtAbstractInvocation<?> getInvocationFromMethod(String methodName) throws Exception {
-		Factory factory = TestUtils.build(ExecutableRefTestSource.class);
+		Factory factory = TestUtils.build(ExecutableRefTestSource.class, MyIntf.class);
 
 		CtClass<ExecutableRefTestSource> clazz = factory.Class().get(ExecutableRefTestSource.class);
 		Assert.assertNotNull(clazz);
