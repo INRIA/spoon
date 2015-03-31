@@ -77,7 +77,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
@@ -579,8 +579,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 					.getExecutable()
 					.getDeclaringType()
 					.isAssignableFrom(
-							((CtSimpleType<?>) invocation
-									.getParent(CtSimpleType.class))
+							((CtType<?>) invocation
+									.getParent(CtType.class))
 									.getReference())) {
 				CtBlock<?> b = evaluate(invocation.getParent(),
 						executable.getBody());

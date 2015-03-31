@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 /**
  * This interface defines the pretty printers.
@@ -32,7 +32,7 @@ public interface PrettyPrinter {
 	 * compilation unit is required for calculating the line numbers mapping.
 	 */
 	void calculate(CompilationUnit sourceCompilationUnit,
-			List<CtSimpleType<?>> types);
+			List<CtType<?>> types);
 
 	/**
 	 * Gets the line number mapping between the generated code and the original

@@ -19,7 +19,7 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -51,8 +51,8 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	@Override
-	public CtSimpleType<?> getDeclaringType() {
-		return (CtSimpleType<?>) parent;
+	public CtType<?> getDeclaringType() {
+		return (CtType<?>) parent;
 	}
 
 	public CtExpression<T> getDefaultExpression() {

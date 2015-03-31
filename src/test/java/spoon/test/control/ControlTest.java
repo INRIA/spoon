@@ -13,7 +13,7 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -21,7 +21,7 @@ public class ControlTest {
 
 	@Test
 	public void testModelBuildingFor() throws Exception {
-		CtSimpleType<?> type = build("spoon.test.control", "Fors");
+		CtType<?> type = build("spoon.test.control", "Fors");
 		assertEquals("Fors", type.getSimpleName());
 
 		List<CtFor> fors = type.getElements(new TypeFilter<CtFor>(CtFor.class));
@@ -50,7 +50,7 @@ public class ControlTest {
 
 	@Test
 	public void testModelBuildingDoWhile() throws Exception {
-		CtSimpleType<?> type = build("spoon.test.control", "DoWhile");
+		CtType<?> type = build("spoon.test.control", "DoWhile");
 		assertEquals("DoWhile", type.getSimpleName());
 		CtMethod<?> meth = type.getElements(
 				new NameFilter<CtMethod<?>>("methode")).get(0);

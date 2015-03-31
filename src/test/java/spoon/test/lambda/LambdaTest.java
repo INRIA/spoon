@@ -17,7 +17,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -27,7 +27,7 @@ import spoon.test.lambda.testclasses.Foo;
 
 public class LambdaTest {
 	private Factory factory;
-	private CtSimpleType<Foo> foo;
+	private CtType<Foo> foo;
 
 	@Before
 	public void setUp() throws Exception {

@@ -10,16 +10,16 @@ import java.util.Set;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.Import;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	Factory factory;
 
-	List<CtSimpleType<?>> declaredTypes = new ArrayList<CtSimpleType<?>>();
+	List<CtType<?>> declaredTypes = new ArrayList<CtType<?>>();
 
-	public List<CtSimpleType<?>> getDeclaredTypes() {
+	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;
 	}
 
@@ -29,10 +29,10 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return file;
 	}
 
-	public CtSimpleType<?> getMainType() {
+	public CtType<?> getMainType() {
 		if (getFile() == null)
 			return getDeclaredTypes().get(0);
-		for (CtSimpleType<?> t : getDeclaredTypes()) {
+		for (CtType<?> t : getDeclaredTypes()) {
 			String name = getFile().getName();
 			name = name.substring(0, name.lastIndexOf("."));
 			if (t.getSimpleName().equals(name))
@@ -42,7 +42,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 				+ "': declared types are " + getDeclaredTypes());
 	}
 
-	public void setDeclaredTypes(List<CtSimpleType<?>> types) {
+	public void setDeclaredTypes(List<CtType<?>> types) {
 		this.declaredTypes = types;
 	}
 

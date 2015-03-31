@@ -24,7 +24,7 @@ import java.util.TreeSet;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
@@ -128,7 +128,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtField<T> getDeclaration() {
-		CtSimpleType<?> type = (CtSimpleType<?>) declaringType.getDeclaration();
+		CtType<?> type = (CtType<?>) declaringType.getDeclaration();
 		if ((declaringType != null) && (type != null)) {
 			return (CtField<T>) type.getField(getSimpleName());
 		}

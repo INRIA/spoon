@@ -13,7 +13,7 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
@@ -34,7 +34,7 @@ public class ImportScannerTest {
 		String qualifiedName = packageName + "." + className;
 
 		Factory aFactory = TestUtils.build(packageName, className).getFactory();
-		CtSimpleType<?> theClass = aFactory.Type().get(qualifiedName);
+		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();
 		Collection<CtTypeReference<?>> imports = importContext

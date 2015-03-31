@@ -21,7 +21,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtIfImpl extends CtStatementImpl implements CtIf {
@@ -46,7 +46,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		return (S) elseStatement;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+	public CtCodeElement getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

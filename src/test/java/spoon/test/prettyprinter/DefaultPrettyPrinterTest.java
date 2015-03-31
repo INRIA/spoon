@@ -7,7 +7,7 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -35,7 +35,7 @@ public class DefaultPrettyPrinterTest {
 		comp.setSourceClasspath(classpath.get(0).getPath());
 		comp.build();
 		Factory factory = comp.getFactory();
-		CtSimpleType<?> theClass = factory.Type().get(qualifiedName);
+		CtType<?> theClass = factory.Type().get(qualifiedName);
 		List<CtInvocation<?>> elements = Query.getElements(theClass, new TypeFilter<CtInvocation<?>>(CtInvocation.class));
 		assertEquals(3, elements.size());
 		CtInvocation<?> mathAbsInvocation = elements.get(1);
@@ -59,7 +59,7 @@ public class DefaultPrettyPrinterTest {
 		comp.build();
 		
 		Factory factory = comp.getFactory();
-		CtSimpleType<?> theClass = factory.Type().get("spoon.test.prettyprinter.NestedSuperCall");
+		CtType<?> theClass = factory.Type().get("spoon.test.prettyprinter.NestedSuperCall");
 		
 		assertTrue(theClass.toString().contains("nc.super(\"a\")"));
 	}

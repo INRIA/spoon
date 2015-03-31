@@ -32,7 +32,7 @@ import spoon.processing.FileGenerator;
 import spoon.processing.TraversalStrategy;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 
@@ -41,8 +41,8 @@ import spoon.reflect.visitor.PrettyPrinter;
 /**
  * A processor that generates compilable Java source files from the meta-model.
  */
-public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
-		implements FileGenerator<CtSimpleType<?>> {
+public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
+		implements FileGenerator<CtType<?>> {
 	PrettyPrinter printer;
 
 	File directory;
@@ -109,7 +109,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	 * classes in different files (even if they are in the same file in the
 	 * original sources).
 	 */
-	public void createJavaFile(CtSimpleType<?> element) {
+	public void createJavaFile(CtType<?> element) {
 
 		getEnvironment().debugMessage(
 				"printing " + element.getQualifiedName() + " to " + directory);
@@ -129,7 +129,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 				throw new IllegalStateException();
 			}
 		}
-		List<CtSimpleType<?>> toBePrinted = new ArrayList<CtSimpleType<?>>();
+		List<CtType<?>> toBePrinted = new ArrayList<CtType<?>>();
 		toBePrinted.add(element);
 
 
@@ -185,7 +185,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 			}
 			stream = new PrintStream(file);
 			stream.print(printer.getResult());
-			for (CtSimpleType<?> t : toBePrinted) {
+			for (CtType<?> t : toBePrinted) {
 				lineNumberMappings.put(t.getQualifiedName(),
 						printer.getLineNumberMapping());
 			}
@@ -205,7 +205,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtSimpleType<?>>
 	 * Creates a source file for each processed top-level type and pretty prints
 	 * its contents.
 	 */
-	public void process(CtSimpleType<?> type) {
+	public void process(CtType<?> type) {
 		if (type.isTopLevel())
 			createJavaFile(type);
 		printer.reset();

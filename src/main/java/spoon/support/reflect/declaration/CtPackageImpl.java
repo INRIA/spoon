@@ -22,7 +22,7 @@ import java.util.TreeSet;
 
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -36,7 +36,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	Set<CtPackage> packs = new TreeSet<CtPackage>();
 
-	Set<CtSimpleType<?>> types = new TreeSet<CtSimpleType<?>>();
+	Set<CtType<?>> types = new TreeSet<CtType<?>>();
 
 	public CtPackageImpl() {
 		super();
@@ -80,8 +80,8 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends CtSimpleType<?>> T getType(String simpleName) {
-		for (CtSimpleType<?> t : types) {
+	public <T extends CtType<?>> T getType(String simpleName) {
+		for (CtType<?> t : types) {
 			if (t.getSimpleName().equals(simpleName)) {
 				return (T) t;
 			}
@@ -89,7 +89,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return null;
 	}
 
-	public Set<CtSimpleType<?>> getTypes() {
+	public Set<CtType<?>> getTypes() {
 		return types;
 	}
 
@@ -97,7 +97,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		this.packs = packs;
 	}
 
-	public void setTypes(Set<CtSimpleType<?>> types) {
+	public void setTypes(Set<CtType<?>> types) {
 		this.types = types;
 	}
 
@@ -107,13 +107,13 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public void addType(CtSimpleType<?> type) {
+	public void addType(CtType<?> type) {
 		types.add(type);
 		type.setParent(this);
 	}
 
 	@Override
-	public void removeType(CtSimpleType<?> type) {
+	public void removeType(CtType<?> type) {
 		types.remove(type);
 	}
 

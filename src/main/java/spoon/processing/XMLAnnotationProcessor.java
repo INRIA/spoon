@@ -38,7 +38,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.processing.XmlProcessorProperties;
@@ -125,7 +125,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @return true if the type matches the expression
 	 * @see CtElement#getSignature()
 	 */
-	protected boolean isTypeMatching(CtSimpleType<?> type, String typeExpression) {
+	protected boolean isTypeMatching(CtType<?> type, String typeExpression) {
 		return java.util.regex.Pattern.matches(typeExpression,
 				type.getQualifiedName());
 	}
@@ -172,8 +172,8 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 		for (int i = 0; i < len; i++) {
 			Element clazz = (Element) nodeList.item(i);
 			String nameExpr = clazz.getAttribute("expr");
-			for (CtSimpleType<?> t : getFactory().Type().getAll(true)) {
-				// CtSimpleType<?> t = getType(name);
+			for (CtType<?> t : getFactory().Type().getAll(true)) {
+				// CtType<?> t = getType(name);
 				if (!isTypeMatching(t, nameExpr))
 					continue;
 				try {
@@ -251,9 +251,9 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 		}
 	}
 
-	// private CtSimpleType<?> getType(String name) {
+	// private CtType<?> getType(String name) {
 	// CtTypeReference<?> ref = getFactory().Type().createReference(name);
-	// CtSimpleType<?> t = ref.getDeclaration();
+	// CtType<?> t = ref.getDeclaration();
 	// return t;
 	// }
 	//

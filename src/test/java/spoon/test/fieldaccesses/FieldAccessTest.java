@@ -14,7 +14,7 @@ import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtThisAccessImpl;
@@ -23,7 +23,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testModelBuildingFieldAccesses() throws Exception {
-		CtSimpleType<?> type = build("spoon.test.fieldaccesses", "Mouse");
+		CtType<?> type = build("spoon.test.fieldaccesses", "Mouse");
 		assertEquals("Mouse", type.getSimpleName());
 
 		CtMethod<?> meth1 = type.getElements(
@@ -71,7 +71,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testModelBuildingOuterThisAccesses() throws Exception {
-		CtSimpleType<?> type = build("spoon.test.fieldaccesses",
+		CtType<?> type = build("spoon.test.fieldaccesses",
 				"InnerClassThisAccess");
 		assertEquals("InnerClassThisAccess", type.getSimpleName());
 
@@ -91,7 +91,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testModelBuildingOuterSuperAccesses() throws Exception {
-		CtSimpleType<?> type = build("spoon.test.fieldaccesses",
+		CtType<?> type = build("spoon.test.fieldaccesses",
 				"InternalSuperCall");
 		assertEquals("InternalSuperCall", type.getSimpleName());
 
@@ -104,7 +104,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testBCUBug20140402() throws Exception {
-		CtSimpleType<?> type = build("spoon.test.fieldaccesses",
+		CtType<?> type = build("spoon.test.fieldaccesses",
 				"BCUBug20140402");
 		assertEquals("BCUBug20140402", type.getSimpleName());
 
@@ -132,7 +132,7 @@ public class FieldAccessTest {
 	
 	@Test
 	public void testTargetedAccessPosition() throws Exception{
-		CtSimpleType<?> type = build("spoon.test.fieldaccesses", "TargetedAccessPosition");
+		CtType<?> type = build("spoon.test.fieldaccesses", "TargetedAccessPosition");
 		List<CtFieldAccess<?>> vars = type.getElements(
 				new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
 		//vars is [t.ta.ta, t.ta]

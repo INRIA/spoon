@@ -19,7 +19,7 @@ package spoon.reflect.factory;
 
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 /**
  * The {@link CtEnum} sub-factory.
@@ -68,7 +68,7 @@ public class EnumFactory extends TypeFactory {
 	@SuppressWarnings("unchecked")
 	public CtEnum<?> get(String qualifiedName) {
 		try {
-			return (CtEnum<?>) super.get(qualifiedName);
+			return (CtEnum) super.get(qualifiedName);
 		} catch (Exception e) {
 			return null;
 		}
@@ -85,7 +85,7 @@ public class EnumFactory extends TypeFactory {
 	 */
 	public <T extends Enum<?>> CtEnum<T> getEnum(Class<T> cl) {
 		try {
-			CtSimpleType<T> t = super.get(cl);
+			CtType<T> t = super.get(cl);
 			return (CtEnum<T>) t;
 		} catch (Exception e) {
 			return null;

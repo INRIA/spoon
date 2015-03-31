@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
 public class PrinterTest {
@@ -30,7 +30,7 @@ public class PrinterTest {
 	@Test
 	public void testPrettyPrinter() throws Exception {
 
-		for (CtSimpleType<?> t : factory.Type().getAll()) {
+		for (CtType<?> t : factory.Type().getAll()) {
 			t.toString();
 		}
 		assertEquals(0, factory.getEnvironment().getWarningCount());

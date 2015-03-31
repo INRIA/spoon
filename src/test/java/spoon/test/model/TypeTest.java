@@ -7,7 +7,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 
@@ -15,7 +15,7 @@ public class TypeTest {
 
 	@Test
 	public void test() throws Exception {
-		CtSimpleType<?> type = build("spoon.test.model", "Foo");
+		CtType<?> type = build("spoon.test.model", "Foo");
 		assertEquals(1, type.getDeclaredFields().size());
 		assertEquals(2, ((CtType) type).getMethods().size());
 		assertEquals(3, type.getDeclaredExecutables().size());

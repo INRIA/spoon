@@ -19,11 +19,12 @@ package spoon.template;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 /**
  * This class represents a template parameter that defines a void block
  * statement directly expressed in Java (no returns).
+ *
  *
  * <p>
  * To define a new block template parameter, you must subclass this class and
@@ -47,7 +48,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	public BlockTemplate() {
 	}
 
-	public CtBlock<?> apply(CtSimpleType<?> targetType) {
+	public CtBlock<?> apply(CtType<?> targetType) {
 		CtClass<? extends BlockTemplate> c;
 		c = targetType.getFactory().Class().get(this.getClass());
 		if (c == null) {

@@ -38,7 +38,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -181,13 +181,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public CtSimpleType<T> getDeclaration() {
+	public CtType<T> getDeclaration() {
 		if (!isPrimitive() && !isAnonymous()) {
-			return (CtSimpleType<T>) getFactory().Type()
+			return (CtType<T>) getFactory().Type()
 					.get(getQualifiedName());
 		}
 		if (!isPrimitive() && isAnonymous()) {
-			final CtSimpleType<?> rootType = getFactory().Type().get(getDeclaringType().getQualifiedName());
+			final CtType<?> rootType = getFactory().Type().get(getDeclaringType().getQualifiedName());
 			final CtNewClass elements = rootType.getElements(new AbstractFilter<CtNewClass>(CtNewClass.class) {
 				@Override
 				public boolean matches(CtNewClass element) {
@@ -210,7 +210,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	public String getQualifiedName() {
 		if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName()
-					+ CtSimpleType.INNERTTYPE_SEPARATOR + getSimpleName();
+					+ CtType.INNERTTYPE_SEPARATOR + getSimpleName();
 		} else if (getPackage() != null
 				&& !getPackage().getSimpleName().equals(
 				CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
@@ -254,8 +254,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		if (isPrimitive() || type.isPrimitive()) {
 			return equals(type);
 		}
-		CtSimpleType<?> superTypeDecl = (CtSimpleType<?>) type.getDeclaration();
-		CtSimpleType<?> subTypeDecl = getDeclaration();
+		CtType<?> superTypeDecl = (CtType<?>) type.getDeclaration();
+		CtType<?> subTypeDecl = getDeclaration();
 		if ((subTypeDecl == null) && (superTypeDecl == null)) {
 			try {
 				if (((this instanceof CtArrayTypeReference) && (type instanceof CtArrayTypeReference))) {
@@ -373,7 +373,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
 		Collection<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
-		CtSimpleType<?> t = getDeclaration();
+		CtType<?> t = getDeclaration();
 		if (t == null) {
 			for (Field f : getActualClass().getDeclaredFields()) {
 				l.add(getFactory().Field().createReference(f));
@@ -397,7 +397,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	
 	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
-		CtSimpleType<T> t = getDeclaration();
+		CtType<T> t = getDeclaration();
 		if (t == null) {
 			return RtHelper.getAllExecutables(getActualClass(), getFactory());
 		} else {
@@ -406,7 +406,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public Collection<CtFieldReference<?>> getAllFields() {
-		CtSimpleType<?> t = getDeclaration();
+		CtType<?> t = getDeclaration();
 		if (t == null) {
 			return RtHelper.getAllFields(getActualClass(), getFactory());
 		} else {
@@ -416,7 +416,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Collection<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
-		CtSimpleType<T> t = getDeclaration();
+		CtType<T> t = getDeclaration();
 		if (t == null) {
 			Class<?> c = getActualClass();
 			for (Method m : c.getDeclaredMethods()) {
@@ -437,7 +437,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public Set<ModifierKind> getModifiers() {
-		CtSimpleType<T> t = getDeclaration();
+		CtType<T> t = getDeclaration();
 		if (t != null) {
 			return t.getModifiers();
 		}
@@ -446,7 +446,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public CtTypeReference<?> getSuperclass() {
-		CtSimpleType<T> t = getDeclaration();
+		CtType<T> t = getDeclaration();
 		if (t != null) {
 			return ((CtClass<T>) t).getSuperclass();
 		} else {
@@ -457,7 +457,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
-		CtSimpleType<?> t = getDeclaration();
+		CtType<?> t = getDeclaration();
 		if (t != null) {
 			return t.getSuperInterfaces();
 		} else {
@@ -513,7 +513,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	@Override
 	public boolean isInterface() {
-		CtSimpleType<T> t = getDeclaration();
+		CtType<T> t = getDeclaration();
 		if (t == null) {
 			return getActualClass().isInterface();
 		} else {

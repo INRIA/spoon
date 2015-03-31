@@ -83,7 +83,6 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -144,7 +143,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		Stack<CtElement> elementStack = new Stack<CtElement>();
 
-		CtSimpleType<?> currentTopLevel;
+		CtType<?> currentTopLevel;
 
 		boolean ignoreGenerics = false;
 
@@ -357,7 +356,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public Collection<CtTypeReference<?>> computeImports(CtSimpleType<?> type) {
+	public Collection<CtTypeReference<?>> computeImports(CtType<?> type) {
 		if (env.isAutoImports()) {
 			context.currentTopLevel = type;
 			return importsContext.computeImports(context.currentTopLevel);
@@ -640,7 +639,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <A extends Annotation> void visitCtAnnotationType(
 			CtAnnotationType<A> annotationType) {
-		visitCtSimpleType(annotationType);
+		visitCtType(annotationType);
 		write("@interface " + annotationType.getSimpleName() + " {").incTab();
 
 		SortedList<CtElement> lst = new SortedList<CtElement>(
@@ -941,7 +940,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
-		visitCtSimpleType(ctEnum);
+		visitCtType(ctEnum);
 		write("enum " + ctEnum.getSimpleName());
 		if (ctEnum.getSuperInterfaces().size() > 0) {
 			write(" implements ");
@@ -1739,7 +1738,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(returnStatement.getReturnedExpression());
 	}
 
-	<T> void visitCtSimpleType(CtSimpleType<T> type) {
+	<T> void visitCtType(CtType<T> type) {
 		mapLine(line, type);
 		if (type.isTopLevel()) {
 			context.currentTopLevel = type;
@@ -1823,10 +1822,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(" finally ");
 			scan(tryWithResource.getFinalizer());
 		}
-	}
-
-	<T> void visitCtType(CtType<T> type) {
-		visitCtSimpleType(type);
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
@@ -2077,7 +2072,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Write the compilation unit header.
 	 */
-	public DefaultJavaPrettyPrinter writeHeader(List<CtSimpleType<?>> types,
+	public DefaultJavaPrettyPrinter writeHeader(List<CtType<?>> types,
 			Collection<CtTypeReference<?>> imports) {
 		if (!types.isEmpty()) {
 			CtPackage pack = types.get(0).getPackage();
@@ -2233,14 +2228,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private CompilationUnit sourceCompilationUnit;
 
 	public void calculate(CompilationUnit sourceCompilationUnit,
-			List<CtSimpleType<?>> types) {
+			List<CtType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
 		Collection<CtTypeReference<?>> imports = Collections.EMPTY_LIST;
-		for (CtSimpleType<?> t : types) {
+		for (CtType<?> t : types) {
 			imports = computeImports(t);
 		}
 		writeHeader(types, imports);
-		for (CtSimpleType<?> t : types) {
+		for (CtType<?> t : types) {
 			scan(t);
 			writeln().writeln().writeTabs();
 		}
