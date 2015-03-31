@@ -1912,7 +1912,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (reference.getDeclaringType() == null) {
 			return false;
 		}
-		final CtSimpleType<?> declaration = reference.getDeclaringType().getDeclaration();
+		final CtElement declaration = reference.getDeclaringType().getDeclaration();
 		if (declaration == null) {
 			return false;
 		}
