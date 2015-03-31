@@ -144,8 +144,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	protected Class<T> findClass() {
 		try {
 			return (Class<T>) getFactory().getEnvironment().getClassLoader().loadClass(getQualifiedName());
-		} catch (ClassNotFoundException cnfe) {
-			throw new SpoonException("cannot load class: "
+		} catch (java.lang.ClassNotFoundException cnfe) {
+			throw new spoon.support.reflect.reference.SpoonClassNotFoundException("cannot load class: "
 					+ getQualifiedName() + " with class loader "
 					+ Thread.currentThread().getContextClassLoader(), cnfe);
 		}

@@ -22,6 +22,7 @@ import java.util.Set;
 
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.support.reflect.reference.SpoonClassNotFoundException;
 
 /**
  * This interface defines a reference to a
@@ -40,6 +41,8 @@ public interface CtTypeReference<T> extends CtReference,
 	 * 
 	 * @return the Java class or null if the class is not found (not in
 	 *         classpath)
+	 *         
+	 * @throws spoon.reflect.reference.SpoonClassNotFoundException if the class is not in the classpath
 	 */
 	Class<T> getActualClass();
 
