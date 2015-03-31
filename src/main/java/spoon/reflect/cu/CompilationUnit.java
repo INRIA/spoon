@@ -40,16 +40,6 @@ public interface CompilationUnit extends FactoryAccessor {
 	CtSimpleType<?> getMainType();
 
 	/**
-	 * Add a source code fragment to this compilation unit.
-	 */
-	void addSourceCodeFragment(SourceCodeFragment fragment);
-
-	/**
-	 * Gets the source code fragments for this compilation unit.
-	 */
-	List<SourceCodeFragment> getSourceCodeFragments();
-
-	/**
 	 * Gets the original source code as a string.
 	 */
 	String getOriginalSourceCode();

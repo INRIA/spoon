@@ -44,7 +44,6 @@ import spoon.processing.Severity;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
@@ -192,14 +191,6 @@ public class Launcher implements SpoonAPI {
 			sw1.setLongFlag("tabs");
 			sw1.setDefault("false");
 			sw1.setHelp("Use tabulations instead of spaces in the generated code (use spaces by default).");
-			jsap.registerParameter(sw1);
-
-			// fragments
-			sw1 = new Switch("fragments");
-			sw1.setLongFlag("fragments");
-			sw1.setShortFlag('f');
-			sw1.setDefault("false");
-			sw1.setHelp("Use source code fragments to generate source code (preserve formatting).");
 			jsap.registerParameter(sw1);
 
 			// Tab size
@@ -437,8 +428,6 @@ public class Launcher implements SpoonAPI {
 
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
-		environment.useSourceCodeFragments(jsapActualArgs
-				.getBoolean("fragments"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
     environment.setGenerateJavadoc(jsapActualArgs.getBoolean("generate-javadoc"));
 		
@@ -676,12 +665,7 @@ public class Launcher implements SpoonAPI {
 	}
 
 	public PrettyPrinter createPrettyPrinter() {
-		Environment environment = getEnvironment();
-		if (environment.isUsingSourceCodeFragments()) {
-			return new FragmentDrivenJavaPrettyPrinter(environment);
-		} else {
-			return new DefaultJavaPrettyPrinter(environment);
-		}
+		return new DefaultJavaPrettyPrinter(getEnvironment());
 	}
 
 	/**
@@ -711,9 +695,6 @@ public class Launcher implements SpoonAPI {
 		Environment env = modelBuilder.getFactory().getEnvironment();
 		env.reportProgressMessage("running Spoon...");
 
-		if (env.isUsingSourceCodeFragments()) {
-			env.reportProgressMessage("running in 'fragments' mode: AST changes will be ignored");
-		}
 		env.reportProgressMessage("start processing...");
 
 		long t = 0 ;

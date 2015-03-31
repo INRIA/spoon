@@ -10,7 +10,6 @@ import java.util.Set;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.Import;
-import spoon.reflect.cu.SourceCodeFragment;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 
@@ -49,27 +48,6 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setFile(File file) {
 		this.file = file;
-	}
-
-	List<SourceCodeFragment> fragments;
-
-	public void addSourceCodeFragment(SourceCodeFragment fragment) {
-		if (fragments == null) {
-			fragments = new ArrayList<SourceCodeFragment>();
-		}
-		int i = 0;
-		for (SourceCodeFragment f : fragments) {
-			if (fragment.position <= f.position) {
-				break;
-			}
-			i++;
-		}
-		fragments.add(i, fragment);
-	}
-
-	@Override
-    public List<SourceCodeFragment> getSourceCodeFragments() {
-		return fragments;
 	}
 
 	String originalSourceCode;

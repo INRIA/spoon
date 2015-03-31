@@ -349,16 +349,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		report(processor, severity, element, message);
 	}
 
-	public boolean isUsingSourceCodeFragments() {
-		return useSourceCodeFragments;
-	}
-
-	boolean useSourceCodeFragments = false;
-
-	public void useSourceCodeFragments(boolean b) {
-		useSourceCodeFragments = b;
-	}
-
 	boolean useTabulations = false;
 
 	public boolean isUsingTabulations() {

@@ -185,16 +185,6 @@ public interface Environment {
 	void setVerbose(boolean verbose);
 
 	/**
-	 * Tells if the code generation use code fragments.
-	 */
-	boolean isUsingSourceCodeFragments();
-
-	/**
-	 * Sets the code generation to use code fragments.
-	 */
-	void useSourceCodeFragments(boolean b);
-
-	/**
 	 * Gets the size of the tabulations in the generated source code.
 	 */
 	int getTabulationSize();

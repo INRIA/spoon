@@ -61,7 +61,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.compiler.FileSystemFile;
@@ -828,17 +827,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		PrettyPrinter printer = null;
 
-		if (env.isUsingSourceCodeFragments()) {
-			printer = new FragmentDrivenJavaPrettyPrinter(env);
-		}
 		if (printer == null) {
 			printer = new DefaultJavaPrettyPrinter(env);
 		}
 		printer.calculate(cu, toBePrinted);
 
-		return new ByteArrayInputStream(printer.getResult().toString()
-				.getBytes());
-
+		return new ByteArrayInputStream(printer.getResult().toString().getBytes());
 	}
 
 	@Override
