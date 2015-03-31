@@ -1246,14 +1246,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (invocation.getExecutable().getSimpleName().equals("<init>")) {
 			// It's a constructor (super or this)
 			try {
-				CtType<?> parentType = invocation.getParent(CtType.class);
-				if ((parentType != null)
-						&& (parentType.getQualifiedName() != null)
-						&& parentType.getQualifiedName().equals(
-						invocation.getExecutable().getDeclaringType()
-								.getQualifiedName())) {
+				if (invocation.isThisInvocation()) {
 					write("this");
-				} else {
+				} else if (invocation.isSuperInvocation()) {
 					if (invocation.getTarget() != null) {
 						write(invocation.getTarget().getSignature() + '.');
 					}
