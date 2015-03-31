@@ -7,14 +7,14 @@ import static spoon.test.TestUtils.build;
 import org.junit.Test;
 
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 
 public class ArraysTest {
 
 	@Test
 	public void testArrayReferences() throws Exception {
-		CtSimpleType<?> type = build("spoon.test.arrays", "ArrayClass");
+		CtType<?> type = build("spoon.test.arrays", "ArrayClass");
 		assertEquals("ArrayClass", type.getSimpleName());
 		assertEquals("int[][][]", type.getField("i").getType().toString());
         assertEquals(3,((CtArrayTypeReference<?>)type.getField("i").getType()).getDimensionCount());

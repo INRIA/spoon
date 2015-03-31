@@ -17,16 +17,15 @@
 
 package spoon.reflect.factory;
 
-import java.lang.reflect.Field;
-import java.util.Set;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  * The {@link CtField} sub-factory.
@@ -35,9 +34,8 @@ public class FieldFactory extends SubFactory {
 
 	/**
 	 * Creates a new field sub-factory.
-	 * 
-	 * @param factory
-	 *            the parent factory
+	 *
+	 * @param factory the parent factory
 	 */
 	public FieldFactory(Factory factory) {
 		super(factory);
@@ -45,42 +43,34 @@ public class FieldFactory extends SubFactory {
 
 	/**
 	 * Creates a field.
-	 * 
-	 * @param target
-	 *            the target type to which the field is added
-	 * @param modifiers
-	 *            the modifiers
-	 * @param type
-	 *            the field's type
-	 * @param name
-	 *            the field's name
+	 *
+	 * @param target    the target type to which the field is added
+	 * @param modifiers the modifiers
+	 * @param type      the field's type
+	 * @param name      the field's name
 	 */
-	public <T> CtField<T> create(CtSimpleType<?> target,
+	public <T> CtField<T> create(CtType<?> target,
 			Set<ModifierKind> modifiers, CtTypeReference<T> type, String name) {
 		CtField<T> field = factory.Core().createField();
 		field.setModifiers(modifiers);
 		field.setType(type);
 		field.setSimpleName(name);
-		if (target != null)
+		if (target != null) {
 			target.getFields().add(field);
+		}
 		return field;
 	}
 
 	/**
 	 * Creates a field.
-	 * 
-	 * @param target
-	 *            the target type to which the field is added
-	 * @param modifiers
-	 *            the modifiers
-	 * @param type
-	 *            the field's type
-	 * @param name
-	 *            the field's name
-	 * @param defaultExpression
-	 *            the initializing expression
+	 *
+	 * @param target            the target type to which the field is added
+	 * @param modifiers         the modifiers
+	 * @param type              the field's type
+	 * @param name              the field's name
+	 * @param defaultExpression the initializing expression
 	 */
-	public <T> CtField<T> create(CtSimpleType<?> target,
+	public <T> CtField<T> create(CtType<?> target,
 			Set<ModifierKind> modifiers, CtTypeReference<T> type, String name,
 			CtExpression<T> defaultExpression) {
 		CtField<T> field = create(target, modifiers, type, name);
@@ -90,19 +80,17 @@ public class FieldFactory extends SubFactory {
 
 	/**
 	 * Creates a field by copying an existing field.
-	 * 
-	 * @param <T>
-	 *            the type of the field
-	 * @param target
-	 *            the target type where the new field has to be inserted to
-	 * @param source
-	 *            the source field to be copied
+	 *
+	 * @param <T>    the type of the field
+	 * @param target the target type where the new field has to be inserted to
+	 * @param source the source field to be copied
 	 * @return the newly created field
 	 */
 	public <T> CtField<T> create(CtType<?> target, CtField<T> source) {
 		CtField<T> newField = factory.Core().clone(source);
-		if (target != null)
+		if (target != null) {
 			target.getFields().add(newField);
+		}
 		return newField;
 	}
 

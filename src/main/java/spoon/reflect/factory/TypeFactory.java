@@ -23,7 +23,6 @@ import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -86,7 +85,7 @@ public class TypeFactory extends SubFactory {
 	 *            type of array values
 	 */
 	public <T> CtArrayTypeReference<T[]> createArrayReference(
-			CtSimpleType<T> type) {
+			CtType<T> type) {
 		CtArrayTypeReference<T[]> array = factory.Core()
 				.createArrayTypeReference();
 		array.setComponentType(createReference(type));
@@ -146,7 +145,7 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Create a reference to a simple type
 	 */
-	public <T> CtTypeReference<T> createReference(CtSimpleType<T> type) {
+	public <T> CtTypeReference<T> createReference(CtType<T> type) {
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
 
 		if (type.getPackage() != null) {
@@ -186,12 +185,12 @@ public class TypeFactory extends SubFactory {
 	 * @return a found type or null if does not exist
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> CtSimpleType<T> get(String qualifiedName) {
+	public <T> CtType<T> get(String qualifiedName) {
 		int inertTypeIndex = qualifiedName
-				.lastIndexOf(CtSimpleType.INNERTTYPE_SEPARATOR);
+				.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		if (inertTypeIndex > 0) {
 			String s = qualifiedName.substring(0, inertTypeIndex);
-			CtSimpleType<T> t = get(s);
+			CtType<T> t = get(s);
 			if (t == null) {
 				return null;
 			}
@@ -212,15 +211,15 @@ public class TypeFactory extends SubFactory {
 			return null;
 		}
 
-		return (CtSimpleType<T>) pack.getType(qualifiedName
+		return (CtType<T>) pack.getType(qualifiedName
 				.substring(packageIndex + 1));
 	}
 
 	/**
 	 * Gets the list of all top-level created types.
 	 */
-	public List<CtSimpleType<?>> getAll() {
-		List<CtSimpleType<?>> types = new ArrayList<CtSimpleType<?>>();
+	public List<CtType<?>> getAll() {
+		List<CtType<?>> types = new ArrayList<CtType<?>>();
 		for (CtPackage pack : factory.Package().getAll()) {
 			types.addAll(pack.getTypes());
 		}
@@ -230,22 +229,22 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Gets the list of all created types.
 	 */
-	public List<CtSimpleType<?>> getAll(boolean includeNestedTypes) {
+	public List<CtType<?>> getAll(boolean includeNestedTypes) {
 		if (!includeNestedTypes) {
 			return getAll();
 		}
-		List<CtSimpleType<?>> types = new ArrayList<CtSimpleType<?>>();
+		List<CtType<?>> types = new ArrayList<CtType<?>>();
 		for (CtPackage pack : factory.Package().getAll()) {
-			for (CtSimpleType<?> type : pack.getTypes()) {
+			for (CtType<?> type : pack.getTypes()) {
 				addNestedType(types, type);
 			}
 		}
 		return types;
 	}
 
-	private void addNestedType(List<CtSimpleType<?>> list, CtSimpleType<?> t) {
+	private void addNestedType(List<CtType<?>> list, CtType<?> t) {
 		list.add(t);
-		for (CtSimpleType<?> nt : t.getNestedTypes()) {
+		for (CtType<?> nt : t.getNestedTypes()) {
 			addNestedType(list, nt);
 		}
 	}
@@ -260,8 +259,8 @@ public class TypeFactory extends SubFactory {
 	 *            then poses problem when T is a generic type itself
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> CtSimpleType<T> get(Class<?> cl) {
-		return (CtSimpleType<T>) get(cl.getName());
+	public <T> CtType<T> get(Class<?> cl) {
+		return (CtType<T>) get(cl.getName());
 	}
 
 	/**
@@ -309,7 +308,7 @@ public class TypeFactory extends SubFactory {
 	 * Tells if a given Java qualified name is that of an inner type.
 	 */
 	protected int hasInnerType(String qualifiedName) {
-		int ret = qualifiedName.lastIndexOf(CtSimpleType.INNERTTYPE_SEPARATOR);
+		int ret = qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		// if (ret < 0) {
 		// if (hasPackage(qualifiedName) > 0) {
 		// String buf = qualifiedName.substring(0,

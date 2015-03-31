@@ -20,7 +20,7 @@ package spoon.template;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 /**
  * This class represents a template parameter that defines a statement list
@@ -42,7 +42,7 @@ public abstract class TypedStatementListTemplateParameter<R> implements
 	public TypedStatementListTemplateParameter() {
 	}
 
-	public CtStatementList getSubstitution(CtSimpleType<?> targetType) {
+	public CtStatementList getSubstitution(CtType<?> targetType) {
 		CtClass<?> c;
 		CtBlock<?> b;
 		c = targetType.getFactory().Class().get(this.getClass());

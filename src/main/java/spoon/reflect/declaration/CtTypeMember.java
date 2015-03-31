@@ -11,6 +11,6 @@ public interface CtTypeMember extends CtModifiable {
 	 * 
 	 * @return declaring class
 	 */
-	CtSimpleType<?> getDeclaringType();
+	CtType<?> getDeclaringType();
 	
 }

@@ -47,7 +47,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -156,7 +156,7 @@ public class SubstitutionVisitor extends CtScanner {
 						name = name.replace(pname, (String) value);
 						element.setSimpleName(name);
 					} else if ((value instanceof CtTypeReference)
-							&& (element instanceof CtSimpleType)) {
+							&& (element instanceof CtType)) {
 						// replace with the type reference's name
 						name = name.replace(pname,
 								((CtTypeReference<?>) value).getSimpleName());
@@ -597,7 +597,7 @@ public class SubstitutionVisitor extends CtScanner {
 
 	CtTypeReference<?> targetRef;
 
-	CtSimpleType<?> targetType;
+	CtType<?> targetType;
 
 	Template<?> template;
 
@@ -619,7 +619,7 @@ public class SubstitutionVisitor extends CtScanner {
 	 * @param template
 	 *            the template that holds the parameter values
 	 */
-	public SubstitutionVisitor(Factory f, CtSimpleType<?> targetType,
+	public SubstitutionVisitor(Factory f, CtType<?> targetType,
 			Template<?> template) {
 		inheritanceScanner = new InheritanceSustitutionScanner(this);
 		this.factory = f;

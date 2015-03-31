@@ -8,7 +8,7 @@ import java.util.Map;
 import spoon.compiler.Environment;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourceCodeFragment;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 /**
  * This pretty printer is used when Spoon is use with the "fragments" mode. This
@@ -68,7 +68,7 @@ public class FragmentDrivenJavaPrettyPrinter implements PrettyPrinter {
 	}
 
 	public void calculate(CompilationUnit originalCompilationUnit,
-			List<CtSimpleType<?>> types) {
+			List<CtType<?>> types) {
 		this.compilationUnit = originalCompilationUnit;
 		// do nothing
 	}

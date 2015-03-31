@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -77,14 +77,14 @@ public class AnnotationTest {
 
 	@Test
 	public void testModelBuildingAnnotationBound() throws Exception {
-		CtSimpleType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Bound");
+		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Bound");
 		assertEquals("Bound", type.getSimpleName());
 		assertEquals(1, type.getAnnotations().size());
 	}
 
 	@Test
 	public void testWritingAnnotParamArray() throws Exception {
-		CtSimpleType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotParam");
+		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotParam");
 		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })"
 						+ DefaultJavaPrettyPrinter.LINE_SEPARATOR,
 				type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
@@ -92,7 +92,7 @@ public class AnnotationTest {
 
 	@Test
 	public void testModelBuildingAnnotationBoundUsage() throws Exception {
-		CtSimpleType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
+		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
 		assertEquals("Main", type.getSimpleName());
 
 		CtParameter<?> param = type.getElements(new TypeFilter<CtParameter<?>>(CtParameter.class)).get(0);
@@ -108,7 +108,7 @@ public class AnnotationTest {
 
 	@Test
 	public void testPersistenceProperty() throws Exception {
-		CtSimpleType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.PersistenceProperty");
+		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.PersistenceProperty");
 		assertEquals("PersistenceProperty", type.getSimpleName());
 		assertEquals(2, type.getAnnotations().size());
 
@@ -124,7 +124,7 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationParameterTypes() throws Exception {
-		CtSimpleType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
+		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
 
 		CtMethod<?> m1 = type.getElements(new NameFilter<CtMethod<?>>("m1")).get(0);
 
@@ -320,13 +320,13 @@ public class AnnotationTest {
 	public void testAnnotationWithDefaultArrayValue() throws Throwable {
 		final String res = "java.lang.Class<?>[] value() default {  };";
 
-		CtSimpleType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArrayInnerClass");
-		CtSimpleType<?> annotationInnerClass = type.getNestedType("Annotation");
+		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArrayInnerClass");
+		CtType<?> annotationInnerClass = type.getNestedType("Annotation");
 		assertEquals("Annotation", annotationInnerClass.getSimpleName());
 		assertEquals(1, annotationInnerClass.getAnnotations().size());
 		assertEquals(res, annotationInnerClass.getField("value").toString());
 
-		CtSimpleType<?> annotation = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArray");
+		CtType<?> annotation = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArray");
 		assertEquals("AnnotArray", annotation.getSimpleName());
 		assertEquals(1, annotation.getAnnotations().size());
 		assertEquals(res, annotation.getField("value").toString());
