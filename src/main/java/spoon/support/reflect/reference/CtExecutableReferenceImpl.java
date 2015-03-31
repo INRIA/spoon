@@ -234,6 +234,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		
 		method_loop:
 		for (Method m : getDeclaringType().getActualClass().getDeclaredMethods()) {
+			if (!m.getDeclaringClass().isSynthetic() &&
+					m.isSynthetic()) {
+				continue;
+			}
 			if (!m.getName().equals(getSimpleName())) {
 				continue;
 			}
