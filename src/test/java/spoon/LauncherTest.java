@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import spoon.compiler.Environment;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.FragmentDrivenJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 
 public class LauncherTest extends TestCase {
@@ -27,16 +26,13 @@ public class LauncherTest extends TestCase {
 		Assert.assertFalse(environment.isVerbose());
 		Assert.assertFalse(environment.isAutoImports());
 		Assert.assertFalse(environment.isUsingTabulations());
-		Assert.assertFalse(environment.isUsingSourceCodeFragments());
 		Assert.assertFalse(environment.isPreserveLineNumbers());
 		Assert.assertEquals(4, environment.getTabulationSize());
 		Assert.assertFalse(environment.isDebug());
 		Assert.assertTrue(environment.isCopyResources());
 
-		JavaOutputProcessor processor = (JavaOutputProcessor) environment
-				.getDefaultFileGenerator();
-		Assert.assertTrue(processor
-				.getPrinter() instanceof DefaultJavaPrettyPrinter);
+		JavaOutputProcessor processor = (JavaOutputProcessor) environment.getDefaultFileGenerator();
+		Assert.assertTrue(processor.getPrinter() instanceof DefaultJavaPrettyPrinter);
 		
 		// now assertions on the model builder
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
@@ -50,7 +46,7 @@ public class LauncherTest extends TestCase {
 
 		// Main class of Spoon who contain initEnvironment method.
 		final Launcher launcher = new Launcher();
-		launcher.setArgs("--tabs --tabsize 42 --compliance 5 --verbose --with-imports -r --fragments --lines -o spooned2 -i src/main/java --encoding UTF-16".split(" "));
+		launcher.setArgs("--tabs --tabsize 42 --compliance 5 --verbose --with-imports -r --lines -o spooned2 -i src/main/java --encoding UTF-16".split(" "));
 		launcher.processArguments();
 
 		final Environment environment = launcher.getEnvironment();
@@ -59,24 +55,16 @@ public class LauncherTest extends TestCase {
 		Assert.assertTrue(environment.isVerbose());
 		Assert.assertTrue(environment.isAutoImports());
 		Assert.assertTrue(environment.isUsingTabulations());
-		Assert.assertTrue(environment.isUsingSourceCodeFragments());
 		Assert.assertTrue(environment.isPreserveLineNumbers());
 		Assert.assertEquals(42, environment.getTabulationSize());
 		Assert.assertEquals(5, environment.getComplianceLevel());
 		Assert.assertFalse(environment.isCopyResources());
 		 
-		// Check if the processor of the output is a FragmentDrivenJavaPrettyPrinter
-		//
-		JavaOutputProcessor processor = (JavaOutputProcessor) environment
-				.getDefaultFileGenerator();
-		Assert.assertTrue(processor
-				.getPrinter() instanceof FragmentDrivenJavaPrettyPrinter);
-		
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
 		assertEquals(new File("spooned2"), builder.getOutputDirectory());
 		
 		// the input directories
-		List<File> inputSources = new ArrayList<>(builder.getInputSources());		
+		List<File> inputSources = new ArrayList<>(builder.getInputSources());
 		assertEquals(new File("src/main/java").toURI(), inputSources.get(0).toURI());
 		assertEquals("UTF-16", builder.getEncoding());
 

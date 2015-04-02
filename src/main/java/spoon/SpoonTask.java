@@ -173,10 +173,6 @@ public class SpoonTask extends Java {
 			createArg().setValue("--precompile");
 		}
 
-		if (fragments) {
-			createArg().setValue("--fragments");
-		}
-
 		if (tabs) {
 			createArg().setValue("--tabs");
 		}
@@ -431,16 +427,6 @@ public class SpoonTask extends Java {
 	 */
 	public void setTabs(boolean tabs) {
 		this.tabs = tabs;
-	}
-
-	boolean fragments = false;
-
-	/**
-	 * Sets Spoon to use source code fragment driven generation technique
-	 * (preserves original formatting).
-	 */
-	public void setFragments(boolean fragments) {
-		this.fragments = fragments;
 	}
 
 	int tabSize = 4;
