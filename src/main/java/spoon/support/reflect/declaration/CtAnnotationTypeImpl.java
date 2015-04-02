@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -32,15 +33,12 @@ import spoon.reflect.visitor.CtVisitor;
  * 
  * @author Renaud Pawlak
  */
-public class CtAnnotationTypeImpl<T extends Annotation> extends
-		CtTypeImpl<T> implements CtAnnotationType<T> {
+public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> implements CtAnnotationType<T> {
 	private static final long serialVersionUID = 1L;
 
-	
 	public void accept(CtVisitor v) {
 		v.visitCtAnnotationType(this);
 	}
-
 
 	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
@@ -48,19 +46,37 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends
 	}
 
 	@Override
+	public void setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
+		throw new UnsupportedOperationException("You can't have super interfaces in an annotation.");
+	}
+
+	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		return false;
 	}
-
 
 	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
 		return Collections.emptyList();
 	}
 
-
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public void setMethods(Set<CtMethod<?>> methods) {
+		throw new UnsupportedOperationException("You can't have methods in an annotation.");
+	}
+
+	@Override
+	public <M> boolean addMethod(CtMethod<M> method) {
+		throw new UnsupportedOperationException("You can't have methods in an annotation.");
+	}
+
+	@Override
+	public <M> boolean removeMethod(CtMethod<M> method) {
+		throw new UnsupportedOperationException("You can't have methods in an annotation.");
 	}
 }
