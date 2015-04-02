@@ -1,21 +1,23 @@
 package spoon.test.prettyprinter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.prettyprinter.testclasses.AClass;
+
+import java.io.File;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DefaultPrettyPrinterTest {
 
@@ -60,5 +62,39 @@ public class DefaultPrettyPrinterTest {
 		CtSimpleType<?> theClass = factory.Type().get("spoon.test.prettyprinter.NestedSuperCall");
 		
 		assertTrue(theClass.toString().contains("nc.super(\"a\")"));
+	}
+
+	@Test
+	public void testPrintAClassWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		final Factory factory = launcher.getFactory();
+		factory.getEnvironment().setAutoImports(true);
+		final SpoonCompiler compiler = launcher.createCompiler();
+		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/"));
+		compiler.build();
+
+		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
+		final String expected = "public class AClass {\n"
+				+ "    public List<?> aMethod() {\n"
+				+ "        return new ArrayList<java.lang.Object>();\n"
+				+ "    }\n"
+				+ "}";
+		assertEquals(expected, aClass.toString());
+	}
+
+	@Test
+	public void testPrintAMethodWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		final Factory factory = launcher.getFactory();
+		factory.getEnvironment().setAutoImports(true);
+		final SpoonCompiler compiler = launcher.createCompiler();
+		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/"));
+		compiler.build();
+
+		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
+		final String expected = "public List<?> aMethod() {\n"
+				+ "    return new ArrayList<java.lang.Object>();\n"
+				+ "}";
+		assertEquals(expected, aClass.getMethodsByName("aMethod").get(0).toString());
 	}
 }

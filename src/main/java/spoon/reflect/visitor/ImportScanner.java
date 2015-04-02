@@ -1,5 +1,6 @@
 package spoon.reflect.visitor;
 
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -13,6 +14,11 @@ public interface ImportScanner {
 	 * @return Imports computes by Spoon, not original imports.
 	 */
 	Collection<CtTypeReference<?>> computeImports(CtSimpleType<?> simpleType);
+
+	/**
+	 * Computes imports for all elements.
+	 */
+	void computeImports(CtElement element);
 
 	/**
 	 * Checks if the type is already imported.

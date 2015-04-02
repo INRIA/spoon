@@ -129,6 +129,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
+	public void computeImports(CtElement element) {
+		scan(element);
+	}
+
+	@Override
 	public boolean isImported(CtTypeReference<?> ref) {
 		if (imports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = imports.get(ref.getSimpleName());
