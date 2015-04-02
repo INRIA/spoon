@@ -60,12 +60,13 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	protected static final Logger logger = Logger
 			.getLogger(CtElementImpl.class);
 
-	private static final CtElement ROOT_ELEMENT = new CtElementImpl() {
+	private static class RootElement extends CtElementImpl {
 		private static final long serialVersionUID = 1L;
+		
+		protected static  RootElement ROOT = new RootElement();
 
 		public void accept(spoon.reflect.visitor.CtVisitor visitor) {
 		};
-		
 		@Override
 		public CtElement getParent() throws ParentNotInitializedException {
 			return null;
@@ -121,7 +122,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public CtElementImpl() {
 		super();
-		setParent(this.ROOT_ELEMENT);
+		setParent(RootElement.ROOT);
 	}
 
 	public int compareTo(CtElement o) {
@@ -173,7 +174,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	}
 
 	public CtElement getParentNoExceptions() {
-		if (parent == ROOT_ELEMENT) {
+		if (isRootElement()) {
 			return null;
 		}
 		return parent;
@@ -202,13 +203,13 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	@Override
 	public boolean isRootElement() {
-		return parent == ROOT_ELEMENT;
+		return (parent instanceof RootElement);
 	}
 
 	@Override
 	public void setRootElement(boolean rootElement) {
 		if (rootElement) {
-			parent = ROOT_ELEMENT;
+			parent = RootElement.ROOT;
 		} else {
 			parent = null;
 		}
@@ -410,5 +411,5 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public boolean isParentInitialized() {
 		return parent != null;
 	}
-
+	
 }
