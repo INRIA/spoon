@@ -1,9 +1,12 @@
 package spoon.test.pkg;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.OutputType;
@@ -13,12 +16,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
 import spoon.test.pkg.name.PackageTestClass;
-import spoon.test.pkg.testclasses.Foo;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class PackageTest {
 	@Test

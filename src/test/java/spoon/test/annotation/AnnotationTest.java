@@ -1,8 +1,20 @@
 package spoon.test.annotation;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBlock;
@@ -44,19 +56,6 @@ import spoon.test.annotation.testclasses.Foo.OuterAnnotation;
 import spoon.test.annotation.testclasses.Main;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
-
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class AnnotationTest {
 	private Factory factory;
@@ -364,7 +363,7 @@ public class AnnotationTest {
 	public void testAccessAnnotationValue() throws Exception {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.Main");
 		CtMethod<?> testMethod = ctClass.getMethodsByName("testValueWithArray").get(0);
-		Class[] value = testMethod.getAnnotation(AnnotArray.class).value();
+		Class<?>[] value = testMethod.getAnnotation(AnnotArray.class).value();
 		assertArrayEquals(new Class[] { RuntimeException.class }, value);
 
 		testMethod = ctClass.getMethodsByName("testValueWithoutArray").get(0);

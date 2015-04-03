@@ -21,7 +21,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.CtVisitor;
 
 public abstract class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T> implements
 		CtTargetedAccess<T> {

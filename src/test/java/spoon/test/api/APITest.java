@@ -11,12 +11,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.reflect.declaration.CtPackage;
 import spoon.compiler.Environment;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.support.JavaOutputProcessor;
-import spoon.support.compiler.FileSystemFolder;
 
 public class APITest {
 
@@ -69,14 +68,13 @@ public class APITest {
 		// it's possible to pass twice the same file as parameter
 		// the virtual folder removes the duplicate before passing to JDT
 		try {
-			Launcher spoon = new Launcher();
 			String duplicateEntry = "src/test/resources/spoon/test/api/Foo.java";
 			
 			// check on the JDK API
 			// this is later use by FileSystemFile
 			assertTrue(new File(duplicateEntry).getCanonicalFile().equals(new File("./"+duplicateEntry).getCanonicalFile()));
 			
-			spoon.main(new String[] {
+			Launcher.main(new String[] {
 					"-i",
 					// note the nasty ./
 					duplicateEntry + File.pathSeparator + "./"+duplicateEntry,
@@ -107,8 +105,7 @@ public class APITest {
 	public void testDuplicateFilePlusFolder() throws Exception {
 		// more complex case: a file is given, together with the enclosing folder
 		try {
-			Launcher spoon = new Launcher();
-			spoon.main(new String[] {
+			Launcher.main(new String[] {
 					"-i",
 					"src/test/resources/spoon/test/api/" + File.pathSeparator + "src/test/resources/spoon/test/api/Foo.java",
 					"-o", "target/spooned-apitest" });
@@ -120,9 +117,8 @@ public class APITest {
 	
 	@Test(expected=Exception.class)
 	public void testNotValidInput() throws Exception {
-		Launcher spoon = new Launcher();
 		String invalidEntry = "does/not/exists//Foo.java";
-		spoon.main(new String[] { "-i",
+		Launcher.main(new String[] { "-i",
 				invalidEntry, 
 				"-o",
 				"target/spooned-apitest" });

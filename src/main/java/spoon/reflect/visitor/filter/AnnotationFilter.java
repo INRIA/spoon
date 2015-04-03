@@ -20,7 +20,6 @@ package spoon.reflect.visitor.filter;
 import java.lang.annotation.Annotation;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.Filter;
 
 /**
  * This filter matches all the elements annotated with a given annotation type.

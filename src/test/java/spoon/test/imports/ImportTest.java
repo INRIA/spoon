@@ -1,12 +1,16 @@
 package spoon.test.imports;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
 import org.junit.Ignore;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtSimpleType;
@@ -15,10 +19,6 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.test.imports.testclasses.SubClass;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class ImportTest {
 

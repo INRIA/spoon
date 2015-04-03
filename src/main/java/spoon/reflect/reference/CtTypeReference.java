@@ -22,7 +22,6 @@ import java.util.Set;
 
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.support.reflect.reference.SpoonClassNotFoundException;
 
 /**
  * This interface defines a reference to a

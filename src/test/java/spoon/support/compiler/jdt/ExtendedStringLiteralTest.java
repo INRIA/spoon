@@ -10,14 +10,12 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.SpoonAPI;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.factory.Factory;
 
 public class ExtendedStringLiteralTest {
 

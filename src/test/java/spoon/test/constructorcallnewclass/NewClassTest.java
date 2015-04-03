@@ -87,7 +87,7 @@ public class NewClassTest {
 			fail();
 		}
 		final CtClass<?> foo = (CtClass<?>) factory.Type().get(Bar.class);
-		final CtNewClass<?> newClass = foo.getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		final CtNewClass<?> newClass = foo.getElements(new TypeFilter<CtNewClass<?>>(CtNewClass.class)).get(0);
 		assertIsConstructor(newClass.getExecutable());
 		assertHasParameters(1, newClass.getArguments());
 		assertEquals("\">\"", newClass.getArguments().get(0).toString());

@@ -9,7 +9,6 @@ import java.util.List;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
-import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.factory.Factory;

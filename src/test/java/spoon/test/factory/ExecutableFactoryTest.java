@@ -5,15 +5,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import spoon.compiler.Environment;
-import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.ExecutableFactory;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
 import spoon.test.TestUtils;
 
 public class ExecutableFactoryTest {

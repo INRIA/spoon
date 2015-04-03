@@ -54,8 +54,8 @@ public class ExecutableRefTest {
 	public void testGetActualClassTest() throws Exception {
 		Factory factory = TestUtils.build(ExecutableRefTestSource.class, MyIntf.class);
 
-		CtMethod method = factory.Class().get(ExecutableRefTestSource.class).getMethod("myMethod");
-		CtExecutableReference ref = method.getReference();
+		CtMethod<?> method = factory.Class().get(ExecutableRefTestSource.class).getMethod("myMethod");
+		CtExecutableReference<?> ref = method.getReference();
 
 		Method m = ref.getActualMethod();
 		Assert.assertEquals("myMethod", m.getName());

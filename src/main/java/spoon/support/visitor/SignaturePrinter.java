@@ -469,7 +469,7 @@ public class SignaturePrinter implements CtVisitor {
 		scan(lambda.getType());
 		write(") (");
 		if (!lambda.getParameters().isEmpty()) {
-			for (CtParameter parameter : lambda.getParameters()) {
+			for (CtParameter<?> parameter : lambda.getParameters()) {
 				scan(parameter);
 				write(",");
 			}

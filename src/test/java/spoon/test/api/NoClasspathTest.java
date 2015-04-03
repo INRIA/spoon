@@ -6,10 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -25,8 +22,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.compiler.FileSystemFile;
-import spoon.support.compiler.FileSystemFolder;
 import spoon.support.reflect.reference.SpoonClassNotFoundException;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.test.api.testclasses.Bar;
@@ -129,11 +124,11 @@ public class NoClasspathTest {
 		spoon.addInputResource("./src/test/java/spoon/test/api/testclasses/");
 		spoon.run();
 
-		CtTypeReference expectedType = factory.Type().createReference(javax.sound.sampled.AudioFormat.Encoding.class);
+		CtTypeReference<?> expectedType = factory.Type().createReference(javax.sound.sampled.AudioFormat.Encoding.class);
 		CtClass<?> clazz = factory.Class().get(Bar.class);
 
 		CtMethod<?> method = clazz.getMethodsByName("doSomething").get(0);
-		CtReturn ctReturn = method.getElements(new TypeFilter<CtReturn>(CtReturn.class)).get(0);
+		CtReturn<?> ctReturn = method.getElements(new TypeFilter<CtReturn<?>>(CtReturn.class)).get(0);
 
 		assertEquals(true, ctReturn.getReferencedTypes().contains(expectedType));
 	}

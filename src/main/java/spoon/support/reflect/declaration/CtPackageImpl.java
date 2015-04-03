@@ -21,10 +21,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
 

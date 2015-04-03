@@ -1,26 +1,5 @@
 package spoon.test.trycatch;
 
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
-import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.trycatch.testclasses.Foo;
-
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,6 +7,26 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.test.TestUtils.build;
 import static spoon.test.TestUtils.createFactory;
+
+import java.io.File;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Test;
+
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.trycatch.testclasses.Foo;
 
 public class TryCatchTest {
 

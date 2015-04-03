@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;

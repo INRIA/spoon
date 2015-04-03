@@ -1,16 +1,27 @@
 package spoon.reflect.visitor;
 
-import spoon.reflect.code.CtCatch;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
+
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtTargetedAccess;
-import spoon.reflect.declaration.*;
-import spoon.reflect.reference.*;
-
-import java.lang.annotation.Annotation;
-import java.util.*;
+import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * A scanner that calculates the imports for a given model.
@@ -114,7 +125,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
-		for(CtTypeReference type : catchVariable.getMultiTypes()) {
+		for(CtTypeReference<?> type : catchVariable.getMultiTypes()) {
 			addImport(type);
 		}
 		super.visitCtCatchVariable(catchVariable);
