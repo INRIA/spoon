@@ -189,12 +189,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 		if (!isPrimitive() && isAnonymous()) {
 			final CtSimpleType<?> rootType = getFactory().Type().get(getDeclaringType().getQualifiedName());
-			final CtNewClass elements = rootType.getElements(new AbstractFilter<CtNewClass>(CtNewClass.class) {
-				@Override
-				public boolean matches(CtNewClass element) {
-					return getSimpleName().equals(element.getAnonymousClass().getSimpleName());
-				}
-			}).get(0);
+			final CtNewClass elements = rootType.getElements(
+					(CtNewClass element) ->
+						getSimpleName().equals(element.getAnonymousClass().getSimpleName())
+			).get(0);
 			return elements.getAnonymousClass();
 		}
 		return null;

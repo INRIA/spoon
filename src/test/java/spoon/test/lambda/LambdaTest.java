@@ -161,12 +161,9 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		final CtMethod method = foo.getElements(new NameFilter<CtMethod>("m8")).get(0);
-		final CtIf condition = method.getElements(new AbstractFilter<CtIf>(CtIf.class) {
-			@Override
-			public boolean matches(CtIf element) {
-				return true;
-			}
-		}).get(0);
+		final CtIf condition = method.getElements(
+			(CtIf element) -> { return true; }
+		).get(0);
 		final String expected =
 				"if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {\n"
 						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");\n"

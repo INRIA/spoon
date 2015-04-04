@@ -172,12 +172,9 @@ public class TryCatchTest {
 		Factory factory = compiler.getFactory();
 
 		final CtClass<?> foo = (CtClass<?>) factory.Type().get(Foo.class);
-		final CtCatch ctCatch = foo.getElements(new AbstractFilter<CtCatch>(CtCatch.class) {
-			@Override
-			public boolean matches(CtCatch element) {
-				return true;
-			}
-		}).get(0);
+		final CtCatch ctCatch = foo.getElements(
+			(CtCatch element) -> { return true; }
+		).get(0);
 
 		final String expected = " catch (spoon.test.trycatch.testclasses.internal.MyException | spoon.test.trycatch.testclasses.internal.MyException2 ignore) {\n}";
 		assertEquals(expected, ctCatch.toString());

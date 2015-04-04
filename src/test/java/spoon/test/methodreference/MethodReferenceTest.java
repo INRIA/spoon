@@ -166,11 +166,10 @@ public class MethodReferenceTest {
 	}
 
 	private CtExecutableReferenceExpression getCtExecutableReferenceExpression(final String methodReference) {
-		return foo.getElements(new AbstractFilter<CtExecutableReferenceExpression>(CtExecutableReferenceExpression.class) {
-			@Override
-			public boolean matches(CtExecutableReferenceExpression element) {
-				return (methodReference).equals(element.toString());
+		return foo.getElements(
+			(CtExecutableReferenceExpression element) -> {
+				return methodReference.equals(element.toString());
 			}
-		}).get(0);
+		).get(0);
 	}
 }

@@ -81,12 +81,9 @@ public class ImportTest {
 
 		compiler.build();
 		final CtClass<?> subClass = (CtClass<?>) factory.Type().get(SubClass.class);
-		final CtConstructorCall<?> ctNewClass = subClass.getElements(new AbstractFilter<CtConstructorCall<?>>(CtConstructorCall.class) {
-			@Override
-			public boolean matches(CtConstructorCall<?> element) {
-				return true;
-			}
-		}).get(0);
+		final CtConstructorCall<?> ctNewClass = subClass.getElements(
+			(CtConstructorCall<?> element) -> { return true; }
+		).get(0);
 
 		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctNewClass.toString());
 		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {\n"

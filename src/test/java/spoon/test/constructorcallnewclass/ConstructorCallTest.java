@@ -21,12 +21,9 @@ public class ConstructorCallTest {
 	public void setUp() throws Exception {
 		final Factory factory = TestUtils.build(Foo.class);
 		final CtClass<?> foo = (CtClass<?>) factory.Type().get(Foo.class);
-		constructorCalls = foo.getElements(new AbstractFilter<CtConstructorCall<?>>(CtConstructorCall.class) {
-			@Override
-			public boolean matches(CtConstructorCall<?> element) {
-				return true;
-			}
-		});
+		constructorCalls = foo.getElements(
+			(CtConstructorCall<?> element) -> { return true; }
+		);
 	}
 
 	@Test

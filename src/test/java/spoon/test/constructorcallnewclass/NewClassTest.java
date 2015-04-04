@@ -28,12 +28,9 @@ public class NewClassTest {
 	public void setUp() throws Exception {
 		final Factory build = TestUtils.build(Foo.class);
 		final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
-		newClasses = foo.getElements(new AbstractFilter<CtNewClass<?>>(CtNewClass.class) {
-			@Override
-			public boolean matches(CtNewClass<?> element) {
-				return true;
-			}
-		});
+		newClasses = foo.getElements(
+			(CtNewClass<?> element) -> { return true; }
+		);
 	}
 
 	@Test

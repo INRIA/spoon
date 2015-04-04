@@ -272,12 +272,11 @@ public class GenericsTest {
 
 		CtClass<?> foo = (CtClass<?>) factory.Type().get(Foo.class);
 		CtInterface<?> bar = (CtInterface<?>) factory.Type().get(Bar.class);
-		final CtNewClass<?> newAnonymousBar = foo.getElements(new AbstractFilter<CtNewClass<?>>(CtNewClass.class) {
-			@Override
-			public boolean matches(CtNewClass<?> element) {
+		final CtNewClass<?> newAnonymousBar = foo.getElements(
+			(CtNewClass<?> element) -> {
 				return element.getAnonymousClass() != null && element.getAnonymousClass().isAnonymous();
 			}
-		}).get(0);
+		).get(0);
 
 		final List<CtTypeReference<?>> barGenerics = bar.getFormalTypeParameters();
 		final CtClass<?> anonymousBar = newAnonymousBar.getAnonymousClass();
