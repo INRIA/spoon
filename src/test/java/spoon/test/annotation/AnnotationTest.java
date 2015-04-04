@@ -376,12 +376,11 @@ public class AnnotationTest {
 	public void testUsageOfTypeAnnotationInNewInstance() throws Exception {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
-		final CtConstructorCall<?> ctConstructorCall = ctClass.getElements(new AbstractFilter<CtConstructorCall<?>>(CtConstructorCall.class) {
-			@Override
-			public boolean matches(CtConstructorCall<?> element) {
+		final CtConstructorCall<?> ctConstructorCall = ctClass.getElements(
+			(CtConstructorCall<?> element) -> {
 				return "String".equals(element.getType().getSimpleName());
 			}
-		}).get(0);
+		).get(0);
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = ctConstructorCall.getType().getTypeAnnotations();
 
 		assertEquals("Type of the new class must use an annotation", 1, typeAnnotations.size());
@@ -393,12 +392,11 @@ public class AnnotationTest {
 	public void testUsageOfTypeAnnotationInCast() throws Exception {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
-		final CtReturn<?> returns = ctClass.getElements(new AbstractFilter<CtReturn<?>>(CtReturn.class) {
-			@Override
-			public boolean matches(CtReturn<?> element) {
+		final CtReturn<?> returns = ctClass.getElements(
+			(CtReturn<?> element) -> {
 				return !element.getReturnedExpression().getTypeCasts().isEmpty();
 			}
-		}).get(0);
+		).get(0);
 		final CtExpression<?> returnedExpression = returns.getReturnedExpression();
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = returnedExpression.getTypeCasts().get(0).getTypeAnnotations();
 
@@ -654,12 +652,9 @@ public class AnnotationTest {
 	public void testRepeatSameAnnotationOnLocalVariable() throws Exception {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
 		final CtMethod<?> method = ctClass.getMethodsByName("methodWithLocalVariable").get(0);
-		final CtLocalVariable<?> ctLocalVariable = method.getBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
-			@Override
-			public boolean matches(CtLocalVariable<?> element) {
-				return true;
-			}
-		}).get(0);
+		final CtLocalVariable<?> ctLocalVariable = method.getBody().getElements(
+				(CtLocalVariable<?> element) -> { return true; }
+		).get(0);
 
 		final List<CtAnnotation<? extends Annotation>> annotations = ctLocalVariable.getAnnotations();
 		assertEquals("Local variable must to have multi annotation of the same type", 2, annotations.size());

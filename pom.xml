@@ -159,7 +159,7 @@
   </scm>
 
   <properties>
-    <java.src.version>1.6</java.src.version>
+    <java.src.version>1.8</java.src.version>
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

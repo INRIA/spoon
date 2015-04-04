@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtElement;
  *            the type of the filtered elements (an element belonging to the
  *            filtered element must be assignable from <code>T</code>).
  */
+@FunctionalInterface
 public interface Filter<T extends CtElement> {
 	/**
 	 * Tells if the given element matches.

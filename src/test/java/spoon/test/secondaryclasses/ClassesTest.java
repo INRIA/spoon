@@ -96,12 +96,9 @@ public class ClassesTest {
 	@Test
 	public void testIsAnonymousMethodInCtClass() throws Exception {
 		CtClass<?> type = build("spoon.test.secondaryclasses", "AnonymousClass");
-		final List<CtClass> anonymousClass = type.getElements(new AbstractFilter<CtClass>(CtClass.class) {
-			@Override
-			public boolean matches(CtClass element) {
-				return element.isAnonymous();
-			}
-		});
+		final List<CtClass<?>> anonymousClass = type.getElements(
+			(CtClass<?> element) -> { return element.isAnonymous(); }
+		);
 
 		assertFalse(type.isAnonymous());
 		assertTrue(anonymousClass.get(0).isAnonymous());
