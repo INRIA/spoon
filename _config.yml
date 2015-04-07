@@ -13,5 +13,5 @@ exclude: ["docs"]
 markdown: kramdown
 
 # Spoon
-spoon_release: "3.0"
-spoon_snapshot: "4.0-SNAPSHOT"
+spoon_release: "4.0.0"
+spoon_snapshot: "4.1.0-SNAPSHOT"
