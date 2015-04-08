@@ -1,4 +1,6 @@
 language: java
 
+install: mvn test javadoc:javadoc
+
 jdk:
   - oraclejdk8

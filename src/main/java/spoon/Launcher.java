@@ -538,8 +538,6 @@ public class Launcher implements SpoonAPI {
 	 * Parses the arguments given by the command line.
 	 *
 	 * @return the JSAP-presented arguments
-	 * @throws JSAPException
-	 *             when an error occurs in the argument parsing
 	 */
 	protected JSAPResult parseArgs() {
 		if (jsapSpec==null) {

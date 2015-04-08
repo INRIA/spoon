@@ -266,7 +266,7 @@ public interface Environment {
 	
 	/**
 	 * Returns a {@code ClassLoader} which is able to load classes from the
-	 * class path returned by {@link getSourceClassPath()} 
+	 * class path returned by {@link #getSourceClasspath()}
 	 */
 	ClassLoader getClassLoader();
 

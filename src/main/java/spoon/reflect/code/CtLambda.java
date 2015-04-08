@@ -29,21 +29,11 @@ import spoon.reflect.declaration.CtExecutable;
  *         If your lambda has an expression, getBody method will
  *         return null and getExpression method will return a
  *         CtExpression.
- *
- *         <code>p -> p.age > 18</code>
  *     </li>
  *     <li>
  *         If your lambda has a block of statement, getExpression
  *         method will return null and getBody will returns a CtBlock
  *         with all statements.
- *
- *         <code>p -> {
- *             if (p.age > 18) {
- *                 System.out.println("You can eat tacos!");
- *             } else {
- *                 System.out.println("You can have a lollipop!");
- *             }
- *         }</code>
  *     </li>
  * </ul>
  *
