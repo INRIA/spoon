@@ -24,7 +24,6 @@ import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitable;
-import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Root;
 
 /**

@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;

@@ -6,8 +6,6 @@ import java.util.Set;
 
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtTargetedAccess;
-import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;

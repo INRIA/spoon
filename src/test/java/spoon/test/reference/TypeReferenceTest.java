@@ -159,8 +159,8 @@ public class TypeReferenceTest {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 
-		CtTypeReference ref = factory.Type().createReference(String.class);
-		CtTypeReference nullRef = factory.Type().createReference(CtTypeReference.NULL_TYPE_NAME);
+		CtTypeReference<?> ref = factory.Type().createReference(String.class);
+		CtTypeReference<?> nullRef = factory.Type().createReference(CtTypeReference.NULL_TYPE_NAME);
 
 		assertFalse(ref.isSubtypeOf(nullRef));
 		assertFalse(nullRef.isSubtypeOf(ref));

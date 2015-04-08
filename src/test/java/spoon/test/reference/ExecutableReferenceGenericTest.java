@@ -19,7 +19,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;

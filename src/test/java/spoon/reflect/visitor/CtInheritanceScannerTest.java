@@ -1,17 +1,7 @@
 package spoon.reflect.visitor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
-
-import spoon.reflect.factory.CoreFactory;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
-import spoon.test.TestUtils;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,8 +10,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
+
+import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.factory.Factory;
+import spoon.test.TestUtils;
 
 /**
  * Created by nicolas on 25/02/2015.
@@ -56,12 +53,12 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 	 * @throws Exception
 	 */
 	private List<Method> getMethodToInvoke(Class<?> entry) throws Exception {
-		Queue<Class> tocheck = new LinkedList<>();
+		Queue<Class<?>> tocheck = new LinkedList<>();
 		tocheck.add(entry);
 
 		List<Method> toInvoke = new ArrayList<>();
 		while (!tocheck.isEmpty()) {
-			Class intf = tocheck.poll();
+			Class<?> intf = tocheck.poll();
 
 			Assert.assertTrue(intf.isInterface());
 			if (!intf.getSimpleName().startsWith("Ct")) {

@@ -17,6 +17,8 @@
 
 package spoon.reflect.visitor;
 
+import java.lang.annotation.Annotation;
+
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
@@ -51,7 +53,6 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -82,8 +83,6 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
-
-import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the visitor for the Spoon metamodel, as defined in

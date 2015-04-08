@@ -46,7 +46,6 @@ import org.eclipse.jdt.internal.compiler.util.Util;
 
 import spoon.Launcher;
 import spoon.OutputType;
-import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.ModelBuildingException;

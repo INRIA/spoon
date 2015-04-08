@@ -80,7 +80,7 @@ public class ParentTest {
 	@Test
 	public void testParentPackage() throws Exception {
 		// addType should set Parent
-		CtClass clazz = factory.Core().createClass();
+		CtClass<?> clazz = factory.Core().createClass();
 		clazz.setSimpleName("Foo");
 		CtPackage pack = factory.Core().createPackage();
 		pack.setSimpleName("bar");

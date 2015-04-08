@@ -17,14 +17,6 @@
 
 package spoon.compiler;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
-import spoon.OutputType;
-import spoon.processing.FactoryAccessor;
-import spoon.reflect.factory.Factory;
 
 /**
  * Renamed as {@link spoon.SpoonModelBuilder} that is in the top-level spoon package..

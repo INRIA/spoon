@@ -62,9 +62,9 @@ public class RefactoringTest {
 		launcher.run();
 		final CtClass<?> aClass = (CtClass<?>) launcher.getFactory().Type().get(AClass.class);
 
-		final CtInvocation thisInvocation = aClass.getElements(new AbstractFilter<CtInvocation>(CtInvocation.class) {
+		final CtInvocation<?> thisInvocation = aClass.getElements(new AbstractFilter<CtInvocation<?>>(CtInvocation.class) {
 			@Override
-			public boolean matches(CtInvocation element) {
+			public boolean matches(CtInvocation<?> element) {
 				return element.getExecutable().isConstructor();
 			}
 		}).get(0);
@@ -81,9 +81,9 @@ public class RefactoringTest {
 		});
 		launcher.run();
 		final CtClass<?> aClassX = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.refactoring.testclasses.AClassX");
-		final CtInvocation thisInvocation = aClassX.getElements(new AbstractFilter<CtInvocation>(CtInvocation.class) {
+		final CtInvocation<?> thisInvocation = aClassX.getElements(new AbstractFilter<CtInvocation<?>>(CtInvocation.class) {
 			@Override
-			public boolean matches(CtInvocation element) {
+			public boolean matches(CtInvocation<?> element) {
 				return element.getExecutable().isConstructor();
 			}
 		}).get(0);

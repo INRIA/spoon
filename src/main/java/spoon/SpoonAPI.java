@@ -1,7 +1,5 @@
 package spoon;
 
-import java.io.File;
-
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.factory.Factory;

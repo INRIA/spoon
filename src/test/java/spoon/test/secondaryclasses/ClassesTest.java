@@ -15,7 +15,6 @@ import org.junit.Test;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
@@ -25,8 +24,6 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.secondaryclasses.AnonymousClass.I;
-
-import javax.lang.model.element.TypeElement;
 
 public class ClassesTest {
 
@@ -96,9 +93,9 @@ public class ClassesTest {
 	@Test
 	public void testIsAnonymousMethodInCtClass() throws Exception {
 		CtClass<?> type = build("spoon.test.secondaryclasses", "AnonymousClass");
-		final List<CtClass> anonymousClass = type.getElements(new AbstractFilter<CtClass>(CtClass.class) {
+		final List<CtClass<?>> anonymousClass = type.getElements(new AbstractFilter<CtClass<?>>(CtClass.class) {
 			@Override
-			public boolean matches(CtClass element) {
+			public boolean matches(CtClass<?> element) {
 				return element.isAnonymous();
 			}
 		});

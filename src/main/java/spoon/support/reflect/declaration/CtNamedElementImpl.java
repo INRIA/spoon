@@ -17,11 +17,7 @@
 
 package spoon.support.reflect.declaration;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtReference;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements CtNamedElement {

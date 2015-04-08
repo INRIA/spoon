@@ -17,7 +17,6 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtVariable;
@@ -28,7 +27,6 @@ import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FieldAccessFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
-import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
@@ -73,7 +71,7 @@ public class FilterTest {
 		List<CtNamedElement> elements = foo.getElements(new NameFilter<>("i"));
 		assertEquals(1, elements.size());
 		
-		CtFieldReference ref = (CtFieldReference)(elements.get(0)).getReference();
+		CtFieldReference<?> ref = (CtFieldReference<?>)(elements.get(0)).getReference();
 		List<CtFieldAccess<?>> expressions = foo.getElements(new FieldAccessFilter(ref));
 		assertEquals(2, expressions.size());
 	}

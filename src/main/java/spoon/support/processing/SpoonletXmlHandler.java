@@ -25,7 +25,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import spoon.Launcher;
-import spoon.SpoonAPI;
 import spoon.compiler.SpoonResource;
 import spoon.reflect.factory.Factory;
 

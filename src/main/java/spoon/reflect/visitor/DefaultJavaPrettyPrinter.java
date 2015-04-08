@@ -935,7 +935,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(")");
 			}
 			if (constructorCall instanceof CtNewClass) {
-				scan(((CtNewClass) constructorCall).getAnonymousClass());
+				scan(((CtNewClass<?>) constructorCall).getAnonymousClass());
 			}
 		}
 	}

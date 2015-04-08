@@ -2,10 +2,10 @@ package spoon.support.compiler.jdt;
 
 import java.util.ArrayList;
 
-import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -36,7 +36,6 @@ import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
