@@ -169,7 +169,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 	
 	/**
 	 * Converts an object <code>o</code> into an object or a {@link CtReference}
-	 * of type </code>type<code>.
+	 * of type <code>type</code>.
 	 * 
 	 * @param <T>
 	 *            the actual type of the object
@@ -216,7 +216,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 	}
 
 	/**
-	 * Converts a collection of object into an array of type </code>type<code>.
+	 * Converts a collection of object into an array of type <code>type</code>.
 	 * 
 	 * @param <T>
 	 *            the actual type of the array

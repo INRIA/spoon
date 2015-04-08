@@ -135,7 +135,7 @@ public interface SpoonModelBuilder {
 	 * @return true if the Java was successfully compiled with the core Java
 	 *         compiler, false if some errors were encountered while compiling
 	 * 
-	 * @exception Exception
+	 * @exception spoon.SpoonException
 	 *                when a building problem occurs
 	 * 
 	 * @see #getSourceClasspath()

@@ -70,9 +70,9 @@ public class ProcessingVisitor extends CtScanner {
 
 	/**
 	 * Applies the processing to the given element. To apply the processing,
-	 * this method upcalls, for all the registered processor in
-	 * {@link Factory#Processor }, the {@link Processor#process(CtElement)}
-	 * method if {@link Processor#isToBeProcessed(CtElement)} returns true.
+	 * this method upcalls, for all the registered processor in, the
+	 * {@link Processor#process(CtElement)} method if
+	 * {@link Processor#isToBeProcessed(CtElement)} returns true.
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

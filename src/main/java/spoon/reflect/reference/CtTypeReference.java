@@ -37,7 +37,7 @@ public interface CtTypeReference<T> extends CtReference,
 	 * @return the Java class or null if the class is not found (not in
 	 *         classpath)
 	 *         
-	 * @throws spoon.reflect.reference.SpoonClassNotFoundException if the class is not in the classpath
+	 * @throws spoon.support.reflect.reference.SpoonClassNotFoundException if the class is not in the classpath
 	 */
 	Class<T> getActualClass();
 
