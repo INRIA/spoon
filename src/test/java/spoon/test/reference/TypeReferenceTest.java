@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @author Lionel Seinturier <Lionel.Seinturier@univ-lille1.fr>
+ * @author Lionel Seinturier
  */
 public class TypeReferenceTest {
 
