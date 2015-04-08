@@ -104,6 +104,7 @@ import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1877,13 +1878,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			if (ref.getDeclaringType() != null) {
 				if (!context.currentThis.contains(ref.getDeclaringType())
-						|| ref.getModifiers().contains(ModifierKind.STATIC)) {
+						|| ref.getModifiers().contains(ModifierKind.STATIC)
+						|| hasDeclaringTypeWithGenerics(ref)) {
 					if (!context.ignoreEnclosingClass) {
-						//						boolean ign = context.ignoreGenerics;
-						//						context.ignoreGenerics = false;
+						boolean ign = context.ignoreGenerics;
+						context.ignoreGenerics = false;
 						scan(ref.getDeclaringType());
 						write(".");
-						//						context.ignoreGenerics = ign;
+						context.ignoreGenerics = ign;
 					}
 				}
 				write(ref.getSimpleName());
@@ -1897,6 +1899,33 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
+	}
+
+	private <T> boolean hasDeclaringTypeWithGenerics(CtTypeReference<T> reference) {
+		// If current reference use generic types, we don't need this hack.
+		if (reference.getActualTypeArguments().size() != 0) {
+			return false;
+		}
+		// If current reference is a class declared in a method, we don't need this hack.
+		if (reference.getDeclaration() == null) {
+			return false;
+		}
+		if (reference.getDeclaration().getParent(CtMethod.class) != null) {
+			return false;
+		}
+		// If the declaring type isn't a CtType, we don't need this hack.
+		if (reference.getDeclaringType() == null) {
+			return false;
+		}
+		final CtSimpleType<?> declaration = reference.getDeclaringType().getDeclaration();
+		if (declaration == null) {
+			return false;
+		}
+		if (!(declaration instanceof CtType)) {
+			return false;
+		}
+		// Checks if the declaring type has generic types.
+		return ((CtType) declaration).getFormalTypeParameters().size() != 0;
 	}
 
 	@Override

@@ -53,17 +53,20 @@ public class TestUtils {
 		return comp.getFactory();
 	}
 
-	public static void canBeBuild(File testDirectory, int complianceLevel) throws IOException {
+	public static void canBeBuild(File outputDirectoryFile, int complianceLevel) throws IOException {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(complianceLevel);
 		final SpoonCompiler compiler = launcher.createCompiler(factory);
-		compiler.addInputSource(testDirectory);
+		compiler.addInputSource(outputDirectoryFile);
 		try {
 			compiler.build();
 		} catch (Exception e) {
-			throw new AssertionError("Can't compile " + testDirectory.getName(), e);
+			throw new AssertionError("Can't compile " + outputDirectoryFile.getName(), e);
 		}
 	}
 
+	public static void canBeBuild(String outputDirectory, int complianceLevel) throws IOException {
+		canBeBuild(new File(outputDirectory), complianceLevel);
+	}
 }

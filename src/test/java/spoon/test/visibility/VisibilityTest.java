@@ -3,10 +3,12 @@ package spoon.test.visibility;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.SpoonAPI;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.test.visibility.testclasses.A;
 
 import java.io.File;
 
@@ -55,5 +57,16 @@ public class VisibilityTest {
 		assertEquals(spoon.test.visibility.testclasses.Float.class, aFloat.getActualClass());
 
 		canBeBuild(new File("./target/spooned/spoon/test/visibility/testclasses/"), 7);
+	}
+
+	@Test
+	public void testComplexVisibilityWithGenerics() throws Exception {
+		final SpoonAPI launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/java/spoon/test/visibility/testclasses/A.java",
+				"-o", "./target/spooned/"
+		});
+
+		canBeBuild("./target/spooned/spoon/test/visibility/testclasses/", 8);
 	}
 }
