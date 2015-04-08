@@ -18,7 +18,6 @@
 package spoon.template;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -87,6 +86,6 @@ public interface Template<T extends CtElement> {
 	   *            the type that defines the context of the substitution.
 	   *            It may be null for templates with no context.
 	   */
-	  T apply(CtSimpleType<?> targetType);
+	  T apply(CtType<?> targetType);
 
 }

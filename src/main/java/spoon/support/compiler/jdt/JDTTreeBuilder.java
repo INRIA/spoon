@@ -195,7 +195,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
@@ -248,7 +248,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		CompilationUnitDeclaration compilationunitdeclaration;
 
-		List<CtSimpleType<?>> createdTypes = new ArrayList<CtSimpleType<?>>();
+		List<CtType<?>> createdTypes = new ArrayList<CtType<?>>();
 
 		Stack<CtTry> finallyzer = new Stack<CtTry>();
 
@@ -267,7 +267,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		Stack<CtTargetedExpression<?, ?>> target = new Stack<CtTargetedExpression<?, ?>>();
 
-		public void addCreatedType(CtSimpleType<?> type) {
+		public void addCreatedType(CtType<?> type) {
 			createdTypes.add(type);
 		}
 
@@ -325,7 +325,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 
-		public List<CtSimpleType<?>> getCreatedTypes() {
+		public List<CtType<?>> getCreatedTypes() {
 			return createdTypes;
 		}
 
@@ -821,8 +821,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	}
 
-	CtSimpleType<?> createType(TypeDeclaration typeDeclaration) {
-		CtSimpleType<?> type = null;
+	CtType<?> createType(TypeDeclaration typeDeclaration) {
+		CtType<?> type = null;
 		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
 			type = factory.Core().<java.lang.annotation.Annotation> createAnnotationType();
 		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
@@ -898,7 +898,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	private String computeAnonymousName(SourceTypeBinding binding) {
 		final String poolName = String.valueOf(binding.constantPoolName());
-		final int lastIndexSeparator = poolName.lastIndexOf(CtSimpleType.INNERTTYPE_SEPARATOR);
+		final int lastIndexSeparator = poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		return poolName.substring(lastIndexSeparator + 1, lastIndexSeparator + 2);
 	}
 
@@ -1385,7 +1385,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return null;
 	}
 
-	public List<CtSimpleType<?>> getCreatedTypes() {
+	public List<CtType<?>> getCreatedTypes() {
 		return context.getCreatedTypes();
 	}
 
@@ -2786,7 +2786,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
-		CtSimpleType<?> t = createType(localTypeDeclaration);
+		CtType<?> t = createType(localTypeDeclaration);
 		t.setDocComment(getJavaDoc(localTypeDeclaration.javadoc,
 				scope.referenceCompilationUnit()));
 		context.enter(t, localTypeDeclaration);
@@ -2808,7 +2808,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
-		CtSimpleType<?> type = createType(memberTypeDeclaration);
+		CtType<?> type = createType(memberTypeDeclaration);
 		type.setDocComment(getJavaDoc(memberTypeDeclaration.javadoc,
 				scope.referenceCompilationUnit()));
 		context.enter(type, memberTypeDeclaration);
@@ -2832,7 +2832,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			return true;
 		} else {
-			CtSimpleType<?> type = createType(typeDeclaration);
+			CtType<?> type = createType(typeDeclaration);
 
 			type.setDocComment(getJavaDoc(typeDeclaration.javadoc,
 					scope.referenceContext));

@@ -28,7 +28,6 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
@@ -169,7 +168,7 @@ public class MethodFactory extends ExecutableFactory {
 	 */
 	public Collection<CtMethod<Void>> getMainMethods() {
 		Collection<CtMethod<Void>> methods = new ArrayList<CtMethod<Void>>();
-		for (CtSimpleType<?> t : factory.Type().getAll()) {
+		for (CtType<?> t : factory.Type().getAll()) {
 			if (t instanceof CtClass) {
 				CtMethod<Void> m = ((CtClass<?>) t).getMethod(
 						factory.Type().createReference(void.class),

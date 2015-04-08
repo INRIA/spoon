@@ -17,10 +17,11 @@
 
 package spoon.template;
 
+
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 /**
  * This class represents a template parameter that defines a block statement
@@ -47,13 +48,13 @@ public abstract class TypedBlockTemplateParameter<R> implements
 	public abstract R block() throws Throwable;
 
 	@SuppressWarnings("unchecked")
-	public CtBlock<R> getSubstitution(CtSimpleType<?> targetType) {
+	public CtBlock<R> getSubstitution(CtType<?> targetType) {
 		CtClass<?> c;
 		c = targetType.getFactory().Class().get(this.getClass());
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
-		CtMethod<R> m = (CtMethod<R>) c.getMethod("block");
+		CtMethod m = (CtMethod) c.getMethod("block");
 		if (this instanceof Template) {
 			return Substitution.substitute(targetType, (Template<?>) this,
 					m.getBody());

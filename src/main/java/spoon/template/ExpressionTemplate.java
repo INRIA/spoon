@@ -21,7 +21,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 /**
  * This class represents an expression template parameter expressed in Java.
@@ -63,7 +63,7 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 	public abstract T expression() throws Throwable;
 
 	@SuppressWarnings("unchecked")
-	public CtExpression<T> apply(CtSimpleType<?> targetType) {
+	public CtExpression<T> apply(CtType<?> targetType) {
 		CtClass<? extends ExpressionTemplate<?>> c;
 		CtBlock<?> b;
 		c = targetType.getFactory().Class().get(this.getClass());

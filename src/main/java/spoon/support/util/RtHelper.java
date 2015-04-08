@@ -17,11 +17,13 @@
 
 package spoon.support.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,6 +32,9 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -55,6 +60,18 @@ public abstract class RtHelper {
 		}
 		Field[] result = new Field[fields.size()];
 		return fields.toArray(result);
+	}
+	
+	/**
+	 * Gets all the field references for a given class (including the
+	 * superclasses').
+	 */
+	public static Collection<CtFieldReference<?>> getAllFields(Class<?> c, Factory factory) {
+		Collection<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
+		for (Field f : getAllFields(c)) {
+			l.add(factory.Field().createReference(f));
+		}
+		return l;
 	}
 
 	/**
@@ -149,5 +166,16 @@ public abstract class RtHelper {
 		}
 		return set;
 	}
-
+	/** return all executables of this class */
+	public static Collection<CtExecutableReference<?>> getAllExecutables(
+			Class<?> clazz, Factory factory) {
+		Collection<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
+		for (Method m : clazz.getDeclaredMethods()) {
+			l.add(factory.Method().createReference(m));
+		}
+		for (Constructor<?> c : clazz.getDeclaredConstructors()) {
+			l.add(factory.Constructor().createReference(c));
+		}
+		return l;
+	}
 }

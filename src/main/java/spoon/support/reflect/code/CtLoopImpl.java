@@ -20,7 +20,7 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	private static final long serialVersionUID = 1L;
@@ -31,7 +31,7 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 		return body;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+	public CtCodeElement getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

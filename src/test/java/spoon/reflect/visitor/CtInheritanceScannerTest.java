@@ -15,10 +15,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
-
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.test.TestUtils;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created by nicolas on 25/02/2015.
@@ -103,7 +104,11 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 
 		// verify we call all methods
 		for (int i = 0; i < toInvoke.size(); i++) {
-			toInvoke.get(i).invoke(verify(mocked), instance);
+			try {
+				toInvoke.get(i).invoke(verify(mocked), instance);
+			} catch (InvocationTargetException ex) {
+				throw ex.getTargetException();
+			}
 		}
 	}
 

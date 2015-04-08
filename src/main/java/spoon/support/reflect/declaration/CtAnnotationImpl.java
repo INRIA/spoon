@@ -45,7 +45,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.reference.CtFieldReference;
@@ -236,7 +236,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 
 	private Class<?> getElementType(String name) {
 		// Try by CT reflection
-		CtSimpleType<?> t = getAnnotationType().getDeclaration();
+		CtType<?> t = (CtType<?>) getAnnotationType().getDeclaration();
 		if (t != null) {
 			CtField<?> f = t.getField(name);
 			return f.getType().getActualClass();
@@ -356,6 +356,10 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 		{
 			return CtAnnotatedElementType.METHOD;
 		}
+		if (annotatedElement instanceof CtAnnotation || annotatedElement instanceof CtAnnotationType)
+		{
+			return CtAnnotatedElementType.ANNOTATION_TYPE;
+		}
 		if (annotatedElement instanceof CtType)
 		{
 			return CtAnnotatedElementType.TYPE;
@@ -379,10 +383,6 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 		if (annotatedElement instanceof CtPackage)
 		{
 			return CtAnnotatedElementType.PACKAGE;
-		}
-		if (annotatedElement instanceof CtAnnotation || annotatedElement instanceof CtAnnotationType)
-		{
-			return CtAnnotatedElementType.ANNOTATION_TYPE;
 		}
 		return null;
 	}

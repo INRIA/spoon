@@ -19,7 +19,7 @@ package spoon.template;
 
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.support.template.SubstitutionVisitor;
 
@@ -41,7 +41,7 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 	public StatementTemplate() {
 	}
 
-	public CtStatement apply(CtSimpleType<?> targetType) {
+	public CtStatement apply(CtType<?> targetType) {
 		CtClass<?> c;
 		Factory factory;
 		

@@ -32,7 +32,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
@@ -181,7 +181,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		if ((subType == null) || subType.equals(getDeclaringType())) {
 			return null;
 		}
-		CtSimpleType<?> t = subType.getDeclaration();
+		CtType<?> t = (CtType<?>) subType.getDeclaration();
 		if (t == null) {
 			return null;
 		}

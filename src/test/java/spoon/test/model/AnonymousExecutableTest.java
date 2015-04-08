@@ -9,15 +9,14 @@ import org.junit.Test;
 
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class AnonymousExecutableTest {
 
 	@Test
-	public void testStatements() throws Exception {
-		
-		CtSimpleType<?> type = build("spoon.test.model", "AnonymousExecutableClass");
+	public void testStatements() throws Exception {		
+		CtType<?> type = build("spoon.test.model", "AnonymousExecutableClass");
 		CtAnonymousExecutable anonexec =
 			type.
 			getElements(new TypeFilter<CtAnonymousExecutable>(CtAnonymousExecutable.class)).

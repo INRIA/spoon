@@ -28,7 +28,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
@@ -154,7 +154,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+	public CtCodeElement getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

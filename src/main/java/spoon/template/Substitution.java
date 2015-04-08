@@ -30,7 +30,6 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -136,10 +135,10 @@ public abstract class Substitution {
 			insertField(targetType, template, f);
 		}
 		// insert all the inner types
-		for (CtSimpleType<?> t : templateClass.getNestedTypes()) {
+		for (CtType<?> t : templateClass.getNestedTypes()) {
 			if (t.getAnnotation(Local.class) != null)
 				continue;
-			CtSimpleType<?> result = substitute(templateClass, template, t);
+			CtType<?> result = substitute(templateClass, template, t);
 			targetType.addNestedType(result);
 		}
 
@@ -431,7 +430,7 @@ public abstract class Substitution {
 	 */
 
 	public static CtExpression<?> substituteFieldDefaultExpression(
-			CtSimpleType<?> targetType, Template<?> template, String fieldName) {
+			CtType<?> targetType, Template<?> template, String fieldName) {
 		CtClass<?> sourceClass = targetType.getFactory().Class()
 				.get(template.getClass());
 		CtField<?> sourceField = sourceClass.getField(fieldName);
@@ -452,7 +451,7 @@ public abstract class Substitution {
 	 *         by their values
 	 */
 	public static <E extends CtElement> E substitute(
-			CtSimpleType<?> targetType, Template<?> template, E code) {
+			CtType<?> targetType, Template<?> template, E code) {
 		if (code == null)
 			return null;
 		if (targetType == null)
@@ -502,7 +501,7 @@ public abstract class Substitution {
 	 * @return a copy of the template type where all the parameters has been
 	 *         substituted
 	 */
-	public static <T extends CtSimpleType<?>> T substitute(Template<?> template,
+	public static <T extends CtType<?>> T substitute(Template<?> template,
 			T templateType) {
 		T result = templateType.getFactory().Core().clone(templateType);
 		result.setPositions(null);

@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
@@ -31,7 +31,7 @@ public class LinesTest {
 	@Test
 	public void testPrettyPrinterWithLines() throws Exception {
 
-		for (CtSimpleType<?> t : factory.Type().getAll()) {
+		for (CtType<?> t : factory.Type().getAll()) {
 			if (t.isTopLevel()) {
 				// System.out.println("calculate " + t.getSimpleName());
 				DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(

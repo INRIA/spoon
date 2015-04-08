@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import spoon.processing.FactoryAccessor;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
@@ -26,18 +26,18 @@ public interface CompilationUnit extends FactoryAccessor {
 	/**
 	 * Gets all the types declared in this compilation unit.
 	 */
-	List<CtSimpleType<?>> getDeclaredTypes();
+	List<CtType<?>> getDeclaredTypes();
 
 	/**
 	 * Sets the types declared in this compilation unit.
 	 */
-	void setDeclaredTypes(List<CtSimpleType<?>> types);
+	void setDeclaredTypes(List<CtType<?>> types);
 
 	/**
 	 * Searches and returns the main type (the type which has the same name as
 	 * the file).
 	 */
-	CtSimpleType<?> getMainType();
+	CtType<?> getMainType();
 
 	/**
 	 * Gets the original source code as a string.

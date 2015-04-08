@@ -15,7 +15,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -27,9 +26,9 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 public class SnippetCompilationHelper {
 
-	static public void compileAndReplaceSnippetsIn(CtSimpleType<?> c) {
+	static public void compileAndReplaceSnippetsIn(CtType<?> c) {
 		Factory f = c.getFactory();
-		CtSimpleType<?> workCopy = c;
+		CtType<?> workCopy = c;
 		Set<ModifierKind> backup = new TreeSet<ModifierKind>(
 				workCopy.getModifiers());
 
@@ -56,7 +55,7 @@ public class SnippetCompilationHelper {
 
 		compile(f, w);
 
-		CtSimpleType<?> c = f.Type().get("Wrapper");
+		CtType<?> c = f.Type().get("Wrapper");
 
 		// Get the part we want
 
@@ -143,7 +142,7 @@ public class SnippetCompilationHelper {
 
 		build(f, contents);
 
-		CtSimpleType<?> c = f.Type().get("Wrapper");
+		CtType<?> c = f.Type().get("Wrapper");
 
 		// Get the part we want
 

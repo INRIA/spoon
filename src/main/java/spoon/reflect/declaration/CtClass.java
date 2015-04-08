@@ -52,14 +52,6 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	Set<CtConstructor<T>> getConstructors();
 
 	/**
-	 * Returns the class type directly extended by this class.
-	 * 
-	 * @return the class type directly extended by this class, or null if there
-	 *         is none
-	 */
-	CtTypeReference<?> getSuperclass();
-
-	/**
 	 * Sets the anonymous blocks of this class.
 	 */
 	void setAnonymousExecutables(List<CtAnonymousExecutable> e);

@@ -20,7 +20,7 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtThrow;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtThrowImpl extends CtStatementImpl implements CtThrow {
@@ -45,7 +45,7 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 		return null;
 	}
 
-	public CtCodeElement getSubstitution(CtSimpleType<?> targetType) {
+	public CtCodeElement getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
 

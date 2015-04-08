@@ -77,22 +77,22 @@ public interface CtPackage extends CtNamedElement {
 	 * 
 	 * @return the found type or null
 	 */
-	<T extends CtSimpleType<?>> T getType(String simpleName);
+	<T extends CtType<?>> T getType(String simpleName);
 
 	/**
 	 * Returns the set of the top-level types in this package.
 	 */
-	Set<CtSimpleType<?>> getTypes();
+	Set<CtType<?>> getTypes();
 
 	/**
 	 * Adds a type to this package.
 	 */
-	void addType(CtSimpleType<?> type);
+	void addType(CtType<?> type);
 
 	/**
 	 * Removes a type from this package.
 	 */
-	void removeType(CtSimpleType<?> type);
+	void removeType(CtType<?> type);
 
 	/**
 	 * Sets the children defined in this package
@@ -124,5 +124,5 @@ public interface CtPackage extends CtNamedElement {
 	 * @param types
 	 *            new Set of types
 	 */
-	void setTypes(Set<CtSimpleType<?>> types);
+	void setTypes(Set<CtType<?>> types);
 }

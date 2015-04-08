@@ -18,6 +18,8 @@
 package spoon.support.reflect.declaration;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -28,8 +30,10 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
@@ -53,6 +57,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		v.visitCtClass(this);
 	}
 
+	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> ret = new TreeSet<CtMethod<?>>();
 		ret.addAll(getMethods());
@@ -106,6 +111,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		return anonymousExecutables.remove(e);
 	}
 
+	@Override
 	public CtTypeReference<?> getSuperclass() {
 		return superClass;
 	}
@@ -152,6 +158,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		return true;
 	}
 
+	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		if ((getSuperclass() != null) && getSuperclass().isSubtypeOf(type)) {
 			return true;
@@ -197,5 +204,14 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	public <R extends CtCodeElement> R partiallyEvaluate() {
 		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 		return eval.evaluate(getParent(), (R) this);
+	}
+	
+	@Override
+	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
+		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(super.getDeclaredExecutables());
+		for (CtExecutable<?> c : getConstructors()) {
+			l.add(c.getReference());
+		}
+		return Collections.unmodifiableCollection(l);
 	}
 }
