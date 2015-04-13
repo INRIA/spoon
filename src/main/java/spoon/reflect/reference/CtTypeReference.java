@@ -43,9 +43,12 @@ public interface CtTypeReference<T> extends CtReference,
 	Class<T> getActualClass();
 
 	/**
-	 * Tries to get the declaration that corresponds to the referenced element.
+	 * Returns the {@link CtElement}, a {@link CtType}, that corresponds to the
+	 * reference or <code>null</code> if the type declaration is not in the
+	 * analyzed source files.
 	 * 
-	 * @return referenced element or null if element does not exist
+	 * @return the referenced element or <code>null</code> if the type
+	 *         declaration is not the analyzed source files.
 	 */
 	CtType<T> getDeclaration();
 
