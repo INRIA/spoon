@@ -691,6 +691,7 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public void run() {
 		Environment env = modelBuilder.getFactory().getEnvironment();
+		env.reportProgressMessage(getVersionMessage());
 		env.reportProgressMessage("running Spoon...");
 
 		env.reportProgressMessage("start processing...");
