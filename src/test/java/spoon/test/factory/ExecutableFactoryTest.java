@@ -23,11 +23,13 @@ public class ExecutableFactoryTest {
 		String type = eref.getType().getQualifiedName();
 		String decltype = eref.getDeclaringType().getQualifiedName();
 		String name = eref.getSimpleName();
-		List<CtTypeReference<?>> params = eref.getActualTypeArguments();
+		List<CtTypeReference<?>> params = eref.getParameters();
+		List<CtTypeReference<?>> atas = eref.getActualTypeArguments();
 		
 		Assert.assertEquals("boolean",type);
 		Assert.assertEquals("Object",decltype);
 		Assert.assertEquals("equals",name);
 		Assert.assertEquals(1,params.size());		
+		Assert.assertEquals(0,atas.size());		
 	}
 }
