@@ -318,7 +318,8 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtField(CtField<T> f) {
-		if (f.getDefaultExpression() == null && child instanceof CtExpression && !(child instanceof CtAnnotation)) {
+		if ((f.getDefaultExpression() == null && child instanceof CtExpression && !(child instanceof CtAnnotation)) ||
+				jdtTreeBuilder.defaultValue) {
 			f.setDefaultExpression((CtExpression<T>) child);
 			return;
 		}
