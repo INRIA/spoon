@@ -17,13 +17,16 @@
 
 package spoon.support.reflect.code;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -81,8 +84,12 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 			CtStatementList statementsToBeInserted) throws ParentNotInitializedException {
 		CtElement targetParent = target.getParent();
 		if (targetParent instanceof CtExecutable) {
-			throw new RuntimeException(
-					"cannot insert in this context (use insertEnd?)");
+			throw new SpoonException("cannot insert in this context (use insertEnd?)");
+		}
+		if (target.getParent(CtConstructor.class) != null) {
+			if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith("<init>")) {
+				throw new SpoonException("cannot insert a statement before a super or this invocation.");
+			}
 		}
 		CtBlock<?> parentBlock;
 		if (targetParent instanceof CtIf) {
