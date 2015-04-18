@@ -448,7 +448,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	public CtTypeReference<?> getSuperclass() {
 		CtType<T> t = getDeclaration();
 		if (t != null) {
-			return ((CtClass<T>) t).getSuperclass();
+			return t.getSuperclass();
 		} else {
 			Class<T> c = getActualClass();
 			Class<?> sc = c.getSuperclass();
