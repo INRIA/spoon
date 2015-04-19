@@ -79,6 +79,7 @@ public class AnnotationTest {
 		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Bound");
 		assertEquals("Bound", type.getSimpleName());
 		assertEquals(1, type.getAnnotations().size());
+		assertEquals(0, type.getAllMethods().size());
 	}
 
 	@Test
