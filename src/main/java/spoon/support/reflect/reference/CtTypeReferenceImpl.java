@@ -211,11 +211,16 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName()
 					+ CtType.INNERTTYPE_SEPARATOR + getSimpleName();
-		} else if (getPackage() != null
-				&& !getPackage().getSimpleName().equals(
-				CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
-			return getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR
-					+ getSimpleName();
+		} else if (getPackage() != null && !getPackage().getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+			if (!getTypeAnnotations().isEmpty()) {
+				String qualifiedName = getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR;
+				for (CtAnnotation<? extends Annotation> ctAnnotation : getTypeAnnotations()) {
+					qualifiedName += "@" + ctAnnotation.getAnnotationType().getQualifiedName() + " ";
+				}
+				qualifiedName += getSimpleName();
+				return qualifiedName;
+			}
+			return getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR + getSimpleName();
 		} else {
 			return getSimpleName();
 		}

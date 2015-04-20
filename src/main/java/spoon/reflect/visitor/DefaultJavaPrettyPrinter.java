@@ -1866,9 +1866,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 			return;
 		}
-		printTypeAnnotations(ref);
+
 		if (!context.ignoreImport
 				&& (importsContext.isImported(ref) && ref.getPackage() != null)) {
+			printTypeAnnotations(ref);
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
