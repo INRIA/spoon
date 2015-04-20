@@ -1,14 +1,18 @@
 package spoon.test.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.junit.Test;
 
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
 
 public class TypeTest {
 
@@ -20,7 +24,7 @@ public class TypeTest {
 		assertEquals(4, type.getDeclaredExecutables().size());
 		assertEquals(2, type.getAllFields().size());
 		
-		// we have 4  methods + one explicit constructor + two implicit
+		// we have 4  methods + one explicit constructor + 3 implicit
 		// constructors for Bar, Baz and Baz.Inner
 		Collection<CtExecutableReference<?>> allExecutables = type.getAllExecutables();
 		assertEquals(8, allExecutables.size());
@@ -29,7 +33,14 @@ public class TypeTest {
 	@Test
 	public void testGetUsedTypes() throws Exception {
 		CtType<?> type = build("spoon.test.model", "Foo");
-		assertEquals(3, type.getUsedTypes(true).size());
+		TypeFactory tf = type.getFactory().Type();
+		
+		Set<CtTypeReference<?>> usedTypes = type.getUsedTypes(true);
+		assertEquals(3, usedTypes.size());
+		assertTrue(usedTypes.contains(tf.createReference(Bar.class)));
+		assertTrue(usedTypes.contains(tf.createReference(Baz.class)));
+		assertTrue(usedTypes.contains(tf.createReference(Baz.Inner.class)));
+		
 		assertEquals(0, type.getUsedTypes(false).size());
 	}
 }
