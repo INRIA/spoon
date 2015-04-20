@@ -40,6 +40,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
@@ -113,18 +114,37 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 		for (CtTypeReference<?> typeRef : Query.getReferences(this,
 				new ReferenceTypeFilter<CtTypeReference<?>>(
 						CtTypeReference.class))) {
-			if (!(typeRef.isPrimitive()
-					|| (typeRef instanceof CtArrayTypeReference)
-					|| typeRef.toString()
-					.equals(CtTypeReference.NULL_TYPE_NAME) || ((typeRef
-					.getPackage() != null) && "java.lang".equals(typeRef
-					.getPackage().toString())))
-					&& !(!includeSamePackage && typeRef.getPackage().equals(
-					this.getPackage().getReference()))) {
+			if (!( typeRef.isPrimitive() ||
+				   (typeRef instanceof CtArrayTypeReference) ||
+				   typeRef.toString().equals(CtTypeReference.NULL_TYPE_NAME) ||
+				   ( (typeRef.getPackage() != null) &&
+					 "java.lang".equals(typeRef.getPackage().toString()))) &&
+			    !( !includeSamePackage &&
+		    		getPackageReference(typeRef).equals(this.getPackage().getReference()))) {
 				typeRefs.add(typeRef);
 			}
 		}
 		return typeRefs;
+	}
+	
+	/**
+	 * Return the package reference for the corresponding type reference. For
+	 * inner type, return the package reference of the top-most enclosing type.
+	 * This helper method is meant to deal with package references that are
+	 * <code>null</code> for inner types.
+	 * 
+	 * @param tref  the type reference
+	 * @return      the corresponding package reference
+	 * @since 4.0
+	 * @see CtTypeReference#getPackage()
+	 */
+	private static CtPackageReference getPackageReference( CtTypeReference<?> tref ) {
+    	CtPackageReference pref = tref.getPackage();
+    	while( pref == null ) {
+    		tref = tref.getDeclaringType();
+    		pref = tref.getPackage();
+    	}
+    	return pref;
 	}
 
 	public Class<T> getActualClass() {

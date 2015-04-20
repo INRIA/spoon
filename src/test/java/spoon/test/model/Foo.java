@@ -8,6 +8,8 @@ public class Foo extends Bar {
 	
 	@Override
 	void m() {}
+	
+	void useInner( Inner inner ) {}
 }
 
 class Bar extends Baz {}
@@ -17,5 +19,5 @@ class Baz {
 	int j;
 	void bazMethod(){}
 	void m() {}
-
+	class Inner {}
 }
