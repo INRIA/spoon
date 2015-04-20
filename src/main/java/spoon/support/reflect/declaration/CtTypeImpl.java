@@ -540,11 +540,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> l = new HashSet<CtMethod<?>>(getMethods());
-		CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
-		if (st != null) {
-			l.addAll(((CtType) st).getAllMethods());
-		}
-		return l;		
-
+		return l;
 	}
 }
