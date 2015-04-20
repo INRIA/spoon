@@ -220,6 +220,7 @@ import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 public class JDTTreeBuilder extends ASTVisitor {
 
 	private static final Logger logger = Logger.getLogger(JDTTreeBuilder.class);
+	boolean defaultValue;
 
 	public class ASTPair {
 		public CtElement element;
@@ -1591,21 +1592,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ClassScope classScope) {
 		CtField<Object> f = factory.Core().createField();
 		f.setSimpleName(new String(annotationTypeDeclaration.selector));
-		f.setType(references
-				.getTypeReference(annotationTypeDeclaration.binding.returnType));
+		f.setType(references.getTypeReference(annotationTypeDeclaration.binding.returnType));
 		context.enter(f, annotationTypeDeclaration);
 
 		if (annotationTypeDeclaration.annotations != null) {
 			int annotationsLength = annotationTypeDeclaration.annotations.length;
 			for (int i = 0; i < annotationsLength; i++)
-				annotationTypeDeclaration.annotations[i].traverse(this,
-						annotationTypeDeclaration.scope);
+				annotationTypeDeclaration.annotations[i].traverse(this, annotationTypeDeclaration.scope);
 		}
 
+		defaultValue = true;
 		if (annotationTypeDeclaration.defaultValue != null) {
-			annotationTypeDeclaration.defaultValue.traverse(this,
-					annotationTypeDeclaration.scope);
+			annotationTypeDeclaration.defaultValue.traverse(this, annotationTypeDeclaration.scope);
 		}
+		defaultValue = false;
 		return false;
 	}
 
