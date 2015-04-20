@@ -134,8 +134,9 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	void compileAndReplaceSnippets();
 	
 	/**
-	 * Return all the accessible methods for this type (the recursion stops when
-	 * the super-type is not in the model).
+	 * Return all the accessible methods (concrete and abstract) for this type.
+	 * 
+	 *  The recursion stops when the super-type/super-interface is not in the model.
 	 */
 	Set<CtMethod<?>> getAllMethods();
 

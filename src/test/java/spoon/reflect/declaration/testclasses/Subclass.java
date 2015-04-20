@@ -5,4 +5,9 @@ public class Subclass extends ExtendsObject implements Subinterface {
     public int compareTo(Object o) {
         return 0;
     }
+
+	@Override
+	public void foo() {
+		throw new UnsupportedOperationException();
+	}
 }

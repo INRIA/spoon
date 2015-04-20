@@ -57,19 +57,6 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		v.visitCtClass(this);
 	}
 
-	@Override
-	public Set<CtMethod<?>> getAllMethods() {
-		Set<CtMethod<?>> ret = new TreeSet<CtMethod<?>>();
-		ret.addAll(getMethods());
-
-		if ((getSuperclass() != null)
-				&& (getSuperclass().getDeclaration() != null)) {
-			CtType<?> t = (CtType<?>) getSuperclass().getDeclaration();
-			ret.addAll(t.getAllMethods());
-		}
-		return ret;
-	}
-
 	public List<CtAnonymousExecutable> getAnonymousExecutables() {
 		return anonymousExecutables;
 	}
