@@ -17,6 +17,8 @@
 
 package spoon.reflect.reference;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 
 /**
@@ -40,6 +42,16 @@ public interface CtTypeReference<T> extends CtReference,
 	 * @throws spoon.support.reflect.reference.SpoonClassNotFoundException if the class is not in the classpath
 	 */
 	Class<T> getActualClass();
+
+	/**
+	 * Returns the {@link CtElement}, a {@link CtType}, that corresponds to the
+	 * reference or <code>null</code> if the type declaration is not in the
+	 * analyzed source files.
+	 * 
+	 * @return the referenced element or <code>null</code> if the type
+	 *         declaration is not the analyzed source files.
+	 */
+	CtType<T> getDeclaration();
 
 	/**
 	 * Gets the type that declares the referenced type.
