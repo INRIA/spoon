@@ -89,16 +89,16 @@ public class ImportTest {
 		}).get(0);
 
 		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctNewClass.toString());
-		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {\n"
-				+ "    public void aMethod() {\n"
-				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");\n"
-				+ "    }\n"
-				+ "\n"
-				+ "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {\n"
-				+ "        public Item(java.lang.String s) {\n"
-				+ "            super(1, s);\n"
-				+ "        }\n"
-				+ "    }\n"
+		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator()
+				+ "    public void aMethod() {" + System.lineSeparator()
+				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator()
+				+ "    }" + System.lineSeparator()
+				+ System.lineSeparator()
+				+ "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator()
+				+ "        public Item(java.lang.String s) {" + System.lineSeparator()
+				+ "            super(1, s);" + System.lineSeparator()
+				+ "        }" + System.lineSeparator()
+				+ "    }" + System.lineSeparator()
 				+ "}";
 		assertEquals(expected, subClass.toString());
 	}

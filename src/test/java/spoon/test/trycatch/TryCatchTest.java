@@ -178,7 +178,7 @@ public class TryCatchTest {
 			}
 		}).get(0);
 
-		final String expected = " catch (spoon.test.trycatch.testclasses.internal.MyException | spoon.test.trycatch.testclasses.internal.MyException2 ignore) {\n}";
+		final String expected = " catch (spoon.test.trycatch.testclasses.internal.MyException | spoon.test.trycatch.testclasses.internal.MyException2 ignore) {" + System.lineSeparator() + "}";
 		assertEquals(expected, ctCatch.toString());
 	}
 

@@ -74,10 +74,10 @@ public class DefaultPrettyPrinterTest {
 		compiler.build();
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
-		final String expected = "public class AClass {\n"
-				+ "    public List<?> aMethod() {\n"
-				+ "        return new ArrayList<java.lang.Object>();\n"
-				+ "    }\n"
+		final String expected = "public class AClass {" + System.lineSeparator()
+				+ "    public List<?> aMethod() {" + System.lineSeparator()
+				+ "        return new ArrayList<java.lang.Object>();" + System.lineSeparator()
+				+ "    }" + System.lineSeparator()
 				+ "}";
 		assertEquals(expected, aClass.toString());
 	}
@@ -92,8 +92,8 @@ public class DefaultPrettyPrinterTest {
 		compiler.build();
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
-		final String expected = "public List<?> aMethod() {\n"
-				+ "    return new ArrayList<java.lang.Object>();\n"
+		final String expected = "public List<?> aMethod() {" + System.lineSeparator()
+				+ "    return new ArrayList<java.lang.Object>();" + System.lineSeparator()
 				+ "}";
 		assertEquals(expected, aClass.getMethodsByName("aMethod").get(0).toString());
 	}
