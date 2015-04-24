@@ -47,20 +47,6 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 	// return ret;
 	// }
 
-	@Override
-	public Set<CtMethod<?>> getAllMethods() {
-		Set<CtMethod<?>> ret = new TreeSet<CtMethod<?>>();
-		ret.addAll(getMethods());
-
-		for (CtTypeReference<?> ref : getSuperInterfaces()) {
-			if (ref.getDeclaration() != null) {
-				CtType<?> t = (CtType<?>) ref.getDeclaration();
-				ret.addAll(t.getAllMethods());
-			}
-		}
-		return ret;
-	}
-
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtInterface(this);
 	}

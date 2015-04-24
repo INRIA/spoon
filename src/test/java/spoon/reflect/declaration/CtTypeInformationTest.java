@@ -1,8 +1,11 @@
 package spoon.reflect.declaration;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.declaration.testclasses.ExtendsObject;
@@ -12,6 +15,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 
 public class CtTypeInformationTest
@@ -35,7 +39,7 @@ public class CtTypeInformationTest
     @Test
     public void testGetSuperclass() throws Exception {
         // test superclass of class
-        CtType<?> type = this.factory.Type().get(Subclass.class);
+        final CtType<?> type = this.factory.Type().get(Subclass.class);
 
         CtTypeReference<?> superclass = type.getSuperclass();
         Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());
@@ -52,8 +56,25 @@ public class CtTypeInformationTest
         Assert.assertEquals(Subinterface.class.getName(), superinterface.getQualifiedName());
         Assert.assertNull(superinterface.getSuperclass());
 
+        assertEquals(2, type.getAllMethods().size());
+        
+        
         // test superclass of interface
-        type = this.factory.Type().get(Subinterface.class);
-        Assert.assertNull(type.getSuperclass());
+        final CtType<?> type2 = this.factory.Type().get(Subinterface.class);
+        Assert.assertNull(type2.getSuperclass());
+        
+        // the interface abstract method and the implementation method have the same signature 
+        CtMethod<?> fooConcrete = type.getMethodsByName("foo").get(0);
+        CtMethod<?> fooAbstract = type2.getMethodsByName("foo").get(0);
+        assertEquals(fooConcrete.getSignature(), fooAbstract.getSignature());
+        // and they are in considered the same in a set
+        Set<CtMethod<?>> l = new HashSet<CtMethod<?>>();
+        l.add(fooConcrete);
+        l.add(fooAbstract);
+        assertEquals(1, l.size());
+                
+        
+        assertEquals(type.getMethodsByName("foo").get(0).getSignature(), type2.getMethodsByName("foo").get(0).getSignature());
+        
     }
 }

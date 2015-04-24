@@ -3,6 +3,7 @@ package spoon.test.annotation;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -306,6 +307,9 @@ public class AnnotationTest {
 		// load annotation type Bound and check the annotated element type of the annotations
 		CtAnnotationType<?> annotationType = pkg.getType("Bound");
 		assertEquals(Bound.class, annotationType.getActualClass());
+		assertNull(annotationType.getSuperclass());
+		assertEquals(0,annotationType.getAllMethods().size());
+		assertEquals(0,annotationType.getSuperInterfaces().size());
 
 		annotations = annotationType.getAnnotations();
 		assertEquals(1, annotations.size());

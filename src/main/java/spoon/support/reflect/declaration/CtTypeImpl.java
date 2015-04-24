@@ -319,6 +319,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	@Override
 	public CtTypeReference<?> getSuperclass() {
+		// overridden in CtClassImpl
 		return null;
 	}
 
@@ -560,11 +561,20 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> l = new HashSet<CtMethod<?>>(getMethods());
-		CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
-		if (st != null) {
-			l.addAll(((CtType) st).getAllMethods());
+		
+		if ((getSuperclass() != null)
+				&& (getSuperclass().getDeclaration() != null)) {
+			CtType<?> t = (CtType<?>) getSuperclass().getDeclaration();
+			l.addAll(t.getAllMethods());
 		}
-		return l;		
 
+		for (CtTypeReference<?> ref : getSuperInterfaces()) {
+			if (ref.getDeclaration() != null) {
+				CtType<?> t = (CtType<?>) ref.getDeclaration();
+				l.addAll(t.getAllMethods());
+			}
+		}
+
+		return Collections.unmodifiableSet(l);		
 	}
 }
