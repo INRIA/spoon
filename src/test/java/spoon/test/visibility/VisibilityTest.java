@@ -1,6 +1,14 @@
 package spoon.test.visibility;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static spoon.test.TestUtils.build;
+import static spoon.test.TestUtils.canBeBuild;
+
+import java.io.File;
+
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
@@ -8,14 +16,6 @@ import spoon.compiler.SpoonCompiler;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
-import spoon.test.visibility.testclasses.A;
-
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static spoon.test.TestUtils.build;
-import static spoon.test.TestUtils.canBeBuild;
 
 public class VisibilityTest {
     @Test

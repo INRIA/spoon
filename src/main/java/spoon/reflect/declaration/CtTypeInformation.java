@@ -5,7 +5,6 @@ import java.util.Set;
 
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 
 /** Returns information that can be obtained both at compile-time and run-time 

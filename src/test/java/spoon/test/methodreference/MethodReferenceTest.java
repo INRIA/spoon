@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 public class MethodReferenceTest {
 	private static final String TEST_CLASS = "spoon.test.methodreference.testclasses.Foo.";
-	private CtClass foo;
+	private CtClass<?> foo;
 
 	@Before
 	public void setUp() throws Exception {
@@ -44,13 +44,13 @@ public class MethodReferenceTest {
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
 
-		foo = (CtClass) factory.Type().get(Foo.class);
+		foo = (CtClass<?>) factory.Type().get(Foo.class);
 	}
 
 	@Test
 	public void testReferenceToAStaticMethod() throws Exception {
 		final String methodReference = TEST_CLASS + "Person::compareByAge";
-		final CtExecutableReferenceExpression reference = getCtExecutableReferenceExpression(methodReference);
+		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
 		assertTypedBy(Comparator.class, reference.getType());
 		assertTargetedBy(TEST_CLASS + "Person", reference.getTarget());
@@ -63,7 +63,7 @@ public class MethodReferenceTest {
 	@Test
 	public void testReferenceToAnInstanceMethodOfAParticularObject() throws Exception {
 		final String methodReference = "myComparisonProvider::compareByName";
-		final CtExecutableReferenceExpression reference = getCtExecutableReferenceExpression(methodReference);
+		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
 		assertTypedBy(Comparator.class, reference.getType());
 		assertTargetedBy("myComparisonProvider", reference.getTarget());
@@ -76,7 +76,7 @@ public class MethodReferenceTest {
 	@Test
 	public void testReferenceToAnInstanceMethodOfMultiParticularObject() throws Exception {
 		final String methodReference = "tarzan.phone::compareByNumbers";
-		final CtExecutableReferenceExpression reference = getCtExecutableReferenceExpression(methodReference);
+		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
 		assertTypedBy(Comparator.class, reference.getType());
 		assertTargetedBy("tarzan.phone", reference.getTarget());
@@ -89,7 +89,7 @@ public class MethodReferenceTest {
 	@Test
 	public void testReferenceToAnInstanceMethodOfAnArbitraryObjectOfAParticularType() throws Exception {
 		final String methodReference = "java.lang.String::compareToIgnoreCase";
-		final CtExecutableReferenceExpression reference = getCtExecutableReferenceExpression(methodReference);
+		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
 		assertTypedBy(Comparator.class, reference.getType());
 		assertTargetedBy("java.lang.String", reference.getTarget());
@@ -102,7 +102,7 @@ public class MethodReferenceTest {
 	@Test
 	public void testReferenceToAConstructor() throws Exception {
 		final String methodReference = TEST_CLASS + "Person::new";
-		final CtExecutableReferenceExpression reference = getCtExecutableReferenceExpression(methodReference);
+		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
 		assertTypedBy(Supplier.class, reference.getType());
 		assertTargetedBy(TEST_CLASS + "Person", reference.getTarget());
@@ -115,7 +115,7 @@ public class MethodReferenceTest {
 	@Test
 	public void testReferenceToAClassParametrizedConstructor() throws Exception {
 		final String methodReference = TEST_CLASS + "Type<java.lang.String>::new";
-		final CtExecutableReferenceExpression reference = getCtExecutableReferenceExpression(methodReference);
+		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
 		assertTypedBy(Supplier.class, reference.getType());
 		assertTargetedBy(TEST_CLASS + "Type<java.lang.String>", reference.getTarget());
@@ -128,7 +128,7 @@ public class MethodReferenceTest {
 	@Test
 	public void testReferenceToAJavaUtilClassConstructor() throws Exception {
 		final String methodReference = "java.util.HashSet<" + TEST_CLASS + "Person>::new";
-		final CtExecutableReferenceExpression reference = getCtExecutableReferenceExpression(methodReference);
+		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
 		assertTypedBy(Supplier.class, reference.getType());
 		assertTargetedBy("java.util.HashSet<" + TEST_CLASS + "Person>", reference.getTarget());
@@ -143,32 +143,32 @@ public class MethodReferenceTest {
 		TestUtils.canBeBuild(new File("./target/spooned/spoon/test/methodreference/testclasses/"), 8);
 	}
 
-	private void assertTypedBy(Class<?> expected, CtTypeReference type) {
+	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
 		assertEquals("Method reference must be typed.", expected, type.getActualClass());
 	}
 
-	private void assertTargetedBy(String expected, CtExpression target) {
+	private void assertTargetedBy(String expected, CtExpression<?> target) {
 		assertNotNull("Method reference must have a target expression.", target);
 		assertEquals("Target reference correspond to the enclosing class.", expected, target.toString());
 	}
 
-	private void assertIsConstructorReference(CtExecutableReference executable) {
+	private void assertIsConstructorReference(CtExecutableReference<?> executable) {
 		assertExecutableNamedBy("<init>", executable);
 	}
 
-	private void assertExecutableNamedBy(String expected, CtExecutableReference executable) {
+	private void assertExecutableNamedBy(String expected, CtExecutableReference<?> executable) {
 		assertNotNull("Method reference must reference an executable.", executable);
 		assertEquals("Method reference must reference the right executable.", expected, executable.getSimpleName());
 	}
 
-	private void assertIsWellPrinted(String methodReference, CtExecutableReferenceExpression reference) {
+	private void assertIsWellPrinted(String methodReference, CtExecutableReferenceExpression<?,?> reference) {
 		assertEquals("Method reference must be well printed", methodReference, reference.toString());
 	}
 
-	private CtExecutableReferenceExpression getCtExecutableReferenceExpression(final String methodReference) {
-		return foo.getElements(new AbstractFilter<CtExecutableReferenceExpression>(CtExecutableReferenceExpression.class) {
+	private CtExecutableReferenceExpression<?,?> getCtExecutableReferenceExpression(final String methodReference) {
+		return foo.getElements(new AbstractFilter<CtExecutableReferenceExpression<?,?>>(CtExecutableReferenceExpression.class) {
 			@Override
-			public boolean matches(CtExecutableReferenceExpression element) {
+			public boolean matches(CtExecutableReferenceExpression<?,?> element) {
 				return (methodReference).equals(element.toString());
 			}
 		}).get(0);

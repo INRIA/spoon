@@ -33,12 +33,7 @@ import spoon.Launcher;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -188,9 +183,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 		if (!isPrimitive() && isAnonymous()) {
 			final CtType<?> rootType = getFactory().Type().get(getDeclaringType().getQualifiedName());
-			final CtNewClass elements = rootType.getElements(new AbstractFilter<CtNewClass>(CtNewClass.class) {
+			final CtNewClass elements = rootType.getElements(new AbstractFilter<CtNewClass<?>>(CtNewClass.class) {
 				@Override
-				public boolean matches(CtNewClass element) {
+				public boolean matches(CtNewClass<?> element) {
 					return getSimpleName().equals(element.getAnonymousClass().getSimpleName());
 				}
 			}).get(0);
@@ -259,7 +254,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		if (isPrimitive() || type.isPrimitive()) {
 			return equals(type);
 		}
-		CtType<?> superTypeDecl = (CtType<?>) type.getDeclaration();
+		CtType<?> superTypeDecl = type.getDeclaration();
 		CtType<?> subTypeDecl = getDeclaration();
 		if ((subTypeDecl == null) && (superTypeDecl == null)) {
 			try {

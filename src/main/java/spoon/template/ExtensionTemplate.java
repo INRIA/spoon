@@ -1,6 +1,5 @@
 package spoon.template;
 
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -14,11 +13,7 @@ import spoon.reflect.declaration.CtType;
 public class ExtensionTemplate extends AbstractTemplate<CtType<?>> {
 	@Override 
 	public CtType<?> apply(CtType<?> target) { 
-		if (!(target instanceof CtType)) {
-			throw new TemplateException();
-		}
-		CtClass<?> targetType = (CtClass<?>) target;
-		Substitution.insertAll(targetType, this);
-		return targetType;
+		Substitution.insertAll(target, this);
+		return target;
 	}
 }
