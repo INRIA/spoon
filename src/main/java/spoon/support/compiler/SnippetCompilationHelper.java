@@ -3,7 +3,6 @@ package spoon.support.compiler;
 import java.util.Set;
 import java.util.TreeSet;
 
-import spoon.Launcher;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBlock;
@@ -60,17 +59,6 @@ public class SnippetCompilationHelper {
 		// Get the part we want
 
 		CtMethod<?> wrapper = Query.getElements(c, new Filter<CtMethod<?>>() {
-
-			@SuppressWarnings("unchecked")
-			public Class<CtMethod<?>> getType() {
-				try {
-					return (Class<CtMethod<?>>) Class.forName(CtMethod.class
-							.getName());
-				} catch (Exception e) {
-					Launcher.logger.error(e.getMessage(), e);
-					return null;
-				}
-			}
 
 			public boolean matches(CtMethod<?> element) {
 				return element.getSimpleName().equals("wrap");
@@ -147,10 +135,6 @@ public class SnippetCompilationHelper {
 		// Get the part we want
 
 		CtMethod<T> wrapper = Query.getElements(c, new Filter<CtMethod<T>>() {
-
-			public Class<?> getType() {
-				return CtMethod.class;
-			}
 
 			public boolean matches(CtMethod<T> element) {
 				return element.getSimpleName().equals("wrap");

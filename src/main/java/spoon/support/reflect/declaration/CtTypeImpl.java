@@ -564,13 +564,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 		
 		if ((getSuperclass() != null)
 				&& (getSuperclass().getDeclaration() != null)) {
-			CtType<?> t = (CtType<?>) getSuperclass().getDeclaration();
+			CtType<?> t = getSuperclass().getDeclaration();
 			l.addAll(t.getAllMethods());
 		}
 
 		for (CtTypeReference<?> ref : getSuperInterfaces()) {
 			if (ref.getDeclaration() != null) {
-				CtType<?> t = (CtType<?>) ref.getDeclaration();
+				CtType<?> t = ref.getDeclaration();
 				l.addAll(t.getAllMethods());
 			}
 		}

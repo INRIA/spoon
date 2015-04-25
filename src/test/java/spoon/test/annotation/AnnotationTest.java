@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;

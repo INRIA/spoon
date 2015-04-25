@@ -1,5 +1,7 @@
 package spoon.test;
 
+import java.io.File;
+
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
@@ -8,9 +10,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-
-import java.io.File;
-import java.io.IOException;
 
 public class TestUtils {
 
@@ -53,7 +52,7 @@ public class TestUtils {
 		return comp.getFactory();
 	}
 
-	public static void canBeBuild(File outputDirectoryFile, int complianceLevel) throws IOException {
+	public static void canBeBuild(File outputDirectoryFile, int complianceLevel) {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(complianceLevel);
@@ -66,7 +65,7 @@ public class TestUtils {
 		}
 	}
 
-	public static void canBeBuild(String outputDirectory, int complianceLevel) throws IOException {
+	public static void canBeBuild(String outputDirectory, int complianceLevel) {
 		canBeBuild(new File(outputDirectory), complianceLevel);
 	}
 }

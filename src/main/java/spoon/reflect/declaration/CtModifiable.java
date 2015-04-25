@@ -19,8 +19,6 @@ package spoon.reflect.declaration;
 
 import java.util.Set;
 
-import spoon.processing.FactoryAccessor;
-
 /**
  * This interface defines an element that accepts modifiers.
  */

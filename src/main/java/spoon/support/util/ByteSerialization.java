@@ -26,7 +26,7 @@ public class ByteSerialization {
 		Object objInput = null;
 		ByteArrayInputStream bi = new ByteArrayInputStream( serializedObject);
 		ObjectInputStream si = new ObjectInputStream(bi);
-		objInput = (Object) si.readObject();
+		objInput = si.readObject();
 		si.close();
 		return objInput;
 	}
