@@ -56,7 +56,7 @@ public class FieldFactory extends SubFactory {
 		field.setType(type);
 		field.setSimpleName(name);
 		if (target != null) {
-			target.getFields().add(field);
+			target.addField(field);
 		}
 		return field;
 	}

@@ -75,6 +75,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	public <F> boolean addField(CtField<F> field) {
 		if (!this.fields.contains(field)) {
+			field.setParent(this);
 			return this.fields.add(field);
 		}
 
