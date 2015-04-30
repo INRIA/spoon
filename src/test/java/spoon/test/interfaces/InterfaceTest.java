@@ -45,7 +45,11 @@ public class InterfaceTest {
 		final CtMethod<?> ctMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
 		assertTrue("The method in the interface must to be default", ctMethod.isDefaultMethod());
 
-		final String expected = "default java.time.ZonedDateTime getZonedDateTime(java.lang.String zoneString) {\n    return java.time.ZonedDateTime.of(getLocalDateTime(), spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods.getZoneId(zoneString));\n}";
+		final String expected =
+				"default java.time.ZonedDateTime getZonedDateTime(java.lang.String zoneString) {"
+						+ System.lineSeparator()
+						+ "    return java.time.ZonedDateTime.of(getLocalDateTime(), spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods.getZoneId(zoneString));"
+						+ System.lineSeparator() + "}";
 		assertEquals("The default method must to be well printed", expected, ctMethod.toString());
 	}
 

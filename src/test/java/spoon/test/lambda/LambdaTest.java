@@ -126,9 +126,9 @@ public class LambdaTest {
 		assertParametersSizeIs(0, lambda.getParameters());
 		assertStatementBody(lambda);
 
-		assertIsWellPrinted("((spoon.test.lambda.testclasses.Foo.Check)(() -> {\n"
-				+ "    java.lang.System.err.println(\"\");\n"
-				+ "    return false;\n"
+		assertIsWellPrinted("((spoon.test.lambda.testclasses.Foo.Check)(() -> {" + System.lineSeparator()
+				+ "    java.lang.System.err.println(\"\");" + System.lineSeparator()
+				+ "    return false;" + System.lineSeparator()
 				+ "}))", lambda);
 	}
 
@@ -143,9 +143,9 @@ public class LambdaTest {
 		assertParameterIsNamedBy("p", parameter);
 		assertStatementBody(lambda);
 
-		assertIsWellPrinted("((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> {\n"
-				+ "    p.doSomething();\n"
-				+ "    return (p.age) > 10;\n"
+		assertIsWellPrinted("((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> {" + System.lineSeparator()
+				+ "    p.doSomething();" + System.lineSeparator()
+				+ "    return (p.age) > 10;" + System.lineSeparator()
 				+ "}))", lambda);
 	}
 
@@ -168,8 +168,9 @@ public class LambdaTest {
 			}
 		}).get(0);
 		final String expected =
-				"if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {\n"
-						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");\n"
+				"if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {"
+						+ System.lineSeparator()
+						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");" + System.lineSeparator()
 						+ "} ";
 		assertEquals("Condition must be well printed", expected, condition.toString());
 	}
