@@ -39,4 +39,26 @@ public class FieldFactoryTest {
 		Assert.assertTrue(parent instanceof CtClass<?>);
 		Assert.assertEquals("SampleClass", ((CtClass<?>)parent).getSimpleName());
 	}
+
+	@Test
+	public void testCreateFromSource() throws Exception {
+
+		CtClass<?> target = build("spoon.test", "SampleClass");
+		CtClass<?> type = build("spoon.test.fieldaccesses.testclasses", "Foo");
+		CtField<?> source = type.getField("i");
+		FieldFactory ff = type.getFactory().Field();
+		TypeFactory tf = type.getFactory().Type();
+		
+		ff.create(target,source);
+		
+		CtField<?> field = target.getField("i");
+		Assert.assertEquals("i", field.getSimpleName());
+		CtTypeReference<?> tref = tf.createReference("int");
+		Assert.assertEquals(tref, field.getType());
+		
+		CtElement parent = field.getParent();
+		Assert.assertFalse(parent.isRootElement());
+		Assert.assertTrue(parent instanceof CtClass<?>);
+		Assert.assertEquals("SampleClass", ((CtClass<?>)parent).getSimpleName());
+	}
 }
