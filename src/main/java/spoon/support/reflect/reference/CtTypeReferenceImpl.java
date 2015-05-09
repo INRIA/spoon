@@ -338,7 +338,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	public CtTypeReference<?> unbox() {
-		if (!isPrimitive()) {
+		if (isPrimitive()) {
 			return this;
 		}
 		if (getActualClass() == Integer.class) {
