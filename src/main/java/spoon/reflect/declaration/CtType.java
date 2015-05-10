@@ -109,7 +109,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<F> boolean removeField(CtField<F> field);
 
 	/**
-	 * remove a nested type
+	 * Add a nested type.
 	 *
 	 * @param nestedType
 	 * @return <tt>true</tt> if this element changed as a result of the call
@@ -117,7 +117,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<N> boolean addNestedType(CtType<N> nestedType);
 
 	/**
-	 * add a nested type
+	 * Remove a nested type.
 	 *
 	 * @param nestedType
 	 * @return <tt>true</tt> if this element changed as a result of the call
