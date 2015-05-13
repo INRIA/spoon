@@ -198,36 +198,6 @@ public class MyAnnotationProcessor extends
 {% endhighlight %}
 
 ## Advanced
-
-### How to preserve the transformed source code formatting and one-line comments?
-
-There is a way to preserve comments and formatting of the existing code. However, it requires to use the code fragment API.
-
-The idea of code fragments is that you indicate the changes you make in the code at the compilation unit level. For example to replace an expression e:
-
-{% highlight java %}
-public void process(CtExpression e) {
-  // gets the compilation unit
-  CompilationUnit cu=e.getPosition().getCompilationUnit();
-  // creates an initialize the code fragment
-  SourceCodeFragment fragment = new SourceCodeFragment();
-  // the fragment will start to be printed out at the original 
-  // start position of the expression
-  fragment.position = e.getPosition().getSourceStart();
-  // here we replace the whole expression
-  // note: to insert, just leave replacementLength to 0 (default)
-  fragment.replacementLength = 
-    e.getPosition().getSourceEnd() - e.getPosition().getSourceStart();
-  // here put whatever code you want to replace the expression with...
-  fragment.code="...";
-  // now just add the code fragment to the compilation unit
-  cu.addSourceCodeFragment(fragment); 
-  // you can add as many code fragments as you wish
-}
-{% endhighlight %}
-
-You then just need to start Spoon with the -f option (--fragments). In this mode, all the chages in the AST will ignored and the source code will be changed only when code fragments are found on the compilation units. Note that this feature is not supported (yet) by the Eclipse plugin (so you need to run Spoon in standalone).
-
 ### How to implement program transformations with well-typed templates?
 
 See the section Generative Programming with Spoon of the Tutorial.
