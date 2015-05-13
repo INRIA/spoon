@@ -478,28 +478,24 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 		// Evaluate forInit
 		List<CtStatement> lst = forLoop.getForInit();
-		List<CtStatement> evaluatelst = new ArrayList<CtStatement>();
 		for (CtStatement s : lst) {
 			CtStatement evaluateStatement = evaluate(forLoop, s);
 			if (evaluateStatement != null) {
-				evaluatelst.add(evaluateStatement);
+				forLoop.addForInit(evaluateStatement);
 			}
 		}
-		forLoop.setForInit(evaluatelst);
 
 		// Evaluate Expression
 		forLoop.setExpression(evaluate(forLoop, forLoop.getExpression()));
 
 		// Evaluate forUpdate
 		lst = forLoop.getForUpdate();
-		evaluatelst = new ArrayList<CtStatement>();
 		for (CtStatement s : lst) {
 			CtStatement evaluateStatement = evaluate(forLoop, s);
 			if (evaluateStatement != null) {
-				evaluatelst.add(evaluateStatement);
+				forLoop.addForUpdate(evaluateStatement);
 			}
 		}
-		forLoop.setForUpdate(evaluatelst);
 
 		setResult(forLoop.getFactory().Core().clone(forLoop));
 	}
@@ -531,7 +527,9 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				thenEnded = true;
 				flowEnded = false;
 			}
-			ifRes.setElseStatement(evaluate(ifRes, ifElement.getElseStatement()));
+			if (ifElement.getElseStatement() !=null) {
+			  ifRes.setElseStatement(evaluate(ifRes, ifElement.getElseStatement()));
+			}
 			if (flowEnded) {
 				elseEnded = true;
 				flowEnded = false;

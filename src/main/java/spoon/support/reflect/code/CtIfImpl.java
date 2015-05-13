@@ -60,14 +60,17 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 	}
 
 	public void setCondition(CtExpression<Boolean> condition) {
+		condition.setParent(this);
 		this.condition = condition;
 	}
 
 	public void setElseStatement(CtStatement elseStatement) {
+		elseStatement.setParent(this);
 		this.elseStatement = elseStatement;
 	}
 
 	public void setThenStatement(CtStatement thenStatement) {
+		thenStatement.setParent(this);
 		this.thenStatement = thenStatement;
 	}
 

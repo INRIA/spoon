@@ -1,6 +1,7 @@
 package spoon.support.compiler.jdt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
@@ -174,7 +175,7 @@ public class ParentExiter extends CtInheritanceScanner {
 						"class")) {
 			value = ((CtFieldReference<?>) value).getType();
 		}
-		annotation.getElementValues().put(name, value);
+		annotation.addValue(name, value);
 		super.visitCtAnnotation(annotation);
 	}
 

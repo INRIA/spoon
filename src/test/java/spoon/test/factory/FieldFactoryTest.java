@@ -35,7 +35,6 @@ public class FieldFactoryTest {
 		Assert.assertEquals(tref, field.getType());
 		
 		CtElement parent = field.getParent();
-		Assert.assertFalse(parent.isRootElement());
 		Assert.assertTrue(parent instanceof CtClass<?>);
 		Assert.assertEquals("SampleClass", ((CtClass<?>)parent).getSimpleName());
 	}
@@ -57,7 +56,6 @@ public class FieldFactoryTest {
 		Assert.assertEquals(tref, field.getType());
 		
 		CtElement parent = field.getParent();
-		Assert.assertFalse(parent.isRootElement());
 		Assert.assertTrue(parent instanceof CtClass<?>);
 		Assert.assertEquals("SampleClass", ((CtClass<?>)parent).getSimpleName());
 	}

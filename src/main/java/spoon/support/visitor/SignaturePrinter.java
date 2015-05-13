@@ -137,9 +137,6 @@ public class SignaturePrinter implements CtVisitor {
 		write("@");
 		if (annotation.getAnnotationType() != null) {
 			write(annotation.getAnnotationType().getQualifiedName());
-		} else {
-			logger.error("null annotation type at " + annotation.getPosition(),
-					new Exception());
 		}
 	}
 
@@ -302,8 +299,10 @@ public class SignaturePrinter implements CtVisitor {
 		else
 			write("<no type>");
 		write(" ");
-		write(reference.getDeclaringType().getQualifiedName());
-		write(CtField.FIELD_SEPARATOR);
+		if (reference.getDeclaringType()!=null) {
+			write(reference.getDeclaringType().getQualifiedName());
+			write(CtField.FIELD_SEPARATOR);
+		}
 		write(reference.getSimpleName());
 	}
 

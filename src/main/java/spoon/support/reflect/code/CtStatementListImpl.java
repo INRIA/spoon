@@ -42,8 +42,11 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		return statements;
 	}
 
-	public void setStatements(List<CtStatement> statements) {
-		this.statements = statements;
+	public void setStatements(List<CtStatement> stmts) {		
+		this.statements.clear();
+		for (CtStatement stmt : stmts) {
+			addStatement(stmt);
+		}
 	}
 
 	public R S() {
@@ -66,6 +69,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
 			this.statements = new ArrayList<CtStatement>();
 		}
+		statement.setParent(this);
 		this.statements.add(statement);
 	}
 

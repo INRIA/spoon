@@ -69,7 +69,10 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public void setArguments(List<CtExpression<?>> arguments) {
-		this.arguments = arguments;
+		this.arguments.clear();
+		for (CtExpression<?> expr: arguments) {
+			addArgument(expr);
+		}
 	}
 
 	@Override
@@ -77,6 +80,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
 			arguments = new ArrayList<CtExpression<?>>();
 		}
+		argument.setParent(this);
 		arguments.add(argument);
 	}
 

@@ -102,6 +102,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 
 	public <N> boolean addNestedType(CtType<N> nestedType) {
+		nestedType.setParent(this);
 		return this.nestedTypes.add(nestedType);
 	}
 
@@ -154,7 +155,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	public CtType<?> getDeclaringType() {
 		if(parent == null) {
-			setRootElement(true);
+			setParent(CtPackageImpl.ROOT_PACKAGE);
 		}
 		return getParent(CtType.class);
 	}
@@ -246,17 +247,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 		SnippetCompilationHelper.compileAndReplaceSnippetsIn(this);
 	}
 
-	@Override
-	public void setParent(CtElement parentElement) {
-		super.setParent(parentElement);
-		if (parentElement instanceof CtPackage) {
-			CtPackage pack = (CtPackage) parentElement;
-			Set<CtType<?>> types = pack.getTypes();
-			// TODO: define addType()
-			types.add(this);
-			//pack.setTypes(types);
-		}
-	}
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
@@ -373,6 +363,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 		if (methods == CtElementImpl.<CtMethod<?>> EMPTY_SET()) {
 			methods = new TreeSet<CtMethod<?>>();
 		}
+		method.setParent(this);
 		return methods.add(method);
 	}
 
@@ -526,7 +517,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 	}
 
 	public void setMethods(Set<CtMethod<?>> methods) {
-		this.methods = methods;
+		this.methods.clear();
+		for(CtMethod meth: methods) {
+			addMethod(meth);
+		}
 	}
 
 	public void setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {

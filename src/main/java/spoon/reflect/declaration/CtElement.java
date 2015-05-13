@@ -96,19 +96,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	boolean isParentInitialized();
 
 	/**
-	 * Tells if this element is a root of the element tree (and thus has no
-	 * parent, which is different from being not initialized). When an element
-	 * is a root element, {@link #getParent()} will return null without throwing
-	 * an exception.
-	 */
-	boolean isRootElement();
-
-	/**
-	 * Sets the root element flag to this element.
-	 */
-	void setRootElement(boolean rootElement);
-
-	/**
 	 * Gets the signature of the element.
 	 */
 	String getSignature();

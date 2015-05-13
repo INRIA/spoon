@@ -54,6 +54,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <B extends R> void setBody(CtBlock<B> body) {
+		body.setParent(this);
 		this.body = body;
 	}
 
@@ -64,7 +65,10 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public void setParameters(List<CtParameter<?>> parameters) {
-		this.parameters = parameters;
+		this.parameters.clear();
+		for(CtParameter<?> p: parameters) {
+			addParameter(p);
+		}
 	}
 
 	@Override
@@ -72,6 +76,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (parameters == CtElementImpl.<CtParameter<?>>EMPTY_LIST()) {
 			parameters = new ArrayList<CtParameter<?>>();
 		}
+		parameter.setParent(this);
 		return parameters.add(parameter);
 	}
 

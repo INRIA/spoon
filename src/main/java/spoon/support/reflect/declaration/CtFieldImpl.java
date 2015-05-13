@@ -69,6 +69,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
+		defaultExpression.setParent(this);
 		this.defaultExpression = defaultExpression;
 	}
 

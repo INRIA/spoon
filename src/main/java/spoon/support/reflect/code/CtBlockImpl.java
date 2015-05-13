@@ -66,8 +66,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertBegin(CtStatementList statements) {
-		if (getParentNoExceptions() != null
-				&& getParentNoExceptions() instanceof CtConstructor
+		if (getParent() != null
+				&& getParent() instanceof CtConstructor
 				&& getStatements().size() > 0) {
 			CtStatement first = getStatements().get(0);
 			if (first instanceof CtInvocation
@@ -84,8 +84,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void insertBegin(CtStatement statement) {
-		if (getParentNoExceptions() != null
-				&& getParentNoExceptions() instanceof CtConstructor
+		if (getParent() != null
+				&& getParent() instanceof CtConstructor
 				&& getStatements().size() > 0) {
 			CtStatement first = getStatements().get(0);
 			if (first instanceof CtInvocation
@@ -143,7 +143,10 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public void setStatements(List<CtStatement> statements) {
-		this.statements = statements;
+		this.statements.clear();
+		for(CtStatement s:statements) {
+			addStatement(s);
+		}
 	}
 
 	public R S() {
@@ -163,6 +166,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
 			this.statements = new ArrayList<CtStatement>();
 		}
+		statement.setParent(this);
 		this.statements.add(statement);
 	}
 

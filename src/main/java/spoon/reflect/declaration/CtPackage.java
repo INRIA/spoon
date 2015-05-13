@@ -33,7 +33,7 @@ public interface CtPackage extends CtNamedElement {
 	public static final String PACKAGE_SEPARATOR = ".";
 
 	/**
-	 * The name for the top level package (default is "unnamed package").
+	 * The name for the top level package.
 	 */
 	public static final String TOP_LEVEL_PACKAGE_NAME = "unnamed package";
 

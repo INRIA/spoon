@@ -25,8 +25,11 @@ public class CtTryWithResourceImpl extends CtTryImpl
 	}
 
 	@Override
-	public void setResources(List<CtLocalVariable<?>> resources) {
-		this.resources = resources;
+	public void setResources(List<CtLocalVariable<?>> resources) {		
+		this.resources.clear();
+		for(CtLocalVariable l:resources) {
+			addResource(l);
+		}
 	}
 
 	@Override
@@ -34,6 +37,7 @@ public class CtTryWithResourceImpl extends CtTryImpl
 		if (resources == CtElementImpl.<CtLocalVariable<?>>EMPTY_LIST()) {
 			resources = new ArrayList<CtLocalVariable<?>>();
 		}
+		resource.setParent(this);
 		return resources.add(resource);
 	}
 

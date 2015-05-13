@@ -11,6 +11,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,17 +49,21 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (expression != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
+		body.setParent(this);
 		this.body = body;
 	}
 
 	@Override
 	public List<CtParameter<?>> getParameters() {
-		return parameters;
+		return Collections.unmodifiableList(parameters);
 	}
 
 	@Override
-	public void setParameters(List<CtParameter<?>> parameters) {
-		this.parameters = parameters;
+	public void setParameters(List<CtParameter<?>> params) {
+		this.parameters.clear();
+		for (CtParameter p : params) {
+			addParameter(p);
+		}
 	}
 
 	@Override
@@ -66,6 +71,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (parameters == CtElementImpl.<CtParameter<?>>EMPTY_LIST()) {
 			parameters = new ArrayList<CtParameter<?>>();
 		}
+		parameter.setParent(this);
 		return parameters.add(parameter);
 	}
 
@@ -112,6 +118,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (body != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
+		expression.setParent(this);
 		this.expression = expression;
 	}
 }

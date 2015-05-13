@@ -57,7 +57,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 
 	CtTypeReference<?> declaringType;
 
-	CtPackageReference pack;
+	private CtPackageReference pack;
 
 	boolean isSuperReference = false;
 

@@ -207,10 +207,6 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * Registers a top-level package.
 	 */
 	public void register(CtPackage pck) {
-		if (packages.containsKey(pck.getQualifiedName())) {
-			throw new RuntimeException("package " + pck.getQualifiedName()
-					+ " already created");
-		}
 		packages.put(pck.getQualifiedName(), pck);
 	}
 

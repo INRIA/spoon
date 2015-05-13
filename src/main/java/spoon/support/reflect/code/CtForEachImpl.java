@@ -42,10 +42,12 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 	}
 
 	public void setExpression(CtExpression<?> expression) {
+		expression.setParent(this);
 		this.expression = expression;
 	}
 
 	public void setVariable(CtLocalVariable<?> variable) {
+		variable.setParent(this);
 		this.variable = variable;
 	}
 

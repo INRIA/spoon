@@ -33,6 +33,7 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	CtExpression<T> value;
 
 	public void setAssertExpression(CtExpression<Boolean> asserted) {
+		asserted.setParent(this);
 		this.asserted = asserted;
 	}
 
@@ -45,6 +46,7 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	}
 
 	public void setExpression(CtExpression<T> value) {
+		value.setParent(this);
 		this.value = value;
 	}
 

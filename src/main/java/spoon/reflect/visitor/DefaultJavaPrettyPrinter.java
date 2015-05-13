@@ -441,25 +441,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	public DefaultJavaPrettyPrinter scan(CtElement e) {
 		if (e != null) {
-			if (!context.elementStack.isEmpty()) {
-				CtElement parent = context.elementStack.peek();
-				if (e.isParentInitialized()) {
-					if (parent != e.getParent()) {
-						env.report(null, Severity.WARNING,
-								"ignoring inconsistent parent for "
-										+ e.getClass().getSimpleName()
-										+ " ("
-										+ parent.getClass().getSimpleName()
-										+ " != "
-										+ e.getParent().getClass()
-										.getSimpleName() + ")"
-										+ e.getPosition()
-						);
-					}
-				} else {
-					e.setParent(parent);
-				}
-			}
 			context.elementStack.push(e);
 			if (env.isPreserveLineNumbers()) {
 				context.noNewLines = e.getPosition() == null
@@ -2034,7 +2015,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				removeLastChar();
 			}
 			write("}");
-		} else if (value instanceof Enum) {
+		} else if (value instanceof Object[]) {
+			write("{");
+			if (((Object[]) value).length>0) {
+				for (Object obj : (Object[]) value) {
+					writeAnnotationElement(factory, obj);
+					write(" ,");
+				}
+				removeLastChar();
+			}
+			write("}");
+		} 		
+		else if (value instanceof Enum) {
 			context.ignoreGenerics = true;
 			scan(factory.Type().createReference(
 					((Enum<?>) value).getDeclaringClass()));

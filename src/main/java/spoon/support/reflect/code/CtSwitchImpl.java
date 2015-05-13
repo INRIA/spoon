@@ -46,10 +46,14 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	}
 
 	public void setCases(List<CtCase<? super S>> cases) {
-		this.cases = cases;
+		this.cases.clear();
+		for(CtCase caseStmt: cases) {
+			addCase(caseStmt);
+		}
 	}
 
 	public void setSelector(CtExpression<S> selector) {
+		selector.setParent(this);
 		this.expression = selector;
 	}
 
@@ -58,6 +62,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		if (cases == CtElementImpl.<CtCase<? super S>> EMPTY_LIST()) {
 			cases = new ArrayList<CtCase<? super S>>();
 		}
+		c.setParent(this);
 		return cases.add(c);
 	}
 

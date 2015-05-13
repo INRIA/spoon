@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
@@ -34,15 +35,34 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
-	Set<CtPackage> packs = new TreeSet<CtPackage>();
+	private Set<CtPackage> packs = new TreeSet<CtPackage>();
 
-	Set<CtType<?>> types = new TreeSet<CtType<?>>();
+	private Set<CtType<?>> types = new TreeSet<CtType<?>>();
 
+	public static CtPackage ROOT_PACKAGE = new CtPackageImpl() {
+		@Override
+		public String getSimpleName() {
+			return "";
+		};
+		
+		@Override
+		public String getQualifiedName() {
+			return "";
+		};
+
+		@Override
+		public CtElement getParent() {
+			return null;
+		};
+	};
+	
 	public CtPackageImpl() {
 		super();
+		setParent(ROOT_PACKAGE);
 	}
 
 	public boolean addPackage(CtPackage pack) {
+		pack.setParent(this);
 		return packs.add(pack);
 	}
 
@@ -56,7 +76,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	public CtPackage getDeclaringPackage() {
 		if (parent == null) {
-			setRootElement(true);
+			setParent(ROOT_PACKAGE);
 		}
 		return getParent(CtPackage.class);
 	}
@@ -74,7 +94,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	public String getQualifiedName() {
-		if (getDeclaringPackage() == null)
+		if (getDeclaringPackage() == null || getDeclaringPackage() == ROOT_PACKAGE)
 			return getSimpleName();
 		return getDeclaringPackage().getQualifiedName() + "." + getSimpleName();
 	}
@@ -94,11 +114,17 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	public void setPackages(Set<CtPackage> packs) {
-		this.packs = packs;
+		this.packs.clear();
+		for (CtPackage p : packs) {
+			addPackage(p);
+		}
 	}
 
 	public void setTypes(Set<CtType<?>> types) {
-		this.types = types;
+		this.types.clear();
+		for (CtType t : types) {
+			addType(t);
+		}
 	}
 
 	@Override
@@ -108,8 +134,8 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public void addType(CtType<?> type) {
-		types.add(type);
 		type.setParent(this);
+		types.add(type);
 	}
 
 	@Override
@@ -130,4 +156,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		 */
 		return this.position;
 	}
+	
+	@Override
+	public String toString() {
+		return getQualifiedName();
+	}
+	
 }

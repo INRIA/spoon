@@ -1,11 +1,16 @@
 package spoon.test.main;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtPackage;
+import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.test.parent.ParentTest;
 
 public class MainTest {
 
@@ -24,10 +29,27 @@ public class MainTest {
 		}
 		String systemClassPath = classpath.substring(0, classpath.length() - 1);
 
-		spoon.Launcher.main(new String[] { "-i", "src/main/java", "-o",
+		Launcher launcher = new Launcher();
+		
+		launcher.run(new String[] { "-i", "src/main/java", "-o",
 				"target/spooned", "--source-classpath",
-				systemClassPath, "--compile" });
-		// we should have no exception
+				systemClassPath, "--compile", "--compliance", "7" });
+		
+		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {
+			ParentTest.checkParentContract(pack);
+		}
+	}
+
+	@Test
+	public void testTest() throws Exception {
+		// the tests should be spoonable
+		Launcher launcher = new Launcher();		
+		launcher.run(new String[] { "-i", "src/test/java", "-o",
+				"target/spooned", "--noclasspath", "--compliance", "8" });
+		
+		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {
+			ParentTest.checkParentContract(pack);
+		}
 	}
 
 	@Test

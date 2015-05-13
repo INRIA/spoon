@@ -57,11 +57,6 @@ public class CtInvocationImpl<T> extends
 		return this.genericTypes;
 	}
 
-	@Override
-	public void setTarget(CtExpression<?> target) {
-		super.setTarget(target);
-	}
-
 	public List<CtExpression<?>> getArguments() {
 		return arguments;
 	}
@@ -71,6 +66,7 @@ public class CtInvocationImpl<T> extends
 		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
 			arguments = new ArrayList<CtExpression<?>>();
 		}
+		argument.setParent(this);
 		arguments.add(argument);
 	}
 
@@ -120,7 +116,10 @@ public class CtInvocationImpl<T> extends
 	};
 
 	public void setArguments(List<CtExpression<?>> arguments) {
-		this.arguments = arguments;
+		this.arguments.clear();
+		for (CtExpression expr : arguments) {
+			addArgument(expr);
+		}
 	}
 
 	public void setExecutable(CtExecutableReference<T> executable) {
