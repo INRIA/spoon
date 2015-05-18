@@ -2542,13 +2542,26 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		CtTypeReference<?> withoutSuper = references
-				.getTypeReference(qualifiedSuperReference.qualification.resolvedType);
-		withoutSuper.setSuperReference(true);
-		l.setValue(withoutSuper);
-		context.enter(l, qualifiedSuperReference);
+		CtTypeReference<Object> typeRefOfSuper = references.getTypeReference(qualifiedSuperReference.qualification.resolvedType);
+		final CtSuperAccess<Object> superAccess = createSuperAccess(typeRefOfSuper);
+
+		CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(typeRefOfSuper);
+		superAccess.setTarget(typeAccess);
+
+		context.enter(superAccess, qualifiedSuperReference);
 		return false;
+	}
+
+	private CtSuperAccess<Object> createSuperAccess(CtTypeReference<Object> typeRefOfSuper) {
+		final CtFieldReference<Object> superField = factory.Core().createFieldReference();
+		superField.setSimpleName("super");
+		superField.setDeclaringType(typeRefOfSuper);
+		superField.setType(typeRefOfSuper);
+
+		final CtSuperAccess<Object> superAccess = factory.Core().createSuperAccess();
+		superAccess.setVariable(superField);
+		return superAccess;
 	}
 
 	@Override
@@ -2616,16 +2629,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(SuperReference superReference, BlockScope scope) {
-		CtFieldReference<Object> fr = factory.Core().createFieldReference();
-		CtTypeReference<Object> ref = references
-				.getTypeReference(superReference.resolvedType);
-		fr.setSimpleName("super");
-		fr.setDeclaringType(ref);
-		fr.setType(ref);
+		CtTypeReference<Object> ref = references.getTypeReference(superReference.resolvedType);
+		final CtSuperAccess<Object> superAccess = createSuperAccess(ref);
 
-		CtSuperAccess<Object> fa = factory.Core().createSuperAccess();
-		fa.setVariable(fr);
-		context.enter(fa, superReference);
+		context.enter(superAccess, superReference);
 		return super.visit(superReference, scope);
 	}
 
