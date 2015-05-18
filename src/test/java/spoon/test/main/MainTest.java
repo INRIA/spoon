@@ -1,16 +1,19 @@
 package spoon.test.main;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-
+import org.junit.Rule;
 import org.junit.Test;
-
+import org.junit.contrib.java.lang.system.Assertion;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
-import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.test.parent.ParentTest;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MainTest {
 
@@ -99,6 +102,27 @@ public class MainTest {
 		assertFalse(new File("target/spooned-without-resources/fr/package.html").exists());
 		assertTrue(new File("src/test/resources/no-copy-resources/fr/inria/package.html").exists());
 		assertFalse(new File("target/spooned-without-resources/fr/inria/package.html").exists());
+	}
+
+	@Rule
+	public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+
+	@Test
+	public void testLauncherWithoutArgumentsExitWithSystemExit() throws Exception {
+		exit.expectSystemExit();
+
+		final PrintStream oldErr = System.err;
+		System.setErr(new PrintStream(errContent));
+		exit.checkAssertionAfterwards(new Assertion() {
+			@Override
+			public void checkAssertion() throws Exception {
+				assertTrue(errContent.toString().contains("Usage: java <launcher name> [option(s)]"));
+				System.setErr(oldErr);
+			}
+		});
+
+		new Launcher().run(new String[] { });
 	}
 
 }

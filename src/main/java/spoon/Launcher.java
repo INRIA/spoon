@@ -118,7 +118,7 @@ public class Launcher implements SpoonAPI {
 
 	public void printUsage() {
 		this.commandLineArgs = new String[] { "--help" };
-		run();
+		processArguments();
 	}
 
 	static {
