@@ -2463,6 +2463,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 			context.enter(va, qualifiedNameReference);
 			return false;
+		} else if (qualifiedNameReference.binding instanceof TypeBinding) {
+			CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
+			ta.setType(references.getTypeReference((TypeBinding) qualifiedNameReference.binding));
+			context.enter(ta, qualifiedNameReference);
+			return false;
 		} else {
 			CtVariableAccess<Object> va = factory.Core().createVariableAccess();
 			CtVariableReference<Object> varRef = new CtUnboundVariableReferenceImpl<Object>();
