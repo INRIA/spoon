@@ -23,10 +23,8 @@ import spoon.reflect.reference.CtFieldReference;
  * 
  * This code element defines an access to a target.
  * 
- * see {@link CtFieldAccess},
- * {@link CtSuperAccess}
- * or {@link CtThisAccess}
- * 
+ * see {@link CtFieldAccess} or {@link CtSuperAccess}
+ *
  * @param <T>
  *            Corresponding type
  */
