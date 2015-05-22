@@ -1869,9 +1869,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(ref.getQualifiedName());
 			}
 		}
-		if (ref.isSuperReference()) {
-			write(".super");
-		}
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
@@ -1918,9 +1915,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 		} else {
 			write(ref.getQualifiedName());
-		}
-		if (ref.isSuperReference()) {
-			write(".super");
 		}
 	}
 

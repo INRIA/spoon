@@ -488,14 +488,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return true;
 	}
 
-	public boolean isSuperReference() {
-		return isSuperReference;
-	}
-
-	public void setSuperReference(boolean b) {
-		isSuperReference = b;
-	}
-
 	@Override
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl

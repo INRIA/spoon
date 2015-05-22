@@ -90,15 +90,4 @@ public interface CtTypeReference<T> extends CtReference,
 	 * Sets the reference to the declaring package.
 	 */
 	void setPackage(CtPackageReference pack);
-
-	/**
-	 * Returns true if the reference refers to the super implementation
-	 */
-	boolean isSuperReference();
-
-	/**
-	 * Says that this reference refers to the super implementation
-	 */
-	void setSuperReference(boolean b);
-
 }
