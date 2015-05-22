@@ -20,6 +20,7 @@ package spoon.support.reflect.code;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.StampedLock;
 
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
@@ -47,11 +48,15 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	}
 
 	public void setCaseExpression(CtExpression<E> caseExpression) {
+		caseExpression.setParent(this);
 		this.caseExpression = caseExpression;
 	}
 
-	public void setStatements(List<CtStatement> statements) {
-		this.statements = statements;
+	public void setStatements(List<CtStatement> statements) {		
+		this.statements.clear();
+		for (CtStatement stmt : statements) {
+			addStatement(stmt);
+		}
 	}
 
 	@Override
@@ -59,6 +64,7 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
 			statements = new ArrayList<CtStatement>();
 		}
+		statement.setParent(this);
 		statements.add(statement);
 	}
 

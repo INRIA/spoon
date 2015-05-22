@@ -42,10 +42,12 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 	}
 
 	public void setBody(CtBlock<?> body) {
+		body.setParent(this);
 		this.body = body;
 	}
 
 	public void setParameter(CtCatchVariable<? extends Throwable> parameter) {
+		parameter.setParent(this);
 		this.parameter = parameter;
 	}
 

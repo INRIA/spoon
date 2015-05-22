@@ -52,22 +52,33 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 	}
 
 	public void setExpression(CtExpression<Boolean> expression) {
+		expression.setParent(this);
 		this.expression = expression;
 	}
 
-	public void setForInit(List<CtStatement> forInit) {
-		this.forInit = forInit;
+	@Override
+	public void setForInit(List<CtStatement> statements) {
+		this.forInit.clear();
+		for (CtStatement stmt : statements) {
+			addForInit(stmt);
+		}
 	}
 
-	public void setForUpdate(List<CtStatement> forUpdate) {
-		this.forUpdate = forUpdate;
+	@Override
+	public void setForUpdate(List<CtStatement> statements) {
+		this.forUpdate.clear();
+		for (CtStatement stmt : statements) {
+			addForUpdate(stmt);
+		}
 	}
+	
 
 	@Override
 	public boolean addForInit(CtStatement statement) {
 		if (forInit == CtElementImpl.<CtStatement> EMPTY_LIST()) {
 			forInit = new ArrayList<CtStatement>();
 		}
+		statement.setParent(this);
 		return forInit.add(statement);
 	}
 
@@ -84,6 +95,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		if (forUpdate == CtElementImpl.<CtStatement> EMPTY_LIST()) {
 			forUpdate = new ArrayList<CtStatement>();
 		}
+		statement.setParent(this);
 		return forUpdate.add(statement);
 	}
 
@@ -94,5 +106,5 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		}
 		return forUpdate.remove(statement);
 	}
-	
+
 }

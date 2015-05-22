@@ -80,6 +80,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 	}
 
 	public void setBody(CtBlock<?> block) {
+		block.setParent(this);
 		body = block;
 	}
 

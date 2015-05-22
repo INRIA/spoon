@@ -18,9 +18,11 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -58,11 +60,6 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
-	public CtExecutable<?> getParent() {
-		return (CtExecutable<?>) super.getParentNoExceptions();
-	}
-
-	@Override
 	public CtParameterReference<T> getReference() {
 		return getFactory().Executable().createParameterReference(this);
 	}
@@ -72,6 +69,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
+		defaultExpression.setParent(this);
 		this.defaultExpression = defaultExpression;
 	}
 
@@ -136,4 +134,10 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 			return ModifierKind.PRIVATE;
 		return null;
 	}
+	
+	@Override
+	public CtExecutable<?> getParent() {
+		return (CtExecutable<?>) super.getParent();
+	}
+	
 }

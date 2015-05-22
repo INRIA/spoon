@@ -1,6 +1,9 @@
 package spoon.test.parent;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Stack;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,10 +18,14 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.declaration.CtPackageImpl;
 
 public class ParentTest {
     
@@ -87,6 +94,29 @@ public class ParentTest {
 		pack.addType(clazz);
 		assertTrue(pack.getTypes().contains(clazz));
 		assertEquals(pack, clazz.getParent());
+	}
+
+	public static void checkParentContract(CtPackage pack) {
+		for(CtElement elem: pack.getElements(new TypeFilter<>(CtElement.class))) {
+			// there is always one parent
+			Assert.assertNotNull("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.getParent());
+		}
+		
+		// the scanner and the parent are in correspondence
+		new CtScanner() {
+			Stack<CtElement> elementStack = new Stack<CtElement>();
+			@Override
+			public void scan(CtElement e) {
+				if (e==null) { return; }
+				if (!elementStack.isEmpty()) {
+					assertEquals(elementStack.peek(), e.getParent());
+				}
+				elementStack.push(e);
+				e.accept(this);
+				elementStack.pop();
+			};
+		}.scan(pack);
+
 	}
 
 }

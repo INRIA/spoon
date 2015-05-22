@@ -87,6 +87,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 				.<CtAnonymousExecutable> EMPTY_LIST()) {
 			anonymousExecutables = new ArrayList<CtAnonymousExecutable>();
 		}
+		e.setParent(this);
 		return anonymousExecutables.add(e);
 	}
 
@@ -103,8 +104,11 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		return superClass;
 	}
 
-	public void setAnonymousExecutables(List<CtAnonymousExecutable> e) {
-		anonymousExecutables = e;
+	public void setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
+		this.anonymousExecutables.clear();
+		for (CtAnonymousExecutable exec : anonymousExecutables) {
+			addAnonymousExecutable(exec);
+		}
 	}
 
 	public void setConstructors(Set<CtConstructor<T>> constructors) {

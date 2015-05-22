@@ -38,6 +38,7 @@ public class CtNewClassImpl<T> extends CtConstructorCallImpl<T> implements CtNew
 
 	@Override
 	public void setAnonymousClass(CtClass<?> anonymousClass) {
+		anonymousClass.setParent(this);
 		this.anonymousClass = anonymousClass;
 	}
 }

@@ -29,7 +29,6 @@ public class SerializableTest {
 		
 		CtType<?> typeBef = sta2.getParent(CtType.class);
 		assertNotNull(typeBef);
-		typeBef.isRootElement();
 		
 		assertEquals(sigBef, sigAf);
 		
@@ -51,11 +50,7 @@ public class SerializableTest {
 		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME,parentOriginal.getSimpleName());
 		
 		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME,parentDeser.getSimpleName());
-		
-		assertTrue(parentOriginal.isRootElement());
 				
-		assertTrue(parentDeser.isRootElement());
-		
 	}
 
 	

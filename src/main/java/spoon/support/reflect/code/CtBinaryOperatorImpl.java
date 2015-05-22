@@ -39,11 +39,13 @@ public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements
 	}
 
 	public void setLeftHandOperand(CtExpression<?> expression) {
+		expression.setParent(this);
 		leftHandOperand = expression;
 
 	}
 
 	public void setRightHandOperand(CtExpression<?> expression) {
+		expression.setParent(this);
 		rightHandOperand = expression;
 	}
 

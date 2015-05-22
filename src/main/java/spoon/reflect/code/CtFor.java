@@ -54,15 +54,16 @@ public interface CtFor extends CtLoop {
 	 */
 	void setExpression(CtExpression<Boolean> expression);
 
-	/**
-	 * Sets the <i>init</i> statements.
-	 */
-	void setForInit(List<CtStatement> forInit);
 
-	/**
-	 * Sets the <i>update</i> statements.
-	 */
-	void setForUpdate(List<CtStatement> forUpdate);
+ 	/**
+ 	 * Sets the <i>init</i> statements.
+ 	 */
+ 	void setForInit(List<CtStatement> forInit);
+ 
+ 	/**
+ 	 * Sets the <i>update</i> statements.
+ 	 */
+ 	void setForUpdate(List<CtStatement> forUpdate);
 
 	/**
 	 * Adds an <i>update</i> statement.

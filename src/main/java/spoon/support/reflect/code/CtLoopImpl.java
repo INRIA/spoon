@@ -40,6 +40,7 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	}
 
 	public void setBody(CtStatement body) {
+		body.setParent(this);
 		this.body = body;
 	}
 }

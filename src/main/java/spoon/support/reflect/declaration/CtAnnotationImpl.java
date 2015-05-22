@@ -24,12 +24,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -93,7 +95,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 
 	CtTypeReference<A> annotationType;
 
-	Map<String, Object> elementValues = new TreeMap<String, Object>() {
+	private Map<String, Object> elementValues = new TreeMap<String, Object>() {
 
 		private static final long serialVersionUID = 3501647177461995350L;
 
@@ -128,9 +130,13 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 		visitor.visitCtAnnotation(this);
 	}
 
-	protected void appendValues(String elementName, Object... values) {
+	@Override
+	public void addValue(String elementName, Object value) {
 		if (!elementValues.containsKey(elementName)) {
-			elementValues.put(elementName, values);
+			elementValues.put(elementName, value);
+			if (value instanceof CtElement) {
+				((CtElement)value).setParent(this);
+			}
 		} else {
 			Object o = elementValues.get(elementName);
 			if (o.getClass().isArray()) {
@@ -139,17 +145,14 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 				for (Object a : old) {
 					tmp.add(a);
 				}
-				for (Object a : values) {
-					tmp.add(a);
-				}
-				elementValues.put(elementName, tmp.toArray());
+				tmp.add(value);
+				// recursive call
+				addValue(elementName, tmp.toArray());
 			} else {
-				// o is not a array
-				if (values.length > 1) {
-					throw new RuntimeException(
-							"Cannot add array to a non-array value");
-				}
-				elementValues.put(elementName, values[0]);
+				// transform a single value into an array
+				elementValues.put(elementName, new Object[]{o});
+				// recursive call
+				addValue(elementName, value);
 			}
 		}
 	}
@@ -261,7 +264,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 		if (at != null) {
 			CtField<?> f = at.getField(fieldName);
 			ret = f.getDefaultExpression();
-		}
+		} 
 		return ret;
 	}
 
@@ -310,7 +313,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 	}
 
 	public Map<String, Object> getElementValues() {
-		return elementValues;
+		return Collections.unmodifiableMap(elementValues);
 	}
 
 	private Object getReflectValue(String fieldname) {
@@ -330,8 +333,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 	}
 
 	public void setElementValues(Map<String, Object> values) {
+		this.elementValues.clear();
 		for (Entry<String, Object> e : values.entrySet()) {
-			this.elementValues.put(e.getKey(), e.getValue());
+			addValue(e.getKey(), e.getValue());
 		}
 	}
 

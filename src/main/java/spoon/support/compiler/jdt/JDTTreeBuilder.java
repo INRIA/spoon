@@ -320,7 +320,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 				throw new RuntimeException("Inconsistent Stack " + node+"\n"+pair.node);
 			CtElement current = pair.element;
 			if (!stack.isEmpty()) {
-				current.setParent(stack.peek().element);
 				exiter.child = current;
 				exiter.scan(stack.peek().element);
 			}
@@ -588,11 +587,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtAnnotation<A> a = factory.Core().createAnnotation();
 			CtTypeReference<A> t = references.getTypeReference(annotationBinding.getAnnotationType());
 			a.setAnnotationType(t);
-			final Map<String, Object> valuePairs = new HashMap<String, Object>();
 			for (ElementValuePair valuePair : annotationBinding.getElementValuePairs()) {
-				valuePairs.put(String.valueOf(valuePair.getName()), buildValuePairAnnotation(valuePair.getValue()));
+				a.addValue(String.valueOf(valuePair.getName()), buildValuePairAnnotation(valuePair.getValue()));
 			}
-			a.setElementValues(valuePairs);
 			return a;
 		}
 
@@ -2063,7 +2060,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		l.setValue(references
 				.getBoundedTypeReference(instanceOfExpression.type.resolvedType));
 		op.setRightHandOperand(l);
-		l.setParent(op);
 		context.enter(op, instanceOfExpression);
 		return true;
 	}
@@ -2074,7 +2070,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtTypeReference<Integer> r = references
 				.getTypeReference(intLiteral.resolvedType);
 		l.setType(r);
-		l.setValue(intLiteral.constant.intValue());
+		if (intLiteral.constant!=null) { // check required for noclasspath mode
+			l.setValue(intLiteral.constant.intValue());
+		}
 		context.enter(l, intLiteral);
 		return true;
 	}
@@ -2367,13 +2365,19 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(
 			QualifiedAllocationExpression qualifiedAllocationExpression,
 			BlockScope scope) {
-		buildCommonPartForCtNewClassAndCtConstructorCall(qualifiedAllocationExpression, scope, factory.Core().createNewClass());
-		if (qualifiedAllocationExpression.enclosingInstance != null)
+		// anonymous class
+		if (qualifiedAllocationExpression.anonymousType != null) {
+			buildCommonPartForCtNewClassAndCtConstructorCall(qualifiedAllocationExpression, scope, factory.Core().createNewClass());
+			qualifiedAllocationExpression.anonymousType.traverse(this, scope);
+		} 
+		// constructor call 
+		else {
+			buildCommonPartForCtNewClassAndCtConstructorCall(qualifiedAllocationExpression, scope, factory.Core().createConstructorCall());						
+		}
+		if (qualifiedAllocationExpression.enclosingInstance != null) {
 			qualifiedAllocationExpression.enclosingInstance.traverse(this,
 					scope);
-		if (qualifiedAllocationExpression.anonymousType != null)
-			qualifiedAllocationExpression.anonymousType.traverse(this, scope);
-
+		}
 		return false;
 	}
 
@@ -2399,7 +2403,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 								.createFieldAccess();
 						other.setVariable(references.getVariableReference(b));
 						other.setTarget(fa);
-						fa.setParent(other);
 						//set source position of fa;
 						CompilationUnit cu = factory.CompilationUnit().create(
 								new String(context.compilationunitdeclaration.getFileName()));
@@ -2444,7 +2447,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 						ref.setSimpleName(new String(qualifiedNameReference.tokens[qualifiedNameReference.tokens.length-1]));
 						fa.setType(ref);
 					}
-					va.setParent(fa);
 					//set source position of va;
 					CompilationUnit cu = factory.CompilationUnit().create(
 							new String(context.compilationunitdeclaration.getFileName()));
@@ -2819,7 +2821,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration,
 			CompilationUnitScope scope) {
-
 		if (new String(typeDeclaration.name).equals("package-info")) {
 			CtPackage pack = factory.Package()
 					.getOrCreate(
@@ -2847,6 +2848,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				pack = factory.Package().getOrCreate(
 						CtPackage.TOP_LEVEL_PACKAGE_NAME);
 			}
+			pack.addType(type);
 			context.enter(pack, typeDeclaration);
 			context.compilationunitdeclaration = scope.referenceContext;
 			context.enter(type, typeDeclaration);

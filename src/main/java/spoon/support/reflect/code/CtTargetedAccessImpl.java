@@ -38,11 +38,12 @@ public abstract class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T> im
 	}
 
 	@Override
-	public void setVariable(CtVariableReference<T> variable) {
+	public void setVariable(CtVariableReference<T> variable) {		
 		super.setVariable(variable);
 	}
 
 	public void setTarget(CtExpression<?> target) {
+		target.setParent(this);
 		this.target = target;
 	}
 

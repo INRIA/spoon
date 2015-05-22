@@ -38,7 +38,10 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	}
 
 	public void setCatchers(List<CtCatch> catchers) {
-		this.catchers = catchers;
+		this.catchers.clear();
+		for (CtCatch c : catchers) {
+			addCatcher(c);
+		}
 	}
 
 	@Override
@@ -46,6 +49,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
 			catchers = new ArrayList<CtCatch>();
 		}
+		catcher.setParent(this);
 		return catchers.add(catcher);
 	}
 
@@ -68,6 +72,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	}
 
 	public void setFinalizer(CtBlock<?> finalizer) {
+		finalizer.setParent(this);
 		this.finalizer = finalizer;
 	}
 
@@ -78,6 +83,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	}
 
 	public void setBody(CtBlock<?> body) {
+		body.setParent(this);
 		this.body = body;
 	}
 

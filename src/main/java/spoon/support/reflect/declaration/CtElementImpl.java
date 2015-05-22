@@ -23,9 +23,14 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.RandomAccess;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import org.apache.log4j.Logger;
 
@@ -60,24 +65,74 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	protected static final Logger logger = Logger
 			.getLogger(CtElementImpl.class);
 
-	private static class RootElement extends CtElementImpl {
-		private static final long serialVersionUID = 1L;
-		
-		protected static  RootElement ROOT = new RootElement();
-
-		public void accept(spoon.reflect.visitor.CtVisitor visitor) {
-		};
+	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet 
+	// because we need clear() for all set* methods
+	// and UnmodifiableList and unmodifiableCollection are not overridable (not visible grrrr)
+	private static class UNMODIFIABLE_COLLECTION<Object> extends
+			ArrayList<Object> implements Set<Object> {
 		@Override
-		public CtElement getParent() throws ParentNotInitializedException {
-			return null;
-		};
+		public Object set(int index, Object element) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void add(int index, Object element) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Object remove(int index) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(int index, Collection<? extends Object> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void replaceAll(UnaryOperator<Object> operator) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void sort(Comparator<? super Object> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public java.lang.Object[] toArray(java.lang.Object[] a) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add(java.lang.Object e) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean containsAll(Collection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(Collection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(Collection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(Collection c) {
+			throw new UnsupportedOperationException();
+		}
 	};
 
-	private static final List<Object> EMPTY_LIST = Collections
-			.unmodifiableList(new ArrayList<Object>());
-
-	private static final Set<Object> EMPTY_SET = Collections
-			.unmodifiableSet(new TreeSet<Object>());
+	private static final Set<Object> EMPTY_SET = new UNMODIFIABLE_COLLECTION();
+	private static final Set<Object> EMPTY_LIST = new UNMODIFIABLE_COLLECTION();
 
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> EMPTY_LIST() {
@@ -122,7 +177,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public CtElementImpl() {
 		super();
-		setParent(RootElement.ROOT);
 	}
 
 	public int compareTo(CtElement o) {
@@ -153,7 +207,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return null;
 	}
 
-	// TODO remove the warning
 	@SuppressWarnings("unchecked")
 	public <A extends Annotation> CtAnnotation<A> getAnnotation(
 			CtTypeReference<A> annotationType) {
@@ -173,13 +226,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return docComment;
 	}
 
-	public CtElement getParentNoExceptions() {
-		if (isRootElement()) {
-			return null;
-		}
-		return parent;
-	}
-
 	public CtElement getParent() throws ParentNotInitializedException {
 		if (parent == null) {
             String exceptionMsg ="";
@@ -187,6 +233,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
                 exceptionMsg =(
 						"parent not initialized for "
 								+ ((CtNamedElement) this).getSimpleName()
+								+ "(" + this.getClass() + ")"
 								+ (getPosition() != null ? " " + getPosition()
 										: " (?)"));
 			} else {
@@ -201,20 +248,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return parent;
 	}
 
-	@Override
-	public boolean isRootElement() {
-		return (parent instanceof RootElement);
-	}
-
-	@Override
-	public void setRootElement(boolean rootElement) {
-		if (rootElement) {
-			parent = RootElement.ROOT;
-		} else {
-			parent = null;
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	public <P extends CtElement> P getParent(Class<P> parentType)
 			throws ParentNotInitializedException {
@@ -227,8 +260,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public boolean hasParent(CtElement candidate)
 			throws ParentNotInitializedException {
-		if (isRootElement())
-			return false;
 		if (getParent() == candidate)
 			return true;
 		return getParent().hasParent(candidate);
@@ -237,9 +268,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public SourcePosition getPosition() {
 		if (position != null) {
 			return position;
-		}
-		if (isParentInitialized() && !isRootElement()) {
-			return getParentNoExceptions().getPosition();
 		}
 		return null;
 	}
@@ -325,13 +353,17 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public void setAnnotations(
 			List<CtAnnotation<? extends Annotation>> annotations) {
-		this.annotations = annotations;
+		this.annotations.clear();
+		for (CtAnnotation annot: annotations) {
+			addAnnotation(annot);
+		}
 	}
 
 	public boolean addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if ((List<?>) this.annotations == (List<?>) EMPTY_LIST()) {
 			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>();
 		}
+		annotation.setParent(this);
 		return this.annotations.add(annotation);
 	}
 

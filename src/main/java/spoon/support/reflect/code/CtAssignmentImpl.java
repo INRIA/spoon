@@ -69,12 +69,13 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 	}
 
 	public void setAssigned(CtExpression<T> assigned) {
+		assigned.setParent(this);
 		this.assigned = assigned;
 	}
 
 	public void setAssignment(CtExpression<A> assignment) {
+		assignment.setParent(this);
 		this.assignment = assignment;
-		this.assignment.setParent(this);
 	}
 
 	public void setType(CtTypeReference<T> type) {

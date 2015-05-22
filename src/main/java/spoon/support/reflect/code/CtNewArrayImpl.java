@@ -47,7 +47,10 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 
 	public void setDimensionExpressions(
 			List<CtExpression<Integer>> dimensionExpressions) {
-		this.dimensionExpressions = dimensionExpressions;
+		this.dimensionExpressions.clear();
+		for (CtExpression expr : dimensionExpressions) {
+			addDimensionExpression(expr);
+		}
 	}
 
 	@Override
@@ -56,6 +59,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 				.<CtExpression<Integer>> EMPTY_LIST()) {
 			dimensionExpressions = new ArrayList<CtExpression<Integer>>();
 		}
+		dimension.setParent(this);
 		return dimensionExpressions.add(dimension);
 	}
 
@@ -68,8 +72,11 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 		return dimensionExpressions.remove(dimension);
 	}
 
-	public void setElements(List<CtExpression<?>> expression) {
-		this.expressions = expression;
+	public void setElements(List<CtExpression<?>> expressions) {
+		this.expressions.clear();
+		for (CtExpression expr: expressions) {
+			addElement(expr);
+		}
 	}
 
 	@Override
@@ -77,6 +84,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 		if (expressions == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
 			this.expressions = new ArrayList<CtExpression<?>>();
 		}
+		expression.setParent(this);
 		return expressions.add(expression);
 	}
 
