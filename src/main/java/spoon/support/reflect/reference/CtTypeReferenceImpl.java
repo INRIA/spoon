@@ -452,6 +452,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		} else {
 			Class<T> c = getActualClass();
 			Class<?> sc = c.getSuperclass();
+			if (sc == null)
+			{
+				return null;
+			}
 			return getFactory().Type().createReference(sc);
 		}
 	}
