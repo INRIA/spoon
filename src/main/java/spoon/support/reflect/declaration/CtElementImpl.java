@@ -25,12 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.RandomAccess;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 
 import org.apache.log4j.Logger;
 
@@ -68,8 +63,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet 
 	// because we need clear() for all set* methods
 	// and UnmodifiableList and unmodifiableCollection are not overridable (not visible grrrr)
-	private static class UNMODIFIABLE_COLLECTION<Object> extends
-			ArrayList<Object> implements Set<Object> {
+	private static class UNMODIFIABLE_COLLECTION<Object> extends ArrayList<Object> implements Set<Object> {
 		@Override
 		public Object set(int index, Object element) {
 			throw new UnsupportedOperationException();
@@ -91,17 +85,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		}
 
 		@Override
-		public void replaceAll(UnaryOperator<Object> operator) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void sort(Comparator<? super Object> c) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public java.lang.Object[] toArray(java.lang.Object[] a) {
+		public Object[] toArray(java.lang.Object[] a) {
 			throw new UnsupportedOperationException();
 		}
 
