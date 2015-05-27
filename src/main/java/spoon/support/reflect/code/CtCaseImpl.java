@@ -20,7 +20,6 @@ package spoon.support.reflect.code;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.locks.StampedLock;
 
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
