@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTOR_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConstructor<T> {
 	private static final long serialVersionUID = 1L;
 
@@ -74,7 +76,8 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 			return false;
 		}
 		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
-			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>(
+					CONSTRUCTOR_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return formalTypeParameters.add(formalTypeParameter);
 	}
@@ -86,7 +89,10 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	@Override
 	public boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
-		return formalTypeParameter != null && formalTypeParameters.remove(formalTypeParameter);
+		return formalTypeParameter != null &&
+				formalTypeParameters !=
+						CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+				formalTypeParameters.remove(formalTypeParameter);
 	}
 
 	@Override

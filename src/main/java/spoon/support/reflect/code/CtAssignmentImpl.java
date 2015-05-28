@@ -28,6 +28,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		CtAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
@@ -89,7 +91,8 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 	@Override
 	public void addTypeCast(CtTypeReference<?> type) {
 		if (typeCasts == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			typeCasts = new ArrayList<CtTypeReference<?>>();
+			typeCasts = new ArrayList<CtTypeReference<?>>(
+					CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		typeCasts.add(type);
 	}

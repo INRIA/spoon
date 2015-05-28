@@ -40,6 +40,8 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -390,7 +392,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
 				.<CtTypeReference<?>> EMPTY_LIST()) {
-			actualTypeArguments = new ArrayList<CtTypeReference<?>>();
+			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
+					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return actualTypeArguments.add(actualTypeArgument);
 	}
@@ -398,11 +401,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	@Override
 	public boolean removeActualTypeArgument(
 			CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl
-				.<CtTypeReference<?>> EMPTY_LIST()) {
-			return false;
-		}
-		return actualTypeArguments.remove(actualTypeArgument);
+		return actualTypeArguments !=
+				CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+				actualTypeArguments.remove(actualTypeArgument);
 	}
 
 }

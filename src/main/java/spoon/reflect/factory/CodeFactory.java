@@ -125,7 +125,8 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtInvocation<T> createInvocation(CtExpression<?> target,
 			CtExecutableReference<T> executable, CtExpression<?>... arguments) {
-		List<CtExpression<?>> ext = new ArrayList<CtExpression<?>>();
+		List<CtExpression<?>> ext =
+				new ArrayList<CtExpression<?>>(arguments.length);
 		for (CtExpression<?> arg : arguments) {
 			ext.add(arg);
 		}
@@ -328,7 +329,8 @@ public class CodeFactory extends SubFactory {
 	 */
 	public List<CtExpression<?>> createVariableAccesses(
 			List<? extends CtVariable<?>> variables) {
-		List<CtExpression<?>> result = new ArrayList<CtExpression<?>>();
+		List<CtExpression<?>> result =
+				new ArrayList<CtExpression<?>>(variables.size());
 		for (CtVariable<?> v : variables) {
 			result.add(createVariableAccess(v.getReference(), v.getModifiers()
 					.contains(ModifierKind.STATIC)));
@@ -396,7 +398,7 @@ public class CodeFactory extends SubFactory {
 	@SuppressWarnings("unchecked")
 	public <R extends CtReference, E extends CtNamedElement> List<R> getReferences(
 			List<E> elements) {
-		List<R> refs = new ArrayList<R>();
+		List<R> refs = new ArrayList<R>(elements.size());
 		for (E e : elements) {
 			refs.add((R) e.getReference());
 		}

@@ -28,6 +28,8 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_CASES_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
 
@@ -47,7 +49,8 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	@Override
 	public boolean addCatcher(CtCatch catcher) {
 		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
-			catchers = new ArrayList<CtCatch>();
+			catchers = new ArrayList<CtCatch>(
+					CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		catcher.setParent(this);
 		return catchers.add(catcher);
@@ -55,10 +58,8 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	@Override
 	public boolean removeCatcher(CtCatch catcher) {
-		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
-			catchers = new ArrayList<CtCatch>();
-		}
-		return catchers.remove(catcher);
+		return catchers != CtElementImpl.<CtCatch>EMPTY_LIST() &&
+				catchers.remove(catcher);
 	}
 
 	public void accept(CtVisitor visitor) {

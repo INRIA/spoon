@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
  *
@@ -86,7 +88,8 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 			return false;
 		}
 		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
-			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>(
+					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return formalTypeParameters.add(formalTypeParameter);
 	}
@@ -98,7 +101,10 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
-		return formalTypeParameter != null && formalTypeParameters.remove(formalTypeParameter);
+		return formalTypeParameter != null &&
+				formalTypeParameters !=
+						CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+				formalTypeParameters.remove(formalTypeParameter);
 	}
 
 	@Override

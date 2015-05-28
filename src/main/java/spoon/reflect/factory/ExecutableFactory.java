@@ -32,6 +32,9 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
+import static java.util.Arrays.asList;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * The {@link CtExecutable} sub-factory.
  */
@@ -131,10 +134,8 @@ public class ExecutableFactory extends SubFactory {
 		methodRef.setDeclaringType(declaringType);
 		methodRef.setSimpleName(methodName);
 		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>();
-		for (CtTypeReference<?> ref : parameterTypes) {
-			l.add(ref);
-		}
+		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>(
+				asList(parameterTypes));
 		methodRef.setParameters(l);
 		return methodRef;
 	}
@@ -163,10 +164,8 @@ public class ExecutableFactory extends SubFactory {
 		methodRef.setDeclaringType(declaringType);
 		methodRef.setSimpleName(methodName);
 		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>();
-		for (CtTypeReference<?> ref : parameterTypes) {
-			l.add(ref);
-		}
+		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>(
+				asList(parameterTypes));
 		methodRef.setParameters(l);
 		return methodRef;
 	}
@@ -195,10 +194,8 @@ public class ExecutableFactory extends SubFactory {
 		methodRef.setDeclaringType(declaringType);
 		methodRef.setSimpleName(methodName);
 		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>();
-		for (CtTypeReference<?> ref : parameterTypes) {
-			l.add(ref);
-		}
+		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>(
+				parameterTypes);
 		methodRef.setParameters(l);
 		return methodRef;
 	}
@@ -223,10 +220,8 @@ public class ExecutableFactory extends SubFactory {
 		methodRef.setDeclaringType(declaringType);
 		methodRef.setSimpleName(methodName);
 		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>();
-		for (CtTypeReference<?> ref : parameterTypes) {
-			l.add(ref);
-		}
+		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>(
+				parameterTypes);
 		methodRef.setParameters(l);
 		return methodRef;
 	}
@@ -251,7 +246,8 @@ public class ExecutableFactory extends SubFactory {
 		executableRef.setType(typeRef);
 		String parameters = signature.substring(signature.indexOf("(") + 1,
 				signature.indexOf(")"));
-		List<CtTypeReference<?>> params = new ArrayList<CtTypeReference<?>>();
+		List<CtTypeReference<?>> params = new ArrayList<CtTypeReference<?>>(
+				PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		StringTokenizer t = new StringTokenizer(parameters, ",");
 		while (t.hasMoreTokens()) {
 			String paramType = t.nextToken();

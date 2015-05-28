@@ -47,6 +47,9 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.FIELDS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
  */
@@ -61,7 +64,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	Set<CtMethod<?>> methods = EMPTY_SET();
 
-	private List<CtField<?>> fields = new ArrayList<CtField<?>>();
+	private List<CtField<?>> fields = new ArrayList<CtField<?>>(
+			FIELDS_CONTAINER_DEFAULT_CAPACITY);
 
 	Set<CtType<?>> nestedTypes = new TreeSet<CtType<?>>();
 
@@ -321,7 +325,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	@Override
 	public List<CtFieldReference<?>> getAllFields() {
-		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
+		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>(
+				getFields().size());
 		for (CtField<?> f: getFields()) {
 			l.add(f.getReference());
 		}
@@ -337,7 +342,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
+		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>(
+				getFields().size());
 		for (CtField<?> f : getFields()) {
 			l.add(f.getReference());
 		}
@@ -393,18 +399,16 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 	public boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
 		if (formalTypeParameters == CtElementImpl
 				.<CtTypeReference<?>> EMPTY_LIST()) {
-			formalTypeParameters = new ArrayList<CtTypeReference<?>>();
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>(
+					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return formalTypeParameters.add(formalTypeParameter);
 	}
 
 	public boolean removeFormalTypeParameter(
 			CtTypeReference<?> formalTypeParameter) {
-		if (formalTypeParameters.contains(formalTypeParameter)) {
-			return formalTypeParameters.remove(formalTypeParameter);
-		} else {
-			return false;
-		}
+		return formalTypeParameters.contains(formalTypeParameter) &&
+				formalTypeParameters.remove(formalTypeParameter);
 	}
 
 	public List<CtTypeReference<?>> getFormalTypeParameters() {
@@ -481,7 +485,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	@Override
 	public List<CtMethod<?>> getMethodsByName(String name) {
-		List<CtMethod<?>> result = new ArrayList<CtMethod<?>>();
+		List<CtMethod<?>> result = new ArrayList<CtMethod<?>>(1);
 		for (CtMethod<?> m : methods) {
 			if (name.equals(m.getSimpleName())) {
 				result.add(m);
@@ -531,7 +535,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 	 * Gets the executables declared by this type if applicable.
 	 */
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
-		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
+		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(
+				getMethods().size());
 		for (CtExecutable<?> m : getMethods()) {
 			l.add(m.getReference());
 		}

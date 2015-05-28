@@ -27,6 +27,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
@@ -101,7 +104,8 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
 				.<CtTypeReference<?>> EMPTY_LIST()) {
-			actualTypeArguments = new ArrayList<CtTypeReference<?>>();
+			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
+					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return actualTypeArguments.add(actualTypeArgument);
 	}
@@ -109,27 +113,24 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 	@Override
 	public boolean removeActualTypeArgument(
 			CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl
-				.<CtTypeReference<?>> EMPTY_LIST()) {
-			return false;
-		}
-		return actualTypeArguments.remove(actualTypeArgument);
+		return actualTypeArguments !=
+				CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+				actualTypeArguments.remove(actualTypeArgument);
 	}
 
 	@Override
 	public boolean addBound(CtTypeReference<?> bound) {
 		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			bounds = new ArrayList<CtTypeReference<?>>();
+			bounds = new ArrayList<CtTypeReference<?>>(
+					TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return bounds.add(bound);
 	}
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			return false;
-		}
-		return bounds.remove(bound);
+		return bounds != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+				bounds.remove(bound);
 	}
 
 	@Override

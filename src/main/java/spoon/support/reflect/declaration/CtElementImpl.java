@@ -50,6 +50,8 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
+
 /** 
  * Contains the default implementation of most CtElement methods.
  * 
@@ -345,7 +347,8 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public boolean addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if ((List<?>) this.annotations == (List<?>) EMPTY_LIST()) {
-			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>();
+			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(
+					ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		annotation.setParent(this);
 		return this.annotations.add(annotation);
@@ -353,7 +356,8 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public boolean removeAnnotation(
 			CtAnnotation<? extends Annotation> annotation) {
-		return this.annotations.remove(annotation);
+		return (List<?>) annotations != (List<?>) EMPTY_LIST() &&
+				this.annotations.remove(annotation);
 	}
 
 	public void setDocComment(String docComment) {

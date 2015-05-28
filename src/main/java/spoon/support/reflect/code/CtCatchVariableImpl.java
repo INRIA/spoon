@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
 
@@ -62,7 +64,8 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	@Override
 	public boolean addMultiType(CtTypeReference<?> ref) {
 		if (types == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
-			types = new ArrayList<CtTypeReference<?>>();
+			types = new ArrayList<CtTypeReference<?>>(
+					CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return types.add(ref);
 	}

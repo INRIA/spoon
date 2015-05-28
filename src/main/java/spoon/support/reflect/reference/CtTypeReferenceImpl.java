@@ -47,6 +47,9 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -492,7 +495,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl
 				.<CtTypeReference<?>>EMPTY_LIST()) {
-			actualTypeArguments = new ArrayList<CtTypeReference<?>>();
+			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
+					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return actualTypeArguments.add(actualTypeArgument);
 	}
@@ -500,11 +504,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	@Override
 	public boolean removeActualTypeArgument(
 			CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl
-				.<CtTypeReference<?>>EMPTY_LIST()) {
-			return false;
-		}
-		return actualTypeArguments.remove(actualTypeArgument);
+		return actualTypeArguments !=
+				CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+				actualTypeArguments.remove(actualTypeArgument);
 	}
 
 	@Override
@@ -533,17 +535,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			return false;
 		}
 		if ((List<?>) this.annotations == (List<?>) CtElementImpl.EMPTY_LIST()) {
-			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>();
+			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(
+					ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return !this.annotations.contains(annotation) && this.annotations.add(annotation);
 	}
 
 	@Override
 	public boolean removeTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		if (annotation == null) {
-			return false;
-		}
-		return this.annotations.remove(annotation);
+		return annotation != null && this.annotations.remove(annotation);
 	}
 	
 }

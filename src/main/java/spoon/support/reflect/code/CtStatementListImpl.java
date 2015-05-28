@@ -28,6 +28,8 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		CtStatementList {
 	private static final long serialVersionUID = 1L;
@@ -67,7 +69,8 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 	@Override
 	public void addStatement(CtStatement statement) {
 		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			this.statements = new ArrayList<CtStatement>();
+			this.statements = new ArrayList<CtStatement>(
+					BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		this.statements.add(statement);
@@ -75,10 +78,9 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 
 	@Override
 	public void removeStatement(CtStatement statement) {
-		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			this.statements = new ArrayList<CtStatement>();
+		if (this.statements != CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements.remove(statement);
 		}
-		this.statements.remove(statement);
 	}
 
     @Override
