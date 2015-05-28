@@ -18,14 +18,7 @@
 package spoon.support.reflect.declaration;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -67,10 +60,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 	private List<CtField<?>> fields = new ArrayList<CtField<?>>(
 			FIELDS_CONTAINER_DEFAULT_CAPACITY);
 
-	Set<CtType<?>> nestedTypes = new TreeSet<CtType<?>>();
+	Set<CtType<?>> nestedTypes = EMPTY_SET();
 
 	
-	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
+	Set<ModifierKind> modifiers = EMPTY_SET();
 	
 	public CtTypeImpl() {
 		super();
@@ -106,12 +99,26 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 
 	public <N> boolean addNestedType(CtType<N> nestedType) {
+		if (nestedTypes == CtElementImpl.<CtType<?>>EMPTY_SET()) {
+			nestedTypes = new TreeSet<CtType<?>>();
+		}
 		nestedType.setParent(this);
 		return this.nestedTypes.add(nestedType);
 	}
 
 	public <N> boolean removeNestedType(CtType<N> nestedType) {
-		return this.nestedTypes.remove(nestedType);
+		if (nestedTypes.isEmpty()) {
+			return false;
+		} else if (nestedTypes.size() == 1) {
+			if (nestedTypes.contains(nestedType)) {
+				nestedTypes = CtElementImpl.<CtType<?>>EMPTY_SET();
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return this.nestedTypes.remove(nestedType);
+		}
 	}
 
 
@@ -269,21 +276,23 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	@Override
 	public boolean addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			this.modifiers = new TreeSet<ModifierKind>();
+		if (modifiers == CtElementImpl.<ModifierKind>EMPTY_SET()) {
+			this.modifiers = EnumSet.of(modifier);
+			return true;
 		}
 		return modifiers.add(modifier);
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		return modifiers.remove(modifier);
+		return modifiers != CtElementImpl.<ModifierKind>EMPTY_SET() &&
+				modifiers.remove(modifier);
 	}
 
 	@Override
 	public void setVisibility(ModifierKind visibility) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			this.modifiers = new TreeSet<ModifierKind>();
+			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);
 		getModifiers().remove(ModifierKind.PROTECTED);
@@ -373,6 +382,27 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 		return methods.add(method);
 	}
 
+	public <M> boolean removeMethod(CtMethod<M> method) {
+		if (methods.isEmpty()) {
+			return false;
+		} else if (methods.size() == 1) {
+			if (methods.contains(method)) {
+				methods = CtElementImpl.<CtMethod<?>>EMPTY_SET();
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			// This contains() is not needed for dealing with empty and
+			// singleton sets (as they are dealt above), but removing contains()
+			// check here might broke someone's code like
+			// type.setMethods(immutableSet(a, b, c));
+			// ...
+			// type.removeMethod(d)
+			return methods.contains(method) && methods.remove(method);
+		}
+	}
+
 	public <S> boolean addSuperInterface(CtTypeReference<S> interfac) {
 		if (interfaces == CtElementImpl.<CtTypeReference<?>> EMPTY_SET()) {
 			interfaces = new TreeSet<CtTypeReference<?>>();
@@ -380,19 +410,19 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 		return interfaces.add(interfac);
 	}
 
-	public <M> boolean removeMethod(CtMethod<M> method) {
-		if (methods.contains(method)) {
-			return methods.remove(method);
-		} else {
-			return false;
-		}
-	}
-
 	public <S> boolean removeSuperInterface(CtTypeReference<S> interfac) {
-		if (interfaces.contains(interfac)) {
-			return interfaces.remove(interfac);
-		} else {
+		if (interfaces.isEmpty()) {
 			return false;
+		} else if (interfaces.size() == 1) {
+			if (interfaces.contains(interfac)) {
+				interfaces = CtElementImpl.<CtTypeReference<?>>EMPTY_SET();
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			// contains() not needed. see comment in removeMethod()
+			return interfaces.contains(interfac) && interfaces.remove(interfac);
 		}
 	}
 

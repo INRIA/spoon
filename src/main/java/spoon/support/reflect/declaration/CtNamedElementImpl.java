@@ -18,6 +18,8 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements CtNamedElement {
@@ -35,6 +37,9 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 	}
 
 	public void setSimpleName(String simpleName) {
+		Factory factory = getFactory();
+		if (factory instanceof FactoryImpl)
+			simpleName = ((FactoryImpl) factory).dedup(simpleName);
 		this.simpleName = simpleName;
 	}
 }

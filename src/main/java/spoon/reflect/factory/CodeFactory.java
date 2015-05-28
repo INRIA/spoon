@@ -17,10 +17,7 @@
 
 package spoon.reflect.factory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
@@ -413,7 +410,7 @@ public class CodeFactory extends SubFactory {
 	 * @return Set of given modifiers
 	 */
 	public Set<ModifierKind> modifiers(ModifierKind... modifiers) {
-		Set<ModifierKind> ret = new TreeSet<ModifierKind>();
+		Set<ModifierKind> ret = EnumSet.noneOf(ModifierKind.class);
 		for (ModifierKind m : modifiers)
 			ret.add(m);
 		return ret;

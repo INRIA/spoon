@@ -130,10 +130,15 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 
 	@Override
 	public void removeConstructor(CtConstructor<T> constructor) {
-		if (constructors == CtElementImpl.<CtConstructor<T>> EMPTY_SET()) {
-			constructors = new TreeSet<CtConstructor<T>>();
+		if (!constructors.isEmpty()) {
+			if (constructors.size() == 1) {
+                if (constructors.contains(constructor)) {
+                    constructors = CtElementImpl.<CtConstructor<T>>EMPTY_SET();
+                }
+            } else {
+                constructors.remove(constructor);
+            }
 		}
-		constructors.remove(constructor);
 	}
 
 	public void setSuperclass(CtTypeReference<?> superClass) {

@@ -18,6 +18,9 @@
 package spoon.reflect.factory;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 import spoon.compiler.Environment;
 import spoon.reflect.cu.CompilationUnit;
@@ -252,6 +255,47 @@ public class FactoryImpl implements Factory, Serializable {
 	public FactoryImpl(CoreFactory coreFactory, Environment environment) {
 		this(coreFactory, environment, null);
 	}
+	
+	
+	// Deduplication
+	// See http://shipilev.net/talks/joker-Oct2014-string-catechism.pdf
+	
+	private static class Dedup {
+		Map<String, String> cache = new HashMap<String, String>();
+		// TODO replace with ThreadLocalRandom when Spoon drops Java 6 compat
+		Random random = new Random();
+	}
 
+	/**
+	 * Note this is an instance field. To avoid memory leaks and dedup being
+	 * targeted to each Spoon Launching, that could differ a lot by
+	 * frequently used symbols.
+	 */
+	private transient ThreadLocal<Dedup> threadLocalDedup =
+			new ThreadLocal<Dedup>() {
+				@Override
+				protected Dedup initialValue() {
+					return new Dedup();
+				}
+			};
 
+	/**
+	 * Returns a String equal to the given symbol. Performs probablilistic
+	 * deduplication. 
+	 */
+	public String dedup(String symbol) {
+		Dedup dedup = threadLocalDedup.get();
+		Map<String, String> cache = dedup.cache;
+		String cached;
+		if ((cached = cache.get(symbol)) != null) {
+			return cached;
+		} else {
+			// Puts the symbol into cache with 20% probability
+			int prob = (int) (Integer.MIN_VALUE + (0.2 * (1L << 32)));
+			if (dedup.random.nextInt() < prob) {
+				cache.put(symbol, symbol);
+			}
+			return symbol;
+		}
+	}
 }

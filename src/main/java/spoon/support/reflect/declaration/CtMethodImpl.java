@@ -23,10 +23,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -125,20 +122,20 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@Override
 	public boolean addModifier(ModifierKind modifier) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			this.modifiers = new TreeSet<ModifierKind>();
+			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		return modifiers.add(modifier);
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		return modifiers.remove(modifier);
+		return !modifiers.isEmpty() && modifiers.remove(modifier);
 	}
 
 	@Override
 	public void setVisibility(ModifierKind visibility) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			this.modifiers = new TreeSet<ModifierKind>();
+			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);
 		getModifiers().remove(ModifierKind.PROTECTED);

@@ -1,5 +1,6 @@
 package spoon.support.compiler;
 
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -28,8 +29,8 @@ public class SnippetCompilationHelper {
 	static public void compileAndReplaceSnippetsIn(CtType<?> c) {
 		Factory f = c.getFactory();
 		CtType<?> workCopy = c;
-		Set<ModifierKind> backup = new TreeSet<ModifierKind>(
-				workCopy.getModifiers());
+		Set<ModifierKind> backup = EnumSet.noneOf(ModifierKind.class);
+		backup.addAll(workCopy.getModifiers());
 
 		workCopy.getModifiers().remove(ModifierKind.PUBLIC);
 
@@ -83,7 +84,7 @@ public class SnippetCompilationHelper {
 
 		body.addStatement(st);
 
-		Set<ModifierKind> x = new TreeSet<ModifierKind>();
+		Set<ModifierKind> x = EnumSet.noneOf(ModifierKind.class);
 
 		f.Method().create(
 				w,
@@ -160,7 +161,7 @@ public class SnippetCompilationHelper {
 		ret.setReturnedExpression(st);
 		body.addStatement(ret);
 
-		Set<ModifierKind> x = new TreeSet<ModifierKind>();
+		Set<ModifierKind> x = EnumSet.noneOf(ModifierKind.class);
 
 		f.Method().create(
 				w,

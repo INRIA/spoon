@@ -17,6 +17,7 @@
 
 package spoon.support.reflect.declaration;
 
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -40,16 +41,13 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 
 	public boolean addModifier(ModifierKind modifier) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			modifiers = new TreeSet<ModifierKind>();
+			modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		return modifiers.add(modifier);
 	}
 
 	public boolean removeModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			modifiers = new TreeSet<ModifierKind>();
-		}
-		return modifiers.remove(modifier);
+		return !modifiers.isEmpty() && modifiers.remove(modifier);
 	}
 
 	public CtBlock<?> getBody() {
@@ -90,7 +88,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 
 	public void setVisibility(ModifierKind visibility) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
-			modifiers = new TreeSet<ModifierKind>();
+			modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);
 		getModifiers().remove(ModifierKind.PROTECTED);
