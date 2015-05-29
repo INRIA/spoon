@@ -2388,10 +2388,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
 			CtFieldAccess<Object> fa = factory.Core().createFieldAccess();
 
-			CtFieldReference<Object> ref = references.getVariableReference(
-					qualifiedNameReference.fieldBinding());
-			ref.setDeclaringType(references.getTypeReference(
-					qualifiedNameReference.actualReceiverType));
+			CtFieldReference<Object> ref = references
+					.getVariableReference(qualifiedNameReference.fieldBinding());
+			// Only set the declaring type if we are in a static context. See
+			// StaticAccessTest#testReferences test to have an example about that.
+			if (ref.isStatic()) {
+				ref.setDeclaringType(
+						references.getTypeReference(qualifiedNameReference.actualReceiverType));
+			}
 			fa.setVariable(ref);
 
 			if (qualifiedNameReference.otherBindings != null){
