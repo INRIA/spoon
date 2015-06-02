@@ -262,11 +262,6 @@ public class SubstitutionVisitor extends CtScanner {
 			visitCtTargetedAccess(f);
 		}
 
-		@Override
-		public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-			visitCtTargetedAccess(f);
-		}
-
 		/**
 		 * Replaces direct field parameter accesses.
 		 */

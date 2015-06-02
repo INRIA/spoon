@@ -297,9 +297,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-		scanCtTargetedAccess(f);
-		visitCtVariableAccess(f);
 		scanCtTargetedExpression(f);
+		scanCtExpression(f);
+		scanCtCodeElement(f);
+		scanCtTypedElement(f);
+		scanCtElement(f);
+		scanCtVisitable(f);
 	}
 
 	public void scanCtMultiTypedElement(CtMultiTypedElement f) {

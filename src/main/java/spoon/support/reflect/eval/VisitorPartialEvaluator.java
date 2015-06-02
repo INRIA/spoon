@@ -850,6 +850,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	@Override
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-		visitCtTargetedAccess(f);
+		setResult(f.getFactory().Core().clone(f));
 	}
 }

@@ -17,11 +17,11 @@
 
 package spoon.support.reflect.code;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtSuperAccessImpl<T> extends CtTargetedAccessImpl<T> implements
-		CtSuperAccess<T> {
+public class CtSuperAccessImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtSuperAccess<T> {
 
 	private static final long serialVersionUID = 1L;
 

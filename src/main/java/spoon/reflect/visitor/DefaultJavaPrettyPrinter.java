@@ -1045,6 +1045,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(thisAccess);
 	}
 
+	@Override
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+		enterCtExpression(f);
+		if (f.getTarget() != null) {
+			scan(f.getTarget());
+			write(".");
+		}
+		write("super");
+
+		exitCtExpression(f);
+	}
+
 	public <T> void visitCtAnnotationFieldAccess(
 			CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		enterCtExpression(annotationFieldAccess);
@@ -2238,23 +2250,5 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtUnboundVariableReference(
 			CtUnboundVariableReference<T> reference) {
 		write(reference.getSimpleName());
-	}
-
-	@Override
-	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-
-		enterCtExpression(f);
-		if (f.getTarget() != null) {
-			scan(f.getTarget());
-			write(".");
-			context.ignoreStaticAccess = true;
-		}
-		context.ignoreGenerics = true;
-		scan(f.getVariable());
-
-		context.ignoreGenerics = false;
-		context.ignoreStaticAccess = false;
-		exitCtExpression(f);
-
 	}
 }

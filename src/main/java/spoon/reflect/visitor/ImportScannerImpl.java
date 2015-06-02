@@ -42,18 +42,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-		enter(f);
-		scan(f.getVariable());
-		// scan(fieldAccess.getType());
-		scan(f.getAnnotations());
-		scanReferences(f.getTypeCasts());
-		scan(f.getVariable());
-		scan(f.getTarget());
-		exit(f);
-	}
-
-	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enterReference(reference);
 		scan(reference.getDeclaringType());

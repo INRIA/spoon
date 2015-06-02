@@ -17,7 +17,15 @@
 
 package spoon.support.compiler.jdt;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -1532,7 +1540,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(AllocationExpression allocationExpression,
 			BlockScope scope) {
-		buildCommonPartForCtNewClassAndCtConstructorCall(allocationExpression, scope, factory.Core().createConstructorCall());
+		buildCommonPartForCtNewClassAndCtConstructorCall(allocationExpression, scope,
+														 factory.Core().createConstructorCall());
 		return false;
 	}
 
@@ -1579,7 +1588,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(AND_AND_Expression and_and_Expression, BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-		op.setKind(getBinaryOperatorKind((and_and_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
+		op.setKind(getBinaryOperatorKind(
+				(and_and_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, and_and_Expression);
 		return true; // do nothing by default, keep traversing
 	}
@@ -1637,7 +1647,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			BlockScope scope) {
 		CtNewArray<Object> array = factory.Core().createNewArray();
 		array.setType(references
-				.getTypeReference(arrayAllocationExpression.resolvedType));
+							  .getTypeReference(arrayAllocationExpression.resolvedType));
 
 		context.enter(array, arrayAllocationExpression);
 
@@ -1876,7 +1886,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(EqualExpression equalExpression, BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-		op.setKind(getBinaryOperatorKind((equalExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
+		op.setKind(getBinaryOperatorKind(
+				(equalExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, equalExpression);
 		return true; // do nothing by default, keep traversing
 	}
@@ -2292,7 +2303,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(OR_OR_Expression or_or_Expression, BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-		op.setKind(getBinaryOperatorKind((or_or_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
+		op.setKind(getBinaryOperatorKind(
+				(or_or_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, or_or_Expression);
 		return true;
 	}
@@ -2306,7 +2318,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l.setValue(references
-				.getBoundedTypeReference(parameterizedQualifiedTypeReference.resolvedType));
+						   .getBoundedTypeReference(
+								   parameterizedQualifiedTypeReference.resolvedType));
 		context.enter(l, parameterizedQualifiedTypeReference);
 		return true;
 	}
@@ -2550,7 +2563,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		CtTypeReference<Object> typeRefOfSuper = references.getTypeReference(qualifiedSuperReference.qualification.resolvedType);
-		final CtSuperAccess<Object> superAccess = createSuperAccess(typeRefOfSuper);
+		final CtSuperAccess<Object> superAccess = factory.Core().createSuperAccess();
 
 		CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
 		typeAccess.setType(typeRefOfSuper);
@@ -2560,15 +2573,24 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return false;
 	}
 
-	private CtSuperAccess<Object> createSuperAccess(CtTypeReference<Object> typeRefOfSuper) {
-		final CtFieldReference<Object> superField = factory.Core().createFieldReference();
-		superField.setSimpleName("super");
-		superField.setDeclaringType(typeRefOfSuper);
-		superField.setType(typeRefOfSuper);
-
+	@Override
+	public boolean visit(SuperReference superReference, BlockScope scope) {
 		final CtSuperAccess<Object> superAccess = factory.Core().createSuperAccess();
-		superAccess.setVariable(superField);
-		return superAccess;
+
+		context.enter(superAccess, superReference);
+		return super.visit(superReference, scope);
+	}
+
+	@Override
+	public boolean visit(ThisReference thisReference, BlockScope scope) {
+		CtThisAccess<Object> fa = factory.Core().createThisAccess();
+		fa.setImplicit(thisReference.isImplicitThis());
+		if (thisReference instanceof QualifiedThisReference) {
+			fa.setQualified(true);
+		}
+		fa.setType(references.getTypeReference(thisReference.resolvedType));
+		context.enter(fa, thisReference);
+		return true;
 	}
 
 	@Override
@@ -2590,7 +2612,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ClassScope scope) {
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l.setValue(references
-				.getTypeReference(singleTypeReference.resolvedType));
+						   .getTypeReference(singleTypeReference.resolvedType));
 		context.enter(l, singleTypeReference);
 		return true; // do nothing by default, keep traversing
 	}
@@ -2635,15 +2657,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(SuperReference superReference, BlockScope scope) {
-		CtTypeReference<Object> ref = references.getTypeReference(superReference.resolvedType);
-		final CtSuperAccess<Object> superAccess = createSuperAccess(ref);
-
-		context.enter(superAccess, superReference);
-		return super.visit(superReference, scope);
-	}
-
-	@Override
 	public boolean visit(SwitchStatement switchStatement, BlockScope scope) {
 		CtSwitch<?> s = factory.Core().createSwitch();
 		context.enter(s, switchStatement);
@@ -2678,20 +2691,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtSynchronized s = factory.Core().createSynchronized();
 		context.enter(s, synchronizedStatement);
 		return super.visit(synchronizedStatement, scope);
-	}
-
-	@Override
-	public boolean visit(ThisReference thisReference, BlockScope scope) {
-		CtThisAccess<Object> fa = factory.Core().createThisAccess();
-		fa.setImplicit(thisReference.isImplicitThis());
-		if (thisReference instanceof QualifiedThisReference) {
-			fa.setQualified(true);
-		}
-		CtTypeReference<Object> typeref = references
-				.getTypeReference(thisReference.resolvedType);
-		fa.setType(typeref);
-		context.enter(fa, thisReference);
-		return true;
 	}
 
 	@Override

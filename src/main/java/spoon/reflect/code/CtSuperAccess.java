@@ -17,12 +17,11 @@
 
 package spoon.reflect.code;
 
-
 /**
  * This code element defines an access to super.
- * 
+ *
  * @param <T>
- *            Type of super
+ * 		Type of super
  */
-public interface CtSuperAccess<T> extends CtTargetedAccess<T> {
+public interface CtSuperAccess<T> extends CtTargetedExpression<T, CtExpression<?>> {
 }

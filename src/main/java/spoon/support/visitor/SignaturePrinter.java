@@ -617,6 +617,6 @@ public class SignaturePrinter implements CtVisitor {
 
 	@Override
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-		scan(f.getVariable());
+		write(f.getType().getQualifiedName() + ".super");
 	}
 }
