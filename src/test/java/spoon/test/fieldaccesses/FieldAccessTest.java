@@ -3,19 +3,14 @@ package spoon.test.fieldaccesses;
 import org.junit.Test;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtTargetedAccess;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.code.CtThisAccessImpl;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static spoon.test.TestUtils.build;
 
 public class FieldAccessTest {
@@ -113,7 +108,7 @@ public class FieldAccessTest {
 		assertEquals(3, vars.get(0).getTarget().getPosition().getSourceEnd() - vars.get(0).getTarget().getPosition().getSourceStart());
 
 		// 0 is length(t)-1
-		assertEquals(0, ((CtTargetedAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() - 
-				((CtTargetedAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
+		assertEquals(0, ((CtFieldAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() -
+				((CtFieldAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
 	}
 }
