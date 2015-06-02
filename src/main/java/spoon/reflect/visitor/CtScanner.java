@@ -369,6 +369,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(thisAccess);
 		scan(thisAccess.getType());
 		scanReferences(thisAccess.getTypeCasts());
+		scan(thisAccess.getTarget());
 		exit(thisAccess);
 	}
 

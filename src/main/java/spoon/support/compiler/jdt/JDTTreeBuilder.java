@@ -1264,14 +1264,24 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(QualifiedSuperReference qualifiedsuperReference,
-			BlockScope scope) {
+	public void endVisit(QualifiedSuperReference qualifiedsuperReference, BlockScope scope) {
 		context.exit(qualifiedsuperReference);
 	}
 
 	@Override
 	public void endVisit(SuperReference superReference, BlockScope scope) {
 		context.exit(superReference);
+	}
+
+	@Override
+	public void endVisit(QualifiedThisReference qualifiedThisReference, ClassScope scope) {
+		super.endVisit(qualifiedThisReference, scope);
+		context.exit(qualifiedThisReference);
+	}
+
+	@Override
+	public void endVisit(ThisReference thisReference, BlockScope scope) {
+		context.exit(thisReference);
 	}
 
 	@Override
@@ -1283,11 +1293,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public void endVisit(SynchronizedStatement synchronizedStatement,
 			BlockScope scope) {
 		context.exit(synchronizedStatement);
-	}
-
-	@Override
-	public void endVisit(ThisReference thisReference, BlockScope scope) {
-		context.exit(thisReference);
 	}
 
 	@Override
@@ -2492,12 +2497,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(QualifiedThisReference qualifiedThisReference,
-			BlockScope scope) {
-		return visit((ThisReference) qualifiedThisReference, scope);
-	}
-
-	@Override
 	public boolean visit(QualifiedTypeReference arg0, BlockScope arg1) {
 		if (skipTypeInAnnotation) {
 			return true;
@@ -2582,14 +2581,27 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public boolean visit(QualifiedThisReference qualifiedThisReference, BlockScope scope) {
+		final CtTypeReference<Object> typeRefOfThis = references.getTypeReference(qualifiedThisReference.qualification.resolvedType);
+		CtThisAccess<Object> thisAccess = factory.Core().createThisAccess();
+		thisAccess.setImplicit(qualifiedThisReference.isImplicitThis());
+		thisAccess.setType(typeRefOfThis);
+
+		CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(typeRefOfThis);
+		thisAccess.setTarget(typeAccess);
+
+		context.enter(thisAccess, qualifiedThisReference);
+		return true;
+	}
+
+	@Override
 	public boolean visit(ThisReference thisReference, BlockScope scope) {
-		CtThisAccess<Object> fa = factory.Core().createThisAccess();
-		fa.setImplicit(thisReference.isImplicitThis());
-		if (thisReference instanceof QualifiedThisReference) {
-			fa.setQualified(true);
-		}
-		fa.setType(references.getTypeReference(thisReference.resolvedType));
-		context.enter(fa, thisReference);
+		CtThisAccess<Object> thisAccess = factory.Core().createThisAccess();
+		thisAccess.setImplicit(thisReference.isImplicitThis());
+		thisAccess.setType(references.getTypeReference(thisReference.resolvedType));
+
+		context.enter(thisAccess, thisReference);
 		return true;
 	}
 

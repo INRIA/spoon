@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;

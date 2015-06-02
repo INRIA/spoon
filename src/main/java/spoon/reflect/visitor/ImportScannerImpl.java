@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;

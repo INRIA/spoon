@@ -69,26 +69,6 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testModelBuildingOuterThisAccesses() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses",
-				"InnerClassThisAccess");
-		assertEquals("InnerClassThisAccess", type.getSimpleName());
-
-		CtMethod<?> meth1 = type.getElements(
-				new NameFilter<CtMethod<?>>("method2")).get(0);
-		assertEquals(
-				"spoon.test.fieldaccesses.InnerClassThisAccess.this.method()",
-				meth1.getBody().getStatements().get(0).toString());
-
-		CtClass<?> c = type.getElements(
-				new NameFilter<CtClass<?>>("InnerClass")).get(0);
-		assertEquals("InnerClass", c.getSimpleName());
-		CtConstructor<?> ctr = c.getConstructor(type.getFactory().Type()
-				.createReference(boolean.class));
-		assertEquals("this.b = b", ctr.getBody().getLastStatement().toString());
-	}
-
-	@Test
 	public void testBCUBug20140402() throws Exception {
 		CtType<?> type = build("spoon.test.fieldaccesses",
 				"BCUBug20140402");
@@ -135,17 +115,5 @@ public class FieldAccessTest {
 		// 0 is length(t)-1
 		assertEquals(0, ((CtTargetedAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() - 
 				((CtTargetedAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
-	}
-
-	@Test
-	public void testTargetOfFieldAccess() throws Exception {
-		CtClass<?> type = build("spoon.test.fieldaccesses.testclasses", "Foo");
-		CtConstructor<?> constructor = type.getConstructors().toArray(new CtConstructor<?>[0])[0];
-
-		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
-		assertEquals(2, elements.size());
-
-		assertEquals("Target is CtThisAccessImpl if there is a 'this' explicit.", CtThisAccessImpl.class, elements.get(0).getTarget().getClass());
-		assertNull("Targets is null if there isn't a 'this' explicit.", elements.get(1).getTarget());
 	}
 }

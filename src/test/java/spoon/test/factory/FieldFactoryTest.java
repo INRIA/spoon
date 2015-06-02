@@ -43,7 +43,7 @@ public class FieldFactoryTest {
 	public void testCreateFromSource() throws Exception {
 
 		CtClass<?> target = build("spoon.test", "SampleClass");
-		CtClass<?> type = build("spoon.test.fieldaccesses.testclasses", "Foo");
+		CtClass<?> type = build("spoon.test.targeted.testclasses", "Foo");
 		CtField<?> source = type.getField("i");
 		FieldFactory ff = type.getFactory().Field();
 		TypeFactory tf = type.getFactory().Type();

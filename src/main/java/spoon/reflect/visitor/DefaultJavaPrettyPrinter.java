@@ -1032,10 +1032,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		enterCtExpression(thisAccess);
-		if (thisAccess.isQualified() && thisAccess.isImplicit()) {
+		if (thisAccess.getTarget() != null && thisAccess.isImplicit()) {
 			throw new RuntimeException("inconsistent this definition");
 		}
-		if (thisAccess.isQualified()) {
+		if (thisAccess.getTarget() != null) {
 			visitCtTypeReferenceWithoutGenerics(thisAccess.getType());
 			write(".");
 		}

@@ -490,6 +490,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtThisAccess(CtThisAccess<T> e) {
+		scanCtTargetedExpression(e);
 		scanCtExpression(e);
 		scanCtCodeElement(e);
 		scanCtTypedElement(e);

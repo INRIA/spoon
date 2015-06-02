@@ -1,4 +1,4 @@
-package spoon.test.fieldaccesses.testclasses;
+package spoon.test.targeted.testclasses;
 
 public class Foo {
 	private int i;
