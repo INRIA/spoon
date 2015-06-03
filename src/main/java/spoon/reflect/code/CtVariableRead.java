@@ -1,6 +1,6 @@
 /* 
  * Spoon - http://spoon.gforge.inria.fr/
- * Copyright (C) 2013 INRIA <nicolas.petitprez@inria.fr>
+ * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
  * 
  * This software is governed by the CeCILL-C License under French law and
  * abiding by the rules of distribution of free software. You can use, modify 
@@ -14,17 +14,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
+
 package spoon.reflect.code;
 
-import spoon.reflect.reference.CtFieldReference;
-
 /**
- * This code element defines an access to a annotation parameter variable.
+ * This code element defines an read access to a variable.
  *
  * @param <T>
- * 		Type of this field
+ * 		type of the variable
  */
-public interface CtAnnotationFieldAccess<T>
-		extends CtVariableRead<T>, CtTargetedExpression<T, CtExpression<?>> {
-	CtFieldReference<T> getVariable();
+public interface CtVariableRead<T> extends CtVariableAccess<T> {
 }

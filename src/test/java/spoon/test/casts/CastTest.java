@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
@@ -58,8 +58,8 @@ public class CastTest {
 								+ "}" + "};").compile();
 		CtMethod<?> foo = clazz.getElements(new NameFilter<CtMethod<?>>("foo"))
 				.get(0);
-		CtVariableAccess<?> a = (CtVariableAccess<?>) clazz.getElements(
-				new TypeFilter<>(CtVariableAccess.class)).get(0);
+		CtVariableRead<?> a = (CtVariableRead<?>) clazz.getElements(
+				new TypeFilter<>(CtVariableRead.class)).get(0);
 		assertEquals(1, a.getTypeCasts().size());
 		assertEquals("addConsumedAnnotationType(((java.lang.Class<A>)(x)))",
 				foo.getBody().getStatements().get(1).toString());

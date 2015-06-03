@@ -64,7 +64,9 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -291,14 +293,14 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
-		visitCtVariableAccess(f);
+		visitCtVariableRead(f);
 		scanCtTargetedAccess(f);
 		scanCtTargetedExpression(f);
 	}
 
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
 		scanCtTargetedAccess(f);
-		visitCtVariableAccess(f);
+		visitCtVariableRead(f);
 		scanCtTargetedExpression(f);
 	}
 
@@ -758,6 +760,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVisitable(e);
 	}
 
+	@Override
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> e) {
 		scanCtExpression(e);
 		scanCtCodeElement(e);
@@ -766,9 +769,18 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVisitable(e);
 	}
 
+	public <T> void visitCtVariableRead(CtVariableRead<T> e) {
+		visitCtVariableAccess(e);
+	}
+
+	@Override
+	public <T> void visitCtVariableWrite(CtVariableWrite<T> e) {
+		visitCtVariableAccess(e);
+	}
+
 	public <T> void visitCtAnnotationFieldAccess(
 			CtAnnotationFieldAccess<T> e) {
-		visitCtVariableAccess(e);
+		visitCtVariableRead(e);
 		scanCtTargetedExpression(e);
 	}
 

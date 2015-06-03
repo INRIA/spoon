@@ -35,6 +35,7 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtVariable;
@@ -298,20 +299,18 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a variable access.
 	 */
-	public <T> CtVariableAccess<T> createVariableAccess(
-			CtVariableReference<T> variable, boolean isStatic) {
-		CtVariableAccess<T> va;
+	public <T> CtVariableRead<T> createVariableRead(CtVariableReference<T> variable,
+													boolean isStatic) {
+		CtVariableRead<T> va;
 		if (variable instanceof CtFieldReference) {
 			va = factory.Core().createFieldAccess();
-			// creates a this target for non-static fields to avoid name
-			// conflicts...
+			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
-				((CtFieldAccess<T>) va)
-						.setTarget(createThisAccess(((CtFieldReference<T>) variable)
-								.getDeclaringType()));
+				((CtFieldAccess<T>) va).setTarget(
+						createThisAccess(((CtFieldReference<T>) variable).getDeclaringType()));
 			}
 		} else {
-			va = factory.Core().createVariableAccess();
+			va = factory.Core().createVariableRead();
 		}
 		va.setVariable(variable);
 		va.setType(variable.getType());
@@ -324,13 +323,11 @@ public class CodeFactory extends SubFactory {
 	 * @param variables
 	 *            the variables to be accessed
 	 */
-	public List<CtExpression<?>> createVariableAccesses(
-			List<? extends CtVariable<?>> variables) {
-		List<CtExpression<?>> result =
-				new ArrayList<CtExpression<?>>(variables.size());
+	public List<CtExpression<?>> createVariableReads(List<? extends CtVariable<?>> variables) {
+		List<CtExpression<?>> result = new ArrayList<CtExpression<?>>(variables.size());
 		for (CtVariable<?> v : variables) {
-			result.add(createVariableAccess(v.getReference(), v.getModifiers()
-					.contains(ModifierKind.STATIC)));
+			result.add(createVariableRead(v.getReference(), v.getModifiers()
+															 .contains(ModifierKind.STATIC)));
 		}
 		return result;
 	}
@@ -353,7 +350,7 @@ public class CodeFactory extends SubFactory {
 			CtExpression<T> expression) {
 		CtAssignment<A, T> va = factory.Core().createAssignment();
 		va.setAssignment(expression);
-		CtVariableAccess<A> vaccess = createVariableAccess(variable, isStatic);
+		CtVariableAccess<A> vaccess = createVariableRead(variable, isStatic);
 		va.setAssigned(vaccess);
 		return va;
 	}

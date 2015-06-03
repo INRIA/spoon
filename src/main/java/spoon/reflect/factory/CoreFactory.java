@@ -60,6 +60,8 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -403,7 +405,18 @@ public interface CoreFactory {
 	/**
 	 * Creates a variable access expression.
 	 */
+	@Deprecated
 	<T> CtVariableAccess<T> createVariableAccess();
+
+	/**
+	 * Creates a variable read expression.
+	 */
+	<T> CtVariableRead<T> createVariableRead();
+
+	/**
+	 * Creates a variable write expression.
+	 */
+	<T> CtVariableWrite<T> createVariableWrite();
 
 	/**
 	 * Creates a <code>while</code> loop.

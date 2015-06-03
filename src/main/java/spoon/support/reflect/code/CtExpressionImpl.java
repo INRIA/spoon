@@ -35,10 +35,6 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 
 	List<CtTypeReference<?>> typeCasts = EMPTY_LIST();
 
-	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
-	}
-
 	public CtTypeReference<T> getType() {
 		return type;
 	}

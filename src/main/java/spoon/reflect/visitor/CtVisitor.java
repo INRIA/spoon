@@ -59,7 +59,9 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -108,8 +110,7 @@ public interface CtVisitor {
 	/**
 	 * Visits an annotation type declaration.
 	 */
-	<A extends Annotation> void visitCtAnnotationType(
-			CtAnnotationType<A> annotationType);
+	<A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType);
 
 	/**
 	 * Visits an anonymous executable.
@@ -119,8 +120,7 @@ public interface CtVisitor {
 	/**
 	 * Visits an array access.
 	 */
-	<T, E extends CtExpression<?>> void visitCtArrayAccess(
-			CtArrayAccess<T, E> arrayAccess);
+	<T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess);
 
 	/**
 	 * Visits a reference to an array type.
@@ -295,7 +295,8 @@ public interface CtVisitor {
 	/**
 	 * Visits a reference to an executable.
 	 */
-	<T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression);
+	<T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
+			CtExecutableReferenceExpression<T, E> expression);
 
 	/**
 	 * Visits an operator assignment.
@@ -384,20 +385,28 @@ public interface CtVisitor {
 	<T> void visitCtUnaryOperator(CtUnaryOperator<T> operator);
 
 	/**
-	 * Visits a variable access.
+	 * Visits a variable access (read or write).
 	 */
 	<T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess);
+
+	/**
+	 * Visits a variable read access.
+	 */
+	<T> void visitCtVariableRead(CtVariableRead<T> variableRead);
+
+	/**
+	 * Visits a variable write access.
+	 */
+	<T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite);
 
 	/**
 	 * Visits a <code>while</code> loop.
 	 */
 	void visitCtWhile(CtWhile whileLoop);
 
-	<T> void visitCtAnnotationFieldAccess(
-			CtAnnotationFieldAccess<T> annotationFieldAccess);
+	<T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess);
 
 	<T> void visitCtFieldAccess(CtFieldAccess<T> f);
 
 	<T> void visitCtSuperAccess(CtSuperAccess<T> f);
-	
 }

@@ -40,7 +40,9 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -383,6 +385,16 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
+
+	}
+
+	@Override
+	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+
+	}
+
+	@Override
+	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
 
 	}
 

@@ -68,6 +68,8 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -136,6 +138,8 @@ import spoon.support.reflect.code.CtTryWithResourceImpl;
 import spoon.support.reflect.code.CtTypeAccessImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableAccessImpl;
+import spoon.support.reflect.code.CtVariableReadImpl;
+import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.SourcePositionImpl;
@@ -636,6 +640,18 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtVariableAccess<T> createVariableAccess() {
 		CtVariableAccess<T> e = new CtVariableAccessImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public <T> CtVariableRead<T> createVariableRead() {
+		CtVariableRead<T> e = new CtVariableReadImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public <T> CtVariableWrite<T> createVariableWrite() {
+		CtVariableWrite<T> e = new CtVariableWriteImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

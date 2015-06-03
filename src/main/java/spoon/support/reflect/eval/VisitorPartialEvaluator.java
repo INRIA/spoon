@@ -61,7 +61,9 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -99,7 +101,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.RtHelper;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -771,15 +772,23 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(operator.getFactory().Core().clone(operator));
 	}
 
+	@Override
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 		CtVariable<?> v = variableAccess.getVariable().getDeclaration();
-		// System.out.println("** "+variableAccess+" => "+v);
-		if ((v != null) && v.hasModifier(ModifierKind.FINAL)
-				&& (v.getDefaultExpression() != null)) {
+		if (v != null && v.hasModifier(ModifierKind.FINAL) && v.getDefaultExpression() != null) {
 			setResult(evaluate(v, v.getDefaultExpression()));
 		} else {
 			setResult(variableAccess.getFactory().Core().clone(variableAccess));
 		}
+	}
+
+	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+		visitCtVariableAccess(variableRead);
+	}
+
+	@Override
+	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
+		visitCtVariableAccess(variableWrite);
 	}
 
 	public <T, A extends T> void visitCtAssignment(

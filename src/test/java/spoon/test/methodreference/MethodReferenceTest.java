@@ -9,7 +9,7 @@ import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
@@ -67,7 +67,7 @@ public class MethodReferenceTest {
 
 		assertTypedBy(Comparator.class, reference.getType());
 		assertTargetedBy("myComparisonProvider", reference.getTarget());
-		assertTrue(reference.getTarget() instanceof CtVariableAccess);
+		assertTrue(reference.getTarget() instanceof CtVariableRead);
 		assertExecutableNamedBy("compareByName", reference.getExecutable());
 
 		assertIsWellPrinted(methodReference, reference);
@@ -80,7 +80,7 @@ public class MethodReferenceTest {
 
 		assertTypedBy(Comparator.class, reference.getType());
 		assertTargetedBy("tarzan.phone", reference.getTarget());
-		assertTrue(reference.getTarget() instanceof CtVariableAccess);
+		assertTrue(reference.getTarget() instanceof CtVariableRead);
 		assertExecutableNamedBy("compareByNumbers", reference.getExecutable());
 
 		assertIsWellPrinted(methodReference, reference);
