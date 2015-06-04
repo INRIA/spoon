@@ -17,8 +17,6 @@
 
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
@@ -38,6 +36,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -59,8 +59,8 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
@@ -85,6 +85,8 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+
+import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the visitor for the Spoon metamodel, as defined in
@@ -385,7 +387,7 @@ public interface CtVisitor {
 	<T> void visitCtUnaryOperator(CtUnaryOperator<T> operator);
 
 	/**
-	 * Visits a variable access (read or write).
+	 * Visits a variable access (read and write).
 	 */
 	<T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess);
 
@@ -406,7 +408,20 @@ public interface CtVisitor {
 
 	<T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess);
 
+	/**
+	 * Visits a field access (read and write).
+	 */
 	<T> void visitCtFieldAccess(CtFieldAccess<T> f);
+
+	/**
+	 * Visits a field read access.
+	 */
+	<T> void visitCtFieldRead(CtFieldRead<T> fieldRead);
+
+	/**
+	 * Visits a field write access.
+	 */
+	<T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite);
 
 	<T> void visitCtSuperAccess(CtSuperAccess<T> f);
 }

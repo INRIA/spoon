@@ -38,6 +38,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -433,7 +435,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				return;
 			}
 		}
-		if (fieldAccess.getFactory().Type().createReference(Enum.class).isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
+		if (fieldAccess.getFactory().Type().createReference(Enum.class)
+					   .isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
 			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
 			l.setValue(fieldAccess.getVariable());
 			setResult(l);
@@ -445,6 +448,16 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			return;
 		}
 		setResult(fieldAccess.getFactory().Core().clone(fieldAccess));
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		visitCtFieldAccess(fieldRead);
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visitCtFieldAccess(fieldWrite);
 	}
 
 	@Override

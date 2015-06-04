@@ -19,6 +19,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -404,8 +406,7 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	@Override
-	public <T> void visitCtAnnotationFieldAccess(
-			CtAnnotationFieldAccess<T> annotationFieldAccess) {
+	public <T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess) {
 
 	}
 
@@ -424,6 +425,16 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
+
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 
 	}
 

@@ -28,6 +28,7 @@ import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -35,7 +36,6 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtVariable;
@@ -93,7 +93,7 @@ public class CodeFactory extends SubFactory {
 	 * @return the class access expression.
 	 */
 	public <T> CtFieldAccess<Class<T>> createClassAccess(CtTypeReference<T> type) {
-		CtFieldAccess<Class<T>> ca = factory.Core().createFieldAccess();
+		CtFieldRead<Class<T>> ca = factory.Core().createFieldRead();
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		CtTypeReference<Class<T>> classType = (CtTypeReference) factory.Type()
 				.createReference(Class.class);
@@ -299,11 +299,11 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a variable access.
 	 */
-	public <T> CtVariableRead<T> createVariableRead(CtVariableReference<T> variable,
+	public <T> CtVariableAccess<T> createVariableRead(CtVariableReference<T> variable,
 													boolean isStatic) {
-		CtVariableRead<T> va;
+		CtVariableAccess<T> va;
 		if (variable instanceof CtFieldReference) {
-			va = factory.Core().createFieldAccess();
+			va = factory.Core().createFieldRead();
 			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
 				((CtFieldAccess<T>) va).setTarget(

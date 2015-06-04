@@ -3,7 +3,7 @@ package spoon.reflect.code;
 import spoon.reflect.reference.CtVariableReference;
 
 /**
- * This code element defines an access to a variable (access or write).
+ * This code element defines an access to a variable (read and write).
  *
  * @param <T>
  * 		type of the variable

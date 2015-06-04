@@ -46,6 +46,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -116,6 +118,8 @@ import spoon.support.reflect.code.CtContinueImpl;
 import spoon.support.reflect.code.CtDoImpl;
 import spoon.support.reflect.code.CtExecutableReferenceExpressionImpl;
 import spoon.support.reflect.code.CtFieldAccessImpl;
+import spoon.support.reflect.code.CtFieldReadImpl;
+import spoon.support.reflect.code.CtFieldWriteImpl;
 import spoon.support.reflect.code.CtForEachImpl;
 import spoon.support.reflect.code.CtForImpl;
 import spoon.support.reflect.code.CtIfImpl;
@@ -417,6 +421,20 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtFieldAccess<T> createFieldAccess() {
 		CtFieldAccess<T> e = new CtFieldAccessImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtFieldRead<T> createFieldRead() {
+		CtFieldRead<T> e = new CtFieldReadImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtFieldWrite<T> createFieldWrite() {
+		CtFieldWrite<T> e = new CtFieldWriteImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

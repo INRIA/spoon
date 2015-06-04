@@ -51,6 +51,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -1029,6 +1031,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.ignoreGenerics = false;
 		context.ignoreStaticAccess = false;
 		exitCtExpression(f);
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		visitCtFieldAccess(fieldRead);
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visitCtFieldAccess(fieldWrite);
 	}
 
 	@Override

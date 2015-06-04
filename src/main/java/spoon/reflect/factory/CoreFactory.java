@@ -38,6 +38,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -213,8 +215,18 @@ public interface CoreFactory {
 	/**
 	 * Creates a field access expression.
 	 */
+	@Deprecated
 	<T> CtFieldAccess<T> createFieldAccess();
-	
+
+	/**
+	 * Creates a field read access.
+	 */
+	<T> CtFieldRead<T> createFieldRead();
+
+	/**
+	 * Creates a field write access.
+	 */
+	<T> CtFieldWrite<T> createFieldWrite();
 
 	/**
 	 * Creates an access expression to this.

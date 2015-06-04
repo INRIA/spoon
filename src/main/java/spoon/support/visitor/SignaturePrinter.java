@@ -41,6 +41,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -620,6 +622,16 @@ public class SignaturePrinter implements CtVisitor {
 	@Override
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
 		scan(f.getVariable());
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		visitCtFieldAccess(fieldRead);
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visitCtFieldAccess(fieldWrite);
 	}
 
 	@Override

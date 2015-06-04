@@ -39,6 +39,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -296,6 +298,16 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		visitCtVariableRead(f);
 		scanCtTargetedAccess(f);
 		scanCtTargetedExpression(f);
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		visitCtFieldAccess(fieldRead);
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visitCtFieldAccess(fieldWrite);
 	}
 
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
