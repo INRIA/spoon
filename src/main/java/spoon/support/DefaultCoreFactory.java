@@ -29,6 +29,8 @@ import java.util.Stack;
 import spoon.Launcher;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -102,6 +104,8 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtAnnotationFieldAccesImpl;
 import spoon.support.reflect.code.CtArrayAccessImpl;
+import spoon.support.reflect.code.CtArrayReadImpl;
+import spoon.support.reflect.code.CtArrayWriteImpl;
 import spoon.support.reflect.code.CtAssertImpl;
 import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtBinaryOperatorImpl;
@@ -319,6 +323,20 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T, E extends CtExpression<?>> CtArrayAccess<T, E> createArrayAccess() {
 		CtArrayAccess<T, E> e = new CtArrayAccessImpl<T, E>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtArrayRead<T> createArrayRead() {
+		CtArrayRead<T> e = new CtArrayReadImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtArrayWrite<T> createArrayWrite() {
+		CtArrayWrite<T> e = new CtArrayWriteImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

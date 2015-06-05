@@ -1681,7 +1681,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayReference arrayReference, BlockScope scope) {
-		CtArrayAccess<?, ?> a = factory.Core().createArrayAccess();
+		CtArrayAccess<?, ?> a;
+		if (context.stack.peek().element instanceof CtAssignment) {
+			a = factory.Core().createArrayWrite();
+		} else {
+			a = factory.Core().createArrayRead();
+		}
 		context.enter(a, arrayReference);
 		arrayReference.receiver.traverse(this, scope);
 		context.arguments.push(a);

@@ -28,8 +28,7 @@ package spoon.reflect.code;
  * @param <E>
  *            Type of the target expression
  */
-public interface CtArrayAccess<T, E extends CtExpression<?>> extends
-		CtTargetedExpression<T, E> {
+public interface CtArrayAccess<T, E extends CtExpression<?>> extends CtTargetedExpression<T, E> {
 	/**
 	 * Sets the expression that defines the index.
 	 */

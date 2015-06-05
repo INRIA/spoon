@@ -1,6 +1,10 @@
 package spoon.test.variable;
 
 import org.junit.Test;
+import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
@@ -11,6 +15,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.test.TestUtils;
+import spoon.test.variable.testclasses.ArrayAccessSample;
 import spoon.test.variable.testclasses.FieldAccessSample;
 import spoon.test.variable.testclasses.VariableAccessSample;
 
@@ -54,7 +59,7 @@ public class AccessTest {
 									  }
 								  });
 
-		assertEquals(variablesRead.size() + variablesWrite.size(), variablesAccess.size());
+		assertEquals(3, variablesAccess.size());
 	}
 
 	@Test
@@ -92,6 +97,46 @@ public class AccessTest {
 									  }
 								  });
 
-		assertEquals(fieldsRead.size() + fieldsWrite.size(), fieldsAccess.size());
+		assertEquals(5, fieldsAccess.size());
+	}
+
+	@Test
+	public void testCanVisitArrayAccessAndSubClasses() throws Exception {
+		final Factory factory = TestUtils.build(ArrayAccessSample.class);
+
+		final List<CtArrayRead<?>> arraysRead =
+				Query.getElements(factory,
+								  new AbstractFilter<CtArrayRead<?>>(CtArrayRead.class) {
+									  @Override
+									  public boolean matches(CtArrayRead<?> element) {
+										  return super.matches(element);
+									  }
+								  });
+
+		assertEquals(1, arraysRead.size());
+
+		final List<CtArrayWrite<?>> arraysWrite =
+				Query.getElements(factory,
+								  new AbstractFilter<CtArrayWrite<?>>(CtArrayWrite.class) {
+									  @Override
+									  public boolean matches(CtArrayWrite<?> element) {
+										  return super.matches(element);
+									  }
+								  });
+
+		assertEquals(1, arraysWrite.size());
+
+		final List<CtArrayAccess<?, CtExpression<?>>> arraysAccess =
+				Query.getElements(factory,
+								  new AbstractFilter<CtArrayAccess<?, CtExpression<?>>>(
+										  CtArrayAccess.class) {
+									  @Override
+									  public boolean matches(
+											  CtArrayAccess<?, CtExpression<?>> element) {
+										  return super.matches(element);
+									  }
+								  });
+
+		assertEquals(2, arraysAccess.size());
 	}
 }

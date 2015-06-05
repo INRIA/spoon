@@ -21,6 +21,8 @@ import java.lang.annotation.Annotation;
 
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -130,7 +132,18 @@ public interface CoreFactory {
 	/**
 	 * Creates an array access expression.
 	 */
+	@Deprecated
 	<T, E extends CtExpression<?>> CtArrayAccess<T, E> createArrayAccess();
+
+	/**
+	 * Creates an array read access expression.
+	 */
+	<T> CtArrayRead<T> createArrayRead();
+
+	/**
+	 * Creates an array write access expression.
+	 */
+	<T> CtArrayWrite<T> createArrayWrite();
 
 	/**
 	 * Creates an array type reference.

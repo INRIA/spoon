@@ -22,6 +22,8 @@ import java.util.Collection;
 
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -225,6 +227,16 @@ public abstract class CtScanner implements CtVisitor {
 		scan(arrayAccess.getTarget());
 		scan(arrayAccess.getIndexExpression());
 		exit(arrayAccess);
+	}
+
+	@Override
+	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
+		visitCtArrayAccess(arrayRead);
+	}
+
+	@Override
+	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
+		visitCtArrayAccess(arrayWrite);
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
