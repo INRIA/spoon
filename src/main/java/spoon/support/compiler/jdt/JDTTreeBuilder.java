@@ -2556,13 +2556,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(QualifiedSuperReference qualifiedSuperReference,
-			BlockScope scope) {
+	public boolean visit(QualifiedSuperReference qualifiedSuperReference, BlockScope scope) {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		CtTypeReference<Object> typeRefOfSuper = references.getTypeReference(qualifiedSuperReference.qualification.resolvedType);
+		CtTypeReference<Object> typeRefOfSuper = references
+				.getTypeReference(qualifiedSuperReference.qualification.resolvedType);
 		final CtSuperAccess<Object> superAccess = factory.Core().createSuperAccess();
+
+		addVariableToSuperAccess(typeRefOfSuper, superAccess);
 
 		CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
 		typeAccess.setType(typeRefOfSuper);
@@ -2575,9 +2577,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(SuperReference superReference, BlockScope scope) {
 		final CtSuperAccess<Object> superAccess = factory.Core().createSuperAccess();
+		CtTypeReference<Object> ref = references.getTypeReference(superReference.resolvedType);
+		addVariableToSuperAccess(ref, superAccess);
 
 		context.enter(superAccess, superReference);
 		return super.visit(superReference, scope);
+	}
+
+	private void addVariableToSuperAccess(CtTypeReference<Object> ref,
+										  CtSuperAccess<Object> superAccess) {
+		// TODO This super field and the call to setVariable can be delete when we'll remove the
+		// deprecated methods in CtSuperAccess and its dependency to CtTargetedAccess.
+		final CtFieldReference<Object> superField = factory.Core().createFieldReference();
+		superField.setSimpleName("super");
+		superField.setDeclaringType(ref);
+		superField.setType(ref);
+		superAccess.setVariable(superField);
 	}
 
 	@Override
