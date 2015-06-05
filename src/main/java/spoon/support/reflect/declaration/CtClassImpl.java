@@ -132,12 +132,12 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	public void removeConstructor(CtConstructor<T> constructor) {
 		if (!constructors.isEmpty()) {
 			if (constructors.size() == 1) {
-                if (constructors.contains(constructor)) {
-                    constructors = CtElementImpl.<CtConstructor<T>>EMPTY_SET();
-                }
-            } else {
-                constructors.remove(constructor);
-            }
+				if (constructors.contains(constructor)) {
+					constructors = CtElementImpl.<CtConstructor<T>>EMPTY_SET();
+				}
+			} else {
+				constructors.remove(constructor);
+			}
 		}
 	}
 
