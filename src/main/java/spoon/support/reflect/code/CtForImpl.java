@@ -26,6 +26,9 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
 
@@ -76,7 +79,8 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 	@Override
 	public boolean addForInit(CtStatement statement) {
 		if (forInit == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			forInit = new ArrayList<CtStatement>();
+			forInit = new ArrayList<CtStatement>(
+					FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		return forInit.add(statement);
@@ -84,16 +88,15 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public boolean removeForInit(CtStatement statement) {
-		if (forInit == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			forInit = new ArrayList<CtStatement>();
-		}
-		return forInit.remove(statement);
+		return forInit != CtElementImpl.<CtStatement>EMPTY_LIST() &&
+				forInit.remove(statement);
 	}
 
 	@Override
 	public boolean addForUpdate(CtStatement statement) {
 		if (forUpdate == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			forUpdate = new ArrayList<CtStatement>();
+			forUpdate = new ArrayList<CtStatement>(
+					FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		return forUpdate.add(statement);
@@ -101,10 +104,8 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public boolean removeForUpdate(CtStatement statement) {
-		if (forUpdate == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			forUpdate = new ArrayList<CtStatement>();
-		}
-		return forUpdate.remove(statement);
+		return forUpdate != CtElementImpl.<CtStatement>EMPTY_LIST() &&
+				forUpdate.remove(statement);
 	}
 
 }

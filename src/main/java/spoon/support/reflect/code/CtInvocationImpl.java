@@ -31,6 +31,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtInvocationImpl<T> extends
 		CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
@@ -64,7 +66,8 @@ public class CtInvocationImpl<T> extends
 	@Override
 	public void addArgument(CtExpression<?> argument) {
 		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
-			arguments = new ArrayList<CtExpression<?>>();
+			arguments = new ArrayList<CtExpression<?>>(
+					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		argument.setParent(this);
 		arguments.add(argument);
@@ -72,10 +75,9 @@ public class CtInvocationImpl<T> extends
 
 	@Override
 	public void removeArgument(CtExpression<?> argument) {
-		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
-			arguments = new ArrayList<CtExpression<?>>();
+		if (arguments != CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+			arguments.remove(argument);
 		}
-		arguments.remove(argument);
 	}
 
 	public CtExecutableReference<T> getExecutable() {

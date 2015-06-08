@@ -34,6 +34,8 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
@@ -44,9 +46,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	public List<CtStatement> getStatements() {
-		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			this.statements = new ArrayList<CtStatement>();
-		}
+		ensureModifiableStatementsList();
 		return this.statements;
 	}
 
@@ -78,7 +78,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			}
 		}
 		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			this.statements = new ArrayList<CtStatement>();
+			this.statements = new ArrayList<CtStatement>(
+					statements.getStatements().size() +
+							BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.statements.addAll(0, statements.getStatements());
 	}
@@ -95,16 +97,12 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 				return;
 			}
 		}
-		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			this.statements = new ArrayList<CtStatement>();
-		}
+		ensureModifiableStatementsList();
 		this.statements.add(0, statement);
 	}
 
 	public void insertEnd(CtStatement statement) {
-		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			this.statements = new ArrayList<CtStatement>();
-		}
+		ensureModifiableStatementsList();
 		addStatement(statement);
 	}
 
@@ -163,19 +161,23 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public void addStatement(CtStatement statement) {
-		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			this.statements = new ArrayList<CtStatement>();
-		}
+		ensureModifiableStatementsList();
 		statement.setParent(this);
 		this.statements.add(statement);
 	}
 
+	private void ensureModifiableStatementsList() {
+		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements = new ArrayList<CtStatement>(
+					BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+		}
+	}
+
 	@Override
 	public void removeStatement(CtStatement statement) {
-		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			this.statements = new ArrayList<CtStatement>();
+		if (this.statements != CtElementImpl.<CtStatement> EMPTY_LIST()) {
+			this.statements.remove(statement);
 		}
-		this.statements.remove(statement);
 	}
 
 	@Override

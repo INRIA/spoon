@@ -24,6 +24,8 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * The implementation for {@link spoon.reflect.declaration.CtTypeParameter}.
  * 
@@ -43,15 +45,14 @@ public class CtTypeParameterImpl extends CtElementImpl implements
 
 	public boolean addBound(CtTypeReference<?> bound) {
 		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			bounds = new ArrayList<CtTypeReference<?>>();
+			bounds = new ArrayList<CtTypeReference<?>>(
+					TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		return this.bounds.add(bound);
 	}
 	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			bounds = new ArrayList<CtTypeReference<?>>();
-		}
-		return this.bounds.remove(bound);
+		return bounds != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+				this.bounds.remove(bound);
 	}
 	
 	public void accept(CtVisitor v) {

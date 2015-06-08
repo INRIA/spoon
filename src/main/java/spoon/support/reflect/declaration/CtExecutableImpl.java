@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * The implementation for {@link spoon.reflect.declaration.CtExecutable}.
  * 
@@ -74,7 +76,8 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	@Override
 	public boolean addParameter(CtParameter<?> parameter) {
 		if (parameters == CtElementImpl.<CtParameter<?>>EMPTY_LIST()) {
-			parameters = new ArrayList<CtParameter<?>>();
+			parameters = new ArrayList<CtParameter<?>>(
+					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		parameter.setParent(this);
 		return parameters.add(parameter);
@@ -82,7 +85,8 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public boolean removeParameter(CtParameter<?> parameter) {
-		return parameters.remove(parameter);
+		return parameters != CtElementImpl.<CtParameter<?>>EMPTY_LIST() &&
+				parameters.remove(parameter);
 	}
 
 	@Override

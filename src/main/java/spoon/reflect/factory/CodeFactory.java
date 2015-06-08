@@ -17,10 +17,7 @@
 
 package spoon.reflect.factory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
@@ -125,7 +122,8 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtInvocation<T> createInvocation(CtExpression<?> target,
 			CtExecutableReference<T> executable, CtExpression<?>... arguments) {
-		List<CtExpression<?>> ext = new ArrayList<CtExpression<?>>();
+		List<CtExpression<?>> ext =
+				new ArrayList<CtExpression<?>>(arguments.length);
 		for (CtExpression<?> arg : arguments) {
 			ext.add(arg);
 		}
@@ -328,7 +326,8 @@ public class CodeFactory extends SubFactory {
 	 */
 	public List<CtExpression<?>> createVariableAccesses(
 			List<? extends CtVariable<?>> variables) {
-		List<CtExpression<?>> result = new ArrayList<CtExpression<?>>();
+		List<CtExpression<?>> result =
+				new ArrayList<CtExpression<?>>(variables.size());
 		for (CtVariable<?> v : variables) {
 			result.add(createVariableAccess(v.getReference(), v.getModifiers()
 					.contains(ModifierKind.STATIC)));
@@ -396,7 +395,7 @@ public class CodeFactory extends SubFactory {
 	@SuppressWarnings("unchecked")
 	public <R extends CtReference, E extends CtNamedElement> List<R> getReferences(
 			List<E> elements) {
-		List<R> refs = new ArrayList<R>();
+		List<R> refs = new ArrayList<R>(elements.size());
 		for (E e : elements) {
 			refs.add((R) e.getReference());
 		}
@@ -411,7 +410,7 @@ public class CodeFactory extends SubFactory {
 	 * @return Set of given modifiers
 	 */
 	public Set<ModifierKind> modifiers(ModifierKind... modifiers) {
-		Set<ModifierKind> ret = new TreeSet<ModifierKind>();
+		Set<ModifierKind> ret = EnumSet.noneOf(ModifierKind.class);
 		for (ModifierKind m : modifiers)
 			ret.add(m);
 		return ret;

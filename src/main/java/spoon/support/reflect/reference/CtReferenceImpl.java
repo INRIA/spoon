@@ -30,6 +30,7 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -130,10 +131,15 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 	public String getSimpleName() {
 		return simplename;
 	}
+	
+
 
 	public void setSimpleName(String simplename) {
 		if (simplename.contains("?"))
 			throw new RuntimeException("argl");
+		Factory factory = getFactory();
+		if (factory instanceof FactoryImpl)
+			simplename = ((FactoryImpl) factory).dedup(simplename);
 		this.simplename = simplename;
 	}
 

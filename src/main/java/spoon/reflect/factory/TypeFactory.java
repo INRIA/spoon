@@ -274,7 +274,8 @@ public class TypeFactory extends SubFactory {
 	 * Creates a collection of type references from a collection of classes.
 	 */
 	public List<CtTypeReference<?>> createReferences(List<Class<?>> classes) {
-		List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>();
+		List<CtTypeReference<?>> refs =new ArrayList<CtTypeReference<?>>(
+				classes.size());
 		for (Class<?> c : classes) {
 			refs.add(createReference(c));
 		}

@@ -13,11 +13,14 @@ import spoon.reflect.cu.Import;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
+
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	Factory factory;
 
-	List<CtType<?>> declaredTypes = new ArrayList<CtType<?>>();
+	List<CtType<?>> declaredTypes = new ArrayList<CtType<?>>(
+			COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
 
 	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;

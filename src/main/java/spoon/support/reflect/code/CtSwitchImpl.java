@@ -26,6 +26,8 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	private static final long serialVersionUID = 1L;
 
@@ -60,7 +62,8 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	@Override
 	public boolean addCase(CtCase<? super S> c) {
 		if (cases == CtElementImpl.<CtCase<? super S>> EMPTY_LIST()) {
-			cases = new ArrayList<CtCase<? super S>>();
+			cases = new ArrayList<CtCase<? super S>>(
+					SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		c.setParent(this);
 		return cases.add(c);
@@ -68,10 +71,8 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 
 	@Override
 	public boolean removeCase(CtCase<? super S> c) {
-		if (cases == CtElementImpl.<CtCase<? super S>> EMPTY_LIST()) {
-			return false;
-		}
-		return cases.remove(c);
+		return cases != CtElementImpl.<CtCase<? super S>>EMPTY_LIST() &&
+				cases.remove(c);
 	}
 
 }

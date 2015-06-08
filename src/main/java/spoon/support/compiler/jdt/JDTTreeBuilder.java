@@ -17,15 +17,7 @@
 
 package spoon.support.compiler.jdt;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -142,6 +134,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -214,6 +207,8 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * A visitor for iterating through the parse tree.
  */
@@ -245,7 +240,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		Stack<CtElement> arguments = new Stack<CtElement>();
 
-		List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>();
+		List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>(
+				CASTS_CONTAINER_DEFAULT_CAPACITY);
 
 		CompilationUnitDeclaration compilationunitdeclaration;
 
@@ -383,7 +379,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			// original() method returns a result not null when the current method is generic.
 			if (exec.original() != null) {
-				final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>();
+				final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>(
+						exec.original().parameters.length);
 				for (TypeBinding b : exec.original().parameters) {
 					parameters.add(getTypeReference(b));
 				}
@@ -693,7 +690,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		public List<CtTypeReference<?>> getBoundedTypesReferences(
 				TypeBinding[] genericTypeArguments) {
-			List<CtTypeReference<?>> res = new ArrayList<CtTypeReference<?>>();
+			List<CtTypeReference<?>> res = new ArrayList<CtTypeReference<?>>(
+					genericTypeArguments.length);
 			for (TypeBinding tb : genericTypeArguments) {
 				res.add(getBoundedTypeReference(tb));
 			}
@@ -730,7 +728,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	public static Set<ModifierKind> getModifiers(int mod) {
-		Set<ModifierKind> ret = new TreeSet<ModifierKind>();
+		Set<ModifierKind> ret = EnumSet.noneOf(ModifierKind.class);
 		if ((mod & ClassFileConstants.AccPublic) != 0)
 			ret.add(ModifierKind.PUBLIC);
 		if ((mod & ClassFileConstants.AccPrivate) != 0)
@@ -1406,7 +1404,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	protected <T> CtLocalVariable<T> getLocalVariableDeclaration(
 			final String name) {
-		List<CtElement> reversedElements = new ArrayList<CtElement>();
+		List<CtElement> reversedElements = new ArrayList<CtElement>(
+				context.stack.size());
 		for (ASTPair element : context.stack) {
 			reversedElements.add(0, element.element);
 		}
@@ -1436,7 +1435,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	protected <T> CtCatchVariable<T> getCatchVariableDeclaration(
 			final String name) {
-		List<CtElement> reversedElements = new ArrayList<CtElement>();
+		List<CtElement> reversedElements = new ArrayList<CtElement>(
+				context.stack.size());
 		for (ASTPair element : context.stack) {
 			reversedElements.add(0, element.element);
 		}
@@ -2626,7 +2626,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		op.setKind(BinaryOperatorKind.PLUS);
 		context.enter(op, literal);
 
-		List<Expression> exp = new ArrayList<Expression>();
+		List<Expression> exp = new ArrayList<Expression>(literal.counter);
 		for (int i = 0; i < literal.counter; i++)
 			exp.add(literal.literals[i]);
 
@@ -2742,7 +2742,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				else if (jdtCatch.type instanceof UnionTypeReference) { 
 					UnionTypeReference utr = (UnionTypeReference)jdtCatch.type;
 
-					final List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>();
+					final List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>(
+							utr.typeReferences.length);
 					for (TypeReference type : utr.typeReferences) {
 						CtTypeReference<Throwable> r = references.getTypeReference(type.resolvedType);
 						refs.add(r);

@@ -25,6 +25,8 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 		CtNewArray<T> {
 	private static final long serialVersionUID = 1L;
@@ -57,7 +59,8 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 	public boolean addDimensionExpression(CtExpression<Integer> dimension) {
 		if (dimensionExpressions == CtElementImpl
 				.<CtExpression<Integer>> EMPTY_LIST()) {
-			dimensionExpressions = new ArrayList<CtExpression<Integer>>();
+			dimensionExpressions = new ArrayList<CtExpression<Integer>>(
+					NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		dimension.setParent(this);
 		return dimensionExpressions.add(dimension);
@@ -65,11 +68,9 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 
 	@Override
 	public boolean removeDimensionExpression(CtExpression<Integer> dimension) {
-		if (dimensionExpressions == CtElementImpl
-				.<CtExpression<Integer>> EMPTY_LIST()) {
-			dimensionExpressions = new ArrayList<CtExpression<Integer>>();
-		}
-		return dimensionExpressions.remove(dimension);
+		return dimensionExpressions !=
+				CtElementImpl.<CtExpression<Integer>>EMPTY_LIST() &&
+				dimensionExpressions.remove(dimension);
 	}
 
 	public void setElements(List<CtExpression<?>> expressions) {
@@ -90,10 +91,8 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 
 	@Override
 	public boolean removeElement(CtExpression<?> expression) {
-		if (expressions == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
-			return false;
-		}
-		return expressions.remove(expression);
+		return expressions != CtElementImpl.<CtExpression<?>>EMPTY_LIST() &&
+				expressions.remove(expression);
 	}
 
 

@@ -38,6 +38,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
  * 
@@ -85,18 +87,17 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	public boolean addAnonymousExecutable(CtAnonymousExecutable e) {
 		if (anonymousExecutables == CtElementImpl
 				.<CtAnonymousExecutable> EMPTY_LIST()) {
-			anonymousExecutables = new ArrayList<CtAnonymousExecutable>();
+			anonymousExecutables = new ArrayList<CtAnonymousExecutable>(
+					ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		e.setParent(this);
 		return anonymousExecutables.add(e);
 	}
 
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
-		if (anonymousExecutables == CtElementImpl
-				.<CtAnonymousExecutable> EMPTY_LIST()) {
-			anonymousExecutables = new ArrayList<CtAnonymousExecutable>();
-		}
-		return anonymousExecutables.remove(e);
+		return anonymousExecutables !=
+				CtElementImpl.<CtAnonymousExecutable>EMPTY_LIST() &&
+				anonymousExecutables.remove(e);
 	}
 
 	@Override
@@ -129,10 +130,15 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 
 	@Override
 	public void removeConstructor(CtConstructor<T> constructor) {
-		if (constructors == CtElementImpl.<CtConstructor<T>> EMPTY_SET()) {
-			constructors = new TreeSet<CtConstructor<T>>();
+		if (!constructors.isEmpty()) {
+			if (constructors.size() == 1) {
+				if (constructors.contains(constructor)) {
+					constructors = CtElementImpl.<CtConstructor<T>>EMPTY_SET();
+				}
+			} else {
+				constructors.remove(constructor);
+			}
 		}
-		constructors.remove(constructor);
 	}
 
 	public void setSuperclass(CtTypeReference<?> superClass) {
@@ -199,7 +205,11 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 	
 	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
-		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(super.getDeclaredExecutables());
+		Collection<CtExecutableReference<?>> declaredExecutables =
+				super.getDeclaredExecutables();
+		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(
+				declaredExecutables.size() + getConstructors().size());
+		l.addAll(declaredExecutables);
 		for (CtExecutable<?> c : getConstructors()) {
 			l.add(c.getReference());
 		}

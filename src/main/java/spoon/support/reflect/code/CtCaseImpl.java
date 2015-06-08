@@ -27,6 +27,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private static final long serialVersionUID = 1L;
 
@@ -61,7 +63,8 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	@Override
 	public void addStatement(CtStatement statement) {
 		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			statements = new ArrayList<CtStatement>();
+			statements = new ArrayList<CtStatement>(
+					CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		statements.add(statement);
