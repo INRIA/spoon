@@ -54,7 +54,6 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -423,40 +422,28 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	@Override
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
-		visitCtTargetedAccess(f);
-	}
-
-	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-		if (targetedAccess.getVariable().getSimpleName().equals("class")) {
-			Class<?> c = targetedAccess.getVariable().getDeclaringType()
-					.getActualClass();
+	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
+		if (fieldAccess.getVariable().getSimpleName().equals("class")) {
+			Class<?> c = fieldAccess.getVariable().getDeclaringType().getActualClass();
 			if (c != null) {
-				CtLiteral<Class<?>> l = targetedAccess.getFactory().Core()
-						.createLiteral();
+				CtLiteral<Class<?>> l = fieldAccess.getFactory().Core().createLiteral();
 				l.setValue(c);
 				setResult(l);
 				return;
 			}
 		}
-		if (targetedAccess
-				.getFactory()
-				.Type()
-				.createReference(Enum.class)
-				.isAssignableFrom(
-						targetedAccess.getVariable().getDeclaringType())) {
-			CtLiteral<CtFieldReference<?>> l = targetedAccess.getFactory()
-					.Core().createLiteral();
-			l.setValue(targetedAccess.getVariable());
+		if (fieldAccess.getFactory().Type().createReference(Enum.class).isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
+			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
+			l.setValue(fieldAccess.getVariable());
 			setResult(l);
 			return;
 		}
-		CtField<?> f = targetedAccess.getVariable().getDeclaration();
+		CtField<?> f = fieldAccess.getVariable().getDeclaration();
 		if ((f != null) && f.getModifiers().contains(ModifierKind.FINAL)) {
 			setResult(evaluate(f, f.getDefaultExpression()));
 			return;
 		}
-		setResult(targetedAccess.getFactory().Core().clone(targetedAccess));
+		setResult(fieldAccess.getFactory().Core().clone(fieldAccess));
 	}
 
 	@Override
@@ -850,6 +837,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	@Override
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-		visitCtTargetedAccess(f);
+		setResult(f.getFactory().Core().clone(f));
 	}
 }

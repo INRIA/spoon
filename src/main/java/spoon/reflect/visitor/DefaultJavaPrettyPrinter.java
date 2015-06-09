@@ -1032,10 +1032,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		enterCtExpression(thisAccess);
-		if (thisAccess.isQualified() && thisAccess.isImplicit()) {
+		if (thisAccess.getTarget() != null && thisAccess.isImplicit()) {
 			throw new RuntimeException("inconsistent this definition");
 		}
-		if (thisAccess.isQualified()) {
+		if (thisAccess.getTarget() != null) {
 			visitCtTypeReferenceWithoutGenerics(thisAccess.getType());
 			write(".");
 		}
@@ -1043,6 +1043,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("this");
 		}
 		exitCtExpression(thisAccess);
+	}
+
+	@Override
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+		enterCtExpression(f);
+		if (f.getTarget() != null) {
+			scan(f.getTarget());
+			write(".");
+		}
+		write("super");
+
+		exitCtExpression(f);
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(
@@ -2238,23 +2250,5 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtUnboundVariableReference(
 			CtUnboundVariableReference<T> reference) {
 		write(reference.getSimpleName());
-	}
-
-	@Override
-	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-
-		enterCtExpression(f);
-		if (f.getTarget() != null) {
-			scan(f.getTarget());
-			write(".");
-			context.ignoreStaticAccess = true;
-		}
-		context.ignoreGenerics = true;
-		scan(f.getVariable());
-
-		context.ignoreGenerics = false;
-		context.ignoreStaticAccess = false;
-		exitCtExpression(f);
-
 	}
 }

@@ -1,28 +1,17 @@
 package spoon.test.fieldaccesses;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static spoon.test.TestUtils.build;
+import org.junit.Test;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtTargetedAccess;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.code.CtThisAccessImpl;
+import static org.junit.Assert.assertEquals;
+import static spoon.test.TestUtils.build;
 
 public class FieldAccessTest {
 
@@ -75,54 +64,6 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testModelBuildingOuterThisAccesses() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses",
-				"InnerClassThisAccess");
-		assertEquals("InnerClassThisAccess", type.getSimpleName());
-
-		CtMethod<?> meth1 = type.getElements(
-				new NameFilter<CtMethod<?>>("method2")).get(0);
-		assertEquals(
-				"spoon.test.fieldaccesses.InnerClassThisAccess.this.method()",
-				meth1.getBody().getStatements().get(0).toString());
-
-		CtClass<?> c = type.getElements(
-				new NameFilter<CtClass<?>>("InnerClass")).get(0);
-		assertEquals("InnerClass", c.getSimpleName());
-		CtConstructor<?> ctr = c.getConstructor(type.getFactory().Type()
-				.createReference(boolean.class));
-		assertEquals("this.b = b", ctr.getBody().getLastStatement().toString());
-	}
-
-	@Test
-	public void testModelBuildingOuterSuperAccesses() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses",
-				"InternalSuperCall");
-		assertEquals("InternalSuperCall", type.getSimpleName());
-
-		CtMethod<?> meth0 = type.getElements(
-				new NameFilter<CtMethod<?>>("methode")).get(0);
-		assertEquals(
-				"spoon.test.fieldaccesses.InternalSuperCall.super.toString()",
-				meth0.getBody().getStatements().get(0).toString());
-	}
-
-	@Test
-	public void testTargetOfSuperAccesses() throws Exception {
-		final Factory factory = build(InternalSuperCall.class);
-		final CtClass<?> ctClass = factory.Class().get(InternalSuperCall.class);
-		final List<CtSuperAccess> superAccesses = ctClass.getElements(new AbstractFilter<CtSuperAccess>(CtSuperAccess.class) {
-			@Override
-			public boolean matches(CtSuperAccess element) {
-				return super.matches(element);
-			}
-		});
-		assertEquals(2, superAccesses.size());
-		assertNull(superAccesses.get(0).getTarget());
-		assertNotNull(superAccesses.get(1).getTarget());
-	}
-
-	@Test
 	public void testBCUBug20140402() throws Exception {
 		CtType<?> type = build("spoon.test.fieldaccesses",
 				"BCUBug20140402");
@@ -167,19 +108,7 @@ public class FieldAccessTest {
 		assertEquals(3, vars.get(0).getTarget().getPosition().getSourceEnd() - vars.get(0).getTarget().getPosition().getSourceStart());
 
 		// 0 is length(t)-1
-		assertEquals(0, ((CtTargetedAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() - 
-				((CtTargetedAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
-	}
-
-	@Test
-	public void testTargetOfFieldAccess() throws Exception {
-		CtClass<?> type = build("spoon.test.fieldaccesses.testclasses", "Foo");
-		CtConstructor<?> constructor = type.getConstructors().toArray(new CtConstructor<?>[0])[0];
-
-		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
-		assertEquals(2, elements.size());
-
-		assertEquals("Target is CtThisAccessImpl if there is a 'this' explicit.", CtThisAccessImpl.class, elements.get(0).getTarget().getClass());
-		assertNull("Targets is null if there isn't a 'this' explicit.", elements.get(1).getTarget());
+		assertEquals(0, ((CtFieldAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() -
+				((CtFieldAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
 	}
 }

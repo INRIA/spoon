@@ -21,9 +21,9 @@ import spoon.reflect.reference.CtFieldReference;
 
 /**
  * This code element defines an access to a field variable.
- * 
+ *
  * @param <T>
- *            Type of this field
+ * 		Type of this field
  */
 public interface CtFieldAccess<T> extends CtTargetedAccess<T> {
 	CtFieldReference<T> getVariable();

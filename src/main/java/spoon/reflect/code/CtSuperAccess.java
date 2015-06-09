@@ -17,12 +17,19 @@
 
 package spoon.reflect.code;
 
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtVariableReference;
 
 /**
  * This code element defines an access to super.
- * 
+ *
  * @param <T>
- *            Type of super
+ * 		Type of super
  */
 public interface CtSuperAccess<T> extends CtTargetedAccess<T> {
+	@Deprecated
+	CtFieldReference<T> getVariable();
+
+	@Deprecated
+	void setVariable(CtVariableReference<T> variable);
 }

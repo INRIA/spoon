@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
@@ -51,18 +50,6 @@ public class TypeReferenceScanner extends CtScanner {
 	 */
 	private <T> boolean addReference(CtTypeReference<T> ref) {
 		return references.add(ref);
-	}
-
-	@Override
-	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-		enter(f);
-		scan(f.getVariable());
-		// scan(fieldAccess.getType());
-		scan(f.getAnnotations());
-		scanReferences(f.getTypeCasts());
-		scan(f.getVariable());
-		scan(f.getTarget());
-		exit(f);
 	}
 
 	@Override

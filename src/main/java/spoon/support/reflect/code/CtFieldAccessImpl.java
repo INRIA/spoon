@@ -17,17 +17,39 @@
 
 package spoon.support.reflect.code;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtFieldAccessImpl<T> extends CtTargetedAccessImpl<T> implements
-		CtFieldAccess<T> {
+public class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> implements CtFieldAccess<T> {
 
 	private static final long serialVersionUID = 1L;
+
+	CtExpression<?> target;
 
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtFieldAccess(this);
 	}
 
+	public CtExpression<?> getTarget() {
+		return target;
+	}
+
+	@Override
+	public CtFieldReference<T> getVariable() {
+		return (CtFieldReference<T>) super.getVariable();
+	}
+
+	@Override
+	public void setVariable(CtVariableReference<T> variable) {
+		super.setVariable(variable);
+	}
+
+	public void setTarget(CtExpression<?> target) {
+		target.setParent(this);
+		this.target = target;
+	}
 }

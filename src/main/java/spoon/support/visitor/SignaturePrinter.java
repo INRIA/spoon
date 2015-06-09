@@ -57,7 +57,6 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -278,10 +277,6 @@ public class SignaturePrinter implements CtVisitor {
 	public <T> void visitCtField(CtField<T> f) {
 		scan(f.getType());
 		write(" ").write(f.getSimpleName());
-	}
-
-	public <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-		scan(targetedAccess.getVariable());
 	}
 
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
@@ -617,6 +612,6 @@ public class SignaturePrinter implements CtVisitor {
 
 	@Override
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-		scan(f.getVariable());
+		write(f.getType().getQualifiedName() + ".super");
 	}
 }

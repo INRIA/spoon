@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -31,18 +30,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
-		enter(f);
-		scan(f.getVariable());
-		// scan(fieldAccess.getType());
-		scan(f.getAnnotations());
-		scanReferences(f.getTypeCasts());
-		scan(f.getVariable());
-		scan(f.getTarget());
-		exit(f);
-	}
-
-	@Override
-	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
 		enter(f);
 		scan(f.getVariable());
 		// scan(fieldAccess.getType());

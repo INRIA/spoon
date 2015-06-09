@@ -35,8 +35,6 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
-import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -257,32 +255,22 @@ public class SubstitutionVisitor extends CtScanner {
 			super.visitCtForEach(foreach);
 		}
 
-		@Override
-		public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
-			visitCtTargetedAccess(f);
-		}
-
-		@Override
-		public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-			visitCtTargetedAccess(f);
-		}
-
 		/**
 		 * Replaces direct field parameter accesses.
 		 */
-		@SuppressWarnings("unchecked")
-		private <T> void visitCtTargetedAccess(CtTargetedAccess<T> targetedAccess) {
-			CtFieldReference<?> ref = targetedAccess.getVariable();
+		@Override
+		public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
+			CtFieldReference<?> ref = fieldAccess.getVariable();
 			if ("length".equals(ref.getSimpleName())) {
-				if (targetedAccess.getTarget() instanceof CtFieldAccess) {
-					ref = ((CtFieldAccess<?>) targetedAccess.getTarget())
+				if (fieldAccess.getTarget() instanceof CtFieldAccess) {
+					ref = ((CtFieldAccess<?>) fieldAccess.getTarget())
 							.getVariable();
 					if (Parameters.isParameterSource(ref)) {
 						Object[] value = (Object[]) Parameters.getValue(
 								template, ref.getSimpleName(), null);
-						targetedAccess.replace(targetedAccess.getFactory()
+						fieldAccess.replace(fieldAccess.getFactory()
 								.Code().createLiteral(value.length));
-						throw new SkipException(targetedAccess);
+						throw new SkipException(fieldAccess);
 					}
 				}
 			}
@@ -290,10 +278,10 @@ public class SubstitutionVisitor extends CtScanner {
 				// replace direct field parameter accesses
 				Object value = Parameters.getValue(template,
 						ref.getSimpleName(),
-						Parameters.getIndex(targetedAccess));
-				CtElement toReplace = targetedAccess;
-				if (targetedAccess.getParent() instanceof CtArrayAccess) {
-					toReplace = targetedAccess.getParent();
+						Parameters.getIndex(fieldAccess));
+				CtElement toReplace = fieldAccess;
+				if (fieldAccess.getParent() instanceof CtArrayAccess) {
+					toReplace = fieldAccess.getParent();
 				}
 				if (!(value instanceof TemplateParameter)) {
 					if (value instanceof Class) {
@@ -312,13 +300,13 @@ public class SubstitutionVisitor extends CtScanner {
 						List<CtParameter<?>> l = (List<CtParameter<?>>) value;
 						List<CtExpression<?>> vas = factory.Code()
 								.createVariableAccesses(l);
-						CtAbstractInvocation<?> inv = (CtAbstractInvocation<?>) targetedAccess
+						CtAbstractInvocation<?> inv = (CtAbstractInvocation<?>) fieldAccess
 								.getParent();
-						int i = inv.getArguments().indexOf(targetedAccess);
+						int i = inv.getArguments().indexOf(fieldAccess);
 						inv.getArguments().remove(i);
 						inv.getExecutable().getActualTypeArguments().remove(i);
 						for (CtExpression<?> va : vas) {
-							va.setParent(targetedAccess.getParent());
+							va.setParent(fieldAccess.getParent());
 							inv.getArguments().add(i, va);
 							inv.getExecutable().getActualTypeArguments()
 									.add(i, va.getType());
@@ -334,7 +322,7 @@ public class SubstitutionVisitor extends CtScanner {
 					factory.Core().clone(toReplace);
 				}
 				// do not visit if replaced
-				throw new SkipException(targetedAccess);
+				throw new SkipException(fieldAccess);
 			}
 		}
 

@@ -1,4 +1,4 @@
-package spoon.test.fieldaccesses;
+package spoon.test.targeted.testclasses;
 
 public class InternalSuperCall{
 
