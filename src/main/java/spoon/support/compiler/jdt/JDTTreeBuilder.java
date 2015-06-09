@@ -161,6 +161,7 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -1680,7 +1681,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayReference arrayReference, BlockScope scope) {
-		CtArrayAccess<?, ?> a = factory.Core().createArrayAccess();
+		CtArrayAccess<?, ?> a;
+		if (context.stack.peek().element instanceof CtAssignment) {
+			a = factory.Core().createArrayWrite();
+		} else {
+			a = factory.Core().createArrayRead();
+		}
 		context.enter(a, arrayReference);
 		arrayReference.receiver.traverse(this, scope);
 		context.arguments.push(a);
@@ -1773,20 +1779,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ClassLiteralAccess classLiteral, BlockScope scope) {
-		CtTypeReference<Class<Object>> ref = references
-				.getTypeReference(classLiteral.targetType);
-		CtFieldReference<Class<Object>> fr = factory.Core()
-				.createFieldReference();
+		CtTypeReference<Class<Object>> ref = references.getTypeReference(classLiteral.targetType);
+		CtFieldReference<Class<Object>> fr = factory.Core().createFieldReference();
 		fr.setSimpleName("class");
 		fr.setType(ref);
 		fr.setDeclaringType(ref);
 
-		CtFieldAccess<Class<Object>> fa = factory.Core().createFieldAccess();
+		CtFieldRead<Class<Object>> fa = factory.Core().createFieldRead();
 		fa.setType(ref);
 		fa.setVariable(fr);
 
 		context.enter(fa, classLiteral);
-
 		return true;
 	}
 
@@ -1978,13 +1981,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(FieldReference fieldReference, BlockScope scope) {
-		CtFieldAccess<Object> acc = factory.Core().createFieldAccess();
+		CtFieldAccess<Object> fieldAccess;
+		if (context.stack.peek().element instanceof CtAssignment) {
+			fieldAccess = factory.Core().createFieldWrite();
+		} else {
+			fieldAccess = factory.Core().createFieldRead();
+		}
 		CtFieldReference<Object> variableReference = references.getVariableReference(fieldReference.binding);
 		if (variableReference.getSimpleName()==null) {
 			variableReference.setSimpleName(new String(fieldReference.token));
 		}
-		acc.setVariable(variableReference);
-		acc.setType(references.getTypeReference(fieldReference.resolvedType));
+		fieldAccess.setVariable(variableReference);
+		fieldAccess.setType(references.getTypeReference(fieldReference.resolvedType));
 
 		// Hmmm Maybe this should not be commented, but I cannot see why we need
 		// it.
@@ -2000,9 +2008,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// acc.getVariable().setDeclaringType(
 		// references.getTypeReference(fieldReference.receiverType));
 		// }
-		context.enter(acc, fieldReference);
+		context.enter(fieldAccess, fieldReference);
 
-		context.target.push(acc);
+		context.target.push(fieldAccess);
 		fieldReference.receiver.traverse(this, scope);
 		context.target.pop();
 		return false;
@@ -2400,11 +2408,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(QualifiedNameReference qualifiedNameReference,
-			BlockScope scope) {
+	public boolean visit(QualifiedNameReference qualifiedNameReference, BlockScope scope) {
 		long[] positions = qualifiedNameReference.sourcePositions;
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
-			CtFieldAccess<Object> fa = factory.Core().createFieldAccess();
+			CtFieldAccess<Object> fa;
+			if (context.stack.peek().element instanceof CtAssignment) {
+				fa = factory.Core().createFieldWrite();
+			} else {
+				fa = factory.Core().createFieldRead();
+			}
 
 			CtFieldReference<Object> ref = references.getVariableReference(
 					qualifiedNameReference.fieldBinding());
@@ -2414,11 +2426,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			if (qualifiedNameReference.otherBindings != null){
 				int i = 0; //positions index;
-			int sourceStart = (int)(positions[0] >>> 32);
-			for (FieldBinding b : qualifiedNameReference.otherBindings) {
+				int sourceStart = (int)(positions[0] >>> 32);
+				for (FieldBinding b : qualifiedNameReference.otherBindings) {
 					if (b != null) {
-						CtFieldAccess<Object> other = factory.Core()
-								.createFieldAccess();
+						CtFieldRead<Object> other = factory.Core().createFieldRead();
 						other.setVariable(references.getVariableReference(b));
 						other.setTarget(fa);
 						//set source position of fa;
@@ -2431,7 +2442,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 										sourceStart,
 										sourceEnd,
 										context.compilationunitdeclaration.compilationResult.lineSeparatorPositions));
-						
+
 						fa = other;
 						i++;
 					}
@@ -2440,41 +2451,43 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(fa, qualifiedNameReference);
 			return true;
 		} else if (qualifiedNameReference.binding instanceof VariableBinding) {
-			CtVariableAccess<Object> va = factory.Core().createVariableAccess();
+			CtVariableAccess<Object> va = null;
+			if (context.stack.peek().element instanceof CtAssignment) {
+				va = factory.Core().createVariableWrite();
+			} else {
+				va = factory.Core().createVariableRead();
+			}
 			va.setVariable(references
 					.getVariableReference((VariableBinding) qualifiedNameReference.binding));
 			va.setType(va.getVariable().getType());
 			if (qualifiedNameReference.otherBindings != null) {
 				int i = 0; //positions index;
-				int sourceStart = (int)(positions[0] >>> 32);
+				int sourceStart = (int) (positions[0] >>> 32);
 				for (FieldBinding b : qualifiedNameReference.otherBindings) {
-					CtFieldAccess<Object> fa = factory.Core()
-							.createFieldAccess();
+					CtFieldRead<Object> fa = factory.Core().createFieldRead();
 					fa.setTarget(va);
-					CtVariableReference<Object> varRef = references
-							.getVariableReference(b);
+					CtVariableReference<Object> varRef = references.getVariableReference(b);
 					if (varRef != null) {
 						fa.setVariable(varRef);
 					}
-					if (b!=null)
-					fa.setType(references
-							.getTypeReference(b.type));
-					else {
+					if (b != null) {
+						fa.setType(references.getTypeReference(b.type));
+					} else {
 						// case with no complete classpath
 						CtTypeReference<Object> ref = factory.Core().createTypeReference();
-						ref.setSimpleName(new String(qualifiedNameReference.tokens[qualifiedNameReference.tokens.length-1]));
+						ref.setSimpleName(new String(
+								qualifiedNameReference.tokens[qualifiedNameReference.tokens.length
+										- 1]));
 						fa.setType(ref);
 					}
 					//set source position of va;
 					CompilationUnit cu = factory.CompilationUnit().create(
 							new String(context.compilationunitdeclaration.getFileName()));
-					int sourceEnd = (int)(positions[i]);
-					va.setPosition(factory.Core()
-							.createSourcePosition(
-									cu,
-									sourceStart,
-									sourceEnd,
-									context.compilationunitdeclaration.compilationResult.lineSeparatorPositions));
+					int sourceEnd = (int) (positions[i]);
+					final int[] lineSeparatorPositions = context.compilationunitdeclaration
+							.compilationResult.lineSeparatorPositions;
+					va.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceEnd,
+																	   lineSeparatorPositions));
 					va = fa;
 					i++;
 				}
@@ -2487,7 +2500,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(ta, qualifiedNameReference);
 			return false;
 		} else {
-			CtVariableAccess<Object> va = factory.Core().createVariableAccess();
+			CtVariableAccess<Object> va = null;
+			if (context.stack.peek().element instanceof CtAssignment) {
+				va = factory.Core().createVariableWrite();
+			} else {
+				va = factory.Core().createVariableRead();
+			}
 			CtVariableReference<Object> varRef = new CtUnboundVariableReferenceImpl<Object>();
 			varRef.setSimpleName(qualifiedNameReference.toString());
 			va.setVariable(varRef);
@@ -2534,15 +2552,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(SingleNameReference singleNameReference,
-			BlockScope scope) {
+	public boolean visit(SingleNameReference singleNameReference, BlockScope scope) {
 		CtVariableAccess<Object> va = null;
 		if (singleNameReference.binding instanceof FieldBinding) {
-			va = factory.Core().createFieldAccess();
-			va.setVariable(references.getVariableReference(singleNameReference
-					.fieldBinding()));
+			if (context.stack.peek().element instanceof CtAssignment) {
+				va = factory.Core().createFieldWrite();
+			} else {
+				va = factory.Core().createFieldRead();
+			}
+			va.setVariable(references.getVariableReference(singleNameReference.fieldBinding()));
 		} else if (singleNameReference.binding instanceof VariableBinding) {
-			va = factory.Core().createVariableAccess();
+			if (context.stack.peek().element instanceof CtAssignment) {
+				va = factory.Core().createVariableWrite();
+			} else {
+				va = factory.Core().createVariableRead();
+			}
 			va.setVariable(references
 					.getVariableReference((VariableBinding) singleNameReference.binding));
 		} else if (singleNameReference.binding instanceof TypeBinding) {
@@ -2629,7 +2653,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// if(context.annotationValueName.peek().equals("value")) return true;
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
 		l.setValue(references
-				.getTypeReference(singleTypeReference.resolvedType));
+						   .getTypeReference(singleTypeReference.resolvedType));
 		context.enter(l, singleTypeReference);
 		return true; // do nothing by default, keep traversing
 	}

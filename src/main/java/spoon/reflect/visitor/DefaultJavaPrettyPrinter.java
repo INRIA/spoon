@@ -33,6 +33,8 @@ import spoon.processing.Severity;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -51,6 +53,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -74,7 +78,9 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
@@ -651,6 +657,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(arrayAccess);
 	}
 
+	@Override
+	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
+		visitCtArrayAccess(arrayRead);
+	}
+
+	@Override
+	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
+		visitCtArrayAccess(arrayWrite);
+	}
+
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
 		scan(reference.getComponentType());
 		if (!context.skipArray) {
@@ -1027,6 +1043,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.ignoreGenerics = false;
 		context.ignoreStaticAccess = false;
 		exitCtExpression(f);
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		visitCtFieldAccess(fieldRead);
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visitCtFieldAccess(fieldWrite);
 	}
 
 	@Override
@@ -1941,12 +1967,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(operator);
 	}
 
+	@Override
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 		enterCtExpression(variableAccess);
-		// if (variableAccess.getTarget() != null) {
-		// }
 		write(variableAccess.getVariable().getSimpleName());
 		exitCtExpression(variableAccess);
+	}
+
+	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+		visitCtVariableAccess(variableRead);
+	}
+
+	@Override
+	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
+		visitCtVariableAccess(variableWrite);
 	}
 
 	public void visitCtWhile(CtWhile whileLoop) {

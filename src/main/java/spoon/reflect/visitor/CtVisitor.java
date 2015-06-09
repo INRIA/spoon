@@ -17,10 +17,10 @@
 
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -38,6 +38,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -60,6 +62,8 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -83,6 +87,8 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+
+import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the visitor for the Spoon metamodel, as defined in
@@ -108,8 +114,7 @@ public interface CtVisitor {
 	/**
 	 * Visits an annotation type declaration.
 	 */
-	<A extends Annotation> void visitCtAnnotationType(
-			CtAnnotationType<A> annotationType);
+	<A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType);
 
 	/**
 	 * Visits an anonymous executable.
@@ -119,8 +124,17 @@ public interface CtVisitor {
 	/**
 	 * Visits an array access.
 	 */
-	<T, E extends CtExpression<?>> void visitCtArrayAccess(
-			CtArrayAccess<T, E> arrayAccess);
+	<T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess);
+
+	/**
+	 * Visits an array read access.
+	 */
+	<T> void visitCtArrayRead(CtArrayRead<T> arrayRead);
+
+	/**
+	 * Visits an array write access.
+	 */
+	<T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite);
 
 	/**
 	 * Visits a reference to an array type.
@@ -295,7 +309,8 @@ public interface CtVisitor {
 	/**
 	 * Visits a reference to an executable.
 	 */
-	<T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression);
+	<T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
+			CtExecutableReferenceExpression<T, E> expression);
 
 	/**
 	 * Visits an operator assignment.
@@ -384,20 +399,41 @@ public interface CtVisitor {
 	<T> void visitCtUnaryOperator(CtUnaryOperator<T> operator);
 
 	/**
-	 * Visits a variable access.
+	 * Visits a variable access (read and write).
 	 */
 	<T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess);
+
+	/**
+	 * Visits a variable read access.
+	 */
+	<T> void visitCtVariableRead(CtVariableRead<T> variableRead);
+
+	/**
+	 * Visits a variable write access.
+	 */
+	<T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite);
 
 	/**
 	 * Visits a <code>while</code> loop.
 	 */
 	void visitCtWhile(CtWhile whileLoop);
 
-	<T> void visitCtAnnotationFieldAccess(
-			CtAnnotationFieldAccess<T> annotationFieldAccess);
+	<T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess);
 
+	/**
+	 * Visits a field access (read and write).
+	 */
 	<T> void visitCtFieldAccess(CtFieldAccess<T> f);
 
+	/**
+	 * Visits a field read access.
+	 */
+	<T> void visitCtFieldRead(CtFieldRead<T> fieldRead);
+
+	/**
+	 * Visits a field write access.
+	 */
+	<T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite);
+
 	<T> void visitCtSuperAccess(CtSuperAccess<T> f);
-	
 }

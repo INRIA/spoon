@@ -29,6 +29,8 @@ import java.util.Stack;
 import spoon.Launcher;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -46,6 +48,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -68,6 +72,8 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -98,6 +104,8 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtAnnotationFieldAccesImpl;
 import spoon.support.reflect.code.CtArrayAccessImpl;
+import spoon.support.reflect.code.CtArrayReadImpl;
+import spoon.support.reflect.code.CtArrayWriteImpl;
 import spoon.support.reflect.code.CtAssertImpl;
 import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtBinaryOperatorImpl;
@@ -114,6 +122,8 @@ import spoon.support.reflect.code.CtContinueImpl;
 import spoon.support.reflect.code.CtDoImpl;
 import spoon.support.reflect.code.CtExecutableReferenceExpressionImpl;
 import spoon.support.reflect.code.CtFieldAccessImpl;
+import spoon.support.reflect.code.CtFieldReadImpl;
+import spoon.support.reflect.code.CtFieldWriteImpl;
 import spoon.support.reflect.code.CtForEachImpl;
 import spoon.support.reflect.code.CtForImpl;
 import spoon.support.reflect.code.CtIfImpl;
@@ -136,6 +146,8 @@ import spoon.support.reflect.code.CtTryWithResourceImpl;
 import spoon.support.reflect.code.CtTypeAccessImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableAccessImpl;
+import spoon.support.reflect.code.CtVariableReadImpl;
+import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.SourcePositionImpl;
@@ -315,6 +327,20 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
+	@Override
+	public <T> CtArrayRead<T> createArrayRead() {
+		CtArrayRead<T> e = new CtArrayReadImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtArrayWrite<T> createArrayWrite() {
+		CtArrayWrite<T> e = new CtArrayWriteImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
 	public <T> CtArrayTypeReference<T> createArrayTypeReference() {
 		CtArrayTypeReference<T> e = new CtArrayTypeReferenceImpl<T>();
 		e.setFactory(getMainFactory());
@@ -413,6 +439,20 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtFieldAccess<T> createFieldAccess() {
 		CtFieldAccess<T> e = new CtFieldAccessImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtFieldRead<T> createFieldRead() {
+		CtFieldRead<T> e = new CtFieldReadImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtFieldWrite<T> createFieldWrite() {
+		CtFieldWrite<T> e = new CtFieldWriteImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -636,6 +676,18 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtVariableAccess<T> createVariableAccess() {
 		CtVariableAccess<T> e = new CtVariableAccessImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public <T> CtVariableRead<T> createVariableRead() {
+		CtVariableRead<T> e = new CtVariableReadImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public <T> CtVariableWrite<T> createVariableWrite() {
+		CtVariableWrite<T> e = new CtVariableWriteImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

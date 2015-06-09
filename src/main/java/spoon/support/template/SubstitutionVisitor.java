@@ -35,7 +35,9 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -231,19 +233,19 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public void visitCtForEach(CtForEach foreach) {
 			if (foreach.getExpression() instanceof CtFieldAccess) {
-				CtFieldAccess<?> fa = (CtFieldAccess<?>) foreach
-						.getExpression();
+				CtFieldAccess<?> fa = (CtFieldAccess<?>) foreach.getExpression();
 				if (Parameters.isParameterSource(fa.getVariable())) {
 					Object[] value = (Object[]) Parameters.getValue(template,
-							fa.getVariable().getSimpleName(), null);
-					CtStatementList l = foreach.getFactory().Core()
-							.createStatementList();
+																	fa.getVariable()
+																	  .getSimpleName(),
+																	null);
+					CtStatementList l = foreach.getFactory().Core().createStatementList();
 					CtStatement body = foreach.getBody();
 					for (Object element : value) {
 						CtStatement b = foreach.getFactory().Core().clone(body);
-						for (CtVariableAccess<?> va : Query.getElements(b,
-								new VariableAccessFilter<CtVariableAccess<?>>(foreach.getVariable()
-										.getReference()))) {
+						for (CtVariableAccess<?> va : Query.getElements(
+								b, new VariableAccessFilter<CtVariableAccess<?>>(
+								foreach.getVariable().getReference()))) {
 							va.replace((CtElement) element);
 						}
 						l.addStatement(b);
@@ -291,15 +293,14 @@ public class SubstitutionVisitor extends CtScanner {
 					} else if (value instanceof Enum) {
 						CtTypeReference<?> enumType = factory.Type().createReference(
 								value.getClass());
-						toReplace.replace(factory.Code().createVariableAccess(
+						toReplace.replace(factory.Code().createVariableRead(
 								factory.Field().createReference(enumType, enumType,
-										((Enum<?>) value).name()), true));
+																((Enum<?>) value).name()), true));
 					} else if (value instanceof List) {
 						// replace list of CtParameter for generic access to the
 						// parameters
 						List<CtParameter<?>> l = (List<CtParameter<?>>) value;
-						List<CtExpression<?>> vas = factory.Code()
-								.createVariableAccesses(l);
+						List<CtExpression<?>> vas = factory.Code().createVariableReads(l);
 						CtAbstractInvocation<?> inv = (CtAbstractInvocation<?>) fieldAccess
 								.getParent();
 						int i = inv.getArguments().indexOf(fieldAccess);
@@ -519,19 +520,17 @@ public class SubstitutionVisitor extends CtScanner {
 			super.visitCtTypeReference(reference);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
+		@SuppressWarnings("unchecked")
 		public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 			String name = variableAccess.getVariable().getSimpleName();
 			for (String pname : parameterNames) {
 				if (name.contains(pname)) {
 					Object value = Parameters.getValue(template, pname, null);
 					if ((value instanceof List) && name.equals(pname)) {
-						// replace list of CtParameter for generic access to the
-						// parameters
+						// replace list of CtParameter for generic access to the parameters
 						List<CtParameter<?>> l = (List<CtParameter<?>>) value;
-						List<CtExpression<?>> vas = factory.Code()
-								.createVariableAccesses(l);
+						List<CtExpression<?>> vas = factory.Code().createVariableReads(l);
 						CtAbstractInvocation<?> inv = (CtAbstractInvocation<?>) variableAccess
 								.getParent();
 						int i = inv.getArguments().indexOf(variableAccess);
@@ -540,11 +539,9 @@ public class SubstitutionVisitor extends CtScanner {
 						for (CtExpression<?> va : vas) {
 							va.setParent(variableAccess.getParent());
 							inv.getArguments().add(i, va);
-							inv.getExecutable().getActualTypeArguments()
-									.add(i, va.getType());
+							inv.getExecutable().getActualTypeArguments().add(i, va.getType());
 							i++;
 						}
-						// inv.getArguments().remove(variableAccess);
 						throw new SkipException(variableAccess);
 					}
 					// replace variable accesses names
@@ -555,26 +552,32 @@ public class SubstitutionVisitor extends CtScanner {
 				}
 			}
 			CtTypeReference<T> reference = variableAccess.getType();
-			if ((parameterNames != null) && (reference != null)
-					&& parameterNames.contains(reference.getSimpleName())) {
+			if ((parameterNames != null) && (reference != null) && parameterNames
+					.contains(reference.getSimpleName())) {
 				CtTypeReference<T> t;
-				Object o = Parameters.getValue(template,
-						reference.getSimpleName(), null);
+				Object o = Parameters.getValue(template, reference.getSimpleName(), null);
 				if (o instanceof Class) {
 					t = factory.Type().createReference(((Class<T>) o));
 				} else if (o instanceof CtTypeReference) {
 					t = (CtTypeReference<T>) o;
-					reference
-							.setActualTypeArguments(t.getActualTypeArguments());
+					reference.setActualTypeArguments(t.getActualTypeArguments());
 				} else {
-					throw new RuntimeException(
-							"unsupported reference substitution");
+					throw new RuntimeException("unsupported reference substitution");
 				}
 				variableAccess.setType(t);
 			}
 			super.visitCtVariableAccess(variableAccess);
 		}
 
+		@Override
+		public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+			visitCtVariableAccess(variableRead);
+		}
+
+		@Override
+		public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
+			visitCtVariableAccess(variableWrite);
+		}
 	}
 
 	Factory factory;

@@ -20,12 +20,11 @@ import spoon.reflect.reference.CtFieldReference;
 
 /**
  * This code element defines an access to a annotation parameter variable.
- * 
+ *
  * @param <T>
- *            Type of this field
+ * 		Type of this field
  */
-public interface CtAnnotationFieldAccess<T> extends CtVariableAccess<T>,
-		CtTargetedExpression<T, CtExpression<?>> {
+public interface CtAnnotationFieldAccess<T>
+		extends CtVariableRead<T>, CtTargetedExpression<T, CtExpression<?>> {
 	CtFieldReference<T> getVariable();
-
 }

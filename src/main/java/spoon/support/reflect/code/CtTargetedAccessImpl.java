@@ -4,7 +4,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtTargetedAccess;
 
 @Deprecated
-public class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T>
+public abstract class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T>
 		implements CtTargetedAccess<T> {
 	private static final long serialVersionUID = 1L;
 

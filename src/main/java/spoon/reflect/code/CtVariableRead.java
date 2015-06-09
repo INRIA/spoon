@@ -18,24 +18,10 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines a one-dimensional array access. When
- * multi-dimensional, array accesses are applied to other one-dimensional array
- * accesses. The target of {@link spoon.reflect.code.CtTargetedExpression}
- * defines the expression that represents the accessed array.
- * 
+ * This code element defines an read access to a variable.
+ *
  * @param <T>
- *            "Return" type of this access (not a array type)
- * @param <E>
- *            Type of the target expression
+ * 		type of the variable
  */
-public interface CtArrayAccess<T, E extends CtExpression<?>> extends CtTargetedExpression<T, E> {
-	/**
-	 * Sets the expression that defines the index.
-	 */
-	void setIndexExpression(CtExpression<Integer> expression);
-
-	/**
-	 * Returns the expression that defines the index.
-	 */
-	CtExpression<Integer> getIndexExpression();
+public interface CtVariableRead<T> extends CtVariableAccess<T> {
 }

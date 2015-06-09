@@ -21,6 +21,8 @@ import java.lang.annotation.Annotation;
 
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -38,6 +40,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -60,6 +64,8 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -126,7 +132,18 @@ public interface CoreFactory {
 	/**
 	 * Creates an array access expression.
 	 */
+	@Deprecated
 	<T, E extends CtExpression<?>> CtArrayAccess<T, E> createArrayAccess();
+
+	/**
+	 * Creates an array read access expression.
+	 */
+	<T> CtArrayRead<T> createArrayRead();
+
+	/**
+	 * Creates an array write access expression.
+	 */
+	<T> CtArrayWrite<T> createArrayWrite();
 
 	/**
 	 * Creates an array type reference.
@@ -211,8 +228,18 @@ public interface CoreFactory {
 	/**
 	 * Creates a field access expression.
 	 */
+	@Deprecated
 	<T> CtFieldAccess<T> createFieldAccess();
-	
+
+	/**
+	 * Creates a field read access.
+	 */
+	<T> CtFieldRead<T> createFieldRead();
+
+	/**
+	 * Creates a field write access.
+	 */
+	<T> CtFieldWrite<T> createFieldWrite();
 
 	/**
 	 * Creates an access expression to this.
@@ -403,7 +430,18 @@ public interface CoreFactory {
 	/**
 	 * Creates a variable access expression.
 	 */
+	@Deprecated
 	<T> CtVariableAccess<T> createVariableAccess();
+
+	/**
+	 * Creates a variable read expression.
+	 */
+	<T> CtVariableRead<T> createVariableRead();
+
+	/**
+	 * Creates a variable write expression.
+	 */
+	<T> CtVariableWrite<T> createVariableWrite();
 
 	/**
 	 * Creates a <code>while</code> loop.

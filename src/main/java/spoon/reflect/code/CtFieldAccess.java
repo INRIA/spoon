@@ -20,7 +20,7 @@ package spoon.reflect.code;
 import spoon.reflect.reference.CtFieldReference;
 
 /**
- * This code element defines an access to a field variable.
+ * This code element defines an access to a field variable (read and write)
  *
  * @param <T>
  * 		Type of this field

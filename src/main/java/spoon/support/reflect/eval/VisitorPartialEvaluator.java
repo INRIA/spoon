@@ -20,6 +20,8 @@ package spoon.support.reflect.eval;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -38,6 +40,8 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -61,7 +65,9 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -99,7 +105,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.RtHelper;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -176,6 +181,16 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
 			CtArrayAccess<T, E> arrayAccess) {
 		setResult(arrayAccess.getFactory().Core().clone(arrayAccess));
+	}
+
+	@Override
+	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
+		visitCtArrayAccess(arrayRead);
+	}
+
+	@Override
+	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
+		visitCtArrayAccess(arrayWrite);
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
@@ -432,7 +447,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				return;
 			}
 		}
-		if (fieldAccess.getFactory().Type().createReference(Enum.class).isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
+		if (fieldAccess.getFactory().Type().createReference(Enum.class)
+					   .isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
 			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
 			l.setValue(fieldAccess.getVariable());
 			setResult(l);
@@ -444,6 +460,16 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			return;
 		}
 		setResult(fieldAccess.getFactory().Core().clone(fieldAccess));
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		visitCtFieldAccess(fieldRead);
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visitCtFieldAccess(fieldWrite);
 	}
 
 	@Override
@@ -771,15 +797,23 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(operator.getFactory().Core().clone(operator));
 	}
 
+	@Override
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 		CtVariable<?> v = variableAccess.getVariable().getDeclaration();
-		// System.out.println("** "+variableAccess+" => "+v);
-		if ((v != null) && v.hasModifier(ModifierKind.FINAL)
-				&& (v.getDefaultExpression() != null)) {
+		if (v != null && v.hasModifier(ModifierKind.FINAL) && v.getDefaultExpression() != null) {
 			setResult(evaluate(v, v.getDefaultExpression()));
 		} else {
 			setResult(variableAccess.getFactory().Core().clone(variableAccess));
 		}
+	}
+
+	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+		visitCtVariableAccess(variableRead);
+	}
+
+	@Override
+	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
+		visitCtVariableAccess(variableWrite);
 	}
 
 	public <T, A extends T> void visitCtAssignment(
