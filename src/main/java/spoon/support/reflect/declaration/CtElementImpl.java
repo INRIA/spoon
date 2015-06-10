@@ -328,14 +328,14 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return o1 == o2;
 	}
 
-	public void replace(Filter<? extends CtElement> replacementPoints,
-			CtElement element) {
-		List<? extends CtElement> l = Query
-				.getElements(this, replacementPoints);
-		for (CtElement e : l) {
-			e.replace(element);
-		}
-	}
+//	public void replace(Filter<? extends CtElement> replacementPoints,
+//			CtElement element) {
+//		List<? extends CtElement> l = Query
+//				.getElements(this, replacementPoints);
+//		for (CtElement e : l) {
+//			e.replace(element);
+//		}
+//	}
 
 	public void setAnnotations(
 			List<CtAnnotation<? extends Annotation>> annotations) {

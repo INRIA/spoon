@@ -46,5 +46,10 @@ public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>,
 	 * Adds a type cast.
 	 */
 	void addTypeCast(CtTypeReference<?> type);
+
+	/**
+	 * Replaces this element by another one.
+	 */
+	<E extends T> void replace(CtExpression<E> element);
 	
 }

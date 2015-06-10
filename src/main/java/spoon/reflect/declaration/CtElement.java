@@ -119,11 +119,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	SourcePosition getPosition();
 
 	/**
-	 * Replaces this element by another one.
-	 */
-	void replace(CtElement element);
-
-	/**
 	 * Add an annotation for this element
 	 * 
 	 * @param annotation

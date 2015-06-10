@@ -18,6 +18,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -126,5 +127,10 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		if (getModifiers().contains(ModifierKind.PRIVATE))
 			return ModifierKind.PRIVATE;
 		return null;
+	}
+
+	@Override
+	public <R extends T> void replace(CtField<R> element) {
+		replace((CtElement)element);
 	}
 }

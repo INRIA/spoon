@@ -239,14 +239,14 @@ public class SubstitutionVisitor extends CtScanner {
 																	fa.getVariable()
 																	  .getSimpleName(),
 																	null);
-					CtStatementList l = foreach.getFactory().Core().createStatementList();
+					CtBlock l = foreach.getFactory().Core().createBlock();
 					CtStatement body = foreach.getBody();
 					for (Object element : value) {
 						CtStatement b = foreach.getFactory().Core().clone(body);
 						for (CtVariableAccess<?> va : Query.getElements(
 								b, new VariableAccessFilter<CtVariableAccess<?>>(
 								foreach.getVariable().getReference()))) {
-							va.replace((CtElement) element);
+							va.replace((CtExpression) element);
 						}
 						l.addStatement(b);
 					}
@@ -270,7 +270,7 @@ public class SubstitutionVisitor extends CtScanner {
 					if (Parameters.isParameterSource(ref)) {
 						Object[] value = (Object[]) Parameters.getValue(
 								template, ref.getSimpleName(), null);
-						fieldAccess.replace(fieldAccess.getFactory()
+						fieldAccess.replace((CtExpression)fieldAccess.getFactory()
 								.Code().createLiteral(value.length));
 						throw new SkipException(fieldAccess);
 					}
@@ -281,9 +281,9 @@ public class SubstitutionVisitor extends CtScanner {
 				Object value = Parameters.getValue(template,
 						ref.getSimpleName(),
 						Parameters.getIndex(fieldAccess));
-				CtElement toReplace = fieldAccess;
+				CtExpression toReplace = fieldAccess;
 				if (fieldAccess.getParent() instanceof CtArrayAccess) {
-					toReplace = fieldAccess.getParent();
+					toReplace = (CtExpression)fieldAccess.getParent();
 				}
 				if (!(value instanceof TemplateParameter)) {
 					if (value instanceof Class) {
@@ -361,9 +361,9 @@ public class SubstitutionVisitor extends CtScanner {
 						// block template parameters in returns should
 						// replace
 						// the return
-						invocation.getParent().replace(r);
+						((CtReturn)invocation.getParent()).replace((CtStatement)r);
 					} else {
-						invocation.replace(r);
+						invocation.replace((CtExpression)r);
 					}
 				}
 				// do not visit the invocation if replaced
@@ -656,7 +656,7 @@ public class SubstitutionVisitor extends CtScanner {
 		if (!(e.getParent() instanceof CtBlock)) {
 			removeEnclosingStatement(e.getParent());
 		} else {
-			e.replace(null);
+			((CtStatement)e).replace(null);
 		}
 	}
 

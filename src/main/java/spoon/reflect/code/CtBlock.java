@@ -96,4 +96,9 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	 */
 	void removeStatement(CtStatement statement);
 
+	/**
+	 * Replaces this element by another one.
+	 */
+	<T extends R> void replace(CtBlock<T> element);
+
 }

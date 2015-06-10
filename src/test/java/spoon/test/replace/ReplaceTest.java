@@ -5,6 +5,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -46,8 +47,8 @@ public class ReplaceTest {
 				.getType("Bar");
 		assertEquals("Bar", bar.getSimpleName());
 
-		CtField<?> i1 = foo.getField("i");
-		CtField<?> i2 = bar.getField("i");
+		CtField<Number> i1 = (CtField<Number>)foo.getField("i");
+		CtField<Number> i2 = (CtField<Number>)bar.getField("i");
 
 		assertEquals("int", foo.getField("i").getType().getSimpleName());
 
@@ -75,8 +76,8 @@ public class ReplaceTest {
 		final CtStatement parent = m.getBody().getStatements().get(2);
 		CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) parent;
 
-		CtExpression<?> s1 = assignment.getAssignment();
-		CtExpression<?> s2 = factory.Code().createLiteral(3);
+		CtExpression<Integer> s1 = (CtExpression<Integer> ) assignment.getAssignment();
+		CtExpression<Integer> s2 = factory.Code().createLiteral(3);
 
 		assertEquals("z = x + 1", assignment.toString());
 		assertEquals("x + 1", s1.toString());
@@ -116,9 +117,9 @@ public class ReplaceTest {
 
 		assertEquals(fooMethod.getBody(), newAssignment.getParent());
 
-		CtLiteral<?> lit = foo.getElements(new TypeFilter<CtLiteral<?>>(CtLiteral.class)).get(0);
+		CtLiteral<Integer> lit = (CtLiteral<Integer>)foo.getElements(new TypeFilter<CtLiteral<?>>(CtLiteral.class)).get(0);
 		final CtElement parent = lit.getParent();
-		CtLiteral<?> newLit = factory.Code().createLiteral(0);
+		CtLiteral<Integer> newLit = factory.Code().createLiteral(0);
 		lit.replace(newLit);
 		assertEquals("int y = 0", fooMethod.getBody().getStatement(0).toString());
 		assertEquals(parent, newLit.getParent());
@@ -131,7 +132,7 @@ public class ReplaceTest {
 
 		// replace retry content by statements
 		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
-		CtStatementList lst = sample.getMethod("statements").getBody();
+		CtBlock lst = sample.getMethod("statements").getBody();
 
 		// replace a single statement by a statement list
 		stmt.replace(lst);
