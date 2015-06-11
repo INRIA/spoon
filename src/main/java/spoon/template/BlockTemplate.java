@@ -54,12 +54,8 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
-		if (this instanceof Template) {
-			return Substitution.substitute(targetType, this,
-					getBlock(c));
-		}
-		return targetType.getFactory().Core().clone(
-				c.getMethod("block").getBody());
+		return Substitution.substitute(targetType, this,
+				getBlock(c));
 	}
 
 	public Void S() {
