@@ -71,69 +71,10 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 
 	abstract protected AnnotatedElement getActualAnnotatedElement();
 
-	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-		CtElement e = getDeclaration();
-		if (e != null) {
-			return e.getAnnotation(annotationType);
-		} else {
-			return getActualAnnotatedElement().getAnnotation(annotationType);
-		}
-	}
-
-	@Override
-	public <A extends Annotation> CtAnnotation<A> getAnnotation(
-			CtTypeReference<A> annotationType) {
-		CtElement e = getDeclaration();
-		if (e != null) {
-			return e.getAnnotation(annotationType);
-		} else {
-			try {
-				Class<A> ac = annotationType.getActualClass();
-				A a = getActualAnnotatedElement().getAnnotation(ac);
-				Map<String, Object> values = new HashMap<String, Object>();
-				for (Method m : ac.getMethods()) {
-					Object value;
-					value = m.invoke(a);
-					if (value instanceof Class) {
-						Class<?> clazz = (Class<?>) value;
-						values.put(m.getName(), getFactory().Type()
-								.createReference(clazz));
-					} else {
-						values.put(m.getName(), value);
-					}
-				}
-				CtAnnotation<A> ctAnnotation = getFactory().Core()
-						.createAnnotation();
-				ctAnnotation.setElementValues(values);
-				return ctAnnotation;
-			} catch (Exception ex) {
-				Launcher.logger.error(ex.getMessage(), ex);
-				return null;
-			}
-		}
-	}
-
-	public List<Annotation> getAnnotations() {
-		CtElement e = getDeclaration();
-		if (e != null) {
-			Annotation[] annotations = new Annotation[e.getAnnotations().size()];
-			int i = 0;
-			for (CtAnnotation<?> a : e.getAnnotations()) {
-				annotations[i++] = a.getActualAnnotation();
-			}
-			return Arrays.asList(annotations);
-		} else {
-			AnnotatedElement elt = getActualAnnotatedElement();
-			return Arrays.asList(elt.getAnnotations());
-		}
-	}
-
 	public String getSimpleName() {
 		return simplename;
 	}
 	
-
-
 	public void setSimpleName(String simplename) {
 		if (simplename.contains("?"))
 			throw new RuntimeException("argl");
