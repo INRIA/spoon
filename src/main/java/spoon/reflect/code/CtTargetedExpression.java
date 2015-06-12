@@ -31,7 +31,7 @@ public interface CtTargetedExpression<T, E extends CtExpression<?>> extends
 		CtExpression<T> {
 
 	/**
-	 * Gets the target expression.
+	 * Gets the target expression. The target is null for static methods.
 	 */
 	E getTarget();
 

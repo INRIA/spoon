@@ -137,7 +137,7 @@ public class CodeFactory extends SubFactory {
 	 * @param <T>
 	 *            the return type of the invoked method
 	 * @param target
-	 *            the target expression
+	 *            the target expression (may be null for static methods)
 	 * @param executable
 	 *            the invoked executable
 	 * @param arguments
@@ -147,7 +147,9 @@ public class CodeFactory extends SubFactory {
 	public <T> CtInvocation<T> createInvocation(CtExpression<?> target,
 			CtExecutableReference<T> executable, List<CtExpression<?>> arguments) {
 		CtInvocation<T> invocation = factory.Core().createInvocation();
-		invocation.setTarget(target);
+		if (target!=null) { // not a static method
+			invocation.setTarget(target);
+		}
 		invocation.setExecutable(executable);
 		invocation.setArguments(arguments);
 		return invocation;
