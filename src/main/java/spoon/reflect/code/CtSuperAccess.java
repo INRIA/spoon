@@ -27,9 +27,15 @@ import spoon.reflect.reference.CtVariableReference;
  * 		Type of super
  */
 public interface CtSuperAccess<T> extends CtTargetedAccess<T> {
+	/**
+	 * @deprecated super isn't a variable. So this method will be removed in a next release.
+	 */
 	@Deprecated
 	CtFieldReference<T> getVariable();
 
+	/**
+	 * @deprecated super isn't a variable. So this method will be removed in a next release.
+	 */
 	@Deprecated
 	void setVariable(CtVariableReference<T> variable);
 }
