@@ -131,6 +131,9 @@ public interface CoreFactory {
 
 	/**
 	 * Creates an array access expression.
+	 *
+	 * @deprecated See {@link #createArrayRead() createArrayRead}
+	 * or {@link #createArrayWrite() createArrayWrite}
 	 */
 	@Deprecated
 	<T, E extends CtExpression<?>> CtArrayAccess<T, E> createArrayAccess();
@@ -227,6 +230,9 @@ public interface CoreFactory {
 
 	/**
 	 * Creates a field access expression.
+	 *
+	 * @deprecated See {@link #createFieldRead() createFieldRead}
+	 * or {@link #createFieldWrite() createFieldWrite}
 	 */
 	@Deprecated
 	<T> CtFieldAccess<T> createFieldAccess();
@@ -429,6 +435,9 @@ public interface CoreFactory {
 
 	/**
 	 * Creates a variable access expression.
+	 *
+	 * @deprecated See {@link #createVariableRead() createVariableRead}
+	 * or {@link #createVariableWrite() createVariableWrite}
 	 */
 	@Deprecated
 	<T> CtVariableAccess<T> createVariableAccess();
