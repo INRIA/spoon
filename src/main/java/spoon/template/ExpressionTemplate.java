@@ -70,12 +70,8 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
-		if (this instanceof Template) {
-			b = Substitution
-					.substitute(targetType, this, getExpressionBlock(c));
-		} else {
-			b = targetType.getFactory().Core().clone(getExpressionBlock(c));
-		}
+		b = Substitution
+				.substitute(targetType, this, getExpressionBlock(c));
 		return ((CtReturn<T>) b.getStatements().get(0)).getReturnedExpression();
 	}
 
