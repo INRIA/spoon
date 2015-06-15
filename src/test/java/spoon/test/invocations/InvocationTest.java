@@ -6,14 +6,20 @@ import spoon.SpoonAPI;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.test.TestUtils;
+import spoon.test.invocations.testclasses.Bar;
 import spoon.test.invocations.testclasses.Foo;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class InvocationTest {
 	@Test
@@ -26,15 +32,31 @@ public class InvocationTest {
 		Factory factory = launcher.getFactory();
 		CtClass<?> aClass = factory.Class().get(Foo.class);
 
-		final List<CtInvocation<?>> elements = aClass.getElements(new AbstractFilter<CtInvocation<?>>(CtInvocation.class) {
-			@Override
-			public boolean matches(CtInvocation<?> element) {
-				return element.getTarget() != null;
-			}
-		});
+		final List<CtInvocation<?>> elements = aClass
+				.getElements(new AbstractFilter<CtInvocation<?>>(CtInvocation.class) {
+					@Override
+					public boolean matches(CtInvocation<?> element) {
+						return element.getTarget() != null;
+					}
+				});
 
 		assertEquals(2, elements.size());
 		assertTrue(elements.get(0).getTarget() instanceof CtTypeAccess);
 		assertTrue(elements.get(1).getTarget() instanceof CtTypeAccess);
+	}
+
+	@Test
+	public void testTargetNullForStaticMethod() throws Exception {
+		final Factory factory = TestUtils.build(Bar.class);
+		final CtClass<Bar> barClass = factory.Class().get(Bar.class);
+		final CtMethod<?> staticMethod = barClass.getMethodsByName("staticMethod").get(0);
+		final CtExecutableReference<?> reference = factory.Method().createReference(staticMethod);
+
+		try {
+			final CtInvocation<?> invocation = factory.Code().createInvocation(null, reference);
+			assertNull(invocation.getTarget());
+		} catch (NullPointerException e) {
+			fail();
+		}
 	}
 }
