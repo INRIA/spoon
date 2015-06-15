@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -314,41 +313,36 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
-					final Queue<DefaultMutableTreeNode> q = new LinkedList<DefaultMutableTreeNode>();
+					Queue<DefaultMutableTreeNode> q = new LinkedList<DefaultMutableTreeNode>();
 					q.add(node);
 					while (!q.isEmpty()) {
 						final DefaultMutableTreeNode n = q.poll();
-						if (n == null) {
-							break;
-						}
-						SwingUtilities.invokeAndWait(new Runnable() {
+						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
 								TreePath path = new TreePath(n.getPath());
 								if (!jTree.isExpanded(path)) {
 									jTree.expandPath(path);
+									jTree.updateUI();
 								}
-								for (Object childObject : Collections.list(n
-										.children())) {
-									if (childObject instanceof DefaultMutableTreeNode) {
-										DefaultMutableTreeNode child = (DefaultMutableTreeNode) childObject;
-										if (!child.isLeaf()
-												&& child.getChildCount() > 0) {
-											q.offer(child);
-										}
-									}
-								}
-								jTree.updateUI();
 							}
 						});
+						@SuppressWarnings("unchecked")
+						Enumeration<DefaultMutableTreeNode> children = n
+								.children();
+						while (children.hasMoreElements()) {
+							DefaultMutableTreeNode child = children
+									.nextElement();
+							if (!child.isLeaf() && child.getChildCount() > 0) {
+								q.offer(child);
+							}
+						}
 					}
-				} catch (Exception e) {
-					Launcher.logger.error(e.getMessage(), e);
 				} finally {
 					executor.shutdownNow();
 				}
 			}
 		});
-		return null;
+		return node;
 	}
 
 	public void setVisible(DefaultMutableTreeNode node) {
