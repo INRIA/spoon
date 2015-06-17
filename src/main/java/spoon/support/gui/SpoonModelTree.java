@@ -317,15 +317,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 					q.add(node);
 					while (!q.isEmpty()) {
 						final DefaultMutableTreeNode n = q.poll();
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								TreePath path = new TreePath(n.getPath());
-								if (!jTree.isExpanded(path)) {
-									jTree.expandPath(path);
-									jTree.updateUI();
-								}
-							}
-						});
+						expand(n);
 						@SuppressWarnings("unchecked")
 						Enumeration<DefaultMutableTreeNode> children = n
 								.children();
@@ -343,6 +335,18 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 			}
 		});
 		return node;
+	}
+
+	public void expand(final DefaultMutableTreeNode node) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TreePath path = new TreePath(node.getPath());
+				if (!jTree.isExpanded(path)) {
+					jTree.expandPath(path);
+					jTree.updateUI();
+				}
+			}
+		});
 	}
 
 	public void setVisible(DefaultMutableTreeNode node) {
