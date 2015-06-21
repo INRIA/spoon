@@ -17,13 +17,14 @@
 
 package spoon.support.reflect.declaration;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -49,8 +50,6 @@ import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 
 /** 
  * Contains the default implementation of most CtElement methods.
@@ -186,7 +185,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
 			if (a.getAnnotationType().toString()
-					.equals(annotationType.getName())) {
+					.equals(annotationType.getName().replace('$','.'))) {
 				return ((CtAnnotation<A>) a).getActualAnnotation();
 			}
 		}

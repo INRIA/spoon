@@ -51,6 +51,7 @@ import spoon.test.annotation.testclasses.AnnotationRepeated;
 import spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass;
 import spoon.test.annotation.testclasses.AnnotationsRepeated;
 import spoon.test.annotation.testclasses.Bound;
+import spoon.test.annotation.testclasses.Foo;
 import spoon.test.annotation.testclasses.Foo.InnerAnnotation;
 import spoon.test.annotation.testclasses.Foo.MiddleAnnotation;
 import spoon.test.annotation.testclasses.Foo.OuterAnnotation;
@@ -692,6 +693,15 @@ public class AnnotationTest {
 		assertEquals("Field is typed by an annotation.", InnerAnnot.class, ctField.getType().getActualClass());
 		assertEquals("Default value of a field typed by an annotation must be an annotation",
 				InnerAnnot.class, ctField.getDefaultExpression().getType().getActualClass());
+	}
+
+	@Test
+	public void testGetAnnotationOuter() throws Exception {
+		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.Foo");
+		final CtMethod<?> testMethod = ctClass.getMethodsByName("test").get(0);
+		Foo.OuterAnnotation annot = testMethod.getAnnotation(Foo.OuterAnnotation.class);
+		assertNotNull(annot);
+		assertEquals(2,annot.value().length);
 	}
 
 	private Class<? extends Annotation> getActualClassFromAnnotation(CtAnnotation<? extends Annotation> annotation) {
