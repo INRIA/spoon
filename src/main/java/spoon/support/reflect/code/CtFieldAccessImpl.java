@@ -48,7 +48,8 @@ public class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> implements CtF
 	}
 
 	public void setTarget(CtExpression<?> target) {
-		target.setParent(this);
+		if (target != null)
+			target.setParent(this);
 		this.target = target;
 	}
 }

@@ -5,13 +5,16 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtThisAccessImpl;
+import spoon.test.targeted.testclasses.Foo;
 import spoon.test.targeted.testclasses.InternalSuperCall;
 
 import java.util.List;
@@ -73,5 +76,20 @@ public class TargetedExpressionTest {
 
 		assertEquals("Target is CtThisAccessImpl if there is a 'this' explicit.", CtThisAccessImpl.class, elements.get(0).getTarget().getClass());
 		assertNull("Targets is null if there isn't a 'this' explicit.", elements.get(1).getTarget());
+	}
+
+	@Test
+	public void testNotTargetedExpression() throws Exception {
+		Factory factory = build(Foo.class);
+		CtClass<Object> fooClass = factory.Class().get(Foo.class);
+		CtField<?> iField = fooClass.getField("i");
+		CtFieldAccess<?> fieldAccess = factory.Core().createFieldRead();
+		fieldAccess.setVariable((CtFieldReference) iField.getReference());
+		fieldAccess.setTarget(factory.Code().createThisAccess(fooClass.getReference()));
+		assertEquals("this.i", fieldAccess.toString());
+		// this test is made for this line. Check that we can setTarget(null)
+		// without NPE
+		fieldAccess.setTarget(null);
+		assertEquals("i", fieldAccess.toString());
 	}
 }

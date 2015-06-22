@@ -37,7 +37,8 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	}
 
 	public void setLabelledStatement(CtStatement labelledStatement) {
-		labelledStatement.setParent(this);
+		if (labelledStatement != null)
+			labelledStatement.setParent(this);
 		this.labelledStatement = labelledStatement;
 	}
 	
