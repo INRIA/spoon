@@ -55,7 +55,8 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 	}
 
 	public void setExpression(CtExpression<Boolean> expression) {
-		expression.setParent(this);
+		if (expression != null)
+			expression.setParent(this);
 		this.expression = expression;
 	}
 

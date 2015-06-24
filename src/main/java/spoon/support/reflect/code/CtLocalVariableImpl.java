@@ -61,8 +61,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
+		if (defaultExpression != null)
+			defaultExpression.setParent(this);
 		this.defaultExpression = defaultExpression;
-		this.defaultExpression.setParent(this);
 	}
 
 	public void setSimpleName(String simpleName) {

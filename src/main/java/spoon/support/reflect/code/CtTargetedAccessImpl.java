@@ -15,7 +15,8 @@ public abstract class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T>
 	}
 
 	public void setTarget(CtExpression<?> target) {
-		target.setParent(this);
+		if (target != null)
+			target.setParent(this);
 		this.target = target;
 	}
 }

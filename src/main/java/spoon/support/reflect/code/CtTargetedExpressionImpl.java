@@ -31,7 +31,8 @@ public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>>
 	}
 
 	public void setTarget(T target) {
-		target.setParent(this);
+		if (target != null)
+			target.setParent(this);
 		this.target = target;
 	}
 

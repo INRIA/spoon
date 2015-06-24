@@ -65,12 +65,15 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 	}
 
 	public void setElseStatement(CtStatement elseStatement) {
-		elseStatement.setParent(this);
+		if (elseStatement != null)
+			elseStatement.setParent(this);
 		this.elseStatement = elseStatement;
 	}
 
 	public void setThenStatement(CtStatement thenStatement) {
-		thenStatement.setParent(this);
+		// then branch might be null: `if (condition) ;`
+		if (thenStatement != null)
+			thenStatement.setParent(this);
 		this.thenStatement = thenStatement;
 	}
 

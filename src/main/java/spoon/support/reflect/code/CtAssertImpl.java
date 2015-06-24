@@ -46,7 +46,8 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	}
 
 	public void setExpression(CtExpression<T> value) {
-		value.setParent(this);
+		if (value != null)
+			value.setParent(this);
 		this.value = value;
 	}
 

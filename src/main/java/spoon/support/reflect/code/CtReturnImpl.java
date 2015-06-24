@@ -33,7 +33,8 @@ public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 	}
 
 	public void setReturnedExpression(CtExpression<R> expression) {
-		expression.setParent(this);
+		if (expression != null)
+			expression.setParent(this);
 		this.returnedExpression = expression;
 	}
 
