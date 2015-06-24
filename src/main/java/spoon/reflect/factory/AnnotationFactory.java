@@ -148,10 +148,7 @@ public class AnnotationFactory extends TypeFactory {
 		}
 		if (isArray == ((value instanceof Collection) || value.getClass()
 				.isArray())) {
-			if (value.getClass().isArray()) {
-				value = Arrays.asList(value);
-			}
-			annotation.getElementValues().put(annotationElementName, value);
+			annotation.addValue(annotationElementName, value);
 		} else {
 			if (isArray) {
 				List<Object> l = annotation
