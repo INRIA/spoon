@@ -27,6 +27,10 @@ import java.awt.event.MouseListener;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -36,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -181,6 +186,22 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 				}
 			});
 			menu.add(item);
+
+			menu.addSeparator();
+
+			// Expand all
+			item = new JMenuItem("Expand all");
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree
+							.getLastSelectedPathComponent();
+					if (node == null) {
+						node = root;
+					}
+					expandAll(node);
+				}
+			});
+			menu.add(item);
 		}
 		return menu;
 	}
@@ -282,6 +303,50 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 			return next();
 		}
 		return null;
+	}
+
+	public DefaultMutableTreeNode expandAll(final DefaultMutableTreeNode node) {
+		if (node == null || node.isLeaf()) {
+			return null;
+		}
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.execute(new Runnable() {
+			public void run() {
+				try {
+					Queue<DefaultMutableTreeNode> q = new LinkedList<DefaultMutableTreeNode>();
+					q.add(node);
+					while (!q.isEmpty()) {
+						final DefaultMutableTreeNode n = q.poll();
+						expand(n);
+						@SuppressWarnings("unchecked")
+						Enumeration<DefaultMutableTreeNode> children = n
+								.children();
+						while (children.hasMoreElements()) {
+							DefaultMutableTreeNode child = children
+									.nextElement();
+							if (!child.isLeaf() && child.getChildCount() > 0) {
+								q.offer(child);
+							}
+						}
+					}
+				} finally {
+					executor.shutdownNow();
+				}
+			}
+		});
+		return node;
+	}
+
+	public void expand(final DefaultMutableTreeNode node) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TreePath path = new TreePath(node.getPath());
+				if (!jTree.isExpanded(path)) {
+					jTree.expandPath(path);
+					jTree.updateUI();
+				}
+			}
+		});
 	}
 
 	public void setVisible(DefaultMutableTreeNode node) {
