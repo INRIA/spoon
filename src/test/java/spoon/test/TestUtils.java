@@ -52,6 +52,10 @@ public class TestUtils {
 		return comp.getFactory();
 	}
 
+	public static <T> CtType<T> buildClass(Class<T> classToBuild) throws Exception {
+		return build(classToBuild).Class().get(classToBuild);
+	}
+
 	public static void canBeBuild(File outputDirectoryFile, int complianceLevel) {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.createFactory();
