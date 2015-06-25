@@ -134,4 +134,14 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	public <R extends T> void replace(CtField<R> element) {
 		replace((CtElement)element);
 	}
+	
+   @Override
+	public CtExpression<T> getAssignment() {
+		return getDefaultExpression();
+	}
+	
+	@Override
+	public void setAssignment(CtExpression<T> assignment) {
+		setDefaultExpression(assignment);;
+	}
 }

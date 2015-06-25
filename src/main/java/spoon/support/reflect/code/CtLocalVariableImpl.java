@@ -123,4 +123,14 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 			return ModifierKind.PRIVATE;
 		return null;
 	}
+	
+	@Override
+	public CtExpression<T> getAssignment() {
+		return getDefaultExpression();
+	}
+
+	@Override
+	public void setAssignment(CtExpression<T> assignment) {
+		setDefaultExpression(assignment);;
+	}
 }

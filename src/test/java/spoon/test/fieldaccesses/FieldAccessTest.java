@@ -1,17 +1,20 @@
 package spoon.test.fieldaccesses;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static spoon.test.TestUtils.build;
+
+import java.util.List;
+
 import org.junit.Test;
+
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static spoon.test.TestUtils.build;
 
 public class FieldAccessTest {
 
@@ -89,6 +92,20 @@ public class FieldAccessTest {
 		assertEquals(
 				"java.lang.Object[]",
 				fa.getType().toString());
+		
+		// testing the proxy method setAssignment/getAssignment on local variables
+		var.setAssignment(null);
+		assertEquals(null, var.getAssignment());
+		assertEquals("int a", var.toString());
+		
+		// testing the proxy method setAssignment/getAssignment on fields
+		CtField<?> field = type.getElements(
+				new TypeFilter<CtField<?>>(CtField.class)).get(0);
+		assertNotNull(field.getAssignment());
+		field.setAssignment(null);
+		assertEquals(null, field.getAssignment());
+		assertEquals("java.lang.Object[] data;", field.toString());
+
 	}
 	
 	@Test

@@ -587,7 +587,6 @@ public abstract class CtScanner implements CtVisitor {
 		enter(parameter);
 		scan(parameter.getAnnotations());
 		scan(parameter.getType());
-		scan(parameter.getDefaultExpression());
 		exit(parameter);
 	}
 

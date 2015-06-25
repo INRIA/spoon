@@ -28,7 +28,7 @@ import spoon.reflect.reference.CtLocalVariableReference;
  *            type of the variable
  * @see spoon.reflect.declaration.CtExecutable
  */
-public interface CtLocalVariable<T> extends CtStatement, CtVariable<T> {
+public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSReceiver<T> {
 	/*
 	 * (non-Javadoc)
 	 * 

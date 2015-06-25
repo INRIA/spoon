@@ -15,8 +15,6 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABL
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
 
-	CtExpression<T> defaultExpression;
-
 	String name;
 
 	CtTypeReference<T> type;
@@ -30,7 +28,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	public CtExpression<T> getDefaultExpression() {
-		return defaultExpression;
+		return null;
 	}
 
 	public CtCatchVariableReference<T> getReference() {
@@ -46,8 +44,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
-		this.defaultExpression = defaultExpression;
-		this.defaultExpression.setParent(this);
+		throw new UnsupportedOperationException();
 	}
 
 	public void setSimpleName(String simpleName) {
