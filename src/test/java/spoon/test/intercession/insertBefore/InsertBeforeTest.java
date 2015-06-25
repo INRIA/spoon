@@ -81,7 +81,7 @@ public class InsertBeforeTest {
         CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
         CtIf ifWithoutBraces = ifWithoutBraces_m.getElements(
-                new TypeFilter<CtIf>(CtIf.class)).get(0);
+                new TypeFilter<>(CtIf.class)).get(0);
 
         // Inserts a s before the then statement
         ifWithoutBraces.getThenStatement().insertBefore(s);
