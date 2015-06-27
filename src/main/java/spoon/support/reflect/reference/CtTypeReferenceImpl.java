@@ -258,25 +258,23 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			return true;
 		}
 		if (subTypeDecl != null) {
-			if (subTypeDecl instanceof CtType) {
-				for (CtTypeReference<?> ref : ((CtType<?>) subTypeDecl)
-						.getSuperInterfaces()) {
-					if (ref.isSubtypeOf(type)) {
-						return true;
-					}
+			for (CtTypeReference<?> ref : ((CtType<?>) subTypeDecl)
+					.getSuperInterfaces()) {
+				if (ref.isSubtypeOf(type)) {
+					return true;
 				}
-				if (subTypeDecl instanceof CtClass) {
-					if (getFactory().Type().OBJECT.equals(type)) {
+			}
+			if (subTypeDecl instanceof CtClass) {
+				if (getFactory().Type().OBJECT.equals(type)) {
+					return true;
+				}
+				if (((CtClass<?>) subTypeDecl).getSuperclass() != null) {
+					if (((CtClass<?>) subTypeDecl).getSuperclass().equals(
+							type)) {
 						return true;
 					}
-					if (((CtClass<?>) subTypeDecl).getSuperclass() != null) {
-						if (((CtClass<?>) subTypeDecl).getSuperclass().equals(
-								type)) {
-							return true;
-						}
-						return ((CtClass<?>) subTypeDecl).getSuperclass()
-								.isSubtypeOf(type);
-					}
+					return ((CtClass<?>) subTypeDecl).getSuperclass()
+							.isSubtypeOf(type);
 				}
 			}
 			return false;
