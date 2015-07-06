@@ -26,6 +26,8 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * This abstract element defines a super-type for classes and interfaces, which
  * can declare methods.
+ * 
+ * The type parameter T refers to the actual class that this type represents.
  */
 public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtGenericElement {
 
