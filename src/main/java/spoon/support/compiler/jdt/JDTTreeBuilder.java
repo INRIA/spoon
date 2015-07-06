@@ -28,6 +28,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
@@ -67,6 +68,7 @@ import org.eclipse.jdt.internal.compiler.ast.FloatLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
 import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
 import org.eclipse.jdt.internal.compiler.ast.IfStatement;
+import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
 import org.eclipse.jdt.internal.compiler.ast.IntLiteral;
@@ -142,7 +144,6 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 
-import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -464,6 +465,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 							.enclosingType()));
 				} else {
 					ref.setPackage(getPackageReference(binding.getPackage()));
+					if (context.compilationunitdeclaration != null && context.compilationunitdeclaration.imports != null) {
+						for (ImportReference anImport : context.compilationunitdeclaration.imports) {
+							if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], binding.sourceName())) {
+								char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
+								Binding someBinding = context.compilationunitdeclaration.scope.findImport(chars, false, false);
+								PackageBinding packageBinding;
+								if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
+									packageBinding = (PackageBinding)someBinding;
+								} else {
+									packageBinding = context.compilationunitdeclaration.scope.environment.createPackage(chars);
+								}
+								ref.setPackage(getPackageReference(packageBinding));
+								break;
+							}
+						}
+					}
 				}
 				ref.setSimpleName(new String(binding.sourceName()));
 

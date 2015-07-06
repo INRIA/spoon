@@ -1,6 +1,8 @@
 package spoon.test.imports;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
@@ -101,5 +104,21 @@ public class ImportTest {
 				+ "    }" + System.lineSeparator()
 				+ "}";
 		assertEquals(expected, subClass.toString());
+	}
+
+	@Test
+	public void testMissingImport() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		factory.getEnvironment().setNoClasspath(true);
+
+		SpoonCompiler compiler = spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources("./src/test/resources/import-resources/fr/inria/MissingImport.java"));
+
+		compiler.build();
+		CtTypeReference<?> type = factory.Class().getAll().get(0).getFields().get(0).getType();
+		assertEquals("Abcd", type.getSimpleName());
+		assertEquals("fr.inria.internal", type.getPackage().getSimpleName());
 	}
 }
