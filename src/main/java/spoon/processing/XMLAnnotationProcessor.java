@@ -199,9 +199,6 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 					}
 				}
 
-				if (!(t instanceof CtType))
-					continue;
-
 				List<CtExecutable<?>> executables = new ArrayList<CtExecutable<?>>();
 				executables.addAll(((CtType<?>) t).getMethods());
 				if (t instanceof CtClass) {

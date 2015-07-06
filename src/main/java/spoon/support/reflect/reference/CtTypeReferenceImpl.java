@@ -17,6 +17,9 @@
 
 package spoon.support.reflect.reference;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -46,9 +49,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		CtTypeReference<T> {
@@ -258,25 +258,23 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			return true;
 		}
 		if (subTypeDecl != null) {
-			if (subTypeDecl instanceof CtType) {
-				for (CtTypeReference<?> ref : ((CtType<?>) subTypeDecl)
-						.getSuperInterfaces()) {
-					if (ref.isSubtypeOf(type)) {
-						return true;
-					}
+			for (CtTypeReference<?> ref : ((CtType<?>) subTypeDecl)
+					.getSuperInterfaces()) {
+				if (ref.isSubtypeOf(type)) {
+					return true;
 				}
-				if (subTypeDecl instanceof CtClass) {
-					if (getFactory().Type().OBJECT.equals(type)) {
+			}
+			if (subTypeDecl instanceof CtClass) {
+				if (getFactory().Type().OBJECT.equals(type)) {
+					return true;
+				}
+				if (((CtClass<?>) subTypeDecl).getSuperclass() != null) {
+					if (((CtClass<?>) subTypeDecl).getSuperclass().equals(
+							type)) {
 						return true;
 					}
-					if (((CtClass<?>) subTypeDecl).getSuperclass() != null) {
-						if (((CtClass<?>) subTypeDecl).getSuperclass().equals(
-								type)) {
-							return true;
-						}
-						return ((CtClass<?>) subTypeDecl).getSuperclass()
-								.isSubtypeOf(type);
-					}
+					return ((CtClass<?>) subTypeDecl).getSuperclass()
+							.isSubtypeOf(type);
 				}
 			}
 			return false;
