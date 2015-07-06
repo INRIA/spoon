@@ -87,7 +87,8 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 			throw new SpoonException("cannot insert in this context (use insertEnd?)");
 		}
 		if (target.getParent(CtConstructor.class) != null) {
-			if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith("<init>")) {
+			if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName()
+					.startsWith("<init>")) {
 				throw new SpoonException("cannot insert a statement before a super or this invocation.");
 			}
 		}
@@ -103,43 +104,44 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 				throw new IllegalArgumentException("should not happen");
 			}
 			if (stat instanceof CtBlock) {
-                ((CtBlock<?>) stat).insertBegin(statementsToBeInserted);
-                return;
+				((CtBlock<?>) stat).insertBegin(statementsToBeInserted);
+				return;
 			} else {
 				CtBlock<?> block = target.getFactory().Core().createBlock();
 				target.setParent(block);
 				block.addStatement(stat);
-				if (inThen)
+				if (inThen) {
 					((CtIf) targetParent).setThenStatement(block);
-				else
+				} else {
 					((CtIf) targetParent).setElseStatement(block);
+				}
 				parentBlock = block;
 			}
 		} else if (targetParent instanceof CtSwitch) {
-            for (CtStatement s : statementsToBeInserted) {
-                if (! (s instanceof CtCase)) {
-                    throw new RuntimeException(
-                            "cannot insert something that is not case in a switch");
-                }
-            }
-            int i=0;
-            for (CtStatement s : ((CtSwitch<?>) targetParent).getCases()) {
-                if (s == target) {
-                    break;
-                }
-                i++;
-            }
-            for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
-                CtStatement s = statementsToBeInserted.getStatements().get(j);
-                ((CtSwitch<?>) targetParent).getCases().add(i, (CtCase)s);
-            }
-            return;
-        } else if (targetParent instanceof CtLoop) {
+			for (CtStatement s : statementsToBeInserted) {
+				if (!(s instanceof CtCase)) {
+					throw new RuntimeException(
+							"cannot insert something that is not case in a switch");
+				}
+			}
+			int i = 0;
+			for (CtStatement s : ((CtSwitch<?>) targetParent).getCases()) {
+				if (s == target) {
+					break;
+				}
+				i++;
+			}
+			for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
+				CtStatement s = statementsToBeInserted.getStatements().get(j);
+				((CtSwitch<?>) targetParent).getCases().add(i, (CtCase) s);
+			}
+			return;
+		} else if (targetParent instanceof CtLoop) {
 			CtStatement stat = ((CtLoop) targetParent).getBody();
 			if (stat instanceof CtBlock) {
 				parentBlock = (CtBlock<?>) stat;
-                ((CtBlock<?>) stat).insertBegin(statementsToBeInserted);
-                return;
+				((CtBlock<?>) stat).insertBegin(statementsToBeInserted);
+				return;
 			} else {
 				CtBlock<?> block = target.getFactory().Core().createBlock();
 				block.getStatements().add(stat);
@@ -147,27 +149,27 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 				parentBlock = block;
 			}
 		} else if (targetParent instanceof CtCase) {
-            int i=0;
-            for (CtStatement s : ((CtCase<?>) targetParent).getStatements()) {
-                if (s == target) {
-                    break;
-                }
-                i++;
-            }
-            for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
-                CtStatement s = statementsToBeInserted.getStatements().get(j);
-                ((CtCase<?>) targetParent).getStatements().add(i, s);
-            }
-            return;
-        } else {
+			int i = 0;
+			for (CtStatement s : ((CtCase<?>) targetParent).getStatements()) {
+				if (s == target) {
+					break;
+				}
+				i++;
+			}
+			for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
+				CtStatement s = statementsToBeInserted.getStatements().get(j);
+				((CtCase<?>) targetParent).getStatements().add(i, s);
+			}
+			return;
+		} else {
 			parentBlock = (CtBlock<?>) targetParent;// BCUTAG bad cast
 		}
 
-        if (!(parentBlock instanceof CtBlock)) {
-            throw new RuntimeException("cannot add a statement that is not in a block");
-        }
+		if (!(parentBlock instanceof CtBlock)) {
+			throw new RuntimeException("cannot add a statement that is not in a block");
+		}
 
-        int indexOfTargetElement = 0;
+		int indexOfTargetElement = 0;
 		for (CtStatement s : parentBlock.getStatements()) {
 			if (s == target) {
 				break;
@@ -218,4 +220,8 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		this.label = label;
 	}
 
+	@Override
+	public void replace(CtStatement element) {
+		replace((CtElement) element);
+	}
 }

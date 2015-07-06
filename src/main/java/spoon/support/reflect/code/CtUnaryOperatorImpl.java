@@ -89,4 +89,8 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements
 		this.label = label;
 	}
 
+	@Override
+	public void replace(CtStatement element) {
+		replace((CtElement)element);
+	}
 }

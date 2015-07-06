@@ -263,10 +263,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	}
 
 	public void replace(CtElement element) {
-		// ElementReplacer<CtElement> translator = new
-		// ElementReplacer<CtElement>(
-		// this, element);
-		// getParent().accept(translator);
 		try {
 			replaceIn(this, element, getParent());
 		} catch (CtUncomparableException e1) {
@@ -325,15 +321,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	private boolean compare(Object o1, Object o2) {
 		return o1 == o2;
-	}
-
-	public void replace(Filter<? extends CtElement> replacementPoints,
-			CtElement element) {
-		List<? extends CtElement> l = Query
-				.getElements(this, replacementPoints);
-		for (CtElement e : l) {
-			e.replace(element);
-		}
 	}
 
 	public void setAnnotations(

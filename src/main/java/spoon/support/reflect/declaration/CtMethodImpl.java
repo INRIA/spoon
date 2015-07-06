@@ -17,6 +17,7 @@
 
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -152,5 +153,10 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (getModifiers().contains(ModifierKind.PRIVATE))
 			return ModifierKind.PRIVATE;
 		return null;
+	}
+
+	@Override
+	public <R extends T> void replace(CtMethod<T> element) {
+		replace((CtElement)element);
 	}
 }

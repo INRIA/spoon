@@ -17,22 +17,23 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -72,12 +73,12 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			CtStatement first = getStatements().get(0);
 			if (first instanceof CtInvocation
 					&& ((CtInvocation<?>) first).getExecutable()
-							.getSimpleName().startsWith("<init>")) {
+					.getSimpleName().startsWith("<init>")) {
 				first.insertAfter(statements);
 				return;
 			}
 		}
-		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+		if (this.statements == CtElementImpl.<CtStatement>EMPTY_LIST()) {
 			this.statements = new ArrayList<CtStatement>(
 					statements.getStatements().size() +
 							BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
@@ -92,7 +93,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			CtStatement first = getStatements().get(0);
 			if (first instanceof CtInvocation
 					&& ((CtInvocation<?>) first).getExecutable()
-							.getSimpleName().startsWith("<init>")) {
+					.getSimpleName().startsWith("<init>")) {
 				first.insertAfter(statement);
 				return;
 			}
@@ -142,7 +143,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	public void setStatements(List<CtStatement> statements) {
 		this.statements.clear();
-		for(CtStatement s:statements) {
+		for (CtStatement s : statements) {
 			addStatement(s);
 		}
 	}
@@ -167,7 +168,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	private void ensureModifiableStatementsList() {
-		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+		if (this.statements == CtElementImpl.<CtStatement>EMPTY_LIST()) {
 			this.statements = new ArrayList<CtStatement>(
 					BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -175,7 +176,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public void removeStatement(CtStatement statement) {
-		if (this.statements != CtElementImpl.<CtStatement> EMPTY_LIST()) {
+		if (this.statements != CtElementImpl.<CtStatement>EMPTY_LIST()) {
 			this.statements.remove(statement);
 		}
 	}
@@ -189,4 +190,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 				new ArrayList<CtStatement>(getStatements())).iterator();
 	}
 
+	@Override
+	public <T extends R> void replace(CtBlock<T> element) {
+		replace((CtElement) element);
+	}
 }

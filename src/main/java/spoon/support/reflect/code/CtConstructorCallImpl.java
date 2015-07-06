@@ -103,4 +103,9 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
+	@Override
+	public void replace(CtStatement element) {
+		replace((CtElement)element);
+	}
 }

@@ -142,4 +142,8 @@ public class CtInvocationImpl<T> extends
 		this.label = label;
 	}
 
+	@Override
+	public void replace(CtStatement element) {
+		replace((CtElement)element);
+	}
 }

@@ -17,14 +17,13 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -57,10 +56,15 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 
 	@Override
 	public void addTypeCast(CtTypeReference<?> type) {
-		if (typeCasts == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+		if (typeCasts == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
 			typeCasts = new ArrayList<CtTypeReference<?>>(
 					CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		typeCasts.add(type);
+	}
+
+	@Override
+	public <E extends T> void replace(CtExpression<E> element) {
+		replace((CtElement) element);
 	}
 }

@@ -64,4 +64,8 @@ public interface CtStatement extends CtCodeElement {
 	 */
 	void setLabel(String label);
 
+	/**
+	 * Replaces this element by another one.
+	 */
+	void replace(CtStatement element);
 }

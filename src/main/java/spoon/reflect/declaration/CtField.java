@@ -35,4 +35,9 @@ public interface CtField<T> extends CtVariable<T>, CtTypeMember {
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
 	CtFieldReference<T> getReference();
+
+	/**
+	 * Replaces this element by another one.
+	 */
+	<R extends T> void replace(CtField<R> element);
 }

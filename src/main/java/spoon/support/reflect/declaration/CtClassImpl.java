@@ -30,6 +30,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -214,5 +215,10 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 			l.add(c.getReference());
 		}
 		return Collections.unmodifiableCollection(l);
+	}
+
+	@Override
+	public void replace(CtStatement element) {
+		replace((CtElement)element);
 	}
 }

@@ -23,6 +23,7 @@ import java.util.List;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -97,4 +98,8 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		typeCasts.add(type);
 	}
 
+	@Override
+	public <E extends T> void replace(CtExpression<E> element) {
+		replace((CtElement)element);
+	}
 }
