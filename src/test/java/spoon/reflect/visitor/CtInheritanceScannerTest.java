@@ -1,5 +1,6 @@
 package spoon.reflect.visitor;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
+
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.test.TestUtils;
@@ -22,6 +24,12 @@ import spoon.test.TestUtils;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * 
+ * Tests the main contract of CtInheritanceScanner
+ * 
+ * Can be called with 
+ * $ mvn test -D test=spoon.reflect.visitor.CtInheritanceScannerTest
+ * 
  * Created by nicolas on 25/02/2015.
  */
 @RunWith(Parameterized.class)
@@ -65,23 +73,29 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			if (!intf.getSimpleName().startsWith("Ct")) {
 				continue;
 			}
-			Method mth;
-			try {
+			Method mth=null;
+			
+			// if a method visitX exists, it must be invoked
+			try {				
 				mth = CtInheritanceScanner.class.getDeclaredMethod("visit" + intf.getSimpleName(), intf);
-
-				// we should not have a scan method
-				try {
-					CtInheritanceScanner.class.getDeclaredMethod("scan" + intf.getSimpleName(), intf);
-					Assert.fail("should not have both visit" + intf.getSimpleName() + " and scan" + intf.getSimpleName()
-							+ " method");
-				} catch (NoSuchMethodException ex) {
-				}
 			} catch (NoSuchMethodException ex) {
-				mth = CtInheritanceScanner.class.getDeclaredMethod("scan" + intf.getSimpleName(), intf);
+				// no such method, nothing
 			}
-			if (!toInvoke.contains(mth)) {
+			if (mth!=null && !toInvoke.contains(mth)) {
 				toInvoke.add(mth);
 			}
+			
+			// if a method scanX exists, it must be invoked
+			try {				
+				mth = CtInheritanceScanner.class.getDeclaredMethod("scan" + intf.getSimpleName(), intf);
+			} catch (NoSuchMethodException ex) {
+				// no such method, nothing
+			}
+			if (mth!=null && !toInvoke.contains(mth)) {
+				toInvoke.add(mth);
+			}
+
+			// recursion
 			for (Class<?> aClass : intf.getInterfaces()) {
 				tocheck.add(aClass);
 			}
@@ -106,8 +120,12 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 		for (int i = 0; i < toInvoke.size(); i++) {
 			try {
 				toInvoke.get(i).invoke(verify(mocked), instance);
-			} catch (InvocationTargetException ex) {
-				throw ex.getTargetException();
+			} catch (InvocationTargetException e) {
+				if (e.getTargetException() instanceof AssertionError) {
+					fail("visit"+instance.getClass().getSimpleName().replaceAll("Impl$", "")+" does not call "+toInvoke.get(i).getName());
+				} else {
+					throw e.getTargetException();
+				}
 			}
 		}
 	}
