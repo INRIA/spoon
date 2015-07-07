@@ -81,6 +81,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean verbose = false;
 
+	private boolean quiet = false;
+
 	private boolean autoImports = false;
 
 	private int warningCount = 0;
@@ -208,16 +210,18 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	private void print(StringBuffer buffer, Severity severity) {
-		switch (severity) {
-		case ERROR:
-			logger.error(buffer.toString());
-			break;
-		case WARNING:
-			logger.warn(buffer.toString());
-			break;
-		default:
-			if (isVerbose()) {
-				logger.info(buffer.toString());
+		if(!quiet) {
+			switch (severity) {
+				case ERROR:
+					logger.error(buffer.toString());
+					break;
+				case WARNING:
+					logger.warn(buffer.toString());
+					break;
+				default:
+					if (isVerbose()) {
+						logger.info(buffer.toString());
+					}
 			}
 		}
 	}
@@ -322,6 +326,10 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
+	}
+
+	public void setQuiet(boolean quiet) {
+		this.quiet = quiet;
 	}
 
 	public void setXmlRootFolder(File xmlRootFolder) {
