@@ -18,11 +18,14 @@
 package spoon.support.compiler;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -169,4 +172,35 @@ public class ZipFolder implements SpoonFolder {
 		throw new UnsupportedOperationException("not possible a real folder");
 	}
 
+	public void extract(File destDir) {
+		ZipInputStream zipInput = null;
+		try {
+			zipInput = new ZipInputStream(new BufferedInputStream(
+					new FileInputStream(file)));
+
+			ZipEntry entry;
+			while ((entry = zipInput.getNextEntry()) != null) {
+				File f = new File(destDir + File.separator + entry.getName());
+				if (entry.isDirectory()) { // if its a directory, create it
+					f.mkdir();
+					continue;
+				}
+				// deflate in buffer
+				final int BUFFER = 2048;
+				f.getParentFile().mkdirs(); // Force parent directory creation, sometimes directory was not yet handled
+											// in the zip entry iteration
+				OutputStream output = new BufferedOutputStream(new FileOutputStream(f));
+				int count;
+				byte data[] = new byte[BUFFER];
+				while ((count = zipInput.read(data, 0, BUFFER)) != -1) {
+					output.write(data, 0, count);
+				}
+				output.flush();
+				output.close();
+			}
+			zipInput.close();
+		} catch (Exception e) {
+			Launcher.logger.error(e.getMessage(), e);
+		}
+	}
 }

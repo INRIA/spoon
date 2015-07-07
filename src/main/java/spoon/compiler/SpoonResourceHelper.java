@@ -96,7 +96,13 @@ public abstract class SpoonResourceHelper {
 				return new FileSystemFolder(f);
 			}
 			if (isArchive(f)) {
-				return new ZipFolder(f);
+				ZipFolder zipFolder = new ZipFolder(f);
+				File tempFile = File.createTempFile("ZIP", "ZIP");
+				tempFile.delete();
+				tempFile.mkdirs();
+				zipFolder.extract(tempFile);
+				tempFile.deleteOnExit();
+				return new FileSystemFolder(tempFile);
 			}
 		} catch (IOException e) {
 			Launcher.logger.error(e.getMessage(), e);
