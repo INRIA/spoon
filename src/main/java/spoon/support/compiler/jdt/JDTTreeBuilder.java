@@ -1541,7 +1541,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(lambdaExpression);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(AllocationExpression allocationExpression,
 			BlockScope scope) {
