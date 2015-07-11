@@ -31,7 +31,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;

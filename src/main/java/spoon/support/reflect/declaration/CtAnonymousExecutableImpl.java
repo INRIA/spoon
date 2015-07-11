@@ -19,7 +19,6 @@ package spoon.support.reflect.declaration;
 
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnonymousExecutable;

@@ -17,6 +17,9 @@
 
 package spoon.support.reflect.declaration;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -25,10 +28,6 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtField}.

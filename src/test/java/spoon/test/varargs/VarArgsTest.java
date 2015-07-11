@@ -1,14 +1,10 @@
 package spoon.test.varargs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
 import org.junit.Test;
 
-import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;

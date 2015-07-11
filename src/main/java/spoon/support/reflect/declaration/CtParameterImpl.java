@@ -17,19 +17,16 @@
 
 package spoon.support.reflect.declaration;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtParameter}.

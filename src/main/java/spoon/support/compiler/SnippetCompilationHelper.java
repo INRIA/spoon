@@ -2,7 +2,6 @@ package spoon.support.compiler;
 
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;

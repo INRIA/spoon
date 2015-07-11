@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.code;
 
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtVariableReference;
