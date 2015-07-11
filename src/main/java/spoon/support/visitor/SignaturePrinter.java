@@ -20,8 +20,6 @@ package spoon.support.visitor;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -67,8 +65,8 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
@@ -99,8 +97,6 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class SignaturePrinter implements CtVisitor {
-	private static final Logger logger = Logger
-			.getLogger(SignaturePrinter.class);
 
 	StringBuffer signature;
 
