@@ -134,7 +134,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 
 	@SuppressWarnings("unchecked")
 	public CtExecutable<T> getDeclaration() {
-		CtType<?> typeDecl = (CtType<?>) getDeclaringType().getDeclaration();
+		CtType<?> typeDecl = getDeclaringType().getDeclaration();
 		if (typeDecl == null) {
 			return null;
 		}
@@ -182,7 +182,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		if ((subType == null) || subType.equals(getDeclaringType())) {
 			return null;
 		}
-		CtType<?> t = (CtType<?>) subType.getDeclaration();
+		CtType<?> t = subType.getDeclaration();
 		if (t == null) {
 			return null;
 		}

@@ -237,7 +237,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 
 	private Class<?> getElementType(String name) {
 		// Try by CT reflection
-		CtType<?> t = (CtType<?>) getAnnotationType().getDeclaration();
+		CtType<?> t = getAnnotationType().getDeclaration();
 		if (t != null) {
 			CtField<?> f = t.getField(name);
 			return f.getType().getActualClass();

@@ -232,7 +232,7 @@ public abstract class Parameters {
 	synchronized private static CtTypeReference<TemplateParameter<?>> getTemplateParameterType(
 			Factory factory) {
 		if (templateParameterType == null) {
-			templateParameterType = (CtTypeReference<TemplateParameter<?>>) (CtTypeReference) factory
+			templateParameterType = (CtTypeReference) factory
 					.Type().createReference(TemplateParameter.class);
 		}
 		return templateParameterType;
