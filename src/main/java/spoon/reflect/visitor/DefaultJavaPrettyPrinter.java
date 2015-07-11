@@ -1936,7 +1936,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return false;
 		}
 		// Checks if the declaring type has generic types.
-		return ((CtType) declaration).getFormalTypeParameters().size() != 0;
+		return ((CtType<?>) declaration).getFormalTypeParameters().size() != 0;
 	}
 
 	@Override

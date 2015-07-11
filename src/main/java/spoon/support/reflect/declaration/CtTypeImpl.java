@@ -559,7 +559,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl  implements
 
 	public void setMethods(Set<CtMethod<?>> methods) {
 		this.methods.clear();
-		for(CtMethod meth: methods) {
+		for(CtMethod<?> meth: methods) {
 			addMethod(meth);
 		}
 	}

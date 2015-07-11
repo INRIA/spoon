@@ -29,9 +29,9 @@ public class TargetedExpressionTest {
 	public void testCtSuperAccess() throws Exception {
 		final Factory factory = build(InternalSuperCall.class);
 		final CtClass<?> ctClass = factory.Class().get(InternalSuperCall.class);
-		final List<CtSuperAccess> superAccesses = ctClass.getElements(new AbstractFilter<CtSuperAccess>(CtSuperAccess.class) {
+		final List<CtSuperAccess<?>> superAccesses = ctClass.getElements(new AbstractFilter<CtSuperAccess<?>>(CtSuperAccess.class) {
 			@Override
-			public boolean matches(CtSuperAccess element) {
+			public boolean matches(CtSuperAccess<?> element) {
 				return super.matches(element);
 			}
 		});

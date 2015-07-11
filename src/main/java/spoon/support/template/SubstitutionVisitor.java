@@ -238,7 +238,7 @@ public class SubstitutionVisitor extends CtScanner {
 																	fa.getVariable()
 																	  .getSimpleName(),
 																	null);
-					CtBlock l = foreach.getFactory().Core().createBlock();
+					CtBlock<?> l = foreach.getFactory().Core().createBlock();
 					CtStatement body = foreach.getBody();
 					for (Object element : value) {
 						CtStatement b = foreach.getFactory().Core().clone(body);
@@ -360,7 +360,7 @@ public class SubstitutionVisitor extends CtScanner {
 						// block template parameters in returns should
 						// replace
 						// the return
-						((CtReturn)invocation.getParent()).replace((CtStatement)r);
+						((CtReturn<?>)invocation.getParent()).replace((CtStatement)r);
 					} else {
 						invocation.replace((CtExpression)r);
 					}

@@ -29,7 +29,7 @@ public class CtTryWithResourceImpl extends CtTryImpl
 	@Override
 	public void setResources(List<CtLocalVariable<?>> resources) {		
 		this.resources.clear();
-		for(CtLocalVariable l:resources) {
+		for(CtLocalVariable<?> l:resources) {
 			addResource(l);
 		}
 	}

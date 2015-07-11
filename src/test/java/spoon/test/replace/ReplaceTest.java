@@ -190,16 +190,16 @@ public class ReplaceTest {
 		CtMethod<?> sample = factory.Package().get("spoon.test.replace")
 				.getType("Foo").getMethod("foo");
 
-		CtVariable var = sample.getBody().getStatement(0);
+		CtVariable<?> var = sample.getBody().getStatement(0);
 
 		Assert.assertTrue(var.getDefaultExpression() instanceof CtLiteral);
-		Assert.assertEquals(3, ((CtLiteral) var.getDefaultExpression()).getValue());
+		Assert.assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
 
 		CtLiteral replacement = factory.Core().createLiteral();
 		replacement.setValue(42);
 		var.getDefaultExpression().replace(replacement);
 
-		Assert.assertEquals(42, ((CtLiteral) var.getDefaultExpression()).getValue());
+		Assert.assertEquals(42, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
 
 	}
 

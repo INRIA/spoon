@@ -64,7 +64,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet 
 	// because we need clear() for all set* methods
 	// and UnmodifiableList and unmodifiableCollection are not overridable (not visible grrrr)
-	private static class UNMODIFIABLE_COLLECTION<Object> extends ArrayList<Object> implements Set<Object> {
+	private static class UNMODIFIABLE_COLLECTION extends ArrayList<Object> implements Set<Object> {
 		@Override
 		public Object set(int index, Object element) {
 			throw new UnsupportedOperationException();
@@ -96,22 +96,22 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		}
 
 		@Override
-		public boolean containsAll(Collection c) {
+		public boolean containsAll(Collection<?> c) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public boolean addAll(Collection c) {
+		public boolean addAll(Collection<?> c) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public boolean retainAll(Collection c) {
+		public boolean retainAll(Collection<?> c) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public boolean removeAll(Collection c) {
+		public boolean removeAll(Collection<?> c) {
 			throw new UnsupportedOperationException();
 		}
 	};
@@ -326,7 +326,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public void setAnnotations(
 			List<CtAnnotation<? extends Annotation>> annotations) {
 		this.annotations.clear();
-		for (CtAnnotation annot: annotations) {
+		for (CtAnnotation<? extends Annotation> annot: annotations) {
 			addAnnotation(annot);
 		}
 	}
