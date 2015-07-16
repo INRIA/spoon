@@ -421,6 +421,4 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return actualTypeArguments !=CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
 				actualTypeArguments.remove(actualTypeArgument);
 	}
-
-
 }

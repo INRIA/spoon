@@ -16,6 +16,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -106,14 +107,11 @@ public class ImportTest {
 
 		compiler.build();
 		final CtClass<?> subClass = (CtClass<?>) factory.Type().get(SubClass.class);
-		final CtConstructorCall<?> ctNewClass = subClass.getElements(new AbstractFilter<CtConstructorCall<?>>(CtConstructorCall.class) {
-			@Override
-			public boolean matches(CtConstructorCall<?> element) {
-				return true;
-			}
-		}).get(0);
+		final CtConstructorCall<?> ctConstructorCall = subClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(
+				0);
 
-		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctNewClass.toString());
+		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")",
+					 ctConstructorCall.toString());
 		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator()
 				+ "    public void aMethod() {" + System.lineSeparator()
 				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator()

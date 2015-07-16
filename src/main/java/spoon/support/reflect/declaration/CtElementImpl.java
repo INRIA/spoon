@@ -36,6 +36,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
@@ -187,7 +188,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
 			if (a.getAnnotationType().toString()
-					.equals(annotationType.getName().replace('$','.'))) {
+					.equals(annotationType.getName().replace('$', '.'))) {
 				return ((CtAnnotation<A>) a).getActualAnnotation();
 			}
 		}

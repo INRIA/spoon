@@ -10,18 +10,23 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtGenericElementReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
 		implements CtConstructorCall<T> {
 	private static final long serialVersionUID = 1L;
 
+	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.EMPTY_LIST();
 	List<CtExpression<?>> arguments = EMPTY_LIST();
 	CtExecutableReference<T> executable;
 	String label;
@@ -119,5 +124,33 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	@Override
 	public void replace(CtStatement element) {
 		replace((CtElement)element);
+	}
+
+	@Override
+	public List<CtTypeReference<?>> getActualTypeArguments() {
+		return Collections.unmodifiableList(actualTypeArguments);
+	}
+
+	@Override
+	public <T extends CtGenericElementReference> T setActualTypeArguments(
+			List<CtTypeReference<?>> actualTypeArguments) {
+		this.actualTypeArguments = actualTypeArguments;
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtGenericElementReference> T addActualTypeArgument(
+			CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
+			actualTypeArguments = new ArrayList<CtTypeReference<?>>(CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		actualTypeArguments.add(actualTypeArgument);
+		return (T) this;
+	}
+
+	@Override
+	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()
+				&& actualTypeArguments.remove(actualTypeArgument);
 	}
 }

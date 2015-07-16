@@ -272,6 +272,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean selector = false;
 
+		boolean isGenericTypeExplicit = true;
+
 		/**
 		 * Stack of all parents elements
 		 */
@@ -445,7 +447,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (binding instanceof RawTypeBinding) {
 				ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
 			} else if (binding instanceof ParameterizedTypeBinding) {
-				ref = factory.Core().createTypeReference();
+				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
+					ref = factory.Core().createImplicitTypeReference();
+				} else {
+					ref = factory.Core().createTypeReference();
+				}
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName("");
 				} else {
@@ -457,7 +463,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 
-				// bindingCache.put(binding, ref);
 				if (((ParameterizedTypeBinding) binding).arguments != null) {
 					for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
 						ref.addActualTypeArgument(getTypeReference(b));
@@ -485,7 +490,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			} else if (binding instanceof BinaryTypeBinding) {
-				ref = factory.Core().createTypeReference();
+				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
+					ref = factory.Core().createImplicitTypeReference();
+				} else {
+					ref = factory.Core().createTypeReference();
+				}
 				if (binding.enclosingType() != null) {
 					ref.setDeclaringType(getTypeReference(binding
 							.enclosingType()));
@@ -496,7 +505,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			} else if (binding instanceof TypeVariableBinding) {
 				boolean oldBounds = bounds;
-				ref = factory.Core().createTypeParameterReference();
+				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
+					ref = factory.Core().createImplicitTypeReference();
+				} else {
+					ref = factory.Core().createTypeParameterReference();
+				}
 				if (binding instanceof CaptureBinding) {
 					ref.setSimpleName("?");
 					bounds = true;
@@ -539,18 +552,28 @@ public class JDTTreeBuilder extends ASTVisitor {
 					basestypes.put(name, ref);
 				}
 			} else if (binding instanceof WildcardBinding) {
-				CtTypeParameterReference reference = factory.Core().createTypeParameterReference();
-				reference.setSimpleName("?");
-				if (((WildcardBinding) binding).boundKind == Wildcard.SUPER) {
-					reference.setUpper(false);
+				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
+					ref = factory.Core().createImplicitTypeReference();
+				} else {
+					ref = factory.Core().createTypeParameterReference();
+				}
+				ref.setSimpleName("?");
+				if (((WildcardBinding) binding).boundKind == Wildcard.SUPER &&
+						ref instanceof CtTypeParameterReference) {
+					((CtTypeParameterReference) ref).setUpper(false);
 				}
 
-				if (((WildcardBinding) binding).bound != null) {
-					reference.addBound(getTypeReference(((WildcardBinding) binding).bound));
+				if (((WildcardBinding) binding).bound != null &&
+						ref instanceof CtTypeParameterReference) {
+					((CtTypeParameterReference) ref).addBound(
+							getTypeReference(((WildcardBinding) binding).bound));
 				}
-				ref = reference;
 			} else if (binding instanceof LocalTypeBinding) {
-				ref = factory.Core().createTypeReference();
+				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
+					ref = factory.Core().createImplicitTypeReference();
+				} else {
+					ref = factory.Core().createTypeReference();
+				}
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName(computeAnonymousName((SourceTypeBinding) binding));
 					ref.setDeclaringType(getTypeReference((binding.enclosingType())));
@@ -563,7 +586,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 								.enclosingType()));
 				}
 			} else if (binding instanceof SourceTypeBinding) {
-				ref = factory.Core().createTypeReference();
+				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
+					ref = factory.Core().createImplicitTypeReference();
+				} else {
+					ref = factory.Core().createTypeReference();
+				}
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName(computeAnonymousName((SourceTypeBinding) binding));
 					ref.setDeclaringType(getTypeReference((binding.enclosingType())));
@@ -583,20 +610,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 					// }
 				}
 			} else if (binding instanceof ArrayBinding) {
-				CtArrayTypeReference<Object> arrayref = factory.Core()
-						.createArrayTypeReference();
+				CtArrayTypeReference<Object> arrayref = factory.Core().createArrayTypeReference();
 				ref = arrayref;
 				for (int i = 1; i < binding.dimensions(); i++) {
-					CtArrayTypeReference<Object> tmp = factory.Core()
-							.createArrayTypeReference();
+					CtArrayTypeReference<Object> tmp = factory.Core().createArrayTypeReference();
 					arrayref.setComponentType(tmp);
 					arrayref = tmp;
 				}
-				arrayref.setComponentType(getTypeReference(binding
-						.leafComponentType()));
+				arrayref.setComponentType(getTypeReference(binding.leafComponentType()));
 			} else if (binding instanceof ProblemReferenceBinding) {
 				// Spoon is able to analyze also without the classpath
-				ref = factory.Core().createTypeReference();
+				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
+					ref = factory.Core().createImplicitTypeReference();
+				} else {
+					ref = factory.Core().createTypeReference();
+				}
 				ref.setSimpleName(new String(binding.readableName()));
 			} else if(binding instanceof SpoonReferenceBinding) {
 				ref = factory.Core().createTypeReference();
@@ -1622,26 +1650,33 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	private <T extends CtConstructorCall<Object>> T buildCommonPartForCtNewClassAndCtConstructorCall(AllocationExpression allocationExpression, BlockScope scope, T constructorCall) {
 		if (allocationExpression.type != null) {
-			if (allocationExpression.type.resolvedType instanceof ParameterizedTypeBinding) {
-				CtTypeReference<Object> res = references.getTypeReference(((ParameterizedTypeBinding) allocationExpression.type.resolvedType).genericType());
-				ParameterizedTypeBinding paramType = ((ParameterizedTypeBinding) allocationExpression.type.resolvedType);
-				if (paramType.arguments != null && paramType.isBoundParameterizedType()) {
-					for (TypeBinding b : ((ParameterizedTypeBinding) allocationExpression.type.resolvedType).arguments) {
-						res.addActualTypeArgument(references.getTypeReference(b));
+			final TypeReference[][] typeArguments = allocationExpression.type.getTypeArguments();
+			// If typeArguments are null or empty, we have an element with a generic type.
+			if (typeArguments != null && typeArguments.length > 0) {
+				context.isGenericTypeExplicit = true;
+				// This loop is necessary because it is the only way to know if the generic type
+				// is implicit or not.
+				for (TypeReference[] typeArgument : typeArguments) {
+					context.isGenericTypeExplicit = typeArgument != null && typeArgument.length > 0;
+					if (context.isGenericTypeExplicit) {
+						break;
 					}
 				}
-				constructorCall.setType(res);
-			} else
-				constructorCall.setType(references.getTypeReference(allocationExpression.type.resolvedType));
+			}
+			constructorCall.setType(references.getTypeReference(allocationExpression.type.resolvedType));
+			context.isGenericTypeExplicit = true;
 		} else if (allocationExpression.expectedType() != null) {
 			constructorCall.setType(references.getTypeReference(allocationExpression.expectedType()));
 		}
 		constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
-		if (constructorCall.getExecutable() == null) {
-			// "null executable ref
-		} else {
+		if (constructorCall.getExecutable() != null) {
 			constructorCall.getExecutable().setType((CtTypeReference<Object>) constructorCall.getExecutable().getDeclaringType());
 		}
+
+		if (allocationExpression.genericTypeArguments() != null) {
+			constructorCall.setActualTypeArguments(references.getBoundedTypesReferences(allocationExpression.genericTypeArguments()));
+		}
+
 		context.enter(constructorCall, allocationExpression);
 
 		if (allocationExpression.enclosingInstance() != null) {
@@ -1989,6 +2024,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 						.getDeclaringType());
 		inv.setType(inv.getExecutable().getType());
 
+		if (explicitConstructor.genericTypeArguments() != null) {
+			inv.getExecutable().setActualTypeArguments(
+					references.getBoundedTypesReferences(explicitConstructor.genericTypeArguments()));
+		}
+
 		context.enter(inv, explicitConstructor);
 
 		if (explicitConstructor.qualification != null) {
@@ -2264,9 +2304,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 				for (Expression e : messageSend.arguments) {
 					e.traverse(this, scope);
 				}
-			if (messageSend.genericTypeArguments != null)
-				inv.getExecutable().setActualTypeArguments(references
-						.getBoundedTypesReferences(messageSend.genericTypeArguments));
+			if (messageSend.genericTypeArguments() != null) {
+				for (TypeBinding typeBinding : messageSend.genericTypeArguments()) {
+					inv.getExecutable().addActualTypeArgument(references.getTypeReference(typeBinding));
+				}
+			}
 			context.popArgument(inv);
 			return false;
 
