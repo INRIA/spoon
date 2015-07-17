@@ -63,7 +63,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	@Override
 	public void setParameters(List<CtParameter<?>> params) {
 		this.parameters.clear();
-		for (CtParameter p : params) {
+		for (CtParameter<?> p : params) {
 			addParameter(p);
 		}
 	}

@@ -18,7 +18,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 
@@ -82,14 +81,14 @@ public class VisibilityTest {
 				"-i", "./src/test/java/spoon/test/visibility/testclasses/Tacos.java"
 		});
 
-		final List<CtFieldReference> references = Query.getReferences(launcher.getFactory(), new AbstractReferenceFilter<CtFieldReference>(CtFieldReference.class) {
+		final List<CtFieldReference<?>> references = Query.getReferences(launcher.getFactory(), new AbstractReferenceFilter<CtFieldReference<?>>(CtFieldReference.class) {
 			@Override
-			public boolean matches(CtFieldReference reference) {
+			public boolean matches(CtFieldReference<?> reference) {
 				return "x".equals(reference.getSimpleName());
 			}
 		});
 		assertEquals(1, references.size());
-		final CtFieldReference field = references.get(0);
+		final CtFieldReference<?> field = references.get(0);
 		assertNotNull(field.getDeclaration());
 		final CtClass<?> tacos = launcher.getFactory().Class().get("spoon.test.visibility.testclasses.Tacos");
 		assertEquals(tacos, field.getDeclaringType().getDeclaration());

@@ -34,9 +34,8 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -239,7 +238,7 @@ public class SubstitutionVisitor extends CtScanner {
 																	fa.getVariable()
 																	  .getSimpleName(),
 																	null);
-					CtBlock l = foreach.getFactory().Core().createBlock();
+					CtBlock<?> l = foreach.getFactory().Core().createBlock();
 					CtStatement body = foreach.getBody();
 					for (Object element : value) {
 						CtStatement b = foreach.getFactory().Core().clone(body);
@@ -361,7 +360,7 @@ public class SubstitutionVisitor extends CtScanner {
 						// block template parameters in returns should
 						// replace
 						// the return
-						((CtReturn)invocation.getParent()).replace((CtStatement)r);
+						((CtReturn<?>)invocation.getParent()).replace((CtStatement)r);
 					} else {
 						invocation.replace((CtExpression)r);
 					}

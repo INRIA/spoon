@@ -25,7 +25,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.declaration.CtPackageImpl;
 
 public class ParentTest {
     

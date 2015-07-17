@@ -119,7 +119,7 @@ public class CtInvocationImpl<T> extends
 
 	public void setArguments(List<CtExpression<?>> arguments) {
 		this.arguments.clear();
-		for (CtExpression expr : arguments) {
+		for (CtExpression<?> expr : arguments) {
 			addArgument(expr);
 		}
 	}

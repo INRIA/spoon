@@ -17,7 +17,9 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.annotation.Annotation;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +28,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		implements CtTypeParameterReference {

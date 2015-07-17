@@ -20,7 +20,6 @@ package spoon.reflect.declaration;
 import java.util.List;
 import java.util.Set;
 
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
 /**

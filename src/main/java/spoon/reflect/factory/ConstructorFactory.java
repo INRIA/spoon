@@ -165,7 +165,7 @@ public class ConstructorFactory extends ExecutableFactory {
 				type,
 				CtExecutableReference.CONSTRUCTOR_NAME,
 				factory.Type().createReferences(
-						(List<Class<?>>) Arrays.asList(constructor
+						Arrays.asList(constructor
 								.getParameterTypes())));
 	}
 

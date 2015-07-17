@@ -773,7 +773,7 @@ public class Launcher implements SpoonAPI {
 		if (getEnvironment().isCopyResources()) {
 			for (File dirInputSource : modelBuilder.getInputSources()) {
 				if (dirInputSource.isDirectory()) {
-					final Collection resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
+					final Collection<?> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
 					for (Object resource : resources) {
 						final String resourceParentPath = ((File) resource).getParent();
 						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());

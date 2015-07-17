@@ -122,7 +122,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	public void setTypes(Set<CtType<?>> types) {
 		this.types.clear();
-		for (CtType t : types) {
+		for (CtType<?> t : types) {
 			addType(t);
 		}
 	}

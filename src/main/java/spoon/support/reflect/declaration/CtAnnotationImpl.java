@@ -31,7 +31,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -238,7 +237,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 
 	private Class<?> getElementType(String name) {
 		// Try by CT reflection
-		CtType<?> t = (CtType<?>) getAnnotationType().getDeclaration();
+		CtType<?> t = getAnnotationType().getDeclaration();
 		if (t != null) {
 			CtField<?> f = t.getField(name);
 			return f.getType().getActualClass();

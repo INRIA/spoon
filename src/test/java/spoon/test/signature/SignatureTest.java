@@ -42,7 +42,7 @@ public class SignatureTest {
 				.createCodeSnippetStatement(
 						"" + "class X {" + "public Object foo() {"
 								+ " return null;" + "}};").compile();
-		CtReturn<?> returnEl = (CtReturn<?>) clazz.getElements(
+		CtReturn<?> returnEl = clazz.getElements(
 				new TypeFilter<>(CtReturn.class)).get(0);
 		CtExpression<?> lit = returnEl.getReturnedExpression();
 		assertTrue(lit instanceof CtLiteral);
@@ -90,7 +90,7 @@ public class SignatureTest {
 
 		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getStatement(0);
 
-		CtExpression<?> argument1 = (CtExpression<?>) invo.getArguments().get(0);
+		CtExpression<?> argument1 = invo.getArguments().get(0);
 
 		String signatureUnbound = argument1.getSignature();
 
@@ -207,12 +207,12 @@ public class SignatureTest {
 
 		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodString.getBody().getStatement(1);
 		String signatureInvoToInt = invoToInt1.getSignature();
-		CtExpression<?> argumentToInt1 = (CtExpression<?>) invoToInt1.getArguments().get(0);
+		CtExpression<?> argumentToInt1 = invoToInt1.getArguments().get(0);
 			
 		//----------From the second method we take the Method Inv
 		CtMethod<?> methodInt = (CtMethod<?>) clazz1.getAllMethods().toArray()[1];
 		CtInvocation<?> invoToString = (CtInvocation<?>) methodInt.getBody().getStatement(1);
-		CtExpression<?> argumentToString = (CtExpression<?>) invoToString.getArguments().get(0);
+		CtExpression<?> argumentToString = invoToString.getArguments().get(0);
 		
 		String signatureInvoToString = invoToString.getSignature();
 		//we compare the signatures of " this.foo(s);"	from both methods	
@@ -228,12 +228,12 @@ public class SignatureTest {
 		
 		/// ***SECOND PART, passing Parameters
 		CtInvocation<?> invoToString2 = (CtInvocation<?>) methodString.getBody().getStatement(2);
-		CtExpression<?> argumentToString2 = (CtExpression<?>) invoToString2.getArguments().get(0);
+		CtExpression<?> argumentToString2 = invoToString2.getArguments().get(0);
 		String signatureInvoToString2 = argumentToString2.getSignature();
 		
 		
 		CtInvocation<?> invoToInt2 = (CtInvocation<?>) methodInt.getBody().getStatement(2);
-		CtExpression<?> argumentToInt2 = (CtExpression<?>) invoToInt2.getArguments().get(0);
+		CtExpression<?> argumentToInt2 = invoToInt2.getArguments().get(0);
 		String signatureInvoToInt2 = argumentToInt2.getSignature();
 		///
 		
@@ -279,7 +279,7 @@ public class SignatureTest {
 		///--------From the first method we take the method invocations
 		CtMethod<?> methodString = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
 
-		CtAssignment invoToInt1 = (CtAssignment) methodString.getBody().getStatement(0);
+		CtAssignment<?,?> invoToInt1 = (CtAssignment<?,?>) methodString.getBody().getStatement(0);
 	
 		String sigAssign = invoToInt1.getSignature();
 		

@@ -50,7 +50,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 	public void setDimensionExpressions(
 			List<CtExpression<Integer>> dimensionExpressions) {
 		this.dimensionExpressions.clear();
-		for (CtExpression expr : dimensionExpressions) {
+		for (CtExpression<Integer> expr : dimensionExpressions) {
 			addDimensionExpression(expr);
 		}
 	}
@@ -75,7 +75,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 
 	public void setElements(List<CtExpression<?>> expressions) {
 		this.expressions.clear();
-		for (CtExpression expr: expressions) {
+		for (CtExpression<?> expr: expressions) {
 			addElement(expr);
 		}
 	}
