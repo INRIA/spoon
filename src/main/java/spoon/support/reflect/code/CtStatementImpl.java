@@ -165,10 +165,6 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 			parentBlock = (CtBlock<?>) targetParent;// BCUTAG bad cast
 		}
 
-		if (!(parentBlock instanceof CtBlock)) {
-			throw new RuntimeException("cannot add a statement that is not in a block");
-		}
-
 		int indexOfTargetElement = 0;
 		for (CtStatement s : parentBlock.getStatements()) {
 			if (s == target) {
