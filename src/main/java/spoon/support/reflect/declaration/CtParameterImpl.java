@@ -39,8 +39,6 @@ import java.util.TreeSet;
 public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParameter<T> {
 	private static final long serialVersionUID = 1L;
 
-	CtExpression<T> defaultExpression;
-
 	CtTypeReference<T> type;
 
 	boolean varArgs = false;
@@ -57,7 +55,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 
     @Override
 	public CtExpression<T> getDefaultExpression() {
-		return defaultExpression;
+		return null;
 	}
 
 	@Override
@@ -70,8 +68,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	public void setDefaultExpression(CtExpression<T> defaultExpression) {
-		defaultExpression.setParent(this);
-		this.defaultExpression = defaultExpression;
+		throw new UnsupportedOperationException();
 	}
 
 	public void setType(CtTypeReference<T> type) {

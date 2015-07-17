@@ -16,8 +16,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
@@ -99,8 +101,10 @@ public class ParentContractTest<T extends CtVisitable> {
 		Object o = instance;
 		for (Method setter : getMethodsToInvoke(toTest)) {
 			
-			// special case: unsupported method
+			// special case: impossible methods on some objects (they throw an UnsupportedOperationException)
 			if (o instanceof CtAnnotationType && "addMethod".equals(setter.getName())) continue;
+			if (o instanceof CtParameter && "setDefaultExpression".equals(setter.getName())) continue;
+			if (o instanceof CtCatchVariable && "setDefaultExpression".equals(setter.getName())) continue;
 			
 			CtElement mockedArgument = (CtElement) mock(setter.getParameters()[0].getType(),  Mockito.withSettings().extraInterfaces(Comparable.class));
 			try {
