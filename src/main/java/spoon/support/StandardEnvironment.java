@@ -152,9 +152,12 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private InputStream getPropertyStream(String processorName)
 			throws FileNotFoundException {
-		for (File child : getXmlRootFolder().listFiles()) {
-			if (child.getName().equals(processorName + PROPERTIES_EXT)) {
-				return new FileInputStream(child);
+		File[] listFiles = getXmlRootFolder().listFiles();
+		if(listFiles != null) {
+			for (File child : listFiles) {
+				if (child.getName().equals(processorName + PROPERTIES_EXT)) {
+					return new FileInputStream(child);
+				}
 			}
 		}
 		throw new FileNotFoundException();
