@@ -20,6 +20,7 @@ package spoon.support.compiler.jdt;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -132,12 +133,14 @@ import org.eclipse.jdt.internal.compiler.lookup.ElementValuePair;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
@@ -570,6 +573,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 				// Spoon is able to analyze also without the classpath
 				ref = factory.Core().createTypeReference();
 				ref.setSimpleName(new String(binding.readableName()));
+			} else if(binding instanceof SpoonReferenceBinding) {
+				ref = factory.Core().createTypeReference();
+				ref.setSimpleName(new String(binding.sourceName()));
+				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else {
 				throw new RuntimeException("Unknown TypeBinding: "
 						+ binding.getClass() + " " + binding);
@@ -852,8 +859,32 @@ public class JDTTreeBuilder extends ASTVisitor {
 			type = interf;
 		} else {
 			CtClass<?> cl = factory.Core().createClass();
+			if (typeDeclaration.superclass != null &&
+					typeDeclaration.superclass.resolvedType != null &&
+					!new String(typeDeclaration.superclass.resolvedType.qualifiedPackageName()).equals(new String(typeDeclaration.binding.qualifiedPackageName()))) {
+
+				// Sorry for this hack but see the test case ImportTest#testImportOfAnInnerClassInASuperClassPackage.
+				// JDT isn't smart enough to return me a super class available. So, I modify their AST when
+				// superclasses aren't in the same package and when their visibilities are "default".
+				List<ModifierKind> modifiers = Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED);
+				final TypeBinding resolvedType = typeDeclaration.superclass.resolvedType;
+				if (resolvedType instanceof MemberTypeBinding &&
+						resolvedType.enclosingType() != null &&
+						!getModifiers(resolvedType.enclosingType().modifiers).containsAll(modifiers)) {
+					typeDeclaration.superclass.resolvedType = new SpoonReferenceBinding(
+							typeDeclaration.superclass.resolvedType.sourceName(),
+							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
+				} else if (resolvedType instanceof BinaryTypeBinding &&
+						resolvedType.enclosingType() != null &&
+						!getModifiers(resolvedType.enclosingType().modifiers).containsAll(modifiers)) {
+					typeDeclaration.superclass.resolvedType = new SpoonReferenceBinding(
+							typeDeclaration.superclass.resolvedType.sourceName(),
+							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
+				}
+			}
 			if (typeDeclaration.superclass != null) {
-				cl.setSuperclass(references.getTypeReference(typeDeclaration.superclass.resolvedType));
+				cl.setSuperclass(
+						references.getTypeReference(typeDeclaration.superclass.resolvedType));
 			}
 
 			// If the current class is an anonymous class with a super interface and generic types, we add generic types
@@ -898,6 +929,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
 
 		return type;
+	}
+
+	class SpoonReferenceBinding extends ReferenceBinding {
+		private ReferenceBinding enclosingType;
+
+		public SpoonReferenceBinding(char[] sourceName, ReferenceBinding enclosingType) {
+			this.sourceName = sourceName;
+			this.enclosingType = enclosingType;
+		}
+
+		@Override
+		public ReferenceBinding enclosingType() {
+			return enclosingType;
+		}
 	}
 
 	private String computeAnonymousName(SourceTypeBinding binding) {
