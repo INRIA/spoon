@@ -35,6 +35,12 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		super();
 	}
 
+	@Override
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtParameterReference(this);
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public CtParameter<T> getDeclaration() {
 		CtExecutable<?> exec = executable.getDeclaration();
@@ -50,16 +56,14 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
 				"Cannot found declaration for parameter " + getSimpleName());
 	}
 
+	@Override
 	public CtExecutableReference<?> getDeclaringExecutable() {
 		return executable;
 	}
 
-	public void setDeclaringExecutable(CtExecutableReference<?> executable) {
+	@Override
+	public <C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable) {
 		this.executable = executable;
+		return (C) this;
 	}
-
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtParameterReference(this);
-	}
-	
 }

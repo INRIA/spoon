@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtField;

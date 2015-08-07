@@ -53,5 +53,5 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	 * Sets the expression in the body of the lambda. Nothing will change
 	 * if the lambda already has a value in the body attribute.
 	 */
-	void setExpression(CtExpression<T> expression);
+	<C extends CtLambda<T>> C setExpression(CtExpression<T> expression);
 }

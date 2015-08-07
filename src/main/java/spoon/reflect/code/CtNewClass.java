@@ -35,6 +35,6 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	/**
 	 * Sets the created class.
 	 */
-	void setAnonymousClass(CtClass<?> anonymousClass);
+	<N extends CtNewClass> N setAnonymousClass(CtClass<?> anonymousClass);
 
 }

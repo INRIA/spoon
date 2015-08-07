@@ -24,6 +24,7 @@ import java.util.List;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -36,44 +37,34 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 
 	List<CtStatement> statements = EMPTY_LIST();
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtStatementList(this);
 	}
 
+	@Override
 	public List<CtStatement> getStatements() {
 		return statements;
 	}
 
-	public void setStatements(List<CtStatement> stmts) {		
+	@Override
+	public <T extends CtStatementList> T setStatements(List<CtStatement> stmts) {
 		this.statements.clear();
 		for (CtStatement stmt : stmts) {
 			addStatement(stmt);
 		}
-	}
-
-	public R S() {
-		return null;
-	}
-
-	public CtStatementList getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+		return (T) this;
 	}
 
 	@Override
-	public void setPosition(SourcePosition position) {
-		for (CtStatement s : statements) {
-			s.setPosition(position);
-		}
-	}
-
-	@Override
-	public void addStatement(CtStatement statement) {
+	public <T extends CtStatementList> T addStatement(CtStatement statement) {
 		if (this.statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
 			this.statements = new ArrayList<CtStatement>(
 					BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		this.statements.add(statement);
+		return (T) this;
 	}
 
 	@Override
@@ -83,8 +74,20 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements
 		}
 	}
 
+	@Override
+	public <E extends CtElement> E setPosition(SourcePosition position) {
+		for (CtStatement s : statements) {
+			s.setPosition(position);
+		}
+		return (E) this;
+	}
+
     @Override
     public Iterator<CtStatement> iterator() {
         return statements.iterator();
     }
+
+	public CtStatementList getSubstitution(CtType<?> targetType) {
+		return getFactory().Core().clone(this);
+	}
 }

@@ -2,6 +2,11 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtMultiTypedElement;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -23,45 +28,56 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCatchVariable(this);
 	}
 
+	@Override
 	public CtExpression<T> getDefaultExpression() {
 		return null;
 	}
 
+	@Override
 	public CtCatchVariableReference<T> getReference() {
 		return getFactory().Code().createCatchVariableReference(this);
 	}
 
+	@Override
 	public String getSimpleName() {
 		return name;
 	}
 
+	@Override
 	public CtTypeReference<T> getType() {
 		return type;
 	}
 
-	public void setDefaultExpression(CtExpression<T> defaultExpression) {
+	@Override
+	public <C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> defaultExpression) {
 		throw new UnsupportedOperationException();
 	}
 
-	public void setSimpleName(String simpleName) {
+	@Override
+	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
 		this.name = simpleName;
-	}
-
-	public void setType(CtTypeReference<T> type) {
-		this.type = type;
+		return (C) this;
 	}
 
 	@Override
-	public boolean addMultiType(CtTypeReference<?> ref) {
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		this.type = type;
+		return (C) this;
+	}
+
+	@Override
+	public <T extends CtMultiTypedElement> T addMultiType(CtTypeReference<?> ref) {
 		if (types == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
 			types = new ArrayList<CtTypeReference<?>>(
 					CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
-		return types.add(ref);
+		types.add(ref);
+		return (T) this;
 	}
 
 	@Override
@@ -85,16 +101,18 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
-	public void setModifiers(Set<ModifierKind> modifiers) {
+	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		this.modifiers = modifiers;
+		return (C) this;
 	}
 
 	@Override
-	public boolean addModifier(ModifierKind modifier) {
+	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		return modifiers.add(modifier);
+		modifiers.add(modifier);
+		return (C) this;
 	}
 
 	@Override
@@ -103,7 +121,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
-	public void setVisibility(ModifierKind visibility) {
+	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
@@ -111,6 +129,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);
 		getModifiers().add(visibility);
+		return (C) this;
 	}
 
 	@Override

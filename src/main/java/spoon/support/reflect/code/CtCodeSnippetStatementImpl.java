@@ -2,6 +2,7 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SnippetCompilationHelper;
@@ -21,8 +22,9 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
 		return value;
 	}
 
-	public void setValue(String value) {
+	public <C extends CtCodeSnippet> C setValue(String value) {
 		this.value = value;
+		return (C) this;
 	}
 
 	@SuppressWarnings("unchecked")

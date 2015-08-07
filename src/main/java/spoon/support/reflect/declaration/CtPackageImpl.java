@@ -61,26 +61,32 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		setParent(ROOT_PACKAGE);
 	}
 
-	public boolean addPackage(CtPackage pack) {
-		pack.setParent(this);
-		return packs.add(pack);
-	}
-
-	public boolean removePackage(CtPackage pack) {
-		return packs.remove(pack);
-	}
-
+	@Override
 	public void accept(CtVisitor v) {
 		v.visitCtPackage(this);
 	}
 
+	@Override
+	public <T extends CtPackage> T addPackage(CtPackage pack) {
+		pack.setParent(this);
+		packs.add(pack);
+		return (T) this;
+	}
+
+	@Override
+	public boolean removePackage(CtPackage pack) {
+		return packs.remove(pack);
+	}
+
+	@Override
 	public CtPackage getDeclaringPackage() {
 		if (parent == null) {
 			setParent(ROOT_PACKAGE);
 		}
 		return getParent(CtPackage.class);
 	}
-	
+
+	@Override
 	public CtPackage getPackage(String name) {
 		for (CtPackage p : packs) {
 			if (p.getSimpleName().equals(name))
@@ -89,16 +95,19 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return null;
 	}
 
+	@Override
 	public Set<CtPackage> getPackages() {
 		return packs;
 	}
 
+	@Override
 	public String getQualifiedName() {
 		if (getDeclaringPackage() == null || getDeclaringPackage() == ROOT_PACKAGE)
 			return getSimpleName();
 		return getDeclaringPackage().getQualifiedName() + "." + getSimpleName();
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends CtType<?>> T getType(String simpleName) {
 		for (CtType<?> t : types) {
@@ -109,22 +118,27 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return null;
 	}
 
+	@Override
 	public Set<CtType<?>> getTypes() {
 		return types;
 	}
 
-	public void setPackages(Set<CtPackage> packs) {
+	@Override
+	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
 		this.packs.clear();
 		for (CtPackage p : packs) {
 			addPackage(p);
 		}
+		return (T) this;
 	}
 
-	public void setTypes(Set<CtType<?>> types) {
+	@Override
+	public <T extends CtPackage> T setTypes(Set<CtType<?>> types) {
 		this.types.clear();
 		for (CtType<?> t : types) {
 			addType(t);
 		}
+		return (T) this;
 	}
 
 	@Override
@@ -133,9 +147,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public void addType(CtType<?> type) {
+	public <T extends CtPackage> T addType(CtType<?> type) {
 		type.setParent(this);
 		types.add(type);
+		return (T) this;
 	}
 
 	@Override
@@ -144,8 +159,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public SourcePosition getPosition()
-	{
+	public SourcePosition getPosition() {
 		/*
 		 * The super.getPosition() method returns the own position
 		 * or if it's null the position of the parent element,

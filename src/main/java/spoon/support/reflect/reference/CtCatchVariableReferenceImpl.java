@@ -31,16 +31,19 @@ public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		super();
 	}
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCatchVariableReference(this);
 	}
 
+	@Override
 	public CtCatchVariable<T> getDeclaration() {
 		return declaration;
 	}
 
-	public void setDeclaration(CtCatchVariable<T> declaration) {
+	@Override
+	public <C extends CtCatchVariableReference<T>> C setDeclaration(CtCatchVariable<T> declaration) {
 		this.declaration = declaration;
+		return (C) this;
 	}
-
 }

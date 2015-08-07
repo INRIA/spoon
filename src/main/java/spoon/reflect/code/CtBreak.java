@@ -31,5 +31,5 @@ public interface CtBreak extends CtCFlowBreak {
 	 * Sets the label from which the control flow breaks (null if no label
 	 * defined).
 	 */
-	void setTargetLabel(String targetLabel);
+	<T extends CtBreak> T setTargetLabel(String targetLabel);
 }

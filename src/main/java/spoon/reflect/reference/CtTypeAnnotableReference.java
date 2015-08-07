@@ -29,7 +29,7 @@ public interface CtTypeAnnotableReference {
 	/**
 	 * Sets the type annotations for this type.
 	 */
-	void setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations);
+	<T extends CtTypeAnnotableReference> T setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations);
 
 	/**
 	 * Adds an type annotation for this type.
@@ -37,7 +37,7 @@ public interface CtTypeAnnotableReference {
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	boolean addTypeAnnotation(CtAnnotation<? extends Annotation> annotation);
+	<T extends CtTypeAnnotableReference> T addTypeAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
 	 * Removes an type annotation for this type.

@@ -55,9 +55,10 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	}
 
 	@Override
-	public <B extends R> void setBody(CtBlock<B> body) {
+	public <B extends R, T extends CtExecutable<R>> T setBody(CtBlock<B> body) {
 		body.setParent(this);
 		this.body = body;
+		return (T) this;
 	}
 
 	@Override
@@ -66,27 +67,28 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	}
 
 	@Override
-	public void setParameters(List<CtParameter<?>> parameters) {
+	public <T extends CtExecutable<R>> T setParameters(List<CtParameter<?>> parameters) {
 		this.parameters.clear();
 		for(CtParameter<?> p: parameters) {
 			addParameter(p);
 		}
+		return (T) this;
 	}
 
 	@Override
-	public boolean addParameter(CtParameter<?> parameter) {
+	public <T extends CtExecutable<R>> T addParameter(CtParameter<?> parameter) {
 		if (parameters == CtElementImpl.<CtParameter<?>>EMPTY_LIST()) {
 			parameters = new ArrayList<CtParameter<?>>(
 					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		parameter.setParent(this);
-		return parameters.add(parameter);
+		parameters.add(parameter);
+		return (T) this;
 	}
 
 	@Override
 	public boolean removeParameter(CtParameter<?> parameter) {
-		return parameters != CtElementImpl.<CtParameter<?>>EMPTY_LIST() &&
-				parameters.remove(parameter);
+		return parameters != CtElementImpl.<CtParameter<?>>EMPTY_LIST() && parameters.remove(parameter);
 	}
 
 	@Override
@@ -95,16 +97,18 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	}
 
 	@Override
-	public void setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+	public <T extends CtExecutable<R>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		this.thrownTypes = thrownTypes;
+		return (T) this;
 	}
 
 	@Override
-	public boolean addThrownType(CtTypeReference<? extends Throwable> throwType) {
+	public <T extends CtExecutable<R>> T addThrownType(CtTypeReference<? extends Throwable> throwType) {
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>EMPTY_SET()) {
 			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
 		}
-		return thrownTypes.add(throwType);
+		thrownTypes.add(throwType);
+		return (T) this;
 	}
 
 	@Override

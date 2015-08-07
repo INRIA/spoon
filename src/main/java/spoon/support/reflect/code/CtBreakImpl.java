@@ -25,16 +25,20 @@ public class CtBreakImpl extends CtStatementImpl implements CtBreak {
 
 	String targetLabel;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtBreak(this);
 	}
 
+	@Override
 	public String getTargetLabel() {
 		return targetLabel;
 	}
 
-	public void setTargetLabel(String targetLabel) {
+	@Override
+	public <T extends CtBreak> T setTargetLabel(String targetLabel) {
 		this.targetLabel = targetLabel;
+		return (T) this;
 	}
 
 }

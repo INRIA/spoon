@@ -15,6 +15,5 @@ public interface CtRHSReceiver<A> {
 	/**
 	 * Sets the right-hand side expression (RHS) of the "=" operator.
 	 */
-	void setAssignment(CtExpression<A> assignment);
-
+	<T extends CtRHSReceiver<A>> T setAssignment(CtExpression<A> assignment);
 }

@@ -26,16 +26,20 @@ public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T>
 
 	T value;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtLiteral(this);
 	}
 
+	@Override
 	public T getValue() {
 		return value;
 	}
 
-	public void setValue(T value) {
+	@Override
+	public <C extends CtLiteral<T>> C setValue(T value) {
 		this.value = value;
+		return (C) this;
 	}
 
 }

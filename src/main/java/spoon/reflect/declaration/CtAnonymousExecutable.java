@@ -39,6 +39,5 @@ public interface CtAnonymousExecutable extends CtTypeMember {
 	 * @param block
 	 *            the representation of this executable
 	 */
-	void setBody(CtBlock<?> block);
-
+	<T extends CtAnonymousExecutable> T setBody(CtBlock<?> block);
 }

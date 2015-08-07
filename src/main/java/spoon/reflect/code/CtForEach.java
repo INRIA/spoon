@@ -36,10 +36,10 @@ public interface CtForEach extends CtLoop {
 	/**
 	 * Sets the iterated expression (an iterable of an array).
 	 */
-	void setExpression(CtExpression<?> expression);
+	<T extends CtForEach> T setExpression(CtExpression<?> expression);
 
 	/**
 	 * Sets the variable that references the currently iterated element.
 	 */
-	void setVariable(CtLocalVariable<?> variable);
+	<T extends CtForEach> T setVariable(CtLocalVariable<?> variable);
 }

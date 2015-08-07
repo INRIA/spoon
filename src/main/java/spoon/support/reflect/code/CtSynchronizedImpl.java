@@ -22,34 +22,39 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtSynchronizedImpl extends CtStatementImpl implements
-		CtSynchronized {
+public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronized {
 	private static final long serialVersionUID = 1L;
 
 	CtBlock<?> block;
 
 	CtExpression<?> expression;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtSynchronized(this);
 	}
 
+	@Override
 	public CtBlock<?> getBlock() {
 		return block;
 	}
 
+	@Override
 	public CtExpression<?> getExpression() {
 		return expression;
 	}
 
-	public void setBlock(CtBlock<?> block) {
+	@Override
+	public <T extends CtSynchronized> T setBlock(CtBlock<?> block) {
 		block.setParent(this);
 		this.block = block;
+		return (T) this;
 	}
 
-	public void setExpression(CtExpression<?> expression) {
+	@Override
+	public <T extends CtSynchronized> T setExpression(CtExpression<?> expression) {
 		expression.setParent(this);
 		this.expression = expression;
+		return (T) this;
 	}
-
 }

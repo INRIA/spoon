@@ -29,26 +29,33 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 
 	CtCatchVariable<? extends Throwable> parameter;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCatch(this);
 	}
 
+	@Override
 	public CtBlock<?> getBody() {
 		return body;
 	}
 
+	@Override
 	public CtCatchVariable<? extends Throwable> getParameter() {
 		return parameter;
 	}
 
-	public void setBody(CtBlock<?> body) {
+	@Override
+	public <T extends CtCatch> T setBody(CtBlock<?> body) {
 		body.setParent(this);
 		this.body = body;
+		return (T) this;
 	}
 
-	public void setParameter(CtCatchVariable<? extends Throwable> parameter) {
+	@Override
+	public <T extends CtCatch> T setParameter(CtCatchVariable<? extends Throwable> parameter) {
 		parameter.setParent(this);
 		this.parameter = parameter;
+		return (T) this;
 	}
 
 }

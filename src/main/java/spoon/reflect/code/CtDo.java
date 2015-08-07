@@ -29,5 +29,5 @@ public interface CtDo extends CtLoop {
 	/**
 	 * Sets the looping test as a boolean expression.
 	 */
-	void setLoopingExpression(CtExpression<Boolean> expression);
+	<T extends CtDo> T setLoopingExpression(CtExpression<Boolean> expression);
 }

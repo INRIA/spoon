@@ -31,7 +31,7 @@ public interface CtTypeReference<T> extends CtReference,
 	/**
 	 * The name of the null type ("&lt;nulltype&gt;").
 	 */
-	public static final String NULL_TYPE_NAME = "<nulltype>";
+	String NULL_TYPE_NAME = "<nulltype>";
 
 	/**
 	 * Gets the Java runtime class of the referenced type.
@@ -84,10 +84,10 @@ public interface CtTypeReference<T> extends CtReference,
 	 * Sets the reference to the declaring type. Should be set to null if the
 	 * referenced type is not a inner type.
 	 */
-	void setDeclaringType(CtTypeReference<?> type);
+	<C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> type);
 
 	/**
 	 * Sets the reference to the declaring package.
 	 */
-	void setPackage(CtPackageReference pack);
+	<C extends CtTypeReference<T>> C setPackage(CtPackageReference pack);
 }

@@ -124,7 +124,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	boolean addAnnotation(CtAnnotation<? extends Annotation> annotation);
+	<E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
 	 * Remove an annotation for this element
@@ -138,7 +138,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * Sets the text of the documentation ("javadoc") comment of this
 	 * declaration.
 	 */
-	void setDocComment(String docComment);
+	<E extends CtElement> E setDocComment(String docComment);
 
 	/**
 	 * Manually sets the parent element of the current element. Note that the
@@ -148,7 +148,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * @param element
 	 *            parent
 	 */
-	void setParent(CtElement element);
+	<E extends CtElement> E setParent(CtElement element);
 
 	/**
 	 * Calculates and sets all the parents below this element. This function can
@@ -164,7 +164,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * @param position
 	 *            of this element in the input source files
 	 */
-	void setPosition(SourcePosition position);
+	<E extends CtElement> E setPosition(SourcePosition position);
 
 	/**
 	 * Gets the child elements annotated with the given annotation type's
@@ -189,7 +189,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	/**
 	 * Sets this element to be implicit (will not be printed).
 	 */
-	void setImplicit(boolean b);
+	<E extends CtElement> E setImplicit(boolean b);
 
 	/**
 	 * Calculates and returns the set of all the types referenced by this
@@ -217,11 +217,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * @param position
 	 *            of this element and all children in the input source file
 	 */
-	void setPositions(SourcePosition position);
+	<E extends CtElement> E setPositions(SourcePosition position);
 
 	/**
 	 * Sets the annotations for this element.
 	 */
-	void setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
+	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
 }

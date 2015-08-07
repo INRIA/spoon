@@ -28,19 +28,24 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 
 	CtExpression<? extends Throwable> throwExpression;
 
-	public CtExpression<? extends Throwable> getThrownExpression() {
-		return throwExpression;
-	}
-
-	public void setThrownExpression(CtExpression<? extends Throwable> expression) {
-		this.throwExpression = expression;
-		throwExpression.setParent(this);
-	}
-
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtThrow(this);
 	}
 
+	@Override
+	public CtExpression<? extends Throwable> getThrownExpression() {
+		return throwExpression;
+	}
+
+	@Override
+	public <T extends CtThrow> T setThrownExpression(CtExpression<? extends Throwable> expression) {
+		this.throwExpression = expression;
+		throwExpression.setParent(this);
+		return (T) this;
+	}
+
+	@Override
 	public Void S() {
 		return null;
 	}

@@ -323,21 +323,23 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return o1 == o2;
 	}
 
-	public void setAnnotations(
+	public <E extends CtElement> E setAnnotations(
 			List<CtAnnotation<? extends Annotation>> annotations) {
 		this.annotations.clear();
 		for (CtAnnotation<? extends Annotation> annot: annotations) {
 			addAnnotation(annot);
 		}
+		return (E) this;
 	}
 
-	public boolean addAnnotation(CtAnnotation<? extends Annotation> annotation) {
+	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if ((List<?>) this.annotations == (List<?>) EMPTY_LIST()) {
 			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(
 					ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		annotation.setParent(this);
-		return this.annotations.add(annotation);
+		this.annotations.add(annotation);
+		return (E) this;
 	}
 
 	public boolean removeAnnotation(
@@ -346,25 +348,29 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 				this.annotations.remove(annotation);
 	}
 
-	public void setDocComment(String docComment) {
+	public <E extends CtElement> E setDocComment(String docComment) {
 		this.docComment = docComment;
+		return (E) this;
 	}
 
-	public void setParent(CtElement parentElement) {
+	public <E extends CtElement> E setParent(CtElement parentElement) {
 		this.parent = parentElement;
+		return (E) this;
 	}
 
-	public void setPosition(SourcePosition position) {
+	public <E extends CtElement> E setPosition(SourcePosition position) {
 		this.position = position;
+		return (E) this;
 	}
 
-	public void setPositions(final SourcePosition position) {
+	public <E extends CtElement> E setPositions(final SourcePosition position) {
 		accept(new CtScanner() {
 			@Override
 			public void enter(CtElement e) {
 				e.setPosition(position);
 			}
 		});
+		return (E) this;
 	}
 
 	@Override
@@ -389,8 +395,9 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return implicit;
 	}
 
-	public void setImplicit(boolean implicit) {
+	public <E extends CtElement> E setImplicit(boolean implicit) {
 		this.implicit = implicit;
+		return (E) this;
 	}
 
 	public Set<CtTypeReference<?>> getReferencedTypes() {

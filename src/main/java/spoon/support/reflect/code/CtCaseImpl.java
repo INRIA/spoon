@@ -24,6 +24,7 @@ import java.util.List;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -36,38 +37,45 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	List<CtStatement> statements = EMPTY_LIST();
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCase(this);
 	}
 
+	@Override
 	public CtExpression<E> getCaseExpression() {
 		return caseExpression;
 	}
 
+	@Override
 	public List<CtStatement> getStatements() {
 		return statements;
 	}
 
-	public void setCaseExpression(CtExpression<E> caseExpression) {
+	@Override
+	public <T extends CtCase<E>> T setCaseExpression(CtExpression<E> caseExpression) {
 		caseExpression.setParent(this);
 		this.caseExpression = caseExpression;
+		return (T) this;
 	}
 
-	public void setStatements(List<CtStatement> statements) {		
+	@Override
+	public <T extends CtStatementList> T setStatements(List<CtStatement> statements) {
 		this.statements.clear();
 		for (CtStatement stmt : statements) {
 			addStatement(stmt);
 		}
+		return (T) this;
 	}
 
 	@Override
-	public void addStatement(CtStatement statement) {
+	public <T extends CtStatementList> T addStatement(CtStatement statement) {
 		if (statements == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			statements = new ArrayList<CtStatement>(
-					CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+			statements = new ArrayList<CtStatement>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		statements.add(statement);
+		return (T) this;
 	}
 
 	@Override
@@ -82,13 +90,4 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	public Iterator<CtStatement> iterator() {
 		return getStatements().iterator();
 	}
-
-	// adds all those elements before the current case
-//	@Override
-//	public void insertBefore(CtStatementList statements)
-//			throws ParentNotInitializedException {
-//		
-//		throw new SpoonException("");
-//	}
-
 }

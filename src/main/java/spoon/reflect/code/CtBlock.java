@@ -31,50 +31,50 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	/**
 	 * Inserts the given statement at the beginning of the block.
 	 */
-	void insertBegin(CtStatement statement);
+	<T extends CtBlock<R>> T insertBegin(CtStatement statement);
 
 	/**
 	 * Inserts the given statement list at the beginning of the block.
 	 */
-	void insertBegin(CtStatementList statements);
+	<T extends CtBlock<R>> T insertBegin(CtStatementList statements);
 
 	/**
 	 * Inserts the given statement at the end of the block.
 	 */
-	void insertEnd(CtStatement statement);
+	<T extends CtBlock<R>> T insertEnd(CtStatement statement);
 
 	/**
 	 * Inserts the given statements at the end of the block.
 	 */
-	void insertEnd(CtStatementList statements);
+	<T extends CtBlock<R>> T insertEnd(CtStatementList statements);
 
 	/**
 	 * Inserts the given statement before a set of insertion points given by a
 	 * filter.
 	 */
-	void insertBefore(Filter<? extends CtStatement> insertionPoints,
-			CtStatement statement);
+	<T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints,
+										  CtStatement statement);
 
 	/**
 	 * Inserts the given statement list before a set of insertion points given
 	 * by a filter.
 	 */
-	void insertBefore(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList statements);
+	<T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints,
+										  CtStatementList statements);
 
 	/**
 	 * Inserts the given statement after a set of insertion points given by a
 	 * filter.
 	 */
-	void insertAfter(Filter<? extends CtStatement> insertionPoints,
-			CtStatement statement);
+	<T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints,
+										 CtStatement statement);
 
 	/**
 	 * Inserts the given statement list after a set of insertion points given by
 	 * a filter.
 	 */
-	void insertAfter(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList statements);
+	<T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints,
+										 CtStatementList statements);
 
 	/**
 	 * Gets the ith statement of this block.
@@ -87,18 +87,7 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	<T extends CtStatement> T getLastStatement();
 
 	/**
-	 * Adds a statement to this block.
-	 */
-	void addStatement(CtStatement statement);
-
-	/**
-	 * Removes a statement from this block.
-	 */
-	void removeStatement(CtStatement statement);
-
-	/**
 	 * Replaces this element by another one.
 	 */
 	<T extends R> void replace(CtBlock<T> element);
-
 }

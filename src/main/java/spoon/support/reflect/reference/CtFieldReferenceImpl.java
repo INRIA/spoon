@@ -51,6 +51,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		visitor.visitCtFieldReference(this);
 	}
 
+	@Override
 	public Member getActualField() {
 		try {
 			if (getDeclaringType().getActualClass().isAnnotation()) {
@@ -135,14 +136,17 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		return null;
 	}
 
+	@Override
 	public CtTypeReference<?> getDeclaringType() {
 		return declaringType;
 	}
 
+	@Override
 	public String getQualifiedName() {
 		return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
 	}
 
+	@Override
 	public boolean isFinal() {
 		return fina;
 	}
@@ -150,20 +154,27 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 	/**
 	 * Tells if the referenced field is static.
 	 */
+	@Override
 	public boolean isStatic() {
 		return stat;
 	}
 
-	public void setDeclaringType(CtTypeReference<?> declaringType) {
+	@Override
+	public <C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
 		this.declaringType = declaringType;
+		return (C) this;
 	}
 
-	public void setFinal(boolean b) {
+	@Override
+	public <C extends CtFieldReference<T>> C setFinal(boolean b) {
 		fina = b;
+		return (C) this;
 	}
 
-	public void setStatic(boolean stat) {
+	@Override
+	public <C extends CtFieldReference<T>> C setStatic(boolean stat) {
 		this.stat = stat;
+		return (C) this;
 	}
 
 	@Override

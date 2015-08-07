@@ -28,20 +28,25 @@ public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 
 	CtExpression<R> returnedExpression;
 
-	public CtExpression<R> getReturnedExpression() {
-		return returnedExpression;
-	}
-
-	public void setReturnedExpression(CtExpression<R> expression) {
-		if (expression != null)
-			expression.setParent(this);
-		this.returnedExpression = expression;
-	}
-
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtReturn(this);
 	}
 
+	@Override
+	public CtExpression<R> getReturnedExpression() {
+		return returnedExpression;
+	}
+
+	@Override
+	public <T extends CtReturn<R>> T setReturnedExpression(CtExpression<R> expression) {
+		if (expression != null)
+			expression.setParent(this);
+		this.returnedExpression = expression;
+		return (T) this;
+	}
+
+	@Override
 	public Void S() {
 		return null;
 	}
@@ -49,5 +54,4 @@ public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 	public CtCodeElement getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
-
 }

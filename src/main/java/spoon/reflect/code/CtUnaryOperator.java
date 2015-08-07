@@ -34,16 +34,15 @@ public interface CtUnaryOperator<T> extends CtExpression<T>, CtStatement {
 	/**
 	 * Sets the expression to which the operator is applied.
 	 */
-	void setOperand(CtExpression<T> expression);
+	<C extends CtUnaryOperator> C setOperand(CtExpression<T> expression);
 
 	/**
 	 * Sets the kind of this operator.
 	 */
-	void setKind(UnaryOperatorKind kind);
+	<C extends CtUnaryOperator> C setKind(UnaryOperatorKind kind);
 
 	/**
 	 * Gets the kind of this operator.
 	 */
 	UnaryOperatorKind getKind();
-
 }

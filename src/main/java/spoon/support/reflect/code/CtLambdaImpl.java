@@ -4,6 +4,8 @@ import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -36,8 +38,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public void setSimpleName(String simpleName) {
+	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
 		this.simpleName = simpleName;
+		return (C) this;
 	}
 
 	@Override
@@ -47,12 +50,13 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public <B extends T> void setBody(CtBlock<B> body) {
+	public <B extends T, C extends CtExecutable<T>> C setBody(CtBlock<B> body) {
 		if (expression != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
 		body.setParent(this);
 		this.body = body;
+		return (C) this;
 	}
 
 	@Override
@@ -61,21 +65,23 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public void setParameters(List<CtParameter<?>> params) {
+	public <C extends CtExecutable<T>> C setParameters(List<CtParameter<?>> params) {
 		this.parameters.clear();
 		for (CtParameter<?> p : params) {
 			addParameter(p);
 		}
+		return (C) this;
 	}
 
 	@Override
-	public boolean addParameter(CtParameter<?> parameter) {
+	public <C extends CtExecutable<T>> C addParameter(CtParameter<?> parameter) {
 		if (parameters == CtElementImpl.<CtParameter<?>>EMPTY_LIST()) {
 			parameters = new ArrayList<CtParameter<?>>(
 					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		parameter.setParent(this);
-		return parameters.add(parameter);
+		parameters.add(parameter);
+		return (C) this;
 	}
 
 	@Override
@@ -90,16 +96,18 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public void setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+	public <C extends CtExecutable<T>> C setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		this.thrownTypes = thrownTypes;
+		return (C) this;
 	}
 
 	@Override
-	public boolean addThrownType(CtTypeReference<? extends Throwable> throwType) {
+	public <C extends CtExecutable<T>> C addThrownType(CtTypeReference<? extends Throwable> throwType) {
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>EMPTY_SET()) {
 			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
 		}
-		return thrownTypes.add(throwType);
+		thrownTypes.add(throwType);
+		return (C) this;
 	}
 
 	@Override
@@ -118,11 +126,12 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public void setExpression(CtExpression<T> expression) {
+	public <C extends CtLambda<T>> C setExpression(CtExpression<T> expression) {
 		if (body != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
 		expression.setParent(this);
 		this.expression = expression;
+		return (C) this;
 	}
 }

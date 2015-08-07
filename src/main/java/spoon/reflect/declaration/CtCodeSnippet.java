@@ -16,7 +16,7 @@ public interface CtCodeSnippet {
 	/**
 	 * Sets the textual value of the code.
 	 */
-	void setValue(String value);
+	<C extends CtCodeSnippet> C setValue(String value);
 
 	/**
 	 * Gets the textual value of the code.

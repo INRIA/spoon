@@ -31,16 +31,20 @@ public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		super();
 	}
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtLocalVariableReference(this);
 	}
 
+	@Override
 	public CtLocalVariable<T> getDeclaration() {
 		return declaration;
 	}
 
-	public void setDeclaration(CtLocalVariable<T> declaration) {
+	@Override
+	public <C extends CtLocalVariableReference<T>> C setDeclaration(CtLocalVariable<T> declaration) {
 		this.declaration = declaration;
+		return (C) this;
 	}
 	
 }

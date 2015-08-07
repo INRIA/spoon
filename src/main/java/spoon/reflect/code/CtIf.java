@@ -44,16 +44,15 @@ public interface CtIf extends CtStatement, TemplateParameter<Void> {
 	 * Sets the boolean expression that represents the <code>if</code>'s
 	 * condition.
 	 */
-	void setCondition(CtExpression<Boolean> expression);
+	<T extends CtIf> T setCondition(CtExpression<Boolean> expression);
 
 	/**
 	 * Sets the statement executed when the condition is false.
 	 */
-	void setElseStatement(CtStatement elseStatement);
+	<T extends CtIf> T setElseStatement(CtStatement elseStatement);
 
 	/**
 	 * Sets the statement executed when the condition is true.
 	 */
-	void setThenStatement(CtStatement thenStatement);
-
+	<T extends CtIf> T setThenStatement(CtStatement thenStatement);
 }

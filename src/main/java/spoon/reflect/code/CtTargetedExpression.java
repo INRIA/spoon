@@ -38,6 +38,5 @@ public interface CtTargetedExpression<T, E extends CtExpression<?>> extends
 	/**
 	 * Sets the target expression.
 	 */
-	void setTarget(E target);
-
+	<C extends CtTargetedExpression<T, E>> C setTarget(E target);
 }

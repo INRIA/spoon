@@ -24,55 +24,61 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities
+		.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtTypeParameter}.
- * 
+ *
  * @author Renaud Pawlak
  */
-public class CtTypeParameterImpl extends CtElementImpl implements
-		CtTypeParameter {
+public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypeParameter {
 	private static final long serialVersionUID = 1L;
 
 	List<CtTypeReference<?>> bounds = EMPTY_LIST();
 
-	String name;
-	
 	public CtTypeParameterImpl() {
 		super();
 	}
 
-	public boolean addBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			bounds = new ArrayList<CtTypeReference<?>>(
-					TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		return this.bounds.add(bound);
-	}
-	public boolean removeBound(CtTypeReference<?> bound) {
-		return bounds != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
-				this.bounds.remove(bound);
-	}
-	
+	@Override
 	public void accept(CtVisitor v) {
 		v.visitCtTypeParameter(this);
 	}
 
+	@Override
+	public <T extends CtTypeParameter> T addBound(CtTypeReference<?> bound) {
+		if (bounds == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
+			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.bounds.add(bound);
+		return (T) this;
+	}
+
+	@Override
+	public boolean removeBound(CtTypeReference<?> bound) {
+		return bounds != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() && this.bounds.remove(bound);
+	}
+
+	@Override
+	public String getName() {
+		return super.getSimpleName();
+	}
+
+	@Override
+	public <T extends CtTypeParameter> T setName(String name) {
+		super.setSimpleName(name);
+		return (T) this;
+	}
+
+	@Override
 	public List<CtTypeReference<?>> getBounds() {
 		return bounds;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setBounds(List<CtTypeReference<?>> bounds) {
+	@Override
+	public <T extends CtTypeParameter> T setBounds(List<CtTypeReference<?>> bounds) {
 		this.bounds = bounds;
+		return (T) this;
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 }

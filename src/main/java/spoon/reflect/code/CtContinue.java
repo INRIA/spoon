@@ -31,8 +31,8 @@ public interface CtContinue extends CtCFlowBreak {
 	 * Sets the statement where the control flow continues (null if no label
 	 * defined).
 	 */
-	void setLabelledStatement(CtStatement labelledStatement);
-	
+	<T extends CtContinue> T setLabelledStatement(CtStatement labelledStatement);
+
 	/**
 	 * Gets the label from which the control flow breaks (null if no label
 	 * defined).
@@ -43,5 +43,5 @@ public interface CtContinue extends CtCFlowBreak {
 	 * Sets the label from which the control flow breaks (null if no label
 	 * defined).
 	 */
-	void setTargetLabel(String targetLabel);
+	<T extends CtContinue> T setTargetLabel(String targetLabel);
 }

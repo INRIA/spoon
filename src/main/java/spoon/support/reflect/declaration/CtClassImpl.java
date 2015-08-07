@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import spoon.SpoonException;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -34,9 +36,11 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 
 /**
@@ -44,8 +48,7 @@ import spoon.support.reflect.eval.VisitorPartialEvaluator;
  * 
  * @author Renaud Pawlak
  */
-public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
-		CtClass<T> {
+public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtClass<T> {
 	private static final long serialVersionUID = 1L;
 
 	List<CtAnonymousExecutable> anonymousExecutables = EMPTY_LIST();
@@ -54,14 +57,17 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 
 	CtTypeReference<?> superClass;
 
+	@Override
 	public void accept(CtVisitor v) {
 		v.visitCtClass(this);
 	}
 
+	@Override
 	public List<CtAnonymousExecutable> getAnonymousExecutables() {
 		return anonymousExecutables;
 	}
 
+	@Override
 	public CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes) {
 		for (CtConstructor<T> c : constructors) {
 			boolean cont = c.getParameters().size() == parameterTypes.length;
@@ -79,23 +85,25 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		return null;
 	}
 
+	@Override
 	public Set<CtConstructor<T>> getConstructors() {
 		return constructors;
 	}
 
-	public boolean addAnonymousExecutable(CtAnonymousExecutable e) {
-		if (anonymousExecutables == CtElementImpl
-				.<CtAnonymousExecutable> EMPTY_LIST()) {
+	@Override
+	public <C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e) {
+		if (anonymousExecutables == CtElementImpl.<CtAnonymousExecutable> EMPTY_LIST()) {
 			anonymousExecutables = new ArrayList<CtAnonymousExecutable>(
 					ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		e.setParent(this);
-		return anonymousExecutables.add(e);
+		anonymousExecutables.add(e);
+		return (C) this;
 	}
 
+	@Override
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
-		return anonymousExecutables !=
-				CtElementImpl.<CtAnonymousExecutable>EMPTY_LIST() &&
+		return anonymousExecutables != CtElementImpl.<CtAnonymousExecutable>EMPTY_LIST() &&
 				anonymousExecutables.remove(e);
 	}
 
@@ -104,19 +112,23 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		return superClass;
 	}
 
-	public void setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
+	@Override
+	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
 		this.anonymousExecutables.clear();
 		for (CtAnonymousExecutable exec : anonymousExecutables) {
 			addAnonymousExecutable(exec);
 		}
-	}
-
-	public void setConstructors(Set<CtConstructor<T>> constructors) {
-		this.constructors = constructors;
+		return (C) this;
 	}
 
 	@Override
-	public void addConstructor(CtConstructor<T> constructor) {
+	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
+		this.constructors = constructors;
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
 		if (constructors == CtElementImpl.<CtConstructor<T>> EMPTY_SET()) {
 			constructors = new TreeSet<CtConstructor<T>>();
 		}
@@ -125,6 +137,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		// TODO: CHANGE SETS TO LIST TO AVOID HAVING TO DO THIS
 		constructor.setParent(this);
 		constructors.add(constructor);
+		return (C) this;
 	}
 
 	@Override
@@ -140,8 +153,10 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		}
 	}
 
-	public void setSuperclass(CtTypeReference<?> superClass) {
+	@Override
+	public <C extends CtClass<T>> C setSuperclass(CtTypeReference<?> superClass) {
 		this.superClass = superClass;
+		return (C) this;
 	}
 
 	@Override
@@ -167,32 +182,38 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements
 		return false;
 	}
 
-	public void insertAfter(CtStatement statement) {
-		spoon.support.reflect.code.CtStatementImpl.insertAfter(this, statement);
+	@Override
+	public <C extends CtStatement> C insertAfter(CtStatement statement) {
+		CtStatementImpl.insertAfter(this, statement);
+		return (C) this;
 	}
 
-	public void insertAfter(CtStatementList statements) {
-		spoon.support.reflect.code.CtStatementImpl
-				.insertAfter(this, statements);
+	@Override
+	public <C extends CtStatement> C insertAfter(CtStatementList statements) {
+		CtStatementImpl.insertAfter(this, statements);
+		return (C) this;
 	}
 
-	public void insertBefore(CtStatement statement) {
-		spoon.support.reflect.code.CtStatementImpl
-				.insertBefore(this, statement);
+	@Override
+	public <C extends CtStatement> C insertBefore(CtStatement statement) {
+		CtStatementImpl.insertBefore(this, statement);
+		return (C) this;
 	}
 
-	public void insertBefore(CtStatementList statements) {
-		spoon.support.reflect.code.CtStatementImpl.insertBefore(this,
-				statements);
+	@Override
+	public <C extends CtStatement> C insertBefore(CtStatementList statements) {
+		CtStatementImpl.insertBefore(this, statements);
+		return (C) this;
 	}
 
+	@Override
 	public String getLabel() {
 		return null;
 	}
 
-	public void setLabel(String label) {
-		throw new UnsupportedOperationException(
-				"cannot set a label on a class declaration");
+	@Override
+	public <C extends CtStatement> C setLabel(String label) {
+		throw new UnsupportedOperationException("cannot set a label on a class declaration");
 	}
 
 	@SuppressWarnings("unchecked")

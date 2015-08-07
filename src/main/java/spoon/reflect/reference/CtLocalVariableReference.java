@@ -30,5 +30,5 @@ public interface CtLocalVariableReference<T> extends CtVariableReference<T> {
 	 * Sets the local variable declaration that corresponds to this local
 	 * variable reference.
 	 */
-	void setDeclaration(CtLocalVariable<T> declaration);
+	<C extends CtLocalVariableReference<T>> C setDeclaration(CtLocalVariable<T> declaration);
 }

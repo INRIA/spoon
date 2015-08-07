@@ -33,7 +33,7 @@ public interface CtParameterReference<T> extends CtVariableReference<T> {
 	/**
 	 * Sets the declaring executable of the referenced parameter.
 	 */
-	void setDeclaringExecutable(CtExecutableReference<?> executable);
+	<C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable);
 
 	CtParameter<T> getDeclaration();
 

@@ -22,45 +22,52 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements
-		CtBinaryOperator<T> {
+public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBinaryOperator<T> {
 	private static final long serialVersionUID = 1L;
+
+	BinaryOperatorKind kind;
 
 	CtExpression<?> leftHandOperand;
 
 	CtExpression<?> rightHandOperand;
 
-	public CtExpression<?> getLeftHandOperand() {
-		return leftHandOperand;
-	}
-
-	public CtExpression<?> getRightHandOperand() {
-		return rightHandOperand;
-	}
-
-	public void setLeftHandOperand(CtExpression<?> expression) {
-		expression.setParent(this);
-		leftHandOperand = expression;
-
-	}
-
-	public void setRightHandOperand(CtExpression<?> expression) {
-		expression.setParent(this);
-		rightHandOperand = expression;
-	}
-
-	BinaryOperatorKind kind;
-
-	public void setKind(BinaryOperatorKind kind) {
-		this.kind = kind;
-	}
-
-	public BinaryOperatorKind getKind() {
-		return kind;
-	}
-
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtBinaryOperator(this);
 	}
 
+	@Override
+	public CtExpression<?> getLeftHandOperand() {
+		return leftHandOperand;
+	}
+
+	@Override
+	public CtExpression<?> getRightHandOperand() {
+		return rightHandOperand;
+	}
+
+	@Override
+	public <C extends CtBinaryOperator<T>> C setLeftHandOperand(CtExpression<?> expression) {
+		expression.setParent(this);
+		leftHandOperand = expression;
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtBinaryOperator<T>> C setRightHandOperand(CtExpression<?> expression) {
+		expression.setParent(this);
+		rightHandOperand = expression;
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtBinaryOperator<T>> C setKind(BinaryOperatorKind kind) {
+		this.kind = kind;
+		return (C) this;
+	}
+
+	@Override
+	public BinaryOperatorKind getKind() {
+		return kind;
+	}
 }

@@ -42,7 +42,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeAnnotableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -50,8 +52,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
-public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
-		CtTypeReference<T> {
+public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.EMPTY_LIST();
@@ -66,10 +67,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		super();
 	}
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtTypeReference(this);
 	}
 
+	@Override
 	public CtTypeReference<?> box() {
 		if (!isPrimitive()) {
 			return this;
@@ -104,6 +107,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return this;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Class<T> getActualClass() {
 		if (isPrimitive()) {
@@ -146,6 +150,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 	}
 
+	@Override
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return actualTypeArguments;
 	}
@@ -155,6 +160,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return getActualClass();
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaration() {
 		if (!isPrimitive() && !isAnonymous()) {
@@ -174,14 +180,17 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return null;
 	}
 
+	@Override
 	public CtTypeReference<?> getDeclaringType() {
 		return declaringType;
 	}
 
+	@Override
 	public CtPackageReference getPackage() {
 		return pack;
 	}
 
+	@Override
 	public String getQualifiedName() {
 		if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName()
@@ -201,13 +210,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 	}
 
+	@Override
 	public boolean isAssignableFrom(CtTypeReference<?> type) {
-		if (type != null) {
-			return type.isSubtypeOf(this);
-		}
-		return false;
+		return type != null && type.isSubtypeOf(this);
 	}
 
+	@Override
 	public boolean isPrimitive() {
 		return (getSimpleName().equals("boolean")
 				|| getSimpleName().equals("byte")
@@ -220,6 +228,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 				"void"));
 	}
 
+	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		if (type instanceof CtTypeParameterReference) {
 			return false;
@@ -258,8 +267,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 			return true;
 		}
 		if (subTypeDecl != null) {
-			for (CtTypeReference<?> ref : ((CtType<?>) subTypeDecl)
-					.getSuperInterfaces()) {
+			for (CtTypeReference<?> ref : subTypeDecl.getSuperInterfaces()) {
 				if (ref.isSubtypeOf(type)) {
 					return true;
 				}
@@ -269,12 +277,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 					return true;
 				}
 				if (((CtClass<?>) subTypeDecl).getSuperclass() != null) {
-					if (((CtClass<?>) subTypeDecl).getSuperclass().equals(
-							type)) {
+					if (((CtClass<?>) subTypeDecl).getSuperclass().equals(type)) {
 						return true;
 					}
-					return ((CtClass<?>) subTypeDecl).getSuperclass()
-							.isSubtypeOf(type);
+					return ((CtClass<?>) subTypeDecl).getSuperclass().isSubtypeOf(type);
 				}
 			}
 			return false;
@@ -302,19 +308,25 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 	}
 
-	public void setActualTypeArguments(
-			List<CtTypeReference<?>> actualTypeArguments) {
+	@Override
+	public <C extends CtGenericElementReference> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
 		this.actualTypeArguments = actualTypeArguments;
+		return (C) this;
 	}
 
-	public void setDeclaringType(CtTypeReference<?> declaringType) {
+	@Override
+	public <C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
 		this.declaringType = declaringType;
+		return (C) this;
 	}
 
-	public void setPackage(CtPackageReference pack) {
+	@Override
+	public <C extends CtTypeReference<T>> C setPackage(CtPackageReference pack) {
 		this.pack = pack;
+		return (C) this;
 	}
 
+	@Override
 	public CtTypeReference<?> unbox() {
 		if (isPrimitive()) {
 			return this;
@@ -349,6 +361,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return this;
 	}
 
+	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
 		Collection<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
 		CtType<?> t = getDeclaration();
@@ -383,6 +396,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 	}
 
+	@Override
 	public Collection<CtFieldReference<?>> getAllFields() {
 		CtType<?> t = getDeclaration();
 		if (t == null) {
@@ -392,6 +406,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		}
 	}
 
+	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Collection<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
 		CtType<T> t = getDeclaration();
@@ -414,6 +429,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return l;
 	}
 
+	@Override
 	public Set<ModifierKind> getModifiers() {
 		CtType<T> t = getDeclaration();
 		if (t != null) {
@@ -423,6 +439,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		return RtHelper.getModifiers(c.getModifiers());
 	}
 
+	@Override
 	public CtTypeReference<?> getSuperclass() {
 		CtType<T> t = getDeclaration();
 		if (t != null) {
@@ -430,14 +447,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 		} else {
 			Class<T> c = getActualClass();
 			Class<?> sc = c.getSuperclass();
-			if (sc == null)
-			{
+			if (sc == null) {
 				return null;
 			}
 			return getFactory().Type().createReference(sc);
 		}
 	}
 
+	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
 		CtType<?> t = getDeclaration();
 		if (t != null) {
@@ -467,20 +484,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	@Override
-	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl
-				.<CtTypeReference<?>>EMPTY_LIST()) {
+	public <C extends CtGenericElementReference> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
 					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		return actualTypeArguments.add(actualTypeArgument);
+		actualTypeArguments.add(actualTypeArgument);
+		return (C) this;
 	}
 
 	@Override
 	public boolean removeActualTypeArgument(
 			CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments !=
-				CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
 				actualTypeArguments.remove(actualTypeArgument);
 	}
 
@@ -500,20 +516,22 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	@Override
-	public void setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
+	public <C extends CtTypeAnnotableReference> C setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
 		this.annotations = annotations;
+		return (C) this;
 	}
 
 	@Override
-	public boolean addTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
+	public <C extends CtTypeAnnotableReference> C addTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if (annotation == null) {
-			return false;
+			return (C) this;
 		}
 		if ((List<?>) this.annotations == (List<?>) CtElementImpl.EMPTY_LIST()) {
 			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(
 					ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		return !this.annotations.contains(annotation) && this.annotations.add(annotation);
+		this.annotations.add(annotation);
+		return (C) this;
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Sets the anonymous blocks of this class.
 	 */
-	void setAnonymousExecutables(List<CtAnonymousExecutable> e);
+	<C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> e);
 
 	/**
 	 * Add an anonymous block to this class.
@@ -62,7 +62,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * @param e
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	boolean addAnonymousExecutable(CtAnonymousExecutable e);
+	<C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e);
 
 	/**
 	 * Remove an anonymous block to this class.
@@ -75,12 +75,12 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Sets the constructors for this class.
 	 */
-	void setConstructors(Set<CtConstructor<T>> constructors);
+	<C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors);
 
 	/**
 	 * Adds a constructor to this class.
 	 */
-	void addConstructor(CtConstructor<T> constructor);
+	<C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor);
 
 	/**
 	 * Removes a constructor from this class.
@@ -90,7 +90,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Sets the superclass type.
 	 */
-	void setSuperclass(CtTypeReference<?> classType);
+	<C extends CtClass<T>> C setSuperclass(CtTypeReference<?> classType);
 
 	/**
 	 * Return {@code true} if the referenced type is a anonymous type

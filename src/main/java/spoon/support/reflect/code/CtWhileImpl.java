@@ -26,17 +26,20 @@ public class CtWhileImpl extends CtLoopImpl implements CtWhile {
 
 	CtExpression<Boolean> expression;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtWhile(this);
 	}
 
+	@Override
 	public CtExpression<Boolean> getLoopingExpression() {
 		return expression;
 	}
 
-	public void setLoopingExpression(CtExpression<Boolean> expression) {
+	@Override
+	public <T extends CtWhile> T setLoopingExpression(CtExpression<Boolean> expression) {
 		expression.setParent(this);
 		this.expression = expression;
+		return (T) this;
 	}
-
 }

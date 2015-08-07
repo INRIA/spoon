@@ -83,7 +83,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
 	 * @param type
 	 *            reference to the type of this annotation
 	 */
-	void setAnnotationType(CtTypeReference<? extends Annotation> type);
+	<T extends CtAnnotation<A>> T setAnnotationType(CtTypeReference<? extends Annotation> type);
 
 	/**
 	 * Set's this annotation's element names and their values. This is in the
@@ -91,7 +91,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
 	 * values. Note that type values are stored as
 	 * {@link spoon.reflect.reference.CtTypeReference}.
 	 */
-	void setElementValues(Map<String, Object> values);
+	<T extends CtAnnotation<A>> T setElementValues(Map<String, Object> values);
 
 	/**
 	 * Returns the element which is annotated by this annotation.
@@ -108,5 +108,5 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
 	CtAnnotatedElementType getAnnotatedElementType();
 	
 	/** Adds a new key-value pair for this annotation */
-	void addValue(String elementName, Object value);
+	<T extends CtAnnotation<A>> T addValue(String elementName, Object value);
 }

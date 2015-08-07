@@ -26,14 +26,16 @@ public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>>
 
 	T target;
 
+	@Override
 	public T getTarget() {
 		return target;
 	}
 
-	public void setTarget(T target) {
+	@Override
+	public <C extends CtTargetedExpression<E, T>> C setTarget(T target) {
 		if (target != null)
 			target.setParent(this);
 		this.target = target;
+		return (C) this;
 	}
-
 }

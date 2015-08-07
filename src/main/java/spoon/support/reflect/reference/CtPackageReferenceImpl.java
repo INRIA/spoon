@@ -31,10 +31,12 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements
 		super();
 	}
 
+	@Override
 	public CtPackage getDeclaration() {
 		return getFactory().Package().get(getSimpleName());
 	}
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtPackageReference(this);
 	}

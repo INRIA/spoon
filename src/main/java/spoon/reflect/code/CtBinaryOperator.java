@@ -38,21 +38,20 @@ public interface CtBinaryOperator<T> extends CtExpression<T> {
 	/**
 	 * Sets the left-hand operand.
 	 */
-	void setLeftHandOperand(CtExpression<?> expression);
+	<C extends CtBinaryOperator<T>> C setLeftHandOperand(CtExpression<?> expression);
 
 	/**
 	 * Sets the right-hand operand.
 	 */
-	void setRightHandOperand(CtExpression<?> expression);
+	<C extends CtBinaryOperator<T>> C setRightHandOperand(CtExpression<?> expression);
 
 	/**
 	 * Sets the kind of this binary operator.
 	 */
-	void setKind(BinaryOperatorKind kind);
+	<C extends CtBinaryOperator<T>> C setKind(BinaryOperatorKind kind);
 
 	/**
 	 * Gets the kind of this binary operator.
 	 */
 	BinaryOperatorKind getKind();
-
 }

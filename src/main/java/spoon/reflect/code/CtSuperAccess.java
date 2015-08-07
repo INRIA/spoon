@@ -37,5 +37,6 @@ public interface CtSuperAccess<T> extends CtTargetedAccess<T> {
 	 * @deprecated super isn't a variable. So this method will be removed in a next release.
 	 */
 	@Deprecated
-	void setVariable(CtVariableReference<T> variable);
+	@Override
+	<C extends CtVariableAccess<T>> C setVariable(CtVariableReference<T> variable);
 }

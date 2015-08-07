@@ -30,27 +30,23 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Inserts a statement after the current statement.
 	 */
-	void insertAfter(CtStatement statement)
-			throws ParentNotInitializedException;
+	<T extends CtStatement> T insertAfter(CtStatement statement) throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	void insertAfter(CtStatementList statements)
-			throws ParentNotInitializedException;
+	<T extends CtStatement> T insertAfter(CtStatementList statements) throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement given as parameter before the current statement
 	 * (this).
 	 */
-	void insertBefore(CtStatement statement)
-			throws ParentNotInitializedException;
+	<T extends CtStatement> T insertBefore(CtStatement statement) throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	void insertBefore(CtStatementList statements)
-			throws ParentNotInitializedException;
+	<T extends CtStatement> T insertBefore(CtStatementList statements) throws ParentNotInitializedException;
 
 	/**
 	 * Gets the label of this statement if defined.
@@ -62,7 +58,7 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Sets the label of this statement.
 	 */
-	void setLabel(String label);
+	<T extends CtStatement> T setLabel(String label);
 
 	/**
 	 * Replaces this element by another one.

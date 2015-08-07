@@ -28,7 +28,7 @@ public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T
 	/**
 	 * The separator for a string representation of a field.
 	 */
-	public static final String FIELD_SEPARATOR = "#";
+	String FIELD_SEPARATOR = "#";
 
 	/*
 	 * (non-Javadoc)

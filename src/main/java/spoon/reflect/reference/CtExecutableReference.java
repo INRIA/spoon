@@ -29,8 +29,7 @@ import spoon.reflect.declaration.CtExecutable;
  * {@link spoon.reflect.declaration.CtMethod} or a
  * {@link spoon.reflect.declaration.CtConstructor}.
  */
-public interface CtExecutableReference<T> extends CtReference,
-		CtGenericElementReference {
+public interface CtExecutableReference<T> extends CtReference, CtGenericElementReference {
 
 	String CONSTRUCTOR_NAME = "<init>";
 
@@ -75,7 +74,7 @@ public interface CtExecutableReference<T> extends CtReference,
 	/**
 	 * Sets parameters of the executable.
 	 */
-	void setParameters(List<CtTypeReference<?>> parameters);
+	<C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters);
 
 	/**
 	 * Returns <code>true</code> if this executable overrides the given
@@ -100,8 +99,7 @@ public interface CtExecutableReference<T> extends CtReference,
 	 * @return the first found (most concrete) executable that overrides this
 	 *         executable (null if none found)
 	 */
-	<S extends T> CtExecutableReference<S> getOverridingExecutable(
-			CtTypeReference<?> subType);
+	<S extends T> CtExecutableReference<S> getOverridingExecutable(CtTypeReference<?> subType);
 
 	/**
 	 * Tells if the referenced executable is static.
@@ -111,17 +109,17 @@ public interface CtExecutableReference<T> extends CtReference,
 	/**
 	 * Sets the declaring type.
 	 */
-	void setDeclaringType(CtTypeReference<?> declaringType);
+	<C extends CtExecutableReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**
 	 * Sets this executable reference to be static or not.
 	 */
-	void setStatic(boolean b);
+	<C extends CtExecutableReference<T>> C setStatic(boolean b);
 
 	/**
 	 * Sets the type of the variable.
 	 */
-	void setType(CtTypeReference<T> type);
+	<C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type);
 
 	/**
 	 * Tells if the referenced executable is final.

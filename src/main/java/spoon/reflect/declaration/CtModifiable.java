@@ -45,7 +45,7 @@ public interface CtModifiable extends CtElement {
 	/**
 	 * Sets the modifiers.
 	 */
-	void setModifiers(Set<ModifierKind> modifiers);
+	<T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers);
 
 	/**
 	 * add a modifier
@@ -53,7 +53,7 @@ public interface CtModifiable extends CtElement {
 	 * @param modifier
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	boolean addModifier(ModifierKind modifier);
+	<T extends CtModifiable> T addModifier(ModifierKind modifier);
 
 	/**
 	 * remove a modifier
@@ -66,7 +66,7 @@ public interface CtModifiable extends CtElement {
 	/**
 	 * Sets the visibility of this modifiable element (replaces old visibility).
 	 */
-	void setVisibility(ModifierKind visibility);
+	<T extends CtModifiable> T setVisibility(ModifierKind visibility);
 
 	/**
 	 * Gets the visibility of this modifiable element.

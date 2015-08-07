@@ -35,44 +35,50 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 
 	CtExpression<S> expression;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtSwitch(this);
 	}
 
+	@Override
 	public List<CtCase<? super S>> getCases() {
 		return cases;
 	}
 
+	@Override
 	public CtExpression<S> getSelector() {
 		return expression;
 	}
 
-	public void setCases(List<CtCase<? super S>> cases) {
+	@Override
+	public <T extends CtSwitch<S>> T setCases(List<CtCase<? super S>> cases) {
 		this.cases.clear();
-		for(CtCase caseStmt: cases) {
-			addCase(caseStmt);
+		for (CtCase<? super S> aCase : cases) {
+			addCase(aCase);
 		}
-	}
-
-	public void setSelector(CtExpression<S> selector) {
-		selector.setParent(this);
-		this.expression = selector;
+		return (T) this;
 	}
 
 	@Override
-	public boolean addCase(CtCase<? super S> c) {
+	public <T extends CtSwitch<S>> T setSelector(CtExpression<S> selector) {
+		selector.setParent(this);
+		this.expression = selector;
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtSwitch<S>> T addCase(CtCase<? super S> c) {
 		if (cases == CtElementImpl.<CtCase<? super S>> EMPTY_LIST()) {
-			cases = new ArrayList<CtCase<? super S>>(
-					SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
+			cases = new ArrayList<CtCase<? super S>>(SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		c.setParent(this);
-		return cases.add(c);
+		cases.add(c);
+		return (T) this;
 	}
 
 	@Override
 	public boolean removeCase(CtCase<? super S> c) {
-		return cases != CtElementImpl.<CtCase<? super S>>EMPTY_LIST() &&
-				cases.remove(c);
+		return cases != CtElementImpl.<CtCase<? super S>>EMPTY_LIST() && cases.remove(c);
 	}
 
 }

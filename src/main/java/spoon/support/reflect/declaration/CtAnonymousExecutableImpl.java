@@ -23,36 +23,42 @@ import java.util.Set;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtAnonymousExecutableImpl extends CtElementImpl implements
-		CtAnonymousExecutable {
+public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;
 
 	CtBlock<?> body;
 
 	Set<ModifierKind> modifiers = EMPTY_SET();
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAnonymousExecutable(this);
 	}
 
-	public boolean addModifier(ModifierKind modifier) {
+	@Override
+	public <T extends CtModifiable> T addModifier(ModifierKind modifier) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		return modifiers.add(modifier);
+		modifiers.add(modifier);
+		return (T) this;
 	}
 
+	@Override
 	public boolean removeModifier(ModifierKind modifier) {
 		return !modifiers.isEmpty() && modifiers.remove(modifier);
 	}
 
+	@Override
 	public CtBlock<?> getBody() {
 		return body;
 	}
 
+	@Override
 	public Set<ModifierKind> getModifiers() {
 		return modifiers;
 	}
@@ -62,6 +68,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 		return (CtClass<?>) parent;
 	}
 
+	@Override
 	public ModifierKind getVisibility() {
 		if (getModifiers().contains(ModifierKind.PUBLIC))
 			return ModifierKind.PUBLIC;
@@ -72,20 +79,26 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 		return null;
 	}
 
+	@Override
 	public boolean hasModifier(ModifierKind modifier) {
 		return modifiers.contains(modifier);
 	}
 
-	public void setBody(CtBlock<?> block) {
+	@Override
+	public <T extends CtAnonymousExecutable> T setBody(CtBlock<?> block) {
 		block.setParent(this);
 		body = block;
+		return (T) this;
 	}
 
-	public void setModifiers(Set<ModifierKind> modifiers) {
+	@Override
+	public <T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers) {
 		this.modifiers = modifiers;
+		return (T) this;
 	}
 
-	public void setVisibility(ModifierKind visibility) {
+	@Override
+	public <T extends CtModifiable> T setVisibility(ModifierKind visibility) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
@@ -93,6 +106,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);
 		getModifiers().add(visibility);
+		return (T) this;
 	}
 
 }

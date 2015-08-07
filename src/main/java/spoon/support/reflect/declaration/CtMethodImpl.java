@@ -18,8 +18,11 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -48,16 +51,20 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		super();
 	}
 
+	@Override
 	public void accept(CtVisitor v) {
 		v.visitCtMethod(this);
 	}
 
+	@Override
 	public CtTypeReference<T> getType() {
 		return returnType;
 	}
 
-	public void setType(CtTypeReference<T> type) {
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		this.returnType = type;
+		return (C) this;
 	}
 
 	@Override
@@ -71,8 +78,9 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public void setDefaultMethod(boolean defaultMethod) {
+	public <C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod) {
 		this.defaultMethod = defaultMethod;
+		return (C) this;
 	}
 
 	@Override
@@ -81,27 +89,28 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+	public <T extends CtGenericElement> T addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
 		if (formalTypeParameter == null) {
-			return false;
+			return (T) this;
 		}
 		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
 			formalTypeParameters = new ArrayList<CtTypeReference<?>>(
 					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		return formalTypeParameters.add(formalTypeParameter);
+		formalTypeParameters.add(formalTypeParameter);
+		return (T) this;
 	}
 
 	@Override
-	public void setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
+	public <T extends CtGenericElement> T setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
 		this.formalTypeParameters = formalTypeParameters;
+		return (T) this;
 	}
 
 	@Override
 	public boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
 		return formalTypeParameter != null &&
-				formalTypeParameters !=
-						CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+				formalTypeParameters != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
 				formalTypeParameters.remove(formalTypeParameter);
 	}
 
@@ -116,16 +125,18 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public void setModifiers(Set<ModifierKind> modifiers) {
+	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		this.modifiers = modifiers;
+		return (C) this;
 	}
 
 	@Override
-	public boolean addModifier(ModifierKind modifier) {
+	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		return modifiers.add(modifier);
+		modifiers.add(modifier);
+		return (C) this;
 	}
 
 	@Override
@@ -134,7 +145,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public void setVisibility(ModifierKind visibility) {
+	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
@@ -142,6 +153,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);
 		getModifiers().add(visibility);
+		return (C) this;
 	}
 
 	@Override

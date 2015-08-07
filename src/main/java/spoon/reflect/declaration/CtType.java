@@ -29,6 +29,10 @@ import spoon.reflect.reference.CtTypeReference;
  * The type parameter T refers to the actual class that this type represents.
  */
 public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtGenericElement {
+	/**
+	 * The string separator in a Java innertype qualified name.
+	 */
+	String INNERTTYPE_SEPARATOR = "$";
 
 	/**
 	 * Returns the types used by this type.
@@ -38,12 +42,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *            in the same package as the current type
 	 */
 	Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage);
-
-
-	/**
-	 * The string separator in a Java innertype qualified name.
-	 */
-	public static final String INNERTTYPE_SEPARATOR = "$";
 
 	/**
 	 * Returns the actual runtime class if exists.
@@ -99,7 +97,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @param field
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	<F> boolean addField(CtField<F> field);
+	<F, C extends CtType<T>> C addField(CtField<F> field);
 
 	/**
 	 * remove a Field
@@ -115,7 +113,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @param nestedType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	<N> boolean addNestedType(CtType<N> nestedType);
+	<N, C extends CtType<T>> C addNestedType(CtType<N> nestedType);
 
 	/**
 	 * Remove a nested type.
@@ -178,12 +176,12 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Sets the methods of this type.
 	 */
-	void setMethods(Set<CtMethod<?>> methods);
+	<C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods);
 
 	/**
 	 * Adds a method to this type.
 	 */
-	<M> boolean addMethod(CtMethod<M> method);
+	<M, C extends CtType<T>> C addMethod(CtMethod<M> method);
 
 	/**
 	 * Removes a method from this type.
@@ -193,14 +191,14 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Sets the super interfaces of this type.
 	 */
-	void setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
+	<C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
 
 	/**
 	 * 
 	 * @param interfac
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	<S> boolean addSuperInterface(CtTypeReference<S> interfac);
+	<S, C extends CtType<T>> C addSuperInterface(CtTypeReference<S> interfac);
 
 	/**
 	 * 

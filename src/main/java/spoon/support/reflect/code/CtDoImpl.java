@@ -26,16 +26,20 @@ public class CtDoImpl extends CtLoopImpl implements CtDo {
 
 	CtExpression<Boolean> expression;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtDo(this);
 	}
 
+	@Override
 	public CtExpression<Boolean> getLoopingExpression() {
 		return expression;
 	}
 
-	public void setLoopingExpression(CtExpression<Boolean> expression) {
+	@Override
+	public <T extends CtDo> T setLoopingExpression(CtExpression<Boolean> expression) {
 		expression.setParent(this);
 		this.expression = expression;
+		return (T) this;
 	}
 }

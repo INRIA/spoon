@@ -32,7 +32,7 @@ public interface CtCatch extends CtCodeElement {
 	/**
 	 * Sets the catch's parameter (a throwable).
 	 */
-	void setParameter(CtCatchVariable<? extends Throwable> parameter);
+	<T extends CtCatch> T setParameter(CtCatchVariable<? extends Throwable> parameter);
 
 	/**
 	 * Gets the catch's body.
@@ -42,5 +42,5 @@ public interface CtCatch extends CtCodeElement {
 	/**
 	 * Sets the catch's body.
 	 */
-	void setBody(CtBlock<?> body);
+	<T extends CtCatch> T setBody(CtBlock<?> body);
 }

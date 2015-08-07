@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Set;
 
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -37,6 +39,7 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> implements CtAnnotationType<T> {
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public void accept(CtVisitor v) {
 		v.visitCtAnnotationType(this);
 	}
@@ -47,7 +50,7 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	}
 
 	@Override
-	public void setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
+	public <C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
 		throw new UnsupportedOperationException("You can't have super interfaces in an annotation.");
 	}
 
@@ -67,12 +70,12 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	}
 
 	@Override
-	public void setMethods(Set<CtMethod<?>> methods) {
+	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
 		throw new UnsupportedOperationException("You can't have methods in an annotation.");
 	}
 
 	@Override
-	public <M> boolean addMethod(CtMethod<M> method) {
+	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
 		throw new UnsupportedOperationException("You can't have methods in an annotation.");
 	}
 
@@ -82,12 +85,12 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	}
 
 	@Override
-	public void setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
+	public <C extends CtGenericElement> C setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
 		throw new UnsupportedOperationException("You can't have generics in an annotation.");
 	}
 
 	@Override
-	public boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+	public <C extends CtGenericElement> C addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
 		throw new UnsupportedOperationException("You can't have generics in an annotation.");
 	}
 
