@@ -9,6 +9,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.test.trycatch.Main;
 
 public class VarArgsTest {
@@ -29,7 +30,8 @@ public class VarArgsTest {
 		assertEquals("Array", param1.getType().getSimpleName());
 		assertEquals("java.lang.String", ((CtArrayTypeReference<?>)param1.getType()).getComponentType().toString());
 		// we can even rewrite the vararg
-		assertEquals("void foo(int arg0, java.lang.String... args) {\n}", m.toString());
+		assertEquals("void foo(int arg0, java.lang.String... args) {"
+				+ DefaultJavaPrettyPrinter.LINE_SEPARATOR + "}", m.toString());
 	}
 
 	
