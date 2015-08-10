@@ -861,6 +861,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtClass<?> cl = factory.Core().createClass();
 			if (typeDeclaration.superclass != null &&
 					typeDeclaration.superclass.resolvedType != null &&
+					typeDeclaration.enclosingType != null &&
 					!new String(typeDeclaration.superclass.resolvedType.qualifiedPackageName()).equals(new String(typeDeclaration.binding.qualifiedPackageName()))) {
 
 				// Sorry for this hack but see the test case ImportTest#testImportOfAnInnerClassInASuperClassPackage.
