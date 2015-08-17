@@ -185,7 +185,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
 			if (a.getAnnotationType().toString()
-					.equals(annotationType.getName().replace('$','.'))) {
+					.equals(annotationType.getName().replace('$', '.'))) {
 				return ((CtAnnotation<A>) a).getActualAnnotation();
 			}
 		}
@@ -243,11 +243,29 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return getParent().getParent(parentType);
 	}
 
-	public boolean hasParent(CtElement candidate)
-			throws ParentNotInitializedException {
-		if (getParent() == candidate)
-			return true;
-		return getParent().hasParent(candidate);
+	@Override
+	public <P extends CtElement> boolean hasParent(Class<P> parentType) {
+		try {
+			return getParent(parentType) != null;
+		} catch (ParentNotInitializedException e) {
+			return false;
+		}
+	}
+
+	@Override
+	public <P extends CtElement> boolean hasParentTypedBy(Class<P> parentType) {
+		try {
+			final CtElement parent = getParent();
+			return parent != null && parentType.isAssignableFrom(parent.getClass());
+		} catch (ParentNotInitializedException e) {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean hasParent(CtElement candidate) throws ParentNotInitializedException {
+		final CtElement parent = getParent();
+		return parent == candidate || parent.hasParent(candidate);
 	}
 
 	public SourcePosition getPosition() {

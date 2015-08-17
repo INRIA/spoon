@@ -578,14 +578,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return true;
 		}
 		try {
-			if ((e.getParent() instanceof CtBinaryOperator)
-					|| (e.getParent() instanceof CtUnaryOperator)) {
+			if (e.hasParentTypedBy(CtBinaryOperator.class) ||
+					e.hasParentTypedBy(CtUnaryOperator.class)) {
 				return (e instanceof CtTargetedExpression)
 						|| (e instanceof CtAssignment)
 						|| (e instanceof CtConditional)
 						|| (e instanceof CtUnaryOperator);
 			}
-			if (e.getParent() instanceof CtTargetedExpression) {
+			if (e.hasParentTypedBy(CtTargetedExpression.class)) {
 				return (e instanceof CtBinaryOperator)
 						|| (e instanceof CtAssignment)
 						|| (e instanceof CtConditional);
@@ -697,13 +697,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		enterCtExpression(operator);
-		boolean paren = false;
-		try {
-			paren = (operator.getParent() instanceof CtBinaryOperator)
-					|| (operator.getParent() instanceof CtUnaryOperator);
-		} catch (ParentNotInitializedException ex) {
-			// nothing if we have no parent
-		}
+		boolean paren = operator.hasParentTypedBy(CtBinaryOperator.class) ||
+				operator.hasParentTypedBy(CtUnaryOperator.class);;
 		if (paren) {
 			write("(");
 		}
@@ -831,12 +826,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctClass.getFields());
 		lst.addAll(ctClass.getMethods());
 
-		if ((ctClass.getSimpleName() == null || ctClass.getSimpleName()
-				.isEmpty())
-				&& ctClass.getParent() != null
-				&& ctClass.getParent() instanceof CtNewClass) {
-			context.currentThis.push(((CtNewClass<?>) ctClass.getParent())
-					.getType());
+		if ((ctClass.getSimpleName() == null || ctClass.getSimpleName().isEmpty())
+				&& ctClass.hasParentTypedBy(CtNewClass.class)) {
+			context.currentThis.push(((CtNewClass<?>) ctClass.getParent()).getType());
 		} else {
 			context.currentThis.push(ctClass.getReference());
 		}
@@ -1011,10 +1003,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(" ");
 		write(f.getSimpleName());
 
-		if ((!f.isParentInitialized())
-				|| !CtAnnotationType.class.isAssignableFrom(f.getParent()
-				.getClass())
-				|| f.getModifiers().contains(ModifierKind.STATIC)) {
+		if (!f.isParentInitialized() ||
+				!f.hasParentTypedBy(CtAnnotationType.class) ||
+				f.getModifiers().contains(ModifierKind.STATIC)) {
 			if (f.getDefaultExpression() != null) {
 				write(" = ");
 				scan(f.getDefaultExpression());
@@ -1578,8 +1569,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
 
-		if ((newArray.getParent(CtAnnotationType.class) == null)
-				&& (newArray.getParent(CtAnnotation.class) == null)) {
+		if (!newArray.hasParent(CtAnnotationType.class) && !newArray.hasParent(CtAnnotation.class)) {
 			CtTypeReference<?> ref = newArray.getType();
 
 			if (ref != null) {
@@ -1921,7 +1911,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (reference.getDeclaration() == null) {
 			return false;
 		}
-		if (reference.getDeclaration().getParent(CtMethod.class) != null) {
+		if (reference.getDeclaration().hasParent(CtMethod.class)) {
 			return false;
 		}
 		// If the declaring type isn't a CtType, we don't need this hack.
