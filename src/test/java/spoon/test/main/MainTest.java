@@ -1,19 +1,27 @@
 package spoon.test.main;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.Assertion;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-import spoon.Launcher;
-import spoon.reflect.declaration.CtPackage;
-import spoon.test.parent.ParentTest;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.contrib.java.lang.system.Assertion;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+
+import spoon.Launcher;
+import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldWrite;
+import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.parent.ParentTest;
 
 public class MainTest {
 
@@ -39,8 +47,28 @@ public class MainTest {
 				systemClassPath, "--compile", "--compliance", "7" });
 		
 		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {
-			ParentTest.checkParentContract(pack);
+			checkGenericContracts(pack);
 		}
+	}
+
+	public void checkGenericContracts(CtPackage pack) {
+		// parent
+		ParentTest.checkParentContract(pack);
+
+		// assignments
+		checkAssignmentContracts(pack);
+	}
+	
+	public static void checkAssignmentContracts(CtElement pack) {
+		for (CtAssignment assign : pack.getElements(new TypeFilter<CtAssignment>(
+				CtAssignment.class))) {
+			CtExpression assigned = assign.getAssigned();
+			if (!(assigned instanceof CtFieldWrite
+					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
+				throw new AssertionError("AssignmentContract error:" + assign.getPosition()+"\n"+assign.toString()+"\nAssigned is "+assigned.getClass());
+			}
+		}
+
 	}
 
 	@Test
@@ -51,7 +79,7 @@ public class MainTest {
 				"target/spooned", "--noclasspath", "--compliance", "8" });
 		
 		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {
-			ParentTest.checkParentContract(pack);
+			checkGenericContracts(pack);
 		}
 	}
 

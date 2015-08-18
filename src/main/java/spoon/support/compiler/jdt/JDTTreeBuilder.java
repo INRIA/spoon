@@ -139,6 +139,7 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
@@ -2371,8 +2372,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references
-				.getBoundedTypeReference(parameterizedSingleTypeReference.resolvedType));
+		l.setValue(references.getBoundedTypeReference(parameterizedSingleTypeReference.resolvedType));
 		context.enter(l, parameterizedSingleTypeReference);
 		return true;
 	}
@@ -2438,7 +2438,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		long[] positions = qualifiedNameReference.sourcePositions;
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
 			CtFieldAccess<Object> fa;
-			if (context.stack.peek().element instanceof CtAssignment) {
+			if (context.stack.peek().element instanceof CtAssignment
+					&& (qualifiedNameReference.otherBindings == null
+					|| qualifiedNameReference.otherBindings.length == 0)) {
 				fa = factory.Core().createFieldWrite();
 			} else {
 				fa = factory.Core().createFieldRead();
@@ -2454,61 +2456,79 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 			fa.setVariable(ref);
 
-			if (qualifiedNameReference.otherBindings != null){
+			if (qualifiedNameReference.otherBindings != null) {
 				int i = 0; //positions index;
-				int sourceStart = (int)(positions[0] >>> 32);
+				int sourceStart = (int) (positions[0] >>> 32);
 				for (FieldBinding b : qualifiedNameReference.otherBindings) {
-					if (b != null) {
-						CtFieldRead<Object> other = factory.Core().createFieldRead();
-						other.setVariable(references.getVariableReference(b));
-						other.setTarget(fa);
-						//set source position of fa;
-						CompilationUnit cu = factory.CompilationUnit().create(
-								new String(context.compilationunitdeclaration.getFileName()));
-						int sourceEnd = (int)(positions[i]);
-						fa.setPosition(factory.Core()
-								.createSourcePosition(
-										cu,
-										sourceStart,
-										sourceEnd,
-										context.compilationunitdeclaration.compilationResult.lineSeparatorPositions));
-
-						fa = other;
-						i++;
+					CtFieldAccess<Object> other;
+					if (qualifiedNameReference.otherBindings.length == i + 1 && context.stack
+							.peek().element instanceof CtAssignment) {
+						other = factory.Core().createFieldWrite();
+					} else {
+						other = factory.Core().createFieldRead();
 					}
+					other.setVariable(references.getVariableReference(b));
+					other.setTarget(fa);
+
+					if (b != null) {
+						other.setType(references.getTypeReference(b.type));
+					} else {
+						// case with no complete classpath
+						CtTypeReference<Object> ref2 = factory.Core().createTypeReference();
+						ref2.setSimpleName(new String(
+								qualifiedNameReference.tokens[qualifiedNameReference.tokens.length
+										- 1]));
+						other.setType(ref2);
+					}
+
+					//set source position of fa;
+					CompilationUnit cu = factory.CompilationUnit().create(
+							new String(context.compilationunitdeclaration.getFileName()));
+					int sourceEnd = (int) (positions[i]);
+					final int[] lineSeparatorPositions = context.compilationunitdeclaration
+							.compilationResult.lineSeparatorPositions;
+					fa.setPosition(factory.Core().createSourcePosition(
+							cu, sourceStart, sourceEnd, lineSeparatorPositions));
+					fa = other;
+					i++;
 				}
 			}
 			context.enter(fa, qualifiedNameReference);
 			return true;
 		} else if (qualifiedNameReference.binding instanceof VariableBinding) {
-			CtVariableAccess<Object> va = null;
-			if (context.stack.peek().element instanceof CtAssignment) {
+			CtVariableAccess<Object> va;
+			if (context.stack.peek().element instanceof CtAssignment
+					&& (qualifiedNameReference.otherBindings == null
+					|| qualifiedNameReference.otherBindings.length == 0)) {
 				va = factory.Core().createVariableWrite();
 			} else {
 				va = factory.Core().createVariableRead();
 			}
-			va.setVariable(references
-					.getVariableReference((VariableBinding) qualifiedNameReference.binding));
+			va.setVariable(references.getVariableReference(
+					(VariableBinding) qualifiedNameReference.binding));
 			va.setType(va.getVariable().getType());
 			if (qualifiedNameReference.otherBindings != null) {
 				int i = 0; //positions index;
 				int sourceStart = (int) (positions[0] >>> 32);
 				for (FieldBinding b : qualifiedNameReference.otherBindings) {
-					CtFieldRead<Object> fa = factory.Core().createFieldRead();
-					fa.setTarget(va);
-					CtVariableReference<Object> varRef = references.getVariableReference(b);
-					if (varRef != null) {
-						fa.setVariable(varRef);
+					CtFieldAccess<Object> other;
+					if (qualifiedNameReference.otherBindings.length == i + 1 && context.stack
+							.peek().element instanceof CtAssignment) {
+						other = factory.Core().createFieldWrite();
+					} else {
+						other = factory.Core().createFieldRead();
 					}
+					other.setVariable(references.getVariableReference(b));
+					other.setTarget(va);
 					if (b != null) {
-						fa.setType(references.getTypeReference(b.type));
+						other.setType(references.getTypeReference(b.type));
 					} else {
 						// case with no complete classpath
 						CtTypeReference<Object> ref = factory.Core().createTypeReference();
 						ref.setSimpleName(new String(
 								qualifiedNameReference.tokens[qualifiedNameReference.tokens.length
 										- 1]));
-						fa.setType(ref);
+						other.setType(ref);
 					}
 					//set source position of va;
 					CompilationUnit cu = factory.CompilationUnit().create(
@@ -2518,7 +2538,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 							.compilationResult.lineSeparatorPositions;
 					va.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceEnd,
 																	   lineSeparatorPositions));
-					va = fa;
+					va = other;
 					i++;
 				}
 			}
@@ -2603,6 +2623,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
 			ta.setType(references.getTypeReference((TypeBinding) singleNameReference.binding));
 			context.enter(ta, singleNameReference);
+		} else if (singleNameReference.binding instanceof ProblemBinding) {
+			if (context.stack.peek().element instanceof CtAssignment) {
+				va = factory.Core().createFieldWrite();
+			} else {
+				va = factory.Core().createFieldRead();
+			}
 		}
 		if (va != null)
 			context.enter(va, singleNameReference);
