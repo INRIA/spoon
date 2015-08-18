@@ -704,7 +704,7 @@ public class AnnotationTest {
 		assertEquals(2,annot.value().length);
 	}
 
-	private Class<? extends Annotation> getActualClassFromAnnotation(CtAnnotation<? extends Annotation> annotation) {
+	public static Class<? extends Annotation> getActualClassFromAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		return annotation.getAnnotationType().getActualClass();
 	}
 

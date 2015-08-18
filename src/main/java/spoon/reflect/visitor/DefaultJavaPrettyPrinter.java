@@ -913,6 +913,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void writeEnumField(CtField<?> f) {
+		visitCtNamedElement(f);
 		write(f.getSimpleName());
 		if (f.getDefaultExpression() != null) {
 			CtConstructorCall<?> constructorCall = (CtConstructorCall<?>) f.getDefaultExpression();
