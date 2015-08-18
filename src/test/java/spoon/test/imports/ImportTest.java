@@ -11,8 +11,10 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
+import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -21,13 +23,12 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.imports.testclasses.SubClass;
 
 public class ImportTest {
 
-	// TODO This test is ignored because we have proposed a wrong fix for the issue #114 on GitHub.
 	@Test
-	@Ignore
 	public void testImportOfAnInnerClassInASuperClassPackage() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
@@ -48,6 +49,27 @@ public class ImportTest {
 		assertEquals(expected, innerClass.getReference().toString());
 
 		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
+		assertEquals(expected, innerClass.getSuperclass().toString());
+	}
+
+	@Test
+	public void testImportOfAnInnerClassInASuperClassAvailableInLibrary() throws Exception {
+		SpoonCompiler comp = new Launcher().createCompiler();
+		List<SpoonResource> fileToBeSpooned = SpoonResourceHelper.resources("./src/test/resources/visibility/YamlRepresenter.java");
+		assertEquals(1, fileToBeSpooned.size());
+		comp.addInputSources(fileToBeSpooned);
+		List<SpoonResource> classpath = SpoonResourceHelper.resources("./src/test/resources/visibility/snakeyaml-1.9.jar");
+		assertEquals(1, classpath.size());
+		comp.setSourceClasspath(classpath.get(0).getPath());
+		comp.build();
+		Factory factory = comp.getFactory();
+		CtType<?> theClass = factory.Type().get("visibility.YamlRepresenter");
+
+		final CtClass<?> innerClass = theClass.getNestedType("RepresentConfigurationSection");
+		String expected = "visibility.YamlRepresenter.RepresentConfigurationSection";
+		assertEquals(expected, innerClass.getReference().toString());
+
+		expected = "org.yaml.snakeyaml.representer.Representer.RepresentMap";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 	}
 
