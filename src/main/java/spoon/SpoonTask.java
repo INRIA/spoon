@@ -106,6 +106,10 @@ public class SpoonTask extends Java {
 	boolean verbose = false;
 
 	boolean debug = false;
+	
+	boolean imports = false;
+	
+	boolean noclasspath = false;
 
 	boolean precompile = false;
 
@@ -177,6 +181,14 @@ public class SpoonTask extends Java {
 			createArg().setValue("--tabs");
 		}
 
+		if (imports) {
+			createArg().setValue("--with-imports");
+		}
+		
+		if (noclasspath) {
+			createArg().setValue("--noclasspath");
+		}
+		
 		createArg().setValue("--tabsize");
 		createArg().setValue("" + tabSize);
 
@@ -526,6 +538,20 @@ public class SpoonTask extends Java {
 		this.encoding = encoding;
 	}
 
+	/**
+	 * Sets automatic imports in generated files.
+	 */
+	public void setImports(boolean imports) {
+		this.imports = imports;
+	}
+	
+	/**
+	 * Does not assume a full classpath
+	 */
+	public void setNoClasspath(boolean noclasspath) {
+		this.noclasspath = noclasspath;
+	}
+	
 	/**
 	 * Tells if Spoon should try to preserve the original line numbers when
 	 * generating the source code (may lead to human-unfriendly formatting).
