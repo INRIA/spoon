@@ -2112,8 +2112,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(pack).writeln().writeln().writeTabs();
 			if (env.isAutoImports()) {
 				for (CtTypeReference<?> ref : imports) {
-					write("import " + ref.getQualifiedName() + ";")
+					if (!ref.getQualifiedName().contains("$")) {
+						write("import " + ref.getQualifiedName() + ";")
 							.writeln().writeTabs();
+					}
 				}
 			}
 			writeln().writeTabs();
