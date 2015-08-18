@@ -1,17 +1,9 @@
 package spoon.test.lambda;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.io.File;
-import java.util.List;
-import java.util.function.Predicate;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
@@ -25,21 +17,30 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.test.TestUtils;
 import spoon.test.lambda.testclasses.Foo;
 
+import java.io.File;
+import java.util.List;
+import java.util.function.Predicate;
+
+import static org.junit.Assert.*;
+
 public class LambdaTest {
 	private Factory factory;
 	private CtType<Foo> foo;
+	private SpoonCompiler compiler;
 
 	@Before
 	public void setUp() throws Exception {
 		final Launcher launcher = new Launcher();
 		this.factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(8);
-		final SpoonCompiler compiler = launcher.createCompiler(this.factory);
+		compiler = launcher.createCompiler(this.factory);
 
-		compiler.setDestinationDirectory(new File("./target/spooned/"));
+		compiler.setOutputDirectory(TestUtils.getSpoonedDirectory(getClass()));
+		compiler.setDestinationDirectory(TestUtils.getBuildDirectory(getClass()));
 		compiler.addInputSource(new File("./src/test/java/spoon/test/lambda/testclasses/"));
 		compiler.build();
-		compiler.compileInputSources();
+		compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
+
 		foo = factory.Type().get(Foo.class);
 	}
 
@@ -65,7 +66,9 @@ public class LambdaTest {
 		assertParameterIsNamedBy("p", parameter);
 		assertHasExpressionBody(lambda);
 
-		assertIsWellPrinted("((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))", lambda);
+		assertIsWellPrinted(
+				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))",
+				lambda);
 	}
 
 	@Test
@@ -83,7 +86,8 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))", lambda);
+				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))",
+				lambda);
 	}
 
 	@Test
@@ -97,7 +101,9 @@ public class LambdaTest {
 		assertParameterIsNamedBy("p", parameter);
 		assertHasExpressionBody(lambda);
 
-		assertIsWellPrinted("((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))", lambda);
+		assertIsWellPrinted(
+				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))",
+				lambda);
 	}
 
 	@Test
@@ -115,7 +121,8 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))", lambda);
+				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))",
+				lambda);
 	}
 
 	@Test
@@ -143,10 +150,12 @@ public class LambdaTest {
 		assertParameterIsNamedBy("p", parameter);
 		assertStatementBody(lambda);
 
-		assertIsWellPrinted("((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> {" + System.lineSeparator()
-				+ "    p.doSomething();" + System.lineSeparator()
-				+ "    return (p.age) > 10;" + System.lineSeparator()
-				+ "}))", lambda);
+		assertIsWellPrinted(
+				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> {"
+						+ System.lineSeparator()
+						+ "    p.doSomething();" + System.lineSeparator()
+						+ "    return (p.age) > 10;" + System.lineSeparator()
+						+ "}))", lambda);
 	}
 
 	@Test
@@ -170,14 +179,15 @@ public class LambdaTest {
 		final String expected =
 				"if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {"
 						+ System.lineSeparator()
-						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");" + System.lineSeparator()
+						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");" + System
+						.lineSeparator()
 						+ "} ";
 		assertEquals("Condition must be well printed", expected, condition.toString());
 	}
 
 	@Test
 	public void testCompileLambdaGeneratedBySpoon() throws Exception {
-		TestUtils.canBeBuild(new File("./target/spooned/spoon/test/lambda/testclasses/"), 8);
+		TestUtils.canBeBuild(TestUtils.getSpoonedDirectory(getClass()), 8);
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {

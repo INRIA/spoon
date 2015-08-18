@@ -1653,7 +1653,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (argument.type != null) {
 			p.setType(references.getTypeReference(argument.type.resolvedType));
 		} else if (argument.binding != null && argument.binding.type != null) {
-			p.setType(references.getTypeReference((argument.binding.type)));
+			if (argument.binding.type instanceof WildcardBinding) {
+				p.setType(references.getTypeReference((((WildcardBinding) argument.binding.type).bound)));
+			} else {
+				p.setType(references.getTypeReference((argument.binding.type)));
+			}
 		}
 		context.enter(p, argument);
 		if (argument.initialization != null)
