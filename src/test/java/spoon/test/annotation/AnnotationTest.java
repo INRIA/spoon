@@ -10,6 +10,7 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.processing.AbstractAnnotationProcessor;
+import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
@@ -45,6 +48,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.QueueProcessingManager;
 import spoon.test.TestUtils;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
@@ -58,6 +62,7 @@ import spoon.test.annotation.testclasses.Foo;
 import spoon.test.annotation.testclasses.Foo.InnerAnnotation;
 import spoon.test.annotation.testclasses.Foo.MiddleAnnotation;
 import spoon.test.annotation.testclasses.Foo.OuterAnnotation;
+import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.annotation.testclasses.InnerAnnot;
 import spoon.test.annotation.testclasses.Main;
 import spoon.test.annotation.testclasses.TestInterface;
@@ -535,7 +540,9 @@ public class AnnotationTest {
 		final CtMethod<?> method = ctClass.getMethodsByName("m4").get(0);
 		final List<CtTypeReference<?>> formalTypeParameters = method.getFormalTypeParameters();
 		assertEquals("Method has 1 generic parameter", 1, formalTypeParameters.size());
-		assertEquals("Method with an type annotation must be well printed", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", formalTypeParameters.get(0).toString());
+		assertEquals("Method with an type annotation must be well printed",
+					 "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator()
+							 + "T", formalTypeParameters.get(0).toString());
 
 		final CtBlock<?> body = method.getBody();
 		final String expectedFirstStatement =
@@ -729,6 +736,84 @@ public class AnnotationTest {
 		Foo.OuterAnnotation annot = testMethod.getAnnotation(Foo.OuterAnnotation.class);
 		assertNotNull(annot);
 		assertEquals(2,annot.value().length);
+	}
+
+	@Test
+	public void testAbstractAllAnnotationProcessor() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/BasicAnnotation.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/TypeAnnotation.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotParamTypeEnum.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/InnerAnnot.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Inception.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/TestAnnotation.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotArrayInnerClass.java");
+		factory = spoon.getFactory();
+		spoon.buildModel();
+
+		// create the processor
+		final ProcessingManager p = new QueueProcessingManager(factory);
+		final TypeAnnotationProcessor processor = new TypeAnnotationProcessor();
+		p.addProcessor(processor);
+		p.process(factory.Class().getAll());
+
+		assertEquals(27, processor.elements.size());
+	}
+
+	@Test
+	public void testAbstractAllAnnotationProcessorWithGlobalAnnotation() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/ClassProcessed.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/TypeAnnotation.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotParamTypeEnum.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/InnerAnnot.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Inception.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/GlobalAnnotation.java");
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/TestAnnotation.java");
+		factory = spoon.getFactory();
+		spoon.buildModel();
+
+		// create the processor
+		final ProcessingManager p = new QueueProcessingManager(factory);
+		final GlobalProcessor processor = new GlobalProcessor();
+		p.addProcessor(processor);
+		final TypeAnnotationMethodProcessor methodProcessor = new TypeAnnotationMethodProcessor();
+		p.addProcessor(methodProcessor);
+		p.process(factory.Class().getAll());
+
+		assertEquals(5, processor.elements.size());
+		assertEquals(1, methodProcessor.elements.size());
+	}
+
+	abstract class AbstractElementsProcessor<A extends Annotation, E extends CtElement>
+			extends AbstractAnnotationProcessor<A, E> {
+		final List<CtElement> elements = new ArrayList<>();
+		@Override
+		public void process(A annotation, E element) {
+			elements.add(element);
+		}
+	}
+
+	class GlobalProcessor extends AbstractElementsProcessor<GlobalAnnotation, CtElement> {
+		@Override
+		public void process(GlobalAnnotation annotation, CtElement element) {
+			super.process(annotation, element);
+		}
+	}
+
+	class TypeAnnotationProcessor extends AbstractElementsProcessor<TypeAnnotation, CtElement> {
+		@Override
+		public void process(TypeAnnotation annotation, CtElement element) {
+			super.process(annotation, element);
+		}
+	}
+
+	class TypeAnnotationMethodProcessor extends AbstractElementsProcessor<TypeAnnotation, CtMethod<?>> {
+		@Override
+		public void process(TypeAnnotation annotation, CtMethod<?> element) {
+			super.process(annotation, element);
+		}
 	}
 
 	public static Class<? extends Annotation> getActualClassFromAnnotation(CtAnnotation<? extends Annotation> annotation) {
