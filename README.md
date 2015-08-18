@@ -53,6 +53,15 @@ Snapshot version:
 </repositories>
 ```
 
+### Eclipse IDE Setup
+
+In order to generate the Eclipse project files required for importing run the following commands from the root spoon directory (requires Maven):
+```
+mvn eclipse:clean
+mvn eclipse:eclipse
+```
+
+
 # Contributors
 
 Alphabetical order of last names
