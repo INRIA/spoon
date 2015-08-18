@@ -30,6 +30,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
@@ -69,6 +70,7 @@ import org.eclipse.jdt.internal.compiler.ast.FloatLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
 import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
 import org.eclipse.jdt.internal.compiler.ast.IfStatement;
+import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
 import org.eclipse.jdt.internal.compiler.ast.IntLiteral;
@@ -134,6 +136,7 @@ import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
@@ -454,6 +457,27 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (((ParameterizedTypeBinding) binding).arguments != null) {
 					for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
 						ref.addActualTypeArgument(getTypeReference(b));
+					}
+				}
+			} else if (binding instanceof MissingTypeBinding) {
+				ref = factory.Core().createTypeReference();
+				ref.setSimpleName(new String(binding.sourceName()));
+				ref.setPackage(getPackageReference(binding.getPackage()));
+				// We try to check in imports if there is the correct package of the type.
+				if (context.compilationunitdeclaration != null && context.compilationunitdeclaration.imports != null) {
+					for (ImportReference anImport : context.compilationunitdeclaration.imports) {
+						if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], binding.sourceName())) {
+							char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
+							Binding someBinding = context.compilationunitdeclaration.scope.findImport(chars, false, false);
+							PackageBinding packageBinding;
+							if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
+								packageBinding = (PackageBinding)someBinding;
+							} else {
+								packageBinding = context.compilationunitdeclaration.scope.environment.createPackage(chars);
+							}
+							ref.setPackage(getPackageReference(packageBinding));
+							break;
+						}
 					}
 				}
 			} else if (binding instanceof BinaryTypeBinding) {
