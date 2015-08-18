@@ -366,7 +366,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			context.currentTopLevel = type;
 			return importsContext.computeImports(context.currentTopLevel);
 		}
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	/**
@@ -2263,7 +2263,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void calculate(CompilationUnit sourceCompilationUnit,
 			List<CtType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
-		Collection<CtTypeReference<?>> imports = Collections.EMPTY_LIST;
+		Collection<CtTypeReference<?>> imports = Collections.emptyList();
 		for (CtType<?> t : types) {
 			imports = computeImports(t);
 		}
