@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
@@ -34,6 +35,7 @@ public class NoClasspathTest {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath");
+		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		CtClass<Object> clazz = factory.Class().get("Foo"); 
@@ -122,6 +124,7 @@ public class NoClasspathTest {
 		final Factory factory = spoon.getFactory();
 		factory.getEnvironment().setAutoImports(false);
 		spoon.addInputResource("./src/test/java/spoon/test/api/testclasses/");
+		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 
 		CtTypeReference<?> expectedType = factory.Type().createReference(javax.sound.sampled.AudioFormat.Encoding.class);

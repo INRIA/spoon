@@ -1,9 +1,5 @@
 package spoon.test.variable;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayAccess;
@@ -18,8 +14,8 @@ import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -31,6 +27,10 @@ import spoon.test.variable.testclasses.FieldAccessSample;
 import spoon.test.variable.testclasses.RHSSample;
 import spoon.test.variable.testclasses.StackedAssignmentSample;
 import spoon.test.variable.testclasses.VariableAccessSample;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class AccessTest {
 	@Test
@@ -167,6 +167,7 @@ public class AccessTest {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/spoon/test/variable/Tacos.java",
+				"-o", "target/spooned/variable",
 				"--noclasspath",
 				"--compliance", "8"
 		});

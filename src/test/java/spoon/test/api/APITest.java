@@ -1,21 +1,20 @@
 package spoon.test.api;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.support.JavaOutputProcessor;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class APITest {
 
@@ -25,6 +24,7 @@ public class APITest {
 		// and asserts there is no exception
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("src/test/resources/spoon/test/api");
+		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		for(CtPackage p : factory.Package().getAll()) {
@@ -57,9 +57,9 @@ public class APITest {
 			
 		};
 		spoon.run(new String[] {
-						"-i", "src/test/resources/spoon/test/api/",
-						"-o","target/spooned-apitest"
-						});
+				"-i", "src/test/resources/spoon/test/api/",
+				"-o", "target/spooned/apitest"
+		});
 		Assert.assertEquals(2, l.size());
 	}
 	
@@ -77,8 +77,8 @@ public class APITest {
 			Launcher.main(new String[] {
 					"-i",
 					// note the nasty ./
-					duplicateEntry + File.pathSeparator + "./"+duplicateEntry,
-					"-o", "target/spooned-apitest" });
+					duplicateEntry + File.pathSeparator + "./" + duplicateEntry,
+					"-o", "target/spooned/apitest" });
 		} catch (IllegalArgumentException e) // from JDT
 		{
 			fail();
@@ -93,8 +93,8 @@ public class APITest {
 			String duplicateEntry = "src/test/resources/spoon/test/api/";
 			Launcher.main(new String[] {
 					"-i",
-					duplicateEntry+ File.pathSeparator +"./"+duplicateEntry,
-					"-o", "target/spooned-apitest" });
+					duplicateEntry + File.pathSeparator + "./" + duplicateEntry,
+					"-o", "target/spooned/apitest" });
 		} catch (IllegalArgumentException e) // from JDT
 		{
 			fail();
@@ -107,8 +107,9 @@ public class APITest {
 		try {
 			Launcher.main(new String[] {
 					"-i",
-					"src/test/resources/spoon/test/api/" + File.pathSeparator + "src/test/resources/spoon/test/api/Foo.java",
-					"-o", "target/spooned-apitest" });
+					"src/test/resources/spoon/test/api/" + File.pathSeparator
+							+ "src/test/resources/spoon/test/api/Foo.java",
+					"-o", "target/spooned/apitest" });
 		} catch (IllegalArgumentException e) // from JDT
 		{
 			fail();
@@ -119,9 +120,9 @@ public class APITest {
 	public void testNotValidInput() throws Exception {
 		String invalidEntry = "does/not/exists//Foo.java";
 		Launcher.main(new String[] { "-i",
-				invalidEntry, 
+				invalidEntry,
 				"-o",
-				"target/spooned-apitest" });
+				"target/spooned/apitest" });
 	}
 
 }

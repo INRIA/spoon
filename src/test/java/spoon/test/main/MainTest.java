@@ -1,17 +1,9 @@
 package spoon.test.main;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
@@ -22,6 +14,13 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.parent.ParentTest;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MainTest {
 
@@ -41,12 +40,16 @@ public class MainTest {
 		String systemClassPath = classpath.substring(0, classpath.length() - 1);
 
 		Launcher launcher = new Launcher();
-		
-		launcher.run(new String[] { "-i", "src/main/java", "-o",
-				"target/spooned", "--source-classpath",
-				systemClassPath, "--compile", "--compliance", "7" });
-		
-		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {
+
+		launcher.run(new String[] {
+				"-i", "src/main/java",
+				"-o", "target/spooned",
+				"--destination","target/spooned-build",
+				"--source-classpath", systemClassPath,
+				"--compile",
+				"--compliance", "7" });
+
+		for (CtPackage pack : launcher.getFactory().Package().getAllRoots()) {
 			checkGenericContracts(pack);
 		}
 	}
@@ -97,6 +100,7 @@ public class MainTest {
 		spoon.Launcher.main(new String[] {
 				"-i", "src/test/resources/no-copy-resources/",
 				"-o", "target/spooned-with-resources",
+				"--destination","target/spooned-build",
 				"--source-classpath", systemClassPath, "--compile" });
 
 		assertTrue(new File("src/test/resources/no-copy-resources/package.html").exists());
@@ -121,8 +125,9 @@ public class MainTest {
 		spoon.Launcher.main(new String[] {
 				"-i", "src/test/resources/no-copy-resources",
 				"-o", "target/spooned-without-resources",
+				"--destination","target/spooned-build",
 				"--source-classpath", systemClassPath, "--compile",
-				"-r"});
+				"-r" });
 
 		assertTrue(new File("src/test/resources/no-copy-resources/package.html").exists());
 		assertFalse(new File("target/spooned-without-resources/package.html").exists());

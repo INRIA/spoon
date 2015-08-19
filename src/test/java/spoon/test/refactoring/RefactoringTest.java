@@ -12,17 +12,15 @@ import spoon.test.refactoring.testclasses.AClass;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class RefactoringTest {
 	@Test
 	public void testRefactoringClassChangeAllCtTypeReferenceAssociatedWithClassConcerned() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "src/test/java/spoon/test/refactoring/testclasses"
+				"-i", "src/test/java/spoon/test/refactoring/testclasses",
+				"-o", "target/spooned/refactoring"
 		});
 		launcher.run();
 
@@ -31,6 +29,7 @@ public class RefactoringTest {
 
 		launcher.setArgs(new String[] {
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
+				"-o", "target/spooned/refactoring",
 				"-p", ThisTransformationProcessor.class.getName()
 		});
 		launcher.run();
@@ -57,7 +56,8 @@ public class RefactoringTest {
 	public void testThisInConstructor() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "src/test/java/spoon/test/refactoring/testclasses"
+				"-i", "src/test/java/spoon/test/refactoring/testclasses",
+				"-o", "target/spooned/refactoring"
 		});
 		launcher.run();
 		final CtClass<?> aClass = (CtClass<?>) launcher.getFactory().Type().get(AClass.class);
@@ -76,7 +76,7 @@ public class RefactoringTest {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
-				"-o", "target/spooned",
+				"-o", "target/spooned/refactoring",
 				"-p", ThisTransformationProcessor.class.getName()
 		});
 		launcher.run();

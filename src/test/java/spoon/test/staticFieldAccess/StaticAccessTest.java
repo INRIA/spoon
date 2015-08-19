@@ -52,10 +52,10 @@ public class StaticAccessTest {
         compiler.process(Arrays.asList(InsertBlockProcessor.class.getName()));
 
         // generate files
-        File tmpdir = new File("test_tmp");
+        File tmpdir = new File("target/spooned/staticFieldAccess");
         tmpdir.mkdirs();
         //    tmpdir.deleteOnExit();
-        compiler.setDestinationDirectory(tmpdir);
+        compiler.setOutputDirectory(tmpdir);
         compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 
         // try to reload generated datas

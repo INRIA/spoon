@@ -39,7 +39,7 @@ public class VisibilityTest {
 
 	@Test
 	public void testVisibilityOfClassesNamedByClassesInJavaLangPackage() throws Exception {
-		final File sourceOutputDir = new File("target/spooned");
+		final File sourceOutputDir = new File("target/spooned/visibility");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir, launcher.getEnvironment()));
@@ -68,7 +68,7 @@ public class VisibilityTest {
 		final SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/visibility/testclasses/A.java",
-				"-o", "./target/spooned/"
+				"-o", "./target/spooned/visibility"
 		});
 
 		canBeBuild("./target/spooned/spoon/test/visibility/testclasses/", 8);
@@ -78,7 +78,8 @@ public class VisibilityTest {
 	public void testName() throws Exception {
 		final SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
-				"-i", "./src/test/java/spoon/test/visibility/testclasses/Tacos.java"
+				"-i", "./src/test/java/spoon/test/visibility/testclasses/Tacos.java",
+				"-o", "./target/spooned/visibility"
 		});
 
 		final List<CtFieldReference<?>> references = Query.getReferences(launcher.getFactory(), new AbstractReferenceFilter<CtFieldReference<?>>(CtFieldReference.class) {
