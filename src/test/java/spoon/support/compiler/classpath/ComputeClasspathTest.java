@@ -39,6 +39,7 @@ public class ComputeClasspathTest {
 			}
 
 		};
+		launcher.getEnvironment().setLevel("OFF");
 
 		this.compiler = (JDTBasedSpoonCompiler) launcher.createCompiler();
 		this.compilerClass = compiler.getClass();

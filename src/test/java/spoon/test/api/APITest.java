@@ -27,16 +27,16 @@ public class APITest {
 	public void testBasicAPIUsage() throws Exception {
 		// this test shows a basic usage of the Launcher API without command line
 		// and asserts there is no exception
-		Launcher spoon = new Launcher();
+		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/test/resources/spoon/test/api");
 		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 		Factory factory = spoon.getFactory();
-		for(CtPackage p : factory.Package().getAll()) {
-			System.out.println("package: "+p.getQualifiedName());
+		for (CtPackage p : factory.Package().getAll()) {
+			spoon.getEnvironment().debugMessage("package: " + p.getQualifiedName());
 		}
-		for(CtType<?> s : factory.Class().getAll()) {
-			System.out.println("class: "+s.getQualifiedName());
+		for (CtType<?> s : factory.Class().getAll()) {
+			spoon.getEnvironment().debugMessage("class: "+s.getQualifiedName());
 		}
 	}
 

@@ -17,14 +17,13 @@ public class VarArgsTest {
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
 		CtClass<Main> type = build("spoon.test.varargs", "VarArgsSample");
-		assertEquals("VarArgsSample", type.getSimpleName());		
+		assertEquals("VarArgsSample", type.getSimpleName());
 		CtMethod<?> m = type.getMethodsByName("foo").get(0);
-		System.out.println(m);
-		
-		CtParameter<?> param0 = m.getParameters().get(0);		
+
+		CtParameter<?> param0 = m.getParameters().get(0);
 		assertEquals(false, param0.isVarArgs());
 
-		CtParameter<?> param1 = m.getParameters().get(1);		
+		CtParameter<?> param1 = m.getParameters().get(1);
 		assertEquals(true, param1.isVarArgs());
 		assertEquals("java.lang.String[]", param1.getType().toString());
 		assertEquals("Array", param1.getType().getSimpleName());
@@ -34,5 +33,5 @@ public class VarArgsTest {
 				+ DefaultJavaPrettyPrinter.LINE_SEPARATOR + "}", m.toString());
 	}
 
-	
+
 }

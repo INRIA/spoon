@@ -19,6 +19,7 @@ package spoon.support.compiler.jdt;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
@@ -36,7 +37,6 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
-import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -117,8 +117,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		comp.addInputSource(file);
 		try {
 			comp.build();
-			System.out.println(comp.getFactory().Package()
-					.get("spoon.support.compiler").getTypes());
+			final Set<CtType<?>> types = comp.getFactory().Package()
+											 .get("spoon.support.compiler").getTypes();
+			for (CtType<?> type : types) {
+				main.getEnvironment().debugMessage(type.toString());
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -521,7 +524,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 				// in noclasspath mode, errors are only reported
 				environment.report(
 						null,
-						problem.isError()?Severity.ERROR:Severity.WARNING,
+						problem.isError()?Level.ERROR: Level.WARN,
 						message);
 			}
 		}

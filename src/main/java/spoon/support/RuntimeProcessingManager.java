@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
-import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
@@ -66,7 +66,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		} catch (Exception e) {
 			factory.getEnvironment()
 					.report(null,
-							Severity.ERROR,
+							Level.ERROR,
 							"Unable to instantiate processor \""
 									+ type.getName()
 									+ "\" - Your processor should have a constructor with no arguments");
@@ -86,7 +86,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		} catch (ClassNotFoundException e) {
 			factory.getEnvironment()
 					.report(null,
-							Severity.ERROR,
+							Level.ERROR,
 							"Unable to load processor \""
 									+ qualifiedName
 									+ "\" - Check your classpath. Did you use the --precompile option?");

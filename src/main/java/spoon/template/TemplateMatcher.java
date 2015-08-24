@@ -596,7 +596,7 @@ public class TemplateMatcher {
 					// m.group(1));
 					boolean ok = addMatch(pname, m.group(1));
 					if (!ok) {
-						System.out.println("incongruent match");
+						Launcher.logger.debug("incongruent match");
 						return false;
 					}
 					return true;

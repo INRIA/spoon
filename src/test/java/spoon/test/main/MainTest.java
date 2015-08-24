@@ -47,7 +47,9 @@ public class MainTest {
 				"--destination","target/spooned-build",
 				"--source-classpath", systemClassPath,
 				"--compile",
-				"--compliance", "7" });
+				"--compliance", "7",
+				"--level", "OFF"
+		});
 
 		for (CtPackage pack : launcher.getFactory().Package().getAllRoots()) {
 			checkGenericContracts(pack);
@@ -78,8 +80,13 @@ public class MainTest {
 	public void testTest() throws Exception {
 		// the tests should be spoonable
 		Launcher launcher = new Launcher();		
-		launcher.run(new String[] { "-i", "src/test/java", "-o",
-				"target/spooned", "--noclasspath", "--compliance", "8" });
+		launcher.run(new String[] {
+				"-i", "src/test/java",
+				"-o", "target/spooned",
+				"--noclasspath",
+				"--compliance", "8",
+				"--level", "OFF"
+		});
 		
 		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {
 			checkGenericContracts(pack);

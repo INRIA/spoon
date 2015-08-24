@@ -30,6 +30,7 @@ import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -863,6 +864,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public JDTTreeBuilder(Factory factory) {
 		super();
 		this.factory = factory;
+		logger.setLevel(factory.getEnvironment().getLevel());
 	}
 
 	private void createExpression(StringLiteralConcatenation literal,

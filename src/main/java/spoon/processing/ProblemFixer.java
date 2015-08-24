@@ -26,7 +26,7 @@ import spoon.reflect.declaration.CtElement;
  * problem is reported to the environment. The user can then chose what fixer to
  * use.
  * 
- * @see Environment#report(Processor, Severity, CtElement, String,
+ * @see Environment#report(Processor, org.apache.log4j.Level, CtElement, String,
  *      ProblemFixer[])
  */
 public interface ProblemFixer<T extends CtElement> extends FactoryAccessor {

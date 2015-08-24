@@ -19,6 +19,7 @@ package spoon.compiler;
 
 import java.io.File;
 
+import org.apache.log4j.Level;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -26,6 +27,7 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 
 /**
  * This interface represents the environment in which Spoon is launched -
@@ -74,7 +76,10 @@ public interface Environment {
 
 	/**
 	 * Returns true if Spoon is in debug mode.
+	 *
+	 * @see Environment#getLevel()
 	 */
+	@Deprecated
 	public boolean isDebug();
 
 	/**
@@ -91,7 +96,10 @@ public interface Environment {
 
 	/**
 	 * Returns true if Spoon is in verbose mode.
+	 *
+	 * @see Environment#getLevel()
 	 */
+	@Deprecated
 	public boolean isVerbose();
 
 	/**
@@ -99,7 +107,7 @@ public interface Environment {
 	 * message as dictated by the severity parameter. Note that this does not
 	 * stop the processing or any remaining task. To do so, use
 	 * {@link #setProcessingStopped(boolean)}.
-	 * 
+	 *
 	 * @param processor
 	 *            The processor that report this message. Can be null.
 	 * @param severity
@@ -109,15 +117,32 @@ public interface Environment {
 	 * @param message
 	 *            The message to report
 	 */
-	public void report(Processor<?> processor, Severity severity,
-			CtElement element, String message);
+	@Deprecated
+	void report(Processor<?> processor, Severity severity, CtElement element, String message);
 
 	/**
 	 * Helper method called by a processor to report an error, warning or
 	 * message as dictated by the severity parameter. Note that this does not
 	 * stop the processing or any remaining task. To do so, use
 	 * {@link #setProcessingStopped(boolean)}.
-	 * 
+	 *
+	 * @param processor
+	 *            The processor that report this message. Can be null.
+	 * @param level
+	 *            The level of the report
+	 * @param element
+	 *            The CtElement to which the report is associated
+	 * @param message
+	 *            The message to report
+	 */
+	void report(Processor<?> processor, Level level, CtElement element, String message);
+
+	/**
+	 * Helper method called by a processor to report an error, warning or
+	 * message as dictated by the severity parameter. Note that this does not
+	 * stop the processing or any remaining task. To do so, use
+	 * {@link #setProcessingStopped(boolean)}.
+	 *
 	 * @param processor
 	 *            The processor that report this message. Can be null.
 	 * @param severity
@@ -129,13 +154,34 @@ public interface Environment {
 	 * @param fixes
 	 *            The problem fixer(s) to correct this problem
 	 */
-	public void report(Processor<?> processor, Severity severity,
-			CtElement element, String message, ProblemFixer<?>... fixes);
+	@Deprecated
+	void report(Processor<?> processor, Severity severity,
+				CtElement element, String message, ProblemFixer<?>... fixes);
+
+	/**
+	 * Helper method called by a processor to report an error, warning or
+	 * message as dictated by the severity parameter. Note that this does not
+	 * stop the processing or any remaining task. To do so, use
+	 * {@link #setProcessingStopped(boolean)}.
+	 *
+	 * @param processor
+	 *            The processor that report this message. Can be null.
+	 * @param level
+	 *            The level of the report
+	 * @param element
+	 *            The CtElement to which the report is associated
+	 * @param message
+	 *            The message to report
+	 * @param fixes
+	 *            The problem fixer(s) to correct this problem
+	 */
+	void report(Processor<?> processor, Level level,
+				CtElement element, String message, ProblemFixer<?>... fixes);
 
 	/**
 	 * This method should be called to print out a message during the
 	 * processing.
-	 * 
+	 *
 	 * @param processor
 	 *            The processor that report this message. Can be null.
 	 * @param severity
@@ -143,7 +189,21 @@ public interface Environment {
 	 * @param message
 	 *            The message to report
 	 */
-	public void report(Processor<?> processor, Severity severity, String message);
+	@Deprecated
+	void report(Processor<?> processor, Severity severity, String message);
+
+	/**
+	 * This method should be called to print out a message during the
+	 * processing.
+	 *
+	 * @param processor
+	 *            The processor that report this message. Can be null.
+	 * @param level
+	 *            The level of the report
+	 * @param message
+	 *            The message to report
+	 */
+	void report(Processor<?> processor, Level level, String message);
 
 	/**
 	 * This method should be called to report the end of the processing.
@@ -160,7 +220,10 @@ public interface Environment {
 
 	/**
 	 * Sets the debug mode.
+	 *
+	 * @see Environment#setLevel(String)
 	 */
+	@Deprecated
 	public void setDebug(boolean debug);
 
 	/**
@@ -181,7 +244,10 @@ public interface Environment {
 
 	/**
 	 * Sets/unsets the verbose mode.
+	 *
+	 * @see Environment#setLevel(String)
 	 */
+	@Deprecated
 	void setVerbose(boolean verbose);
 
 	/**
@@ -316,4 +382,19 @@ public interface Environment {
 	 * Sets the option generate-javadoc to generate javadoc of the project on the source generated.
 	 */
 	void setGenerateJavadoc(boolean generateJavadoc);
+
+	/**
+	 * Gets the factory of the environment.
+	 */
+	Factory getFactory();
+
+	/**
+	 * Gets the level of loggers asked by the user.
+	 */
+	Level getLevel();
+
+	/**
+	 * Sets the level of loggers asked by the user.
+	 */
+	void setLevel(String level);
 }

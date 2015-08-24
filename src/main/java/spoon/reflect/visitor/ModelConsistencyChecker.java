@@ -19,8 +19,8 @@ package spoon.reflect.visitor;
 
 import java.util.Stack;
 
+import org.apache.log4j.Level;
 import spoon.compiler.Environment;
-import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 
@@ -76,7 +76,7 @@ public class ModelConsistencyChecker extends CtScanner {
 				} else {
 					environment
 							.report(null,
-									Severity.WARNING,
+									Level.WARN,
 									(element.isParentInitialized() ? "inconsistent"
 											: "null")
 											+ " parent for "
@@ -105,9 +105,9 @@ public class ModelConsistencyChecker extends CtScanner {
 	}
 
 	private void dumpStack() {
-		System.out.println("model consistency checker stack:");
+		environment.debugMessage("model consistency checker stack:");
 		for (CtElement e : stack) {
-			System.out.println("    " + e.getClass().getSimpleName() + " "
+			environment.debugMessage("    " + e.getClass().getSimpleName() + " "
 					+ (e.getPosition() == null ? "(?)" : "" + e.getPosition()));
 		}
 	}

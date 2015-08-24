@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import spoon.Launcher;
@@ -153,6 +154,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
+		logger.setLevel(factory.getEnvironment().getLevel());
 	}
 
 	List<CtAnnotation<? extends Annotation>> annotations = EMPTY_LIST();

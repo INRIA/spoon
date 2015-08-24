@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
+import org.apache.log4j.Level;
 import spoon.compiler.Environment;
-import spoon.processing.Severity;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -546,7 +546,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			while (line > e.getPosition().getLine()) {
 				if (!removeLine()) {
 					if (line > e.getPosition().getEndLine()) {
-						env.report(null, Severity.WARNING, e,
+						env.report(null, Level.WARN, e,
 								"cannot adjust position of "
 										+ e.getClass().getSimpleName() + " '"
 										+ e.getSignature() + "' "
