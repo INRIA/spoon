@@ -11,9 +11,10 @@ nb-actions.xml
 
 # Eclipse
 .settings/
-#.project/
+.project
 .classpath
 .externalToolBuilders/
+bin/
 maven-eclipse.xml
 
 # IntelliJ IDEA
