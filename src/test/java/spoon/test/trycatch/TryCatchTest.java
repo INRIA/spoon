@@ -187,6 +187,7 @@ public class TryCatchTest {
 		spoon.Launcher.main(new String[] {
 				"-i", "src/test/java/spoon/test/trycatch/testclasses",
 				"-o", "target/spooned",
+				"--destination","target/spooned-build",
 				"--compile"
 		});
 
