@@ -6,9 +6,8 @@ import static spoon.test.TestUtils.build;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.visitor.filter.FieldAccessFilter;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Foo;
 
@@ -37,6 +36,10 @@ public class EnumsTest {
 		assertEquals(1, foo.getFields().get(0).getAnnotations().size());
 		assertEquals(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
 				foo.getFields().get(0).getAnnotations().get(0)));
-		assertEquals("public enum Foo {\n@java.lang.Deprecated\n    Bar;}", foo.toString());
+		assertEquals(
+				"public enum Foo {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR
+						+ "@java.lang.Deprecated"
+						+ DefaultJavaPrettyPrinter.LINE_SEPARATOR + "    Bar;}",
+				foo.toString());
 	}
 }
