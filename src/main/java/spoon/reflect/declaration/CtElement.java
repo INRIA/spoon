@@ -107,6 +107,16 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 			throws ParentNotInitializedException;
 
 	/**
+	 * Tells if the given type is a direct or indirect parent.
+	 */
+	<P extends CtElement> boolean hasParent(Class<P> parentType);
+
+	/**
+	 * Tells if the given type is a direct parent.
+	 */
+	<P extends CtElement> boolean hasParentTypedBy(Class<P> parentType);
+
+	/**
 	 * Tells if the given element is a direct or indirect parent.
 	 */
 	boolean hasParent(CtElement candidate) throws ParentNotInitializedException;
