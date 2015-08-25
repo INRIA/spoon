@@ -1,30 +1,29 @@
 package spoon.test.imports;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.util.List;
-
-import org.junit.Ignore;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.ImportScanner;
+import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.SubClass;
+import spoon.test.imports.testclasses.internal.ChildClass;
+
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class ImportTest {
 
@@ -142,5 +141,22 @@ public class ImportTest {
 		CtTypeReference<?> type = factory.Class().getAll().get(0).getFields().get(0).getType();
 		assertEquals("Abcd", type.getSimpleName());
 		assertEquals("fr.inria.internal", type.getPackage().getSimpleName());
+	}
+
+	@Test
+	public void testSpoonWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses",
+				"--with-imports"
+		});
+		final CtClass<ImportTest> aClass = launcher.getFactory().Class().get(ChildClass.class);
+		final CtClass<ImportTest> anotherClass = launcher.getFactory().Class().get(ClientClass.class);
+
+		final ImportScanner importScanner = new ImportScannerImpl();
+		final Collection<CtTypeReference<?>> imports = importScanner.computeImports(aClass);
+		assertEquals(2, imports.size());
+		final Collection<CtTypeReference<?>> imports1 = importScanner.computeImports(anotherClass);
+		assertEquals(1, imports1.size());
 	}
 }
