@@ -198,8 +198,8 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	Set<CtTypeReference<?>> getReferencedTypes();
 
 	/**
-	 * @param filter
-	 * @return
+	 * Returns all the children elements recursively matching the filter.
+	 * If the receiver (this) matches the filter, it is also returned
 	 */
 	<E extends CtElement> List<E> getElements(Filter<E> filter);
 

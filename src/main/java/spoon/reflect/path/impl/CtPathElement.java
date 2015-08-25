@@ -1,0 +1,29 @@
+package spoon.reflect.path.impl;
+
+import spoon.reflect.declaration.CtElement;
+
+import java.util.Collection;
+
+/**
+ * A single path element from a CtPath.
+ * <p>
+ * Internal interface, not meant to be used by client code.
+ *
+ * @param <P> the type of the queried elements
+ * @param <T> the type of the returned elements
+ */
+public interface CtPathElement<P extends CtElement, T extends CtElement> {
+
+	/**
+	 * Get elements childs of roots that match with this path.
+	 */
+	public Collection<T> getElements(Collection<P> roots);
+
+	/**
+	 * Add a path argument.
+	 *  
+	 * For instance, addArgument("index",3) will select only the third element in an indexed list.
+	 */
+	<C extends CtPathElement<P, T>> C addArgument(String key, String value);
+
+}
