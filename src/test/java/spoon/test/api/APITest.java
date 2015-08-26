@@ -1,20 +1,25 @@
 package spoon.test.api;
 
-import org.junit.Assert;
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.compiler.Environment;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.support.JavaOutputProcessor;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Assert;
+import org.junit.Test;
+import spoon.Launcher;
+import spoon.SpoonAPI;
+import spoon.compiler.Environment;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.support.JavaOutputProcessor;
+import spoon.test.api.testclasses.Bar;
 
 public class APITest {
 
@@ -34,7 +39,7 @@ public class APITest {
 			System.out.println("class: "+s.getQualifiedName());
 		}
 	}
-	
+
 	@Test
 	public void testOverrideOutputWriter() throws Exception {
 		// this test that we can correctly set the Java output processor
@@ -42,7 +47,7 @@ public class APITest {
 		Launcher spoon = new Launcher() {
 			@Override
 			public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
-				return new JavaOutputProcessor() { 
+				return new JavaOutputProcessor() {
 					@Override
 					public void process(CtType<?> e) {
 						l.add(e);
@@ -54,7 +59,7 @@ public class APITest {
 
 				};
 			}
-			
+
 		};
 		spoon.run(new String[] {
 				"-i", "src/test/resources/spoon/test/api/",
@@ -62,18 +67,18 @@ public class APITest {
 		});
 		Assert.assertEquals(2, l.size());
 	}
-	
+
 	@Test
 	public void testDuplicateEntry() throws Exception {
 		// it's possible to pass twice the same file as parameter
 		// the virtual folder removes the duplicate before passing to JDT
 		try {
 			String duplicateEntry = "src/test/resources/spoon/test/api/Foo.java";
-			
+
 			// check on the JDK API
 			// this is later use by FileSystemFile
 			assertTrue(new File(duplicateEntry).getCanonicalFile().equals(new File("./"+duplicateEntry).getCanonicalFile()));
-			
+
 			Launcher.main(new String[] {
 					"-i",
 					// note the nasty ./
@@ -84,9 +89,9 @@ public class APITest {
 			fail();
 		}
 	}
-	
+
 	@Test
-	public void testDuplicateFolder() throws Exception { 
+	public void testDuplicateFolder() throws Exception {
 		// it's possible to pass twice the same folder as parameter
 		// the virtual folder removes the duplicate before passing to JDT
 		try {
@@ -115,7 +120,7 @@ public class APITest {
 			fail();
 		}
 	}
-	
+
 	@Test(expected=Exception.class)
 	public void testNotValidInput() throws Exception {
 		String invalidEntry = "does/not/exists//Foo.java";
@@ -125,4 +130,18 @@ public class APITest {
 				"target/spooned/apitest" });
 	}
 
+	@Test
+	public void testAddProcessorMethodInSpoonAPI() throws Exception {
+		final SpoonAPI launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
+		final AwesomeProcessor processor = new AwesomeProcessor();
+		launcher.addProcessor(processor);
+		launcher.run();
+
+		assertEquals(1, processor.getElements().size());
+		final CtClass<Bar> actual = processor.getElements().get(0);
+		assertEquals(2, actual.getMethods().size());
+		assertNotNull(actual.getMethodsByName("prepareMojito").get(0));
+		assertNotNull(actual.getMethodsByName("makeMojito").get(0));
+	}
 }

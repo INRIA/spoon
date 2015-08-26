@@ -2,6 +2,8 @@ package spoon;
 
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
+import spoon.processing.Processor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 
 /** Is the core entry point of Spoon. Implemented by Launcher. */
@@ -22,7 +24,13 @@ public interface SpoonAPI {
 	 * Adds a processor (fully qualified name).
 	 */
 	public void addProcessor(String name);
-	
+
+	/**
+	 * Adds an instance of a processor. The user is responsible for keeping a pointer to it for
+	 * later retrieving some processing information.
+	 */
+	<T extends CtElement> void addProcessor(Processor<T> processor);
+
 	/**
 	 * Builds the model
 	 */

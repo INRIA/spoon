@@ -18,10 +18,13 @@
 package spoon;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import spoon.compiler.SpoonResource;
+import spoon.processing.Processor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -147,6 +150,11 @@ public interface SpoonModelBuilder {
 	 * Processes the Java model with the given processors.
 	 */
 	void process(List<String> processorTypes);
+
+	/**
+	 * Processes the Java model with the given processors.
+	 */
+	void process(Collection<Processor<? extends CtElement>> processors);
 
 	/**
 	 * Generates the source code associated to the classes stored in this
