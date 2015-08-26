@@ -17,33 +17,13 @@
 
 package spoon.support.compiler.jdt;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
-import org.eclipse.jdt.internal.compiler.util.Util;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -64,6 +44,22 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.VirtualFolder;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
@@ -88,7 +84,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		this.outputDirectory = outputDirectory;
 	}
 
-	/** output directory for binary code .class file */
+	/**
+	 * output directory for binary code .class file
+	 */
 	File destinationDirectory;
 
 	@Override
@@ -236,7 +234,19 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			List<SpoonFile> files) {
 		List<String> res = new ArrayList<String>();
 		for (SpoonFile f : files) {
-			res.add(f.toString());
+			if (f.isActualFile()) {
+				res.add(f.toString());
+			} else {
+				try {
+					File file = File.createTempFile(f.getName(), ".java");
+					file.deleteOnExit();
+					IOUtils.copy(f.getContent(), new FileOutputStream(file));
+
+					res.add(file.toString());
+				} catch (IOException e) {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			}
 		}
 		return res;
 	}
@@ -281,13 +291,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			Launcher.logger.error(e.getMessage(), e);
 		}
 		return f;
-	}
-
-	protected void deleteTmpJavaFile(File folder) {
-		File f = new File(folder, "Tmp.java");
-		if (f.exists()) {
-			f.delete();
-		}
 	}
 
 	protected boolean buildTemplates() {
@@ -366,27 +369,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		return probs.size() == 0;
 
-	}
-
-	PrintWriter out;
-
-	/*
-	 * Build the set of compilation source units
-	 */
-	public CompilationUnit[] getCompilationUnits(List<SpoonFile> streams,
-			Factory factory) throws Exception {
-		CompilationUnit[] units = new CompilationUnit[streams.size()];
-		int i = 0;
-		for (SpoonFile stream : streams) {
-			// TODO: here substitute processed content!!!!
-			// factory.CompilationUnit().
-			InputStream in = stream.getContent();
-			units[i] = new CompilationUnit(Util.getInputStreamAsCharArray(in,
-					-1, null), stream.getPath(), null);
-			in.close();
-			i++;
-		}
-		return units;
 	}
 
 	INameEnvironment environment = null;
@@ -690,8 +672,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	Factory factory;
 
 	Map<String, char[]> loadedContent = new HashMap<String, char[]>();
-
-	boolean writePackageAnnotationFile = true;
 
 	@Override
 	public void generateProcessedSourceFiles(OutputType outputType) {
