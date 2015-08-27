@@ -1,22 +1,20 @@
 package spoon.support.compiler;
 
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
-
 public class VirtualFile implements SpoonFile {
 
-	InputStream contents;
+	String content;
 
 	String name = "virtual_file";
 
 	public VirtualFile(String _contents) {
-		byte[] contentsBA = _contents.getBytes();
-		contents = new ByteArrayInputStream(contentsBA);
-
+		this.content = _contents;
 	}
 
 	public VirtualFile(String _contents, String _name) {
@@ -25,7 +23,7 @@ public class VirtualFile implements SpoonFile {
 	}
 
 	public InputStream getContent() {
-		return contents;
+		return new ByteArrayInputStream(content.getBytes());
 	}
 
 	public boolean isJava() {
@@ -57,15 +55,15 @@ public class VirtualFile implements SpoonFile {
 	public boolean isArchive() {
 		return false;
 	}
-	
+
 	@Override
 	public File toFile() {
 		return null;
 	}
-	
+
 	@Override
 	public boolean isActualFile() {
 		return false;
 	}
-	
+
 }
