@@ -27,43 +27,46 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY;
 
-public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
-		CtNewArray<T> {
+public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray<T> {
 	private static final long serialVersionUID = 1L;
 
 	List<CtExpression<Integer>> dimensionExpressions = EMPTY_LIST();
 
 	List<CtExpression<?>> expressions = EMPTY_LIST();
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtNewArray(this);
 	}
 
+	@Override
 	public List<CtExpression<Integer>> getDimensionExpressions() {
 		return dimensionExpressions;
 	}
 
+	@Override
 	public List<CtExpression<?>> getElements() {
 		return expressions;
 	}
 
-	public void setDimensionExpressions(
-			List<CtExpression<Integer>> dimensionExpressions) {
+	@Override
+	public <C extends CtNewArray<T>> C setDimensionExpressions(List<CtExpression<Integer>> dimensionExpressions) {
 		this.dimensionExpressions.clear();
 		for (CtExpression<Integer> expr : dimensionExpressions) {
 			addDimensionExpression(expr);
 		}
+		return (C) this;
 	}
 
 	@Override
-	public boolean addDimensionExpression(CtExpression<Integer> dimension) {
-		if (dimensionExpressions == CtElementImpl
-				.<CtExpression<Integer>> EMPTY_LIST()) {
+	public <C extends CtNewArray<T>> C addDimensionExpression(CtExpression<Integer> dimension) {
+		if (dimensionExpressions == CtElementImpl.<CtExpression<Integer>> EMPTY_LIST()) {
 			dimensionExpressions = new ArrayList<CtExpression<Integer>>(
 					NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		dimension.setParent(this);
-		return dimensionExpressions.add(dimension);
+		dimensionExpressions.add(dimension);
+		return (C) this;
 	}
 
 	@Override
@@ -73,27 +76,27 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements
 				dimensionExpressions.remove(dimension);
 	}
 
-	public void setElements(List<CtExpression<?>> expressions) {
+	@Override
+	public <C extends CtNewArray<T>> C setElements(List<CtExpression<?>> expressions) {
 		this.expressions.clear();
 		for (CtExpression<?> expr: expressions) {
 			addElement(expr);
 		}
+		return (C) this;
 	}
 
 	@Override
-	public boolean addElement(CtExpression<?> expression) {
+	public <C extends CtNewArray<T>> C addElement(CtExpression<?> expression) {
 		if (expressions == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
 			this.expressions = new ArrayList<CtExpression<?>>();
 		}
 		expression.setParent(this);
-		return expressions.add(expression);
+		expressions.add(expression);
+		return (C) this;
 	}
 
 	@Override
 	public boolean removeElement(CtExpression<?> expression) {
-		return expressions != CtElementImpl.<CtExpression<?>>EMPTY_LIST() &&
-				expressions.remove(expression);
+		return expressions != CtElementImpl.<CtExpression<?>>EMPTY_LIST() && expressions.remove(expression);
 	}
-
-
 }

@@ -24,31 +24,37 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	private static final long serialVersionUID = 1L;
 
-	public CtExpression<Boolean> getAssertExpression() {
-		return asserted;
-	}
-
 	CtExpression<Boolean> asserted;
 
 	CtExpression<T> value;
 
-	public void setAssertExpression(CtExpression<Boolean> asserted) {
-		asserted.setParent(this);
-		this.asserted = asserted;
-	}
-
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAssert(this);
 	}
 
+	@Override
+	public CtExpression<Boolean> getAssertExpression() {
+		return asserted;
+	}
+
+	@Override
+	public <A extends CtAssert<T>> A setAssertExpression(CtExpression<Boolean> asserted) {
+		asserted.setParent(this);
+		this.asserted = asserted;
+		return (A) this;
+	}
+
+	@Override
 	public CtExpression<T> getExpression() {
 		return value;
 	}
 
-	public void setExpression(CtExpression<T> value) {
+	@Override
+	public <A extends CtAssert<T>> A setExpression(CtExpression<T> value) {
 		if (value != null)
 			value.setParent(this);
 		this.value = value;
+		return (A) this;
 	}
-
 }

@@ -31,14 +31,12 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 
-public abstract class CtStatementImpl extends CtCodeElementImpl implements
-		CtStatement {
+public abstract class CtStatementImpl extends CtCodeElementImpl implements CtStatement {
 	private static final long serialVersionUID = 1L;
 
 	public static void insertAfter(CtStatement target, CtStatement statement)
 			throws ParentNotInitializedException {
-		CtStatementList sts = target.getFactory().Core()
-				.createStatementList();
+		CtStatementList sts = target.getFactory().Core().createStatementList();
 		sts.addStatement(statement);
 		insertAfter(target, sts);
 	}
@@ -51,12 +49,11 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		parentStatementList.removeStatement(target);
 	}
 
-	public static void insertAfter(CtStatement target,
-			CtStatementList statements) throws ParentNotInitializedException {
+	public static void insertAfter(CtStatement target, CtStatementList statements)
+			throws ParentNotInitializedException {
 		CtElement e = target.getParent();
 		if (e instanceof CtExecutable) {
-			throw new RuntimeException(
-					"cannot insert in this context (use insertEnd?)");
+			throw new RuntimeException("cannot insert in this context (use insertEnd?)");
 		}
 		CtStatementList parentStatementList = (CtStatementList) e;
 		int i = 0;
@@ -74,22 +71,24 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 
 	public static void insertBefore(CtStatement target, CtStatement statement)
 			throws ParentNotInitializedException {
-		CtStatementList sts = target.getFactory().Core()
-				.createStatementList();
+		CtStatementList sts = target.getFactory().Core().createStatementList();
 		sts.addStatement(statement);
 		insertBefore(target, sts);
 	}
 
-	public static void insertBefore(CtStatement target,
-			CtStatementList statementsToBeInserted) throws ParentNotInitializedException {
+	public static void insertBefore(CtStatement target, CtStatementList statementsToBeInserted)
+			throws ParentNotInitializedException {
 		CtElement targetParent = target.getParent();
 		if (targetParent instanceof CtExecutable) {
 			throw new SpoonException("cannot insert in this context (use insertEnd?)");
 		}
 		if (target.getParent(CtConstructor.class) != null) {
-			if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName()
-					.startsWith("<init>")) {
-				throw new SpoonException("cannot insert a statement before a super or this invocation.");
+			if (target instanceof CtInvocation &&
+					((CtInvocation<?>) target).getExecutable()
+											  .getSimpleName()
+											  .startsWith("<init>")) {
+				throw new SpoonException(
+						"cannot insert a statement before a super or this invocation.");
 			}
 		}
 		CtBlock<?> parentBlock;
@@ -177,24 +176,28 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 		}
 	}
 
-	public void insertBefore(CtStatement statement)
-			throws ParentNotInitializedException {
+	@Override
+	public <T extends CtStatement> T insertBefore(CtStatement statement) throws ParentNotInitializedException {
 		insertBefore(this, statement);
+		return (T) this;
 	}
 
-	public void insertBefore(CtStatementList statements)
-			throws ParentNotInitializedException {
+	@Override
+	public <T extends CtStatement> T insertBefore(CtStatementList statements) throws ParentNotInitializedException {
 		insertBefore(this, statements);
+		return (T) this;
 	}
 
-	public void insertAfter(CtStatement statement)
-			throws ParentNotInitializedException {
+	@Override
+	public <T extends CtStatement> T insertAfter(CtStatement statement) throws ParentNotInitializedException {
 		insertAfter(this, statement);
+		return (T) this;
 	}
 
-	public void insertAfter(CtStatementList statements)
-			throws ParentNotInitializedException {
+	@Override
+	public <T extends CtStatement> T insertAfter(CtStatementList statements) throws ParentNotInitializedException {
 		insertAfter(this, statements);
+		return (T) this;
 	}
 
 	@Override
@@ -208,12 +211,15 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements
 
 	String label;
 
+	@Override
 	public String getLabel() {
 		return label;
 	}
 
-	public void setLabel(String label) {
+	@Override
+	public <T extends CtStatement> T setLabel(String label) {
 		this.label = label;
+		return (T) this;
 	}
 
 	@Override

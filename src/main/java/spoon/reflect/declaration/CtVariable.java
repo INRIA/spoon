@@ -42,5 +42,5 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModi
 	 * Sets the initialization expression assigned to the variable, when
 	 * declared.
 	 */
-	void setDefaultExpression(CtExpression<T> assignedExpression);
+	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 }

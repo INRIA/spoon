@@ -21,9 +21,7 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements
-		CtConditional<T> {
-
+public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtConditional<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<T> elseExpression;
@@ -32,35 +30,44 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements
 
 	CtExpression<T> thenExpression;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtConditional(this);
 	}
 
+	@Override
 	public CtExpression<T> getElseExpression() {
 		return elseExpression;
 	}
 
+	@Override
 	public CtExpression<Boolean> getCondition() {
 		return condition;
 	}
 
+	@Override
 	public CtExpression<T> getThenExpression() {
 		return thenExpression;
 	}
 
-	public void setElseExpression(CtExpression<T> elseExpression) {
+	@Override
+	public <C extends CtConditional<T>> C setElseExpression(CtExpression<T> elseExpression) {
 		elseExpression.setParent(this);
 		this.elseExpression = elseExpression;
+		return (C) this;
 	}
 
-	public void setCondition(CtExpression<Boolean> condition) {
+	@Override
+	public <C extends CtConditional<T>> C setCondition(CtExpression<Boolean> condition) {
 		condition.setParent(this);
 		this.condition = condition;
+		return (C) this;
 	}
 
-	public void setThenExpression(CtExpression<T> thenExpression) {
+	@Override
+	public <C extends CtConditional<T>> C setThenExpression(CtExpression<T> thenExpression) {
 		thenExpression.setParent(this);
 		this.thenExpression = thenExpression;
+		return (C) this;
 	}
-
 }

@@ -33,61 +33,71 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_CASES_C
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
 
+	CtBlock<?> body;
+
 	List<CtCatch> catchers = EMPTY_LIST();
 
-	public List<CtCatch> getCatchers() {
-		return catchers;
-	}
-
-	public void setCatchers(List<CtCatch> catchers) {
-		this.catchers.clear();
-		for (CtCatch c : catchers) {
-			addCatcher(c);
-		}
-	}
+	CtBlock<?> finalizer;
 
 	@Override
-	public boolean addCatcher(CtCatch catcher) {
-		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
-			catchers = new ArrayList<CtCatch>(
-					CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
-		}
-		catcher.setParent(this);
-		return catchers.add(catcher);
-	}
-
-	@Override
-	public boolean removeCatcher(CtCatch catcher) {
-		return catchers != CtElementImpl.<CtCatch>EMPTY_LIST() &&
-				catchers.remove(catcher);
-	}
-
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtTry(this);
 	}
 
-	CtBlock<?> finalizer;
+	@Override
+	public List<CtCatch> getCatchers() {
+		return catchers;
+	}
 
+	@Override
+	public <T extends CtTry> T setCatchers(List<CtCatch> catchers) {
+		this.catchers.clear();
+		for (CtCatch c : catchers) {
+			addCatcher(c);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtTry> T addCatcher(CtCatch catcher) {
+		if (catchers == CtElementImpl.<CtCatch> EMPTY_LIST()) {
+			catchers = new ArrayList<CtCatch>(CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
+		}
+		catcher.setParent(this);
+		catchers.add(catcher);
+		return (T) this;
+	}
+
+	@Override
+	public boolean removeCatcher(CtCatch catcher) {
+		return catchers != CtElementImpl.<CtCatch>EMPTY_LIST() && catchers.remove(catcher);
+	}
+
+	@Override
 	public CtBlock<?> getFinalizer() {
 		return finalizer;
 	}
 
-	public void setFinalizer(CtBlock<?> finalizer) {
+	@Override
+	public <T extends CtTry> T setFinalizer(CtBlock<?> finalizer) {
 		finalizer.setParent(this);
 		this.finalizer = finalizer;
+		return (T) this;
 	}
 
-	CtBlock<?> body;
-
+	@Override
 	public CtBlock<?> getBody() {
 		return body;
 	}
 
-	public void setBody(CtBlock<?> body) {
+	@Override
+	public <T extends CtTry> T setBody(CtBlock<?> body) {
 		body.setParent(this);
 		this.body = body;
+		return (T) this;
 	}
 
+	@Override
 	public Void S() {
 		return null;
 	}

@@ -31,5 +31,5 @@ public interface CtTypedElement<T> extends CtElement {
 	/**
 	 * Sets this element's type.
 	 */
-	void setType(CtTypeReference<T> type);
+	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
 }

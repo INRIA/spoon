@@ -42,7 +42,7 @@ public interface CtReference extends FactoryAccessor, CtVisitable {
 	/**
 	 * Sets the name of referenced element.
 	 */
-	void setSimpleName(String simpleName);
+	<T extends CtReference> T setSimpleName(String simpleName);
 
 	/**
 	 * Tries to get the declaration that corresponds to the referenced element.

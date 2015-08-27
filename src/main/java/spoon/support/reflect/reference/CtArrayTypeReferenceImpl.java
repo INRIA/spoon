@@ -33,12 +33,20 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 		super();
 	}
 
+	@Override
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtArrayTypeReference(this);
+	}
+
+	@Override
 	public CtTypeReference<?> getComponentType() {
 		return componentType;
 	}
 
-	public void setComponentType(CtTypeReference<?> componentType) {
+	@Override
+	public <C extends CtArrayTypeReference<T>> C setComponentType(CtTypeReference<?> componentType) {
 		this.componentType = componentType;
+		return (C) this;
 	}
 
 	@Override
@@ -47,13 +55,8 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 	}
 
 	@Override
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtArrayTypeReference(this);
-	}
-
-	@Override
 	public String getQualifiedName() {
-                 return Array.class.getCanonicalName();
+		return Array.class.getCanonicalName();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -66,10 +69,10 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 		return (Class<T>) Array.newInstance(c, 0).getClass();
 	}
 
+	@Override
 	public int getDimensionCount() {
 		if (getComponentType() instanceof CtArrayTypeReference) {
-			return ((CtArrayTypeReference<?>) getComponentType())
-					.getDimensionCount() + 1;
+			return ((CtArrayTypeReference<?>) getComponentType()).getDimensionCount() + 1;
 		}
 		return 1;
 	}

@@ -34,12 +34,12 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	/**
 	 * Sets the <i>catchers</i> of this <code>try</code>.
 	 */
-	void setCatchers(List<CtCatch> catchers);
+	<T extends CtTry> T setCatchers(List<CtCatch> catchers);
 
 	/**
 	 * Adds a catch block.
 	 */
-	boolean addCatcher(CtCatch catcher);
+	<T extends CtTry> T addCatcher(CtCatch catcher);
 
 	/**
 	 * Removes a catch block.
@@ -54,7 +54,7 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	/**
 	 * Sets the tried body.
 	 */
-	void setBody(CtBlock<?> body);
+	<T extends CtTry> T setBody(CtBlock<?> body);
 
 	/**
 	 * Gets the <i>finalizer</i> block of this <code>try</code> (
@@ -66,5 +66,5 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	 * Sets the <i>finalizer</i> block of this <code>try</code> (
 	 * <code>finally</code> part).
 	 */
-	void setFinalizer(CtBlock<?> finalizer);
+	<T extends CtTry> T setFinalizer(CtBlock<?> finalizer);
 }

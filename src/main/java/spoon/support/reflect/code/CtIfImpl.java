@@ -33,48 +33,60 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 
 	CtStatement thenStatement;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtIf(this);
 	}
 
+	@Override
 	public CtExpression<Boolean> getCondition() {
 		return condition;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public <S extends CtStatement> S getElseStatement() {
 		return (S) elseStatement;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <S extends CtStatement> S getThenStatement() {
+		return (S) thenStatement;
+	}
+
+	@Override
+	public <T extends CtIf> T setCondition(CtExpression<Boolean> condition) {
+		condition.setParent(this);
+		this.condition = condition;
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtIf> T setElseStatement(CtStatement elseStatement) {
+		if (elseStatement != null) {
+			elseStatement.setParent(this);
+		}
+		this.elseStatement = elseStatement;
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtIf> T setThenStatement(CtStatement thenStatement) {
+		// then branch might be null: `if (condition) ;`
+		if (thenStatement != null) {
+			thenStatement.setParent(this);
+		}
+		this.thenStatement = thenStatement;
+		return (T) this;
+	}
+
+	@Override
+	public Void S() {
+		return null;
 	}
 
 	public CtCodeElement getSubstitution(CtType<?> targetType) {
 		return getFactory().Core().clone(this);
 	}
-
-	@SuppressWarnings("unchecked")
-	public <S extends CtStatement> S getThenStatement() {
-		return (S) thenStatement;
-	}
-
-	public Void S() {
-		return null;
-	}
-
-	public void setCondition(CtExpression<Boolean> condition) {
-		condition.setParent(this);
-		this.condition = condition;
-	}
-
-	public void setElseStatement(CtStatement elseStatement) {
-		if (elseStatement != null)
-			elseStatement.setParent(this);
-		this.elseStatement = elseStatement;
-	}
-
-	public void setThenStatement(CtStatement thenStatement) {
-		// then branch might be null: `if (condition) ;`
-		if (thenStatement != null)
-			thenStatement.setParent(this);
-		this.thenStatement = thenStatement;
-	}
-
 }

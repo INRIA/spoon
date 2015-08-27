@@ -20,6 +20,8 @@ package spoon.support.reflect.code;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.SpoonException;
+import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -31,15 +33,16 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities
+		.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
-public class CtInvocationImpl<T> extends
-		CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
+public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
+		implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtExpression<?>> arguments = EMPTY_LIST();
+	String label;
 
-	CtBlock<?> block;
+	List<CtExpression<?>> arguments = EMPTY_LIST();
 
 	CtExecutableReference<T> executable;
 
@@ -47,61 +50,116 @@ public class CtInvocationImpl<T> extends
 
 	List<CtTypeReference<?>> genericTypes = EMPTY_LIST();
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtInvocation(this);
 	}
 
-	public void setGenericTypes(List<CtTypeReference<?>> genericTypes) {
-		this.genericTypes = genericTypes;
-	}
-
-	public List<CtTypeReference<?>> getGenericTypes() {
-		return this.genericTypes;
-	}
-
+	@Override
 	public List<CtExpression<?>> getArguments() {
 		return arguments;
 	}
 
 	@Override
-	public void addArgument(CtExpression<?> argument) {
-		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
-			arguments = new ArrayList<CtExpression<?>>(
-					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+	public <C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument) {
+		if (arguments == CtElementImpl.<CtExpression<?>>EMPTY_LIST()) {
+			arguments = new ArrayList<CtExpression<?>>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		argument.setParent(this);
 		arguments.add(argument);
+		return (C) this;
 	}
 
 	@Override
 	public void removeArgument(CtExpression<?> argument) {
-		if (arguments != CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+		if (arguments != CtElementImpl.<CtExpression<?>>EMPTY_LIST()) {
 			arguments.remove(argument);
 		}
 	}
 
+	@Override
 	public CtExecutableReference<T> getExecutable() {
 		return executable;
 	}
 
+	@Override
+	public <C extends CtStatement> C insertAfter(CtStatement statement) {
+		CtStatementImpl.insertAfter(this, statement);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtStatement> C insertBefore(CtStatement statement) {
+		CtStatementImpl.insertBefore(this, statement);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtStatement> C insertAfter(CtStatementList statements) {
+		CtStatementImpl.insertAfter(this, statements);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtStatement> C insertBefore(CtStatementList statements) {
+		CtStatementImpl.insertBefore(this, statements);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtAbstractInvocation<T>> C setArguments(List<CtExpression<?>> arguments) {
+		this.arguments.clear();
+		for (CtExpression<?> expr : arguments) {
+			addArgument(expr);
+		}
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtAbstractInvocation<T>> C setExecutable(CtExecutableReference<T> executable) {
+		this.executable = executable;
+		return (C) this;
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
+	}
+
+	@Override
+	public <C extends CtStatement> C setLabel(String label) {
+		this.label = label;
+		return (C) this;
+	}
+
+	@Deprecated
+	public void setGenericTypes(List<CtTypeReference<?>> genericTypes) {
+		this.genericTypes = genericTypes;
+	}
+
+	@Deprecated
+	public List<CtTypeReference<?>> getGenericTypes() {
+		return this.genericTypes;
+	}
+
+	@Deprecated
 	public List<CtExpression<Integer>> getIndexExpressions() {
 		return indexExpressions;
 	}
 
-	public void insertAfter(CtStatement statement) {
-		CtStatementImpl.insertAfter(this, statement);
+	@Deprecated
+	public void setIndexExpressions(List<CtExpression<Integer>> indexExpressions) {
+		this.indexExpressions = indexExpressions;
 	}
 
-	public void insertBefore(CtStatement statement) {
-		CtStatementImpl.insertBefore(this, statement);
+	@Deprecated
+	public boolean isArrayOperation() {
+		return indexExpressions.size() > 0;
 	}
 
-	public void insertAfter(CtStatementList statements) {
-		CtStatementImpl.insertAfter(this, statements);
-	}
-
-	public void insertBefore(CtStatementList statements) {
-		CtStatementImpl.insertBefore(this, statements);
+	@Override
+	public void replace(CtStatement element) {
+		replace((CtElement) element);
 	}
 
 	@Override
@@ -111,39 +169,5 @@ public class CtInvocationImpl<T> extends
 		} else {
 			super.replace(element);
 		}
-	}
-
-	public boolean isArrayOperation() {
-		return indexExpressions.size() > 0;
-	};
-
-	public void setArguments(List<CtExpression<?>> arguments) {
-		this.arguments.clear();
-		for (CtExpression<?> expr : arguments) {
-			addArgument(expr);
-		}
-	}
-
-	public void setExecutable(CtExecutableReference<T> executable) {
-		this.executable = executable;
-	}
-
-	public void setIndexExpressions(List<CtExpression<Integer>> indexExpressions) {
-		this.indexExpressions = indexExpressions;
-	}
-
-	String label;
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	@Override
-	public void replace(CtStatement element) {
-		replace((CtElement)element);
 	}
 }

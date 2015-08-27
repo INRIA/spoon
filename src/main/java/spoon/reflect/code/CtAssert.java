@@ -29,7 +29,7 @@ public interface CtAssert<T> extends CtStatement {
 	/**
 	 * Sets the assert expression.
 	 */
-	void setAssertExpression(CtExpression<Boolean> asserted);
+	<A extends CtAssert<T>> A setAssertExpression(CtExpression<Boolean> asserted);
 
 	/**
 	 * Gets the expression of the assertion if defined.
@@ -39,5 +39,5 @@ public interface CtAssert<T> extends CtStatement {
 	/**
 	 * Sets the expression of the assertion.
 	 */
-	void setExpression(CtExpression<T> expression);
+	<A extends CtAssert<T>> A setExpression(CtExpression<T> expression);
 }

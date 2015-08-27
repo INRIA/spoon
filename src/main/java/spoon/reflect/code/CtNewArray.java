@@ -35,12 +35,12 @@ public interface CtNewArray<T> extends CtExpression<T> {
 	/**
 	 * Sets the expressions that define the array's dimensions.
 	 */
-	void setDimensionExpressions(List<CtExpression<Integer>> dimensions);
+	<C extends CtNewArray<T>> C setDimensionExpressions(List<CtExpression<Integer>> dimensions);
 
 	/**
 	 * Adds a dimension expression.
 	 */
-	boolean addDimensionExpression(CtExpression<Integer> dimension);
+	<C extends CtNewArray<T>> C addDimensionExpression(CtExpression<Integer> dimension);
 
 	/**
 	 * Removes a dimension expression.
@@ -55,12 +55,12 @@ public interface CtNewArray<T> extends CtExpression<T> {
 	/**
 	 * Sets the initialization expressions.
 	 */
-	void setElements(List<CtExpression<?>> expression);
+	<C extends CtNewArray<T>> C setElements(List<CtExpression<?>> expression);
 
 	/**
 	 * Adds an element.
 	 */
-	boolean addElement(CtExpression<?> expression);
+	<C extends CtNewArray<T>> C addElement(CtExpression<?> expression);
 
 	/**
 	 * Removes an element.

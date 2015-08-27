@@ -28,18 +28,22 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 
 	String simpleName;
 
+	@Override
 	public CtReference getReference() {
 		return null;
 	}
 
+	@Override
 	public String getSimpleName() {
 		return simpleName;
 	}
 
-	public void setSimpleName(String simpleName) {
+	@Override
+	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
 		Factory factory = getFactory();
 		if (factory instanceof FactoryImpl)
 			simpleName = ((FactoryImpl) factory).dedup(simpleName);
 		this.simpleName = simpleName;
+		return (T) this;
 	}
 }

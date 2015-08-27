@@ -58,15 +58,15 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Sets the type in which the field is declared.
 	 */
-	void setDeclaringType(CtTypeReference<?> declaringType);
+	<C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**
 	 * Forces a reference to a final element.
 	 */
-	void setFinal(boolean b);
+	<C extends CtFieldReference<T>> C setFinal(boolean b);
 
 	/**
 	 * Forces a reference to a static element.
 	 */
-	void setStatic(boolean b);
+	<C extends CtFieldReference<T>> C setStatic(boolean b);
 }

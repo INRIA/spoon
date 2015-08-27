@@ -34,16 +34,15 @@ public interface CtStatementList extends CtCodeElement, Iterable<CtStatement> {
 	/**
 	 * Sets the statement list.
 	 */
-	void setStatements(List<CtStatement> statements);
+	<T extends CtStatementList> T setStatements(List<CtStatement> statements);
 
 	/**
 	 * Adds a statement at the end of the list.
 	 */
-	void addStatement(CtStatement statement);
+	<T extends CtStatementList> T addStatement(CtStatement statement);
 
 	/**
 	 * Removes a statement.
 	 */
 	void removeStatement(CtStatement statement);
-
 }

@@ -37,12 +37,20 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 		super();
 	}
 
+	@Override
+	public void accept(CtVisitor visitor) {
+		// nothing
+	}
+
+	@Override
 	public CtTypeReference<T> getType() {
 		return type;
 	}
 
-	public void setType(CtTypeReference<T> type) {
+	@Override
+	public <C extends CtVariableReference<T>> C setType(CtTypeReference<T> type) {
 		this.type = type;
+		return (C) this;
 	}
 
 	@Override
@@ -55,14 +63,6 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 				&& simplename.equals(ref.getSimpleName());
 	}
 
-	public Set<ModifierKind> getModifiers() {
-		CtVariable<T> v = getDeclaration();
-		if (v != null) {
-			return v.getModifiers();
-		}
-		return new TreeSet<ModifierKind>();
-	}
-
 	@Override
 	protected AnnotatedElement getActualAnnotatedElement() {
 		// this is never available through reflection
@@ -70,13 +70,16 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 	}
 
 	@Override
-	public void accept(CtVisitor visitor) {
-		// nothing
-	}
-
-	@Override
 	public CtVariable<T> getDeclaration() {
 		return null;
 	}
 
+	@Override
+	public Set<ModifierKind> getModifiers() {
+		CtVariable<T> v = getDeclaration();
+		if (v != null) {
+			return v.getModifiers();
+		}
+		return new TreeSet<ModifierKind>();
+	}
 }

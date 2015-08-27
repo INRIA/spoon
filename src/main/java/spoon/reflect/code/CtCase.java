@@ -34,5 +34,5 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	/**
 	 * Sets the case expression.
 	 */
-	void setCaseExpression(CtExpression<S> caseExpression);
+	<T extends CtCase<S>> T setCaseExpression(CtExpression<S> caseExpression);
 }

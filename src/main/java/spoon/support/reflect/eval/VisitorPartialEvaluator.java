@@ -535,13 +535,13 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			CtIf ifRes = ifElement.getFactory().Core().createIf();
 			ifRes.setCondition(r);
 			boolean thenEnded = false, elseEnded = false;
-			ifRes.setThenStatement(evaluate(ifRes, ifElement.getThenStatement()));
+			ifRes.setThenStatement((CtStatement) evaluate(ifRes, ifElement.getThenStatement()));
 			if (flowEnded) {
 				thenEnded = true;
 				flowEnded = false;
 			}
 			if (ifElement.getElseStatement() !=null) {
-			  ifRes.setElseStatement(evaluate(ifRes, ifElement.getElseStatement()));
+			  ifRes.setElseStatement((CtStatement) evaluate(ifRes, ifElement.getElseStatement()));
 			}
 			if (flowEnded) {
 				elseEnded = true;

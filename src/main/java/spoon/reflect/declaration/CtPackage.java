@@ -30,12 +30,12 @@ public interface CtPackage extends CtNamedElement {
 	/**
 	 * The separator for a string representation of a package.
 	 */
-	public static final String PACKAGE_SEPARATOR = ".";
+	String PACKAGE_SEPARATOR = ".";
 
 	/**
 	 * The name for the top level package.
 	 */
-	public static final String TOP_LEVEL_PACKAGE_NAME = "unnamed package";
+	String TOP_LEVEL_PACKAGE_NAME = "unnamed package";
 
 	/**
 	 * Gets the declaring package of the current one.
@@ -87,7 +87,7 @@ public interface CtPackage extends CtNamedElement {
 	/**
 	 * Adds a type to this package.
 	 */
-	void addType(CtType<?> type);
+	<T extends CtPackage> T addType(CtType<?> type);
 
 	/**
 	 * Removes a type from this package.
@@ -100,7 +100,7 @@ public interface CtPackage extends CtNamedElement {
 	 * @param pack
 	 *            new set of child packages
 	 */
-	void setPackages(Set<CtPackage> pack);
+	<T extends CtPackage> T setPackages(Set<CtPackage> pack);
 
 	/**
 	 * add a subpackage
@@ -108,7 +108,7 @@ public interface CtPackage extends CtNamedElement {
 	 * @param pack
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	boolean addPackage(CtPackage pack);
+	<T extends CtPackage> T addPackage(CtPackage pack);
 
 	/**
 	 * remove a subpackage
@@ -124,5 +124,5 @@ public interface CtPackage extends CtNamedElement {
 	 * @param types
 	 *            new Set of types
 	 */
-	void setTypes(Set<CtType<?>> types);
+	<T extends CtPackage> T setTypes(Set<CtType<?>> types);
 }

@@ -17,16 +17,15 @@ public interface CtTryWithResource extends CtTry {
 	 * Sets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
 	 */
-	void setResources(List<CtLocalVariable<?>> resources);
+	<T extends CtTryWithResource> T setResources(List<CtLocalVariable<?>> resources);
 
 	/**
 	 * Adds a resource.
 	 */
-	boolean addResource(CtLocalVariable<?> resource);
+	<T extends CtTryWithResource> T addResource(CtLocalVariable<?> resource);
 
 	/**
 	 * Removes a resource.
 	 */
 	boolean removeResource(CtLocalVariable<?> resource);
-
 }

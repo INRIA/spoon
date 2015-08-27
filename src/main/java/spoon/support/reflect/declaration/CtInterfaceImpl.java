@@ -30,18 +30,7 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> {
 	private static final long serialVersionUID = 1L;
 
-	// @Override
-	// public List<CtField<?>> getAllFields() {
-	// List<CtField<?>> ret = new ArrayList<CtField<?>>();
-	// ret.addAll(getFields());
-	// for (CtTypeReference<?> ref : getSuperInterfaces()) {
-	// if (ref.getDeclaration() != null) {
-	// ret.addAll(ref.getDeclaration().getAllFields());
-	// }
-	// }
-	// return ret;
-	// }
-
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtInterface(this);
 	}

@@ -11,7 +11,7 @@ public interface CtMultiTypedElement extends CtElement {
 	/**
 	 * Adds a type for the element.
 	 */
-	boolean addMultiType(CtTypeReference<?> ref);
+	<T extends CtMultiTypedElement> T addMultiType(CtTypeReference<?> ref);
 
 	/**
 	 * Removes a type for the element.

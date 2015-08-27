@@ -38,6 +38,7 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 		super();
 	}
 
+	@Override
 	public int compareTo(CtReference o) {
 		SignaturePrinter pr = new SignaturePrinter();
 		pr.scan(this);
@@ -54,24 +55,27 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof CtReference)
-			return compareTo((CtReference) object) == 0;
-		return false;
+		return object instanceof CtReference && compareTo((CtReference) object) == 0;
 	}
 
 	abstract protected AnnotatedElement getActualAnnotatedElement();
 
+	@Override
 	public String getSimpleName() {
 		return simplename;
 	}
-	
-	public void setSimpleName(String simplename) {
-		if (simplename.contains("?"))
+
+	@Override
+	public <T extends CtReference> T setSimpleName(String simplename) {
+		if (simplename.contains("?")) {
 			throw new RuntimeException("argl");
+		}
 		Factory factory = getFactory();
-		if (factory instanceof FactoryImpl)
+		if (factory instanceof FactoryImpl) {
 			simplename = ((FactoryImpl) factory).dedup(simplename);
+		}
 		this.simplename = simplename;
+		return (T) this;
 	}
 
 	@Override
@@ -82,12 +86,13 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 		return printer.toString();
 	}
 
+	@Override
 	public Factory getFactory() {
 		return factory;
 	}
 
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 	}
-
 }

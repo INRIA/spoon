@@ -27,21 +27,25 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 
 	CtStatement body;
 
+	@Override
 	public CtStatement getBody() {
 		return body;
 	}
 
-	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+	@Override
+	public <T extends CtLoop> T setBody(CtStatement body) {
+		if (body != null)
+			body.setParent(this);
+		this.body = body;
+		return (T) this;
 	}
 
+	@Override
 	public Void S() {
 		return null;
 	}
 
-	public void setBody(CtStatement body) {
-		if (body != null)
-			body.setParent(this);
-		this.body = body;
+	public CtCodeElement getSubstitution(CtType<?> targetType) {
+		return getFactory().Core().clone(this);
 	}
 }

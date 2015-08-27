@@ -32,11 +32,10 @@ public interface CtNamedElement extends CtElement {
 	/**
 	 * Sets the simple (unqualified) name of this element.
 	 */
-	void setSimpleName(String simpleName);
+	<T extends CtNamedElement> T setSimpleName(String simpleName);
 
 	/**
 	 * Returns the corresponding reference.
 	 */
 	CtReference getReference();
-
 }

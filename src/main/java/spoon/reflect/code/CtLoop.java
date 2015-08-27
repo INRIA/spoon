@@ -32,5 +32,5 @@ public interface CtLoop extends CtStatement, TemplateParameter<Void> {
 	/**
 	 * Sets the body of this loop.
 	 */
-	void setBody(CtStatement body);
+	<T extends CtLoop> T setBody(CtStatement body);
 }

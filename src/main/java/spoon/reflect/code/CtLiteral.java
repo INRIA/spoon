@@ -33,6 +33,6 @@ public interface CtLiteral<T> extends CtExpression<T> {
 	/**
 	 * Sets the actual value of the literal.
 	 */
-	void setValue(T value);
+	<C extends CtLiteral<T>> C setValue(T value);
 
 }

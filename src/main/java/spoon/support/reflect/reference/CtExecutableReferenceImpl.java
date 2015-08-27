@@ -35,6 +35,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -60,14 +61,17 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		super();
 	}
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtExecutableReference(this);
 	}
 
+	@Override
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return actualTypeArguments;
 	}
 
+	@Override
 	public boolean isConstructor() {
 		return getSimpleName().equals(CONSTRUCTOR_NAME);
 	}
@@ -132,6 +136,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 //		return null;
 //	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public CtExecutable<T> getDeclaration() {
 		CtType<?> typeDecl = getDeclaringType().getDeclaration();
@@ -155,10 +160,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return method;
 	}
 
+	@Override
 	public CtTypeReference<?> getDeclaringType() {
 		return declaringType;
 	}
 
+	@Override
 	public CtTypeReference<T> getType() {
 		return type;
 	}
@@ -169,13 +176,15 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 	}
 
 	@Override
-	public void setParameters(List<CtTypeReference<?>> parameters) {
+	public <C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters) {
 		if (this.parameters == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
 			this.parameters = new ArrayList<CtTypeReference<?>>();
 			this.parameters.addAll(parameters);
 		}
+		return (C) this;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <S extends T> CtExecutableReference<S> getOverridingExecutable(
 			CtTypeReference<?> subType) {
@@ -198,27 +207,30 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return getOverridingExecutable(c.getSuperclass());
 	}
 
+	@Override
 	public boolean isOverriding(CtExecutableReference<?> executable) {
 		if (!this.getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
 			return false;
 		}
-		if (!getSimpleName().equals(executable.getSimpleName())) {
-			return false;
-		}
-		return true;
+		return getSimpleName().equals(executable.getSimpleName());
 	}
 
-	public void setActualTypeArguments(
-			List<CtTypeReference<?>> actualTypeArguments) {
+	@Override
+	public <C extends CtGenericElementReference> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
 		this.actualTypeArguments = actualTypeArguments;
+		return (C) this;
 	}
 
-	public void setDeclaringType(CtTypeReference<?> declaringType) {
+	@Override
+	public <C extends CtExecutableReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
 		this.declaringType = declaringType;
+		return (C) this;
 	}
 
-	public void setType(CtTypeReference<T> type) {
+	@Override
+	public <C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type) {
 		this.type = type;
+		return (C) this;
 	}
 
 	@Override
@@ -229,7 +241,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 			return getActualMethod();
 		}
 	}
-	
+
+	@Override
 	public Method getActualMethod() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 		
@@ -320,10 +333,13 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		// return false;
 	}
 
-	public void setStatic(boolean b) {
+	@Override
+	public <C extends CtExecutableReference<T>> C setStatic(boolean b) {
 		this.stat = b;
+		return (C) this;
 	}
 
+	@Override
 	public boolean isFinal() {
 		CtExecutable<T> e = getDeclaration();
 		if (e != null) {
@@ -359,18 +375,18 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return new TreeSet<ModifierKind>();
 	}
 
+	@Override
 	public CtExecutableReference<?> getOverridingExecutable() {
 		CtTypeReference<?> st = getDeclaringType().getSuperclass();
-		CtTypeReference<Object> objectType = getFactory().Type()
-				.createReference(Object.class);
+		CtTypeReference<Object> objectType = getFactory().Type().createReference(Object.class);
 		if (st == null) {
 			return getOverloadedExecutable(objectType, objectType);
 		}
 		return getOverloadedExecutable(st, objectType);
 	}
 
-	private CtExecutableReference<?> getOverloadedExecutable(
-			CtTypeReference<?> t, CtTypeReference<Object> objectType) {
+	private CtExecutableReference<?> getOverloadedExecutable(CtTypeReference<?> t,
+															 CtTypeReference<Object> objectType) {
 		if (t == null) {
 			return null;
 		}
@@ -389,21 +405,22 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		return getOverloadedExecutable(t.getSuperclass(), objectType);
 	}
 
-	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl
-				.<CtTypeReference<?>> EMPTY_LIST()) {
+	@Override
+	public <C extends CtGenericElementReference> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
 					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		return actualTypeArguments.add(actualTypeArgument);
+		actualTypeArguments.add(actualTypeArgument);
+		return (C) this;
 	}
 
 	@Override
 	public boolean removeActualTypeArgument(
 			CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments !=
-				CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+		return actualTypeArguments !=CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
 				actualTypeArguments.remove(actualTypeArgument);
 	}
+
 
 }

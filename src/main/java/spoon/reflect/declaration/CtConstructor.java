@@ -25,11 +25,6 @@ import spoon.reflect.reference.CtTypeReference;
 public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtGenericElement {
 
 	/**
-	 * This operation is not allowed.
-	 */
-	void setSimpleName(String simpleName);
-
-	/**
 	 * Always returns "&lt;init&gt;".
 	 */
 	String getSimpleName();
@@ -39,11 +34,4 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtGener
 	 * constructor's type).
 	 */
 	CtType<T> getDeclaringType();
-
-	/**
-	 * This method has not effect for the constructor since its type is always
-	 * the declaring type.
-	 */
-	void setType(CtTypeReference<T> type);
-
 }

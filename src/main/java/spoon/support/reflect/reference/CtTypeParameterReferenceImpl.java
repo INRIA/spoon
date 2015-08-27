@@ -24,6 +24,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.reflect.reference.CtGenericElementReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -46,20 +48,26 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		visitor.visitCtTypeParameterReference(this);
 	}
 
+	@Override
 	public List<CtTypeReference<?>> getBounds() {
 		return bounds;
 	}
 
+	@Override
 	public boolean isUpper() {
 		return upper;
 	}
 
-	public void setBounds(List<CtTypeReference<?>> bounds) {
+	@Override
+	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
 		this.bounds = bounds;
+		return (T) this;
 	}
 
-	public void setUpper(boolean upper) {
+	@Override
+	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
 		this.upper = upper;
+		return (T) this;
 	}
 
 	@Override
@@ -78,11 +86,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 	}
 
 	@Override
-	public void setSimpleName(String simplename) {
-		this.simplename = simplename;
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
@@ -95,36 +98,33 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 	}
 
 	@Override
-	public boolean addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl
-				.<CtTypeReference<?>> EMPTY_LIST()) {
+	public <C extends CtGenericElementReference> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
 					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		return actualTypeArguments.add(actualTypeArgument);
+		actualTypeArguments.add(actualTypeArgument);
+		return (C) this;
 	}
 
 	@Override
-	public boolean removeActualTypeArgument(
-			CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments !=
-				CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
+	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
 				actualTypeArguments.remove(actualTypeArgument);
 	}
 
 	@Override
-	public boolean addBound(CtTypeReference<?> bound) {
+	public <T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound) {
 		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			bounds = new ArrayList<CtTypeReference<?>>(
-					TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		return bounds.add(bound);
+		bounds.add(bound);
+		return (T) this;
 	}
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		return bounds != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
-				bounds.remove(bound);
+		return bounds != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() && bounds.remove(bound);
 	}
 
 	@Override
@@ -133,4 +133,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		return null;
 	}
 
+	@Override
+	public <T extends CtReference> T setSimpleName(String simplename) {
+		this.simplename = simplename;
+		return (T) this;
+	}
 }

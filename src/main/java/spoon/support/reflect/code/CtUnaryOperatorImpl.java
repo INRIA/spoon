@@ -17,16 +17,18 @@
 
 package spoon.support.reflect.code;
 
+import spoon.SpoonException;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements
-		CtUnaryOperator<T> {
+public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUnaryOperator<T> {
 	private static final long serialVersionUID = 1L;
 
 	UnaryOperatorKind kind;
@@ -35,36 +37,48 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements
 
 	CtExpression<T> operand;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtUnaryOperator(this);
 	}
 
+	@Override
 	public CtExpression<T> getOperand() {
 		return operand;
 	}
 
+	@Override
 	public UnaryOperatorKind getKind() {
 		return kind;
 	}
 
+	@Override
 	public String getLabel() {
 		return label;
 	}
 
-	public void insertAfter(CtStatement statement) {
+	@Override
+	public <C extends CtStatement> C insertAfter(CtStatement statement) {
 		CtStatementImpl.insertAfter(this, statement);
+		return (C) this;
 	}
 
-	public void insertBefore(CtStatement statement) {
+	@Override
+	public <C extends CtStatement> C insertBefore(CtStatement statement) {
 		CtStatementImpl.insertBefore(this, statement);
+		return (C) this;
 	}
 
-	public void insertAfter(CtStatementList statements) {
+	@Override
+	public <C extends CtStatement> C insertAfter(CtStatementList statements) {
 		CtStatementImpl.insertAfter(this, statements);
+		return (C) this;
 	}
 
-	public void insertBefore(CtStatementList statements) {
+	@Override
+	public <C extends CtStatement> C insertBefore(CtStatementList statements) {
 		CtStatementImpl.insertBefore(this, statements);
+		return (C) this;
 	}
 
 	@Override
@@ -76,17 +90,23 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements
 		}
 	}
 
-	public void setOperand(CtExpression<T> expression) {
+	@Override
+	public <C extends CtUnaryOperator> C setOperand(CtExpression<T> expression) {
 		expression.setParent(this);
 		this.operand = expression;
+		return (C) this;
 	}
 
-	public void setKind(UnaryOperatorKind kind) {
+	@Override
+	public <C extends CtUnaryOperator> C setKind(UnaryOperatorKind kind) {
 		this.kind = kind;
+		return (C) this;
 	}
 
-	public void setLabel(String label) {
+	@Override
+	public <C extends CtStatement> C setLabel(String label) {
 		this.label = label;
+		return (C) this;
 	}
 
 	@Override

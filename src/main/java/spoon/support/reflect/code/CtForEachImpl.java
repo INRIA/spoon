@@ -29,26 +29,33 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 
 	CtLocalVariable<?> variable;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtForEach(this);
 	}
 
+	@Override
 	public CtExpression<?> getExpression() {
 		return expression;
 	}
 
+	@Override
 	public CtLocalVariable<?> getVariable() {
 		return variable;
 	}
 
-	public void setExpression(CtExpression<?> expression) {
+	@Override
+	public <T extends CtForEach> T setExpression(CtExpression<?> expression) {
 		expression.setParent(this);
 		this.expression = expression;
+		return (T) this;
 	}
 
-	public void setVariable(CtLocalVariable<?> variable) {
+	@Override
+	public <T extends CtForEach> T setVariable(CtLocalVariable<?> variable) {
 		variable.setParent(this);
 		this.variable = variable;
+		return (T) this;
 	}
 
 }

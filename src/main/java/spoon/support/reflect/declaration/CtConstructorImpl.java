@@ -18,11 +18,16 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtGenericElement;
+import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.*;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTOR_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
@@ -35,8 +40,13 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
 
 	@Override
-	public void setSimpleName(String simpleName) {
-		throw new RuntimeException("Operation not allowed");
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtConstructor(this);
+	}
+
+	@Override
+	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -44,22 +54,22 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		return "<init>";
 	}
 
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtConstructor(this);
-	}
-
+	@Override
 	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaringType() {
 		return (CtType<T>) parent;
 	}
 
+	@Override
 	public CtTypeReference<T> getType() {
 		if (getDeclaringType() == null)
 			return null;
 		return getDeclaringType().getReference();
 	}
 
-	public void setType(CtTypeReference<T> type) {
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -68,20 +78,22 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public boolean addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+	public <T extends CtGenericElement> T addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
 		if (formalTypeParameter == null) {
-			return false;
+			return (T) this;
 		}
 		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
 			formalTypeParameters = new ArrayList<CtTypeReference<?>>(
 					CONSTRUCTOR_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		return formalTypeParameters.add(formalTypeParameter);
+		formalTypeParameters.add(formalTypeParameter);
+		return (T) this;
 	}
 
 	@Override
-	public void setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
+	public <T extends CtGenericElement> T setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
 		this.formalTypeParameters = formalTypeParameters;
+		return (T) this;
 	}
 
 	@Override
@@ -103,16 +115,18 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public void setModifiers(Set<ModifierKind> modifiers) {
+	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		this.modifiers = modifiers;
+		return (C) this;
 	}
 
 	@Override
-	public boolean addModifier(ModifierKind modifier) {
+	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		return modifiers.add(modifier);
+		modifiers.add(modifier);
+		return (C) this;
 	}
 
 	@Override
@@ -121,7 +135,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public void setVisibility(ModifierKind visibility) {
+	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
@@ -129,6 +143,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);
 		getModifiers().add(visibility);
+		return (C) this;
 	}
 
 	@Override

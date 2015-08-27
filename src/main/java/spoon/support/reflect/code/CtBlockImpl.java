@@ -17,6 +17,7 @@
 
 package spoon.support.reflect.code;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtInvocation;
@@ -25,6 +26,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
@@ -46,16 +48,14 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		visitor.visitCtBlock(this);
 	}
 
+	@Override
 	public List<CtStatement> getStatements() {
 		ensureModifiableStatementsList();
 		return this.statements;
 	}
 
-	public CtStatementList toStatementList() {
-		return getFactory().Code().createStatementList(this);
-	}
-
 	@SuppressWarnings("unchecked")
+	@Override
 	public <T extends CtStatement> T getStatement(int i) {
 		return (T) statements.get(i);
 	}
@@ -66,7 +66,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		return (T) statements.get(statements.size() - 1);
 	}
 
-	public void insertBegin(CtStatementList statements) {
+	@Override
+	public <T extends CtBlock<R>> T insertBegin(CtStatementList statements) {
 		if (getParent() != null
 				&& getParent() instanceof CtConstructor
 				&& getStatements().size() > 0) {
@@ -75,7 +76,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 					&& ((CtInvocation<?>) first).getExecutable()
 					.getSimpleName().startsWith("<init>")) {
 				first.insertAfter(statements);
-				return;
+				return (T) this;
 			}
 		}
 		if (this.statements == CtElementImpl.<CtStatement>EMPTY_LIST()) {
@@ -84,87 +85,97 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 							BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.statements.addAll(0, statements.getStatements());
+		return (T) this;
 	}
 
-	public void insertBegin(CtStatement statement) {
-		if (getParent() != null
-				&& getParent() instanceof CtConstructor
-				&& getStatements().size() > 0) {
-			CtStatement first = getStatements().get(0);
-			if (first instanceof CtInvocation
-					&& ((CtInvocation<?>) first).getExecutable()
-					.getSimpleName().startsWith("<init>")) {
-				first.insertAfter(statement);
-				return;
+	@Override
+	public <T extends CtBlock<R>> T insertBegin(CtStatement statement) {
+		try {
+			if (getParent() != null
+					&& getParent() instanceof CtConstructor
+					&& getStatements().size() > 0) {
+				CtStatement first = getStatements().get(0);
+				if (first instanceof CtInvocation
+						&& ((CtInvocation<?>) first).getExecutable()
+													.getSimpleName().startsWith("<init>")) {
+					first.insertAfter(statement);
+					return (T) this;
+				}
 			}
+		} catch (ParentNotInitializedException ignore) {
+			// CtBlock hasn't a parent. So, it isn't in a constructor.
 		}
 		ensureModifiableStatementsList();
 		this.statements.add(0, statement);
+		return (T) this;
 	}
 
-	public void insertEnd(CtStatement statement) {
+	@Override
+	public <T extends CtBlock<R>> T insertEnd(CtStatement statement) {
 		ensureModifiableStatementsList();
 		addStatement(statement);
+		return (T) this;
 	}
 
-	public void insertEnd(CtStatementList statements) {
+	@Override
+	public <T extends CtBlock<R>> T insertEnd(CtStatementList statements) {
 		for (CtStatement s : statements.getStatements()) {
 			insertEnd(s);
 		}
+		return (T) this;
 	}
 
-	public void insertAfter(Filter<? extends CtStatement> insertionPoints,
-			CtStatement statement) {
+	@Override
+	public <T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints,
+												CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statement);
 		}
+		return (T) this;
 	}
 
-	public void insertAfter(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList statements) {
+	@Override
+	public <T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints,
+							CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statements);
 		}
+		return (T) this;
 	}
 
-	public void insertBefore(Filter<? extends CtStatement> insertionPoints,
-			CtStatement statement) {
+	@Override
+	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints,
+												 CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statement);
 		}
+		return (T) this;
 	}
 
-	public void insertBefore(Filter<? extends CtStatement> insertionPoints,
-			CtStatementList statements) {
+	@Override
+	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints,
+							 CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statements);
 		}
+		return (T) this;
 	}
 
-	public void setStatements(List<CtStatement> statements) {
+	@Override
+	public <T extends CtStatementList> T setStatements(List<CtStatement> statements) {
 		this.statements.clear();
 		for (CtStatement s : statements) {
 			addStatement(s);
 		}
-	}
-
-	public R S() {
-		return null;
-	}
-
-	public void R(R value) {
-
-	}
-
-	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+		return (T) this;
 	}
 
 	@Override
-	public void addStatement(CtStatement statement) {
+	public <T extends CtStatementList> T addStatement(CtStatement statement) {
 		ensureModifiableStatementsList();
 		statement.setParent(this);
 		this.statements.add(statement);
+		return (T) this;
 	}
 
 	private void ensureModifiableStatementsList() {
@@ -186,12 +197,20 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		// we have to both create a defensive object and an unmodifiable list
 		// with only Collections.unmodifiableList you can modify the defensive object
 		// with only new ArrayList it breaks the encapsulation
-		return Collections.unmodifiableList(
-				new ArrayList<CtStatement>(getStatements())).iterator();
+		return Collections.unmodifiableList(new ArrayList<CtStatement>(getStatements())).iterator();
 	}
 
 	@Override
 	public <T extends R> void replace(CtBlock<T> element) {
 		replace((CtElement) element);
+	}
+
+	@Override
+	public R S() {
+		return null;
+	}
+
+	public CtCodeElement getSubstitution(CtType<?> targetType) {
+		return getFactory().Core().clone(this);
 	}
 }

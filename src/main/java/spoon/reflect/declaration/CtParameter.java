@@ -42,7 +42,7 @@ public interface CtParameter<T> extends CtVariable<T> {
 	/**
 	 * Sets this parameter to have varargs.
 	 */
-	void setVarArgs(boolean varArgs);
+	<C extends CtParameter<T>> C setVarArgs(boolean varArgs);
 
 	CtParameterReference<T> getReference();
 }

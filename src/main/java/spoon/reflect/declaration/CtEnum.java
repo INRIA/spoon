@@ -26,6 +26,5 @@ import java.util.List;
 public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 
 	/** Returns the set of predefined constant values of this enum */
-	public List<CtField<?>> getValues();
-	
+	List<CtField<?>> getValues();
 }

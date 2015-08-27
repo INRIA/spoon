@@ -19,6 +19,7 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -30,6 +31,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAIN
 public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 		CtExpression<T> {
 	private static final long serialVersionUID = 1L;
+
 	CtTypeReference<T> type;
 
 	List<CtTypeReference<?>> typeCasts = EMPTY_LIST();
@@ -38,33 +40,40 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 		return type;
 	}
 
+	@Override
 	public List<CtTypeReference<?>> getTypeCasts() {
 		return typeCasts;
 	}
 
-	public T S() {
-		return null;
-	}
-
-	public void setType(CtTypeReference<T> type) {
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		this.type = type;
-	}
-
-	public void setTypeCasts(List<CtTypeReference<?>> casts) {
-		this.typeCasts = casts;
+		return (C) this;
 	}
 
 	@Override
-	public void addTypeCast(CtTypeReference<?> type) {
+	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
+		this.typeCasts = casts;
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type) {
 		if (typeCasts == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
 			typeCasts = new ArrayList<CtTypeReference<?>>(
 					CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		typeCasts.add(type);
+		return (C) this;
 	}
 
 	@Override
 	public <E extends T> void replace(CtExpression<E> element) {
 		replace((CtElement) element);
+	}
+
+	@Override
+	public T S() {
+		return null;
 	}
 }

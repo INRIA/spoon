@@ -40,16 +40,15 @@ public interface CtConditional<T> extends CtExpression<T> {
 	/**
 	 * Sets the "false" expression.
 	 */
-	void setElseExpression(CtExpression<T> elseExpression);
+	<C extends CtConditional<T>> C setElseExpression(CtExpression<T> elseExpression);
 
 	/**
 	 * Sets the "true" expression.
 	 */
-	void setThenExpression(CtExpression<T> thenExpression);
+	<C extends CtConditional<T>> C setThenExpression(CtExpression<T> thenExpression);
 
 	/**
 	 * Sets the condition expression.
 	 */
-	void setCondition(CtExpression<Boolean> condition);
-
+	<C extends CtConditional<T>> C setCondition(CtExpression<Boolean> condition);
 }

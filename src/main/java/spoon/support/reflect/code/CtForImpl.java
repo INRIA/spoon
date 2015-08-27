@@ -26,8 +26,10 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities
+		.FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities
+		.FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
@@ -38,75 +40,82 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	List<CtStatement> forUpdate = EMPTY_LIST();
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtFor(this);
 	}
 
+	@Override
 	public CtExpression<Boolean> getExpression() {
 		return expression;
 	}
 
+	@Override
+	public <T extends CtFor> T setExpression(CtExpression<Boolean> expression) {
+		if (expression != null) {
+			expression.setParent(this);
+		}
+		this.expression = expression;
+		return (T) this;
+	}
+
+	@Override
 	public List<CtStatement> getForInit() {
 		return forInit;
 	}
 
-	public List<CtStatement> getForUpdate() {
-		return forUpdate;
-	}
-
-	public void setExpression(CtExpression<Boolean> expression) {
-		if (expression != null)
-			expression.setParent(this);
-		this.expression = expression;
+	@Override
+	public <T extends CtFor> T addForInit(CtStatement statement) {
+		if (forInit == CtElementImpl.<CtStatement>EMPTY_LIST()) {
+			forInit = new ArrayList<CtStatement>(FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		statement.setParent(this);
+		forInit.add(statement);
+		return (T) this;
 	}
 
 	@Override
-	public void setForInit(List<CtStatement> statements) {
+	public <T extends CtFor> T setForInit(List<CtStatement> statements) {
 		this.forInit.clear();
 		for (CtStatement stmt : statements) {
 			addForInit(stmt);
 		}
-	}
-
-	@Override
-	public void setForUpdate(List<CtStatement> statements) {
-		this.forUpdate.clear();
-		for (CtStatement stmt : statements) {
-			addForUpdate(stmt);
-		}
-	}
-	
-
-	@Override
-	public boolean addForInit(CtStatement statement) {
-		if (forInit == CtElementImpl.<CtStatement> EMPTY_LIST()) {
-			forInit = new ArrayList<CtStatement>(
-					FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		statement.setParent(this);
-		return forInit.add(statement);
+		return (T) this;
 	}
 
 	@Override
 	public boolean removeForInit(CtStatement statement) {
-		return forInit != CtElementImpl.<CtStatement>EMPTY_LIST() &&
-				forInit.remove(statement);
+		return forInit != CtElementImpl.<CtStatement>EMPTY_LIST() && forInit.remove(statement);
 	}
 
 	@Override
-	public boolean addForUpdate(CtStatement statement) {
-		if (forUpdate == CtElementImpl.<CtStatement> EMPTY_LIST()) {
+	public List<CtStatement> getForUpdate() {
+		return forUpdate;
+	}
+
+	@Override
+	public <T extends CtFor> T addForUpdate(CtStatement statement) {
+		if (forUpdate == CtElementImpl.<CtStatement>EMPTY_LIST()) {
 			forUpdate = new ArrayList<CtStatement>(
 					FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		return forUpdate.add(statement);
+		forUpdate.add(statement);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtFor> T setForUpdate(List<CtStatement> statements) {
+		this.forUpdate.clear();
+		for (CtStatement stmt : statements) {
+			addForUpdate(stmt);
+		}
+		return (T) this;
 	}
 
 	@Override
 	public boolean removeForUpdate(CtStatement statement) {
-		return forUpdate != CtElementImpl.<CtStatement>EMPTY_LIST() &&
-				forUpdate.remove(statement);
+		return forUpdate != CtElementImpl.<CtStatement>EMPTY_LIST() && forUpdate.remove(statement);
 	}
 
 }

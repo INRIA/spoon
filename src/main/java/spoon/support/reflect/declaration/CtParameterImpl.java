@@ -22,7 +22,10 @@ import java.util.Set;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -46,6 +49,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		super();
 	}
 
+	@Override
 	public void accept(CtVisitor v) {
 		v.visitCtParameter(this);
 	}
@@ -60,24 +64,31 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		return getFactory().Executable().createParameterReference(this);
 	}
 
+	@Override
 	public CtTypeReference<T> getType() {
 		return type;
 	}
 
-	public void setDefaultExpression(CtExpression<T> defaultExpression) {
+	@Override
+	public <C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> defaultExpression) {
 		throw new UnsupportedOperationException();
 	}
 
-	public void setType(CtTypeReference<T> type) {
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		this.type = type;
+		return (C) this;
 	}
 
+	@Override
 	public boolean isVarArgs() {
 		return varArgs;
 	}
 
-	public void setVarArgs(boolean varArgs) {
+	@Override
+	public <C extends CtParameter<T>> C setVarArgs(boolean varArgs) {
 		this.varArgs = varArgs;
+		return (C) this;
 	}
 
 	@Override
@@ -91,16 +102,18 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
-	public void setModifiers(Set<ModifierKind> modifiers) {
+	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		this.modifiers = modifiers;
+		return (C) this;
 	}
 
 	@Override
-	public boolean addModifier(ModifierKind modifier) {
+	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		return modifiers.add(modifier);
+		modifiers.add(modifier);
+		return (C) this;
 	}
 
 	@Override
@@ -109,7 +122,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
-	public void setVisibility(ModifierKind visibility) {
+	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
 		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
@@ -117,6 +130,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		getModifiers().remove(ModifierKind.PROTECTED);
 		getModifiers().remove(ModifierKind.PRIVATE);
 		getModifiers().add(visibility);
+		return (C) this;
 	}
 
 	@Override

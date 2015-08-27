@@ -27,26 +27,26 @@ public class CtTryWithResourceImpl extends CtTryImpl
 	}
 
 	@Override
-	public void setResources(List<CtLocalVariable<?>> resources) {		
+	public <T extends CtTryWithResource> T setResources(List<CtLocalVariable<?>> resources) {
 		this.resources.clear();
 		for(CtLocalVariable<?> l:resources) {
 			addResource(l);
 		}
+		return (T) this;
 	}
 
 	@Override
-	public boolean addResource(CtLocalVariable<?> resource) {
+	public <T extends CtTryWithResource> T addResource(CtLocalVariable<?> resource) {
 		if (resources == CtElementImpl.<CtLocalVariable<?>>EMPTY_LIST()) {
-			resources = new ArrayList<CtLocalVariable<?>>(
-					RESOURCES_CONTAINER_DEFAULT_CAPACITY);
+			resources = new ArrayList<CtLocalVariable<?>>(RESOURCES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		resource.setParent(this);
-		return resources.add(resource);
+		resources.add(resource);
+		return (T) this;
 	}
 
 	@Override
 	public boolean removeResource(CtLocalVariable<?> resource) {
-		return resources != CtElementImpl.<CtLocalVariable<?>>EMPTY_LIST() &&
-				resources.remove(resource);
+		return resources != CtElementImpl.<CtLocalVariable<?>>EMPTY_LIST() && resources.remove(resource);
 	}
 }

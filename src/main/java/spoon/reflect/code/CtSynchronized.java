@@ -31,7 +31,7 @@ public interface CtSynchronized extends CtStatement {
 	/**
 	 * Sets the expression that defines the monitored.
 	 */
-	void setExpression(CtExpression<?> expression);
+	<T extends CtSynchronized> T setExpression(CtExpression<?> expression);
 
 	/**
 	 * Gets the synchronized block.
@@ -41,5 +41,5 @@ public interface CtSynchronized extends CtStatement {
 	/**
 	 * Sets the synchronized block.
 	 */
-	void setBlock(CtBlock<?> block);
+	<T extends CtSynchronized> T setBlock(CtBlock<?> block);
 }

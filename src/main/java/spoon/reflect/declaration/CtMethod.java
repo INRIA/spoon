@@ -30,7 +30,7 @@ public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtGenericEle
 	/**
 	 * Sets the default value state of a method.
 	 */
-	void setDefaultMethod(boolean defaultMethod);
+	<C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod);
 
 	/**
 	 * Replaces this element by another one.

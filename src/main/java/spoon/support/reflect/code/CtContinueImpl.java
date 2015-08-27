@@ -28,26 +28,33 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	
 	String targetLabel;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtContinue(this);
 	}
 
+	@Override
 	public CtStatement getLabelledStatement() {
 		return labelledStatement;
 	}
 
-	public void setLabelledStatement(CtStatement labelledStatement) {
+	@Override
+	public <T extends CtContinue> T setLabelledStatement(CtStatement labelledStatement) {
 		if (labelledStatement != null)
 			labelledStatement.setParent(this);
 		this.labelledStatement = labelledStatement;
+		return (T) this;
 	}
-	
+
+	@Override
 	public String getTargetLabel() {
 		return targetLabel;
 	}
 
-	public void setTargetLabel(String targetLabel) {
+	@Override
+	public <T extends CtContinue> T setTargetLabel(String targetLabel) {
 		this.targetLabel = targetLabel;
+		return (T) this;
 	}
 
 }

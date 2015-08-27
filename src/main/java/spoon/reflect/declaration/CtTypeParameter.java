@@ -24,7 +24,19 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * This element defines a type parameter (aka generics).
  */
-public interface CtTypeParameter extends CtElement {
+public interface CtTypeParameter extends CtNamedElement {
+
+	/**
+	 * @see CtNamedElement#getSimpleName()
+	 */
+	@Deprecated
+	String getName();
+
+	/**
+	 * @see CtNamedElement#setSimpleName(String)
+	 */
+	@Deprecated
+	<T extends CtTypeParameter> T setName(String name);
 
 	/**
 	 * Returns the bounds of this type parameter. These are the types given by
@@ -34,21 +46,16 @@ public interface CtTypeParameter extends CtElement {
 	List<CtTypeReference<?>> getBounds();
 
 	/**
-	 * Returns the name of this type parameter.
-	 */
-	String getName();
-
-	/**
 	 * Sets the bounds of this type parameter.
 	 */
-	void setBounds(List<CtTypeReference<?>> bounds);
+	<T extends CtTypeParameter> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * 
 	 * @param bounds
 	 * @return
 	 */
-	boolean addBound(CtTypeReference<?> bounds);
+	<T extends CtTypeParameter> T addBound(CtTypeReference<?> bounds);
 
 	/**
 	 * 
@@ -56,10 +63,4 @@ public interface CtTypeParameter extends CtElement {
 	 * @return
 	 */
 	boolean removeBound(CtTypeReference<?> bounds);
-
-	/**
-	 * Sets the name of this type parameter.
-	 */
-	void setName(String name);
-
 }

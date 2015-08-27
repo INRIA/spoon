@@ -40,7 +40,7 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	/**
 	 * Adds an argument expression to the invocation.
 	 */
-	void addArgument(CtExpression<?> argument);
+	<C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument);
 
 	/**
 	 * Removes an argument expression from the invocation.
@@ -48,17 +48,17 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	void removeArgument(CtExpression<?> argument);
 
 	/**
+	 * Sets the invocation's arguments.
+	 */
+	<C extends CtAbstractInvocation<T>> C setArguments(List<CtExpression<?>> arguments);
+
+	/**
 	 * Returns the invoked executable.
 	 */
 	CtExecutableReference<T> getExecutable();
 
 	/**
-	 * Sets the invocation's arguments.
-	 */
-	void setArguments(List<CtExpression<?>> arguments);
-
-	/**
 	 * Sets the invoked executable.
 	 */
-	void setExecutable(CtExecutableReference<T> executable);
+	<C extends CtAbstractInvocation<T>> C setExecutable(CtExecutableReference<T> executable);
 }

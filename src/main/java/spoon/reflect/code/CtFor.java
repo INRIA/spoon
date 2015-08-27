@@ -30,6 +30,11 @@ public interface CtFor extends CtLoop {
 	CtExpression<Boolean> getExpression();
 
 	/**
+	 * Sets the end-loop test expression.
+	 */
+	<T extends CtFor> T setExpression(CtExpression<Boolean> expression);
+
+	/**
 	 * Gets the <i>init</i> statements.
 	 */
 	List<CtStatement> getForInit();
@@ -37,7 +42,12 @@ public interface CtFor extends CtLoop {
 	/**
 	 * Adds an <i>init</i> statement.
 	 */
-	boolean addForInit(CtStatement statement);
+	<T extends CtFor> T addForInit(CtStatement statement);
+
+	/**
+	 * Sets the <i>init</i> statements.
+	 */
+	<T extends CtFor> T setForInit(List<CtStatement> forInit);
 
 	/**
 	 * Removes an <i>init</i> statement.
@@ -50,25 +60,14 @@ public interface CtFor extends CtLoop {
 	List<CtStatement> getForUpdate();
 
 	/**
-	 * Sets the end-loop test expression.
+	 * Adds an <i>update</i> statement.
 	 */
-	void setExpression(CtExpression<Boolean> expression);
+	<T extends CtFor> T addForUpdate(CtStatement statement);
 
-
- 	/**
- 	 * Sets the <i>init</i> statements.
- 	 */
- 	void setForInit(List<CtStatement> forInit);
- 
  	/**
  	 * Sets the <i>update</i> statements.
  	 */
- 	void setForUpdate(List<CtStatement> forUpdate);
-
-	/**
-	 * Adds an <i>update</i> statement.
-	 */
-	boolean addForUpdate(CtStatement statement);
+	<T extends CtFor> T setForUpdate(List<CtStatement> forUpdate);
 
 	/**
 	 * Removes an <i>update</i> statement.

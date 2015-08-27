@@ -4,8 +4,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtVariableAccessImpl<T> extends CtExpressionImpl<T>
-		implements CtVariableAccess<T> {
+public class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements CtVariableAccess<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtVariableReference<T> variable;
@@ -21,7 +20,8 @@ public class CtVariableAccessImpl<T> extends CtExpressionImpl<T>
 	}
 
 	@Override
-	public void setVariable(CtVariableReference<T> variable) {
+	public <C extends CtVariableAccess<T>> C setVariable(CtVariableReference<T> variable) {
 		this.variable = variable;
+		return (C) this;
 	}
 }

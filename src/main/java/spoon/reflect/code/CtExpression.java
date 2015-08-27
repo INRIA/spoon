@@ -29,8 +29,7 @@ import spoon.template.TemplateParameter;
  * @param <T>
  *            the "return type" of this expression
  */
-public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>,
-		TemplateParameter<T> {
+public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>, TemplateParameter<T> {
 
 	/**
 	 * Returns the type casts if any.
@@ -40,12 +39,12 @@ public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>,
 	/**
 	 * Sets the type casts.
 	 */
-	void setTypeCasts(List<CtTypeReference<?>> types);
+	<C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> types);
 
 	/**
 	 * Adds a type cast.
 	 */
-	void addTypeCast(CtTypeReference<?> type);
+	<C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type);
 
 	/**
 	 * Replaces this element by another one.

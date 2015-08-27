@@ -130,7 +130,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 	}
 
 	@Override
-	public void addValue(String elementName, Object value) {
+	public <T extends CtAnnotation<A>> T addValue(String elementName, Object value) {
 		if (!elementValues.containsKey(elementName)) {
 			elementValues.put(elementName, value);
 			if (value instanceof CtElement) {
@@ -154,6 +154,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 				addValue(elementName, value);
 			}
 		}
+		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -325,17 +326,21 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A>
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public void setAnnotationType(
+	public <T extends CtAnnotation<A>> T setAnnotationType(
 			CtTypeReference<? extends Annotation> annotationType) {
 		this.annotationType = (CtTypeReference<A>) annotationType;
+		return (T) this;
 	}
 
-	public void setElementValues(Map<String, Object> values) {
+	@Override
+	public <T extends CtAnnotation<A>> T setElementValues(Map<String, Object> values) {
 		this.elementValues.clear();
 		for (Entry<String, Object> e : values.entrySet()) {
 			addValue(e.getKey(), e.getValue());
 		}
+		return (T) this;
 	}
 
 	@Override

@@ -29,5 +29,5 @@ public interface CtCatchVariableReference<T> extends CtVariableReference<T> {
 	 * Sets the catch variable declaration that corresponds to this catch
 	 * variable reference.
 	 */
-	void setDeclaration(CtCatchVariable<T> declaration);
+	<C extends CtCatchVariableReference<T>> C setDeclaration(CtCatchVariable<T> declaration);
 }

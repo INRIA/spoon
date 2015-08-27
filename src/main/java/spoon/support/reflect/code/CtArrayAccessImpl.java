@@ -27,17 +27,20 @@ public class CtArrayAccessImpl<T, V extends CtExpression<?>> extends
 
 	private CtExpression<Integer> expression;
 
-	public CtExpression<Integer> getIndexExpression() {
-		return expression;
-	}
-
-	public void setIndexExpression(CtExpression<Integer> expression) {
-		expression.setParent(this);
-		this.expression = expression;
-	}
-
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtArrayAccess(this);
 	}
 
+	@Override
+	public CtExpression<Integer> getIndexExpression() {
+		return expression;
+	}
+
+	@Override
+	public <C extends CtArrayAccess<T, V>> C setIndexExpression(CtExpression<Integer> expression) {
+		expression.setParent(this);
+		this.expression = expression;
+		return (C) this;
+	}
 }

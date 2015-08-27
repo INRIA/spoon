@@ -26,8 +26,8 @@ package spoon.reflect.code;
  *            type of expression to assign, it should extends &lt;T&gt;
  */
 public interface CtAssignment<T, A extends T> extends CtStatement,
-		CtExpression<T>, CtRHSReceiver<A> {
-
+													  CtExpression<T>,
+													  CtRHSReceiver<A> {
 	/**
 	 * Returns the assigned expression on the left-hand side (where the value is stored, 
 	 * e.g. in a variable, in an array, in a field ...).
@@ -35,18 +35,7 @@ public interface CtAssignment<T, A extends T> extends CtStatement,
 	CtExpression<T> getAssigned();
 
 	/**
-	 * {@inheritDoc}
-	 */
-	CtExpression<A> getAssignment();
-
-	/**
 	 * Sets the assigned expression (left hand side - LHS).
 	 */
-	void setAssigned(CtExpression<T> assigned);
-
-	/**
-	 *  {@inheritDoc}
-	 */
-	void setAssignment(CtExpression<A> assignment);
-
+	<C extends CtAssignment<T, A>> C setAssigned(CtExpression<T> assigned);
 }
