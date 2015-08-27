@@ -5,10 +5,13 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtImplicitTypeReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.prettyprinter.testclasses.AClass;
@@ -76,10 +79,18 @@ public class DefaultPrettyPrinterTest {
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
 		final String expected = "public class AClass {" + System.lineSeparator()
 				+ "    public List<?> aMethod() {" + System.lineSeparator()
-				+ "        return new ArrayList<java.lang.Object>();" + System.lineSeparator()
+				+ "        return new ArrayList<>();" + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
 				+ "}";
 		assertEquals(expected, aClass.toString());
+		final CtConstructorCall constructorCall =
+				aClass.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class))
+					  .get(0);
+		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
+																  .getActualTypeArguments()
+																  .get(0);
+		assertTrue(ctTypeReference instanceof CtImplicitTypeReference);
+		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
 
 	@Test
@@ -93,8 +104,17 @@ public class DefaultPrettyPrinterTest {
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
 		final String expected = "public List<?> aMethod() {" + System.lineSeparator()
-				+ "    return new ArrayList<java.lang.Object>();" + System.lineSeparator()
+				+ "    return new ArrayList<>();" + System.lineSeparator()
 				+ "}";
 		assertEquals(expected, aClass.getMethodsByName("aMethod").get(0).toString());
+
+		final CtConstructorCall constructorCall =
+				aClass.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class))
+					  .get(0);
+		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
+																  .getActualTypeArguments()
+																  .get(0);
+		assertTrue(ctTypeReference instanceof CtImplicitTypeReference);
+		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
 }

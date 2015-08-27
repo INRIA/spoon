@@ -43,5 +43,4 @@ public interface CtGenericElementReference {
 	 * Removes a type argument.
 	 */
 	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
-
 }

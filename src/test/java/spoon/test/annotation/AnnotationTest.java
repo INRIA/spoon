@@ -24,11 +24,13 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -37,6 +39,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -535,11 +538,35 @@ public class AnnotationTest {
 		assertEquals("Method with an type annotation must be well printed", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", formalTypeParameters.get(0).toString());
 
 		final CtBlock<?> body = method.getBody();
-		final String expectedFirstStatement = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T> list = new java.util.ArrayList<@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T>()";
-		assertEquals("Type annotation on generic parameter declared in the method", expectedFirstStatement, body.getStatement(0).toString());
+		final String expectedFirstStatement =
+				"java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation" +
+						System.lineSeparator() + "T> list = new java.util.ArrayList<>()";
+		final CtStatement firstStatement = body.getStatement(0);
+		assertEquals("Type annotation on generic parameter declared in the method",
+					 expectedFirstStatement, firstStatement.toString());
+		final CtConstructorCall firstConstructorCall =
+				firstStatement.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class))
+							  .get(0);
+		final CtTypeReference<?> firstTypeReference = firstConstructorCall.getType()
+																		  .getActualTypeArguments()
+																		  .get(0);
+		assertTrue(firstTypeReference instanceof CtImplicitTypeReference);
+		assertEquals("T", firstTypeReference.getSimpleName());
 
-		final String expectedSecondStatement = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "?> list2 = new java.util.ArrayList<java.lang.Object>()";
-		assertEquals("Wildcard with an type annotation must be well printed", expectedSecondStatement, body.getStatement(1).toString());
+		final String expectedSecondStatement =
+				"java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation" +
+						System.lineSeparator() + "?> list2 = new java.util.ArrayList<>()";
+		final CtStatement secondStatement = body.getStatement(1);
+		assertEquals("Wildcard with an type annotation must be well printed",
+					 expectedSecondStatement, secondStatement.toString());
+		final CtConstructorCall secondConstructorCall =
+				secondStatement.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class))
+							   .get(0);
+		final CtTypeReference<?> secondTypeReference = secondConstructorCall.getType()
+																			.getActualTypeArguments()
+																			.get(0);
+		assertTrue(secondTypeReference instanceof CtImplicitTypeReference);
+		assertEquals("Object", secondTypeReference.getSimpleName());
 
 		final String expectedThirdStatement = "java.util.List<spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation BasicAnnotation> list3 = new java.util.ArrayList<spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation BasicAnnotation>()";
 		assertEquals("Type in generic parameter with an type annotation must be well printed", expectedThirdStatement, body.getStatement(2).toString());

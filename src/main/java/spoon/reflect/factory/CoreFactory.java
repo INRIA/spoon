@@ -85,6 +85,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -422,6 +423,11 @@ public interface CoreFactory {
 	 * Creates a type reference.
 	 */
 	<T> CtTypeReference<T> createTypeReference();
+
+	/**
+	 * Creates a inference type reference.
+	 */
+	<T> CtImplicitTypeReference<T> createImplicitTypeReference();
 
 	/**
 	 * Creates a type access expression.

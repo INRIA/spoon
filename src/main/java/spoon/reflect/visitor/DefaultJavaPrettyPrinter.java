@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
-import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.processing.Severity;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -108,6 +107,8 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtGenericElementReference;
+import spoon.reflect.reference.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -816,7 +817,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			visitCtType(ctClass);
 			write("class " + ctClass.getSimpleName());
 
-			writeGenericsParameter(ctClass.getFormalTypeParameters());
+			writeFormalTypeParameters(ctClass.getFormalTypeParameters());
 
 			writeExtendsClause(ctClass);
 			writeImplementsClause(ctClass);
@@ -871,7 +872,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtConstructor(CtConstructor<T> c) {
 		visitCtNamedElement(c);
 		writeModifiers(c);
-		writeGenericsParameter(c.getFormalTypeParameters());
+		writeFormalTypeParameters(c.getFormalTypeParameters());
 		write(c.getDeclaringType().getSimpleName());
 		write("(");
 		if (c.getParameters().size() > 0) {
@@ -1001,7 +1002,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			write(reference.getSimpleName());
 		}
-		writeGenericsParameter(reference.getActualTypeArguments());
+		writeActualTypeArguments(reference);
 		writeParameters(reference.getActualTypeArguments());
 	}
 
@@ -1236,7 +1237,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtType(intrface);
 		write("interface " + intrface.getSimpleName());
 		if (intrface.getFormalTypeParameters() != null) {
-			writeGenericsParameter(intrface.getFormalTypeParameters());
+			writeFormalTypeParameters(intrface.getFormalTypeParameters());
 		}
 
 		if (intrface.getSuperInterfaces().size() > 0) {
@@ -1266,43 +1267,31 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		enterCtStatement(invocation);
 		enterCtExpression(invocation);
-		//BCUTAG ???
-		//		if (invocation.getExecutable() ==null || invocation.getExecutable().getSimpleName() == null){
-		//			exitCtExpression(invocation);
-		//			return;
-		//		}
-		if (invocation.getExecutable().getSimpleName().equals("<init>")) {
+		if (invocation.getExecutable().isConstructor()) {
 			// It's a constructor (super or this)
-			try {
-				CtType<?> parentType = invocation.getParent(CtType.class);
-				if ((parentType != null)
-						&& (parentType.getQualifiedName() != null)
-						&& parentType.getQualifiedName().equals(
-						invocation.getExecutable().getDeclaringType()
-								.getQualifiedName())) {
-					write("this");
-				} else {
-					if (invocation.getTarget() != null) {
-						write(invocation.getTarget().getSignature() + '.');
-					}
-					write("super");
+			writeActualTypeArguments(invocation.getExecutable());
+			CtType<?> parentType = invocation.getParent(CtType.class);
+			if (parentType != null
+					&& parentType.getQualifiedName() != null
+					&& parentType.getQualifiedName()
+								 .equals(invocation.getExecutable()
+												   .getDeclaringType()
+												   .getQualifiedName())) {
+				write("this");
+			} else {
+				if (invocation.getTarget() != null) {
+					write(invocation.getTarget().getSignature() + '.');
 				}
-			} catch (Exception e) {
-				Launcher.logger.error(e.getMessage(), e);
+				write("super");
 			}
 		} else {
 			// It's a method invocation
 			if (invocation.getExecutable().isStatic()) {
-				try {
-					CtTypeReference<?> type = invocation.getExecutable()
-							.getDeclaringType();
-					context.ignoreGenerics = true;
-					scan(type);
-					context.ignoreGenerics = false;
-					write(".");
-				} catch (Exception e) {
-					Launcher.logger.error(e.getMessage(), e);
-				}
+				CtTypeReference<?> type = invocation.getExecutable().getDeclaringType();
+				context.ignoreGenerics = true;
+				scan(type);
+				context.ignoreGenerics = false;
+				write(".");
 			} else if (invocation.getTarget() != null) {
 				context.enterTarget();
 				scan(invocation.getTarget());
@@ -1312,22 +1301,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					&& invocation.getExecutable().getActualTypeArguments().size() > 0) {
 				write("this.");
 			}
-			boolean removeLastChar = false;
-			if (invocation.getExecutable().getActualTypeArguments() != null
-					&& invocation.getExecutable().getActualTypeArguments().size() > 0) {
-				write("<");
-				for (CtTypeReference<?> ref : invocation.getExecutable().getActualTypeArguments()) {
-					context.isInvocation = true;
-					scan(ref);
-					context.isInvocation = false;
-					write(",");
-					removeLastChar = true;
-				}
-				if (removeLastChar) {
-					removeLastChar();
-				}
-				write(">");
-			}
+			writeActualTypeArguments(invocation.getExecutable());
 			// TODO: this does not work because the invocation does not have the
 			// right line number
 			if (env.isPreserveLineNumbers()) {
@@ -1507,7 +1481,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (m.isDefaultMethod()) {
 			write("default ");
 		}
-		writeGenericsParameter(m.getFormalTypeParameters());
+		writeFormalTypeParameters(m.getFormalTypeParameters());
 		scan(m.getType());
 		write(" ");
 		write(m.getSimpleName());
@@ -1620,13 +1594,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if (ctConstructorCall.getTarget() != null) {
 			scan(ctConstructorCall.getTarget()).write(".");
-		}
-
-		if (ctConstructorCall.getTarget() != null) {
 			context.ignoreEnclosingClass = true;
 		}
 
-		write("new ").scan(ctConstructorCall.getType());
+		// JDT doesn't support new Foo<K>.Bar(); So we check that the parent of the constructor
+		// call and the declaring type of the type of the constructor call are equals or not.
+		// If yes, Bar is a intern class of Foo and we don't need to print fully qualified name.
+		// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593
+		if (getTopLevelType(ctConstructorCall).getReference().equals(ctConstructorCall.getType().getDeclaringType()) &&
+				ctConstructorCall.getType().getDeclaringType().getActualTypeArguments().size() > 0) {
+			context.ignoreEnclosingClass = true;
+		}
+
+		write("new ");
+
+		if (ctConstructorCall.getActualTypeArguments().size() > 0) {
+			writeActualTypeArguments(ctConstructorCall);
+		}
+
+		scan(ctConstructorCall.getType());
 		context.ignoreEnclosingClass = false;
 
 		write("(");
@@ -1643,6 +1629,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(")");
 
 		exitCtExpression(ctConstructorCall);
+	}
+
+	private CtType<?> getTopLevelType(CtElement e) {
+		final CtType parent = e.getParent(CtType.class);
+		if (parent == null && this instanceof CtType) {
+			return (CtType<?>) this;
+		}
+		return getTypeParent(parent);
+	}
+
+	private CtType<?> getTypeParent(CtType<?> parent) {
+		final CtType typeParent = parent.getParent(CtType.class);
+		if (typeParent == null) {
+			return parent;
+		}
+		return getTypeParent(typeParent);
 	}
 
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
@@ -1909,7 +1911,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 		if (!context.ignoreGenerics) {
-			writeGenericsParameter(ref.getActualTypeArguments());
+			writeActualTypeArguments(ref);
 		}
 	}
 
@@ -2081,9 +2083,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * Writes a generics parameter.
+	 * Writes formal type parameters given in parameter.
+	 *
+	 * @param params
+	 * 		List of formal type parameters.
+	 * @return current instance of the {@link DefaultJavaPrettyPrinter}
 	 */
-	public DefaultJavaPrettyPrinter writeGenericsParameter(
+	public DefaultJavaPrettyPrinter writeFormalTypeParameters(
 			Collection<CtTypeReference<?>> params) {
 		if (params == null) {
 			return this;
@@ -2097,6 +2103,36 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			context.ignoreImport = false;
 			removeLastChar();
+			write(">");
+		}
+		return this;
+	}
+
+	/**
+	 * Writes actual type arguments in a {@link CtGenericElementReference} element.
+	 *
+	 * @param ctGenericElementReference
+	 * 		Reference with actual type arguments.
+	 * @return current instance of the {@link DefaultJavaPrettyPrinter}
+	 */
+	public DefaultJavaPrettyPrinter writeActualTypeArguments(
+			CtGenericElementReference ctGenericElementReference) {
+		Collection<CtTypeReference<?>> params = ctGenericElementReference.getActualTypeArguments();
+		if (params != null && params.size() > 0) {
+			write("<");
+			boolean isImplicitTypeReference = true;
+			context.ignoreImport = true;
+			for (CtTypeReference<?> param : params) {
+				if (!(param instanceof CtImplicitTypeReference)) {
+					isImplicitTypeReference = false;
+					scan(param);
+					write(", ");
+				}
+			}
+			context.ignoreImport = false;
+			if (!isImplicitTypeReference) {
+				removeLastChar();
+			}
 			write(">");
 		}
 		return this;

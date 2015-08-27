@@ -16,25 +16,30 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
 import spoon.test.TestUtils;
+import spoon.test.generics.testclasses.Tacos;
 
 public class GenericsTest {
 
@@ -108,7 +113,7 @@ public class GenericsTest {
 
 		// the diamond is resolved to String
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).toString());
-		assertEquals("new java.util.ArrayList<java.lang.String>()",val.toString());
+		assertEquals("new java.util.ArrayList<>()",val.toString());
 	}
 
 	@Test
@@ -286,5 +291,144 @@ public class GenericsTest {
 
 		assertEquals("Name of the second generic parameter in Bar interface must to be O.", "O", barGenerics.get(1).getSimpleName());
 		assertEquals("Name of the second generic parameter in Bar usage must to be V.", "V", anonymousBar.getFormalTypeParameters().get(1).getSimpleName());
+	}
+
+	@Test
+	public void testConstructorCallGenerics() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/java/spoon/test/generics/testclasses/",
+				"-o", "./target/spooned/"
+		});
+
+		final CtClass<?> aTacos = launcher.getFactory().Class().get(Tacos.class);
+		assertEquals(2, aTacos.getFormalTypeParameters().size());
+		final CtTypeReference interfaces = aTacos.getSuperInterfaces().toArray(new CtTypeReference[0])[0];
+		assertEquals(1, interfaces.getActualTypeArguments().size());
+
+		final CtMethod<?> m = aTacos.getMethodsByName("m").get(0);
+		final CtElement local1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		final CtTypeReference<Object> leftSideLocal1 = (CtTypeReference<Object>) local1.getReferences(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
+		final CtConstructorCall<Object> rightSideLocal1 = (CtConstructorCall<Object>) local1.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		assertEquals(1, leftSideLocal1.getActualTypeArguments().size());
+		assertEquals(1, rightSideLocal1.getType().getActualTypeArguments().size());
+		assertEquals("java.util.List<java.lang.String> l = new java.util.ArrayList<>()", local1.toString());
+
+		final CtElement local2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		final CtTypeReference<Object> leftSideLocal2 = (CtTypeReference<Object>) local2.getReferences(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
+		assertEquals(0, leftSideLocal2.getActualTypeArguments().size());
+		assertEquals("java.util.List l2", local2.toString());
+
+		final CtElement local3 = m.getBody().getStatement(2).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		final CtTypeReference<Object> leftSideLocal3 = (CtTypeReference<Object>) local3.getReferences(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
+		final CtConstructorCall<Object> rightSideLocal3 = (CtConstructorCall<Object>) local3.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		assertEquals(2, leftSideLocal3.getActualTypeArguments().size());
+		assertEquals(2, rightSideLocal3.getType().getActualTypeArguments().size());
+		assertEquals("spoon.test.generics.testclasses.IBurritos<?, ?> burritos = new Burritos<>()", local3.toString());
+
+		final CtElement local4 = m.getBody().getStatement(3).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		final CtTypeReference<Object> leftSideLocal4 = (CtTypeReference<Object>) local4.getReferences(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
+		final CtConstructorCall<Object> rightSideLocal4 = (CtConstructorCall<Object>) local4.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		assertEquals(1, leftSideLocal4.getActualTypeArguments().size());
+		assertEquals(1, rightSideLocal4.getType().getActualTypeArguments().size());
+		assertEquals("java.util.List<?> l3 = new java.util.ArrayList<java.lang.Object>()", local4.toString());
+
+		final CtConstructorCall constructorCall1 = (CtConstructorCall) m.getBody().getStatement(4).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		assertEquals(1, constructorCall1.getActualTypeArguments().size());
+		assertEquals(2, constructorCall1.getType().getActualTypeArguments().size());
+		assertEquals("new <java.lang.Integer>spoon.test.generics.testclasses.Tacos<java.lang.Object, java.lang.String>()", constructorCall1.toString());
+
+		final CtConstructorCall constructorCall2 = (CtConstructorCall) m.getBody().getStatement(5).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		assertEquals(0, constructorCall2.getActualTypeArguments().size());
+		assertEquals(2, constructorCall2.getType().getActualTypeArguments().size());
+		assertEquals("new spoon.test.generics.testclasses.Tacos<>()", constructorCall2.toString());
+
+		TestUtils.canBeBuild("./target/spooned/spoon/test/generics/testclasses/", 8);
+	}
+
+	@Test
+	public void testInvocationGenerics() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/java/spoon/test/generics/testclasses/",
+				"-o", "./target/spooned/"
+		});
+
+		final CtClass<?> aTacos = launcher.getFactory().Class().get(Tacos.class);
+
+		final CtConstructor<?> defaultConstructor = aTacos.getConstructor();
+		final CtInvocation<?> explicitConstructorCall = (CtInvocation<?>) defaultConstructor.getBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		assertEquals(1, explicitConstructorCall.getExecutable().getActualTypeArguments().size());
+		assertEquals("<java.lang.String>this(1)", explicitConstructorCall.toString());
+
+		final CtMethod<?> m = aTacos.getMethodsByName("m2").get(0);
+		final CtInvocation invocation1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		assertEquals(1, invocation1.getExecutable().getActualTypeArguments().size());
+		assertEquals("this.<java.lang.String>makeTacos(null)", invocation1.toString());
+
+		final CtInvocation invocation2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
+		assertEquals("makeTacos(null)", invocation2.toString());
+
+		TestUtils.canBeBuild("./target/spooned/spoon/test/generics/testclasses/", 8);
+	}
+
+	@Test
+	public void testNewClassGenerics() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/java/spoon/test/generics/testclasses/",
+				"-o", "./target/spooned/"
+		});
+
+		final CtClass<?> aTacos = launcher.getFactory().Class().get(Tacos.class);
+
+		final CtMethod<?> m = aTacos.getMethodsByName("m3").get(0);
+		final CtNewClass newClass1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtNewClass.class)).get(0);
+		assertEquals(0, newClass1.getActualTypeArguments().size());
+		assertEquals(2, newClass1.getType().getActualTypeArguments().size());
+		assertEquals("new javax.lang.model.util.SimpleTypeVisitor7<spoon.test.generics.testclasses.Tacos, java.lang.Void>() {}", newClass1.toString());
+
+		final CtNewClass newClass2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtNewClass.class)).get(0);
+		assertEquals(0, newClass2.getActualTypeArguments().size());
+		assertEquals(2, newClass2.getType().getActualTypeArguments().size());
+		assertEquals("new javax.lang.model.util.SimpleTypeVisitor7<spoon.test.generics.testclasses.Tacos, java.lang.Void>() {}", newClass2.toString());
+
+		TestUtils.canBeBuild("./target/spooned/spoon/test/generics/testclasses/", 8);
+	}
+
+	@Test
+	public void testMethodsWithGenericsWhoExtendsObject() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/java/spoon/test/generics/testclasses/",
+				"-o", "./target/spooned/"
+		});
+
+		final CtClass<?> aTacos = launcher.getFactory().Class().get(Tacos.class);
+
+		final CtMethod<?> m = aTacos.getMethodsByName("m4").get(0);
+		final CtInvocation<?> invocation1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		assertEquals(2, invocation1.getExecutable().getActualTypeArguments().size());
+		assertEquals("spoon.test.generics.testclasses.Tacos.<V, C>makeTacos()", invocation1.toString());
+
+		final CtInvocation<?> invocation2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
+		assertEquals("spoon.test.generics.testclasses.Tacos.makeTacos()", invocation2.toString());
+	}
+
+	@Test
+	public void testName() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/java/spoon/test/generics/testclasses/",
+				"-o", "./target/spooned/"
+		});
+
+		final CtClass<?> aFactory = launcher.getFactory().Class().get(Tacos.BeerFactory.class);
+
+		final CtMethod<?> m = aFactory.getMethodsByName("newBeer").get(0);
+		final CtConstructorCall constructorCall1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		assertEquals("new Beer()", constructorCall1.toString());
 	}
 }
