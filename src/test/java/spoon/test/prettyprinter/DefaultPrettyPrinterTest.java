@@ -9,11 +9,14 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.test.TestUtils;
 import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.File;
@@ -21,6 +24,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DefaultPrettyPrinterTest {
 
@@ -116,5 +120,16 @@ public class DefaultPrettyPrinterTest {
 																  .get(0);
 		assertTrue(ctTypeReference instanceof CtImplicitTypeReference);
 		assertEquals("Object", ctTypeReference.getSimpleName());
+	}
+
+	@Test
+	public void testParentNotInitializedInToString() throws Exception {
+		final Factory factory = TestUtils.createFactory();
+		final CtClass<Object> aClass = factory.Core().createClass();
+		try {
+			assertEquals(CtElementImpl.ERROR_MESSAGE_TO_STRING, aClass.toString());
+		} catch (ParentNotInitializedException ignore) {
+			fail("toString of CtElement must catch ParentNotInitializeException during the scan");
+		}
 	}
 }

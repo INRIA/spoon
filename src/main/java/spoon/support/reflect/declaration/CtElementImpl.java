@@ -59,8 +59,8 @@ import spoon.support.visitor.TypeReferenceScanner;
  */
 public abstract class CtElementImpl implements CtElement, Serializable , Comparable<CtElement>{
 
-	protected static final Logger logger = Logger
-			.getLogger(CtElementImpl.class);
+	protected static final Logger logger = Logger.getLogger(CtElementImpl.class);
+	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 
 	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet
 	// because we need clear() for all set* methods
@@ -378,10 +378,16 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	@Override
 	public String toString() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
-		printer.computeImports(this);
-		printer.scan(this);
-		return printer.toString();
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
+				getFactory().getEnvironment());
+		String errorMessage = "";
+		try {
+			printer.computeImports(this);
+			printer.scan(this);
+		} catch (ParentNotInitializedException ignore) {
+			errorMessage = ERROR_MESSAGE_TO_STRING;
+		}
+		return printer.toString() + errorMessage;
 	}
 
 	@SuppressWarnings("unchecked")
