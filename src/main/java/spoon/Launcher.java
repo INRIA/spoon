@@ -40,7 +40,9 @@ import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.processing.Processor;
 import spoon.processing.Severity;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -87,7 +89,8 @@ public class Launcher implements SpoonAPI {
 	private static JSAP jsapSpec;	
 	protected JSAPResult jsapActualArgs;
 
-	private List<String> processors = new ArrayList<String>();
+	private List<String> processorTypes = new ArrayList<String>();
+	private List<Processor<? extends CtElement>> processors = new ArrayList<Processor<? extends CtElement>>();
 
 	/**
 	 * A default program entry point (instantiates a launcher with the given
@@ -148,7 +151,12 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void addProcessor(String name) {
-		processors.add(name);
+		processorTypes.add(name);
+	}
+
+	@Override
+	public <T extends CtElement> void addProcessor(Processor<T> processor) {
+		processors.add(processor);
 	}
 
 	public void addTemplateResource(SpoonResource resource) {
@@ -481,6 +489,14 @@ public class Launcher implements SpoonAPI {
 	 * processing (-p option).
 	 */
 	protected java.util.List<String> getProcessorTypes() {
+		return processorTypes;
+	}
+
+	/**
+	 * Gets the list of processors instance to be initially applied during the
+	 * processing.
+	 */
+	protected List<Processor<? extends CtElement>> getProcessors() {
 		return processors;
 	}
 
@@ -756,6 +772,7 @@ public class Launcher implements SpoonAPI {
 	public void process() {
 		long tstart = System.currentTimeMillis();
 		modelBuilder.process(getProcessorTypes());
+		modelBuilder.process(getProcessors());
 		getEnvironment().debugMessage("model processed in "
 				+ (System.currentTimeMillis() - tstart) + " ms");
 	}

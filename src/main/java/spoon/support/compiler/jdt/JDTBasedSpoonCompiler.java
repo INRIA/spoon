@@ -35,7 +35,9 @@ import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
 import spoon.processing.Severity;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -990,6 +992,20 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			processing.addProcessor(processorName);
 			factory.getEnvironment().debugMessage(
 					"Loaded processor " + processorName + ".");
+		}
+
+		processing.process();
+	}
+
+	@Override
+	public void process(Collection<Processor<? extends CtElement>> processors) {
+		initInputClassLoader();
+
+		// processing (consume all the processors)
+		ProcessingManager processing = new QueueProcessingManager(factory);
+		for (Processor<? extends CtElement> processorName : processors) {
+			processing.addProcessor(processorName);
+			factory.getEnvironment().debugMessage("Loaded processor " + processorName + ".");
 		}
 
 		processing.process();
