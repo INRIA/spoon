@@ -119,8 +119,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public Collection<CtTypeReference<?>> computeImports(
-			CtType<?> simpleType) {
+	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
+		imports.clear();
 		addImport(simpleType.getReference());
 		scan(simpleType);
 		return getImports(simpleType);
@@ -128,6 +128,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public void computeImports(CtElement element) {
+		imports.clear();
 		scan(element);
 	}
 
