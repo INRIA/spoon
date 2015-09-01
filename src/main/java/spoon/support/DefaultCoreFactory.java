@@ -300,6 +300,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 			}
 		} catch (Exception e) {
 			Launcher.logger.error(e.getMessage(), e);
+//			cloningContext.pop();
 		}
 		return result;
 
@@ -314,6 +315,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	public <T extends Annotation> CtAnnotationType<T> createAnnotationType() {
 		CtAnnotationType<T> e = new CtAnnotationTypeImpl<T>();
 		e.setFactory(getMainFactory());
+		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
 	}
 
@@ -394,6 +396,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	public <T> CtClass<T> createClass() {
 		CtClass<T> e = new CtClassImpl<T>();
 		e.setFactory(getMainFactory());
+		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
 	}
 
@@ -424,6 +427,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	public <T extends Enum<?>> CtEnum<T> createEnum() {
 		CtEnum<T> e = new CtEnumImpl<T>();
 		e.setFactory(getMainFactory());
+		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
 	}
 
@@ -492,6 +496,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	public <T> CtInterface<T> createInterface() {
 		CtInterface<T> e = new CtInterfaceImpl<T>();
 		e.setFactory(getMainFactory());
+		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
 	}
 
@@ -581,6 +586,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	public CtPackage createPackage() {
 		CtPackage e = new CtPackageImpl();
 		e.setFactory(getMainFactory());
+		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
 	}
 

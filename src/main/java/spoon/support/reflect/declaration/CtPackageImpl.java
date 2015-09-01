@@ -17,19 +17,18 @@
 
 package spoon.support.reflect.declaration;
 
-import java.util.Set;
-import java.util.TreeSet;
-
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.
- * 
+ *
  * @author Renaud Pawlak
  */
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
@@ -39,26 +38,8 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	private Set<CtType<?>> types = new TreeSet<CtType<?>>();
 
-	public static CtPackage ROOT_PACKAGE = new CtPackageImpl() {
-		@Override
-		public String getSimpleName() {
-			return "";
-		};
-		
-		@Override
-		public String getQualifiedName() {
-			return "";
-		};
-
-		@Override
-		public CtElement getParent() {
-			return null;
-		};
-	};
-	
 	public CtPackageImpl() {
 		super();
-		setParent(ROOT_PACKAGE);
 	}
 
 	@Override
@@ -80,17 +61,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public CtPackage getDeclaringPackage() {
-		if (parent == null) {
-			setParent(ROOT_PACKAGE);
-		}
 		return getParent(CtPackage.class);
 	}
 
 	@Override
 	public CtPackage getPackage(String name) {
 		for (CtPackage p : packs) {
-			if (p.getSimpleName().equals(name))
+			if (p.getSimpleName().equals(name)) {
 				return p;
+			}
 		}
 		return null;
 	}
@@ -102,8 +81,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public String getQualifiedName() {
-		if (getDeclaringPackage() == null || getDeclaringPackage() == ROOT_PACKAGE)
+		if (getDeclaringPackage() == null || TOP_LEVEL_PACKAGE_NAME.equals(
+				((CtPackageImpl) getDeclaringPackage()).simpleName)) {
 			return getSimpleName();
+		}
 		return getDeclaringPackage().getQualifiedName() + "." + getSimpleName();
 	}
 
@@ -170,10 +151,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		 */
 		return this.position;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getQualifiedName();
 	}
-	
+
 }

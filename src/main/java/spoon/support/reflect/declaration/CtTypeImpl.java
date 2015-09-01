@@ -17,8 +17,27 @@
 
 package spoon.support.reflect.declaration;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.FIELDS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtGenericElement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.support.compiler.SnippetCompilationHelper;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -31,26 +50,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtGenericElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
-import spoon.support.compiler.SnippetCompilationHelper;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.FIELDS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -69,9 +70,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	Set<CtType<?>> nestedTypes = EMPTY_SET();
 
-	
 	Set<ModifierKind> modifiers = EMPTY_SET();
-	
+
 	public CtTypeImpl() {
 		super();
 	}
@@ -138,37 +138,37 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		Set<CtTypeReference<?>> typeRefs = new HashSet<CtTypeReference<?>>();
 		for (CtTypeReference<?> typeRef : Query.getReferences(this,
 				new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
-			if (!( typeRef.isPrimitive() ||
-				   (typeRef instanceof CtArrayTypeReference) ||
-				   typeRef.toString().equals(CtTypeReference.NULL_TYPE_NAME) ||
-				   ( (typeRef.getPackage() != null) &&
-					 "java.lang".equals(typeRef.getPackage().toString()))) &&
-			    !( !includeSamePackage &&
-		    		getPackageReference(typeRef).equals(this.getPackage().getReference()))) {
+			if (!(typeRef.isPrimitive() ||
+					(typeRef instanceof CtArrayTypeReference) ||
+					typeRef.toString().equals(CtTypeReference.NULL_TYPE_NAME) ||
+					((typeRef.getPackage() != null) &&
+							"java.lang".equals(typeRef.getPackage().toString()))) &&
+					!(!includeSamePackage &&
+							getPackageReference(typeRef).equals(this.getPackage().getReference()))) {
 				typeRefs.add(typeRef);
 			}
 		}
 		return typeRefs;
 	}
-	
+
 	/**
 	 * Return the package reference for the corresponding type reference. For
 	 * inner type, return the package reference of the top-most enclosing type.
 	 * This helper method is meant to deal with package references that are
 	 * <code>null</code> for inner types.
-	 * 
-	 * @param tref  the type reference
-	 * @return      the corresponding package reference
-	 * @since 4.0
+	 *
+	 * @param tref the type reference
+	 * @return the corresponding package reference
 	 * @see CtTypeReference#getPackage()
+	 * @since 4.0
 	 */
-	private static CtPackageReference getPackageReference( CtTypeReference<?> tref ) {
-    	CtPackageReference pref = tref.getPackage();
-    	while( pref == null ) {
-    		tref = tref.getDeclaringType();
-    		pref = tref.getPackage();
-    	}
-    	return pref;
+	private static CtPackageReference getPackageReference(CtTypeReference<?> tref) {
+		CtPackageReference pref = tref.getPackage();
+		while (pref == null) {
+			tref = tref.getDeclaringType();
+			pref = tref.getPackage();
+		}
+		return pref;
 	}
 
 	@Override
@@ -178,10 +178,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public CtType<?> getDeclaringType() {
-		if(parent == null) {
-			setParent(CtPackageImpl.ROOT_PACKAGE);
+		try {
+			return getParent(CtType.class);
+		} catch (ParentNotInitializedException ex) {
+			return null;
 		}
-		return getParent(CtType.class);
 	}
 
 	@Override
@@ -233,7 +234,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				scan(annotationType.getNestedTypes());
 
 				checkType(annotationType);
-			};
+			}
+
+			;
 
 			CtType<?> getType() {
 				return type;
@@ -259,7 +262,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return null;
 		}
 	}
- 
+
 	@Override
 	public CtTypeReference<T> getReference() {
 		return getFactory().Type().createReference(this);
@@ -320,12 +323,15 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC))
+		if (getModifiers().contains(ModifierKind.PUBLIC)) {
 			return ModifierKind.PUBLIC;
-		if (getModifiers().contains(ModifierKind.PROTECTED))
+		}
+		if (getModifiers().contains(ModifierKind.PROTECTED)) {
 			return ModifierKind.PROTECTED;
-		if (getModifiers().contains(ModifierKind.PRIVATE))
+		}
+		if (getModifiers().contains(ModifierKind.PRIVATE)) {
 			return ModifierKind.PRIVATE;
+		}
 		return null;
 	}
 
@@ -354,7 +360,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public List<CtFieldReference<?>> getAllFields() {
 		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>(
 				getFields().size());
-		for (CtField<?> f: getFields()) {
+		for (CtField<?> f : getFields()) {
 			l.add(f.getReference());
 		}
 		if (this instanceof CtClass) {
@@ -365,7 +371,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		return l;
 	}
-
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
@@ -578,7 +583,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
 		this.methods.clear();
-		for(CtMethod<?> meth: methods) {
+		for (CtMethod<?> meth : methods) {
 			addMethod(meth);
 		}
 		return (C) this;
@@ -610,11 +615,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		return l;
 	}
-	
+
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> l = new HashSet<CtMethod<?>>(getMethods());
-		
 		if ((getSuperclass() != null) && (getSuperclass().getDeclaration() != null)) {
 			CtType<?> t = getSuperclass().getDeclaration();
 			l.addAll(t.getAllMethods());
