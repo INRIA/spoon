@@ -17,6 +17,7 @@ import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.internal.ChildClass;
