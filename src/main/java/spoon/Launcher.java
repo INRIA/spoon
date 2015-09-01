@@ -194,6 +194,14 @@ public class Launcher implements SpoonAPI {
 			sw1.setHelp("Output messages about what the compiler is doing.");
 			jsap.registerParameter(sw1);
 
+			// Quiet
+			sw1 = new Switch("quiet");
+			sw1.setShortFlag('q');
+			sw1.setLongFlag("quiet");
+			sw1.setDefault("false");
+			sw1.setHelp("Be quiet about messages");
+			jsap.registerParameter(sw1);
+
 			// Tabs
 			sw1 = new Switch("tabs");
 			sw1.setLongFlag("tabs");
@@ -418,6 +426,7 @@ public class Launcher implements SpoonAPI {
 		// environment initialization
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setVerbose(true);
+		environment.setQuiet(false);
 		environment.setXmlRootFolder(jsapActualArgs.getFile("properties"));
 
 		JavaOutputProcessor printer = createOutputWriter(
@@ -428,6 +437,7 @@ public class Launcher implements SpoonAPI {
 		environment.setVerbose(jsapActualArgs.getBoolean("verbose")
 				|| debug);
 		environment.setDebug(debug);
+		environment.setQuiet(jsapActualArgs.getBoolean("quiet"));
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
 		environment
 				.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));

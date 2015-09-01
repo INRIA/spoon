@@ -185,6 +185,11 @@ public interface Environment {
 	void setVerbose(boolean verbose);
 
 	/**
+	 * Sets/unsets the quiet mode.
+	 */
+	void setQuiet(boolean quiet);
+
+	/**
 	 * Gets the size of the tabulations in the generated source code.
 	 */
 	int getTabulationSize();
