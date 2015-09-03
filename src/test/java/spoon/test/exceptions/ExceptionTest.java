@@ -70,6 +70,7 @@ public class ExceptionTest {
 	public void testExceptionInvalidAPI() throws Exception {
 		try {
 			Launcher spoon = new Launcher();
+			spoon.getFactory().getEnvironment().setLevel("OFF");
 			SpoonCompiler comp = spoon.createCompiler();
 			comp.setSourceClasspath("does_not_exist.jar");
 			fail();
@@ -78,6 +79,7 @@ public class ExceptionTest {
 
 		try {
 			Launcher spoon = new Launcher();
+			spoon.getFactory().getEnvironment().setLevel("OFF");
 			SpoonCompiler comp = spoon.createCompiler();
 			comp.setSourceClasspath("src");
 		} catch (InvalidClassPathException e) {

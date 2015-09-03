@@ -17,25 +17,37 @@
 
 package spoon.processing;
 
+import org.apache.log4j.Level;
 import spoon.compiler.Environment;
 
 /**
  * Enumeration that specifies the severity of the message reported by processors
- * 
+ *
  * @see Environment#report(Processor, Severity,
- *      spoon.reflect.declaration.CtElement, String)
+ * spoon.reflect.declaration.CtElement, String)
  */
+@Deprecated
 public enum Severity {
 	/**
 	 * Error-level severity.
 	 */
-	ERROR,
+	ERROR(Level.ERROR),
 	/**
 	 * Warning-level severity.
 	 */
-	WARNING,
+	WARNING(Level.WARN),
 	/**
 	 * Message-level severity.
 	 */
-	MESSAGE
+	MESSAGE(Level.INFO);
+
+	private Level level;
+
+	Severity(Level level) {
+		this.level = level;
+	}
+
+	public Level toLevel() {
+		return level;
+	}
 }

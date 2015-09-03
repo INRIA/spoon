@@ -2,8 +2,8 @@ package spoon.test.processing;
 
 import java.util.Date;
 
+import org.apache.log4j.Level;
 import spoon.processing.AbstractProcessor;
-import spoon.processing.Severity;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -17,19 +17,18 @@ public class TestProcessor extends AbstractProcessor<CtElement> {
 	@Override
 	public void init() {
 		super.init();
-		System.out.println("MAIN METHODS: "
-				+ getFactory().Method().getMainMethods());
+		getEnvironment().debugMessage("MAIN METHODS: " + getFactory().Method().getMainMethods());
 	}
 
 	public void process(CtElement element) {
 		if ((!(element instanceof CtPackage)) && !element.isParentInitialized()) {
-			getEnvironment().report(this, Severity.ERROR, element,
+			getEnvironment().report(this, Level.ERROR, element,
 					"Element's parent is null (" + element + ")");
 			throw new RuntimeException("uninitialized parent detected");
 		}
 		if (element instanceof CtTypedElement) {
 			if (((CtTypedElement<?>) element).getType() == null) {
-				getEnvironment().report(this, Severity.WARNING, element,
+				getEnvironment().report(this, Level.WARN, element,
 						"Element's type is null (" + element + ")");
 			}
 		}

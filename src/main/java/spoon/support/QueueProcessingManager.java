@@ -22,10 +22,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.log4j.Level;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
-import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.util.Timer;
@@ -65,7 +65,7 @@ public class QueueProcessingManager implements ProcessingManager {
 		} catch (Exception e) {
 			factory.getEnvironment()
 					.report(null,
-							Severity.ERROR,
+							Level.ERROR,
 							"Unable to instantiate processor \""
 									+ type.getName()
 									+ "\" - Your processor should have a constructor with no arguments");
@@ -85,7 +85,7 @@ public class QueueProcessingManager implements ProcessingManager {
 		} catch (ClassNotFoundException e) {
 			factory.getEnvironment()
 					.report(null,
-							Severity.ERROR,
+							Level.ERROR,
 							"Unable to load processor \""
 									+ qualifiedName
 									+ "\" - Check your classpath. Did you use the --precompile option?");
@@ -131,10 +131,7 @@ public class QueueProcessingManager implements ProcessingManager {
 	public void process(Collection<? extends CtElement> elements) {
 		Processor<?> p;
 		while ((p = getProcessors().poll()) != null) {
-			if (getFactory().getEnvironment().isVerbose()) {
-				getFactory().getEnvironment().reportProgressMessage(
-						p.getClass().getName());
-			}
+			getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
 			current = p;
 			p.initProperties(AbstractProcessor.loadProperties(p));
 			p.init();

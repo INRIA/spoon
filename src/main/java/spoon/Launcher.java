@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -41,7 +42,6 @@ import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
-import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -191,7 +191,7 @@ public class Launcher implements SpoonAPI {
 			sw1.setShortFlag('v');
 			sw1.setLongFlag("verbose");
 			sw1.setDefault("false");
-			sw1.setHelp("Output messages about what the compiler is doing.");
+			sw1.setHelp("Argument deprecated, see the argument level. Output messages about what the compiler is doing.");
 			jsap.registerParameter(sw1);
 
 			// Tabs
@@ -209,11 +209,19 @@ public class Launcher implements SpoonAPI {
 			opt2.setHelp("Define tabulation size.");
 			jsap.registerParameter(opt2);
 
+			// Level logging.
+			opt2 = new FlaggedOption("level");
+			opt2.setLongFlag("level");
+			opt2.setHelp("Level of the ouput messages about what spoon is doing. Default value is ALL level.");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setDefault(Level.OFF.toString());
+			jsap.registerParameter(opt2);
+
 			// Super Verbose
 			sw1 = new Switch("debug");
 			sw1.setLongFlag("vvv");
 			sw1.setDefault("false");
-			sw1.setHelp("Generate all debugging info.");
+			sw1.setHelp("Argument deprecated, see the argument level. Generate all debugging info.");
 			jsap.registerParameter(sw1);
 
 			// Auto-import
@@ -412,32 +420,31 @@ public class Launcher implements SpoonAPI {
 	protected void processArguments() {
 		jsapActualArgs = getArguments();
 
-
 		Environment environment = factory.getEnvironment();
-		boolean debug = jsapActualArgs.getBoolean("debug");
 		// environment initialization
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
-		environment.setVerbose(true);
+		environment.setLevel(jsapActualArgs.getString("level"));
+		final boolean debug = jsapActualArgs.getBoolean("debug");
+		final boolean verbose = jsapActualArgs.getBoolean("verbose");
+		if (debug) {
+			environment.setLevel("DEBUG");
+		} else if (verbose) {
+			environment.setLevel("INFO");
+		}
+		logger.setLevel(environment.getLevel());
 		environment.setXmlRootFolder(jsapActualArgs.getFile("properties"));
 
-		JavaOutputProcessor printer = createOutputWriter(
-				jsapActualArgs.getFile(
-						"output"), environment);
-		environment.setDefaultFileGenerator(printer);
+		environment.setDefaultFileGenerator(
+				createOutputWriter(jsapActualArgs.getFile("output"), environment));
 
-		environment.setVerbose(jsapActualArgs.getBoolean("verbose")
-				|| debug);
-		environment.setDebug(debug);
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
-		environment
-				.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
-		environment.setPreserveLineNumbers(jsapActualArgs
-				.getBoolean("lines"));
+		environment.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
+		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
 
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
-    environment.setGenerateJavadoc(jsapActualArgs.getBoolean("generate-javadoc"));
+		environment.setGenerateJavadoc(jsapActualArgs.getBoolean("generate-javadoc"));
 		
 		
 		// now we are ready to create a spoon compiler
@@ -448,7 +455,7 @@ public class Launcher implements SpoonAPI {
 					"[" + File.pathSeparatorChar + "]")) {
 				try {
 					modelBuilder.addInputSource(SpoonResourceHelper
-							.createResource(new File(s)));
+														.createResource(new File(s)));
 				} catch (FileNotFoundException e) {
 					throw new SpoonException(e);
 				}
@@ -465,12 +472,9 @@ public class Launcher implements SpoonAPI {
 				} catch (FileNotFoundException e) {
 					environment.report(
 							null,
-							Severity.ERROR,
-							"Unable to add template file: "
-									+ e.getMessage());
-					if (environment.isDebug()) {
-						logger.error(e.getMessage(), e);
-					}
+							Level.ERROR,
+							"Unable to add template file: " + e.getMessage());
+					logger.error(e.getMessage(), e);
 				}
 			}
 		}
@@ -509,11 +513,8 @@ public class Launcher implements SpoonAPI {
 		try {
 			folder = new ZipFolder(spoonletFile);
 		} catch (IOException e) {
-			env.report(null, Severity.ERROR,
-					"Unable to load spoonlet: " + e.getMessage());
-			if (env.isDebug()) {
-				logger.debug(e.getMessage(), e);
-			}
+			env.report(null, Level.ERROR, "Unable to load spoonlet: " + e.getMessage());
+			logger.debug(e.getMessage(), e);
 			return;
 		}
 		List<SpoonResource> spoonletIndex = new ArrayList<SpoonResource>();
@@ -530,7 +531,7 @@ public class Launcher implements SpoonAPI {
 		if (configFile == null) {
 			env.report(
 					null,
-					Severity.ERROR,
+					Level.ERROR,
 					"No configuration file in spoonlet "
 							+ spoonletFile.getName());
 		} else {

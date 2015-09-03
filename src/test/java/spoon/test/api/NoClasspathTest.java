@@ -34,6 +34,7 @@ public class NoClasspathTest {
 		// do we still have a correct model when the complete classpath is not given as input?
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setNoClasspath(true);
+		spoon.getEnvironment().setLevel("OFF");
 		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath");
 		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();

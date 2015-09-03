@@ -169,7 +169,8 @@ public class AccessTest {
 				"-i", "./src/test/resources/spoon/test/variable/Tacos.java",
 				"-o", "target/spooned/variable",
 				"--noclasspath",
-				"--compliance", "8"
+				"--compliance", "8",
+				"--level", "OFF"
 		});
 
 		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {

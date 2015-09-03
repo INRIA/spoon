@@ -26,13 +26,18 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.xml.sax.SAXException;
 
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
@@ -58,16 +63,12 @@ import spoon.support.processing.XmlProcessorProperties;
  */
 public class StandardEnvironment implements Serializable, Environment {
 
-	Logger logger = Logger.getLogger(StandardEnvironment.class);
-
 	/**
 	 * The processors' properties files extension (.xml)
 	 */
 	public static final String PROPERTIES_EXT = ".xml";
 
 	private static final long serialVersionUID = 1L;
-
-	private boolean debug = false;
 
 	private FileGenerator<? extends CtElement> defaultFileGenerator;
 
@@ -78,8 +79,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	ProcessingManager manager;
 
 	private boolean processingStopped = false;
-
-	private boolean verbose = false;
 
 	private boolean autoImports = false;
 
@@ -97,6 +96,10 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean generateJavadoc = false;
 
+	private Logger logger = Logger.getLogger(StandardEnvironment.class);
+
+	private Level level = Level.OFF;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -104,12 +107,12 @@ public class StandardEnvironment implements Serializable, Environment {
 	public StandardEnvironment() {
 	}
 
+	@Override
 	public void debugMessage(String message) {
-		if (isDebug()) {
-			logger.debug(message);
-		}
+		logger.debug(message);
 	}
 
+	@Override
 	public boolean isAutoImports() {
 		return autoImports;
 	}
@@ -119,20 +122,42 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.autoImports = autoImports;
 	}
 
+	@Override
 	public FileGenerator<? extends CtElement> getDefaultFileGenerator() {
 		return defaultFileGenerator;
 	}
 
+	@Override
 	public Factory getFactory() {
 		return factory;
 	}
 
+	@Override
+	public Level getLevel() {
+		return this.level;
+	}
+
+	@Override
+	public void setLevel(String level) {
+		this.level = toLevel(level);
+		logger.setLevel(this.level);
+	}
+
+	private Level toLevel(String level) {
+		if (level == null || level.isEmpty()) {
+			throw new SpoonException("Wrong level given at Spoon.");
+		}
+		return Level.toLevel(level, Level.ALL);
+	}
+
+	@Override
 	public ProcessingManager getManager() {
 		return manager;
 	}
 
 	Map<String, ProcessorProperties> processorProperties = new TreeMap<String, ProcessorProperties>();
 
+	@Override
 	public ProcessorProperties getProcessorProperties(String processorName)
 			throws FileNotFoundException, IOException, SAXException {
 		if (processorProperties.containsKey(processorName)) {
@@ -174,8 +199,11 @@ public class StandardEnvironment implements Serializable, Environment {
 		return xmlRootFolder;
 	}
 
+	@Override
 	public boolean isDebug() {
-		return debug;
+		final List<String> levels = Arrays.asList(Level.ALL.toString(), Level.TRACE.toString(),
+												  Level.INFO.toString(), Level.DEBUG.toString());
+		return levels.contains(level.toString());
 	}
 
 	/**
@@ -183,6 +211,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	 * processors called {@link #setProcessingStopped(boolean)} after reporting
 	 * an error.
 	 */
+	@Override
 	public boolean isProcessingStopped() {
 		return processingStopped;
 	}
@@ -190,46 +219,34 @@ public class StandardEnvironment implements Serializable, Environment {
 	/**
 	 * Returns true if Spoon is in verbose mode.
 	 */
+	@Override
 	public boolean isVerbose() {
-		return verbose;
+		final List<String> levels = Arrays.asList(Level.ALL.toString(), Level.TRACE.toString(),
+												  Level.INFO.toString());
+		return levels.contains(level.toString());
 	}
 
-	private void prefix(StringBuffer buffer, Severity severity) {
-		// Prefix message
-		switch (severity) {
-		case ERROR:
+	private void prefix(StringBuffer buffer, Level level) {
+		if (level == Level.ERROR) {
 			buffer.append("error: ");
 			errorCount++;
-			break;
-		case WARNING:
+		} else if (level == Level.WARN) {
 			buffer.append("warning: ");
 			warningCount++;
-			break;
-		case MESSAGE:
-			break;
 		}
 	}
 
-	private void print(StringBuffer buffer, Severity severity) {
-		switch (severity) {
-		case ERROR:
-			logger.error(buffer.toString());
-			break;
-		case WARNING:
-			logger.warn(buffer.toString());
-			break;
-		default:
-			if (isVerbose()) {
-				logger.info(buffer.toString());
-			}
-		}
-	}
-
+	@Override
 	public void report(Processor<?> processor, Severity severity,
-			CtElement element, String message) {
+					   CtElement element, String message) {
+		report(processor, severity.toLevel(), element, message);
+	}
+
+	@Override
+	public void report(Processor<?> processor, Level level, CtElement element, String message) {
 		StringBuffer buffer = new StringBuffer();
 
-		prefix(buffer, severity);
+		prefix(buffer, level);
 
 		// Adding message
 		buffer.append(message);
@@ -250,63 +267,87 @@ public class StandardEnvironment implements Serializable, Environment {
 					buffer.append(exe.getSimpleName());
 				}
 				buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine()
-						+ ")");
+									  + ")");
 			}
 		} catch (ParentNotInitializedException e) {
 			buffer.append(" (invalid parent)");
 		}
 
-		print(buffer, severity);
+		print(buffer.toString(), level);
 	}
 
+	@Override
+	public void report(Processor<?> processor, Severity severity,
+					   CtElement element, String message, ProblemFixer<?>... fix) {
+		// Fix not (yet) used in command-line mode
+		report(processor, severity.toLevel(), element, message);
+	}
+
+	@Override
+	public void report(Processor<?> processor, Level level, CtElement element, String message,
+					   ProblemFixer<?>... fixes) {
+		report(processor, level, element, message);
+	}
+
+	@Override
 	public void report(Processor<?> processor, Severity severity, String message) {
+		report(processor, severity.toLevel(), message);
+	}
+
+	@Override
+	public void report(Processor<?> processor, Level level, String message) {
 		StringBuffer buffer = new StringBuffer();
 
-		prefix(buffer, severity);
+		prefix(buffer, level);
 		// Adding message
 		buffer.append(message);
-		print(buffer, severity);
+		print(buffer.toString(), level);
+	}
+
+	private void print(String message, Level level) {
+		if (level.equals(Level.ERROR)) {
+			logger.error(message);
+		} else if (level.equals(Level.WARN)) {
+			logger.warn(message);
+		} else if (level.equals(Level.DEBUG)) {
+			logger.debug(message);
+		} else if (level.equals(Level.INFO)) {
+			logger.info(message);
+		}
 	}
 
 	/**
 	 * This method should be called to report the end of the processing.
 	 */
 	public void reportEnd() {
-		if (!isVerbose()) {
-			return;
-		}
-		System.out.print("end of processing: ");
+		logger.info("end of processing: ");
 		if (warningCount > 0) {
-			System.out.print(warningCount + " warning");
+			logger.info(warningCount + " warning");
 			if (warningCount > 1) {
-				System.out.print("s");
+				logger.info("s");
 			}
 			if (errorCount > 0) {
-				System.out.print(", ");
+				logger.info(", ");
 			}
 		}
 		if (errorCount > 0) {
-			System.out.print(errorCount + " error");
+			logger.info(errorCount + " error");
 			if (errorCount > 1) {
-				System.out.print("s");
+				logger.info("s");
 			}
 		}
 		if ((errorCount + warningCount) > 0) {
-			System.out.print("\n");
+			logger.info("\n");
 		} else {
-			System.out.println("no errors, no warnings");
+			logger.info("no errors, no warnings");
 		}
 	}
 
 	public void reportProgressMessage(String message) {
-		if (!isVerbose()) {
-			return;
-		}
-		System.out.println(message);
+		logger.info(message);
 	}
 
 	public void setDebug(boolean debug) {
-		this.debug = debug;
 	}
 
 	public void setDefaultFileGenerator(
@@ -324,7 +365,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
 	}
 
 	public void setXmlRootFolder(File xmlRootFolder) {
@@ -344,12 +384,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setProcessorProperties(String processorName,
 			ProcessorProperties prop) {
 		processorProperties.put(processorName, prop);
-	}
-
-	public void report(Processor<?> processor, Severity severity,
-			CtElement element, String message, ProblemFixer<?>... fix) {
-		// Fix not (yet) used in command-line mode
-		report(processor, severity, element, message);
 	}
 
 	boolean useTabulations = false;
@@ -423,9 +457,8 @@ public class StandardEnvironment implements Serializable, Environment {
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
 				if (javaFiles.size() > 0) {
-					logger.warn(
-							"You're trying to give source code in the classpath, this should be given to addInputSource "
-									+ javaFiles);
+					logger.warn("You're trying to give source code in the classpath, this should be given to addInputSource "
+											   + javaFiles);
 				}
 			}
 		}

@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
@@ -108,7 +109,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 			p.getFactory()
 					.getEnvironment()
 					.report(p,
-							Severity.ERROR,
+							Level.ERROR,
 							"wrong properties file format for processor '"
 									+ p.getClass().getName() + "'");
 			Launcher.logger.error(e.getMessage(), e);
@@ -116,7 +117,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 			p.getFactory()
 					.getEnvironment()
 					.report(p,
-							Severity.ERROR,
+							Level.ERROR,
 							"unable to get properties for processor '"
 									+ p.getClass().getName() + "': "
 									+ e.getMessage());
@@ -161,7 +162,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 						p.getFactory()
 								.getEnvironment()
 								.report(p,
-										Severity.WARNING,
+										Level.WARN,
 										"No value found for property '"
 												+ f.getName()
 												+ "' in processor "
