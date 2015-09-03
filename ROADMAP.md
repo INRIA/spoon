@@ -1,32 +1,38 @@
-Mission
-======
-
-The mission of Spoon is to provide a high-quality library for analyzing and transforming Java source code.
-
-Design Philosophy
-=================
-
-R1) The Spoon metamodel is as close as possible to the language concepts.
-
-R2) The Spoon model of a program is complete and sound.
-
-R3) The text version of a Spoon model is well-formed and semantically equivalent to the original program.
-
-R4) The analysis and transformation API is intuitive and regular.
-
-R5) Transformation operators are designed to warn as fast as possible about invalid programs. This is done either with static type checking or with dynamic checks when the operators are used.
-
-R6) When feasible, the text version of a Spoon model is close to the original one.
 
 
-Future Work
+Spoon Roadmap
 ==========
 
-The future development of Spoon includes:
+Short-term, long term and crazy ideas about Spoon
 
-* support of Java 7
-* support of Java 8
-* testing framework for transformations
-* keep original indentation for automated maintenance
+version of 03/09/2015
 
+
+* Model
+    * support for analyzing bound vs unbound type references (`List<T>` vs `List<String>`) 
+* Transformations:
+    * Keep original when printing after transformation
+        * inline comments
+        * indentation and formatting   
+    * sniper mode (only rewrites the changed nodes)
+    * Transactional transformations (rollback if transfo fails)
+    * adds generic transformations: a generic transformation is a transformation that is independent of the domain and can be applied to any source code, their goal is to facilitate analysis and transformation
+        * everything in a block
+        * unfinalizer (remove as many "final" keywords as possible)
+* Processor orchestration 
+    * specify the current strategy
+        * what if multiple processors on the same node
+        * what if new nodes added?
+    * improved version, see '[Source model analysis using the JJTraveler visitor combinator framework](http://www3.di.uminho.pt/~joost/publications/SourceModelAnalysisUsingTheJJTravelerVisitorCombinatorFramework.pdf)'    
+    * dependency models between processors
+* Spoon in the IDE
+    * on the fly model update
+    * lazy spoon (build the class model only after a call to getDeclaration)
+* Child project spoon-refactorings (starting from TTC)
+* Templates
+    * templates as query language (see TemplateMatcher)
+    * inline templates
+        * with anonymous classes
+        * with lambda
+* Write spoon processors, compile them to ASM transformations on bytecode
  
