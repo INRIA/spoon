@@ -1,12 +1,14 @@
 package spoon.test.casts;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.test.TestUtils.build;
 
 import org.junit.Test;
 
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -65,4 +67,8 @@ public class CastTest {
 				foo.getBody().getStatements().get(1).toString());
 	}
 
+	@Test
+	public void testCase4() throws Exception {
+		CtType<?> type = build("spoon.test.casts", "Castings");
+	}
 }
