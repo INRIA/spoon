@@ -28,10 +28,13 @@ import java.util.TreeSet;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.visitor.TypeAnnotationVisitor;
 
 /**
  * This class defines an abstract annotation processor to be subclassed by the
- * user for defining new annotation processors.
+ * user for defining new annotation processors including Java 8 annotations.
  */
 public abstract class AbstractAnnotationProcessor<A extends Annotation, E extends CtElement>
 		extends AbstractProcessor<E> implements AnnotationProcessor<A, E> {
@@ -39,6 +42,8 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	Map<String, Class<? extends A>> consumedAnnotationTypes = new TreeMap<String, Class<? extends A>>();
 
 	Map<String, Class<? extends A>> processedAnnotationTypes = new TreeMap<String, Class<? extends A>>();
+
+	private TypeAnnotationVisitor visitor;
 
 	/**
 	 * Empty constructor only for all processors (invoked by Spoon).
@@ -137,29 +142,52 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	 */
 	@Override
 	final public boolean isToBeProcessed(E element) {
+		boolean isToBeProcessed = false;
 		if ((element != null) && (element.getAnnotations() != null)) {
-			for (CtAnnotation<? extends Annotation> a : element
-					.getAnnotations()) {
+			for (CtAnnotation<? extends Annotation> a : element.getAnnotations()) {
 				if (shoudBeProcessed(a)) {
-					return true;
+					isToBeProcessed = true;
 				}
 			}
 		}
-		return false;
+
+		if (!(element instanceof CtTypedElement) && !(element instanceof CtType)) {
+			return isToBeProcessed;
+		}
+
+		visitor = new TypeAnnotationVisitor(isToBeProcessed);
+		visitor.scan(element);
+		return visitor.isToBeProcessed();
 	}
 
 	@SuppressWarnings("unchecked")
 	final public void process(E element) {
-		for (CtAnnotation<? extends Annotation> annotation : new ArrayList<CtAnnotation<?>>(
-				element.getAnnotations())) {
+		boolean alreadyProcessed = false;
+		for (CtAnnotation<? extends Annotation> annotation : visitor.getAnnotations()) {
 			if (shoudBeProcessed(annotation)) {
 				try {
 					process((A) annotation.getActualAnnotation(), element);
+					alreadyProcessed = true;
 				} catch (Exception e) {
 					Launcher.logger.error(e.getMessage(), e);
 				}
 				if (shoudBeConsumed(annotation)) {
 					element.removeAnnotation(annotation);
+				}
+			}
+		}
+		if (!alreadyProcessed) {
+			for (CtAnnotation<? extends Annotation> annotation : new ArrayList<CtAnnotation<?>>(
+					element.getAnnotations())) {
+				if (shoudBeProcessed(annotation)) {
+					try {
+						process((A) annotation.getActualAnnotation(), element);
+					} catch (Exception e) {
+						Launcher.logger.error(e.getMessage(), e);
+					}
+					if (shoudBeConsumed(annotation)) {
+						element.removeAnnotation(annotation);
+					}
 				}
 			}
 		}
@@ -172,20 +200,14 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	 */
 	@Override
 	public boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation) {
-		if (consumedAnnotationTypes.containsKey(annotation.getAnnotationType()
-				.getQualifiedName())) {
-			return true;
-		}
-		return false;
+		return consumedAnnotationTypes.containsKey(annotation.getAnnotationType()
+															 .getQualifiedName());
 	}
 
-	private boolean shoudBeProcessed(
+	protected boolean shoudBeProcessed(
 			CtAnnotation<? extends Annotation> annotation) {
-		if (processedAnnotationTypes.containsKey(annotation.getAnnotationType()
-				.getQualifiedName())) {
-			return true;
-		}
-		return false;
+		return processedAnnotationTypes.containsKey(annotation.getAnnotationType()
+															  .getQualifiedName());
 	}
 
 }
