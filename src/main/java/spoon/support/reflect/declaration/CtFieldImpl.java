@@ -35,7 +35,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtField}.
- * 
+ *
  * @author Renaud Pawlak
  */
 public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
@@ -45,7 +45,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 
 	CtTypeReference<T> type;
 
-	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
+	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	public CtFieldImpl() {
 		super();
@@ -78,8 +78,9 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 
 	@Override
 	public <C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> defaultExpression) {
-		if (defaultExpression != null)
+		if (defaultExpression != null) {
 			defaultExpression.setParent(this);
+		}
 		this.defaultExpression = defaultExpression;
 		return (C) this;
 	}
@@ -108,7 +109,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		modifiers.add(modifier);
@@ -122,7 +123,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);
@@ -134,25 +135,28 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 
 	@Override
 	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC))
+		if (getModifiers().contains(ModifierKind.PUBLIC)) {
 			return ModifierKind.PUBLIC;
-		if (getModifiers().contains(ModifierKind.PROTECTED))
+		}
+		if (getModifiers().contains(ModifierKind.PROTECTED)) {
 			return ModifierKind.PROTECTED;
-		if (getModifiers().contains(ModifierKind.PRIVATE))
+		}
+		if (getModifiers().contains(ModifierKind.PRIVATE)) {
 			return ModifierKind.PRIVATE;
+		}
 		return null;
 	}
 
 	@Override
 	public <R extends T> void replace(CtField<R> element) {
-		replace((CtElement)element);
+		replace((CtElement) element);
 	}
-	
-   @Override
+
+	@Override
 	public CtExpression<T> getAssignment() {
 		return getDefaultExpression();
 	}
-	
+
 	@Override
 	public <C extends CtRHSReceiver<T>> C setAssignment(CtExpression<T> assignment) {
 		setDefaultExpression(assignment);

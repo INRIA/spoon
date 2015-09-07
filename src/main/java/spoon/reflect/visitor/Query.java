@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -40,17 +40,17 @@ public abstract class Query extends CtScanner {
 	/**
 	 * Within a given factory, returns all the program elements that match the
 	 * filter.
-	 * 
+	 *
 	 * @param <E>
-	 *            the type of the sought program elements
+	 * 		the type of the sought program elements
 	 * @param factory
-	 *            the factory that contains the elements where to recursive
-	 *            search on
+	 * 		the factory that contains the elements where to recursive
+	 * 		search on
 	 * @param filter
-	 *            the filter which defines the matching criteria
+	 * 		the filter which defines the matching criteria
 	 */
 	public static <E extends CtElement> List<E> getElements(Factory factory,
-			Filter<E> filter) {
+															Filter<E> filter) {
 		List<E> e = new ArrayList<E>();
 		for (CtPackage p : factory.Package().getAllRoots()) {
 			e.addAll(getElements(p, filter));
@@ -60,13 +60,13 @@ public abstract class Query extends CtScanner {
 
 	/**
 	 * Returns all the program elements that match the filter.
-	 * 
+	 *
 	 * @param <E>
-	 *            the type of the sought program elements
+	 * 		the type of the sought program elements
 	 * @param rootElement
-	 *            the element to start the recursive search on
+	 * 		the element to start the recursive search on
 	 * @param filter
-	 *            the filter which defines the matching criteria
+	 * 		the filter which defines the matching criteria
 	 */
 	public static <E extends CtElement> List<E> getElements(
 			CtElement rootElement, Filter<E> filter) {
@@ -77,13 +77,13 @@ public abstract class Query extends CtScanner {
 
 	/**
 	 * Returns all the program element references that match the filter.
-	 * 
+	 *
 	 * @param <T>
-	 *            the type of the sought program element references
+	 * 		the type of the sought program element references
 	 * @param rootElement
-	 *            the element to start the recursive search on
+	 * 		the element to start the recursive search on
 	 * @param filter
-	 *            the filter which defines the matching criteria
+	 * 		the filter which defines the matching criteria
 	 */
 	public static <T extends CtReference> List<T> getReferences(
 			CtElement rootElement, ReferenceFilter<T> filter) {
@@ -95,14 +95,14 @@ public abstract class Query extends CtScanner {
 	/**
 	 * Within a given factory, returns all the program element references that
 	 * match the filter.
-	 * 
+	 *
 	 * @param <R>
-	 *            the type of the sought program element references
+	 * 		the type of the sought program element references
 	 * @param factory
-	 *            the factory that contains the references where to recursive
-	 *            search on
+	 * 		the factory that contains the references where to recursive
+	 * 		search on
 	 * @param filter
-	 *            the filter which defines the matching criteria
+	 * 		the filter which defines the matching criteria
 	 */
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, ReferenceFilter<R> filter) {

@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -45,11 +45,11 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	/**
 	 * Tells if this element is to be processed (returns <code>true</code> in
 	 * the default implementation).
-	 * 
+	 *
 	 * @param candidate
-	 *            the candidate
+	 * 		the candidate
 	 * @return true if the candidate is to be processed by the
-	 *         {@link #process(CtElement)}
+	 * {@link #process(CtElement)}
 	 */
 	boolean isToBeProcessed(E candidate);
 
@@ -63,9 +63,9 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 * the method {@link #isToBeProcessed(CtElement)} returns true for a given
 	 * scanned element. In order to manually scan the meta-model, one can define
 	 * the {@link #process()} method instead.
-	 * 
+	 *
 	 * @param element
-	 *            the element that is currently being scanned
+	 * 		the element that is currently being scanned
 	 */
 	void process(E element);
 
@@ -85,7 +85,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	/**
 	 * Do the processing job for a given element. This method is upcalled on an
 	 * element if the method {@link #isToBeProcessed(CtElement)} returns true.
-	 * 
+	 *
 	 * @param element
 	 *            the element that holds the processed annotations
 	 */
@@ -118,7 +118,7 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	/**
 	 * Initializes the properties defined by this processor by using the
 	 * environment.
-	 * 
+	 *
 	 * @see Environment#getProcessorProperties(String)
 	 */
 	void initProperties(ProcessorProperties properties);

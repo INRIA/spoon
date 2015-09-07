@@ -17,11 +17,11 @@ public interface CtPathElement<P extends CtElement, T extends CtElement> {
 	/**
 	 * Get elements childs of roots that match with this path.
 	 */
-	public Collection<T> getElements(Collection<P> roots);
+	Collection<T> getElements(Collection<P> roots);
 
 	/**
 	 * Add a path argument.
-	 *  
+	 *
 	 * For instance, addArgument("index",3) will select only the third element in an indexed list.
 	 */
 	<C extends CtPathElement<P, T>> C addArgument(String key, String value);

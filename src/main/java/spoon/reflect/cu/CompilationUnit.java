@@ -47,9 +47,9 @@ public interface CompilationUnit extends FactoryAccessor {
 	/**
 	 * Helper method to get the begin index of the line that corresponds to the
 	 * given index.
-	 * 
+	 *
 	 * @param index
-	 *            an arbitrary index in the source code
+	 * 		an arbitrary index in the source code
 	 * @return the index where the line starts
 	 */
 	int beginOfLineIndex(int index);
@@ -57,21 +57,20 @@ public interface CompilationUnit extends FactoryAccessor {
 	/**
 	 * Helper method to get the begin index of the line that corresponds to the
 	 * next line of the given index.
-	 * 
+	 *
 	 * @param index
-	 *            an arbitrary index in the source code
+	 * 		an arbitrary index in the source code
 	 * @return the index where the next line starts
 	 */
 	int nextLineIndex(int index);
 
 	/**
 	 * Gets the number of tabulations for a given line.
-	 * 
+	 *
 	 * @param index
-	 *            the index where the line starts in the source code
+	 * 		the index where the line starts in the source code
 	 * @return the number of tabs for this line
 	 */
 	int getTabCount(int index);
-
 
 }

@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -32,7 +32,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonym
 
 	CtBlock<?> body;
 
-	Set<ModifierKind> modifiers = EMPTY_SET();
+	Set<ModifierKind> modifiers = emptySet();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -41,7 +41,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonym
 
 	@Override
 	public <T extends CtModifiable> T addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		modifiers.add(modifier);
@@ -70,12 +70,15 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonym
 
 	@Override
 	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC))
+		if (getModifiers().contains(ModifierKind.PUBLIC)) {
 			return ModifierKind.PUBLIC;
-		if (getModifiers().contains(ModifierKind.PROTECTED))
+		}
+		if (getModifiers().contains(ModifierKind.PROTECTED)) {
 			return ModifierKind.PROTECTED;
-		if (getModifiers().contains(ModifierKind.PRIVATE))
+		}
+		if (getModifiers().contains(ModifierKind.PRIVATE)) {
 			return ModifierKind.PRIVATE;
+		}
 		return null;
 	}
 
@@ -99,7 +102,7 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonym
 
 	@Override
 	public <T extends CtModifiable> T setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);

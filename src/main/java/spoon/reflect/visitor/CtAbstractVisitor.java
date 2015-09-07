@@ -308,7 +308,8 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	@Override
-	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
+			CtExecutableReferenceExpression<T, E> expression) {
 
 	}
 

@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -35,7 +35,8 @@ public class FieldFactory extends SubFactory {
 	/**
 	 * Creates a new field sub-factory.
 	 *
-	 * @param factory the parent factory
+	 * @param factory
+	 * 		the parent factory
 	 */
 	public FieldFactory(Factory factory) {
 		super(factory);
@@ -44,13 +45,16 @@ public class FieldFactory extends SubFactory {
 	/**
 	 * Creates a field.
 	 *
-	 * @param target    the target type to which the field is added
-	 * @param modifiers the modifiers
-	 * @param type      the field's type
-	 * @param name      the field's name
+	 * @param target
+	 * 		the target type to which the field is added
+	 * @param modifiers
+	 * 		the modifiers
+	 * @param type
+	 * 		the field's type
+	 * @param name
+	 * 		the field's name
 	 */
-	public <T> CtField<T> create(CtType<?> target,
-			Set<ModifierKind> modifiers, CtTypeReference<T> type, String name) {
+	public <T> CtField<T> create(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference<T> type, String name) {
 		CtField<T> field = factory.Core().createField();
 		field.setModifiers(modifiers);
 		field.setType(type);
@@ -64,15 +68,18 @@ public class FieldFactory extends SubFactory {
 	/**
 	 * Creates a field.
 	 *
-	 * @param target            the target type to which the field is added
-	 * @param modifiers         the modifiers
-	 * @param type              the field's type
-	 * @param name              the field's name
-	 * @param defaultExpression the initializing expression
+	 * @param target
+	 * 		the target type to which the field is added
+	 * @param modifiers
+	 * 		the modifiers
+	 * @param type
+	 * 		the field's type
+	 * @param name
+	 * 		the field's name
+	 * @param defaultExpression
+	 * 		the initializing expression
 	 */
-	public <T> CtField<T> create(CtType<?> target,
-			Set<ModifierKind> modifiers, CtTypeReference<T> type, String name,
-			CtExpression<T> defaultExpression) {
+	public <T> CtField<T> create(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference<T> type, String name, CtExpression<T> defaultExpression) {
 		CtField<T> field = create(target, modifiers, type, name);
 		field.setDefaultExpression(defaultExpression);
 		return field;
@@ -81,9 +88,12 @@ public class FieldFactory extends SubFactory {
 	/**
 	 * Creates a field by copying an existing field.
 	 *
-	 * @param <T>    the type of the field
-	 * @param target the target type where the new field has to be inserted to
-	 * @param source the source field to be copied
+	 * @param <T>
+	 * 		the type of the field
+	 * @param target
+	 * 		the target type where the new field has to be inserted to
+	 * @param source
+	 * 		the source field to be copied
 	 * @return the newly created field
 	 */
 	public <T> CtField<T> create(CtType<?> target, CtField<T> source) {
@@ -98,17 +108,13 @@ public class FieldFactory extends SubFactory {
 	 * Creates a field reference from an existing field.
 	 */
 	public <T> CtFieldReference<T> createReference(CtField<T> field) {
-		return createReference(
-				factory.Type().createReference(field.getDeclaringType()),
-				field.getType(), field.getSimpleName());
+		return createReference(factory.Type().createReference(field.getDeclaringType()), field.getType(), field.getSimpleName());
 	}
 
 	/**
 	 * Creates a field reference.
 	 */
-	public <T> CtFieldReference<T> createReference(
-			CtTypeReference<?> declaringType, CtTypeReference<T> type,
-			String fieldName) {
+	public <T> CtFieldReference<T> createReference(CtTypeReference<?> declaringType, CtTypeReference<T> type, String fieldName) {
 		CtFieldReference<T> fieldRef = factory.Core().createFieldReference();
 		fieldRef.setSimpleName(fieldName);
 		fieldRef.setDeclaringType(declaringType);
@@ -123,10 +129,8 @@ public class FieldFactory extends SubFactory {
 	public <T> CtFieldReference<T> createReference(Field field) {
 		CtFieldReference<T> fieldRef = factory.Core().createFieldReference();
 		fieldRef.setSimpleName(field.getName());
-		fieldRef.setDeclaringType(factory.Type().createReference(
-				field.getDeclaringClass()));
-		CtTypeReference<T> t = factory.Type().createReference(
-				(Class<T>) field.getType());
+		fieldRef.setDeclaringType(factory.Type().createReference(field.getDeclaringClass()));
+		CtTypeReference<T> t = factory.Type().createReference((Class<T>) field.getType());
 		fieldRef.setType(t);
 		return fieldRef;
 	}
@@ -138,10 +142,8 @@ public class FieldFactory extends SubFactory {
 	public <T> CtFieldReference<T> createReference(String signature) {
 		CtFieldReference<T> fieldRef = factory.Core().createFieldReference();
 		String type = signature.substring(0, signature.indexOf(" "));
-		String declaringType = signature.substring(signature.indexOf(" ") + 1,
-				signature.indexOf(CtField.FIELD_SEPARATOR));
-		String fieldName = signature.substring(signature
-				.indexOf(CtField.FIELD_SEPARATOR) + 1);
+		String declaringType = signature.substring(signature.indexOf(" ") + 1, signature.indexOf(CtField.FIELD_SEPARATOR));
+		String fieldName = signature.substring(signature.indexOf(CtField.FIELD_SEPARATOR) + 1);
 		fieldRef.setSimpleName(fieldName);
 		fieldRef.setDeclaringType(factory.Type().createReference(declaringType));
 		CtTypeReference<T> typeRef = factory.Type().createReference(type);

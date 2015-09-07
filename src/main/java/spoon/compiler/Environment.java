@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -39,24 +39,24 @@ public interface Environment {
 	/**
 	 * Gets the Java version compliance level.
 	 */
-	public int getComplianceLevel();
+	int getComplianceLevel();
 
 	/**
 	 * Sets the Java version compliance level.
 	 */
-	public void setComplianceLevel(int level);
+	void setComplianceLevel(int level);
 
 	/**
 	 * This method should be called to print out a message with a source
 	 * position link during the processing.
 	 */
-	public void debugMessage(String message);
+	void debugMessage(String message);
 
 	/**
 	 * Returns the default file generator for this environment (gives the
 	 * default output directory for the created files).
 	 */
-	public FileGenerator<? extends CtElement> getDefaultFileGenerator();
+	FileGenerator<? extends CtElement> getDefaultFileGenerator();
 
 	/**
 	 * Gets the processing manager.
@@ -80,19 +80,19 @@ public interface Environment {
 	 * @see Environment#getLevel()
 	 */
 	@Deprecated
-	public boolean isDebug();
+	boolean isDebug();
 
 	/**
 	 * Returns true is we let Spoon handle imports
 	 */
-	public boolean isAutoImports();
+	boolean isAutoImports();
 
 	/**
 	 * Tells if the processing is stopped, generally because one of the
 	 * processors called {@link #setProcessingStopped(boolean)} after reporting
 	 * an error.
 	 */
-	public boolean isProcessingStopped();
+	boolean isProcessingStopped();
 
 	/**
 	 * Returns true if Spoon is in verbose mode.
@@ -100,7 +100,7 @@ public interface Environment {
 	 * @see Environment#getLevel()
 	 */
 	@Deprecated
-	public boolean isVerbose();
+	boolean isVerbose();
 
 	/**
 	 * Helper method called by a processor to report an error, warning or
@@ -208,7 +208,7 @@ public interface Environment {
 	/**
 	 * This method should be called to report the end of the processing.
 	 */
-	public void reportEnd();
+	void reportEnd();
 
 	/**
 	 * This method should be called to print out a progress message during the
@@ -216,7 +216,7 @@ public interface Environment {
 	 * meant to remain in the message logs and just indicate to the user some
 	 * task progression information.
 	 */
-	public void reportProgressMessage(String message);
+	void reportProgressMessage(String message);
 
 	/**
 	 * Sets the debug mode.
@@ -224,7 +224,7 @@ public interface Environment {
 	 * @see Environment#setLevel(String)
 	 */
 	@Deprecated
-	public void setDebug(boolean debug);
+	void setDebug(boolean debug);
 
 	/**
 	 * Sets the default file generator for this environment.
@@ -315,11 +315,11 @@ public interface Environment {
 	 * Tells if the source generator will try to preserve the original line numbers.
 	 */
 	boolean isPreserveLineNumbers();
-	
+
 	/**
 	 * Returns the source class path of the Spoon model.
 	 * This class path is used when the SpoonCompiler is building the model and also
-	 * to find external classes, referenced from within the model. 
+	 * to find external classes, referenced from within the model.
 	 */
 	String[] getSourceClasspath();
 
@@ -329,7 +329,7 @@ public interface Environment {
 	 * {@link #getSourceClasspath()}.
 	 */
 	void setSourceClasspath(String[] sourceClasspath);
-	
+
 	/**
 	 * Returns a {@code ClassLoader} which is able to load classes from the
 	 * class path returned by {@link #getSourceClasspath()}
@@ -338,30 +338,30 @@ public interface Environment {
 
 	/**
 	 * Sets the option "noclasspath", use with caution (see explanation below).
-	 * 
+	 *
 	 * With this option, Spoon does not require the full classpath to build the
 	 * model. In this case, all references to classes that are not in the
 	 * classpath are handled with the reference mechanism. The "simplename" of
 	 * the reference object refers to the unbound identifier.
-	 * 
+	 *
 	 * This option facilitates the use of Spoon when is is hard to have the
 	 * complete and correct classpath, for example for mining software
 	 * repositories.
-	 * 
+	 *
 	 * For writing analyses, this option works well if you don't cross the
 	 * reference by a call to getDeclaration() (if you really want to do so,
 	 * then check for nullness of the result before).
-	 * 
+	 *
 	 * In normal mode, compilation errors are signaled as exception, with this
 	 * option enabled they are signaled as message only. The reason is that in
 	 * most cases, there are necessarily errors related to the missing classpath
 	 * elements.
-	 * 
+	 *
 	 */
-	public void setNoClasspath(boolean option);
-	
+	void setNoClasspath(boolean option);
+
 	/** Returns the value ot the option noclasspath */
-	public boolean getNoClasspath();
+	boolean getNoClasspath();
 
 	/**
 	 * Returns the value of the option copy-resources.

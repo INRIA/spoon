@@ -14,7 +14,7 @@ public class CtTryWithResourceImpl extends CtTryImpl
 		implements CtTryWithResource {
 	private static final long serialVersionUID = 1L;
 
-	List<CtLocalVariable<?>> resources = EMPTY_LIST();
+	List<CtLocalVariable<?>> resources = emptyList();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -29,7 +29,7 @@ public class CtTryWithResourceImpl extends CtTryImpl
 	@Override
 	public <T extends CtTryWithResource> T setResources(List<CtLocalVariable<?>> resources) {
 		this.resources.clear();
-		for(CtLocalVariable<?> l:resources) {
+		for (CtLocalVariable<?> l : resources) {
 			addResource(l);
 		}
 		return (T) this;
@@ -37,7 +37,7 @@ public class CtTryWithResourceImpl extends CtTryImpl
 
 	@Override
 	public <T extends CtTryWithResource> T addResource(CtLocalVariable<?> resource) {
-		if (resources == CtElementImpl.<CtLocalVariable<?>>EMPTY_LIST()) {
+		if (resources == CtElementImpl.<CtLocalVariable<?>>emptyList()) {
 			resources = new ArrayList<CtLocalVariable<?>>(RESOURCES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		resource.setParent(this);
@@ -47,6 +47,6 @@ public class CtTryWithResourceImpl extends CtTryImpl
 
 	@Override
 	public boolean removeResource(CtLocalVariable<?> resource) {
-		return resources != CtElementImpl.<CtLocalVariable<?>>EMPTY_LIST() && resources.remove(resource);
+		return resources != CtElementImpl.<CtLocalVariable<?>>emptyList() && resources.remove(resource);
 	}
 }

@@ -2,9 +2,7 @@ package spoon.reflect.path.impl;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtInheritanceScanner;
-import sun.reflect.ReflectionFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +52,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 
 	private class NameScanner extends CtInheritanceScanner {
 		private Collection<CtElement> results = new LinkedList<CtElement>();
+
 		NameScanner() {
 		}
 
@@ -61,7 +60,8 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 		public void scanCtElement(CtElement e) {
 			if (WILDCARD.equals(pattern) || RECURSIVE_WILCARD.equals(pattern)) {
 				results.add(e);
-			} else if (e instanceof CtNamedElement && ((CtNamedElement) e).getSimpleName().matches(pattern)) {
+			} else if (e instanceof CtNamedElement
+					&& ((CtNamedElement) e).getSimpleName().matches(pattern)) {
 				results.add(e);
 			}
 		}

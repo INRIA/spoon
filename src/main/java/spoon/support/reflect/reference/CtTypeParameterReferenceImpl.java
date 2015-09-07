@@ -35,7 +35,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> bounds = CtElementImpl.EMPTY_LIST();
+	List<CtTypeReference<?>> bounds = CtElementImpl.emptyList();
 
 	boolean upper = true;
 
@@ -99,7 +99,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public <C extends CtGenericElementReference> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
 					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -109,13 +109,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() &&
-				actualTypeArguments.remove(actualTypeArgument);
+		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
+				&& actualTypeArguments.remove(actualTypeArgument);
 	}
 
 	@Override
 	public <T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
+		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		bounds.add(bound);
@@ -124,7 +124,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		return bounds != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() && bounds.remove(bound);
+		return bounds != CtElementImpl.<CtTypeReference<?>>emptyList() && bounds.remove(bound);
 	}
 
 	@Override

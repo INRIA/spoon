@@ -118,24 +118,19 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	CtCodeElement result;
 
 	Number convert(CtTypeReference<?> type, Number n) {
-		if ((type.getActualClass() == int.class)
-				|| (type.getActualClass() == Integer.class)) {
+		if ((type.getActualClass() == int.class) || (type.getActualClass() == Integer.class)) {
 			return n.intValue();
 		}
-		if ((type.getActualClass() == byte.class)
-				|| (type.getActualClass() == Byte.class)) {
+		if ((type.getActualClass() == byte.class) || (type.getActualClass() == Byte.class)) {
 			return n.byteValue();
 		}
-		if ((type.getActualClass() == long.class)
-				|| (type.getActualClass() == Long.class)) {
+		if ((type.getActualClass() == long.class) || (type.getActualClass() == Long.class)) {
 			return n.longValue();
 		}
-		if ((type.getActualClass() == float.class)
-				|| (type.getActualClass() == Float.class)) {
+		if ((type.getActualClass() == float.class) || (type.getActualClass() == Float.class)) {
 			return n.floatValue();
 		}
-		if ((type.getActualClass() == short.class)
-				|| (type.getActualClass() == Short.class)) {
+		if ((type.getActualClass() == short.class) || (type.getActualClass() == Short.class)) {
 			return n.shortValue();
 		}
 		return n;
@@ -157,20 +152,17 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		result = element;
 	}
 
-	public <T> void visitCtCodeSnippetExpression(
-			CtCodeSnippetExpression<T> expression) {
+	public <T> void visitCtCodeSnippetExpression(CtCodeSnippetExpression<T> expression) {
 	}
 
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
 	}
 
-	public <A extends Annotation> void visitCtAnnotation(
-			CtAnnotation<A> annotation) {
+	public <A extends Annotation> void visitCtAnnotation(CtAnnotation<A> annotation) {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public <A extends Annotation> void visitCtAnnotationType(
-			CtAnnotationType<A> annotationType) {
+	public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
 		throw new RuntimeException("Unknow Element");
 	}
 
@@ -178,8 +170,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
-			CtArrayAccess<T, E> arrayAccess) {
+	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
 		setResult(arrayAccess.getFactory().Core().clone(arrayAccess));
 	}
 
@@ -204,13 +195,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	@SuppressWarnings("unchecked")
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		CtExpression<?> left = evaluate(operator, operator.getLeftHandOperand());
-		CtExpression<?> right = evaluate(operator,
-				operator.getRightHandOperand());
+		CtExpression<?> right = evaluate(operator, operator.getRightHandOperand());
 		if ((left instanceof CtLiteral) && (right instanceof CtLiteral)) {
 			Object leftObject = ((CtLiteral<?>) left).getValue();
 			Object rightObject = ((CtLiteral<?>) right).getValue();
-			CtLiteral<Object> res = operator.getFactory().Core()
-					.createLiteral();
+			CtLiteral<Object> res = operator.getFactory().Core().createLiteral();
 			switch (operator.getKind()) {
 			case AND:
 				res.setValue((Boolean) leftObject && (Boolean) rightObject);
@@ -233,86 +222,67 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				}
 				break;
 			case GE:
-				res.setValue(((Number) leftObject).doubleValue() >= ((Number) rightObject)
-						.doubleValue());
+				res.setValue(((Number) leftObject).doubleValue() >= ((Number) rightObject).doubleValue());
 				break;
 			case LE:
-				res.setValue(((Number) leftObject).doubleValue() <= ((Number) rightObject)
-						.doubleValue());
+				res.setValue(((Number) leftObject).doubleValue() <= ((Number) rightObject).doubleValue());
 				break;
 			case GT:
-				res.setValue(((Number) leftObject).doubleValue() > ((Number) rightObject)
-						.doubleValue());
+				res.setValue(((Number) leftObject).doubleValue() > ((Number) rightObject).doubleValue());
 				break;
 			case LT:
-				res.setValue(((Number) leftObject).doubleValue() < ((Number) rightObject)
-						.doubleValue());
+				res.setValue(((Number) leftObject).doubleValue() < ((Number) rightObject).doubleValue());
 				break;
 			case MINUS:
 				res.setValue(convert(operator.getType(),
-						((Number) leftObject).doubleValue()
-								- ((Number) rightObject).doubleValue()));
+								((Number) leftObject).doubleValue() - ((Number) rightObject).doubleValue()));
 				break;
 			case MUL:
 				res.setValue(convert(operator.getType(),
-						((Number) leftObject).doubleValue()
-								* ((Number) rightObject).doubleValue()));
+								((Number) leftObject).doubleValue() * ((Number) rightObject).doubleValue()));
 				break;
 			case DIV:
 				res.setValue(convert(operator.getType(),
-						((Number) leftObject).doubleValue()
-								/ ((Number) rightObject).doubleValue()));
+								((Number) leftObject).doubleValue() / ((Number) rightObject).doubleValue()));
 				break;
 			case PLUS:
-				if ((leftObject instanceof String)
-						|| (rightObject instanceof String)) {
+				if ((leftObject instanceof String) || (rightObject instanceof String)) {
 					res.setValue("" + leftObject + rightObject);
 				} else {
 					res.setValue(convert(operator.getType(),
-							((Number) leftObject).doubleValue()
-									+ ((Number) rightObject).doubleValue()));
+									((Number) leftObject).doubleValue() + ((Number) rightObject).doubleValue()));
 				}
 				break;
 			case BITAND:
 				if (leftObject instanceof Boolean) {
-					res.setValue(((Boolean) leftObject).booleanValue()
-							& ((Boolean) rightObject).booleanValue());
+					res.setValue(((Boolean) leftObject).booleanValue() & ((Boolean) rightObject).booleanValue());
 				} else {
-					res.setValue(((Number) leftObject).intValue()
-							& ((Number) rightObject).intValue());
+					res.setValue(((Number) leftObject).intValue() & ((Number) rightObject).intValue());
 				}
 				break;
 			case BITOR:
 				if (leftObject instanceof Boolean) {
-					res.setValue(((Boolean) leftObject).booleanValue()
-							| ((Boolean) rightObject).booleanValue());
+					res.setValue(((Boolean) leftObject).booleanValue() | ((Boolean) rightObject).booleanValue());
 				} else {
-					res.setValue(((Number) leftObject).intValue()
-							| ((Number) rightObject).intValue());
+					res.setValue(((Number) leftObject).intValue() | ((Number) rightObject).intValue());
 				}
 				break;
 			case BITXOR:
 				if (leftObject instanceof Boolean) {
-					res.setValue(((Boolean) leftObject).booleanValue()
-							^ ((Boolean) rightObject).booleanValue());
+					res.setValue(((Boolean) leftObject).booleanValue() ^ ((Boolean) rightObject).booleanValue());
 				} else {
-					res.setValue(((Number) leftObject).intValue()
-							^ ((Number) rightObject).intValue());
+					res.setValue(((Number) leftObject).intValue() ^ ((Number) rightObject).intValue());
 				}
 				break;
 			default:
-				throw new RuntimeException("unsupported operator "
-						+ operator.getKind());
+				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
 			setResult(res);
 			return;
 		} else if (operator.getKind() == BinaryOperatorKind.INSTANCEOF) {
-			CtLiteral<Boolean> res = operator.getFactory().Core()
-					.createLiteral();
-			CtTypeReference<?> leftType = ((CtTypedElement<?>) left).getType()
-					.box();
-			CtTypeReference<?> rightType = ((CtLiteral<CtTypeReference<?>>) right)
-					.getValue();
+			CtLiteral<Boolean> res = operator.getFactory().Core().createLiteral();
+			CtTypeReference<?> leftType = ((CtTypedElement<?>) left).getType().box();
+			CtTypeReference<?> rightType = ((CtLiteral<CtTypeReference<?>>) right).getValue();
 			if (leftType.isSubtypeOf(rightType)) {
 				res.setValue(true);
 				setResult(res);
@@ -329,8 +299,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				expr = left;
 			}
 			Object o = literal.getValue();
-			CtLiteral<Object> res = operator.getFactory().Core()
-					.createLiteral();
+			CtLiteral<Object> res = operator.getFactory().Core().createLiteral();
 			switch (operator.getKind()) {
 			case AND:
 				if ((Boolean) o) {
@@ -358,8 +327,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				// TODO: other cases?
 			}
 		}
-		CtBinaryOperator<T> op = operator.getFactory().Core()
-				.createBinaryOperator();
+		CtBinaryOperator<T> op = operator.getFactory().Core().createBinaryOperator();
 		op.setKind(operator.getKind());
 		op.setLeftHandOperand(left);
 		op.setRightHandOperand(right);
@@ -379,8 +347,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				break;
 			}
 		}
-		if ((b.getStatements().size() == 1)
-				&& (b.getStatements().get(0) instanceof CtBlock)) {
+		if ((b.getStatements().size() == 1) && (b.getStatements().get(0) instanceof CtBlock)) {
 			setResult(b.getStatements().get(0));
 		} else {
 			setResult(b);
@@ -408,8 +375,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtContinue(CtContinue continueStatement) {
-		setResult(continueStatement.getFactory().Core()
-				.clone(continueStatement));
+		setResult(continueStatement.getFactory().Core().clone(continueStatement));
 	}
 
 	public void visitCtDo(CtDo doLoop) {
@@ -423,8 +389,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public <T> void visitCtExecutableReference(
-			CtExecutableReference<T> reference) {
+	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 		throw new RuntimeException("Unknow Element");
 	}
 
@@ -448,7 +413,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			}
 		}
 		if (fieldAccess.getFactory().Type().createReference(Enum.class)
-					   .isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
+				.isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
 			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
 			l.setValue(fieldAccess.getVariable());
 			setResult(l);
@@ -477,8 +442,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(thisAccess.getFactory().Core().clone(thisAccess));
 	}
 
-	public <T> void visitCtAnnotationFieldAccess(
-			CtAnnotationFieldAccess<T> annotationFieldAccess) {
+	public <T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		CtField<?> f = annotationFieldAccess.getVariable().getDeclaration();
 		setResult(evaluate(f, f.getDefaultExpression()));
 	}
@@ -517,8 +481,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(foreach.getFactory().Core().clone(foreach));
 	}
 
-	public void visitCtGenericElementReference(
-			CtGenericElementReference reference) {
+	public void visitCtGenericElementReference(CtGenericElementReference reference) {
 		throw new RuntimeException("Unknow Element");
 	}
 
@@ -540,8 +503,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				thenEnded = true;
 				flowEnded = false;
 			}
-			if (ifElement.getElseStatement() !=null) {
-			  ifRes.setElseStatement((CtStatement) evaluate(ifRes, ifElement.getElseStatement()));
+			if (ifElement.getElseStatement() != null) {
+				ifRes.setElseStatement((CtStatement) evaluate(ifRes, ifElement.getElseStatement()));
 			}
 			if (flowEnded) {
 				elseEnded = true;
@@ -580,24 +543,14 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			return;
 		}
 		if (constant) {
-			CtExecutable<?> executable = invocation.getExecutable()
-					.getDeclaration();
+			CtExecutable<?> executable = invocation.getExecutable().getDeclaration();
 			// try to inline partial evaluation results for local calls
 			// (including to superclasses)
-			if ((executable != null)
-					&& (invocation.getType() != null)
-					&& invocation
-					.getExecutable()
-					.getDeclaringType()
-					.isAssignableFrom(
-							((CtType<?>) invocation
-									.getParent(CtType.class))
-									.getReference())) {
-				CtBlock<?> b = evaluate(invocation.getParent(),
-						executable.getBody());
+			if ((executable != null) && (invocation.getType() != null) && invocation.getExecutable().getDeclaringType()
+					.isAssignableFrom(((CtType<?>) invocation.getParent(CtType.class)).getReference())) {
+				CtBlock<?> b = evaluate(invocation.getParent(), executable.getBody());
 				flowEnded = false;
-				CtStatement last = b.getStatements().get(
-						b.getStatements().size() - 1);
+				CtStatement last = b.getStatements().get(b.getStatements().size() - 1);
 				if ((last != null) && (last instanceof CtReturn)) {
 					if (((CtReturn<?>) last).getReturnedExpression() instanceof CtLiteral) {
 						setResult(((CtReturn<?>) last).getReturnedExpression());
@@ -610,14 +563,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				try {
 					// System.err.println("invocking "+i);
 					r = RtHelper.invoke(i);
-					CtLiteral<T> l = invocation.getFactory().Core()
-							.createLiteral();
+					CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
 					l.setValue(r);
 					setResult(l);
 					return;
 				} catch (Exception e) {
-					// swalow and don't simplify
-					// Launcher.logger.error(e.getMessage(), e);
 				}
 			}
 		}
@@ -643,14 +593,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		// }
 		// });
 		// if (res.size() != 0)
-		CtLocalVariable<T> r = localVariable.getFactory().Core()
-				.clone(localVariable);
+		CtLocalVariable<T> r = localVariable.getFactory().Core().clone(localVariable);
 		r.setDefaultExpression(evaluate(r, localVariable.getDefaultExpression()));
 		setResult(r);
 	}
 
-	public <T> void visitCtLocalVariableReference(
-			CtLocalVariableReference<T> reference) {
+	public <T> void visitCtLocalVariableReference(CtLocalVariableReference<T> reference) {
 		throw new RuntimeException("Unknow Element");
 	}
 
@@ -689,7 +637,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	@Override
-	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
+			CtExecutableReferenceExpression<T, E> expression) {
 		setResult(expression.getFactory().Core().clone(expression));
 	}
 
@@ -723,8 +672,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		CtReturn<R> r = returnStatement.getFactory().Core().createReturn();
-		r.setReturnedExpression(evaluate(r,
-				returnStatement.getReturnedExpression()));
+		r.setReturnedExpression(evaluate(r, returnStatement.getReturnedExpression()));
 		setResult(r);
 		flowEnded = true;
 	}
@@ -781,15 +729,13 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		CtExpression<?> operand = evaluate(operator, operator.getOperand());
 		if (operand instanceof CtLiteral) {
 			Object object = ((CtLiteral<?>) operand).getValue();
-			CtLiteral<Object> res = operator.getFactory().Core()
-					.createLiteral();
+			CtLiteral<Object> res = operator.getFactory().Core().createLiteral();
 			switch (operator.getKind()) {
 			case NOT:
 				res.setValue(!(Boolean) object);
 				break;
 			default:
-				throw new RuntimeException("unsupported operator "
-						+ operator.getKind());
+				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
 			setResult(res);
 			return;
@@ -816,10 +762,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		visitCtVariableAccess(variableWrite);
 	}
 
-	public <T, A extends T> void visitCtAssignment(
-			CtAssignment<T, A> variableAssignment) {
-		CtAssignment<T, A> a = variableAssignment.getFactory().Core()
-				.clone(variableAssignment);
+	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> variableAssignment) {
+		CtAssignment<T, A> a = variableAssignment.getFactory().Core().clone(variableAssignment);
 		a.setAssignment(evaluate(a, a.getAssignment()));
 		setResult(a);
 	}
@@ -832,9 +776,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		CtWhile w = whileLoop.getFactory().Core().clone(whileLoop);
 		w.setLoopingExpression(evaluate(w, whileLoop.getLoopingExpression()));
 		// If lopping Expression always false
-		if ((whileLoop.getLoopingExpression() instanceof CtLiteral)
-				&& !((CtLiteral<Boolean>) whileLoop.getLoopingExpression())
-				.getValue()) {
+		if ((whileLoop.getLoopingExpression() instanceof CtLiteral) && !((CtLiteral<Boolean>) whileLoop
+				.getLoopingExpression()).getValue()) {
 			setResult(null);
 			return;
 		}
@@ -843,8 +786,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <T> void visitCtConditional(CtConditional<T> conditional) {
-		CtExpression<Boolean> r = evaluate(conditional,
-				conditional.getCondition());
+		CtExpression<Boolean> r = evaluate(conditional, conditional.getCondition());
 		if (r instanceof CtLiteral) {
 			CtLiteral<Boolean> l = (CtLiteral<Boolean>) r;
 			if (l.getValue()) {
@@ -853,19 +795,15 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				setResult(evaluate(null, conditional.getElseExpression()));
 			}
 		} else {
-			CtConditional<T> ifRes = conditional.getFactory().Core()
-					.createConditional();
+			CtConditional<T> ifRes = conditional.getFactory().Core().createConditional();
 			ifRes.setCondition(r);
-			ifRes.setThenExpression(evaluate(ifRes,
-					conditional.getThenExpression()));
-			ifRes.setElseExpression(evaluate(ifRes,
-					conditional.getElseExpression()));
+			ifRes.setThenExpression(evaluate(ifRes, conditional.getThenExpression()));
+			ifRes.setElseExpression(evaluate(ifRes, conditional.getElseExpression()));
 			setResult(ifRes);
 		}
 	}
 
-	public <T> void visitCtUnboundVariableReference(
-			CtUnboundVariableReference<T> reference) {
+	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
 		throw new RuntimeException("Unknow Element");
 	}
 

@@ -29,22 +29,21 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		}
 
 		boolean srcSuccess;
-		factory.getEnvironment().debugMessage(
-				"compiling sources: " + sources.getAllJavaFiles());
+		factory.getEnvironment().debugMessage("compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
 		srcSuccess = buildSources();
 		reportProblems(factory.getEnvironment());
-		factory.getEnvironment().debugMessage(
-				"compiled in " + (System.currentTimeMillis() - t) + " ms");
+		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
 		t = System.currentTimeMillis();
 		return srcSuccess;
 	}
 
 	@Override
 	protected boolean buildSources() {
-		if (sources.getAllJavaFiles().isEmpty())
+		if (sources.getAllJavaFiles().isEmpty()) {
 			return true;
+		}
 		// long t=System.currentTimeMillis();
 		// Build input
 		JDTBatchCompiler batchCompiler = createBatchCompiler();
@@ -64,8 +63,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 			args.add("-cp");
 			args.add(computeJdtClassPath());
 		} else {
-			ClassLoader currentClassLoader = Thread.currentThread()
-					.getContextClassLoader();// ClassLoader.getSystemClassLoader();
+			ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
 			if (currentClassLoader instanceof URLClassLoader) {
 				URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
 				if (urls != null && urls.length > 0) {
@@ -95,14 +93,13 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		getFactory().getEnvironment().debugMessage("build args: " + args);
 
 		batchCompiler.configure(args.toArray(new String[0]));
-		
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources
-				.getAllJavaFiles());
 
-		if(f!=null && f.exists()) {
+		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources.getAllJavaFiles());
+
+		if (f != null && f.exists()) {
 			f.delete();
 		}
-		
+
 		// here we build the model
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		for (CompilationUnitDeclaration unit : units) {
@@ -114,8 +111,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	@Override
 	protected void report(Environment environment, CategorizedProblem problem) {
-		throw new SnippetCompilationError(problem.getMessage() + "at line "
-				+ problem.getSourceLineNumber());
+		throw new SnippetCompilationError(problem.getMessage() + "at line " + problem.getSourceLineNumber());
 
 	}
 

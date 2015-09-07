@@ -25,7 +25,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 public class SnippetCompilationHelper {
 
-	static public void compileAndReplaceSnippetsIn(CtType<?> c) {
+	public static void compileAndReplaceSnippetsIn(CtType<?> c) {
 		Factory f = c.getFactory();
 		CtType<?> workCopy = c;
 		Set<ModifierKind> backup = EnumSet.noneOf(ModifierKind.class);
@@ -42,7 +42,7 @@ public class SnippetCompilationHelper {
 
 	}
 
-	static public CtStatement compileStatement(CtCodeSnippetStatement st)
+	public static CtStatement compileStatement(CtCodeSnippetStatement st)
 			throws SnippetCompilationError {
 		return internalCompileStatement(st);
 	}
@@ -90,9 +90,9 @@ public class SnippetCompilationHelper {
 				x,
 				f.Type().createReference(void.class),
 				"wrap",
-				CtElementImpl.<CtParameter<?>> EMPTY_LIST(),
+				CtElementImpl.<CtParameter<?>>emptyList(),
 				CtElementImpl
-						.<CtTypeReference<? extends Throwable>> EMPTY_SET(),
+						.<CtTypeReference<? extends Throwable>>emptySet(),
 				body);
 
 		return w;
@@ -119,7 +119,7 @@ public class SnippetCompilationHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	static public <T> CtExpression<T> compileExpression(
+	public static <T> CtExpression<T> compileExpression(
 			CtCodeSnippetExpression<T> expr) throws SnippetCompilationError {
 		// create wrapping template
 
@@ -167,9 +167,9 @@ public class SnippetCompilationHelper {
 				x,
 				f.Type().createReference(Object.class),
 				"wrap",
-				CtElementImpl.<CtParameter<?>> EMPTY_LIST(),
+				CtElementImpl.<CtParameter<?>>emptyList(),
 				CtElementImpl
-						.<CtTypeReference<? extends Throwable>> EMPTY_SET(),
+						.<CtTypeReference<? extends Throwable>>emptySet(),
 				body);
 
 		return w;

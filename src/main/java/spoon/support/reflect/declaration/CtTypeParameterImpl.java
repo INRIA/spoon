@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -35,7 +35,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities
 public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypeParameter {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> bounds = EMPTY_LIST();
+	List<CtTypeReference<?>> bounds = emptyList();
 
 	public CtTypeParameterImpl() {
 		super();
@@ -48,7 +48,7 @@ public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypePar
 
 	@Override
 	public <T extends CtTypeParameter> T addBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
+		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.bounds.add(bound);
@@ -57,7 +57,7 @@ public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypePar
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		return bounds != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST() && this.bounds.remove(bound);
+		return bounds != CtElementImpl.<CtTypeReference<?>>emptyList() && this.bounds.remove(bound);
 	}
 
 	@Override

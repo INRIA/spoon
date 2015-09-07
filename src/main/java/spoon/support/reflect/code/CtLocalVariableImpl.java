@@ -42,7 +42,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	CtTypeReference<T> type;
 
-	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
+	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -71,8 +71,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	public <C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> defaultExpression) {
-		if (defaultExpression != null)
+		if (defaultExpression != null) {
 			defaultExpression.setParent(this);
+		}
 		this.defaultExpression = defaultExpression;
 		return (C) this;
 	}
@@ -107,7 +108,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		modifiers.add(modifier);
@@ -121,7 +122,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);
@@ -133,15 +134,18 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC))
+		if (getModifiers().contains(ModifierKind.PUBLIC)) {
 			return ModifierKind.PUBLIC;
-		if (getModifiers().contains(ModifierKind.PROTECTED))
+		}
+		if (getModifiers().contains(ModifierKind.PROTECTED)) {
 			return ModifierKind.PROTECTED;
-		if (getModifiers().contains(ModifierKind.PRIVATE))
+		}
+		if (getModifiers().contains(ModifierKind.PRIVATE)) {
 			return ModifierKind.PRIVATE;
+		}
 		return null;
 	}
-	
+
 	@Override
 	public CtExpression<T> getAssignment() {
 		return getDefaultExpression();

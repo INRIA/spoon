@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -41,8 +41,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 /**
  * A processor that generates compilable Java source files from the meta-model.
  */
-public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
-		implements FileGenerator<CtType<?>> {
+public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements FileGenerator<CtType<?>> {
 	PrettyPrinter printer;
 
 	File directory;
@@ -53,24 +52,26 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
 
 	/**
 	 * Creates a new processor for generating Java source files.
-	 * 
+	 *
 	 * @param outputDirectory
-	 *            the root output directory
+	 * 		the root output directory
 	 */
 	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
 		this.directory = outputDirectory;
 		this.printer = printer;
 	}
 
-	/** usedful for testing */
+	/**
+	 * usedful for testing
+	 */
 	public JavaOutputProcessor() {
 	}
 
-    public PrettyPrinter getPrinter() {
-        return printer;
-    }
+	public PrettyPrinter getPrinter() {
+		return printer;
+	}
 
-    public List<File> getCreatedFiles() {
+	public List<File> getCreatedFiles() {
 		return printedFiles;
 	}
 
@@ -84,20 +85,22 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
 		// super.init();
 
 		// Check output directory
-		if (directory == null)
-			throw new RuntimeException(
-					"You should set output directory before printing");
+		if (directory == null) {
+			throw new RuntimeException("You should set output directory before printing");
+		}
 		// Create spooned dir
-		if (directory.isFile())
+		if (directory.isFile()) {
 			throw new RuntimeException("Output must be a directory");
+		}
 		if (!directory.exists()) {
-			if (!directory.mkdirs())
+			if (!directory.mkdirs()) {
 				throw new RuntimeException("Error creating output directory");
+			}
 		}
 		try {
 			directory = directory.getCanonicalFile();
 		} catch (IOException e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -111,8 +114,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
 	 */
 	public void createJavaFile(CtType<?> element) {
 
-		getEnvironment().debugMessage(
-				"printing " + element.getQualifiedName() + " to " + directory);
+		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + directory);
 
 		// we only create a file for top-level classes
 		if (!element.isTopLevel()) {
@@ -132,11 +134,10 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
 		List<CtType<?>> toBePrinted = new ArrayList<CtType<?>>();
 		toBePrinted.add(element);
 
-
 		printer.calculate(cu, toBePrinted);
-		
+
 		CtPackage pack = element.getPackage();
-		
+
 		PrintStream stream = null;
 
 		// create package directory
@@ -145,40 +146,36 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
 			packageDir = new File(directory.getAbsolutePath());
 		} else {
 			// Create current package dir
-			packageDir = new File(directory.getAbsolutePath()
-					+ File.separatorChar
-					+ pack.getQualifiedName().replace('.', File.separatorChar));
+			packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
 		}
 		if (!packageDir.exists()) {
-			if (!packageDir.mkdirs())
+			if (!packageDir.mkdirs()) {
 				throw new RuntimeException("Error creating output directory");
+			}
 		}
 
 		// Create package annotation file
-		if (writePackageAnnotationFile
-				&& element.getPackage().getAnnotations().size() > 0) {
-			File packageAnnot = new File(packageDir.getAbsolutePath()
-					+ File.separatorChar
-					+ DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
-			if (!printedFiles.contains(packageAnnot))
+		if (writePackageAnnotationFile && element.getPackage().getAnnotations().size() > 0) {
+			File packageAnnot = new File(packageDir.getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
+			if (!printedFiles.contains(packageAnnot)) {
 				printedFiles.add(packageAnnot);
+			}
 			try {
 				stream = new PrintStream(packageAnnot);
 				stream.println(printer.getPackageDeclaration());
 				stream.close();
 			} catch (FileNotFoundException e) {
-				Launcher.logger.error(e.getMessage(), e);
+				Launcher.LOGGER.error(e.getMessage(), e);
 			} finally {
-				if (stream != null)
+				if (stream != null) {
 					stream.close();
+				}
 			}
 		}
 
 		// print type
 		try {
-			File file = new File(packageDir.getAbsolutePath()
-					+ File.separatorChar + element.getSimpleName()
-					+ DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+			File file = new File(packageDir.getAbsolutePath() + File.separatorChar + element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
 			file.createNewFile();
 			if (!printedFiles.contains(file)) {
 				printedFiles.add(file);
@@ -186,17 +183,17 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
 			stream = new PrintStream(file);
 			stream.print(printer.getResult());
 			for (CtType<?> t : toBePrinted) {
-				lineNumberMappings.put(t.getQualifiedName(),
-						printer.getLineNumberMapping());
+				lineNumberMappings.put(t.getQualifiedName(), printer.getLineNumberMapping());
 			}
 			stream.close();
 		} catch (FileNotFoundException e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 		} finally {
-			if (stream != null)
+			if (stream != null) {
 				stream.close();
+			}
 		}
 
 	}
@@ -206,8 +203,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>>
 	 * its contents.
 	 */
 	public void process(CtType<?> type) {
-		if (type.isTopLevel())
+		if (type.isTopLevel()) {
 			createJavaFile(type);
+		}
 		printer.reset();
 	}
 

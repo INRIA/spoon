@@ -18,8 +18,9 @@ public abstract class CtTargetedAccessImpl<T> extends CtVariableAccessImpl<T>
 
 	@Override
 	public <C extends CtTargetedExpression<T, CtExpression<?>>> C setTarget(CtExpression<?> target) {
-		if (target != null)
+		if (target != null) {
 			target.setParent(this);
+		}
 		this.target = target;
 		return null;
 	}

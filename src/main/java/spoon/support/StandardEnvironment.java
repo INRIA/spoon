@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.xml.sax.SAXException;
 
 import spoon.SpoonException;
@@ -87,7 +85,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	private File xmlRootFolder;
 
 	private String[] sourceClasspath = null;
-	
+
 	private URLClassLoader classLoader = null;
 
 	private boolean preserveLineNumbers = false;
@@ -158,14 +156,13 @@ public class StandardEnvironment implements Serializable, Environment {
 	Map<String, ProcessorProperties> processorProperties = new TreeMap<String, ProcessorProperties>();
 
 	@Override
-	public ProcessorProperties getProcessorProperties(String processorName)
-			throws FileNotFoundException, IOException, SAXException {
+	public ProcessorProperties getProcessorProperties(String processorName) throws FileNotFoundException, IOException, SAXException {
 		if (processorProperties.containsKey(processorName)) {
 			return processorProperties.get(processorName);
 		}
 
 		InputStream in = getPropertyStream(processorName);
-		XmlProcessorProperties prop = null;
+		XmlProcessorProperties prop;
 		try {
 			prop = new XmlProcessorProperties(getFactory(), processorName, in);
 		} catch (SAXException e) {
@@ -175,10 +172,9 @@ public class StandardEnvironment implements Serializable, Environment {
 		return prop;
 	}
 
-	private InputStream getPropertyStream(String processorName)
-			throws FileNotFoundException {
+	private InputStream getPropertyStream(String processorName) throws FileNotFoundException {
 		File[] listFiles = getXmlRootFolder().listFiles();
-		if(listFiles != null) {
+		if (listFiles != null) {
 			for (File child : listFiles) {
 				if (child.getName().equals(processorName + PROPERTIES_EXT)) {
 					return new FileInputStream(child);
@@ -201,8 +197,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public boolean isDebug() {
-		final List<String> levels = Arrays.asList(Level.ALL.toString(), Level.TRACE.toString(),
-												  Level.INFO.toString(), Level.DEBUG.toString());
+		final List<String> levels = Arrays.asList(Level.ALL.toString(), Level.TRACE.toString(), Level.INFO.toString(), Level.DEBUG.toString());
 		return levels.contains(level.toString());
 	}
 
@@ -221,8 +216,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	 */
 	@Override
 	public boolean isVerbose() {
-		final List<String> levels = Arrays.asList(Level.ALL.toString(), Level.TRACE.toString(),
-												  Level.INFO.toString());
+		final List<String> levels = Arrays.asList(Level.ALL.toString(), Level.TRACE.toString(), Level.INFO.toString());
 		return levels.contains(level.toString());
 	}
 
@@ -237,8 +231,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public void report(Processor<?> processor, Severity severity,
-					   CtElement element, String message) {
+	public void report(Processor<?> processor, Severity severity, CtElement element, String message) {
 		report(processor, severity.toLevel(), element, message);
 	}
 
@@ -253,21 +246,18 @@ public class StandardEnvironment implements Serializable, Environment {
 
 		// Add sourceposition (javac format)
 		try {
-			CtType<?> type = (element instanceof CtType) ? (CtType<?>) element
-					: element.getParent(CtType.class);
+			CtType<?> type = (element instanceof CtType) ? (CtType<?>) element : element.getParent(CtType.class);
 			SourcePosition sp = element.getPosition();
 
 			if (sp == null) {
 				buffer.append(" (Unknown Source)");
 			} else {
 				buffer.append(" at " + type.getQualifiedName() + ".");
-				CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element
-						: element.getParent(CtExecutable.class);
+				CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element : element.getParent(CtExecutable.class);
 				if (exe != null) {
 					buffer.append(exe.getSimpleName());
 				}
-				buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine()
-									  + ")");
+				buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine() + ")");
 			}
 		} catch (ParentNotInitializedException e) {
 			buffer.append(" (invalid parent)");
@@ -277,15 +267,13 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public void report(Processor<?> processor, Severity severity,
-					   CtElement element, String message, ProblemFixer<?>... fix) {
+	public void report(Processor<?> processor, Severity severity, CtElement element, String message, ProblemFixer<?>... fix) {
 		// Fix not (yet) used in command-line mode
 		report(processor, severity.toLevel(), element, message);
 	}
 
 	@Override
-	public void report(Processor<?> processor, Level level, CtElement element, String message,
-					   ProblemFixer<?>... fixes) {
+	public void report(Processor<?> processor, Level level, CtElement element, String message, ProblemFixer<?>... fixes) {
 		report(processor, level, element, message);
 	}
 
@@ -350,8 +338,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setDebug(boolean debug) {
 	}
 
-	public void setDefaultFileGenerator(
-			FileGenerator<? extends CtElement> defaultFileGenerator) {
+	public void setDefaultFileGenerator(FileGenerator<? extends CtElement> defaultFileGenerator) {
 		this.defaultFileGenerator = defaultFileGenerator;
 		defaultFileGenerator.setFactory(getFactory());
 	}
@@ -381,8 +368,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		complianceLevel = level;
 	}
 
-	public void setProcessorProperties(String processorName,
-			ProcessorProperties prop) {
+	public void setProcessorProperties(String processorName, ProcessorProperties prop) {
 		processorProperties.put(processorName, prop);
 	}
 
@@ -413,9 +399,9 @@ public class StandardEnvironment implements Serializable, Environment {
 		}
 		return classLoader;
 	}
-	
+
 	/**
-	 * Creates a URL class path from {@link getSourceClasspath()} 
+	 * Creates a URL class path from {@link getSourceClasspath()}
 	 */
 	public URL[] urlClasspath() {
 		String[] classpath = getSourceClasspath();
@@ -430,7 +416,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		}
 		return urls;
 	}
-	
+
 	@Override
 	public String[] getSourceClasspath() {
 		return sourceClasspath;
@@ -442,14 +428,13 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.sourceClasspath = sourceClasspath;
 		this.classLoader = null;
 	}
-	
+
 	private void verifySourceClasspath(String[] sourceClasspath) throws InvalidClassPathException {
 		for (String classPathElem : sourceClasspath) {
 			// preconditions
 			File classOrJarFolder = new File(classPathElem);
 			if (!classOrJarFolder.exists()) {
-				throw new InvalidClassPathException(classPathElem
-						+ " does not exist, it is not a valid folder");
+				throw new InvalidClassPathException(classPathElem + " does not exist, it is not a valid folder");
 			}
 
 			if (classOrJarFolder.isDirectory()) {
@@ -457,13 +442,12 @@ public class StandardEnvironment implements Serializable, Environment {
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
 				if (javaFiles.size() > 0) {
-					logger.warn("You're trying to give source code in the classpath, this should be given to addInputSource "
-											   + javaFiles);
+					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public int getErrorCount() {
 		return errorCount;
@@ -501,10 +485,12 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	private boolean noclasspath = false;
+
 	@Override
 	public void setNoClasspath(boolean option) {
 		noclasspath = option;
 	}
+
 	@Override
 	public boolean getNoClasspath() {
 		return noclasspath;

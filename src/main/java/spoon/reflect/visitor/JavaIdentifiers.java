@@ -11,7 +11,8 @@ import java.util.StringTokenizer;
  */
 public enum JavaIdentifiers {
 
-	IMPORT, PACKAGE, INTERFACE, CLASS, ENUM, SUPER, THIS, ASSERT, EXTENDS, BREAK, CASE, CATCH, CONTINUE, DO, FOR, IF, NEW, RETURN, SWITCH, THROW, TRY, WHILE,
+	IMPORT, PACKAGE, INTERFACE, CLASS, ENUM, SUPER, THIS, ASSERT, EXTENDS, BREAK, CASE, CATCH, CONTINUE, DO, FOR, IF,
+	NEW, RETURN, SWITCH, THROW, TRY, WHILE,
 
 	PUBLIC, PROTECTED, PRIVATE, ABSTRACT, STATIC, FINAL, TRANSIENT, VOLATILE, SYNCHRONIZED, NATIVE, STRICTFP;
 
@@ -41,43 +42,50 @@ public enum JavaIdentifiers {
 
 	/**
 	 * Checks if a string is a valid Java identifier and not a Java keyword.
-	 * 
+	 *
 	 * @param string
-	 *            the string to be tested
+	 * 		the string to be tested
 	 */
 	public static boolean isLegalJavaIdentifier(String string) {
-		if (string == null)
+		if (string == null) {
 			return false;
+		}
 		return !KEYWORDS.contains(string) && isJavaIdentifier(string);
 	}
 
 	/**
 	 * Checks if a string is a valid Java package identifier.
-	 * 
+	 *
 	 * @param string
-	 *            the string to be tested
+	 * 		the string to be tested
 	 */
 	public static boolean isLegalJavaPackageIdentifier(String string) {
-		if (string == null)
+		if (string == null) {
 			return false;
-		StringTokenizer st=new StringTokenizer(string,".");
-		while(st.hasMoreElements()) {
-			String s=st.nextToken();
-			if(!isLegalJavaIdentifier(s)) return false;
+		}
+		StringTokenizer st = new StringTokenizer(string, ".");
+		while (st.hasMoreElements()) {
+			String s = st.nextToken();
+			if (!isLegalJavaIdentifier(s)) {
+				return false;
+			}
 		}
 		return true;
 	}
 
 	/**
 	 * Checks if a string is a valid Java package identifier.
-	 * 
+	 *
 	 * @param string
-	 *            the string to be tested
+	 * 		the string to be tested
 	 */
 	public static boolean isLegalJavaExecutableIdentifier(String string) {
-		if (string == null)
+		if (string == null) {
 			return false;
-		if(string.equals("<init>")) return true;
+		}
+		if (string.equals("<init>")) {
+			return true;
+		}
 		return isLegalJavaIdentifier(string);
 	}
 

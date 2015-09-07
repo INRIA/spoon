@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -57,9 +57,11 @@ public class ZipFolder implements SpoonFolder {
 	public List<SpoonFile> getAllJavaFiles() {
 		List<SpoonFile> files = new ArrayList<SpoonFile>();
 
-		for (SpoonFile f : getFiles())
-			if (f.isJava())
+		for (SpoonFile f : getFiles()) {
+			if (f.isJava()) {
 				files.add(f);
+			}
+		}
 
 		// no subfolder, skipping
 		// for (CtFolder fol : getSubFolder())
@@ -79,12 +81,12 @@ public class ZipFolder implements SpoonFolder {
 				ZipEntry entry;
 				while ((entry = zipInput.getNextEntry()) != null) {
 					// deflate in buffer
-					final int BUFFER = 2048;
+					final int buffer = 2048;
 					ByteArrayOutputStream output = new ByteArrayOutputStream(
-							BUFFER);
+							buffer);
 					int count;
-					byte data[] = new byte[BUFFER];
-					while ((count = zipInput.read(data, 0, BUFFER)) != -1) {
+					byte data[] = new byte[buffer];
+					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}
 					output.flush();
@@ -96,7 +98,7 @@ public class ZipFolder implements SpoonFolder {
 				zipInput.close();
 
 			} catch (Exception e) {
-				Launcher.logger.error(e.getMessage(), e);
+				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		}
 		return files;
@@ -110,7 +112,7 @@ public class ZipFolder implements SpoonFolder {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
 		} catch (FileNotFoundException e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -132,7 +134,7 @@ public class ZipFolder implements SpoonFolder {
 		try {
 			return file.getCanonicalPath();
 		} catch (Exception e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 			return file.getPath();
 		}
 	}
@@ -186,13 +188,14 @@ public class ZipFolder implements SpoonFolder {
 					continue;
 				}
 				// deflate in buffer
-				final int BUFFER = 2048;
-				f.getParentFile().mkdirs(); // Force parent directory creation, sometimes directory was not yet handled
-											// in the zip entry iteration
+				final int buffer = 2048;
+				// Force parent directory creation, sometimes directory was not yet handled
+				f.getParentFile().mkdirs();
+				// in the zip entry iteration
 				OutputStream output = new BufferedOutputStream(new FileOutputStream(f));
 				int count;
-				byte data[] = new byte[BUFFER];
-				while ((count = zipInput.read(data, 0, BUFFER)) != -1) {
+				byte data[] = new byte[buffer];
+				while ((count = zipInput.read(data, 0, buffer)) != -1) {
 					output.write(data, 0, count);
 				}
 				output.flush();
@@ -200,7 +203,7 @@ public class ZipFolder implements SpoonFolder {
 			}
 			zipInput.close();
 		} catch (Exception e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 	}
 }

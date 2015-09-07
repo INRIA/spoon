@@ -32,19 +32,21 @@ public class TypeReferenceScanner extends CtScanner {
 
 	/**
 	 * Constructor.
-	 * @param references a set to fill with the references
+	 *
+	 * @param references
+	 * 		a set to fill with the references
 	 */
 	public TypeReferenceScanner(HashSet<CtTypeReference<?>> references) {
 		this.references = references;
 	}
-	
+
 	/**
 	 * Returns the set of calculated references.
 	 */
 	public Set<CtTypeReference<?>> getReferences() {
 		return references;
 	}
-	
+
 	/**
 	 * Adds a reference.
 	 */
@@ -72,14 +74,14 @@ public class TypeReferenceScanner extends CtScanner {
 		exitReference(reference);
 	}
 
-//	public <T> boolean isImported(CtTypeReference<T> ref) {
-//		if (imports.containsKey(ref.getSimpleName())) {
-//			CtTypeReference<?> exist = imports.get(ref.getSimpleName());
-//			if (exist.getQualifiedName().equals(ref.getQualifiedName()))
-//				return true;
-//		}
-//		return false;
-//	}
+	//	public <T> boolean isImported(CtTypeReference<T> ref) {
+	//		if (imports.containsKey(ref.getSimpleName())) {
+	//			CtTypeReference<?> exist = imports.get(ref.getSimpleName());
+	//			if (exist.getQualifiedName().equals(ref.getQualifiedName()))
+	//				return true;
+	//		}
+	//		return false;
+	//	}
 
 	@Override
 	public <T> void visitCtExecutableReference(

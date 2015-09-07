@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -31,7 +31,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.SWITCH_CASES_
 public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtCase<? super S>> cases = EMPTY_LIST();
+	List<CtCase<? super S>> cases = emptyList();
 
 	CtExpression<S> expression;
 
@@ -68,7 +68,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 
 	@Override
 	public <T extends CtSwitch<S>> T addCase(CtCase<? super S> c) {
-		if (cases == CtElementImpl.<CtCase<? super S>> EMPTY_LIST()) {
+		if (cases == CtElementImpl.<CtCase<? super S>>emptyList()) {
 			cases = new ArrayList<CtCase<? super S>>(SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		c.setParent(this);
@@ -78,7 +78,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 
 	@Override
 	public boolean removeCase(CtCase<? super S> c) {
-		return cases != CtElementImpl.<CtCase<? super S>>EMPTY_LIST() && cases.remove(c);
+		return cases != CtElementImpl.<CtCase<? super S>>emptyList() && cases.remove(c);
 	}
 
 }

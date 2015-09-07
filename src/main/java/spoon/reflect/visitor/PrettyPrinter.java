@@ -24,15 +24,13 @@ public interface PrettyPrinter {
 	/**
 	 * Resets the buffering of results
 	 */
-	public void reset();
+	void reset();
 
-	   
 	/**
 	 * Calculates the resulting source file for a list of types. The source
 	 * compilation unit is required for calculating the line numbers mapping.
 	 */
-	void calculate(CompilationUnit sourceCompilationUnit,
-			List<CtType<?>> types);
+	void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types);
 
 	/**
 	 * Gets the line number mapping between the generated code and the original

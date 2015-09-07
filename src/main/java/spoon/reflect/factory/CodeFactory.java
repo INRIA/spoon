@@ -1,23 +1,21 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
 package spoon.reflect.factory;
-
-import java.util.*;
 
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
@@ -43,6 +41,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -51,6 +50,12 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This sub-factory contains utility methods to create code elements. To avoid
@@ -67,63 +72,50 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a binary operator.
-	 * 
+	 *
 	 * @param <T>
-	 *            the type of the expression
+	 * 		the type of the expression
 	 * @param left
-	 *            the left operand
+	 * 		the left operand
 	 * @param right
-	 *            the right operand
+	 * 		the right operand
 	 * @param kind
-	 *            the operator kind
+	 * 		the operator kind
 	 * @return a binary operator expression
 	 */
-	public <T> CtBinaryOperator<T> createBinaryOperator(CtExpression<?> left,
-														CtExpression<?> right,
-														BinaryOperatorKind kind) {
-		return factory.Core().<T>createBinaryOperator()
-					  .setLeftHandOperand(left)
-					  .setKind(kind)
-					  .setRightHandOperand(right);
+	public <T> CtBinaryOperator<T> createBinaryOperator(CtExpression<?> left, CtExpression<?> right, BinaryOperatorKind kind) {
+		return factory.Core().<T>createBinaryOperator().setLeftHandOperand(left).setKind(kind).setRightHandOperand(right);
 	}
 
 	/**
 	 * Creates a class access expression of the form <code>C.class</code>.
-	 * 
+	 *
 	 * @param <T>
-	 *            the actual type of the accessed class if available
+	 * 		the actual type of the accessed class if available
 	 * @param type
-	 *            a type reference to the accessed class
+	 * 		a type reference to the accessed class
 	 * @return the class access expression.
 	 */
 	public <T> CtFieldAccess<Class<T>> createClassAccess(CtTypeReference<T> type) {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		CtTypeReference<Class<T>> classType = (CtTypeReference) factory.Type()
-																	   .createReference(Class.class);
-		CtFieldReference<Class<T>> field = factory.Core().<Class<T>>createFieldReference()
-												  .setDeclaringType(type)
-												  .setType(classType)
-												  .setSimpleName("class");
-		return factory.Core().<Class<T>>createFieldRead()
-					  .<CtFieldRead<Class<T>>>setType(classType)
-					  .<CtFieldRead<Class<T>>>setVariable(field);
+		@SuppressWarnings({ "rawtypes", "unchecked" }) CtTypeReference<Class<T>> classType = (CtTypeReference) factory.Type().createReference(Class.class);
+		CtFieldReference<Class<T>> field = factory.Core().<Class<T>>createFieldReference().setDeclaringType(type).setType(classType).setSimpleName("class");
+		return factory.Core().<Class<T>>createFieldRead().<CtFieldRead<Class<T>>>setType(classType).<CtFieldRead<Class<T>>>setVariable(field);
 	}
 
 	/**
 	 * Creates an invocation (can be a statement or an expression).
-	 * 
+	 *
 	 * @param <T>
-	 *            the return type of the invoked method
+	 * 		the return type of the invoked method
 	 * @param target
-	 *            the target expression
+	 * 		the target expression
 	 * @param executable
-	 *            the invoked executable
+	 * 		the invoked executable
 	 * @param arguments
-	 *            the argument list
+	 * 		the argument list
 	 * @return the new invocation
 	 */
-	public <T> CtInvocation<T> createInvocation(CtExpression<?> target,
-			CtExecutableReference<T> executable, CtExpression<?>... arguments) {
+	public <T> CtInvocation<T> createInvocation(CtExpression<?> target, CtExecutableReference<T> executable, CtExpression<?>... arguments) {
 		List<CtExpression<?>> ext = new ArrayList<CtExpression<?>>(arguments.length);
 		Collections.addAll(ext, arguments);
 		return createInvocation(target, executable, ext);
@@ -142,22 +134,17 @@ public class CodeFactory extends SubFactory {
 	 * 		the argument list
 	 * @return the new invocation
 	 */
-	public <T> CtInvocation<T> createInvocation(CtExpression<?> target,
-												CtExecutableReference<T> executable,
-												List<CtExpression<?>> arguments) {
-		return factory.Core().<T>createInvocation()
-					  .<CtInvocation<T>>setTarget(target)
-					  .<CtInvocation<T>>setExecutable(executable)
-					  .setArguments(arguments);
+	public <T> CtInvocation<T> createInvocation(CtExpression<?> target, CtExecutableReference<T> executable, List<CtExpression<?>> arguments) {
+		return factory.Core().<T>createInvocation().<CtInvocation<T>>setTarget(target).<CtInvocation<T>>setExecutable(executable).setArguments(arguments);
 	}
 
 	/**
 	 * Creates a literal with a given value.
-	 * 
+	 *
 	 * @param <T>
-	 *            the type of the literal
+	 * 		the type of the literal
 	 * @param value
-	 *            the value of the literal
+	 * 		the value of the literal
 	 * @return a new literal
 	 */
 	public <T> CtLiteral<T> createLiteral(T value) {
@@ -175,11 +162,9 @@ public class CodeFactory extends SubFactory {
 		if (value.getClass().getComponentType().isArray()) {
 			throw new RuntimeException("can only create one-dimension arrays");
 		}
-		CtNewArray<T[]> array = factory.Core().<T[]>createNewArray()
-									   .setType(factory.Type().createArrayReference(
-											   factory.Type().createReference(
-													   (Class<T>) value.getClass()
-																	   .getComponentType())));
+		final CtTypeReference<T> componentTypeRef = factory.Type().createReference((Class<T>) value.getClass().getComponentType());
+		final CtArrayTypeReference<T[]> arrayReference = factory.Type().createArrayReference(componentTypeRef);
+		CtNewArray<T[]> array = factory.Core().<T[]>createNewArray().setType(arrayReference);
 		for (T e : value) {
 			CtLiteral<T> l = factory.Core().createLiteral();
 			l.setValue(e);
@@ -192,30 +177,24 @@ public class CodeFactory extends SubFactory {
 	 * Creates a local variable declaration.
 	 *
 	 * @param <T>
-	 *            the local variable type
+	 * 		the local variable type
 	 * @param type
-	 *            the reference to the type
+	 * 		the reference to the type
 	 * @param name
-	 *            the name of the variable
+	 * 		the name of the variable
 	 * @param defaultExpression
-	 *            the assigned default expression
+	 * 		the assigned default expression
 	 * @return a new local variable declaration
 	 */
-	public <T> CtLocalVariable<T> createLocalVariable(CtTypeReference<T> type,
-													  String name,
-													  CtExpression<T> defaultExpression) {
-		return factory.Core().<T>createLocalVariable()
-					  .<CtLocalVariable<T>>setSimpleName(name)
-					  .<CtLocalVariable<T>>setType(type)
-					  .setDefaultExpression(defaultExpression);
+	public <T> CtLocalVariable<T> createLocalVariable(CtTypeReference<T> type, String name, CtExpression<T> defaultExpression) {
+		return factory.Core().<T>createLocalVariable().<CtLocalVariable<T>>setSimpleName(name).<CtLocalVariable<T>>setType(type).setDefaultExpression(defaultExpression);
 	}
 
 	/**
 	 * Creates a local variable reference that points to an existing local
 	 * variable (strong referencing).
 	 */
-	public <T> CtLocalVariableReference<T> createLocalVariableReference(
-			CtLocalVariable<T> localVariable) {
+	public <T> CtLocalVariableReference<T> createLocalVariableReference(CtLocalVariable<T> localVariable) {
 		CtLocalVariableReference<T> ref = factory.Core().createLocalVariableReference();
 		ref.setType(localVariable.getType());
 		ref.setSimpleName(localVariable.getSimpleName());
@@ -227,8 +206,7 @@ public class CodeFactory extends SubFactory {
 	 * Creates a local variable reference with its name an type (weak
 	 * referencing).
 	 */
-	public <T> CtLocalVariableReference<T> createLocalVariableReference(CtTypeReference<T> type,
-																		String name) {
+	public <T> CtLocalVariableReference<T> createLocalVariableReference(CtTypeReference<T> type, String name) {
 		return factory.Core().<T>createLocalVariableReference().setType(type).setSimpleName(name);
 	}
 
@@ -236,17 +214,15 @@ public class CodeFactory extends SubFactory {
 	 * Creates a catch variable declaration.
 	 *
 	 * @param <T>
-	 *            the catch variable type
+	 * 		the catch variable type
 	 * @param type
-	 *            the reference to the type
+	 * 		the reference to the type
 	 * @param name
-	 *            the name of the variable
+	 * 		the name of the variable
 	 * @return a new catch variable declaration
 	 */
 	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name) {
-		return factory.Core().<T>createCatchVariable()
-					  .<CtCatchVariable<T>>setSimpleName(name)
-					  .setType(type);
+		return factory.Core().<T>createCatchVariable().<CtCatchVariable<T>>setSimpleName(name).setType(type);
 	}
 
 	/**
@@ -254,10 +230,8 @@ public class CodeFactory extends SubFactory {
 	 * variable (strong referencing).
 	 */
 	public <T> CtCatchVariableReference<T> createCatchVariableReference(CtCatchVariable<T> catchVariable) {
-		return factory.Core().<T>createCatchVariableReference()
-					  .setType(catchVariable.getType())
-					  .<CtCatchVariableReference<T>>setSimpleName(catchVariable.getSimpleName())
-					  .setDeclaration(catchVariable);
+		return factory.Core().<T>createCatchVariableReference().setType(catchVariable.getType()).<CtCatchVariableReference<T>>setSimpleName(catchVariable.getSimpleName())
+				.setDeclaration(catchVariable);
 	}
 
 	/**
@@ -274,12 +248,12 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates an access to a <code>this</code> variable (of the form
 	 * <code>type.this</code>).
-	 * 
+	 *
 	 * @param <T>
-	 *            the actual type of <code>this</code>
+	 * 		the actual type of <code>this</code>
 	 * @param type
-	 *            the reference to the type that holds the <code>this</code>
-	 *            variable
+	 * 		the reference to the type that holds the <code>this</code>
+	 * 		variable
 	 * @return a <code>type.this</code> expression
 	 */
 	public <T> CtThisAccess<T> createThisAccess(CtTypeReference<T> type) {
@@ -289,15 +263,13 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a variable access.
 	 */
-	public <T> CtVariableAccess<T> createVariableRead(CtVariableReference<T> variable,
-													boolean isStatic) {
+	public <T> CtVariableAccess<T> createVariableRead(CtVariableReference<T> variable, boolean isStatic) {
 		CtVariableAccess<T> va;
 		if (variable instanceof CtFieldReference) {
 			va = factory.Core().createFieldRead();
 			// creates a this target for non-static fields to avoid name conflicts...
 			if (!isStatic) {
-				((CtFieldAccess<T>) va).setTarget(
-						createThisAccess(((CtFieldReference<T>) variable).getDeclaringType()));
+				((CtFieldAccess<T>) va).setTarget(createThisAccess(((CtFieldReference<T>) variable).getDeclaringType()));
 			}
 		} else {
 			va = factory.Core().createVariableRead();
@@ -307,58 +279,50 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a list of variable accesses.
-	 * 
+	 *
 	 * @param variables
-	 *            the variables to be accessed
+	 * 		the variables to be accessed
 	 */
 	public List<CtExpression<?>> createVariableReads(List<? extends CtVariable<?>> variables) {
 		List<CtExpression<?>> result = new ArrayList<CtExpression<?>>(variables.size());
 		for (CtVariable<?> v : variables) {
-			result.add(createVariableRead(v.getReference(), v.getModifiers()
-															 .contains(ModifierKind.STATIC)));
+			result.add(createVariableRead(v.getReference(), v.getModifiers().contains(ModifierKind.STATIC)));
 		}
 		return result;
 	}
 
 	/**
 	 * Creates a variable assignment (can be an expression or a statement).
-	 * 
+	 *
 	 * @param <T>
-	 *            the type of the assigned variable
+	 * 		the type of the assigned variable
 	 * @param variable
-	 *            a reference to the assigned variable
+	 * 		a reference to the assigned variable
 	 * @param isStatic
-	 *            tells if the assigned variable is static or not
+	 * 		tells if the assigned variable is static or not
 	 * @param expression
-	 *            the assigned expression
+	 * 		the assigned expression
 	 * @return a variable assignment
 	 */
-	public <A, T extends A> CtAssignment<A, T> createVariableAssignment(
-			CtVariableReference<A> variable, boolean isStatic, CtExpression<T> expression) {
+	public <A, T extends A> CtAssignment<A, T> createVariableAssignment(CtVariableReference<A> variable, boolean isStatic, CtExpression<T> expression) {
 		CtVariableAccess<A> vaccess = createVariableRead(variable, isStatic);
-		return factory.Core().<A, T>createAssignment()
-					  .<CtAssignment<A, T>>setAssignment(expression)
-					  .setAssigned(vaccess);
+		return factory.Core().<A, T>createAssignment().<CtAssignment<A, T>>setAssignment(expression).setAssigned(vaccess);
 	}
 
 	/**
 	 * Creates a list of statements that contains the assignments of a set of
 	 * variables.
-	 * 
+	 *
 	 * @param variables
-	 *            the variables to be assigned
+	 * 		the variables to be assigned
 	 * @param expressions
-	 *            the assigned expressions
+	 * 		the assigned expressions
 	 * @return a list of variable assignments
 	 */
-	public <T> CtStatementList createVariableAssignments(
-			List<? extends CtVariable<T>> variables, List<? extends CtExpression<T>> expressions) {
+	public <T> CtStatementList createVariableAssignments(List<? extends CtVariable<T>> variables, List<? extends CtExpression<T>> expressions) {
 		CtStatementList result = factory.Core().createStatementList();
 		for (int i = 0; i < variables.size(); i++) {
-			result.addStatement(createVariableAssignment(
-					variables.get(i).getReference(),
-					variables.get(i).getModifiers()
-							.contains(ModifierKind.STATIC), expressions.get(i)));
+			result.addStatement(createVariableAssignment(variables.get(i).getReference(), variables.get(i).getModifiers().contains(ModifierKind.STATIC), expressions.get(i)));
 		}
 		return result;
 	}
@@ -378,13 +342,9 @@ public class CodeFactory extends SubFactory {
 	 * 		Generic type for the type of the field.
 	 * @return a field
 	 */
-	public <T> CtField<T> createCtField(String name, CtTypeReference<T> type,
-										String exp, ModifierKind... visibilities) {
-		return factory.Core().createField()
-					  .<CtField<T>>setModifiers(modifiers(visibilities))
-					  .<CtField<T>>setSimpleName(name)
-					  .<CtField<T>>setType(type)
-					  .setDefaultExpression(this.<T>createCodeSnippetExpression(exp));
+	public <T> CtField<T> createCtField(String name, CtTypeReference<T> type, String exp, ModifierKind... visibilities) {
+		return factory.Core().createField().<CtField<T>>setModifiers(modifiers(visibilities)).<CtField<T>>setSimpleName(name).<CtField<T>>setType(type)
+				.setDefaultExpression(this.<T>createCodeSnippetExpression(exp));
 	}
 
 	/**
@@ -408,8 +368,7 @@ public class CodeFactory extends SubFactory {
 	 * @return a throw.
 	 */
 	public CtThrow createCtThrow(String thrownExp) {
-		return factory.Core().createThrow().setThrownExpression(
-				this.<Throwable>createCodeSnippetExpression(thrownExp));
+		return factory.Core().createThrow().setThrownExpression(this.<Throwable>createCodeSnippetExpression(thrownExp));
 	}
 
 	/**
@@ -423,15 +382,10 @@ public class CodeFactory extends SubFactory {
 	 * 		Content of the catch.
 	 * @return a catch.
 	 */
-	public CtCatch createCtCatch(String nameCatch, Class<? extends Throwable> exception,
-								 CtBlock<?> ctBlock) {
-		final CtCatchVariable<Throwable> catchVariable = factory.Core()
-																.<Throwable>createCatchVariable()
-																.<CtCatchVariable<Throwable>>setType(this.<Throwable>createCtTypeReference(exception))
-																.setSimpleName(nameCatch);
-		return factory.Core().createCatch()
-					  .setParameter(catchVariable)
-					  .setBody(ctBlock);
+	public CtCatch createCtCatch(String nameCatch, Class<? extends Throwable> exception, CtBlock<?> ctBlock) {
+		final CtCatchVariable<Throwable> catchVariable = factory.Core().<Throwable>createCatchVariable().<CtCatchVariable<Throwable>>setType(this.<Throwable>createCtTypeReference(exception))
+				.setSimpleName(nameCatch);
+		return factory.Core().createCatch().setParameter(catchVariable).setBody(ctBlock);
 	}
 
 	/**
@@ -444,9 +398,7 @@ public class CodeFactory extends SubFactory {
 	 * @return a type reference.
 	 */
 	public <T> CtTypeReference<T> createCtTypeReference(Class<?> originalClass) {
-		return factory.Core().<T>createTypeReference()
-					  .<CtTypeReference<T>>setSimpleName(originalClass.getSimpleName())
-					  .setPackage(createCtPackageReference(originalClass.getPackage()));
+		return factory.Core().<T>createTypeReference().<CtTypeReference<T>>setSimpleName(originalClass.getSimpleName()).setPackage(createCtPackageReference(originalClass.getPackage()));
 	}
 
 	/**
@@ -462,13 +414,13 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Gets a list of references from a list of elements.
-	 * 
+	 *
 	 * @param <R>
-	 *            the expected reference type
+	 * 		the expected reference type
 	 * @param <E>
-	 *            the element type
+	 * 		the element type
 	 * @param elements
-	 *            the element list
+	 * 		the element list
 	 * @return the corresponding list of references
 	 */
 	@SuppressWarnings("unchecked")
@@ -482,9 +434,9 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a modifier set.
-	 * 
+	 *
 	 * @param modifiers
-	 *            to put in set
+	 * 		to put in set
 	 * @return Set of given modifiers
 	 */
 	public Set<ModifierKind> modifiers(ModifierKind... modifiers) {
@@ -495,15 +447,14 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a Code Snippet expression.
-	 * 
+	 *
 	 * @param <T>
-	 *            The type of the expression represented by the CodeSnippet
+	 * 		The type of the expression represented by the CodeSnippet
 	 * @param expression
-	 *            The string that contains the expression.
+	 * 		The string that contains the expression.
 	 * @return a new CtCodeSnippetExpression.
 	 */
-	public <T> CtCodeSnippetExpression<T> createCodeSnippetExpression(
-			String expression) {
+	public <T> CtCodeSnippetExpression<T> createCodeSnippetExpression(String expression) {
 		CtCodeSnippetExpression<T> e = factory.Core().createCodeSnippetExpression();
 		e.setValue(expression);
 		return e;
@@ -511,9 +462,9 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Creates a Code Snippet statement.
-	 * 
+	 *
 	 * @param statement
-	 *            The String containing the statement.
+	 * 		The String containing the statement.
 	 * @return a new CtCodeSnippetStatement
 	 */
 	public CtCodeSnippetStatement createCodeSnippetStatement(String statement) {

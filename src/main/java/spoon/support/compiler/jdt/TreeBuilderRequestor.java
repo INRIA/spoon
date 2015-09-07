@@ -17,10 +17,9 @@ public class TreeBuilderRequestor implements ICompilerRequestor {
 
 	public void acceptResult(CompilationResult result) {
 		if (result.hasErrors()) {
-			for (CategorizedProblem problem: result.problems) {
-			  this.jdtCompiler.reportProblem(problem);
+			for (CategorizedProblem problem : result.problems) {
+				this.jdtCompiler.reportProblem(problem);
 			}
 		}
 	}
-
 }

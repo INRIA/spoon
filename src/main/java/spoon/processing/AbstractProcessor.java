@@ -35,8 +35,7 @@ import spoon.support.util.RtHelper;
  * This class defines an abstract processor to be subclassed by the user for
  * defining new processors.
  */
-public abstract class AbstractProcessor<E extends CtElement> implements
-		Processor<E> {
+public abstract class AbstractProcessor<E extends CtElement> implements Processor<E> {
 
 	Factory factory;
 
@@ -49,8 +48,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	public AbstractProcessor() {
 		super();
 		for (Method m : getClass().getMethods()) {
-			if (m.getName().equals("process")
-					&& (m.getParameterTypes().length == 1)) {
+			if ("process".equals(m.getName()) && (m.getParameterTypes().length == 1)) {
 				Class<?> c = m.getParameterTypes()[0];
 				if (CtElement.class != c) {
 					addProcessedElementType((Class<E>) c);
@@ -66,8 +64,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	 * Adds a processed element type. This method is typically invoked in
 	 * subclasses' constructors.
 	 */
-	protected void addProcessedElementType(
-			Class<? extends CtElement> elementType) {
+	protected void addProcessedElementType(Class<? extends CtElement> elementType) {
 		processedElementTypes.add(elementType);
 	}
 
@@ -97,31 +94,18 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	public static ProcessorProperties loadProperties(Processor<?> p) {
 		ProcessorProperties props = null;
 		try {
-			props = p.getFactory().getEnvironment()
-					.getProcessorProperties(p.getClass().getName());
+			props = p.getFactory().getEnvironment().getProcessorProperties(p.getClass().getName());
 		} catch (FileNotFoundException e) {
-			p.getFactory()
-					.getEnvironment()
-					.debugMessage(
-							"property file not found for processor '"
-									+ p.getClass().getName() + "'");
+			p.getFactory().getEnvironment()
+					.debugMessage("property file not found for processor '" + p.getClass().getName() + "'");
 		} catch (IOException e) {
-			p.getFactory()
-					.getEnvironment()
-					.report(p,
-							Level.ERROR,
-							"wrong properties file format for processor '"
-									+ p.getClass().getName() + "'");
-			Launcher.logger.error(e.getMessage(), e);
+			p.getFactory().getEnvironment().report(p, Level.ERROR,
+					"wrong properties file format for processor '" + p.getClass().getName() + "'");
+			Launcher.LOGGER.error(e.getMessage(), e);
 		} catch (Exception e) {
-			p.getFactory()
-					.getEnvironment()
-					.report(p,
-							Level.ERROR,
-							"unable to get properties for processor '"
-									+ p.getClass().getName() + "': "
-									+ e.getMessage());
-			Launcher.logger.error(e.getMessage(), e);
+			p.getFactory().getEnvironment().report(p, Level.ERROR,
+					"unable to get properties for processor '" + p.getClass().getName() + "': " + e.getMessage());
+			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 		return props;
 	}
@@ -145,8 +129,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	/**
 	 * Helper method to initialize the properties of a given processor.
 	 */
-	public static void initProperties(Processor<?> p,
-			ProcessorProperties properties) {
+	public static void initProperties(Processor<?> p, ProcessorProperties properties) {
 		if (properties != null) {
 			for (Field f : RtHelper.getAllFields(p.getClass())) {
 				if (f.isAnnotationPresent(Property.class)) {
@@ -156,17 +139,12 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 						try {
 							f.set(p, obj);
 						} catch (Exception e) {
-							Launcher.logger.error(e.getMessage(), e);
+							Launcher.LOGGER.error(e.getMessage(), e);
 						}
 					} else {
-						p.getFactory()
-								.getEnvironment()
-								.report(p,
-										Level.WARN,
-										"No value found for property '"
-												+ f.getName()
-												+ "' in processor "
-												+ p.getClass().getName());
+						p.getFactory().getEnvironment().report(p, Level.WARN,
+								"No value found for property '" + f.getName() + "' in processor " + p.getClass()
+										.getName());
 					}
 				}
 			}
@@ -187,8 +165,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements
 	/**
 	 * Removes a processed element type.
 	 */
-	protected void removeProcessedElementType(
-			Class<? extends CtElement> elementType) {
+	protected void removeProcessedElementType(Class<? extends CtElement> elementType) {
 		processedElementTypes.remove(elementType);
 	}
 

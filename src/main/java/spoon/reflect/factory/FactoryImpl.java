@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -55,197 +55,211 @@ public class FactoryImpl implements Factory, Serializable {
 		return parentFactory;
 	}
 
-	private transient AnnotationFactory Annotation;
+	private transient AnnotationFactory annotation;
 
 	/**
 	 * The {@link CtAnnotationType} sub-factory.
 	 */
+	@Override
 	public AnnotationFactory Annotation() {
-		if (Annotation == null) {
-			Annotation = new AnnotationFactory(this);
+		if (annotation == null) {
+			annotation = new AnnotationFactory(this);
 		}
-		return Annotation;
+		return annotation;
 	}
 
-	private transient ClassFactory Class;
+	private transient ClassFactory clazz;
 
 	/**
 	 * The {@link CtClass} sub-factory.
 	 */
+	@Override
 	public ClassFactory Class() {
-		if (Class == null) {
-			Class = new ClassFactory(this);
+		if (clazz == null) {
+			clazz = new ClassFactory(this);
 		}
-		return Class;
+		return clazz;
 	}
 
-	private transient CodeFactory Code;
+	private transient CodeFactory code;
 
 	/**
 	 * The {@link spoon.reflect.code.CtCodeElement} sub-factory.
 	 */
+	@Override
 	public CodeFactory Code() {
-		if (Code == null) {
-			Code = new CodeFactory(this);
+		if (code == null) {
+			code = new CodeFactory(this);
 		}
-		return Code;
+		return code;
 	}
 
-	private transient ConstructorFactory Constructor;
+	private transient ConstructorFactory constructor;
 
 	/**
 	 * The {@link CtConstructor} sub-factory.
 	 */
+	@Override
 	public ConstructorFactory Constructor() {
-		if (Constructor == null) {
-			Constructor = new ConstructorFactory(this);
+		if (constructor == null) {
+			constructor = new ConstructorFactory(this);
 		}
-		return Constructor;
+		return constructor;
 	}
 
-	private transient CoreFactory Core;
+	private transient CoreFactory core;
 
 	/**
 	 * The core factory.
 	 */
+	@Override
 	public CoreFactory Core() {
-		if (Core == null) {
-			Core = new DefaultCoreFactory();
+		if (core == null) {
+			core = new DefaultCoreFactory();
 		}
-		return Core;
+		return core;
 	}
 
-	private transient EnumFactory Enum;
+	private transient EnumFactory enumF;
 
 	/**
 	 * The {@link CtEnum} sub-factory.
 	 */
+	@Override
 	public EnumFactory Enum() {
-		if (Enum == null) {
-			Enum = new EnumFactory(this);
+		if (enumF == null) {
+			enumF = new EnumFactory(this);
 		}
-		return Enum;
+		return enumF;
 	}
 
-	private transient Environment Environment;
+	private transient Environment environment;
 
 	/**
 	 * Gets the Spoon environment that encloses this factory.
 	 */
+	@Override
 	public Environment getEnvironment() {
-		if (Environment == null) {
-			Environment = new StandardEnvironment();
+		if (environment == null) {
+			environment = new StandardEnvironment();
 		}
-		return Environment;
+		return environment;
 	}
 
-	private transient ExecutableFactory Executable;
+	private transient ExecutableFactory executable;
 
 	/**
 	 * The {@link CtExecutable} sub-factory.
 	 */
+	@Override
 	public ExecutableFactory Executable() {
-		if (Executable == null) {
-			Executable = new ExecutableFactory(this);
+		if (executable == null) {
+			executable = new ExecutableFactory(this);
 		}
-		return Executable;
+		return executable;
 	}
 
-	private transient EvalFactory Eval;
+	private transient EvalFactory eval;
 
 	/**
 	 * The evaluators sub-factory.
 	 */
+	@Override
 	public EvalFactory Eval() {
-		if (Eval == null) {
-			Eval = new EvalFactory(this);
+		if (eval == null) {
+			eval = new EvalFactory(this);
 		}
-		return Eval;
+		return eval;
 	}
 
-	private transient FieldFactory Field;
+	private transient FieldFactory field;
 
 	/**
 	 * The {@link CtField} sub-factory.
 	 */
+	@Override
 	public FieldFactory Field() {
-		if (Field == null) {
-			Field = new FieldFactory(this);
+		if (field == null) {
+			field = new FieldFactory(this);
 		}
-		return Field;
+		return field;
 	}
 
 	/**
 	 * The {@link CtInterface} sub-factory.
 	 */
-	private transient InterfaceFactory Interface;
+	private transient InterfaceFactory interfaceF;
 
 	/**
 	 * The {@link CtInterface} sub-factory.
 	 */
+	@Override
 	public InterfaceFactory Interface() {
-		if (Interface == null) {
-			Interface = new InterfaceFactory(this);
+		if (interfaceF == null) {
+			interfaceF = new InterfaceFactory(this);
 		}
-		return Interface;
+		return interfaceF;
 	}
 
-	private transient MethodFactory Method;
+	private transient MethodFactory methodF;
 
 	/**
 	 * The {@link CtMethod} sub-factory.
 	 */
+	@Override
 	public MethodFactory Method() {
-		if (Method == null) {
-			Method = new MethodFactory(this);
+		if (methodF == null) {
+			methodF = new MethodFactory(this);
 		}
-		return Method;
+		return methodF;
 	}
 
-	private PackageFactory Package;
+	private PackageFactory packageF;
 
 	/**
 	 * The {@link CtPackage} sub-factory.
 	 */
+	@Override
 	public PackageFactory Package() {
-		if (Package == null) {
-			Package = new PackageFactory(this);
+		if (packageF == null) {
+			packageF = new PackageFactory(this);
 		}
-		return Package;
+		return packageF;
 	}
 
-	private CompilationUnitFactory CompilationUnit;
+	private CompilationUnitFactory compilationUnit;
 
 	/**
 	 * The {@link CompilationUnit} sub-factory.
 	 */
+	@Override
 	public CompilationUnitFactory CompilationUnit() {
-		if (CompilationUnit == null) {
-			CompilationUnit = new CompilationUnitFactory(this);
+		if (compilationUnit == null) {
+			compilationUnit = new CompilationUnitFactory(this);
 		}
-		return CompilationUnit;
+		return compilationUnit;
 	}
 
-	private transient TypeFactory Type;
+	private transient TypeFactory type;
 
 	/**
 	 * The {@link CtType} sub-factory.
 	 */
+	@Override
 	public TypeFactory Type() {
-		if (Type == null) {
-			Type = new TypeFactory(this);
+		if (type == null) {
+			type = new TypeFactory(this);
 		}
-		return Type;
+		return type;
 	}
 
 	/**
 	 * A constructor that takes the parent factory
 	 */
-	public FactoryImpl(CoreFactory coreFactory, Environment environment,
-			Factory parentFactory) {
-		this.Environment = environment;
-		this.Core = coreFactory;
-		this.Core.setMainFactory(this);
+	public FactoryImpl(CoreFactory coreFactory, Environment environment, Factory parentFactory) {
+		this.environment = environment;
+		this.core = coreFactory;
+		this.core.setMainFactory(this);
 		this.parentFactory = parentFactory;
 	}
 
@@ -255,11 +269,10 @@ public class FactoryImpl implements Factory, Serializable {
 	public FactoryImpl(CoreFactory coreFactory, Environment environment) {
 		this(coreFactory, environment, null);
 	}
-	
-	
+
 	// Deduplication
 	// See http://shipilev.net/talks/joker-Oct2014-string-catechism.pdf
-	
+
 	private static class Dedup {
 		Map<String, String> cache = new HashMap<String, String>();
 		// TODO replace with ThreadLocalRandom when Spoon drops Java 6 compat
@@ -271,17 +284,16 @@ public class FactoryImpl implements Factory, Serializable {
 	 * targeted to each Spoon Launching, that could differ a lot by
 	 * frequently used symbols.
 	 */
-	private transient ThreadLocal<Dedup> threadLocalDedup =
-			new ThreadLocal<Dedup>() {
-				@Override
-				protected Dedup initialValue() {
-					return new Dedup();
-				}
-			};
+	private transient ThreadLocal<Dedup> threadLocalDedup = new ThreadLocal<Dedup>() {
+		@Override
+		protected Dedup initialValue() {
+			return new Dedup();
+		}
+	};
 
 	/**
 	 * Returns a String equal to the given symbol. Performs probablilistic
-	 * deduplication. 
+	 * deduplication.
 	 */
 	public String dedup(String symbol) {
 		Dedup dedup = threadLocalDedup.get();

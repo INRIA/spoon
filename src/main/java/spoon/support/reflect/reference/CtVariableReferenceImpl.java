@@ -64,6 +64,11 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 	}
 
 	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
 	protected AnnotatedElement getActualAnnotatedElement() {
 		// this is never available through reflection
 		return null;

@@ -11,20 +11,15 @@ import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 
-class TreeBuilderCompiler extends
-		org.eclipse.jdt.internal.compiler.Compiler {
+class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
-	public TreeBuilderCompiler(INameEnvironment environment,
-			IErrorHandlingPolicy policy, CompilerOptions options,
-			ICompilerRequestor requestor,
-			IProblemFactory problemFactory, PrintWriter out,
+	TreeBuilderCompiler(INameEnvironment environment, IErrorHandlingPolicy policy, CompilerOptions options,
+			ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,
 			CompilationProgress progress) {
-		super(environment, policy, options, requestor, problemFactory,
-				out, progress);
+		super(environment, policy, options, requestor, problemFactory, out, progress);
 	}
 
-	public CompilationUnitDeclaration[] buildUnits(
-			CompilationUnit[] sourceUnits) {
+	public CompilationUnitDeclaration[] buildUnits(CompilationUnit[] sourceUnits) {
 
 		// //////////////////////////////////////////////////////////////////////////
 		// This code is largely inspired from JDT's
@@ -43,13 +38,14 @@ class TreeBuilderCompiler extends
 			this.parser.getMethodBodies(unit);
 
 			// fault in fields & methods
-			if (unit.scope != null)
+			if (unit.scope != null) {
 				unit.scope.faultInTypes();
+			}
 
 			// verify inherited methods
-			if (unit.scope != null)
-				unit.scope.verifyMethods(lookupEnvironment
-						.methodVerifier());
+			if (unit.scope != null) {
+				unit.scope.verifyMethods(lookupEnvironment.methodVerifier());
+			}
 
 			// type checking
 			unit.resolve();

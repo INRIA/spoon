@@ -26,11 +26,11 @@ import java.util.ArrayList;
  */
 public final class ModelElementContainerDefaultCapacities {
 	/*
-     * Author Roman Leventov
-     *  
+	 * Author Roman Leventov
+     *
      * Some element types were analyzed through JDK 7 sources,
      * others chosen for my feelings only.
-     * 
+     *
      * For those I have precise averages, I choose to take a ceiling of that
      * average as the default capacity. This choice is biased towards performing
      * less container resizes, rather deadly memory efficiency. Not sure this is

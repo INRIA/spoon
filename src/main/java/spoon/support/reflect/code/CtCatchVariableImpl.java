@@ -13,9 +13,13 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities
+		.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
@@ -24,9 +28,9 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	CtTypeReference<T> type;
 
-	List<CtTypeReference<?>> types = EMPTY_LIST();
+	List<CtTypeReference<?>> types = emptyList();
 
-	Set<ModifierKind> modifiers = CtElementImpl.EMPTY_SET();
+	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -72,7 +76,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <T extends CtMultiTypedElement> T addMultiType(CtTypeReference<?> ref) {
-		if (types == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
+		if (types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			types = new ArrayList<CtTypeReference<?>>(
 					CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -108,7 +112,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		modifiers.add(modifier);
@@ -122,7 +126,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);
@@ -134,12 +138,15 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC))
+		if (getModifiers().contains(ModifierKind.PUBLIC)) {
 			return ModifierKind.PUBLIC;
-		if (getModifiers().contains(ModifierKind.PROTECTED))
+		}
+		if (getModifiers().contains(ModifierKind.PROTECTED)) {
 			return ModifierKind.PROTECTED;
-		if (getModifiers().contains(ModifierKind.PRIVATE))
+		}
+		if (getModifiers().contains(ModifierKind.PRIVATE)) {
 			return ModifierKind.PRIVATE;
+		}
 		return null;
 	}
 }

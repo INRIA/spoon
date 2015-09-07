@@ -14,10 +14,10 @@ public interface CtCodeSnippetStatement extends CtCodeSnippet, CtStatement {
 	/**
 	 * Compiles this statement code snippet to produce the corresponding AST
 	 * statement.
-	 * 
+	 *
 	 * @return a statement
 	 * @throws SnippetCompilationError
-	 *             when the current snippet is not valid Java code
+	 * 		when the current snippet is not valid Java code
 	 */
 	<S extends CtStatement> S compile() throws SnippetCompilationError;
 

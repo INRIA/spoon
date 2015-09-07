@@ -37,8 +37,11 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 			switch (role) {
 			case BODY:
 				if (e.getBody() != null) {
-					if (getArguments().containsKey("index") && e.getBody().getStatements().size() > Integer
-							.parseInt(getArguments().get("index"))) {
+					if (getArguments().containsKey("index")
+							&& e.getBody()
+								.getStatements()
+								.size() > Integer.parseInt(
+							getArguments().get("index"))) {
 						matchs.add(e.getBody().getStatements().get(Integer
 								.parseInt(getArguments().get("index"))));
 					} else {

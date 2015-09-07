@@ -54,7 +54,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 		clearProcessedElementType();
 
 		for (Method m : getClass().getMethods()) {
-			if (m.getName().equals("process")
+			if ("process".equals(m.getName())
 					&& (m.getParameterTypes().length == 2)) {
 				Class<?> c = m.getParameterTypes()[0];
 				if (inferConsumedAnnotationType() && (Annotation.class != c)) {
@@ -79,7 +79,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	 * A consumed annotation type is also part of the processed annotation
 	 * types.
 	 */
-	final protected void addConsumedAnnotationType(
+	protected final void addConsumedAnnotationType(
 			Class<? extends A> annotationType) {
 		addProcessedAnnotationType(annotationType);
 		consumedAnnotationTypes.put(annotationType.getName(), annotationType);
@@ -88,7 +88,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	/**
 	 * Adds a processed annotation type (to be used in subclasses constructors).
 	 */
-	final protected void addProcessedAnnotationType(
+	protected final void addProcessedAnnotationType(
 			Class<? extends A> annotationType) {
 		processedAnnotationTypes.put(annotationType.getName(), annotationType);
 	}
@@ -96,7 +96,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	/**
 	 * Removes a processed annotation type.
 	 */
-	final protected void removeProcessedAnnotationType(
+	protected final void removeProcessedAnnotationType(
 			Class<? extends A> annotationType) {
 		processedAnnotationTypes.remove(annotationType.getName());
 	}
@@ -104,32 +104,30 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	/**
 	 * Clears the processed annotation types.
 	 */
-	final protected void clearProcessedAnnotationTypes() {
+	protected final void clearProcessedAnnotationTypes() {
 		processedAnnotationTypes.clear();
 	}
 
 	/**
 	 * Clears the consumed annotation types.
 	 */
-	final protected void clearConsumedAnnotationTypes() {
+	protected final void clearConsumedAnnotationTypes() {
 		consumedAnnotationTypes.clear();
 	}
 
 	/**
 	 * Removes a processed annotation type.
 	 */
-	final protected void removeConsumedAnnotationType(
-			Class<? extends A> annotationType) {
+	protected final void removeConsumedAnnotationType(Class<? extends A> annotationType) {
 		consumedAnnotationTypes.remove(annotationType.getName());
 	}
 
-	final public Set<Class<? extends A>> getConsumedAnnotationTypes() {
+	public final Set<Class<? extends A>> getConsumedAnnotationTypes() {
 		return new TreeSet<Class<? extends A>>(consumedAnnotationTypes.values());
 	}
 
-	final public Set<Class<? extends A>> getProcessedAnnotationTypes() {
-		return new TreeSet<Class<? extends A>>(
-				processedAnnotationTypes.values());
+	public final Set<Class<? extends A>> getProcessedAnnotationTypes() {
+		return new TreeSet<Class<? extends A>>(processedAnnotationTypes.values());
 	}
 
 	public boolean inferConsumedAnnotationType() {
@@ -141,7 +139,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	 * processed.
 	 */
 	@Override
-	final public boolean isToBeProcessed(E element) {
+	public final boolean isToBeProcessed(E element) {
 		boolean isToBeProcessed = false;
 		if ((element != null) && (element.getAnnotations() != null)) {
 			for (CtAnnotation<? extends Annotation> a : element.getAnnotations()) {
@@ -161,7 +159,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	}
 
 	@SuppressWarnings("unchecked")
-	final public void process(E element) {
+	public final void process(E element) {
 		boolean alreadyProcessed = false;
 		for (CtAnnotation<? extends Annotation> annotation : visitor.getAnnotations()) {
 			if (shoudBeProcessed(annotation)) {
@@ -169,7 +167,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 					process((A) annotation.getActualAnnotation(), element);
 					alreadyProcessed = true;
 				} catch (Exception e) {
-					Launcher.logger.error(e.getMessage(), e);
+					Launcher.LOGGER.error(e.getMessage(), e);
 				}
 				if (shoudBeConsumed(annotation)) {
 					element.removeAnnotation(annotation);
@@ -183,7 +181,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 					try {
 						process((A) annotation.getActualAnnotation(), element);
 					} catch (Exception e) {
-						Launcher.logger.error(e.getMessage(), e);
+						Launcher.LOGGER.error(e.getMessage(), e);
 					}
 					if (shoudBeConsumed(annotation)) {
 						element.removeAnnotation(annotation);
@@ -195,19 +193,19 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * Removes all annotations A on elements E.
 	 */
 	@Override
 	public boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation) {
-		return consumedAnnotationTypes.containsKey(annotation.getAnnotationType()
-															 .getQualifiedName());
+		return consumedAnnotationTypes.containsKey(
+				annotation.getAnnotationType().getQualifiedName());
 	}
 
 	protected boolean shoudBeProcessed(
 			CtAnnotation<? extends Annotation> annotation) {
-		return processedAnnotationTypes.containsKey(annotation.getAnnotationType()
-															  .getQualifiedName());
+		return processedAnnotationTypes.containsKey(
+				annotation.getAnnotationType().getQualifiedName());
 	}
 
 }

@@ -5,7 +5,7 @@ import spoon.reflect.visitor.Filter;
 
 /**
  * Filters elements by name (for instance to find a method). Example:
- * 
+ *
  * <pre>
  * CtMethod&lt;?&gt; normalFor = type.getElements(
  * 		new NameFilter&lt;CtMethod&lt;?&gt;&gt;(&quot;normalFor&quot;)).get(0);

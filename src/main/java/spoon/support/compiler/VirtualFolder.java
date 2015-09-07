@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -28,26 +28,27 @@ import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 
 public class VirtualFolder implements SpoonFolder {
-	final private Set<SpoonFile> files = new HashSet<SpoonFile>();
-	final private Set<SpoonFolder> folders = new HashSet<SpoonFolder>();
+	private final Set<SpoonFile> files = new HashSet<SpoonFile>();
+	private final Set<SpoonFolder> folders = new HashSet<SpoonFolder>();
 
-	@Override	
+	@Override
 	public void addFile(SpoonFile o) {
 		files.add(o);
 	}
 
-	@Override	
+	@Override
 	public void addFolder(SpoonFolder o) {
 		folders.add(o);
 	}
 
-	@Override	
+	@Override
 	public List<SpoonFile> getAllFiles() {
 		List<SpoonFile> result = new ArrayList<SpoonFile>();
-		for (SpoonFolder f : folders)
+		for (SpoonFolder f : folders) {
 			result.addAll(f.getAllFiles());
-		
-		for (SpoonFile f: getFiles()) {
+		}
+
+		for (SpoonFile f : getFiles()) {
 			// we take care not to add a file that was already found in a folder
 			if (!result.contains(f)) {
 				result.add(f);
@@ -56,43 +57,45 @@ public class VirtualFolder implements SpoonFolder {
 		return result;
 	}
 
-	@Override	
+	@Override
 	public List<SpoonFile> getAllJavaFiles() {
 		List<SpoonFile> result = new ArrayList<SpoonFile>();
 
-		for (SpoonFile f : getAllFiles())
-			if (f.isJava())
+		for (SpoonFile f : getAllFiles()) {
+			if (f.isJava()) {
 				result.add(f);
-		
+			}
+		}
+
 		return result;
 	}
 
-	@Override	
+	@Override
 	public List<SpoonFile> getFiles() {
 		return Collections.unmodifiableList(new ArrayList<SpoonFile>(files));
 	}
 
-	@Override	
+	@Override
 	public String getName() {
 		return "Virtual directory";
 	}
 
-	@Override	
+	@Override
 	public SpoonFolder getParent() {
 		return null;
 	}
 
-	@Override	
+	@Override
 	public List<SpoonFolder> getSubFolders() {
 		return Collections.unmodifiableList(new ArrayList<SpoonFolder>(folders));
 	}
 
-	@Override	
+	@Override
 	public boolean isFile() {
 		return false;
 	}
 
-	@Override	
+	@Override
 	public String getPath() {
 		// it has to be real path for snippet building
 		return ".";
@@ -107,15 +110,15 @@ public class VirtualFolder implements SpoonFolder {
 	public boolean isArchive() {
 		return false;
 	}
-	
+
 	@Override
 	public File toFile() {
 		return null;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "<virtual folder>: "+super.toString();
+		return "<virtual folder>: " + super.toString();
 	}
-		
+
 }

@@ -75,8 +75,8 @@ public class CtPathBuilder {
 
 	/**
 	 * Match on elements by their role.
-	 * 
-	 * @see  spoon.reflect.path.CtPathRole
+	 *
+	 * @see spoon.reflect.path.CtPathRole
 	 */
 	public CtPathBuilder role(CtPathRole role, String[]... args) {
 		CtRolePathElement e = new CtRolePathElement(role);

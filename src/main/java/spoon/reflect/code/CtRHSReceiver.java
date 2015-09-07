@@ -2,8 +2,9 @@ package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtField;
 
-/** Represents the right hand side of an assignment 
- * 
+/**
+ * Represents the right hand side of an assignment
+ *
  * See {@link CtAssignment}, {@link CtLocalVariable}, {@link CtField}
  */
 public interface CtRHSReceiver<A> {

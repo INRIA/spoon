@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -25,8 +25,9 @@ import spoon.reflect.declaration.CtTypeInformation;
  * This interface defines a reference to a
  * {@link spoon.reflect.declaration.CtType} or sub-type.
  */
-public interface CtTypeReference<T> extends CtReference,
-		CtGenericElementReference, CtTypeAnnotableReference, CtTypeInformation {
+public interface CtTypeReference<T>
+		extends CtReference, CtGenericElementReference,
+				CtTypeAnnotableReference, CtTypeInformation {
 
 	/**
 	 * The name of the null type ("&lt;nulltype&gt;").
@@ -35,11 +36,11 @@ public interface CtTypeReference<T> extends CtReference,
 
 	/**
 	 * Gets the Java runtime class of the referenced type.
-	 * 
+	 *
 	 * @return the Java class or null if the class is not found (not in
-	 *         classpath)
-	 *         
-	 * @throws spoon.support.reflect.reference.SpoonClassNotFoundException if the class is not in the classpath
+	 * classpath)
+	 * @throws spoon.support.reflect.reference.SpoonClassNotFoundException
+	 * 		if the class is not in the classpath
 	 */
 	Class<T> getActualClass();
 
@@ -47,23 +48,23 @@ public interface CtTypeReference<T> extends CtReference,
 	 * Returns the {@link CtElement}, a {@link CtType}, that corresponds to the
 	 * reference or <code>null</code> if the type declaration is not in the
 	 * analyzed source files.
-	 * 
+	 *
 	 * @return the referenced element or <code>null</code> if the type
-	 *         declaration is not the analyzed source files.
+	 * declaration is not the analyzed source files.
 	 */
 	CtType<T> getDeclaration();
 
 	/**
 	 * Gets the type that declares the referenced type.
-	 * 
+	 *
 	 * @return the declaring type if this references an inner class; null in
-	 *         other cases
+	 * other cases
 	 */
 	CtTypeReference<?> getDeclaringType();
 
 	/**
 	 * Gets the package of the referenced type.
-	 * 
+	 *
 	 * @return the declaring package or null if this if a inner class
 	 */
 	CtPackageReference getPackage();

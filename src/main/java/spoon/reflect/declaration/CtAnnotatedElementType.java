@@ -3,8 +3,7 @@ package spoon.reflect.declaration;
 /**
  * This enum specifies the element type which is annotated by the annotation
  */
-public enum CtAnnotatedElementType
-{
+public enum CtAnnotatedElementType {
 	/**
 	 * Class, interface (including annotation type), or enum declaration
 	 */

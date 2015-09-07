@@ -22,12 +22,12 @@ import spoon.compiler.SpoonFile;
 class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 
 	/**
-	 * 
+	 *
 	 */
 	protected JDTBasedSpoonCompiler jdtCompiler;
 	private boolean useFactory;
 
-	public JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, boolean useFactory) {
+	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, boolean useFactory) {
 		super(new PrintWriter(System.out), new PrintWriter(
 		/* new NullOutputStream() */System.err), false, null, null);
 		this.jdtCompiler = jdtCompiler;
@@ -39,7 +39,7 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 		final ICompilerRequestor r = super.getBatchRequestor();
 		return new ICompilerRequestor() {
 			public void acceptResult(CompilationResult compilationResult) {
-				if (compilationResult.hasErrors()) {					
+				if (compilationResult.hasErrors()) {
 					for (CategorizedProblem problem:compilationResult.problems) {
 						JDTBatchCompiler.this.jdtCompiler.reportProblem(problem);
 					}
@@ -99,7 +99,7 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 				culist.add(new CompilationUnit(IOUtils.toCharArray(f
 						.getContent()), f.getName(), null));
 			} catch (Exception e) {
-				Launcher.logger.error(e.getMessage(), e);
+				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		}
 		return culist.toArray(new CompilationUnit[0]);

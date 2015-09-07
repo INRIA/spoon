@@ -7,12 +7,13 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
-/** Returns information that can be obtained both at compile-time and run-time 
- * 
+/**
+ * Returns information that can be obtained both at compile-time and run-time
+ *
  * For CtElement, the compile-time information is given
- * 
- * For CtTypeReference, the runtime information is given (using the Reflection API) 
- * 
+ *
+ * For CtTypeReference, the runtime information is given (using the Reflection API)
+ *
  */
 public interface CtTypeInformation {
 	/**
@@ -25,7 +26,7 @@ public interface CtTypeInformation {
 	 * Returns the fully qualified name of this type declaration.
 	 */
 	String getQualifiedName();
-	
+
 	/**
 	 * Gets modifiers of this type.
 	 */
@@ -60,7 +61,7 @@ public interface CtTypeInformation {
 
 	/**
 	 * Returns the class type directly extended by this class.
-	 * 
+	 *
 	 * @return the class type directly extended by this class, or null if there
 	 *         is none
 	 */
@@ -76,7 +77,7 @@ public interface CtTypeInformation {
 	 * applicable.
 	 */
 	Collection<CtFieldReference<?>> getAllFields();
-	
+
 	/**
 	 * Gets the executables declared by this type if applicable.
 	 */

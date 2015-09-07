@@ -5,18 +5,17 @@ package spoon.reflect.path;
  */
 public enum CtPathRole {
 	/**
-	 * Default value for a field 
+	 * Default value for a field
 	 */
 	DEFAULT_VALUE("defaultValue"),
 	/**
-	 * Then part of a CtIf 
+	 * Then part of a CtIf
 	 */
 	THEN("then"),
 	/**
-	 * Else part of a CtIf 
+	 * Else part of a CtIf
 	 */
 	ELSE("else"),
-
 	/**
 	 * Body of CtExecutable.
 	 */
