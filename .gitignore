@@ -25,3 +25,4 @@ maven-eclipse.xml
 # Spoon
 spooned-classes/
 spooned/
+doc/_jekyll/_site/
