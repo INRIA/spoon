@@ -39,7 +39,7 @@ public class VisibilityTest {
 
 	@Test
 	public void testVisibilityOfClassesNamedByClassesInJavaLangPackage() throws Exception {
-		final File sourceOutputDir = new File("target/spooned/visibility");
+		final File sourceOutputDir = new File("target/spooned/spoon/test/visibility_package/testclasses");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir, launcher.getEnvironment()));
@@ -60,7 +60,7 @@ public class VisibilityTest {
 		assertNotNull(aFloat);
 		assertEquals(spoon.test.visibility.testclasses.Float.class, aFloat.getActualClass());
 
-		canBeBuild(new File("./target/spooned/spoon/test/visibility/testclasses/"), 7);
+		canBeBuild(new File("./target/spooned/spoon/test/visibility_package/testclasses/"), 7);
 	}
 
 	@Test
@@ -68,10 +68,10 @@ public class VisibilityTest {
 		final SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/visibility/testclasses/A.java",
-				"-o", "./target/spooned/visibility"
+				"-o", "./target/spooned/spoon/test/visibility_generics/testclasses/"
 		});
 
-		canBeBuild("./target/spooned/spoon/test/visibility/testclasses/", 8);
+		canBeBuild("./target/spooned/spoon/test/visibility_generics/testclasses/", 8);
 	}
 
 	@Test
