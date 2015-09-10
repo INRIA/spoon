@@ -20,8 +20,7 @@ public class SnippetCompilationError extends SpoonException {
 		super();
 		this.problems = new ArrayList<String>();
 		this.problems.add(string);
-			
+
 	}
 
-	
 }

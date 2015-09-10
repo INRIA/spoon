@@ -8,7 +8,7 @@ import spoon.reflect.visitor.Filter;
 
 /**
  * Filters elements with a regular expression on the element's code. Example:
- * 
+ *
  * <pre>
  * CtFieldAccess thisAccess = type.getElements(new ExpressionFilter(&quot;this&quot;))
  * 		.get(0);

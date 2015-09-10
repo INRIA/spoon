@@ -36,8 +36,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	/**
 	 * Returns the block.
 	 */
-	public static CtBlock<?> getBlock(
-			CtClass<? extends BlockTemplate> p) {
+	public static CtBlock<?> getBlock(CtClass<? extends BlockTemplate> p) {
 		CtBlock<?> b = p.getMethod("block").getBody();
 		return b;
 	}
@@ -54,8 +53,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 		if (c == null) {
 			c = targetType.getFactory().Class().get(this.getClass());
 		}
-		return Substitution.substitute(targetType, this,
-				getBlock(c));
+		return Substitution.substitute(targetType, this, getBlock(c));
 	}
 
 	public Void S() {

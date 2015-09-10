@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -41,7 +41,7 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 	/**
 	 * Gets the runtime method that corresponds to an executable reference if
 	 * any.
-	 * 
+	 *
 	 * @return the method (null if not found)
 	 */
 	Method getActualMethod();
@@ -49,7 +49,7 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 	/**
 	 * Gets the runtime constructor that corresponds to an executable reference
 	 * if any.
-	 * 
+	 *
 	 * @return the constructor (null if not found)
 	 */
 	Constructor<?> getActualConstructor();
@@ -90,14 +90,14 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 	/**
 	 * Gets an overriding executable for this executable from a given subtype,
 	 * if exists.
-	 * 
+	 *
 	 * @param <S>
-	 *            subtype of T
+	 * 		subtype of T
 	 * @param subType
-	 *            starting bottom type to find an overriding executable
-	 *            (subtypes are not tested)
+	 * 		starting bottom type to find an overriding executable
+	 * 		(subtypes are not tested)
 	 * @return the first found (most concrete) executable that overrides this
-	 *         executable (null if none found)
+	 * executable (null if none found)
 	 */
 	<S extends T> CtExecutableReference<S> getOverridingExecutable(CtTypeReference<?> subType);
 

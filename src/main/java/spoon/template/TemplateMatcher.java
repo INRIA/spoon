@@ -59,43 +59,32 @@ import spoon.support.util.RtHelper;
  */
 public class TemplateMatcher {
 
-	private static List<CtInvocation<?>> getMethods(
-			CtClass<? extends Template<?>> root) {
-		CtExecutableReference<?> methodRef = root
-				.getFactory()
-				.Executable()
-				.createReference(
-						root.getFactory().Type()
-								.createReference(TemplateParameter.class),
-						root.getFactory().Type()
-								.createTypeParameterReference("T"), "S");
-		List<CtInvocation<?>> meths = Query.getElements(root,
-				new InvocationFilter(methodRef));
+	private static List<CtInvocation<?>> getMethods(CtClass<? extends Template<?>> root) {
+		CtExecutableReference<?> methodRef = root.getFactory().Executable()
+				.createReference(root.getFactory().Type().createReference(TemplateParameter.class), root.getFactory().Type().createTypeParameterReference("T"), "S");
+		List<CtInvocation<?>> meths = Query.getElements(root, new InvocationFilter(methodRef));
 
 		return meths;
 	}
 
-	private static List<String> getTemplateNameParameters(
-			CtClass<? extends Template<?>> templateType) {
+	private static List<String> getTemplateNameParameters(CtClass<? extends Template<?>> templateType) {
 		final List<String> ts = new ArrayList<String>();
 		final Collection<String> c = Parameters.getNames(templateType);
 		ts.addAll(c);
 		return ts;
 	}
 
-	private static List<CtTypeReference<?>> getTemplateTypeParameters(
-			final CtClass<? extends Template<?>> templateType) {
+	private static List<CtTypeReference<?>> getTemplateTypeParameters(final CtClass<? extends Template<?>> templateType) {
 
 		final List<CtTypeReference<?>> ts = new ArrayList<CtTypeReference<?>>();
 		final Collection<String> c = Parameters.getNames(templateType);
 		new CtScanner() {
 			@Override
-			public void visitCtTypeParameterReference(
-					CtTypeParameterReference reference) {
+			public void visitCtTypeParameterReference(CtTypeParameterReference reference) {
 				if (c.contains(reference.getSimpleName())) {
 					ts.add(reference);
 				}
-			};
+			}
 
 			@Override
 			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
@@ -108,15 +97,13 @@ public class TemplateMatcher {
 		return ts;
 	}
 
-	private static List<CtFieldReference<?>> getVarargs(
-			CtClass<? extends Template<?>> root, List<CtInvocation<?>> variables) {
+	private static List<CtFieldReference<?>> getVarargs(CtClass<? extends Template<?>> root, List<CtInvocation<?>> variables) {
 		List<CtFieldReference<?>> fields = new ArrayList<CtFieldReference<?>>();
 		for (CtFieldReference<?> field : root.getReference().getAllFields()) {
 			if (field.getType().getActualClass() == CtStatementList.class) {
 				boolean alreadyAdded = false;
 				for (CtInvocation<?> invocation : variables) {
-					alreadyAdded |= ((CtFieldAccess<?>) invocation.getTarget())
-							.getVariable().getDeclaration().equals(field);
+					alreadyAdded |= ((CtFieldAccess<?>) invocation.getTarget()).getVariable().getDeclaration().equals(field);
 				}
 				if (!alreadyAdded) {
 					fields.add(field);
@@ -144,14 +131,13 @@ public class TemplateMatcher {
 
 	/**
 	 * Constructs a matcher for a given template.
-	 * 
+	 *
 	 * @param templateType
-	 *            the type of the template
+	 * 		the type of the template
 	 */
 	public TemplateMatcher(CtClass<? extends Template<?>> templateType) {
 		if (templateType == null) {
-			throw new TemplateException(
-					"Template type is null. Use the template factory to access a template CtClass and check your template source path.");
+			throw new TemplateException("Template type is null. Use the template factory " + "to access a template CtClass and check " + "your template source path.");
 		}
 		variables = TemplateMatcher.getMethods(templateType);
 		typeVariables = TemplateMatcher.getTemplateTypeParameters(templateType);
@@ -170,9 +156,7 @@ public class TemplateMatcher {
 		for (Object tem : teList) {
 			if (variables.contains(tem) && (tem instanceof CtInvocation)) {
 				CtInvocation<?> listCand = (CtInvocation<?>) tem;
-				boolean ok = listCand.getFactory().Type()
-						.createReference(TemplateParameter.class)
-						.isAssignableFrom(listCand.getTarget().getType());
+				boolean ok = listCand.getFactory().Type().createReference(TemplateParameter.class).isAssignableFrom(listCand.getTarget().getType());
 				return ok ? listCand : null;
 			}
 			if (tem instanceof CtVariable) {
@@ -193,13 +177,12 @@ public class TemplateMatcher {
 	 * Finds all target program sub-trees that correspond to a template. Once
 	 * this method has been called, {@link #getFinds()} will give the matching
 	 * CtElements if any.
-	 * 
+	 *
 	 * @param targetRoot
-	 *            the target to be tested for match
+	 * 		the target to be tested for match
 	 * @param templateRoot
-	 *            the template to match against
+	 * 		the template to match against
 	 * @return true if there is one or more matches
-	 * 
 	 * @see #getFinds()
 	 */
 	public boolean find(CtElement targetRoot, final CtElement templateRoot) {
@@ -219,8 +202,7 @@ public class TemplateMatcher {
 		return found;
 	}
 
-	private ParameterMatcher findParameterMatcher(CtElement declaration,
-			String name) throws InstantiationException, IllegalAccessException {
+	private ParameterMatcher findParameterMatcher(CtElement declaration, String name) throws InstantiationException, IllegalAccessException {
 		if (declaration == null) {
 			return new DefaultParameterMatcher();
 		}
@@ -228,14 +210,13 @@ public class TemplateMatcher {
 		try {
 			clazz = declaration.getParent(CtClass.class);
 		} catch (ParentNotInitializedException e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 		if (clazz == null) {
 			return new DefaultParameterMatcher();
 		}
 
-		Collection<CtFieldReference<?>> fields = clazz.getReference()
-				.getAllFields();
+		Collection<CtFieldReference<?>> fields = clazz.getReference().getAllFields();
 
 		CtFieldReference<?> param = null;
 		for (CtFieldReference<?> fieldRef : fields) {
@@ -259,8 +240,7 @@ public class TemplateMatcher {
 		}
 
 		if (param == null) {
-			throw new IllegalStateException("Parameter not defined " + name
-					+ "at " + declaration.getPosition());
+			throw new IllegalStateException("Parameter not defined " + name + "at " + declaration.getPosition());
 		}
 		return getParameterInstance(param);
 	}
@@ -301,8 +281,7 @@ public class TemplateMatcher {
 		return matches;
 	}
 
-	private ParameterMatcher getParameterInstance(CtFieldReference<?> param)
-			throws InstantiationException, IllegalAccessException {
+	private ParameterMatcher getParameterInstance(CtFieldReference<?> param) throws InstantiationException, IllegalAccessException {
 		Parameter anParam = param.getDeclaration().getAnnotation(Parameter.class);
 		if (anParam == null) {
 			// Parameter not annotated. Probably is a TemplateParameter. Just
@@ -335,18 +314,15 @@ public class TemplateMatcher {
 		if (target.getClass() != template.getClass()) {
 			return false;
 		}
-		if ((template instanceof CtTypeReference)
-				&& template.equals(templateType.getReference())) {
+		if ((template instanceof CtTypeReference) && template.equals(templateType.getReference())) {
 			return true;
 		}
-		if ((template instanceof CtPackageReference)
-				&& template.equals(templateType.getPackage())) {
+		if ((template instanceof CtPackageReference) && template.equals(templateType.getPackage())) {
 			return true;
 		}
 		if (template instanceof CtReference) {
 			CtReference tRef = (CtReference) template;
-			boolean ok = matchNames(tRef.getSimpleName(),
-					((CtReference) target).getSimpleName());
+			boolean ok = matchNames(tRef.getSimpleName(), ((CtReference) target).getSimpleName());
 			if (ok && !template.equals(target)) {
 				boolean remove = !invokeCallBack(target, template);
 				if (remove) {
@@ -359,8 +335,7 @@ public class TemplateMatcher {
 
 		if (template instanceof CtNamedElement) {
 			CtNamedElement named = (CtNamedElement) template;
-			boolean ok = matchNames(named.getSimpleName(),
-					((CtNamedElement) target).getSimpleName());
+			boolean ok = matchNames(named.getSimpleName(), ((CtNamedElement) target).getSimpleName());
 			if (ok && !template.equals(target)) {
 				boolean remove = !invokeCallBack(target, template);
 				if (remove) {
@@ -371,8 +346,7 @@ public class TemplateMatcher {
 		}
 
 		if (template instanceof Collection) {
-			return matchCollections((Collection<?>) target,
-					(Collection<?>) template);
+			return matchCollections((Collection<?>) target, (Collection<?>) template);
 		}
 
 		if (template instanceof Map) {
@@ -414,7 +388,7 @@ public class TemplateMatcher {
 						return false;
 					}
 				} catch (Exception e) {
-					Launcher.logger.error(e.getMessage(), e);
+					Launcher.LOGGER.error(e.getMessage(), e);
 				}
 			}
 			return true;
@@ -428,12 +402,9 @@ public class TemplateMatcher {
 	private boolean invokeCallBack(Object target, Object template) {
 		try {
 			if (template instanceof CtInvocation) {
-				CtFieldAccess<?> param = (CtFieldAccess<?>) ((CtInvocation<?>) template)
-						.getTarget();
-				ParameterMatcher instance = getParameterInstance(param
-						.getVariable());
-				return instance.match(this, (CtInvocation<?>) template,
-						(CtElement) target);
+				CtFieldAccess<?> param = (CtFieldAccess<?>) ((CtInvocation<?>) template).getTarget();
+				ParameterMatcher instance = getParameterInstance(param.getVariable());
+				return instance.match(this, (CtInvocation<?>) template, (CtElement) target);
 			} else if (template instanceof CtReference) {
 				// Get parameter
 				CtReference ref = (CtReference) template;
@@ -444,25 +415,20 @@ public class TemplateMatcher {
 				} else {
 					instance = param.match().newInstance();
 				}
-				return instance.match(this, (CtReference) template,
-						(CtReference) target);
+				return instance.match(this, (CtReference) template, (CtReference) target);
 			} else if (template instanceof CtNamedElement) {
 				CtNamedElement named = (CtNamedElement) template;
-				ParameterMatcher instance = findParameterMatcher(named,
-						named.getSimpleName());
-				return instance.match(this, (CtElement) template,
-						(CtElement) target);
-			}
-
-			else {
+				ParameterMatcher instance = findParameterMatcher(named, named.getSimpleName());
+				return instance.match(this, (CtElement) template, (CtElement) target);
+			} else {
 				// Should not happen
 				throw new RuntimeException();
 			}
 		} catch (InstantiationException e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 			return true;
 		} catch (IllegalAccessException e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 			return true;
 		}
 	}
@@ -486,13 +452,12 @@ public class TemplateMatcher {
 	 * Matches a target program sub-tree against a template. Once this method
 	 * has been called, {@link #getMatches()} will give the matching parts if
 	 * any.
-	 * 
+	 *
 	 * @param targetRoot
-	 *            the target to be tested for match
+	 * 		the target to be tested for match
 	 * @param templateRoot
-	 *            the template to match against
+	 * 		the template to match against
 	 * @return true if matches
-	 * 
 	 * @see #getMatches()
 	 */
 	public boolean match(CtElement targetRoot, CtElement templateRoot) {
@@ -500,8 +465,7 @@ public class TemplateMatcher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean matchCollections(Collection<?> target,
-			Collection<?> template) {
+	private boolean matchCollections(Collection<?> target, Collection<?> template) {
 		List<Object> teList = new ArrayList<Object>(template);
 		List<Object> taList = new ArrayList<Object>(target);
 
@@ -518,8 +482,7 @@ public class TemplateMatcher {
 				return false;
 			}
 
-			for (int te = 0, ta = 0; (te < teList.size())
-					&& (ta < taList.size()); te++, ta++) {
+			for (int te = 0, ta = 0; (te < teList.size()) && (ta < taList.size()); te++, ta++) {
 				if (!helperMatch(taList.get(ta), teList.get(te))) {
 					return false;
 				}
@@ -531,8 +494,7 @@ public class TemplateMatcher {
 			if (isCurrentTemplate(teList.get(te), inMulti)) {
 				if (te + 1 >= teList.size()) {
 					multi.addAll(taList.subList(te, taList.size()));
-					CtStatementList tpl = templateType.getFactory().Core()
-							.createStatementList();
+					CtStatementList tpl = templateType.getFactory().Core().createStatementList();
 					tpl.setStatements((List<CtStatement>) (List<?>) multi);
 					if (!invokeCallBack(tpl, inMulti)) {
 						return false;
@@ -541,13 +503,11 @@ public class TemplateMatcher {
 					return ret;
 				}
 				te++;
-				while ((te < teList.size()) && (ta < taList.size())
-						&& !helperMatch(taList.get(ta), teList.get(te))) {
+				while ((te < teList.size()) && (ta < taList.size()) && !helperMatch(taList.get(ta), teList.get(te))) {
 					multi.add(taList.get(ta));
 					ta++;
 				}
-				CtStatementList tpl = templateType.getFactory().Core()
-						.createStatementList();
+				CtStatementList tpl = templateType.getFactory().Core().createStatementList();
 				tpl.setStatements((List<CtStatement>) (List<?>) multi);
 				if (!invokeCallBack(tpl, inMulti)) {
 					return false;
@@ -561,9 +521,8 @@ public class TemplateMatcher {
 					return false;
 				}
 				if (!(ta + 1 < taList.size()) && (inMulti != null)) {
-					CtStatementList tpl = templateType
-							.getFactory().Core().createStatementList();
-					for (Object o: multi) {
+					CtStatementList tpl = templateType.getFactory().Core().createStatementList();
+					for (Object o : multi) {
 						tpl.addStatement((CtStatement) o);
 					}
 					if (!invokeCallBack(tpl, inMulti)) {
@@ -596,7 +555,7 @@ public class TemplateMatcher {
 					// m.group(1));
 					boolean ok = addMatch(pname, m.group(1));
 					if (!ok) {
-						Launcher.logger.debug("incongruent match");
+						Launcher.LOGGER.debug("incongruent match");
 						return false;
 					}
 					return true;

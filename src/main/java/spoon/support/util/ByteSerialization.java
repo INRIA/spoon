@@ -8,7 +8,6 @@ import java.io.ObjectOutputStream;
 
 public class ByteSerialization {
 
-	
 	public static byte[] serialize(Object obj) throws IOException {
 
 		byte[] serializedObject = null;
@@ -24,11 +23,11 @@ public class ByteSerialization {
 	public static Object deserialize(byte[] serializedObject) throws Exception {
 
 		Object objInput = null;
-		ByteArrayInputStream bi = new ByteArrayInputStream( serializedObject);
+		ByteArrayInputStream bi = new ByteArrayInputStream(serializedObject);
 		ObjectInputStream si = new ObjectInputStream(bi);
 		objInput = si.readObject();
 		si.close();
 		return objInput;
 	}
-	
+
 }

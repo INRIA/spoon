@@ -1,23 +1,22 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
 package spoon.support.reflect.code;
 
-import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtInvocation;
@@ -42,7 +41,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEME
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
-	private List<CtStatement> statements = EMPTY_LIST();
+	private List<CtStatement> statements = emptyList();
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtBlock(this);
@@ -74,15 +73,16 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			CtStatement first = getStatements().get(0);
 			if (first instanceof CtInvocation
 					&& ((CtInvocation<?>) first).getExecutable()
-					.getSimpleName().startsWith("<init>")) {
+												.getSimpleName()
+												.startsWith("<init>")) {
 				first.insertAfter(statements);
 				return (T) this;
 			}
 		}
-		if (this.statements == CtElementImpl.<CtStatement>EMPTY_LIST()) {
+		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
 			this.statements = new ArrayList<CtStatement>(
-					statements.getStatements().size() +
-							BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+					statements.getStatements().size()
+							+ BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.statements.addAll(0, statements.getStatements());
 		return (T) this;
@@ -96,8 +96,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 					&& getStatements().size() > 0) {
 				CtStatement first = getStatements().get(0);
 				if (first instanceof CtInvocation
-						&& ((CtInvocation<?>) first).getExecutable()
-													.getSimpleName().startsWith("<init>")) {
+						&& ((CtInvocation<?>) first)
+						.getExecutable().getSimpleName()
+						.startsWith("<init>")) {
 					first.insertAfter(statement);
 					return (T) this;
 				}
@@ -135,8 +136,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints,
-							CtStatementList statements) {
+	public <T extends CtBlock<R>> T insertAfter(
+			Filter<? extends CtStatement> insertionPoints,
+			CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statements);
 		}
@@ -144,8 +146,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints,
-												 CtStatement statement) {
+	public <T extends CtBlock<R>> T insertBefore(
+			Filter<? extends CtStatement> insertionPoints,
+			CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statement);
 		}
@@ -153,8 +156,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints,
-							 CtStatementList statements) {
+	public <T extends CtBlock<R>> T insertBefore(
+			Filter<? extends CtStatement> insertionPoints,
+			CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statements);
 		}
@@ -179,7 +183,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	private void ensureModifiableStatementsList() {
-		if (this.statements == CtElementImpl.<CtStatement>EMPTY_LIST()) {
+		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
 			this.statements = new ArrayList<CtStatement>(
 					BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -187,7 +191,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public void removeStatement(CtStatement statement) {
-		if (this.statements != CtElementImpl.<CtStatement>EMPTY_LIST()) {
+		if (this.statements != CtElementImpl.<CtStatement>emptyList()) {
 			this.statements.remove(statement);
 		}
 	}

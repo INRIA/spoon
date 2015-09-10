@@ -13,7 +13,8 @@ import spoon.reflect.cu.Import;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities
+		.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
@@ -33,16 +34,21 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	public CtType<?> getMainType() {
-		if (getFile() == null)
+		if (getFile() == null) {
 			return getDeclaredTypes().get(0);
+		}
 		for (CtType<?> t : getDeclaredTypes()) {
 			String name = getFile().getName();
 			name = name.substring(0, name.lastIndexOf("."));
-			if (t.getSimpleName().equals(name))
+			if (t.getSimpleName().equals(name)) {
 				return t;
+			}
 		}
-		throw new RuntimeException("inconsistent compilation unit: '" + file
-				+ "': declared types are " + getDeclaredTypes());
+		throw new RuntimeException(
+				"inconsistent compilation unit: '"
+						+ file
+						+ "': declared types are "
+						+ getDeclaredTypes());
 	}
 
 	public void setDeclaredTypes(List<CtType<?>> types) {
@@ -93,11 +99,13 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		int whiteSpaceCount = 0;
 		while (cur < getOriginalSourceCode().length()
 				&& (getOriginalSourceCode().charAt(cur) == ' ' || getOriginalSourceCode()
-						.charAt(cur) == '\t')) {
-			if (getOriginalSourceCode().charAt(cur) == '\t')
+				.charAt(cur) == '\t')) {
+			if (getOriginalSourceCode().charAt(cur) == '\t') {
 				tabCount++;
-			if (getOriginalSourceCode().charAt(cur) == ' ')
+			}
+			if (getOriginalSourceCode().charAt(cur) == ' ') {
 				whiteSpaceCount++;
+			}
 			cur++;
 		}
 		tabCount += whiteSpaceCount
@@ -113,9 +121,9 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		this.factory = factory;
 	}
 
-	boolean autoImport=true;
-	
-	Set<Import> manualImports=new HashSet<Import>();
+	boolean autoImport = true;
+
+	Set<Import> manualImports = new HashSet<Import>();
 
 	public boolean isAutoImport() {
 		return autoImport;
@@ -132,7 +140,5 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	public void setManualImports(Set<Import> manualImports) {
 		this.manualImports = manualImports;
 	}
-	
-	
-	
+
 }

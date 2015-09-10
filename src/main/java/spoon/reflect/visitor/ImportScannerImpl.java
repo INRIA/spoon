@@ -112,7 +112,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
-		for(CtTypeReference<?> type : catchVariable.getMultiTypes()) {
+		for (CtTypeReference<?> type : catchVariable.getMultiTypes()) {
 			addImport(type);
 		}
 		super.visitCtCatchVariable(catchVariable);

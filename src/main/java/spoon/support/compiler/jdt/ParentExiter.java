@@ -71,8 +71,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void scanCtElement(CtElement e) {
-		if (child instanceof CtAnnotation
-				&& this.jdtTreeBuilder.context.annotationValueName.isEmpty()) {
+		if (child instanceof CtAnnotation && this.jdtTreeBuilder.context.annotationValueName.isEmpty()) {
 			e.addAnnotation((CtAnnotation<?>) child);
 			return;
 		}
@@ -102,12 +101,10 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		super.scanCtLoop(loop);
 	}
- 
+
 	@Override
-	public <T, E extends CtExpression<?>> void scanCtTargetedExpression(
-			CtTargetedExpression<T, E> targetedExpression) {
-		if (!this.jdtTreeBuilder.context.target.isEmpty()
-				&& this.jdtTreeBuilder.context.target.peek() == targetedExpression) {
+	public <T, E extends CtExpression<?>> void scanCtTargetedExpression(CtTargetedExpression<T, E> targetedExpression) {
+		if (!this.jdtTreeBuilder.context.target.isEmpty() && this.jdtTreeBuilder.context.target.peek() == targetedExpression) {
 			targetedExpression.setTarget((E) child);
 			return;
 		}
@@ -137,8 +134,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void scanCtVariable(CtVariable<T> v) {
-		if (child instanceof CtExpression && !this.jdtTreeBuilder.context.arguments.isEmpty()
-				&& this.jdtTreeBuilder.context.arguments.peek() == v) {
+		if (child instanceof CtExpression && !this.jdtTreeBuilder.context.arguments.isEmpty() && this.jdtTreeBuilder.context.arguments.peek() == v) {
 			v.setDefaultExpression((CtExpression<T>) child);
 			return;
 		}
@@ -146,8 +142,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
-	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(
-			CtAnnotation<A> annotation) {
+	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(CtAnnotation<A> annotation) {
 
 		// //GANYMEDE FIX: JDT now inserts a simpletyperef below annotations
 		// that points
@@ -169,8 +164,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 		if (value instanceof CtVariableAccess) {
 			value = ((CtVariableAccess<?>) value).getVariable();
-		} else if (value instanceof CtFieldReference
-				&& ((CtFieldReference<?>) value).getSimpleName().equals("class")) {
+		} else if (value instanceof CtFieldReference && ((CtFieldReference<?>) value).getSimpleName().equals("class")) {
 			value = ((CtFieldReference<?>) value).getType();
 		}
 		annotation.addValue(name, value);
@@ -187,10 +181,8 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
-			CtArrayAccess<T, E> arrayAccess) {
-		if (this.jdtTreeBuilder.context.arguments.size() > 0
-				&& this.jdtTreeBuilder.context.arguments.peek() == arrayAccess) {
+	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
+		if (this.jdtTreeBuilder.context.arguments.size() > 0 && this.jdtTreeBuilder.context.arguments.peek() == arrayAccess) {
 			arrayAccess.setIndexExpression((CtExpression<Integer>) child);
 			return;
 		} else if (arrayAccess.getTarget() == null) {
@@ -202,21 +194,20 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtAssert(CtAssert<T> asserted) {
-		if (child instanceof CtExpression)
-			if (!this.jdtTreeBuilder.context.arguments.isEmpty()
-					&& this.jdtTreeBuilder.context.arguments.peek() == asserted) {
+		if (child instanceof CtExpression) {
+			if (!this.jdtTreeBuilder.context.arguments.isEmpty() && this.jdtTreeBuilder.context.arguments.peek() == asserted) {
 				asserted.setExpression((CtExpression<T>) child);
 				return;
 			} else {
 				asserted.setAssertExpression((CtExpression<Boolean>) child);
 				return;
 			}
+		}
 		super.visitCtAssert(asserted);
 	}
 
 	@Override
-	public <T, A extends T> void visitCtAssignment(
-			CtAssignment<T, A> assignement) {
+	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
 		if (assignement.getAssigned() == null) {
 			assignement.setAssigned((CtExpression<T>) child);
 			return;
@@ -229,7 +220,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
-		if (child instanceof CtExpression)
+		if (child instanceof CtExpression) {
 			if (operator.getLeftHandOperand() == null) {
 				operator.setLeftHandOperand((CtExpression<?>) child);
 				return;
@@ -237,6 +228,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				operator.setRightHandOperand((CtExpression<?>) child);
 				return;
 			}
+		}
 		super.visitCtBinaryOperator(operator);
 	}
 
@@ -251,8 +243,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
-		if (this.jdtTreeBuilder.context.selector && caseStatement.getCaseExpression() == null
-				&& child instanceof CtExpression) {
+		if (this.jdtTreeBuilder.context.selector && caseStatement.getCaseExpression() == null && child instanceof CtExpression) {
 			caseStatement.setCaseExpression((CtExpression<E>) child);
 			return;
 		} else if (child instanceof CtStatement) {
@@ -268,8 +259,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			catchBlock.setBody((CtBlock<?>) child);
 			return;
 		} else if (child instanceof CtCatchVariable) {
-			catchBlock
-					.setParameter((CtCatchVariable<? extends Throwable>) child);
+			catchBlock.setParameter((CtCatchVariable<? extends Throwable>) child);
 			return;
 		}
 		super.visitCtCatch(catchBlock);
@@ -280,8 +270,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtConstructor) {
 			CtConstructor<T> c = (CtConstructor<T>) child;
 			ctClass.addConstructor(c);
-			if (c.getPosition() != null
-					&& c.getPosition().equals(ctClass.getPosition())) {
+			if (c.getPosition() != null && c.getPosition().equals(ctClass.getPosition())) {
 				c.setImplicit(true);
 			}
 		}
@@ -307,8 +296,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtDo(CtDo doLoop) {
-		if (doLoop.getBody() != null && child instanceof CtExpression
-				&& doLoop.getLoopingExpression() == null) {
+		if (doLoop.getBody() != null && child instanceof CtExpression && doLoop.getLoopingExpression() == null) {
 			doLoop.setLoopingExpression((CtExpression<Boolean>) child);
 			return;
 		}
@@ -317,8 +305,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtField(CtField<T> f) {
-		if ((f.getDefaultExpression() == null && child instanceof CtExpression && !(child instanceof CtAnnotation)) ||
-				jdtTreeBuilder.defaultValue) {
+		if ((f.getDefaultExpression() == null && child instanceof CtExpression && !(child instanceof CtAnnotation)) || jdtTreeBuilder.defaultValue) {
 			f.setDefaultExpression((CtExpression<T>) child);
 			return;
 		}
@@ -331,8 +318,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			forLoop.addForInit((CtStatement) child);
 			return;
 		}
-		if (!this.jdtTreeBuilder.context.forupdate && forLoop.getExpression() == null
-				&& child instanceof CtExpression) {
+		if (!this.jdtTreeBuilder.context.forupdate && forLoop.getExpression() == null && child instanceof CtExpression) {
 			forLoop.setExpression((CtExpression<Boolean>) child);
 			return;
 		}
@@ -348,8 +334,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (foreach.getVariable() == null && child instanceof CtVariable) {
 			foreach.setVariable((CtLocalVariable<?>) child);
 			return;
-		} else if (foreach.getExpression() == null
-				&& child instanceof CtExpression) {
+		} else if (foreach.getExpression() == null && child instanceof CtExpression) {
 			foreach.setExpression((CtExpression<?>) child);
 			return;
 		} else if (child instanceof CtStatement) {
@@ -361,8 +346,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtIf(CtIf ifElement) {
-		if (ifElement.getCondition() == null
-				&& child instanceof CtExpression) {
+		if (ifElement.getCondition() == null && child instanceof CtExpression) {
 			ifElement.setCondition((CtExpression<Boolean>) child);
 			return;
 		} else if (child instanceof CtStatement) {
@@ -458,10 +442,8 @@ public class ParentExiter extends CtInheritanceScanner {
 			}
 			ctPackage.getTypes().add((CtType<?>) child);
 			this.jdtTreeBuilder.context.addCreatedType((CtType<?>) child);
-			if (child.getPosition() != null
-					&& child.getPosition().getCompilationUnit() != null) {
-				child.getPosition().getCompilationUnit().getDeclaredTypes()
-						.add((CtType<?>) child);
+			if (child.getPosition() != null && child.getPosition().getCompilationUnit() != null) {
+				child.getPosition().getCompilationUnit().getDeclaredTypes().add((CtType<?>) child);
 			}
 			return;
 		}
@@ -479,8 +461,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
-		if (switchStatement.getSelector() == null
-				&& child instanceof CtExpression) {
+		if (switchStatement.getSelector() == null && child instanceof CtExpression) {
 			switchStatement.setSelector((CtExpression<E>) child);
 			return;
 		}
@@ -493,8 +474,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtSynchronized(CtSynchronized synchro) {
-		if (synchro.getExpression() == null
-				&& child instanceof CtExpression) {
+		if (synchro.getExpression() == null && child instanceof CtExpression) {
 			synchro.setExpression((CtExpression<?>) child);
 			return;
 		}
@@ -508,8 +488,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void visitCtThrow(CtThrow throwStatement) {
 		if (throwStatement.getThrownExpression() == null) {
-			throwStatement
-					.setThrownExpression((CtExpression<? extends Throwable>) child);
+			throwStatement.setThrownExpression((CtExpression<? extends Throwable>) child);
 			return;
 		}
 		super.visitCtThrow(throwStatement);
@@ -518,11 +497,11 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void visitCtTry(CtTry tryBlock) {
 		if (child instanceof CtBlock) {
-			if (!this.jdtTreeBuilder.context.finallyzer.isEmpty()
-					&& this.jdtTreeBuilder.context.finallyzer.peek() == tryBlock)
+			if (!this.jdtTreeBuilder.context.finallyzer.isEmpty() && this.jdtTreeBuilder.context.finallyzer.peek() == tryBlock) {
 				tryBlock.setFinalizer((CtBlock<?>) child);
-			else
+			} else {
 				tryBlock.setBody((CtBlock<?>) child);
+			}
 			return;
 		} else if (child instanceof CtCatch) {
 			tryBlock.addCatcher((CtCatch) child);
@@ -534,11 +513,11 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 		if (child instanceof CtBlock) {
-			if (!this.jdtTreeBuilder.context.finallyzer.isEmpty()
-					&& this.jdtTreeBuilder.context.finallyzer.peek() == tryWithResource)
+			if (!this.jdtTreeBuilder.context.finallyzer.isEmpty() && this.jdtTreeBuilder.context.finallyzer.peek() == tryWithResource) {
 				tryWithResource.setFinalizer((CtBlock<?>) child);
-			else
+			} else {
 				tryWithResource.setBody((CtBlock<?>) child);
+			}
 			return;
 		} else if (child instanceof CtLocalVariable) {
 			if (tryWithResource.getResources() == null) {
@@ -563,8 +542,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtWhile(CtWhile whileLoop) {
-		if (whileLoop.getLoopingExpression() == null
-				&& child instanceof CtExpression) {
+		if (whileLoop.getLoopingExpression() == null && child instanceof CtExpression) {
 			whileLoop.setLoopingExpression((CtExpression<Boolean>) child);
 			return;
 		}

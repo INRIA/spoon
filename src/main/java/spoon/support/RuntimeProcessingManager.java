@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -47,10 +47,10 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	/**
 	 * Creates a new processing manager that maintains a queue of processors to
 	 * be applied to a given factory.
-	 * 
+	 *
 	 * @param factory
-	 *            the factory on which the processing applies (contains the
-	 *            meta-model)
+	 * 		the factory on which the processing applies (contains the
+	 * 		meta-model)
 	 */
 	public RuntimeProcessingManager(Factory factory) {
 		super();
@@ -64,12 +64,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 			p.init();
 			addProcessor(p);
 		} catch (Exception e) {
-			factory.getEnvironment()
-					.report(null,
-							Level.ERROR,
-							"Unable to instantiate processor \""
-									+ type.getName()
-									+ "\" - Your processor should have a constructor with no arguments");
+			factory.getEnvironment().report(null, Level.ERROR, "Unable to instantiate processor \"" + type.getName() + "\" - Your processor should have a constructor with no arguments");
 		}
 	}
 
@@ -81,15 +76,9 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
-			addProcessor((Class<? extends Processor<?>>) Thread.currentThread()
-					.getContextClassLoader().loadClass(qualifiedName));
+			addProcessor((Class<? extends Processor<?>>) Thread.currentThread().getContextClassLoader().loadClass(qualifiedName));
 		} catch (ClassNotFoundException e) {
-			factory.getEnvironment()
-					.report(null,
-							Level.ERROR,
-							"Unable to load processor \""
-									+ qualifiedName
-									+ "\" - Check your classpath. Did you use the --precompile option?");
+			factory.getEnvironment().report(null, Level.ERROR, "Unable to load processor \"" + qualifiedName + "\" - Check your classpath. Did you use the --precompile option?");
 		}
 	}
 
@@ -109,8 +98,9 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	}
 
 	private ProcessingVisitor getVisitor() {
-		if (visitor == null)
+		if (visitor == null) {
 			visitor = new ProcessingVisitor(getFactory());
+		}
 		return visitor;
 	}
 
@@ -139,14 +129,13 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	/**
 	 * Recursively processes elements and their children with a given processor.
 	 */
-	public void process(Collection<? extends CtElement> elements,
-			Processor<?> processor) {
-		getFactory().getEnvironment().debugMessage(
-				"processing with '" + processor.getClass().getName() + "'...");
+	public void process(Collection<? extends CtElement> elements, Processor<?> processor) {
+		getFactory().getEnvironment().debugMessage("processing with '" + processor.getClass().getName() + "'...");
 		current = processor;
 		Timer.start(processor.getClass().getName());
-		for (CtElement e : elements)
+		for (CtElement e : elements) {
 			process(e, processor);
+		}
 		Timer.stop(processor.getClass().getName());
 	}
 
@@ -161,14 +150,8 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	 * Recursively processes an element and its children with a given processor.
 	 */
 	public void process(CtElement element, Processor<?> processor) {
-		getFactory()
-				.getEnvironment()
-				.debugMessage(
-						"processing '"
-								+ ((element instanceof CtNamedElement) ? ((CtNamedElement) element)
-										.getSimpleName() : element.toString())
-								+ "' with '" + processor.getClass().getName()
-								+ "'...");
+		getFactory().getEnvironment().debugMessage(
+				"processing '" + ((element instanceof CtNamedElement) ? ((CtNamedElement) element).getSimpleName() : element.toString()) + "' with '" + processor.getClass().getName() + "'...");
 		processor.init();
 		getVisitor().setProcessor(processor);
 		getVisitor().scan(element);

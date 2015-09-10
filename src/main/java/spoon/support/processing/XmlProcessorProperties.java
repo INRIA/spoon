@@ -62,8 +62,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		 */
 		@SuppressWarnings("unchecked")
 		@Override
-		public void characters(char[] ch, int start, int length)
-				throws SAXException {
+		public void characters(char[] ch, int start, int length) throws SAXException {
 			if (isValue) {
 				if ((value == null) || !(value instanceof Collection)) {
 					value = new ArrayList<Object>();
@@ -76,12 +75,11 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		 * Handles a tag end.
 		 */
 		@Override
-		public void endElement(String uri, String localName, String qName)
-				throws SAXException {
-			if (localName.equals("property")) {
+		public void endElement(String uri, String localName, String qName) throws SAXException {
+			if ("property".equals(localName)) {
 				props.put(name, value);
 				value = null;
-			} else if (localName.equals("value")) {
+			} else if ("value".equals(localName)) {
 				isValue = false;
 			}
 		}
@@ -90,14 +88,14 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		 * Handles a tag start.
 		 */
 		@Override
-		public void startElement(String uri, String localName, String qName,
-				Attributes attributes) throws SAXException {
-			if (localName.equals("property")) {
+		public void startElement(String uri, String localName, String qName, Attributes attributes)
+				throws SAXException {
+			if ("property".equals(localName)) {
 				name = attributes.getValue("name");
 				if (attributes.getValue("value") != null) {
 					value = attributes.getValue("value");
 				}
-			} else if (localName.equals("value")) {
+			} else if ("value".equals(localName)) {
 				isValue = true;
 			}
 		}
@@ -114,8 +112,8 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		this.factory = factory;
 	}
 
-	public XmlProcessorProperties(Factory factory, String processorName,
-			InputStream stream) throws IOException, SAXException {
+	public XmlProcessorProperties(Factory factory, String processorName, InputStream stream)
+	throws IOException, SAXException {
 		this.processorName = processorName;
 		this.factory = factory;
 		load(stream);
@@ -131,8 +129,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 			return null;
 		}
 		if (type.isArray()) {
-			return (T) convertArray(type.getComponentType(),
-					(Collection<Object>) props.get(name));
+			return (T) convertArray(type.getComponentType(), (Collection<Object>) props.get(name));
 		}
 		return convert(type, props.get(name));
 	}
@@ -166,37 +163,45 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		}
 		return buf.toString();
 	}
-	
+
 	/**
 	 * Converts an object <code>o</code> into an object or a {@link CtReference}
 	 * of type <code>type</code>.
-	 * 
+	 *
 	 * @param <T>
-	 *            the actual type of the object
+	 * 		the actual type of the object
 	 * @param type
-	 *            the type to convert the object into
+	 * 		the type to convert the object into
 	 * @param o
-	 *            the object to be converted
+	 * 		the object to be converted
 	 * @return a primitive object of type T, or a reference
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T convert(Class<T> type, Object o) {
-		if (o == null)
+		if (o == null) {
 			return null;
-		if (type == boolean.class)
+		}
+		if (type == boolean.class) {
 			return (T) new Boolean(o.toString());
-		if (type == byte.class)
+		}
+		if (type == byte.class) {
 			return (T) new Byte(o.toString());
-		if (type == char.class)
+		}
+		if (type == char.class) {
 			return (T) new Character(o.toString().charAt(0));
-		if (type == double.class)
+		}
+		if (type == double.class) {
 			return (T) new Double(o.toString());
-		if (type == float.class)
+		}
+		if (type == float.class) {
 			return (T) new Float(o.toString());
-		if (type == int.class)
+		}
+		if (type == int.class) {
 			return (T) new Integer(o.toString());
-		if (type == long.class)
+		}
+		if (type == long.class) {
 			return (T) new Long(o.toString());
+		}
 		if (CtTypeReference.class.isAssignableFrom(type)) {
 			return (T) factory.Type().createReference(o.toString());
 		}
@@ -217,13 +222,13 @@ public class XmlProcessorProperties implements ProcessorProperties {
 
 	/**
 	 * Converts a collection of object into an array of type <code>type</code>.
-	 * 
+	 *
 	 * @param <T>
-	 *            the actual type of the array
+	 * 		the actual type of the array
 	 * @param type
-	 *            the type to convert the object into
+	 * 		the type to convert the object into
 	 * @param val
-	 *            the collection to be converted
+	 * 		the collection to be converted
 	 * @return an array of type T
 	 */
 	@SuppressWarnings("unchecked")
@@ -306,8 +311,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 			}
 			return (T) ret;
 		} else if (CtExecutableReference.class.isAssignableFrom(type)) {
-			CtExecutableReference<?>[] ret = new CtExecutableReference[val
-					.size()];
+			CtExecutableReference<?>[] ret = new CtExecutableReference[val.size()];
 			int i = 0;
 			for (Object o : val) {
 				ret[i++] = convert(CtExecutableReference.class, o);

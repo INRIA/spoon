@@ -105,7 +105,7 @@ public abstract class SpoonResourceHelper {
 				return new FileSystemFolder(tempFile);
 			}
 		} catch (IOException e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 
 		return null;

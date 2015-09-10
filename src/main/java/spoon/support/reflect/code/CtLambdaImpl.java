@@ -24,8 +24,8 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	String simpleName;
 	CtExpression<T> expression;
 	CtBlock<?> body;
-	List<CtParameter<?>> parameters = EMPTY_LIST();
-	Set<CtTypeReference<? extends Throwable>> thrownTypes = EMPTY_SET();
+	List<CtParameter<?>> parameters = emptyList();
+	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -75,7 +75,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C addParameter(CtParameter<?> parameter) {
-		if (parameters == CtElementImpl.<CtParameter<?>>EMPTY_LIST()) {
+		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			parameters = new ArrayList<CtParameter<?>>(
 					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -86,8 +86,8 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public boolean removeParameter(CtParameter<?> parameter) {
-		return parameters != CtElementImpl.<CtParameter<?>>EMPTY_LIST() &&
-				parameters.remove(parameter);
+		return parameters != CtElementImpl.<CtParameter<?>>emptyList()
+				&& parameters.remove(parameter);
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C addThrownType(CtTypeReference<? extends Throwable> throwType) {
-		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>EMPTY_SET()) {
+		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
 		}
 		thrownTypes.add(throwType);

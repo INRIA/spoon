@@ -61,7 +61,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 			return getDeclaringType().getActualClass().getDeclaredField(
 					getSimpleName());
 		} catch (Exception e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 		return null;
 	}

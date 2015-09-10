@@ -8,9 +8,9 @@ public interface CtTypeMember extends CtModifiable {
 
 	/**
 	 * Gets the type that declares this class member.
-	 * 
+	 *
 	 * @return declaring class
 	 */
 	CtType<?> getDeclaringType();
-	
+
 }

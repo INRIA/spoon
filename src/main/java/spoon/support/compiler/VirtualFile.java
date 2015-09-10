@@ -13,13 +13,13 @@ public class VirtualFile implements SpoonFile {
 
 	String name = "virtual_file";
 
-	public VirtualFile(String _contents) {
-		this.content = _contents;
+	public VirtualFile(String content) {
+		this.content = content;
 	}
 
-	public VirtualFile(String _contents, String _name) {
-		this(_contents);
-		name = _name;
+	public VirtualFile(String contents, String name) {
+		this(contents);
+		this.name = name;
 	}
 
 	public InputStream getContent() {

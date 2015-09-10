@@ -68,9 +68,9 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a new type sub-factory.
-	 * 
+	 *
 	 * @param factory
-	 *            the parent factory
+	 * 		the parent factory
 	 */
 	public TypeFactory(Factory factory) {
 		super(factory);
@@ -78,16 +78,14 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a reference to an array of given type.
-	 * 
+	 *
 	 * @param <T>
-	 *            type of array
+	 * 		type of array
 	 * @param type
-	 *            type of array values
+	 * 		type of array values
 	 */
-	public <T> CtArrayTypeReference<T[]> createArrayReference(
-			CtType<T> type) {
-		CtArrayTypeReference<T[]> array = factory.Core()
-				.createArrayTypeReference();
+	public <T> CtArrayTypeReference<T[]> createArrayReference(CtType<T> type) {
+		CtArrayTypeReference<T[]> array = factory.Core().createArrayTypeReference();
 		array.setComponentType(createReference(type));
 		return array;
 	}
@@ -95,10 +93,8 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Creates a reference to a one-dimension array of given type.
 	 */
-	public <T> CtArrayTypeReference<T[]> createArrayReference(
-			CtTypeReference<T> reference) {
-		CtArrayTypeReference<T[]> array = factory.Core()
-				.createArrayTypeReference();
+	public <T> CtArrayTypeReference<T[]> createArrayReference(CtTypeReference<T> reference) {
+		CtArrayTypeReference<T[]> array = factory.Core().createArrayTypeReference();
 		array.setComponentType(reference);
 		return array;
 	}
@@ -106,15 +102,13 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Creates a reference to an n-dimension array of given type.
 	 */
-	public CtArrayTypeReference<?> createArrayReference(
-			CtTypeReference<?> reference, int n) {
+	public CtArrayTypeReference<?> createArrayReference(CtTypeReference<?> reference, int n) {
 		CtTypeReference<?> componentType = null;
 		if (n == 1) {
 			return createArrayReference(reference);
 		}
 		componentType = createArrayReference(reference, n - 1);
-		CtArrayTypeReference<?> array = factory.Core()
-				.createArrayTypeReference();
+		CtArrayTypeReference<?> array = factory.Core().createArrayTypeReference();
 		array.setComponentType(componentType);
 		return array;
 	}
@@ -123,8 +117,7 @@ public class TypeFactory extends SubFactory {
 	 * Creates a reference to an array of given type.
 	 */
 	public <T> CtArrayTypeReference<T> createArrayReference(String qualifiedName) {
-		CtArrayTypeReference<T> array = factory.Core()
-				.createArrayTypeReference();
+		CtArrayTypeReference<T> array = factory.Core().createArrayTypeReference();
 		array.setComponentType(createReference(qualifiedName));
 		return array;
 	}
@@ -134,8 +127,7 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtTypeReference<T> createReference(Class<T> type) {
 		if (type.isArray()) {
-			CtArrayTypeReference<T> array = factory.Core()
-					.createArrayTypeReference();
+			CtArrayTypeReference<T> array = factory.Core().createArrayTypeReference();
 			array.setComponentType(createReference(type.getComponentType()));
 			return array;
 		}
@@ -165,15 +157,13 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtTypeReference<T> createReference(String qualifiedName) {
 		if (qualifiedName.endsWith("[]")) {
-			return createArrayReference(qualifiedName.substring(0,
-					qualifiedName.length() - 2));
+			return createArrayReference(qualifiedName.substring(0, qualifiedName.length() - 2));
 		}
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
 		if (hasInnerType(qualifiedName) > 0) {
 			ref.setDeclaringType(createReference(getDeclaringTypeName(qualifiedName)));
 		} else if (hasPackage(qualifiedName) > 0) {
-			ref.setPackage(factory.Package().createReference(
-					getPackageName(qualifiedName)));
+			ref.setPackage(factory.Package().createReference(getPackageName(qualifiedName)));
 		}
 		ref.setSimpleName(getSimpleName(qualifiedName));
 		return ref;
@@ -181,13 +171,12 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets a created type from its qualified name.
-	 * 
+	 *
 	 * @return a found type or null if does not exist
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(String qualifiedName) {
-		int inertTypeIndex = qualifiedName
-				.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
+		int inertTypeIndex = qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		if (inertTypeIndex > 0) {
 			String s = qualifiedName.substring(0, inertTypeIndex);
 			CtType<T> t = get(s);
@@ -197,12 +186,10 @@ public class TypeFactory extends SubFactory {
 			return t.getNestedType(qualifiedName.substring(inertTypeIndex + 1));
 		}
 
-		int packageIndex = qualifiedName
-				.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
+		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
 		CtPackage pack;
 		if (packageIndex > 0) {
-			pack = factory.Package().get(
-					qualifiedName.substring(0, packageIndex));
+			pack = factory.Package().get(qualifiedName.substring(0, packageIndex));
 		} else {
 			pack = factory.Package().get(CtPackage.TOP_LEVEL_PACKAGE_NAME);
 		}
@@ -211,8 +198,7 @@ public class TypeFactory extends SubFactory {
 			return null;
 		}
 
-		return (CtType<T>) pack.getType(qualifiedName
-				.substring(packageIndex + 1));
+		return (CtType<T>) pack.getType(qualifiedName.substring(packageIndex + 1));
 	}
 
 	/**
@@ -251,12 +237,12 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets a type from its runtime Java class.
-	 * 
+	 *
 	 * @param <T>
-	 *            actual type of the class
+	 * 		actual type of the class
 	 * @param cl
-	 *            the java class: note that this class should be Class&lt;T&gt; but it
-	 *            then poses problem when T is a generic type itself
+	 * 		the java class: note that this class should be Class&lt;T&gt; but it
+	 * 		then poses problem when T is a generic type itself
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(Class<?> cl) {
@@ -274,8 +260,7 @@ public class TypeFactory extends SubFactory {
 	 * Creates a collection of type references from a collection of classes.
 	 */
 	public List<CtTypeReference<?>> createReferences(List<Class<?>> classes) {
-		List<CtTypeReference<?>> refs =new ArrayList<CtTypeReference<?>>(
-				classes.size());
+		List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>(classes.size());
 		for (Class<?> c : classes) {
 			refs.add(createReference(c));
 		}
@@ -332,11 +317,11 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a type parameter with no bounds.
-	 * 
+	 *
 	 * @param owner
-	 *            the owning declaration
+	 * 		the owning declaration
 	 * @param name
-	 *            the name of the formal parameter
+	 * 		the name of the formal parameter
 	 */
 	public CtTypeParameter createTypeParameter(CtElement owner, String name) {
 		CtTypeParameter typeParam = factory.Core().createTypeParameter();
@@ -346,16 +331,15 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a type parameter.
-	 * 
+	 *
 	 * @param owner
-	 *            the owning declaration
+	 * 		the owning declaration
 	 * @param name
-	 *            the name of the formal parameter
+	 * 		the name of the formal parameter
 	 * @param bounds
-	 *            the bounds
+	 * 		the bounds
 	 */
-	public CtTypeParameter createTypeParameter(CtElement owner, String name,
-			List<CtTypeReference<?>> bounds) {
+	public CtTypeParameter createTypeParameter(CtElement owner, String name, List<CtTypeReference<?>> bounds) {
 		CtTypeParameter typeParam = factory.Core().createTypeParameter();
 		typeParam.setSimpleName(name);
 		typeParam.setBounds(bounds);
@@ -364,29 +348,26 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Creates a type parameter reference with no bounds.
-	 * 
+	 *
 	 * @param name
-	 *            the name of the formal parameter
+	 * 		the name of the formal parameter
 	 */
 	public CtTypeParameterReference createTypeParameterReference(String name) {
-		CtTypeParameterReference typeParam = factory.Core()
-				.createTypeParameterReference();
+		CtTypeParameterReference typeParam = factory.Core().createTypeParameterReference();
 		typeParam.setSimpleName(name);
 		return typeParam;
 	}
 
 	/**
 	 * Creates a type parameter reference.
-	 * 
+	 *
 	 * @param name
-	 *            the name of the formal parameter
+	 * 		the name of the formal parameter
 	 * @param bounds
-	 *            the bounds
+	 * 		the bounds
 	 */
-	public CtTypeParameterReference createTypeParameterReference(String name,
-			List<CtTypeReference<?>> bounds) {
-		CtTypeParameterReference typeParam = factory.Core()
-				.createTypeParameterReference();
+	public CtTypeParameterReference createTypeParameterReference(String name, List<CtTypeReference<?>> bounds) {
+		CtTypeParameterReference typeParam = factory.Core().createTypeParameterReference();
 		typeParam.setSimpleName(name);
 		typeParam.setBounds(bounds);
 		return typeParam;

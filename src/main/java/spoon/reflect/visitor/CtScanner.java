@@ -149,17 +149,18 @@ public abstract class CtScanner implements CtVisitor {
 	 * Generically scans a meta-model element.
 	 */
 	public void scan(CtElement element) {
-		if ((element != null))
+		if ((element != null)) {
 			element.accept(this);
-
+		}
 	}
 
 	/**
 	 * Generically scans a meta-model element reference.
 	 */
 	public void scan(CtReference reference) {
-		if ((reference != null))
+		if ((reference != null)) {
 			reference.accept(this);
+		}
 
 	}
 
@@ -191,10 +192,12 @@ public abstract class CtScanner implements CtVisitor {
 	 * collection of those.
 	 */
 	public void scan(Object o) {
-		if (o instanceof CtElement)
+		if (o instanceof CtElement) {
 			scan((CtElement) o);
-		if (o instanceof CtReference)
+		}
+		if (o instanceof CtReference) {
 			scan((CtReference) o);
+		}
 		if (o instanceof Collection<?>) {
 			for (Object obj : (Collection<?>) o) {
 				scan(obj);
@@ -552,7 +555,8 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	@Override
-	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
+			CtExecutableReferenceExpression<T, E> expression) {
 		enter(expression);
 		scan(expression.getType());
 		scanReferences(expression.getTypeCasts());
@@ -561,7 +565,8 @@ public abstract class CtScanner implements CtVisitor {
 		exit(expression);
 	}
 
-	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
+	public <T, A extends T> void visitCtOperatorAssignment(
+			CtOperatorAssignment<T, A> assignment) {
 		enter(assignment);
 		scan(assignment.getAnnotations());
 		scan(assignment.getType());
@@ -729,7 +734,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
 	}
-
 
 	public <T> void visitCtUnboundVariableReference(
 			CtUnboundVariableReference<T> reference) {

@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -35,11 +35,11 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
 
 	/**
 	 * Do the annotation processing job for a given annotation.
-	 * 
+	 *
 	 * @param annotation
-	 *            the annotation to process
+	 * 		the annotation to process
 	 * @param element
-	 *            the element that holds the processed annotations
+	 * 		the element that holds the processed annotations
 	 */
 	void process(A annotation, E element);
 
@@ -49,7 +49,7 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
 	 * {@link #process(Annotation, CtElement)} method when visiting a program
 	 * element. The processed annotation types includes all the consumed
 	 * annotation types.
-	 * 
+	 *
 	 * @return the annotation classes
 	 */
 	Set<Class<? extends A>> getProcessedAnnotationTypes();
@@ -59,7 +59,7 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
 	 * annotation is a special kind of processed annotation (see
 	 * {@link #getProcessedAnnotationTypes()} that is automatically removed from
 	 * the program once the associated processor has finished its job.
-	 * 
+	 *
 	 * @return the annotation classes
 	 */
 	Set<Class<? extends A>> getConsumedAnnotationTypes();
@@ -69,8 +69,9 @@ public interface AnnotationProcessor<A extends Annotation, E extends CtElement>
 	 * annotation type to the <code>A</code> actual type.
 	 */
 	boolean inferConsumedAnnotationType();
-	
-	/** Returns true if this annotation should be removed from the processed code.
+
+	/**
+	 * Returns true if this annotation should be removed from the processed code.
 	 */
 	boolean shoudBeConsumed(CtAnnotation<? extends Annotation> annotation);
 

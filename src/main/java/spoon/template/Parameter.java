@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -34,7 +34,7 @@ import spoon.support.template.ParameterMatcher;
  * it is not necessary to annotate it with a {@link Local} annotation.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface Parameter {
 	/**
 	 * Defines the name of the parameter (optional, mostly to avoid name
@@ -43,13 +43,13 @@ public @interface Parameter {
 	 * different name to a parameter in order to avoid name clashes, in
 	 * particular when a parameter represents the name of a templated field. For
 	 * instance:
-	 * 
+	 *
 	 * <pre>
 	 * class T extends Template {
-	 * 	// this parameter will contain the actual value of the _i_ field's name 
+	 * 	// this parameter will contain the actual value of the _i_ field's name
 	 * 	\@Parameter(&quot;_i_&quot;)
 	 * 	String __i_;
-	 * 
+	 *
 	 * 	int _i_;
 	 * }
 	 * </pre>

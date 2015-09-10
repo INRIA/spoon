@@ -38,9 +38,9 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a new constructor sub-factory.
-	 * 
+	 *
 	 * @param factory
-	 *            the parent factory
+	 * 		the parent factory
 	 */
 	public ConstructorFactory(Factory factory) {
 		super(factory);
@@ -48,18 +48,16 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Copies a constructor into a target class.
-	 * 
+	 *
 	 * @param target
-	 *            the target class
+	 * 		the target class
 	 * @param source
-	 *            the constructor to be copied
+	 * 		the constructor to be copied
 	 * @return the new constructor
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> CtConstructor<T> create(CtClass<T> target,
-			CtConstructor<?> source) {
-		CtConstructor<T> newConstructor = factory.Core().clone(
-				(CtConstructor<T>) source);
+	public <T> CtConstructor<T> create(CtClass<T> target, CtConstructor<?> source) {
+		CtConstructor<T> newConstructor = factory.Core().clone((CtConstructor<T>) source);
 		target.addConstructor(newConstructor);
 		return newConstructor;
 	}
@@ -67,11 +65,11 @@ public class ConstructorFactory extends ExecutableFactory {
 	/**
 	 * Creates a constructor into a target class by copying it from a source
 	 * method.
-	 * 
+	 *
 	 * @param target
-	 *            the target class
+	 * 		the target class
 	 * @param source
-	 *            the method to be copied
+	 * 		the method to be copied
 	 * @return the new constructor
 	 */
 	@SuppressWarnings("unchecked")
@@ -81,8 +79,7 @@ public class ConstructorFactory extends ExecutableFactory {
 		newConstructor.setAnnotations(method.getAnnotations());
 		newConstructor.setBody(method.getBody());
 		newConstructor.setDocComment(method.getDocComment());
-		newConstructor
-				.setFormalTypeParameters(method.getFormalTypeParameters());
+		newConstructor.setFormalTypeParameters(method.getFormalTypeParameters());
 		newConstructor.setModifiers(method.getModifiers());
 		newConstructor.setParameters(method.getParameters());
 		target.addConstructor(newConstructor);
@@ -91,16 +88,15 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Creates an empty constructor.
-	 * 
+	 *
 	 * @param modifiers
-	 *            the modifiers
+	 * 		the modifiers
 	 * @param parameters
-	 *            the parameters
+	 * 		the parameters
 	 * @param thrownTypes
-	 *            the thrown types
+	 * 		the thrown types
 	 */
-	public <T> CtConstructor<T> create(CtClass<T> target,
-			Set<ModifierKind> modifiers, List<CtParameter<?>> parameters,
+	public <T> CtConstructor<T> create(CtClass<T> target, Set<ModifierKind> modifiers, List<CtParameter<?>> parameters,
 			Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		CtConstructor<T> constructor = factory.Core().createConstructor();
 		constructor.setModifiers(modifiers);
@@ -112,9 +108,9 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Create the default empty constructor.
-	 * 
+	 *
 	 * @param target
-	 *            the class to insert the constructor into
+	 * 		the class to insert the constructor into
 	 * @return the created constructor
 	 */
 	public <T> CtConstructor<T> createDefault(CtClass<T> target) {
@@ -126,22 +122,19 @@ public class ConstructorFactory extends ExecutableFactory {
 
 	/**
 	 * Creates a constructor.
-	 * 
+	 *
 	 * @param modifiers
-	 *            the modifiers
+	 * 		the modifiers
 	 * @param parameters
-	 *            the parameters
+	 * 		the parameters
 	 * @param thrownTypes
-	 *            the thrown types
+	 * 		the thrown types
 	 * @param body
-	 *            the body
+	 * 		the body
 	 */
-	public <T> CtConstructor<T> create(CtClass<T> target,
-			Set<ModifierKind> modifiers, List<CtParameter<?>> parameters,
-			Set<CtTypeReference<? extends Throwable>> thrownTypes,
-			CtBlock<T> body) {
-		CtConstructor<T> constructor = create(target, modifiers, parameters,
-				thrownTypes);
+	public <T> CtConstructor<T> create(CtClass<T> target, Set<ModifierKind> modifiers, List<CtParameter<?>> parameters,
+			Set<CtTypeReference<? extends Throwable>> thrownTypes, CtBlock<T> body) {
+		CtConstructor<T> constructor = create(target, modifiers, parameters, thrownTypes);
 		constructor.setBody(body);
 		return constructor;
 	}
@@ -156,17 +149,10 @@ public class ConstructorFactory extends ExecutableFactory {
 	/**
 	 * Creates a constructor reference from an actual constructor.
 	 */
-	public <T> CtExecutableReference<T> createReference(
-			Constructor<T> constructor) {
-		CtTypeReference<T> type = factory.Type().createReference(
-				constructor.getDeclaringClass());
-		return createReference(
-				type,
-				type,
-				CtExecutableReference.CONSTRUCTOR_NAME,
-				factory.Type().createReferences(
-						Arrays.asList(constructor
-								.getParameterTypes())));
+	public <T> CtExecutableReference<T> createReference(Constructor<T> constructor) {
+		CtTypeReference<T> type = factory.Type().createReference(constructor.getDeclaringClass());
+		return createReference(type, type, CtExecutableReference.CONSTRUCTOR_NAME,
+				factory.Type().createReferences(Arrays.asList(constructor.getParameterTypes())));
 	}
 
 }

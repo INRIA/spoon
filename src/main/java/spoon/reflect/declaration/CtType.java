@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -25,7 +25,7 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * This abstract element defines a super-type for classes and interfaces, which
  * can declare methods.
- * 
+ *
  * The type parameter T refers to the actual class that this type represents.
  */
 public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtGenericElement {
@@ -38,8 +38,8 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Returns the types used by this type.
 	 *
 	 * @param includeSamePackage
-	 *            set to true if the method should return also the types located
-	 *            in the same package as the current type
+	 * 		set to true if the method should return also the types located
+	 * 		in the same package as the current type
 	 */
 	Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage);
 
@@ -79,7 +79,8 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 */
 	CtPackage getPackage();
 
-	/** Returns the corresponding type reference.
+	/**
+	 * Returns the corresponding type reference.
 	 *
 	 * Overrides the return type.
 	 */
@@ -131,25 +132,24 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @see spoon.reflect.code.CtCodeSnippetStatement
 	 */
 	void compileAndReplaceSnippets();
-	
+
 	/**
 	 * Return all the accessible methods (concrete and abstract) for this type.
-	 * 
-	 *  The recursion stops when the super-type/super-interface is not in the model.
+	 *
+	 * The recursion stops when the super-type/super-interface is not in the model.
 	 */
 	Set<CtMethod<?>> getAllMethods();
 
 	/**
 	 * Gets a method from its return type, name, and parameter types.
-	 * 
+	 *
 	 * @return null if does not exit
 	 */
-	<R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name,
-			CtTypeReference<?>... parameterTypes);
+	<R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>... parameterTypes);
 
 	/**
 	 * Gets a method from its name and parameter types.
-	 * 
+	 *
 	 * @return null if does not exit
 	 */
 	<R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes);
@@ -171,7 +171,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * interface and that have the given name.
 	 */
 	List<CtMethod<?>> getMethodsByName(String name);
-	
 
 	/**
 	 * Sets the methods of this type.
@@ -194,14 +193,12 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
 
 	/**
-	 * 
 	 * @param interfac
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<S, C extends CtType<T>> C addSuperInterface(CtTypeReference<S> interfac);
 
 	/**
-	 * 
 	 * @param interfac
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */

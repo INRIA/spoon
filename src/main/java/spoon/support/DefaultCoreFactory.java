@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -202,8 +202,9 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	@SuppressWarnings("unchecked")
 	private <T> T clone(T object, Stack<CtElement> cloningContext) {
-		if (object == null)
+		if (object == null) {
 			return null;
+		}
 		T result = null;
 		try {
 			if (!(object instanceof CtElement || object instanceof CtReference)) {
@@ -243,16 +244,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 				// } else {
 				if (!f.getName().equals("parent")) {
 					Object fieldValue = f.get(object);
-					if (!Modifier.isFinal(f.getModifiers())
-							&& !Modifier.isStatic(f.getModifiers())) {
+					if (!Modifier.isFinal(f.getModifiers()) && !Modifier.isStatic(f.getModifiers())) {
 						if (fieldValue instanceof Collection) {
 							Collection<Object> c;
-							if (fieldValue == CtElementImpl.EMPTY_COLLECTION()
-									|| fieldValue == CtElementImpl.EMPTY_SET()) {
+							if (fieldValue == CtElementImpl.emptyCollection() || fieldValue == CtElementImpl.emptySet()) {
 								c = (Collection<Object>) fieldValue;
 							} else {
-								c = (Collection<Object>) fieldValue.getClass()
-										.getMethod("clone").invoke(fieldValue);
+								c = (Collection<Object>) fieldValue.getClass().getMethod("clone").invoke(fieldValue);
 								c.clear();
 								for (Object o : (Collection<Object>) fieldValue) {
 									c.add(clone(o, cloningContext));
@@ -264,18 +262,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 							// TODO: ARE THERE REALLY MAP FIELDS IN THE MODEL?
 							// System.err.println(" cloning collection " + f+" :
 							// "+cloningContext.peek().getClass().getSimpleName());
-							Map<Object, Object> m = (Map<Object, Object>) fieldValue
-									.getClass().getMethod("clone")
-									.invoke(fieldValue);
+							Map<Object, Object> m = (Map<Object, Object>) fieldValue.getClass().getMethod("clone").invoke(fieldValue);
 							// m.clear();
 							f.set(result, m);
-							for (Entry<?, ?> e : ((Map<?, ?>) fieldValue)
-									.entrySet()) {
-								m.put(e.getKey(),
-										clone(e.getValue(), cloningContext));
+							for (Entry<?, ?> e : ((Map<?, ?>) fieldValue).entrySet()) {
+								m.put(e.getKey(), clone(e.getValue(), cloningContext));
 							}
-						} else if ((object instanceof CtReference)
-								&& (fieldValue instanceof CtElement)) {
+						} else if ((object instanceof CtReference) && (fieldValue instanceof CtElement)) {
 
 							f.set(result, fieldValue);
 						} else {
@@ -299,8 +292,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 				// cloningContext.pop();
 			}
 		} catch (Exception e) {
-			Launcher.logger.error(e.getMessage(), e);
-//			cloningContext.pop();
+			Launcher.LOGGER.error(e.getMessage(), e);
+			//			cloningContext.pop();
 		}
 		return result;
 
@@ -733,10 +726,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		this.mainFactory = mainFactory;
 	}
 
-	public SourcePosition createSourcePosition(CompilationUnit compilationUnit,
-			int start, int end, int[] lineSeparatorPositions) {
-		return new SourcePositionImpl(compilationUnit, start, end,
-				lineSeparatorPositions);
+	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int start, int end, int[] lineSeparatorPositions) {
+		return new SourcePositionImpl(compilationUnit, start, end, lineSeparatorPositions);
 	}
 
 	public CompilationUnit createCompilationUnit() {

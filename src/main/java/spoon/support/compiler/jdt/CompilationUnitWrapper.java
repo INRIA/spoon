@@ -9,7 +9,7 @@ class CompilationUnitWrapper extends CompilationUnit {
 
 	private final JDTBasedSpoonCompiler jdtCompiler;
 
-	public CompilationUnitWrapper(JDTBasedSpoonCompiler jdtCompiler, CompilationUnit wrappedUnit) {
+	CompilationUnitWrapper(JDTBasedSpoonCompiler jdtCompiler, CompilationUnit wrappedUnit) {
 		super(null, wrappedUnit.fileName != null ? new String(
 				wrappedUnit.fileName) : null, null,
 				wrappedUnit.destinationPath != null ? new String(
@@ -32,7 +32,7 @@ class CompilationUnitWrapper extends CompilationUnit {
 					return content;
 				}
 			} catch (Exception e) {
-				Launcher.logger.error(e.getMessage(), e);
+				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		}
 		return super.getContents();

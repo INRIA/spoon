@@ -1,7 +1,6 @@
 package spoon.reflect.path.impl;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +22,7 @@ public class CtTypedNameElement<P extends CtElement, T extends CtElement> extend
 
 	@Override
 	public String toString() {
-		return STRING + type.getSimpleName()+ getParamString();
+		return STRING + type.getSimpleName() + getParamString();
 	}
 
 	@Override
@@ -40,6 +39,6 @@ public class CtTypedNameElement<P extends CtElement, T extends CtElement> extend
 	}
 
 	private boolean match(CtElement element) {
-		return element != null &&  type.isAssignableFrom(element.getClass());
+		return element != null && type.isAssignableFrom(element.getClass());
 	}
 }

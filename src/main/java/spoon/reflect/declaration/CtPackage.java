@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -44,9 +44,9 @@ public interface CtPackage extends CtNamedElement {
 
 	/**
 	 * Searches a child package by name.
-	 * 
+	 *
 	 * @param name
-	 *            the simple name of searched package
+	 * 		the simple name of searched package
 	 * @return the found package or null
 	 */
 	CtPackage getPackage(String name);
@@ -59,22 +59,22 @@ public interface CtPackage extends CtNamedElement {
 	/**
 	 * Returns the fully qualified name of this package. This is also known as
 	 * the package's <i>canonical</i> name.
-	 * 
+	 *
 	 * @return the fully qualified name of this package, or the empty string if
-	 *         this is the unnamed package
+	 * this is the unnamed package
 	 */
 	String getQualifiedName();
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
 	CtPackageReference getReference();
 
 	/**
 	 * Finds a top-level type by name.
-	 * 
+	 *
 	 * @return the found type or null
 	 */
 	<T extends CtType<?>> T getType(String simpleName);
@@ -96,15 +96,15 @@ public interface CtPackage extends CtNamedElement {
 
 	/**
 	 * Sets the children defined in this package
-	 * 
+	 *
 	 * @param pack
-	 *            new set of child packages
+	 * 		new set of child packages
 	 */
 	<T extends CtPackage> T setPackages(Set<CtPackage> pack);
 
 	/**
 	 * add a subpackage
-	 * 
+	 *
 	 * @param pack
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
@@ -112,7 +112,7 @@ public interface CtPackage extends CtNamedElement {
 
 	/**
 	 * remove a subpackage
-	 * 
+	 *
 	 * @param pack
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
@@ -120,9 +120,9 @@ public interface CtPackage extends CtNamedElement {
 
 	/**
 	 * Sets the types defined in the package.
-	 * 
+	 *
 	 * @param types
-	 *            new Set of types
+	 * 		new Set of types
 	 */
 	<T extends CtPackage> T setTypes(Set<CtType<?>> types);
 }

@@ -17,7 +17,6 @@
 
 package spoon.template;
 
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -27,14 +26,13 @@ import spoon.reflect.declaration.CtType;
  * This class represents a template parameter that defines a block statement
  * directly expressed in Java (must return an expression of type <code>R</code>
  * ).
- * 
+ *
  * <p>
  * To define a new block template parameter, you must subclass this class and
  * implement the {@link #block()} method, which actually defines the Java block.
  * It corresponds to a {@link spoon.reflect.code.CtBlock}.
  */
-public abstract class TypedBlockTemplateParameter<R> implements
-		TemplateParameter<R> {
+public abstract class TypedBlockTemplateParameter<R> implements TemplateParameter<R> {
 
 	/**
 	 * Creates a new block template parameter.
@@ -56,8 +54,7 @@ public abstract class TypedBlockTemplateParameter<R> implements
 		}
 		CtMethod m = c.getMethod("block");
 		if (this instanceof Template) {
-			return Substitution.substitute(targetType, (Template<?>) this,
-					m.getBody());
+			return Substitution.substitute(targetType, (Template<?>) this, m.getBody());
 		}
 		return targetType.getFactory().Core().clone(m.getBody());
 	}

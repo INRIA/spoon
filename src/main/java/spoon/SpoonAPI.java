@@ -6,24 +6,30 @@ import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 
-/** Is the core entry point of Spoon. Implemented by Launcher. */
+/**
+ * Is the core entry point of Spoon. Implemented by Launcher.
+ */
 public interface SpoonAPI {
 
-	/** Runs Spoon with these arguments (used by the "main" method) */
-	public void run(String[] args);
-	
+	/**
+	 * Runs Spoon with these arguments (used by the "main" method)
+	 */
+	void run(String[] args);
+
 	/**
 	 * Adds an input resource to be processed by Spoon (either a file or a folder).
 	 */
-	public void addInputResource(String file);
+	void addInputResource(String file);
 
-	/** Sets the output directory */
-	public void setOutputDirectory(String string);
+	/**
+	 * Sets the output directory
+	 */
+	void setOutputDirectory(String string);
 
 	/**
 	 * Adds a processor (fully qualified name).
 	 */
-	public void addProcessor(String name);
+	void addProcessor(String name);
 
 	/**
 	 * Adds an instance of a processor. The user is responsible for keeping a pointer to it for
@@ -34,36 +40,46 @@ public interface SpoonAPI {
 	/**
 	 * Builds the model
 	 */
-	public void buildModel();
-	
+	void buildModel();
+
 	/**
 	 * Processes the model with the processors given previously with {@link #addProcessor(String)}
 	 */
-	public void process();
-	
+	void process();
+
 	/**
 	 * Write the transformed files to disk
 	 */
-	public void prettyprint();
-	
+	void prettyprint();
+
 	/**
-	 * Starts the complete Spoon processing (build model, process, write transformed files) 
+	 * Starts the complete Spoon processing (build model, process, write transformed files)
 	 */
-	public void run();
-		
-	/** Returns the current factory */
-	public Factory getFactory();
-	
-	/** Returns the current environment. This environment is modifiable. */
-	public Environment getEnvironment();
+	void run();
 
-	/** Creates a new Spoon factory (may be overridden) */
-	public Factory createFactory();
+	/**
+	 * Returns the current factory
+	 */
+	Factory getFactory();
 
-	/** Creates a new Spoon environment (may be overridden) */
-	public Environment createEnvironment();
+	/**
+	 * Returns the current environment. This environment is modifiable.
+	 */
+	Environment getEnvironment();
 
-	/** Creates a new Spoon compiler (for building the model) */
+	/**
+	 * Creates a new Spoon factory (may be overridden)
+	 */
+	Factory createFactory();
+
+	/**
+	 * Creates a new Spoon environment (may be overridden)
+	 */
+	Environment createEnvironment();
+
+	/**
+	 * Creates a new Spoon compiler (for building the model)
+	 */
 	SpoonCompiler createCompiler();
 
 }

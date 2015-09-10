@@ -60,17 +60,17 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> formalTypeParameters = EMPTY_LIST();
+	List<CtTypeReference<?>> formalTypeParameters = emptyList();
 
-	Set<CtTypeReference<?>> interfaces = EMPTY_SET();
+	Set<CtTypeReference<?>> interfaces = emptySet();
 
-	Set<CtMethod<?>> methods = EMPTY_SET();
+	Set<CtMethod<?>> methods = emptySet();
 
 	private List<CtField<?>> fields = new ArrayList<CtField<?>>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
 
-	Set<CtType<?>> nestedTypes = EMPTY_SET();
+	Set<CtType<?>> nestedTypes = emptySet();
 
-	Set<ModifierKind> modifiers = EMPTY_SET();
+	Set<ModifierKind> modifiers = emptySet();
 
 	public CtTypeImpl() {
 		super();
@@ -109,7 +109,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <N, C extends CtType<T>> C addNestedType(CtType<N> nestedType) {
-		if (nestedTypes == CtElementImpl.<CtType<?>>EMPTY_SET()) {
+		if (nestedTypes == CtElementImpl.<CtType<?>>emptySet()) {
 			nestedTypes = new TreeSet<CtType<?>>();
 		}
 		nestedType.setParent(this);
@@ -123,7 +123,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return false;
 		} else if (nestedTypes.size() == 1) {
 			if (nestedTypes.contains(nestedType)) {
-				nestedTypes = CtElementImpl.<CtType<?>>EMPTY_SET();
+				nestedTypes = CtElementImpl.<CtType<?>>emptySet();
 				return true;
 			} else {
 				return false;
@@ -136,15 +136,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage) {
 		Set<CtTypeReference<?>> typeRefs = new HashSet<CtTypeReference<?>>();
-		for (CtTypeReference<?> typeRef : Query.getReferences(this,
-				new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
-			if (!(typeRef.isPrimitive() ||
-					(typeRef instanceof CtArrayTypeReference) ||
-					typeRef.toString().equals(CtTypeReference.NULL_TYPE_NAME) ||
-					((typeRef.getPackage() != null) &&
-							"java.lang".equals(typeRef.getPackage().toString()))) &&
-					!(!includeSamePackage &&
-							getPackageReference(typeRef).equals(this.getPackage().getReference()))) {
+		for (CtTypeReference<?> typeRef : Query
+				.getReferences(this, new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
+			if (!(typeRef.isPrimitive() || (typeRef instanceof CtArrayTypeReference) || typeRef.toString()
+					.equals(CtTypeReference.NULL_TYPE_NAME) || ((typeRef.getPackage() != null) && "java.lang"
+					.equals(typeRef.getPackage().toString()))) && !(!includeSamePackage && getPackageReference(typeRef)
+					.equals(this.getPackage().getReference()))) {
 				typeRefs.add(typeRef);
 			}
 		}
@@ -157,7 +154,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	 * This helper method is meant to deal with package references that are
 	 * <code>null</code> for inner types.
 	 *
-	 * @param tref the type reference
+	 * @param tref
+	 * 		the type reference
 	 * @return the corresponding package reference
 	 * @see CtTypeReference#getPackage()
 	 * @since 4.0
@@ -192,16 +190,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			CtType<?> type;
 
 			public void checkType(CtType<?> type) {
-				if (type.getSimpleName().equals(name)
-						&& CtTypeImpl.this
-						.equals(type.getDeclaringType())) {
+				if (type.getSimpleName().equals(name) && CtTypeImpl.this.equals(type.getDeclaringType())) {
 					this.type = type;
 				}
 			}
 
 			@Override
-			public <U> void visitCtClass(
-					spoon.reflect.declaration.CtClass<U> ctClass) {
+			public <U> void visitCtClass(spoon.reflect.declaration.CtClass<U> ctClass) {
 				scan(ctClass.getNestedTypes());
 				scan(ctClass.getConstructors());
 				scan(ctClass.getMethods());
@@ -210,8 +205,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			}
 
 			@Override
-			public <U> void visitCtInterface(
-					spoon.reflect.declaration.CtInterface<U> intrface) {
+			public <U> void visitCtInterface(spoon.reflect.declaration.CtInterface<U> intrface) {
 				scan(intrface.getNestedTypes());
 				scan(intrface.getMethods());
 
@@ -219,8 +213,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			}
 
 			@Override
-			public <U extends java.lang.Enum<?>> void visitCtEnum(
-					spoon.reflect.declaration.CtEnum<U> ctEnum) {
+			public <U extends java.lang.Enum<?>> void visitCtEnum(spoon.reflect.declaration.CtEnum<U> ctEnum) {
 				scan(ctEnum.getNestedTypes());
 				scan(ctEnum.getConstructors());
 				scan(ctEnum.getMethods());
@@ -229,14 +222,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			}
 
 			@Override
-			public <A extends Annotation> void visitCtAnnotationType(
-					CtAnnotationType<A> annotationType) {
+			public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
 				scan(annotationType.getNestedTypes());
 
 				checkType(annotationType);
 			}
-
-			;
 
 			CtType<?> getType() {
 				return type;
@@ -296,7 +286,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.of(modifier);
 		}
 		modifiers.add(modifier);
@@ -305,13 +295,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		return modifiers != CtElementImpl.<ModifierKind>EMPTY_SET() &&
-				modifiers.remove(modifier);
+		return modifiers != CtElementImpl.<ModifierKind>emptySet() && modifiers.remove(modifier);
 	}
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind> EMPTY_SET()) {
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
 		getModifiers().remove(ModifierKind.PUBLIC);
@@ -358,8 +347,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public List<CtFieldReference<?>> getAllFields() {
-		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>(
-				getFields().size());
+		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>(getFields().size());
 		for (CtField<?> f : getFields()) {
 			l.add(f.getReference());
 		}
@@ -396,7 +384,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
-		if (methods == CtElementImpl.<CtMethod<?>> EMPTY_SET()) {
+		if (methods == CtElementImpl.<CtMethod<?>>emptySet()) {
 			methods = new TreeSet<CtMethod<?>>();
 		}
 		method.setParent(this);
@@ -410,7 +398,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return false;
 		} else if (methods.size() == 1) {
 			if (methods.contains(method)) {
-				methods = CtElementImpl.<CtMethod<?>>EMPTY_SET();
+				methods = CtElementImpl.<CtMethod<?>>emptySet();
 				return true;
 			} else {
 				return false;
@@ -428,7 +416,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <S, C extends CtType<T>> C addSuperInterface(CtTypeReference<S> interfac) {
-		if (interfaces == CtElementImpl.<CtTypeReference<?>> EMPTY_SET()) {
+		if (interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			interfaces = new TreeSet<CtTypeReference<?>>();
 		}
 		interfaces.add(interfac);
@@ -441,7 +429,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return false;
 		} else if (interfaces.size() == 1) {
 			if (interfaces.contains(interfac)) {
-				interfaces = CtElementImpl.<CtTypeReference<?>>EMPTY_SET();
+				interfaces = CtElementImpl.<CtTypeReference<?>>emptySet();
 				return true;
 			} else {
 				return false;
@@ -454,19 +442,16 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtGenericElement> C addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
-		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>> EMPTY_LIST()) {
-			formalTypeParameters = new ArrayList<CtTypeReference<?>>(
-					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			formalTypeParameters = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		formalTypeParameters.add(formalTypeParameter);
 		return (C) this;
 	}
 
 	@Override
-	public boolean removeFormalTypeParameter(
-			CtTypeReference<?> formalTypeParameter) {
-		return formalTypeParameters.contains(formalTypeParameter) &&
-				formalTypeParameters.remove(formalTypeParameter);
+	public boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+		return formalTypeParameters.contains(formalTypeParameter) && formalTypeParameters.remove(formalTypeParameter);
 	}
 
 	@Override
@@ -476,8 +461,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType,
-			String name, CtTypeReference<?>... parameterTypes) {
+	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>...
+			parameterTypes) {
 		for (CtMethod<?> mm : methods) {
 			CtMethod<R> m = (CtMethod<R>) mm;
 			if (m.getSimpleName().equals(name)) {
@@ -485,8 +470,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					continue;
 				}
 				boolean cont = m.getParameters().size() == parameterTypes.length;
-				for (int i = 0; cont && (i < m.getParameters().size())
-						&& (i < parameterTypes.length); i++) {
+				for (int i = 0; cont && (i < m.getParameters().size()) && (i < parameterTypes.length); i++) {
 					if (!m.getParameters().get(i).getType().getQualifiedName()
 							.equals(parameterTypes[i].getQualifiedName())) {
 						cont = false;
@@ -502,18 +486,15 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <R> CtMethod<R> getMethod(String name,
-			CtTypeReference<?>... parameterTypes) {
+	public <R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes) {
 		for (CtMethod<?> m : methods) {
 			if (m.getSimpleName().equals(name)) {
 				boolean cont = m.getParameters().size() == parameterTypes.length;
-				for (int i = 0; cont && (i < m.getParameters().size())
-						&& (i < parameterTypes.length); i++) {
+				for (int i = 0; cont && (i < m.getParameters().size()) && (i < parameterTypes.length); i++) {
 					// String
 					// s1=m.getParameters().get(i).getType().getQualifiedName();
 					// String s2=parameterTypes[i].getQualifiedName();
-					if (!m.getParameters().get(i).getType()
-							.equals(parameterTypes[i])) {
+					if (!m.getParameters().get(i).getType().equals(parameterTypes[i])) {
 						cont = false;
 					}
 				}
@@ -557,8 +538,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public String getQualifiedName() {
 		if (isTopLevel()) {
-			if ((getPackage() != null) &&
-					!getPackage().getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+			if ((getPackage() != null) && !getPackage().getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 				return getPackage().getQualifiedName() + "." + getSimpleName();
 			}
 			return getSimpleName();

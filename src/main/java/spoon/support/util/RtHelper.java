@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -61,7 +61,7 @@ public abstract class RtHelper {
 		Field[] result = new Field[fields.size()];
 		return fields.toArray(result);
 	}
-	
+
 	/**
 	 * Gets all the field references for a given class (including the
 	 * superclasses').
@@ -84,8 +84,9 @@ public abstract class RtHelper {
 			getAllIMethods(c, methods);
 		} else {
 			while (c != null && c != Object.class) {
-				for (Method m : c.getDeclaredMethods())
+				for (Method m : c.getDeclaredMethods()) {
 					methods.add(m);
+				}
 				// methods.addAll(Arrays.asList(c.getDeclaredMethods()));
 				c = c.getSuperclass();
 			}
@@ -95,8 +96,9 @@ public abstract class RtHelper {
 	}
 
 	private static void getAllIMethods(Class<?> c, List<Method> methods) {
-		for (Method m : c.getDeclaredMethods())
+		for (Method m : c.getDeclaredMethods()) {
 			methods.add(m);
+		}
 		for (Class<?> i : c.getInterfaces()) {
 			getAllIMethods(i, methods);
 		}
@@ -107,10 +109,9 @@ public abstract class RtHelper {
 	 * reflection).
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T invoke(CtInvocation<T> i) throws NoSuchMethodException,
-			IllegalAccessException, InvocationTargetException {
-		Object target = i.getTarget() == null ? null : ((CtLiteral<?>) i
-				.getTarget()).getValue();
+	public static <T> T invoke(CtInvocation<T> i)
+			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		Object target = i.getTarget() == null ? null : ((CtLiteral<?>) i.getTarget()).getValue();
 		List<Object> args = new ArrayList<Object>();
 		for (CtExpression<?> e : i.getArguments()) {
 			args.add(((CtLiteral<?>) e).getValue());
@@ -120,9 +121,8 @@ public abstract class RtHelper {
 		for (CtTypeReference<?> type : i.getExecutable().getActualTypeArguments()) {
 			argTypes.add(type.getActualClass());
 		}
-		return (T) c.getMethod(i.getExecutable().getSimpleName(),
-				argTypes.toArray(new Class[argTypes.size()])).invoke(target,
-				args.toArray());
+		return (T) c.getMethod(i.getExecutable().getSimpleName(), argTypes.toArray(new Class[argTypes.size()]))
+				.invoke(target, args.toArray());
 	}
 
 	/**
@@ -166,9 +166,11 @@ public abstract class RtHelper {
 		}
 		return set;
 	}
-	/** return all executables of this class */
-	public static Collection<CtExecutableReference<?>> getAllExecutables(
-			Class<?> clazz, Factory factory) {
+
+	/**
+	 * return all executables of this class
+	 */
+	public static Collection<CtExecutableReference<?>> getAllExecutables(Class<?> clazz, Factory factory) {
 		Collection<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
 		for (Method m : clazz.getDeclaredMethods()) {
 			l.add(factory.Method().createReference(m));

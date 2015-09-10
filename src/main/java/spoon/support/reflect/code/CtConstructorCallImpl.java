@@ -1,14 +1,11 @@
 package spoon.support.reflect.code;
 
-import spoon.SpoonException;
 import spoon.reflect.code.CtAbstractInvocation;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -20,14 +17,15 @@ import java.util.Collections;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities
+		.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
 		implements CtConstructorCall<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.EMPTY_LIST();
-	List<CtExpression<?>> arguments = EMPTY_LIST();
+	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
+	List<CtExpression<?>> arguments = emptyList();
 	CtExecutableReference<T> executable;
 	String label;
 
@@ -86,7 +84,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	@Override
 	public <C extends CtAbstractInvocation<T>> C setArguments(List<CtExpression<?>> arguments) {
 		this.arguments.clear();
-		for (CtExpression<?> expr: arguments) {
+		for (CtExpression<?> expr : arguments) {
 			addArgument(expr);
 		}
 		return (C) this;
@@ -94,7 +92,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public <C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument) {
-		if (arguments == CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+		if (arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
 			arguments = new ArrayList<CtExpression<?>>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		argument.setParent(this);
@@ -104,7 +102,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public void removeArgument(CtExpression<?> argument) {
-		if (arguments != CtElementImpl.<CtExpression<?>> EMPTY_LIST()) {
+		if (arguments != CtElementImpl.<CtExpression<?>>emptyList()) {
 			arguments.remove(argument);
 		}
 	}
@@ -123,7 +121,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public void replace(CtStatement element) {
-		replace((CtElement)element);
+		replace((CtElement) element);
 	}
 
 	@Override
@@ -141,8 +139,9 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	@Override
 	public <T extends CtGenericElementReference> T addActualTypeArgument(
 			CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()) {
-			actualTypeArguments = new ArrayList<CtTypeReference<?>>(CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
+					CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		actualTypeArguments.add(actualTypeArgument);
 		return (T) this;
@@ -150,7 +149,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>EMPTY_LIST()
+		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
 				&& actualTypeArguments.remove(actualTypeArgument);
 	}
 }

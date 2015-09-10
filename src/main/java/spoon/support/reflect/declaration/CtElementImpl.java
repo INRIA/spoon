@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import spoon.Launcher;
@@ -37,7 +36,6 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
@@ -58,15 +56,16 @@ import spoon.support.visitor.TypeReferenceScanner;
  *
  * Implements Comparable for being used in TreeSet
  */
-public abstract class CtElementImpl implements CtElement, Serializable , Comparable<CtElement>{
+public abstract class CtElementImpl implements CtElement, Serializable, Comparable<CtElement> {
+	private static final long serialVersionUID = 1L;
 
-	protected static final Logger logger = Logger.getLogger(CtElementImpl.class);
+	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 
 	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet
 	// because we need clear() for all set* methods
 	// and UnmodifiableList and unmodifiableCollection are not overridable (not visible grrrr)
-	private static class UNMODIFIABLE_COLLECTION extends ArrayList<Object> implements Set<Object> {
+	private static class UnModifiableCollection extends ArrayList<Object> implements Set<Object> {
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -118,27 +117,25 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		public boolean removeAll(Collection<?> c) {
 			throw new UnsupportedOperationException();
 		}
-	};
+	}
 
-	private static final Set<Object> EMPTY_SET = new UNMODIFIABLE_COLLECTION();
-	private static final Set<Object> EMPTY_LIST = new UNMODIFIABLE_COLLECTION();
+	private static final Set<Object> EMPTY_SET = new UnModifiableCollection();
+	private static final Set<Object> EMPTY_LIST = new UnModifiableCollection();
 
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> EMPTY_LIST() {
+	public static <T> List<T> emptyList() {
 		return (List<T>) EMPTY_LIST;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Set<T> EMPTY_SET() {
+	public static <T> Set<T> emptySet() {
 		return (Set<T>) EMPTY_SET;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> EMPTY_COLLECTION() {
+	public static <T> Collection<T> emptyCollection() {
 		return (Collection<T>) EMPTY_LIST;
 	}
-
-	private static final long serialVersionUID = 1L;
 
 	transient Factory factory;
 
@@ -154,10 +151,10 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
-		logger.setLevel(factory.getEnvironment().getLevel());
+		LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
-	List<CtAnnotation<? extends Annotation>> annotations = EMPTY_LIST();
+	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
 
 	String docComment;
 
@@ -172,15 +169,17 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public int compareTo(CtElement o) {
 		String current = getSignature();
 		String other = o.getSignature();
-		if (current.length() <= 0 || other.length() <= 0)
+		if (current.length() <= 0 || other.length() <= 0) {
 			throw new ClassCastException("Unable to compare elements");
+		}
 		return current.compareTo(other);
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof CtElement))
+		if (!(o instanceof CtElement)) {
 			return false;
+		}
 		String current = getSignature();
 		String other = ((CtElement) o).getSignature();
 		return current.equals(other);
@@ -189,8 +188,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	@SuppressWarnings("unchecked")
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
-			if (a.getAnnotationType().toString()
-					.equals(annotationType.getName().replace('$', '.'))) {
+			if (a.getAnnotationType().toString().equals(annotationType.getName().replace('$', '.'))) {
 				return ((CtAnnotation<A>) a).getActualAnnotation();
 			}
 		}
@@ -198,8 +196,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	}
 
 	@SuppressWarnings("unchecked")
-	public <A extends Annotation> CtAnnotation<A> getAnnotation(
-			CtTypeReference<A> annotationType) {
+	public <A extends Annotation> CtAnnotation<A> getAnnotation(CtTypeReference<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
 			if (a.getAnnotationType().equals(annotationType)) {
 				return (CtAnnotation<A>) a;
@@ -218,41 +215,30 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	public CtElement getParent() throws ParentNotInitializedException {
 		if (parent == null) {
-            String exceptionMsg ="";
+			String exceptionMsg = "";
 			if (this instanceof CtNamedElement) {
-                exceptionMsg =(
-						"parent not initialized for "
-								+ ((CtNamedElement) this).getSimpleName()
-								+ "(" + this.getClass() + ")"
-								+ (getPosition() != null ? " " + getPosition()
-										: " (?)"));
+				exceptionMsg = ("parent not initialized for " + ((CtNamedElement) this).getSimpleName() + "(" + this.getClass() + ")" + (getPosition() != null ? " " + getPosition() : " (?)"));
 			} else {
-				exceptionMsg = (
-						"parent not initialized for "
-								+ this.getClass()
-								+ (getPosition() != null ? " " + getPosition()
-										: " (?)"));
+				exceptionMsg = ("parent not initialized for " + this.getClass() + (getPosition() != null ? " " + getPosition() : " (?)"));
 			}
-            throw new ParentNotInitializedException(exceptionMsg);
+			throw new ParentNotInitializedException(exceptionMsg);
 		}
 		return parent;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <P extends CtElement> P getParent(Class<P> parentType)
-			throws ParentNotInitializedException {
-		if (getParent() == null)
+	public <P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException {
+		if (getParent() == null) {
 			return null;
-		if (parentType.isAssignableFrom(getParent().getClass()))
+		}
+		if (parentType.isAssignableFrom(getParent().getClass())) {
 			return (P) getParent();
+		}
 		return getParent().getParent(parentType);
 	}
 
-	public boolean hasParent(CtElement candidate)
-			throws ParentNotInitializedException {
-		if (getParent() == candidate)
-			return true;
-		return getParent().hasParent(candidate);
+	public boolean hasParent(CtElement candidate) throws ParentNotInitializedException {
+		return getParent() == candidate || getParent().hasParent(candidate);
 	}
 
 	public SourcePosition getPosition() {
@@ -273,13 +259,11 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		} catch (CtUncomparableException e1) {
 			// do nothing
 		} catch (Exception e1) {
-			Launcher.logger.error(e1.getMessage(), e1);
+			Launcher.LOGGER.error(e1.getMessage(), e1);
 		}
 	}
 
-	private <T extends FactoryAccessor> void replaceIn(Object toReplace,
-			T replacement, Object parent) throws IllegalArgumentException,
-			IllegalAccessException {
+	private <T extends FactoryAccessor> void replaceIn(Object toReplace, T replacement, Object parent) throws IllegalArgumentException, IllegalAccessException {
 
 		for (Field f : RtHelper.getAllFields(parent.getClass())) {
 			f.setAccessible(true);
@@ -287,20 +271,18 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 			if (tmp != null) {
 				if (tmp instanceof List) {
-					@SuppressWarnings("unchecked")
-					List<T> lst = (List<T>) tmp;
+					@SuppressWarnings("unchecked") List<T> lst = (List<T>) tmp;
 
 					for (int i = 0; i < lst.size(); i++) {
-						if (lst.get(i) != null
-								&& compare(lst.get(i), toReplace)) {
+						if (lst.get(i) != null && compare(lst.get(i), toReplace)) {
 							lst.remove(i);
-							if (replacement != null)
+							if (replacement != null) {
 								lst.add(i, getReplacement(replacement, parent));
+							}
 						}
 					}
 				} else if (tmp instanceof Collection) {
-					@SuppressWarnings("unchecked")
-					Collection<T> collect = (Collection<T>) tmp;
+					@SuppressWarnings("unchecked") Collection<T> collect = (Collection<T>) tmp;
 					Object[] array = collect.toArray();
 					for (Object obj : array) {
 						if (compare(obj, toReplace)) {
@@ -315,8 +297,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		}
 	}
 
-	private <T extends FactoryAccessor> T getReplacement(T replacement,
-			Object parent) {
+	private <T extends FactoryAccessor> T getReplacement(T replacement, Object parent) {
 		// T ret = replacement.getFactory().Core().clone(replacement);
 		if (replacement instanceof CtElement && parent instanceof CtElement) {
 			((CtElement) replacement).setParent((CtElement) parent);
@@ -328,29 +309,25 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return o1 == o2;
 	}
 
-	public <E extends CtElement> E setAnnotations(
-			List<CtAnnotation<? extends Annotation>> annotations) {
+	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
 		this.annotations.clear();
-		for (CtAnnotation<? extends Annotation> annot: annotations) {
+		for (CtAnnotation<? extends Annotation> annot : annotations) {
 			addAnnotation(annot);
 		}
 		return (E) this;
 	}
 
 	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		if ((List<?>) this.annotations == (List<?>) EMPTY_LIST()) {
-			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(
-					ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
+		if ((List<?>) this.annotations == (List<?>) emptyList()) {
+			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		annotation.setParent(this);
 		this.annotations.add(annotation);
 		return (E) this;
 	}
 
-	public boolean removeAnnotation(
-			CtAnnotation<? extends Annotation> annotation) {
-		return (List<?>) annotations != (List<?>) EMPTY_LIST() &&
-				this.annotations.remove(annotation);
+	public boolean removeAnnotation(CtAnnotation<? extends Annotation> annotation) {
+		return (List<?>) annotations != (List<?>) emptyList() && this.annotations.remove(annotation);
 	}
 
 	public <E extends CtElement> E setDocComment(String docComment) {
@@ -380,8 +357,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 
 	@Override
 	public String toString() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
-				getFactory().getEnvironment());
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
 		String errorMessage = "";
 		try {
 			printer.computeImports(this);
@@ -393,11 +369,8 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends CtElement> List<E> getAnnotatedChildren(
-			Class<? extends Annotation> annotationType) {
-		return (List<E>) Query
-				.getElements(this, new AnnotationFilter<CtElement>(
-						CtElement.class, annotationType));
+	public <E extends CtElement> List<E> getAnnotatedChildren(Class<? extends Annotation> annotationType) {
+		return (List<E>) Query.getElements(this, new AnnotationFilter<CtElement>(CtElement.class, annotationType));
 	}
 
 	boolean implicit = false;
@@ -421,15 +394,13 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return Query.getElements(this, filter);
 	}
 
-	public <T extends CtReference> List<T> getReferences(
-			ReferenceFilter<T> filter) {
+	public <T extends CtReference> List<T> getReferences(ReferenceFilter<T> filter) {
 		return Query.getReferences(this, filter);
 	}
 
 	@Override
 	public void updateAllParentsBelow() {
-		new ModelConsistencyChecker(getFactory().getEnvironment(), true, true)
-				.scan(this);
+		new ModelConsistencyChecker(getFactory().getEnvironment(), true, true).scan(this);
 	}
 
 	public boolean isParentInitialized() {

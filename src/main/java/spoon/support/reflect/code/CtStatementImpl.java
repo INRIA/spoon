@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -35,14 +35,14 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 	private static final long serialVersionUID = 1L;
 
 	public static void insertAfter(CtStatement target, CtStatement statement)
-			throws ParentNotInitializedException {
+	throws ParentNotInitializedException {
 		CtStatementList sts = target.getFactory().Core().createStatementList();
 		sts.addStatement(statement);
 		insertAfter(target, sts);
 	}
 
 	public static void replace(CtStatement target, CtStatementList statements)
-			throws ParentNotInitializedException {
+	throws ParentNotInitializedException {
 		insertAfter(target, statements);
 		CtElement e = target.getParent();
 		CtStatementList parentStatementList = (CtStatementList) e;
@@ -50,7 +50,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 	}
 
 	public static void insertAfter(CtStatement target, CtStatementList statements)
-			throws ParentNotInitializedException {
+	throws ParentNotInitializedException {
 		CtElement e = target.getParent();
 		if (e instanceof CtExecutable) {
 			throw new RuntimeException("cannot insert in this context (use insertEnd?)");
@@ -70,23 +70,24 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 	}
 
 	public static void insertBefore(CtStatement target, CtStatement statement)
-			throws ParentNotInitializedException {
+	throws ParentNotInitializedException {
 		CtStatementList sts = target.getFactory().Core().createStatementList();
 		sts.addStatement(statement);
 		insertBefore(target, sts);
 	}
 
 	public static void insertBefore(CtStatement target, CtStatementList statementsToBeInserted)
-			throws ParentNotInitializedException {
+	throws ParentNotInitializedException {
 		CtElement targetParent = target.getParent();
 		if (targetParent instanceof CtExecutable) {
 			throw new SpoonException("cannot insert in this context (use insertEnd?)");
 		}
 		if (target.getParent(CtConstructor.class) != null) {
-			if (target instanceof CtInvocation &&
-					((CtInvocation<?>) target).getExecutable()
-											  .getSimpleName()
-											  .startsWith("<init>")) {
+			if (target instanceof CtInvocation
+					&& ((CtInvocation<?>) target)
+					.getExecutable()
+					.getSimpleName()
+					.startsWith("<init>")) {
 				throw new SpoonException(
 						"cannot insert a statement before a super or this invocation.");
 			}
@@ -161,7 +162,8 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 			}
 			return;
 		} else {
-			parentBlock = (CtBlock<?>) targetParent;// BCUTAG bad cast
+			// BCUTAG bad cast
+			parentBlock = (CtBlock<?>) targetParent;
 		}
 
 		int indexOfTargetElement = 0;

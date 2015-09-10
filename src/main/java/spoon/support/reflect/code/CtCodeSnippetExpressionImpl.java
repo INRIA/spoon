@@ -7,15 +7,15 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SnippetCompilationHelper;
 
-public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implements
-		CtCodeSnippetExpression<T> {
+public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T>
+		implements CtCodeSnippetExpression<T> {
 
 	private static final long serialVersionUID = 1L;
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCodeSnippetExpression(this);
 	}
-	
+
 	String value;
 
 	public String getValue() {
@@ -26,10 +26,10 @@ public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implemen
 		this.value = value;
 		return (C) this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <E extends CtExpression<T>> E compile() throws SnippetCompilationError {
-		return (E)SnippetCompilationHelper.compileExpression(this);
+		return (E) SnippetCompilationHelper.compileExpression(this);
 	}
-	
+
 }

@@ -50,14 +50,14 @@ public class LogTest {
 				"--level", level.toString()
 		});
 		assertEquals(level, launcher.getFactory().getEnvironment().getLevel());
-		Launcher.logger.info("Log info");
-		Launcher.logger.warn("Log warn");
-		Launcher.logger.error("Log error");
-		Launcher.logger.debug("Log debug");
+		Launcher.LOGGER.info("Log info");
+		Launcher.LOGGER.warn("Log warn");
+		Launcher.LOGGER.error("Log error");
+		Launcher.LOGGER.debug("Log debug");
 
-		assertEquals(isInfo, Launcher.logger.isEnabledFor(Priority.INFO));
-		assertEquals(isWarn, Launcher.logger.isEnabledFor(Priority.WARN));
-		assertEquals(isError, Launcher.logger.isEnabledFor(Priority.ERROR));
-		assertEquals(isDebug, Launcher.logger.isEnabledFor(Priority.DEBUG));
+		assertEquals(isInfo, Launcher.LOGGER.isEnabledFor(Priority.INFO));
+		assertEquals(isWarn, Launcher.LOGGER.isEnabledFor(Priority.WARN));
+		assertEquals(isError, Launcher.LOGGER.isEnabledFor(Priority.ERROR));
+		assertEquals(isDebug, Launcher.LOGGER.isEnabledFor(Priority.DEBUG));
 	}
 }

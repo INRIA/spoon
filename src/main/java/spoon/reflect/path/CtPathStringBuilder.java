@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
  */
 public class CtPathStringBuilder {
 
-	private final Pattern PATH_PATTERN = Pattern.compile("([/.#])([^/.#\\[]+)(\\[([^/.#]*)\\])?");
-	private final Pattern ARGUMENT_PATTERN = Pattern.compile("(\\w+)=([^=\\]]+)");
+	private final Pattern pathPattern = Pattern.compile("([/.#])([^/.#\\[]+)(\\[([^/.#]*)\\])?");
+	private final Pattern argumentPattern = Pattern.compile("(\\w+)=([^=\\]]+)");
 
 
 	private Class load(String name) throws CtPathException {
@@ -30,7 +30,7 @@ public class CtPathStringBuilder {
 			return Class.forName("spoon.reflect.declaration." + name);
 		} catch (ClassNotFoundException ex) {
 		}
-		// search in  
+		// search in
 		try {
 			return Class.forName("spoon.reflect.code." + name);
 		} catch (ClassNotFoundException ex) {
@@ -42,17 +42,17 @@ public class CtPathStringBuilder {
 	/**
 	 * Build path from a string representation.
 	 *
-	 * for example: 
+	 * for example:
 	 * new CtPathBuilder().fromString(".spoon.test.path.Foo.foo#statement[index=0]")
 	 * Match the first statement of method foo from class spoon.test.path.Foo.
 	 *
-	 * Some specials characters 
+	 * Some specials characters
 	 * . :  match with the given name
 	 * # : match with a CtPathRole
 	 * / : match with a element type (for example, to match all classes, use /CtClass
 	 */
 	public CtPath fromString(String pathStr) throws CtPathException {
-		Matcher matcher = PATH_PATTERN.matcher(pathStr);
+		Matcher matcher = pathPattern.matcher(pathStr);
 
 		CtPathImpl path = new CtPathImpl();
 		while (matcher.find()) {
@@ -70,7 +70,7 @@ public class CtPathStringBuilder {
 			String args = matcher.group(4);
 			if (args != null) {
 				for (String arg : args.split(";")) {
-					Matcher argmatcher = ARGUMENT_PATTERN.matcher(arg);
+					Matcher argmatcher = argumentPattern.matcher(arg);
 					if (argmatcher.matches()) {
 						pathElement.addArgument(argmatcher.group(1), argmatcher.group(2));
 					}

@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -72,21 +72,22 @@ public class SpoonObjectFieldsTable extends JFrame {
 			case (2):
 				try {
 					Object val = m.get(o);
-					if (val != null)
+					if (val != null) {
 						return val.getClass().getCanonicalName();
+					}
 				} catch (IllegalArgumentException e) {
-					Launcher.logger.error(e.getMessage(), e);
+					Launcher.LOGGER.error(e.getMessage(), e);
 				} catch (IllegalAccessException e) {
-					Launcher.logger.error(e.getMessage(), e);
+					Launcher.LOGGER.error(e.getMessage(), e);
 				}
 				break;
 			case (3):
 				try {
 					return m.get(o);
 				} catch (IllegalArgumentException e) {
-					Launcher.logger.error(e.getMessage(), e);
+					Launcher.LOGGER.error(e.getMessage(), e);
 				} catch (IllegalAccessException e) {
-					Launcher.logger.error(e.getMessage(), e);
+					Launcher.LOGGER.error(e.getMessage(), e);
 				}
 			}
 			return null;
@@ -95,16 +96,19 @@ public class SpoonObjectFieldsTable extends JFrame {
 		public void scanFields(Class<?> c) {
 			for (Field f : c.getDeclaredFields()) {
 				f.setAccessible(true);
-				if (!Modifier.isStatic(f.getModifiers()))
+				if (!Modifier.isStatic(f.getModifiers())) {
 					field.add(f);
+				}
 			}
-			if (c.getSuperclass() != null)
+			if (c.getSuperclass() != null) {
 				scanFields(c.getSuperclass());
+			}
 		}
 	}
 
-	public static final String[] columnsName = new String[] { "Name",
-			"FieldType", "currentType", "Value" };
+	public static final String[] columnsName = new String[] {
+			"Name", "FieldType", "currentType", "Value"
+	};
 
 	private static final long serialVersionUID = 1L;
 
@@ -127,7 +131,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 
 	/**
 	 * This method initializes jContentPane
-	 * 
+	 *
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJContentPane() {
@@ -141,7 +145,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 
 	/**
 	 * This method initializes jScrollPane
-	 * 
+	 *
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getJScrollPane() {
@@ -154,7 +158,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 
 	/**
 	 * This method initializes jTable
-	 * 
+	 *
 	 * @return javax.swing.JTable
 	 */
 	private JTable getJTable() {
@@ -166,15 +170,13 @@ public class SpoonObjectFieldsTable extends JFrame {
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 * @return void
 	 */
 	private void initialize() {
 		this.setSize(320, 240);
-		this.setLocation((getGraphicsConfiguration().getDevice()
-				.getDisplayMode().getWidth() - getWidth()) / 2,
-				(getGraphicsConfiguration().getDevice().getDisplayMode()
-						.getHeight() - getHeight()) / 2);
+		this.setLocation((getGraphicsConfiguration().getDevice().getDisplayMode().getWidth() - getWidth()) / 2,
+				(getGraphicsConfiguration().getDevice().getDisplayMode().getHeight() - getHeight()) / 2);
 		this.setContentPane(getJContentPane());
 		this.setTitle(o.getClass().getSimpleName());
 		this.setVisible(true);

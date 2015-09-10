@@ -60,8 +60,7 @@ public abstract class Parameters {
 	@SuppressWarnings("unchecked")
 	public static Integer getIndex(CtExpression<?> e) {
 		if (e.getParent() instanceof CtArrayAccess) {
-			CtExpression<Integer> indexExpression = ((CtArrayAccess<?, CtExpression<Integer>>) e
-					.getParent()).getIndexExpression();
+			CtExpression<Integer> indexExpression = ((CtArrayAccess<?, CtExpression<Integer>>) e.getParent()).getIndexExpression();
 			return ((CtLiteral<Integer>) indexExpression).getValue();
 		}
 		return null;
@@ -70,8 +69,7 @@ public abstract class Parameters {
 	/**
 	 * Gets a template field parameter value.
 	 */
-	public static Object getValue(Template<?> template, String parameterName,
-			Integer index) {
+	public static Object getValue(Template<?> template, String parameterName, Integer index) {
 		Object tparamValue = null;
 		try {
 			Field rtField = null;
@@ -103,8 +101,7 @@ public abstract class Parameters {
 
 	static Map<Template<?>, Map<String, Object>> finals = new HashMap<Template<?>, Map<String, Object>>();
 
-	public static CtField<?> getParameterField(
-			CtClass<? extends Template<?>> templateClass, String parameterName) {
+	public static CtField<?> getParameterField(CtClass<? extends Template<?>> templateClass, String parameterName) {
 		for (CtField<?> f : templateClass.getFields()) {
 			Parameter p = f.getAnnotation(Parameter.class);
 			if (p == null) {
@@ -124,8 +121,7 @@ public abstract class Parameters {
 	 * Sets a template field parameter value.
 	 */
 	@SuppressWarnings("null")
-	public static void setValue(Template<?> template, String parameterName,
-			Integer index, Object value) {
+	public static void setValue(Template<?> template, String parameterName, Integer index, Object value) {
 		Object tparamValue = null;
 		try {
 			Field rtField = null;
@@ -182,18 +178,16 @@ public abstract class Parameters {
 	 * Gets the names of all the template parameters of a given template type
 	 * (including the ones defined by the super types).
 	 */
-	public static Collection<String> getNames(
-			CtClass<? extends Template<?>> templateType) {
+	public static Collection<String> getNames(CtClass<? extends Template<?>> templateType) {
 		Collection<String> params = new ArrayList<String>();
 		try {
-			for (CtFieldReference<?> f : templateType.getReference()
-					.getAllFields()) {
+			for (CtFieldReference<?> f : templateType.getReference().getAllFields()) {
 				if (isParameterSource(f)) {
 					params.add(getParameterName(f));
 				}
 			}
 		} catch (Exception e) {
-			Launcher.logger.error(e.getMessage(), e);
+			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 		return params;
 	}
@@ -204,11 +198,9 @@ public abstract class Parameters {
 	public static boolean isParameterSource(CtFieldReference<?> ref) {
 		try {
 			return (ref.getDeclaration() != null // we must have the source of
-													// this fieldref
-			&& ref.getDeclaration().getAnnotation(Parameter.class) != null)
-					|| (!((ref.getType() instanceof CtTypeParameterReference) || ref
-							.getSimpleName().equals("this")) && getTemplateParameterType(ref.getFactory())
-							.isAssignableFrom(ref.getType()));
+					// this fieldref
+					&& ref.getDeclaration().getAnnotation(Parameter.class) != null) || (!((ref.getType() instanceof CtTypeParameterReference) || ref.getSimpleName().equals("this"))
+					&& getTemplateParameterType(ref.getFactory()).isAssignableFrom(ref.getType()));
 		} catch (RuntimeException e) {
 			// if (e.getCause() instanceof ClassNotFoundException) {
 			// return false;
@@ -222,18 +214,15 @@ public abstract class Parameters {
 	 * Tells if a given field is a template parameter.
 	 */
 	public static boolean isParameterSource(Field field) {
-		return (field.getAnnotation(Parameter.class) != null)
-				|| TemplateParameter.class.isAssignableFrom(field.getType());
+		return (field.getAnnotation(Parameter.class) != null) || TemplateParameter.class.isAssignableFrom(field.getType());
 	}
 
 	static CtTypeReference<TemplateParameter<?>> templateParameterType;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	synchronized private static CtTypeReference<TemplateParameter<?>> getTemplateParameterType(
-			Factory factory) {
+	private static synchronized CtTypeReference<TemplateParameter<?>> getTemplateParameterType(Factory factory) {
 		if (templateParameterType == null) {
-			templateParameterType = (CtTypeReference) factory
-					.Type().createReference(TemplateParameter.class);
+			templateParameterType = (CtTypeReference) factory.Type().createReference(TemplateParameter.class);
 		}
 		return templateParameterType;
 	}
@@ -259,36 +248,40 @@ public abstract class Parameters {
 		};
 	}
 
-	/** returns all the runtime fields of a template representing a template parameter */
+	/**
+	 * returns all the runtime fields of a template representing a template parameter
+	 */
 	public static List<Field> getAllTemplateParameterFields(Class<? extends Template> clazz) {
 		if (!Template.class.isAssignableFrom(clazz)) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		List<Field> result = new ArrayList<Field>();
 		for (Field f : RtHelper.getAllFields(clazz)) {
 			if (isParameterSource(f)) {
 				result.add(f);
 			}
 		}
-		
-		return result;		
+
+		return result;
 	}
 
-	/** returns all the compile_time fields of a template representing a template parameter */
+	/**
+	 * returns all the compile_time fields of a template representing a template parameter
+	 */
 	public static List<CtField<?>> getAllTemplateParameterFields(Class<? extends Template<?>> clazz, Factory factory) {
 		CtClass<?> c = factory.Class().get(clazz);
-		if (c==null) {
+		if (c == null) {
 			throw new IllegalArgumentException("Template not in template classpath");
 		}
-		
+
 		List<CtField<?>> result = new ArrayList<CtField<?>>();
-		
+
 		for (Field f : getAllTemplateParameterFields(clazz)) {
-			result.add(c.getField(f.getName()));			
+			result.add(c.getField(f.getName()));
 		}
-		
-		return result;		
+
+		return result;
 	}
 
 }
