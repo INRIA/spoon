@@ -10,10 +10,10 @@ If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monpe
 
 ```latex
 @article{pawlak:hal-01169705,
-  TITLE = {{Spoon: A Library for Implementing Analyses and Transformations of Java Source Code}},
+  TITLE = {Spoon: A Library for Implementing Analyses and Transformations of Java Source Code},
   AUTHOR = {Pawlak, Renaud and Monperrus, Martin and Petitprez, Nicolas and Noguera, Carlos and Seinturier, Lionel},
-  JOURNAL = {{Software: Practice and Experience}},
-  PUBLISHER = {{Wiley-Blackwell}},
+  JOURNAL = {Software: Practice and Experience},
+  PUBLISHER = {Wiley-Blackwell},
   PAGES = {na},
   YEAR = {2015},
   doi = {10.1002/spe.2346},

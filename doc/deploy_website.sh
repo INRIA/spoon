@@ -66,6 +66,9 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
+# Come back at the root of the temp project.
+cd ../..
+
 # Generate maven site and deploy it.
 mvn site site:deploy
 if [ "$?" -ne 0 ]; then
