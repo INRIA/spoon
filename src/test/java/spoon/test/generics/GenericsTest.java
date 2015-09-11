@@ -200,7 +200,6 @@ public class GenericsTest {
 			CtTypeReference<?> ref = x.getType();
 			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
 					new StandardEnvironment());
-			assertFalse(pp.getContext().getIgnoreImport());
 
 			// qualifed name
 			assertEquals("java.util.Map$Entry", ref.getQualifiedName());

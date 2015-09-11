@@ -7,4 +7,8 @@ public class AClass {
 	public List<?> aMethod() {
 		return new ArrayList<>();
 	}
+
+	public List<? extends ArrayList> aMethodWithGeneric() {
+		return new ArrayList<>();
+	}
 }
