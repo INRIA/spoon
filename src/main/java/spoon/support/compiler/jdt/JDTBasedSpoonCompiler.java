@@ -41,7 +41,9 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
+import spoon.reflect.visitor.Query;
 import spoon.support.QueueProcessingManager;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.VirtualFolder;
@@ -649,27 +651,37 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public void generateProcessedSourceFiles(OutputType outputType) {
+		generateProcessedSourceFiles(outputType, null);
+	}
+
+	@Override
+	public void generateProcessedSourceFiles(OutputType outputType, Filter<CtType<?>> typeFilter) {
 		initInputClassLoader();
 		switch (outputType) {
 		case CLASSES:
-			generateProcessedSourceFilesUsingTypes();
+			generateProcessedSourceFilesUsingTypes(typeFilter);
 			break;
-
 		case COMPILATION_UNITS:
 			generateProcessedSourceFilesUsingCUs();
 			break;
-
 		case NO_OUTPUT:
-
 		}
 	}
 
 	protected void generateProcessedSourceFilesUsingTypes() {
+		generateProcessedSourceFilesUsingTypes(null);
+	}
+
+	protected void generateProcessedSourceFilesUsingTypes(Filter<CtType<?>> typeFilter) {
 		if (factory.getEnvironment().getDefaultFileGenerator() != null) {
 			factory.getEnvironment().debugMessage("Generating source using types...");
 			ProcessingManager processing = new QueueProcessingManager(factory);
 			processing.addProcessor(factory.getEnvironment().getDefaultFileGenerator());
-			processing.process(factory.Package().getRootPackage());
+			if (typeFilter != null) {
+				processing.process(Query.getElements(factory.Package().getRootPackage(), typeFilter));
+			} else {
+				processing.process(factory.Package().getRootPackage());
+			}
 		}
 	}
 
