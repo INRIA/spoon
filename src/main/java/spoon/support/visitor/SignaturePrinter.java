@@ -273,19 +273,22 @@ public class SignaturePrinter implements CtVisitor {
 		write("enum ").write(ctEnum.getQualifiedName());
 	}
 
-	public <T> void visitCtExecutableReference(
-			CtExecutableReference<T> reference) {
-		if (reference.getDeclaringType() != null) { // null in noclasspath
-			write(reference.getDeclaringType().getQualifiedName());
-		}
+	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
+		scan(reference.getDeclaringType());
+
 		write(CtExecutable.EXECUTABLE_SEPARATOR);
-		write(reference.getSimpleName());
-		write("(");
-		for (CtTypeReference<?> ref : reference.getActualTypeArguments()) {
-			scan(ref);
-			write(",");
+		if (reference.isConstructor()) {
+			write(reference.getDeclaringType().getSimpleName());
+		} else {
+			write(reference.getSimpleName());
 		}
-		if (!reference.getActualTypeArguments().isEmpty()) {
+		write("(");
+		if (reference.getParameters().size() > 0) {
+			for (CtTypeReference<?> param : reference.getParameters()) {
+				scan(param);
+				write(", ");
+			}
+			clearLast();
 			clearLast();
 		}
 		write(")");
