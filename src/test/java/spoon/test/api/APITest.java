@@ -144,4 +144,14 @@ public class APITest {
 		assertNotNull(actual.getMethodsByName("prepareMojito").get(0));
 		assertNotNull(actual.getMethodsByName("makeMojito").get(0));
 	}
+
+	@Test
+	public void testOutputOfSpoon() throws Exception {
+		final SpoonAPI launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
+		launcher.setOutputDirectory("./target/spoon/test/output/");
+		launcher.run();
+
+		assertTrue(new File("./target/spoon/test/output/").exists());
+	}
 }

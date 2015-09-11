@@ -436,8 +436,6 @@ public class Launcher implements SpoonAPI {
 		LOGGER.setLevel(environment.getLevel());
 		environment.setXmlRootFolder(jsapActualArgs.getFile("properties"));
 
-		environment.setDefaultFileGenerator(createOutputWriter(jsapActualArgs.getFile("output"), environment));
-
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
 		environment.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
@@ -458,6 +456,10 @@ public class Launcher implements SpoonAPI {
 					throw new SpoonException(e);
 				}
 			}
+		}
+
+		if (getArguments().getFile("output") != null) {
+			setSourceOutputDirectory(getArguments().getFile("output"));
 		}
 
 		// Adding template from command-line
@@ -580,13 +582,13 @@ public class Launcher implements SpoonAPI {
 	 * 		the factory this compiler works on
 	 */
 	public SpoonCompiler createCompiler(Factory factory) {
-		JDTBasedSpoonCompiler comp = new JDTBasedSpoonCompiler(factory);
+		SpoonCompiler comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
 		comp.setEncoding(getArguments().getString("encoding"));
 		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setDestinationDirectory(jsapActualArgs.getFile("destination"));
-		comp.setOutputDirectory(jsapActualArgs.getFile("output"));
+		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
 		comp.setEncoding(jsapActualArgs.getString("encoding"));
 
 		// backward compatibility
@@ -595,7 +597,7 @@ public class Launcher implements SpoonAPI {
 			comp.setSourceClasspath(jsapActualArgs.getString("source-classpath").split(System.getProperty("path.separator")));
 		}
 
-		env.debugMessage("output: " + comp.getDestinationDirectory());
+		env.debugMessage("output: " + comp.getSourceOutputDirectory());
 		env.debugMessage("destination: " + comp.getDestinationDirectory());
 		env.debugMessage("source classpath: " + Arrays.toString(comp.getSourceClasspath()));
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
@@ -790,7 +792,18 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void setOutputDirectory(String path) {
-		modelBuilder.setOutputDirectory(new File(path));
+		setSourceOutputDirectory(path);
+	}
+
+	@Override
+	public void setSourceOutputDirectory(String path) {
+		setSourceOutputDirectory(new File(path));
+	}
+
+	@Override
+	public void setSourceOutputDirectory(File outputDirectory) {
+		modelBuilder.setOutputDirectory(outputDirectory);
+		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory, getEnvironment()));
 	}
 
 }

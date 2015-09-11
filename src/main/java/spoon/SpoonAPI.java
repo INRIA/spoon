@@ -6,6 +6,8 @@ import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 
+import java.io.File;
+
 /**
  * Is the core entry point of Spoon. Implemented by Launcher.
  */
@@ -24,7 +26,24 @@ public interface SpoonAPI {
 	/**
 	 * Sets the output directory
 	 */
+	@Deprecated
 	void setOutputDirectory(String string);
+
+	/**
+	 * Sets the output directory for source generated.
+	 *
+	 * @param path
+	 * 		Path for the output directory.
+	 */
+	void setSourceOutputDirectory(String path);
+
+	/**
+	 * Sets the output directory for source generated.
+	 *
+	 * @param outputDirectory
+	 * 		{@link File} for output directory.
+	 */
+	void setSourceOutputDirectory(File outputDirectory);
 
 	/**
 	 * Adds a processor (fully qualified name).

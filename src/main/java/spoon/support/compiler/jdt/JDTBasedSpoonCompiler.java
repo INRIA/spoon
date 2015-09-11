@@ -78,12 +78,22 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public File getOutputDirectory() {
+		return getSourceOutputDirectory();
+	}
+
+	@Override
+	public void setSourceOutputDirectory(File outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
+
+	@Override
+	public File getSourceOutputDirectory() {
 		return outputDirectory;
 	}
 
 	@Override
 	public void setOutputDirectory(File outputDirectory) {
-		this.outputDirectory = outputDirectory;
+		setSourceOutputDirectory(outputDirectory);
 	}
 
 	/**

@@ -72,12 +72,27 @@ public interface SpoonModelBuilder {
 	 * @param outputDirectory
 	 * 		output directory
 	 */
+	@Deprecated
 	void setOutputDirectory(File outputDirectory);
 
 	/**
 	 * Gets the output directory of this compiler.
 	 */
+	@Deprecated
 	File getOutputDirectory();
+
+	/**
+	 * Sets the output directory for source generated.
+	 *
+	 * @param outputDirectory
+	 * 		{@link File} for output directory.
+	 */
+	void setSourceOutputDirectory(File outputDirectory);
+
+	/**
+	 * Gets the output directory of this compiler.
+	 */
+	File getSourceOutputDirectory();
 
 	/**
 	 * Adds a file/directory (as a CtResource) to be built. By default, the
