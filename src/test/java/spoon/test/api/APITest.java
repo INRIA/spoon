@@ -15,6 +15,7 @@ import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -148,11 +149,25 @@ public class APITest {
 
 	@Test
 	public void testOutputOfSpoon() throws Exception {
+		final File sourceOutput = new File("./target/spoon/test/output/");
 		final SpoonAPI launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
-		launcher.setSourceOutputDirectory("./target/spoon/test/output/");
+		launcher.setSourceOutputDirectory(sourceOutput);
 		launcher.run();
 
-		assertTrue(new File("./target/spoon/test/output/").exists());
+		assertTrue(sourceOutput.exists());
+	}
+
+	@Test
+	public void testDestinationOfSpoon() throws Exception {
+		final File binaryOutput = new File("./target/spoon/test/binary/");
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
+		launcher.setSourceOutputDirectory("./target/spooned");
+		launcher.setBinaryOutputDirectory(binaryOutput);
+		launcher.run();
+
+		assertTrue(binaryOutput.exists());
 	}
 }

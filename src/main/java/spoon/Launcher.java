@@ -445,6 +445,8 @@ public class Launcher implements SpoonAPI {
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
 		environment.setGenerateJavadoc(jsapActualArgs.getBoolean("generate-javadoc"));
 
+		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
+
 		// now we are ready to create a spoon compiler
 		modelBuilder = createCompiler();
 
@@ -587,7 +589,7 @@ public class Launcher implements SpoonAPI {
 		// building
 		comp.setEncoding(getArguments().getString("encoding"));
 		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
-		comp.setDestinationDirectory(jsapActualArgs.getFile("destination"));
+		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
 		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
 		comp.setEncoding(jsapActualArgs.getString("encoding"));
 
@@ -598,7 +600,7 @@ public class Launcher implements SpoonAPI {
 		}
 
 		env.debugMessage("output: " + comp.getSourceOutputDirectory());
-		env.debugMessage("destination: " + comp.getDestinationDirectory());
+		env.debugMessage("destination: " + comp.getBinaryOutputDirectory());
 		env.debugMessage("source classpath: " + Arrays.toString(comp.getSourceClasspath()));
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
 
@@ -701,7 +703,7 @@ public class Launcher implements SpoonAPI {
 
 		prettyprint();
 
-		if (jsapActualArgs.getBoolean("compile")) {
+		if (env.shouldCompile()) {
 			modelBuilder.compile();
 		}
 
@@ -804,6 +806,16 @@ public class Launcher implements SpoonAPI {
 	public void setSourceOutputDirectory(File outputDirectory) {
 		modelBuilder.setSourceOutputDirectory(outputDirectory);
 		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory, getEnvironment()));
+	}
+
+	@Override
+	public void setBinaryOutputDirectory(String path) {
+		setBinaryOutputDirectory(new File(path));
+	}
+
+	@Override
+	public void setBinaryOutputDirectory(File outputDirectory) {
+		modelBuilder.setBinaryOutputDirectory(outputDirectory);
 	}
 
 }

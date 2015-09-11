@@ -59,12 +59,27 @@ public interface SpoonModelBuilder {
 	 * @param destinationDirectory
 	 * 		destination directory
 	 */
+	@Deprecated
 	void setDestinationDirectory(File destinationDirectory);
 
 	/**
 	 * Gets the output directory of this compiler.
 	 */
+	@Deprecated
 	File getDestinationDirectory();
+
+	/**
+	 * Sets the output directory for binary generated.
+	 *
+	 * @param binaryOutputDirectory
+	 * 		{@link File} for binary output directory.
+	 */
+	void setBinaryOutputDirectory(File binaryOutputDirectory);
+
+	/**
+	 * Gets the binary output directory of the compiler.
+	 */
+	File getBinaryOutputDirectory();
 
 	/**
 	 * Sets the output directory for the source files.
@@ -182,7 +197,7 @@ public interface SpoonModelBuilder {
 	/**
 	 * Generates the bytecode associated to the classes stored in this
 	 * compiler's factory. The bytecode is generated in the directory given by
-	 * {@link #getDestinationDirectory()}.
+	 * {@link #getBinaryOutputDirectory()}.
 	 *
 	 * @see #getSourceClasspath()
 	 */
@@ -190,7 +205,7 @@ public interface SpoonModelBuilder {
 
 	/**
 	 * Generates the bytecode by compiling the input sources. The bytecode is
-	 * generated in the directory given by {@link #getDestinationDirectory()}.
+	 * generated in the directory given by {@link #getBinaryOutputDirectory()}.
 	 *
 	 * @see #getSourceClasspath()
 	 */

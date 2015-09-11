@@ -36,7 +36,7 @@ public class LambdaTest {
 		compiler = launcher.createCompiler(this.factory);
 
 		compiler.setSourceOutputDirectory(TestUtils.getSpoonedDirectory(getClass()));
-		compiler.setDestinationDirectory(TestUtils.getBuildDirectory(getClass()));
+		compiler.setBinaryOutputDirectory(TestUtils.getBuildDirectory(getClass()));
 		compiler.addInputSource(new File("./src/test/java/spoon/test/lambda/testclasses/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);

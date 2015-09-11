@@ -98,6 +98,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Level level = Level.OFF;
 
+	private boolean shouldCompile;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -139,6 +141,16 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setLevel(String level) {
 		this.level = toLevel(level);
 		logger.setLevel(this.level);
+	}
+
+	@Override
+	public boolean shouldCompile() {
+		return shouldCompile;
+	}
+
+	@Override
+	public void setShouldCompile(boolean shouldCompile) {
+		this.shouldCompile = shouldCompile;
 	}
 
 	private Level toLevel(String level) {

@@ -46,6 +46,22 @@ public interface SpoonAPI {
 	void setSourceOutputDirectory(File outputDirectory);
 
 	/**
+	 * Sets the output directory for binary generated.
+	 *
+	 * @param path
+	 * 		Path for the binary output directory.
+	 */
+	void setBinaryOutputDirectory(String path);
+
+	/**
+	 * Sets the output directory for binary generated.
+	 *
+	 * @param outputDirectory
+	 * 		{@link File} for the binary output directory.
+	 */
+	void setBinaryOutputDirectory(File outputDirectory);
+
+	/**
 	 * Adds a processor (fully qualified name).
 	 */
 	void addProcessor(String name);

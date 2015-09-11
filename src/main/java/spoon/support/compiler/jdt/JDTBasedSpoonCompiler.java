@@ -99,16 +99,26 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	/**
 	 * output directory for binary code .class file
 	 */
-	File destinationDirectory;
+	File binaryOutputDirectory;
 
 	@Override
 	public File getDestinationDirectory() {
-		return destinationDirectory;
+		return getBinaryOutputDirectory();
 	}
 
 	@Override
 	public void setDestinationDirectory(File destinationDirectory) {
-		this.destinationDirectory = destinationDirectory;
+		setBinaryOutputDirectory(destinationDirectory);
+	}
+
+	@Override
+	public void setBinaryOutputDirectory(File binaryOutputDirectory) {
+		this.binaryOutputDirectory = binaryOutputDirectory;
+	}
+
+	@Override
+	public File getBinaryOutputDirectory() {
+		return binaryOutputDirectory;
 	}
 
 	/**
@@ -575,9 +585,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		args.add("-noExit");
 		// args.add("-verbose");
 		args.add("-proc:none");
-		if (getDestinationDirectory() != null) {
+		if (getBinaryOutputDirectory() != null) {
 			args.add("-d");
-			args.add(getDestinationDirectory().getAbsolutePath());
+			args.add(getBinaryOutputDirectory().getAbsolutePath());
 		} else {
 			args.add("-d");
 			args.add("none");
@@ -633,7 +643,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 				}
 			}
 
-			args.add(getDestinationDirectory().getAbsolutePath());
+			args.add(getBinaryOutputDirectory().getAbsolutePath());
 
 		} else {
 			args.addAll(toStringList(sources.getAllJavaFiles()));
@@ -790,9 +800,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		args.add("-enableJavadoc");
 		args.add("-noExit");
 		args.add("-proc:none");
-		if (getDestinationDirectory() != null) {
+		if (getBinaryOutputDirectory() != null) {
 			args.add("-d");
-			args.add(getDestinationDirectory().getAbsolutePath());
+			args.add(getBinaryOutputDirectory().getAbsolutePath());
 		} else {
 			args.add("-d");
 			args.add("none");
@@ -904,13 +914,13 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	protected void initInputClassLoader() {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		if (buildOnlyOutdatedFiles && getDestinationDirectory() != null) {
+		if (buildOnlyOutdatedFiles && getBinaryOutputDirectory() != null) {
 			CompilerClassLoader ccl = getCompilerClassLoader(cl);
 			if (ccl == null) {
 				try {
-					Launcher.LOGGER.debug("setting classloader for " + getDestinationDirectory().toURI().toURL());
+					Launcher.LOGGER.debug("setting classloader for " + getBinaryOutputDirectory().toURI().toURL());
 					Thread.currentThread().setContextClassLoader(new CompilerClassLoader(new URL[] {
-									getDestinationDirectory().toURI().toURL()
+									getBinaryOutputDirectory().toURI().toURL()
 							}, factory.getEnvironment().getInputClassLoader()));
 				} catch (Exception e) {
 					Launcher.LOGGER.error(e.getMessage(), e);
