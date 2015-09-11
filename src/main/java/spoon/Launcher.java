@@ -772,7 +772,7 @@ public class Launcher implements SpoonAPI {
 					for (Object resource : resources) {
 						final String resourceParentPath = ((File) resource).getParent();
 						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());
-						final String targetDirectory = modelBuilder.getOutputDirectory() + packageDir;
+						final String targetDirectory = modelBuilder.getSourceOutputDirectory() + packageDir;
 						try {
 							FileUtils.copyFileToDirectory((File) resource, new File(targetDirectory));
 						} catch (IOException e) {
@@ -802,7 +802,7 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void setSourceOutputDirectory(File outputDirectory) {
-		modelBuilder.setOutputDirectory(outputDirectory);
+		modelBuilder.setSourceOutputDirectory(outputDirectory);
 		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory, getEnvironment()));
 	}
 

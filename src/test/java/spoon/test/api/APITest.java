@@ -29,7 +29,7 @@ public class APITest {
 		// and asserts there is no exception
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/test/resources/spoon/test/api");
-		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
+		spoon.setSourceOutputDirectory("target/spooned");
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		for (CtPackage p : factory.Package().getAll()) {
@@ -134,6 +134,7 @@ public class APITest {
 	public void testAddProcessorMethodInSpoonAPI() throws Exception {
 		final SpoonAPI launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
+		launcher.setSourceOutputDirectory("./target/spooned");
 		final AwesomeProcessor processor = new AwesomeProcessor();
 		launcher.addProcessor(processor);
 		launcher.run();
@@ -149,7 +150,7 @@ public class APITest {
 	public void testOutputOfSpoon() throws Exception {
 		final SpoonAPI launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
-		launcher.setOutputDirectory("./target/spoon/test/output/");
+		launcher.setSourceOutputDirectory("./target/spoon/test/output/");
 		launcher.run();
 
 		assertTrue(new File("./target/spoon/test/output/").exists());

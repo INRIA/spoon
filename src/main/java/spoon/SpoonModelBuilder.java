@@ -172,7 +172,7 @@ public interface SpoonModelBuilder {
 	/**
 	 * Generates the source code associated to the classes stored in this
 	 * compiler's factory. The source code is generated in the directory given
-	 * by {@link #getOutputDirectory()}.
+	 * by {@link #getSourceOutputDirectory()}.
 	 *
 	 * @param outputType
 	 * 		the output method

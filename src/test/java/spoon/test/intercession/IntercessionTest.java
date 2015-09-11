@@ -150,6 +150,7 @@ public class IntercessionTest {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/main/java",
+				"-o", "./target/spooned",
 				"--source-classpath", systemClassPath
 		});
 		final Factory factory = launcher.getFactory();

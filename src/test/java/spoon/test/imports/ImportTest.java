@@ -146,6 +146,7 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/imports/testclasses",
+				"-o", "./target/spooned",
 				"--with-imports"
 		});
 		final CtClass<ImportTest> aClass = launcher.getFactory().Class().get(ChildClass.class);
