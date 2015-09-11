@@ -6,9 +6,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
@@ -19,6 +24,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.api.testclasses.Bar;
 
@@ -169,5 +175,63 @@ public class APITest {
 		launcher.run();
 
 		assertTrue(binaryOutput.exists());
+	}
+
+	@Test
+	public void testPrintNotAllSourcesWithFilter() throws Exception {
+		final File target = new File("./target/print-not-all/default");
+		final SpoonAPI launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/main/java");
+		launcher.setSourceOutputDirectory(target);
+		launcher.setFilteringOutputSource(new AbstractFilter<CtType<?>>(CtType.class) {
+			@Override
+			public boolean matches(CtType<?> element) {
+				return "spoon.Launcher".equals(element.getQualifiedName())
+						|| "spoon.template.AbstractTemplate".equals(element.getQualifiedName());
+			}
+		});
+		launcher.run();
+
+		List<File> list = new ArrayList<>(FileUtils.listFiles(target, new String[] {"java"}, true));
+
+		assertEquals(2, list.size());
+		assertEquals("Launcher.java", list.get(0).getName());
+		assertEquals("AbstractTemplate.java", list.get(1).getName());
+	}
+
+	@Test
+	public void testPrintNotAllSourcesWithNames() throws Exception {
+		final File target = new File("./target/print-not-all/array");
+		final SpoonAPI launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/main/java");
+		launcher.setSourceOutputDirectory(target);
+		launcher.setFilteringOutputSource("spoon.Launcher", "spoon.template.AbstractTemplate");
+		launcher.run();
+
+		List<File> list = new ArrayList<>(FileUtils.listFiles(target, new String[] {"java"}, true));
+
+		assertEquals(2, list.size());
+		assertEquals("Launcher.java", list.get(0).getName());
+		assertEquals("AbstractTemplate.java", list.get(1).getName());
+	}
+
+	@Test
+	public void testPrintNotAllSourcesInCommandLine() throws Exception {
+		final File target = new File("./target/print-not-all/command");
+		final SpoonAPI launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/main/java",//
+				"-o", "./target/print-not-all/command",//
+				"-f", "spoon.Launcher:spoon.template.AbstractTemplate",//
+				"--noclasspath"
+		});
+
+		List<File> list = new ArrayList<>(FileUtils.listFiles(target, new String[] {"java"}, true));
+
+		assertEquals(2, list.size());
+		assertEquals("Launcher.java", list.get(0).getName());
+		assertEquals("AbstractTemplate.java", list.get(1).getName());
 	}
 }
