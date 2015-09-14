@@ -16,6 +16,7 @@ import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.internal.ChildClass;
@@ -150,11 +151,14 @@ public class ImportTest {
 		});
 		final CtClass<ImportTest> aClass = launcher.getFactory().Class().get(ChildClass.class);
 		final CtClass<ImportTest> anotherClass = launcher.getFactory().Class().get(ClientClass.class);
+		final CtClass<ImportTest> classWithInvocation = launcher.getFactory().Class().get(ClassWithInvocation.class);
 
 		final ImportScanner importScanner = new ImportScannerImpl();
 		final Collection<CtTypeReference<?>> imports = importScanner.computeImports(aClass);
 		assertEquals(2, imports.size());
 		final Collection<CtTypeReference<?>> imports1 = importScanner.computeImports(anotherClass);
 		assertEquals(1, imports1.size());
+		final Collection<CtTypeReference<?>> imports2 = importScanner.computeImports(classWithInvocation);
+		assertEquals("Spoon ignores the arguments of CtInvocations", 1, imports2.size());
 	}
 }
