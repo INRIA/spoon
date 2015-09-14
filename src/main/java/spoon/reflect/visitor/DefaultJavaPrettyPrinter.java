@@ -157,15 +157,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 
 		/**
-		 * if false, no import are output
-		 */
-		boolean ignoreImport = false;
-
-		public boolean getIgnoreImport() {
-			return ignoreImport;
-		}
-
-		/**
 		 * Layout variables
 		 */
 		int jumped = 0;
@@ -195,7 +186,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		@Override
 		public String toString() {
-			return "context.ignoreImport: " + context.ignoreImport + "\n" + "context.ignoreGenerics: " + context.ignoreGenerics + "\n";
+			return "context.ignoreGenerics: " + context.ignoreGenerics + "\n";
 		}
 	}
 
@@ -1818,7 +1809,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return;
 		}
 
-		if (!context.ignoreImport && (importsContext.isImported(ref) && ref.getPackage() != null)) {
+		if (importsContext.isImported(ref) && ref.getPackage() != null) {
 			printTypeAnnotations(ref);
 			write(ref.getSimpleName());
 		} else {
@@ -2019,12 +2010,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		if (params.size() > 0) {
 			write("<");
-			context.ignoreImport = true;
 			for (CtTypeReference<?> param : params) {
 				scan(param);
 				write(", ");
 			}
-			context.ignoreImport = false;
 			removeLastChar();
 			write(">");
 		}
@@ -2043,7 +2032,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (params != null && params.size() > 0) {
 			write("<");
 			boolean isImplicitTypeReference = true;
-			context.ignoreImport = true;
 			for (CtTypeReference<?> param : params) {
 				if (!(param instanceof CtImplicitTypeReference)) {
 					isImplicitTypeReference = false;
@@ -2051,7 +2039,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					write(", ");
 				}
 			}
-			context.ignoreImport = false;
 			if (!isImplicitTypeReference) {
 				removeLastChar();
 			}

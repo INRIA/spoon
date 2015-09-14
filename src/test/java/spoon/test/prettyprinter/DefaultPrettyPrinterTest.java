@@ -85,6 +85,9 @@ public class DefaultPrettyPrinterTest {
 		final String expected = "public class AClass {" + System.lineSeparator()
 				+ "    public List<?> aMethod() {" + System.lineSeparator()
 				+ "        return new ArrayList<>();" + System.lineSeparator()
+				+ "    }"  + System.lineSeparator()  + System.lineSeparator()
+				+ "    public List<? extends ArrayList> aMethodWithGeneric() {" + System.lineSeparator()
+				+ "        return new ArrayList<>();"  + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
 				+ "}";
 		assertEquals(expected, aClass.toString());
@@ -119,6 +122,31 @@ public class DefaultPrettyPrinterTest {
 		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
 																  .getActualTypeArguments()
 																  .get(0);
+		assertTrue(ctTypeReference instanceof CtImplicitTypeReference);
+		assertEquals("Object", ctTypeReference.getSimpleName());
+	}
+
+	@Test
+	public void testPrintAMethodWithGeneric() throws Exception {
+		final Launcher launcher = new Launcher();
+		final Factory factory = launcher.getFactory();
+		factory.getEnvironment().setAutoImports(true);
+		final SpoonCompiler compiler = launcher.createCompiler();
+		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/"));
+		compiler.build();
+
+		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
+		final String expected = "public List<? extends ArrayList> aMethodWithGeneric() {" + System.lineSeparator()
+				+ "    return new ArrayList<>();" + System.lineSeparator()
+				+ "}";
+		assertEquals(expected, aClass.getMethodsByName("aMethodWithGeneric").get(0).toString());
+
+		final CtConstructorCall constructorCall =
+				aClass.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class))
+						.get(0);
+		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
+				.getActualTypeArguments()
+				.get(0);
 		assertTrue(ctTypeReference instanceof CtImplicitTypeReference);
 		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
