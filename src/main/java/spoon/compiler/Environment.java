@@ -397,4 +397,14 @@ public interface Environment {
 	 * Sets the level of loggers asked by the user.
 	 */
 	void setLevel(String level);
+
+	/**
+	 * Checks if we want compile the target source code and get their binary.
+	 */
+	boolean shouldCompile();
+
+	/**
+	 * Sets the compile argument.
+	 */
+	void setShouldCompile(boolean shouldCompile);
 }

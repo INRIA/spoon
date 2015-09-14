@@ -15,6 +15,7 @@ import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -29,7 +30,7 @@ public class APITest {
 		// and asserts there is no exception
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/test/resources/spoon/test/api");
-		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
+		spoon.setSourceOutputDirectory("target/spooned");
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		for (CtPackage p : factory.Package().getAll()) {
@@ -134,6 +135,7 @@ public class APITest {
 	public void testAddProcessorMethodInSpoonAPI() throws Exception {
 		final SpoonAPI launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
+		launcher.setSourceOutputDirectory("./target/spooned");
 		final AwesomeProcessor processor = new AwesomeProcessor();
 		launcher.addProcessor(processor);
 		launcher.run();
@@ -143,5 +145,29 @@ public class APITest {
 		assertEquals(2, actual.getMethods().size());
 		assertNotNull(actual.getMethodsByName("prepareMojito").get(0));
 		assertNotNull(actual.getMethodsByName("makeMojito").get(0));
+	}
+
+	@Test
+	public void testOutputOfSpoon() throws Exception {
+		final File sourceOutput = new File("./target/spoon/test/output/");
+		final SpoonAPI launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
+		launcher.setSourceOutputDirectory(sourceOutput);
+		launcher.run();
+
+		assertTrue(sourceOutput.exists());
+	}
+
+	@Test
+	public void testDestinationOfSpoon() throws Exception {
+		final File binaryOutput = new File("./target/spoon/test/binary/");
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
+		launcher.setSourceOutputDirectory("./target/spooned");
+		launcher.setBinaryOutputDirectory(binaryOutput);
+		launcher.run();
+
+		assertTrue(binaryOutput.exists());
 	}
 }

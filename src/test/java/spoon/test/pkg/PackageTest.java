@@ -68,7 +68,7 @@ public class PackageTest {
 		factory.getEnvironment().setAutoImports(false);
 		SpoonCompiler compiler = launcher.createCompiler(factory);
 		compiler.addInputSource(new File("./src/test/java/spoon/test/pkg/testclasses/"));
-		compiler.setOutputDirectory(new File("./target/spooned/"));
+		compiler.setSourceOutputDirectory(new File("./target/spooned/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
 

@@ -55,7 +55,7 @@ public class StaticAccessTest {
         File tmpdir = new File("target/spooned/staticFieldAccess");
         tmpdir.mkdirs();
         //    tmpdir.deleteOnExit();
-        compiler.setOutputDirectory(tmpdir);
+        compiler.setSourceOutputDirectory(tmpdir);
         compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 
         // try to reload generated datas

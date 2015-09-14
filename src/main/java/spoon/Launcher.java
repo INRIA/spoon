@@ -436,8 +436,6 @@ public class Launcher implements SpoonAPI {
 		LOGGER.setLevel(environment.getLevel());
 		environment.setXmlRootFolder(jsapActualArgs.getFile("properties"));
 
-		environment.setDefaultFileGenerator(createOutputWriter(jsapActualArgs.getFile("output"), environment));
-
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
 		environment.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
@@ -446,6 +444,8 @@ public class Launcher implements SpoonAPI {
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
 		environment.setGenerateJavadoc(jsapActualArgs.getBoolean("generate-javadoc"));
+
+		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
 
 		// now we are ready to create a spoon compiler
 		modelBuilder = createCompiler();
@@ -458,6 +458,10 @@ public class Launcher implements SpoonAPI {
 					throw new SpoonException(e);
 				}
 			}
+		}
+
+		if (getArguments().getFile("output") != null) {
+			setSourceOutputDirectory(getArguments().getFile("output"));
 		}
 
 		// Adding template from command-line
@@ -580,13 +584,13 @@ public class Launcher implements SpoonAPI {
 	 * 		the factory this compiler works on
 	 */
 	public SpoonCompiler createCompiler(Factory factory) {
-		JDTBasedSpoonCompiler comp = new JDTBasedSpoonCompiler(factory);
+		SpoonCompiler comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
 		comp.setEncoding(getArguments().getString("encoding"));
 		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
-		comp.setDestinationDirectory(jsapActualArgs.getFile("destination"));
-		comp.setOutputDirectory(jsapActualArgs.getFile("output"));
+		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
+		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
 		comp.setEncoding(jsapActualArgs.getString("encoding"));
 
 		// backward compatibility
@@ -595,8 +599,8 @@ public class Launcher implements SpoonAPI {
 			comp.setSourceClasspath(jsapActualArgs.getString("source-classpath").split(System.getProperty("path.separator")));
 		}
 
-		env.debugMessage("output: " + comp.getDestinationDirectory());
-		env.debugMessage("destination: " + comp.getDestinationDirectory());
+		env.debugMessage("output: " + comp.getSourceOutputDirectory());
+		env.debugMessage("destination: " + comp.getBinaryOutputDirectory());
 		env.debugMessage("source classpath: " + Arrays.toString(comp.getSourceClasspath()));
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
 
@@ -699,7 +703,7 @@ public class Launcher implements SpoonAPI {
 
 		prettyprint();
 
-		if (jsapActualArgs.getBoolean("compile")) {
+		if (env.shouldCompile()) {
 			modelBuilder.compile();
 		}
 
@@ -770,7 +774,7 @@ public class Launcher implements SpoonAPI {
 					for (Object resource : resources) {
 						final String resourceParentPath = ((File) resource).getParent();
 						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());
-						final String targetDirectory = modelBuilder.getOutputDirectory() + packageDir;
+						final String targetDirectory = modelBuilder.getSourceOutputDirectory() + packageDir;
 						try {
 							FileUtils.copyFileToDirectory((File) resource, new File(targetDirectory));
 						} catch (IOException e) {
@@ -790,7 +794,28 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void setOutputDirectory(String path) {
-		modelBuilder.setOutputDirectory(new File(path));
+		setSourceOutputDirectory(path);
+	}
+
+	@Override
+	public void setSourceOutputDirectory(String path) {
+		setSourceOutputDirectory(new File(path));
+	}
+
+	@Override
+	public void setSourceOutputDirectory(File outputDirectory) {
+		modelBuilder.setSourceOutputDirectory(outputDirectory);
+		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory, getEnvironment()));
+	}
+
+	@Override
+	public void setBinaryOutputDirectory(String path) {
+		setBinaryOutputDirectory(new File(path));
+	}
+
+	@Override
+	public void setBinaryOutputDirectory(File outputDirectory) {
+		modelBuilder.setBinaryOutputDirectory(outputDirectory);
 	}
 
 }
