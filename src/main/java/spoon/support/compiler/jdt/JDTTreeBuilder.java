@@ -2456,6 +2456,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 			fa.setVariable(ref);
 
+			if (qualifiedNameReference.binding != null
+					&& qualifiedNameReference.tokens.length - 1 == ((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName.length) {
+				// We get the binding information when we specify the complete fully qualified name of the delcaring class.
+				final ReferenceBinding declaringClass = ((FieldBinding) qualifiedNameReference.binding).declaringClass;
+				final CtTypeReference<Object> typeReference = references.getTypeReference(declaringClass);
+				fa.setTarget(factory.Code().createCodeSnippetExpression(typeReference.toString()));
+			}
+
 			if (qualifiedNameReference.otherBindings != null) {
 				int i = 0; //positions index;
 				int sourceStart = (int) (positions[0] >>> 32);

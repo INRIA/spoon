@@ -19,7 +19,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
@@ -117,10 +116,7 @@ public class DefaultPrettyPrinterTest {
 			  "}";
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter( launcher.getEnvironment() );
-		printer.computeImports( aClass );
-		String computed = printer.scan( aClass.getMethodsByName("aMethod").get(0) ).toString();
-		assertEquals( expected, computed );
+		assertEquals(expected, aClass.getMethodsByName("aMethod").get(0).toString());
 
 		final CtConstructorCall<?> constructorCall =
 				aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class))
@@ -158,8 +154,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() throws Exception
-	{
+	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() throws Exception {
 		Factory factory = TestUtils.build( spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.class, spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class );
 		factory.getEnvironment().setAutoImports(true);
 
@@ -170,9 +165,7 @@ public class DefaultPrettyPrinterTest {
 			"    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
 			"}"
 		;
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter( factory.getEnvironment() );
-		printer.computeImports(aClass);
-		String computed = printer.scan( aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0) ).toString();
+		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
 		assertEquals( "the externally defined enum should be fully qualified to avoid a name clash with the local enum of the same name", expected, computed );
 
 		expected = //This is what is expected
@@ -185,9 +178,7 @@ public class DefaultPrettyPrinterTest {
 			"    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
 			"}"
 		;
-		printer = new DefaultJavaPrettyPrinter( factory.getEnvironment() );
-		printer.computeImports(aClass);
-		computed = printer.scan( aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0) ).toString();
+		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).toString();
 		assertEquals( expected, computed );
 
 		expected =
@@ -195,9 +186,7 @@ public class DefaultPrettyPrinterTest {
 			"    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" +nl+
 			"}"
 		;
-		printer = new DefaultJavaPrettyPrinter( factory.getEnvironment() );
-		printer.computeImports(aClass);
-		computed = printer.scan( aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0) ).toString();
+		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
 		assertEquals( "The static field of an external type with the same identifier as the compilation unit should be fully qualified", expected, computed );
 
 		expected = //This is what is expected
@@ -212,15 +201,10 @@ public class DefaultPrettyPrinterTest {
 			"    TypeIdentifierCollision.Class1.ClassA.VAR1 = TypeIdentifierCollision.Class1.ClassA.getNum();" +nl+
 			"}"
 		;
-		printer = new DefaultJavaPrettyPrinter( factory.getEnvironment() );
 
 		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and it's identifier can be the short version.
-		CtClass<?> innerClass = aClass.getNestedType("Class0");
-		printer.computeImports( innerClass );
-		printer.computeImports( innerClass.getNestedType("ClassA") );
-		printer.computeImports(aClass);
 
-		computed = printer.scan( aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0) ).toString();
+		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).toString();
 		assertEquals( "where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed );
 
 		expected =
@@ -233,16 +217,12 @@ public class DefaultPrettyPrinterTest {
 			"        this.e = e;" +nl+
 			"    }}"
 		;
-		printer = new DefaultJavaPrettyPrinter( factory.getEnvironment() );
-		printer.computeImports(aClass);
-		aClass.getNestedType("ENUM");
-		computed = printer.scan( (CtType<?>)aClass.getNestedType("ENUM") ).toString();
+		computed = aClass.getNestedType("ENUM").toString();
 		assertEquals( "Parameters in an enum constructor should be fully typed when they refer to externally defined static field of a class with the same identifier as another locally defined type", expected, computed );
 	}
 
 	@Test
-	public void useFullyQualifiedNamesInCtElementImpl_toString() throws Exception
-	{
+	public void useFullyQualifiedNamesInCtElementImpl_toString() throws Exception {
 		Factory factory = TestUtils.build( AClass.class );
 		factory.getEnvironment().setAutoImports(false);
 
