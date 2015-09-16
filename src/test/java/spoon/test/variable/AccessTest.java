@@ -122,7 +122,7 @@ public class AccessTest {
 									  }
 								  });
 
-		assertEquals(1, arraysRead.size());
+		assertEquals(2, arraysRead.size());
 
 		final List<CtArrayWrite<?>> arraysWrite =
 				Query.getElements(factory,
@@ -146,7 +146,7 @@ public class AccessTest {
 									  }
 								  });
 
-		assertEquals(2, arraysAccess.size());
+		assertEquals(3, arraysAccess.size());
 	}
 
 	@Test
