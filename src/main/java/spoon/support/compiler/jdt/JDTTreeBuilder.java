@@ -2218,6 +2218,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				CtExecutableReference<Object> ref = factory.Core().createExecutableReference();
 				ref.setSimpleName(new String(messageSend.selector));
+				ref.setType(references.getTypeReference(messageSend.expectedType()));
+				if (messageSend.receiver.resolvedType == null && messageSend.receiver instanceof SingleNameReference) {
+					// It is crisis dude! static context, we don't have much more information.
+					final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+					typeReference.setSimpleName(new String(((SingleNameReference) messageSend.receiver).binding.readableName()));
+					ref.setDeclaringType(typeReference);
+				} else {
+					ref.setDeclaringType(references.getTypeReference(messageSend.receiver.resolvedType));
+				}
+				if (messageSend.arguments != null) {
+					final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>();
+					for (Expression argument : messageSend.arguments) {
+						parameters.add(references.getTypeReference(argument.resolvedType));
+					}
+					ref.setParameters(parameters);
+				}
 				inv.setExecutable(ref);
 			}
 			// inv
@@ -2614,7 +2630,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ta.setType(references.getTypeReference((TypeBinding) singleNameReference.binding));
 			context.enter(ta, singleNameReference);
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
-			if (context.stack.peek().element instanceof CtAssignment) {
+			if (context.stack.peek().element instanceof CtInvocation) {
+				final CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
+				final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+				typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
+				ta.setType(typeReference);
+				context.enter(ta, singleNameReference);
+				return true;
+			} else if (context.stack.peek().element instanceof CtAssignment) {
 				va = factory.Core().createFieldWrite();
 			} else {
 				va = factory.Core().createFieldRead();

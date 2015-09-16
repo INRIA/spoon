@@ -118,6 +118,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.util.SortedList;
+import spoon.support.visitor.SignaturePrinter;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -943,15 +944,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
-		scan(reference.getDeclaringType());
-		write(".");
-		if (reference.getSimpleName().equals("<init>")) {
-			write(reference.getDeclaringType().getSimpleName());
-		} else {
-			write(reference.getSimpleName());
-		}
-		writeActualTypeArguments(reference);
-		writeParameters(reference.getActualTypeArguments());
+		SignaturePrinter pr = new SignaturePrinter();
+		pr.scan(reference);
+		write(pr.getSignature());
 	}
 
 	public <T> void visitCtField(CtField<T> f) {
