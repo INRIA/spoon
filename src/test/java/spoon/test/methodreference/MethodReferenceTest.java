@@ -11,15 +11,19 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
 import spoon.test.methodreference.testclasses.Foo;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
@@ -141,6 +145,21 @@ public class MethodReferenceTest {
 	@Test
 	public void testCompileMethodReferenceGeneratedBySpoon() throws Exception {
 		TestUtils.canBeBuild(new File("./target/spooned/spoon/test/methodreference/testclasses/"), 8);
+	}
+
+	@Test
+	public void testNoClasspathExecutableReferenceExpression() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/resources/executable-reference-expression/Bar.java", "-o", "./target/spooned", "--noclasspath"
+		});
+		final CtExecutableReferenceExpression<?, ?> element = Query
+				.getElements(launcher.getFactory(), new TypeFilter<CtExecutableReferenceExpression<?, ?>>(CtExecutableReferenceExpression.class)).get(0);
+
+		assertEquals("isInstance", element.getExecutable().getSimpleName());
+		assertNotNull(element.getExecutable().getDeclaringType());
+		assertEquals("Tacos", element.getExecutable().getDeclaringType().getSimpleName());
+		assertEquals("elemType::isInstance", element.toString());
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {

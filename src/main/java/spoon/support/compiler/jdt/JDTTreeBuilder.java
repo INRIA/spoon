@@ -1538,7 +1538,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	private <T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression(ReferenceExpression referenceExpression) {
 		CtExecutableReferenceExpression<T, E> executableRef = factory.Core().createExecutableReferenceExpression();
-		final CtExecutableReference<T> executableReference = references.getExecutableReference(referenceExpression.binding);
+		CtExecutableReference<T> executableReference = references.getExecutableReference(referenceExpression.binding);
+		if (executableReference == null) {
+			// No classpath mode.
+			executableReference = factory.Core().createExecutableReference();
+			executableReference.setSimpleName(new String(referenceExpression.selector));
+			executableReference.setDeclaringType(references.getTypeReference(referenceExpression.lhs.resolvedType));
+		}
 		executableReference.setType((CtTypeReference<T>) executableReference.getDeclaringType());
 		executableRef.setExecutable(executableReference);
 		return executableRef;

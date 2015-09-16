@@ -206,7 +206,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceStatement() {
 		CtMethod<?> sample = factory.Package().get("spoon.test.replace")
-				.getType("Foo").getMethod("foo"); 
+				.getType("Foo").getMethod("foo");
 
 		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtVariable);
 
