@@ -266,6 +266,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean forupdate = false;
 
+		boolean assigned = false;
+
 		Stack<String> label = new Stack<String>();
 
 		boolean selector = false;
@@ -1734,7 +1736,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ArrayReference arrayReference, BlockScope scope) {
 		CtArrayAccess<?, ?> a;
-		if (context.stack.peek().element instanceof CtAssignment) {
+		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
 			a = factory.Core().createArrayWrite();
 		} else {
 			a = factory.Core().createArrayRead();
@@ -1772,7 +1774,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(Assignment assignment, BlockScope scope) {
 		CtAssignment<Object, Object> assign = factory.Core().createAssignment();
 		context.enter(assign, assignment);
-		return true;
+		context.arguments.push(assign);
+		context.assigned = true;
+		if (assignment.lhs != null) {
+			assignment.lhs.traverse(this, scope);
+		}
+		context.assigned = false;
+
+		if (assignment.expression != null) {
+			assignment.expression.traverse(this, scope);
+		}
+		context.arguments.pop();
+		return false;
 	}
 
 	@Override
@@ -1851,7 +1864,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtOperatorAssignment<Object, Object> a = factory.Core().createOperatorAssignment();
 		a.setKind(getBinaryOperatorKind(compoundAssignment.operator));
 		context.enter(a, compoundAssignment);
-		return super.visit(compoundAssignment, scope);
+		context.arguments.push(a);
+		context.assigned = true;
+		if ((compoundAssignment.lhs) != null) {
+			compoundAssignment.lhs.traverse(this, scope);
+		}
+
+		context.assigned = false;
+		if ((compoundAssignment.expression) != null) {
+			compoundAssignment.expression.traverse(this, scope);
+		}
+		context.arguments.pop();
+		return false;
 	}
 
 	@Override
@@ -2032,7 +2056,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(FieldReference fieldReference, BlockScope scope) {
 		CtFieldAccess<Object> fieldAccess;
-		if (context.stack.peek().element instanceof CtAssignment) {
+		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
 			fieldAccess = factory.Core().createFieldWrite();
 		} else {
 			fieldAccess = factory.Core().createFieldRead();
@@ -2464,7 +2488,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		long[] positions = qualifiedNameReference.sourcePositions;
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
 			CtFieldAccess<Object> fa;
-			if (context.stack.peek().element instanceof CtAssignment && (qualifiedNameReference.otherBindings == null || qualifiedNameReference.otherBindings.length == 0)) {
+			if (context.stack.peek().element instanceof CtAssignment
+					&& (qualifiedNameReference.otherBindings == null || qualifiedNameReference.otherBindings.length == 0)
+					&& context.assigned) {
 				fa = factory.Core().createFieldWrite();
 			} else {
 				fa = factory.Core().createFieldRead();
@@ -2521,7 +2547,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		} else if (qualifiedNameReference.binding instanceof VariableBinding) {
 			CtVariableAccess<Object> va;
-			if (context.stack.peek().element instanceof CtAssignment && (qualifiedNameReference.otherBindings == null || qualifiedNameReference.otherBindings.length == 0)) {
+			if (context.stack.peek().element instanceof CtAssignment
+					&& (qualifiedNameReference.otherBindings == null || qualifiedNameReference.otherBindings.length == 0
+					&& context.assigned)) {
 				va = factory.Core().createVariableWrite();
 			} else {
 				va = factory.Core().createVariableRead();
@@ -2566,7 +2594,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return false;
 		} else {
 			CtVariableAccess<Object> va = null;
-			if (context.stack.peek().element instanceof CtAssignment) {
+			if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
 				va = factory.Core().createVariableWrite();
 			} else {
 				va = factory.Core().createVariableRead();
@@ -2618,14 +2646,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(SingleNameReference singleNameReference, BlockScope scope) {
 		CtVariableAccess<Object> va = null;
 		if (singleNameReference.binding instanceof FieldBinding) {
-			if (context.stack.peek().element instanceof CtAssignment) {
+			if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
 				va = factory.Core().createFieldWrite();
 			} else {
 				va = factory.Core().createFieldRead();
 			}
 			va.setVariable(references.getVariableReference(singleNameReference.fieldBinding()));
 		} else if (singleNameReference.binding instanceof VariableBinding) {
-			if (context.stack.peek().element instanceof CtAssignment) {
+			if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
 				va = factory.Core().createVariableWrite();
 			} else {
 				va = factory.Core().createVariableRead();
@@ -2643,7 +2671,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ta.setType(typeReference);
 				context.enter(ta, singleNameReference);
 				return true;
-			} else if (context.stack.peek().element instanceof CtAssignment) {
+			} else if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
 				va = factory.Core().createFieldWrite();
 			} else {
 				va = factory.Core().createFieldRead();
