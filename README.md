@@ -59,7 +59,7 @@ Stable version:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
-    <version>4.2.0</version>
+    <version>4.3.0</version>
 </dependency>
 ```
 
@@ -70,7 +70,7 @@ Snapshot version:
 	<dependency>
 		<groupId>fr.inria.gforge.spoon</groupId>
 		<artifactId>spoon-core</artifactId>
-		<version>4.3.0-SNAPSHOT</version>
+		<version>4.4.0-SNAPSHOT</version>
 	</dependency>
 </dependencies>
 <repositories>

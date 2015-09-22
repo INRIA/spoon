@@ -28,6 +28,7 @@ Do you want to improve this site? pull requests on <https://github.com/INRIA/spo
 
 Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/spoon) :-)
 
+- September 22, 2015: Spoon 4.3.0 is released.
 - June 15, 2015: Spoon 4.2.0 is released.
 - May 7, 2015: Spoon 4.1.0 is released.
 - April 8, 2015: Spoon 4.0.0 is released.
