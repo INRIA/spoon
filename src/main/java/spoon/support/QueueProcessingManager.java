@@ -114,7 +114,7 @@ public class QueueProcessingManager implements ProcessingManager {
 
 	public void process() {
 		Timer.start("process");
-		process(getFactory().Package().getAllRoots());
+		process(factory.Package().getRootPackage());
 		Timer.stop("process");
 	}
 

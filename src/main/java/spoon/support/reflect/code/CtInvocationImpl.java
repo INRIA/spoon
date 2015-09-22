@@ -27,7 +27,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -43,10 +42,6 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	List<CtExpression<?>> arguments = emptyList();
 
 	CtExecutableReference<T> executable;
-
-	List<CtExpression<Integer>> indexExpressions = emptyList();
-
-	List<CtTypeReference<?>> genericTypes = emptyList();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -128,31 +123,6 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	public <C extends CtStatement> C setLabel(String label) {
 		this.label = label;
 		return (C) this;
-	}
-
-	@Deprecated
-	public void setGenericTypes(List<CtTypeReference<?>> genericTypes) {
-		this.genericTypes = genericTypes;
-	}
-
-	@Deprecated
-	public List<CtTypeReference<?>> getGenericTypes() {
-		return this.genericTypes;
-	}
-
-	@Deprecated
-	public List<CtExpression<Integer>> getIndexExpressions() {
-		return indexExpressions;
-	}
-
-	@Deprecated
-	public void setIndexExpressions(List<CtExpression<Integer>> indexExpressions) {
-		this.indexExpressions = indexExpressions;
-	}
-
-	@Deprecated
-	public boolean isArrayOperation() {
-		return indexExpressions.size() > 0;
 	}
 
 	@Override

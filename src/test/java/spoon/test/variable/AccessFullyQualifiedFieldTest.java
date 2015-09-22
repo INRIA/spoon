@@ -13,8 +13,6 @@ public class AccessFullyQualifiedFieldTest {
 	public void testCheckAssignmentContracts() throws Exception {
 		final Factory factory = TestUtils.build(Tacos.class);
 
-		for(CtPackage pack: factory.Package().getAllRoots()) {
-			MainTest.checkAssignmentContracts(pack);
-		}
+		MainTest.checkAssignmentContracts(factory.Package().getRootPackage());
 	}
 }

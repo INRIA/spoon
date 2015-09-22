@@ -51,9 +51,7 @@ public class MainTest {
 				"--level", "OFF"
 		});
 
-		for (CtPackage pack : launcher.getFactory().Package().getAllRoots()) {
-			checkGenericContracts(pack);
-		}
+		checkGenericContracts(launcher.getFactory().Package().getRootPackage());
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
@@ -63,7 +61,7 @@ public class MainTest {
 		// assignments
 		checkAssignmentContracts(pack);
 	}
-	
+
 	public static void checkAssignmentContracts(CtElement pack) {
 		for (CtAssignment assign : pack.getElements(new TypeFilter<CtAssignment>(
 				CtAssignment.class))) {
@@ -79,7 +77,7 @@ public class MainTest {
 	@Test
 	public void testTest() throws Exception {
 		// the tests should be spoonable
-		Launcher launcher = new Launcher();		
+		Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "src/test/java",
 				"-o", "target/spooned",
@@ -87,10 +85,8 @@ public class MainTest {
 				"--compliance", "8",
 				"--level", "OFF"
 		});
-		
-		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {
-			checkGenericContracts(pack);
-		}
+
+		checkGenericContracts(launcher.getFactory().Package().getRootPackage());
 	}
 
 	@Test

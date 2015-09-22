@@ -17,26 +17,11 @@
 
 package spoon.reflect.code;
 
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtVariableReference;
-
 /**
  * This code element defines an access to super.
  *
  * @param <T>
  * 		Type of super
  */
-public interface CtSuperAccess<T> extends CtTargetedAccess<T> {
-	/**
-	 * @deprecated super isn't a variable. So this method will be removed in a next release.
-	 */
-	@Deprecated
-	CtFieldReference<T> getVariable();
-
-	/**
-	 * @deprecated super isn't a variable. So this method will be removed in a next release.
-	 */
-	@Deprecated
-	@Override
-	<C extends CtVariableAccess<T>> C setVariable(CtVariableReference<T> variable);
+public interface CtSuperAccess<T> extends CtVariableRead<T>, CtTargetedExpression<T, CtExpression<?>> {
 }

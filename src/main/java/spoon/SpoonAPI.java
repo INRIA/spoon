@@ -24,12 +24,6 @@ public interface SpoonAPI {
 	void addInputResource(String file);
 
 	/**
-	 * Sets the output directory
-	 */
-	@Deprecated
-	void setOutputDirectory(String string);
-
-	/**
 	 * Sets the output directory for source generated.
 	 *
 	 * @param path

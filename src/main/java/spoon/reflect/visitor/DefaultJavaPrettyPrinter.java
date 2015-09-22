@@ -1765,7 +1765,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		write(typeParameter.getName());
+		write(typeParameter.getSimpleName());
 		if (!typeParameter.getBounds().isEmpty()) {
 			write(" extends ");
 			for (CtTypeReference<?> ref : typeParameter.getBounds()) {

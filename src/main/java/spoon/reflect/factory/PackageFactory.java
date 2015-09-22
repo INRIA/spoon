@@ -28,7 +28,6 @@ import spoon.support.reflect.declaration.CtPackageImpl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -194,16 +193,6 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 */
 	public Collection<CtPackage> getAll() {
 		return getSubPackageList(rootPackage);
-	}
-
-	/**
-	 * Gets the list of all created root packages
-	 *
-	 * @deprecated use getRootPackage
-	 */
-	@Deprecated
-	public Collection<CtPackage> getAllRoots() {
-		return Arrays.asList(rootPackage);
 	}
 
 	/**

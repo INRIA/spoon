@@ -54,21 +54,6 @@ public interface SpoonModelBuilder {
 	void addInputSource(File source);
 
 	/**
-	 * Sets the destination directory for the class files.
-	 *
-	 * @param destinationDirectory
-	 * 		destination directory
-	 */
-	@Deprecated
-	void setDestinationDirectory(File destinationDirectory);
-
-	/**
-	 * Gets the output directory of this compiler.
-	 */
-	@Deprecated
-	File getDestinationDirectory();
-
-	/**
 	 * Sets the output directory for binary generated.
 	 *
 	 * @param binaryOutputDirectory
@@ -80,21 +65,6 @@ public interface SpoonModelBuilder {
 	 * Gets the binary output directory of the compiler.
 	 */
 	File getBinaryOutputDirectory();
-
-	/**
-	 * Sets the output directory for the source files.
-	 *
-	 * @param outputDirectory
-	 * 		output directory
-	 */
-	@Deprecated
-	void setOutputDirectory(File outputDirectory);
-
-	/**
-	 * Gets the output directory of this compiler.
-	 */
-	@Deprecated
-	File getOutputDirectory();
 
 	/**
 	 * Sets the output directory for source generated.

@@ -61,17 +61,6 @@ public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypePar
 	}
 
 	@Override
-	public String getName() {
-		return super.getSimpleName();
-	}
-
-	@Override
-	public <T extends CtTypeParameter> T setName(String name) {
-		super.setSimpleName(name);
-		return (T) this;
-	}
-
-	@Override
 	public List<CtTypeReference<?>> getBounds() {
 		return bounds;
 	}

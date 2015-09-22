@@ -23,12 +23,10 @@ public class LauncherTest extends TestCase {
 
 		final Environment environment = launcher.getEnvironment();
 		// specify the default values
-		Assert.assertFalse(environment.isVerbose());
 		Assert.assertFalse(environment.isAutoImports());
 		Assert.assertFalse(environment.isUsingTabulations());
 		Assert.assertFalse(environment.isPreserveLineNumbers());
 		Assert.assertEquals(4, environment.getTabulationSize());
-		Assert.assertFalse(environment.isDebug());
 		Assert.assertTrue(environment.isCopyResources());
 
 		JavaOutputProcessor processor = (JavaOutputProcessor) environment.getDefaultFileGenerator();
@@ -52,7 +50,6 @@ public class LauncherTest extends TestCase {
 		final Environment environment = launcher.getEnvironment();
 
 		// Verify if the environment is correct.
-		Assert.assertTrue(environment.isVerbose());
 		Assert.assertTrue(environment.isAutoImports());
 		Assert.assertTrue(environment.isUsingTabulations());
 		Assert.assertTrue(environment.isPreserveLineNumbers());

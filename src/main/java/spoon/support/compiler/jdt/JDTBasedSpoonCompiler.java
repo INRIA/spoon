@@ -77,11 +77,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	boolean buildOnlyOutdatedFiles = false;
 
 	@Override
-	public File getOutputDirectory() {
-		return getSourceOutputDirectory();
-	}
-
-	@Override
 	public void setSourceOutputDirectory(File outputDirectory) {
 		this.outputDirectory = outputDirectory;
 	}
@@ -91,25 +86,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		return outputDirectory;
 	}
 
-	@Override
-	public void setOutputDirectory(File outputDirectory) {
-		setSourceOutputDirectory(outputDirectory);
-	}
-
 	/**
 	 * output directory for binary code .class file
 	 */
 	File binaryOutputDirectory;
-
-	@Override
-	public File getDestinationDirectory() {
-		return getBinaryOutputDirectory();
-	}
-
-	@Override
-	public void setDestinationDirectory(File destinationDirectory) {
-		setBinaryOutputDirectory(destinationDirectory);
-	}
 
 	@Override
 	public void setBinaryOutputDirectory(File binaryOutputDirectory) {
