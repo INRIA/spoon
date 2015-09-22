@@ -20,35 +20,6 @@ See <https://github.com/INRIA/spoon/>.
 
 The Spoon metamodel consists of all interfaces that are in packages `spoon.reflect.declaration` (structural part: classes, methods, etc.) and `spoon.reflect.code` (behavioral part: if, loops, etc.).
 
-### How to run Spoon in Maven?
-
-Add the right plugin (exec-maven-plugin) and execute task exec:java
-
-{% highlight PowerShell %}
-mvn exec:java
-{% endhighlight %}
-
-{% highlight xml %}
-<build>
-  <plugins>
-      <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>1.2.1</version>
-          <configuration>
-              <mainClass>spoon.Launcher</mainClass>
-              <arguments>
-                  <argument>-i</argument>
-                  <argument>[SOURCE_FOLDER]</argument>
-                  <argument>-p</argument>
-                  <argument>[PROCESSOR]</argument>
-              </arguments>
-          </configuration>
-      </plugin>
-  </plugins>
-</build>
-{% endhighlight %}
-
 ### How to get a Spoon model programmatically?
 
 {% highlight java %}
@@ -65,85 +36,6 @@ for(CtSimpleType s : factory.Class().getAll()) {
   System.out.println("class: "+s.getQualifiedName());
 }
 {% endhighlight %}
-
-### How to use Spoon in standalone mode?
-
-You can download the Spoon standalone version (here) that includes the Eclipse JDT compiler and can be applied to any Java program using command-line style.
-
-You need to specify a list of compiled processor types to apply to your program, and define the location of the source code to be processed.
-
-{% highlight PowerShell %}
-java -cp spoon-core-with-dependencies.jar spoon.Launcher -i sourceFolder -p CatchProcessor -v --compliance 6
-{% endhighlight %}
-
-Optionally, if you use templates, you have to specify the location of your template source files.
-
-### How to use Spoon with Ant?
-
-First, get the Spoon standalone version.
-
-You need to set the Spoon jar and the compiled processors in the classpath reference (see ant taskdef).
-
-{% highlight xml %}
-<!-- define spoon task -->
-<taskdef name="spoon" classname="spoon.SpoonTask" 
-   classpathref= "classpath"/>
-
-<!-- process some files -->
-<spoon classpathref= "classpath" verbose= "true">
-    <sourceSet dir= "${src}" includes= "x/y/z/src/" />
-    <templateset dir= "${src}" includes= "x/y/z/template/" />
-    <processor type= "x.y.z.MyProcessor1" />
-    <processor type= "x.y.z.MyProcessor2" />
-    <processor type= "x.y.z.MyProcessor3" />
-    ...
-</spoon>
-
-{% endhighlight %}
-
-### How to use Spoon with the Java launcher?
-
-First, get the Spoon standalone version.
-
-You can process program with the Java launcher. For instance, with the following command:
-
-{% highlight PowerShell %}
-java spoon.Launcher -i x/y/z/src/ -t x/y/z/template/ 
-  -p x.y.z.MyProcessor1;x.y.z.MyProcessor2;x.y.z.MyProcessor3...
-Usage: java <launcher name> [option(s)]
-Options : 
-  [-h|--help]
-  [-v|--verbose]
-        Output messages about what the compiler is doing
-  [--vvv]
-        Generate all debugging info
-  [--compliance <compliance>]
-        set java compliance level (1,2,3,4,5 or 6) (default: 5)
-  [(-i|--input) <input>]
-        List of path to sources files
-  [(-p|--processors) <processors>]
-        List of processor's qualified name to be used
-  [(-t|--template) <template>]
-        list of path to templates java files
-  [(-o|--output) <output>]
-        specify where to place generated java files (default: spooned)
-  [--properties <properties>]
-        Directory to search for spoon properties files
-  [<class>]
-        class to launch within the Spoon context (Main class)
-  [arguments1 arguments2 ... argumentsN]
-        parameters to be passed to the main method
-  [--no]
-        disable output printing
-  [(-b|--build) <build>]
-        specify where to place generated class files (default: spoonBuild)
-  [-g|--gui]
-        show spoon model after processing
-{% endhighlight %}
-
-### How to use Spoon as a Maven task?
-
-A Maven plugin by David Bernard is on its way! It is avalaible in beta at this [link](http://alchim.sf.net/spoon-maven-plugin/).
 
 ### How to write your own processor(s)?
 
