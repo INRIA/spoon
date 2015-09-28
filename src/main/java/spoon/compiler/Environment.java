@@ -25,7 +25,6 @@ import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
-import spoon.processing.Severity;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 
@@ -75,14 +74,6 @@ public interface Environment {
 	void setProcessorProperties(String processorName, ProcessorProperties prop);
 
 	/**
-	 * Returns true if Spoon is in debug mode.
-	 *
-	 * @see Environment#getLevel()
-	 */
-	@Deprecated
-	boolean isDebug();
-
-	/**
 	 * Returns true is we let Spoon handle imports
 	 */
 	boolean isAutoImports();
@@ -93,32 +84,6 @@ public interface Environment {
 	 * an error.
 	 */
 	boolean isProcessingStopped();
-
-	/**
-	 * Returns true if Spoon is in verbose mode.
-	 *
-	 * @see Environment#getLevel()
-	 */
-	@Deprecated
-	boolean isVerbose();
-
-	/**
-	 * Helper method called by a processor to report an error, warning or
-	 * message as dictated by the severity parameter. Note that this does not
-	 * stop the processing or any remaining task. To do so, use
-	 * {@link #setProcessingStopped(boolean)}.
-	 *
-	 * @param processor
-	 *            The processor that report this message. Can be null.
-	 * @param severity
-	 *            The severity of the report
-	 * @param element
-	 *            The CtElement to which the report is associated
-	 * @param message
-	 *            The message to report
-	 */
-	@Deprecated
-	void report(Processor<?> processor, Severity severity, CtElement element, String message);
 
 	/**
 	 * Helper method called by a processor to report an error, warning or
@@ -145,27 +110,6 @@ public interface Environment {
 	 *
 	 * @param processor
 	 *            The processor that report this message. Can be null.
-	 * @param severity
-	 *            The severity of the report
-	 * @param element
-	 *            The CtElement to which the report is associated
-	 * @param message
-	 *            The message to report
-	 * @param fixes
-	 *            The problem fixer(s) to correct this problem
-	 */
-	@Deprecated
-	void report(Processor<?> processor, Severity severity,
-				CtElement element, String message, ProblemFixer<?>... fixes);
-
-	/**
-	 * Helper method called by a processor to report an error, warning or
-	 * message as dictated by the severity parameter. Note that this does not
-	 * stop the processing or any remaining task. To do so, use
-	 * {@link #setProcessingStopped(boolean)}.
-	 *
-	 * @param processor
-	 *            The processor that report this message. Can be null.
 	 * @param level
 	 *            The level of the report
 	 * @param element
@@ -177,20 +121,6 @@ public interface Environment {
 	 */
 	void report(Processor<?> processor, Level level,
 				CtElement element, String message, ProblemFixer<?>... fixes);
-
-	/**
-	 * This method should be called to print out a message during the
-	 * processing.
-	 *
-	 * @param processor
-	 *            The processor that report this message. Can be null.
-	 * @param severity
-	 *            The severity of the report
-	 * @param message
-	 *            The message to report
-	 */
-	@Deprecated
-	void report(Processor<?> processor, Severity severity, String message);
 
 	/**
 	 * This method should be called to print out a message during the
@@ -219,14 +149,6 @@ public interface Environment {
 	void reportProgressMessage(String message);
 
 	/**
-	 * Sets the debug mode.
-	 *
-	 * @see Environment#setLevel(String)
-	 */
-	@Deprecated
-	void setDebug(boolean debug);
-
-	/**
 	 * Sets the default file generator for this environment.
 	 */
 	void setDefaultFileGenerator(FileGenerator<? extends CtElement> generator);
@@ -241,14 +163,6 @@ public interface Environment {
 	 * tasks. In general, a processor calls it after reporting a fatal error.
 	 */
 	void setProcessingStopped(boolean processingStopped);
-
-	/**
-	 * Sets/unsets the verbose mode.
-	 *
-	 * @see Environment#setLevel(String)
-	 */
-	@Deprecated
-	void setVerbose(boolean verbose);
 
 	/**
 	 * Gets the size of the tabulations in the generated source code.

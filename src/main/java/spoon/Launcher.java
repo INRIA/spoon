@@ -793,11 +793,6 @@ public class Launcher implements SpoonAPI {
 	}
 
 	@Override
-	public void setOutputDirectory(String path) {
-		setSourceOutputDirectory(path);
-	}
-
-	@Override
 	public void setSourceOutputDirectory(String path) {
 		setSourceOutputDirectory(new File(path));
 	}

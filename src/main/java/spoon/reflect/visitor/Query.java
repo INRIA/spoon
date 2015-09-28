@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 
@@ -52,9 +51,7 @@ public abstract class Query extends CtScanner {
 	public static <E extends CtElement> List<E> getElements(Factory factory,
 															Filter<E> filter) {
 		List<E> e = new ArrayList<E>();
-		for (CtPackage p : factory.Package().getAllRoots()) {
-			e.addAll(getElements(p, filter));
-		}
+		e.addAll(getElements(factory.Package().getRootPackage(), filter));
 		return e;
 	}
 
@@ -107,9 +104,7 @@ public abstract class Query extends CtScanner {
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, ReferenceFilter<R> filter) {
 		List<R> r = new ArrayList<R>();
-		for (CtPackage p : factory.Package().getAllRoots()) {
-			r.addAll(getReferences(p, filter));
-		}
+		r.addAll(getReferences(factory.Package().getRootPackage(), filter));
 		return r;
 	}
 

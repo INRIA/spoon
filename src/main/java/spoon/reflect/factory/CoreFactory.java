@@ -17,10 +17,7 @@
 
 package spoon.reflect.factory;
 
-import java.lang.annotation.Annotation;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
@@ -39,7 +36,6 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
@@ -63,7 +59,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -91,6 +86,8 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the core creation methods for the meta-model (to be
@@ -129,15 +126,6 @@ public interface CoreFactory {
 	 * Creates an anonymous executable.
 	 */
 	CtAnonymousExecutable createAnonymousExecutable();
-
-	/**
-	 * Creates an array access expression.
-	 *
-	 * @deprecated See {@link #createArrayRead() createArrayRead}
-	 * or {@link #createArrayWrite() createArrayWrite}
-	 */
-	@Deprecated
-	<T, E extends CtExpression<?>> CtArrayAccess<T, E> createArrayAccess();
 
 	/**
 	 * Creates an array read access expression.
@@ -228,15 +216,6 @@ public interface CoreFactory {
 	 * Creates a field.
 	 */
 	<T> CtField<T> createField();
-
-	/**
-	 * Creates a field access expression.
-	 *
-	 * @deprecated See {@link #createFieldRead() createFieldRead}
-	 * or {@link #createFieldWrite() createFieldWrite}
-	 */
-	@Deprecated
-	<T> CtFieldAccess<T> createFieldAccess();
 
 	/**
 	 * Creates a field read access.
@@ -439,15 +418,6 @@ public interface CoreFactory {
 	 * Creates a unary operator expression.
 	 */
 	<T> CtUnaryOperator<T> createUnaryOperator();
-
-	/**
-	 * Creates a variable access expression.
-	 *
-	 * @deprecated See {@link #createVariableRead() createVariableRead}
-	 * or {@link #createVariableWrite() createVariableWrite}
-	 */
-	@Deprecated
-	<T> CtVariableAccess<T> createVariableAccess();
 
 	/**
 	 * Creates a variable read expression.

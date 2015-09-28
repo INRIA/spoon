@@ -27,18 +27,6 @@ import spoon.reflect.reference.CtTypeReference;
 public interface CtTypeParameter extends CtNamedElement {
 
 	/**
-	 * @see CtNamedElement#getSimpleName()
-	 */
-	@Deprecated
-	String getName();
-
-	/**
-	 * @see CtNamedElement#setSimpleName(String)
-	 */
-	@Deprecated
-	<T extends CtTypeParameter> T setName(String name);
-
-	/**
 	 * Returns the bounds of this type parameter. These are the types given by
 	 * the <i>extends</i> clause. If there is no explicit <i>extends</i> clause,
 	 * then <tt>java.lang.Object</tt> is considered to be the sole bound.

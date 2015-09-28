@@ -21,7 +21,7 @@ import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtArrayAccessImpl<T, V extends CtExpression<?>>
+public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>>
 		extends CtTargetedExpressionImpl<T, V>
 		implements CtArrayAccess<T, V> {
 	private static final long serialVersionUID = 1L;

@@ -25,7 +25,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> implements CtFieldAccess<T> {
+public abstract class CtFieldAccessImpl<T> extends CtVariableReadImpl<T> implements CtFieldAccess<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtExpression<?> target;

@@ -115,7 +115,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 
 	public void process() {
 		Timer.start("process");
-		process(getFactory().Package().getAllRoots());
+		process(getFactory().Package().getRootPackage());
 		Timer.stop("process");
 	}
 

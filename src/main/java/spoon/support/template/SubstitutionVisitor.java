@@ -34,6 +34,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -472,6 +473,11 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		@SuppressWarnings("unchecked")
 		public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
+			if (variableAccess instanceof CtSuperAccess) {
+				// A CtSuperAccess don't have a variable.
+				super.visitCtVariableAccess(variableAccess);
+				return;
+			}
 			String name = variableAccess.getVariable().getSimpleName();
 			for (String pname : parameterNames) {
 				if (name.contains(pname)) {

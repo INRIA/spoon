@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -45,7 +44,6 @@ import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
-import spoon.processing.Severity;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -207,12 +205,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		return xmlRootFolder;
 	}
 
-	@Override
-	public boolean isDebug() {
-		final List<String> levels = Arrays.asList(Level.ALL.toString(), Level.TRACE.toString(), Level.INFO.toString(), Level.DEBUG.toString());
-		return levels.contains(level.toString());
-	}
-
 	/**
 	 * Tells if the processing is stopped, generally because one of the
 	 * processors called {@link #setProcessingStopped(boolean)} after reporting
@@ -223,15 +215,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		return processingStopped;
 	}
 
-	/**
-	 * Returns true if Spoon is in verbose mode.
-	 */
-	@Override
-	public boolean isVerbose() {
-		final List<String> levels = Arrays.asList(Level.ALL.toString(), Level.TRACE.toString(), Level.INFO.toString());
-		return levels.contains(level.toString());
-	}
-
 	private void prefix(StringBuffer buffer, Level level) {
 		if (level == Level.ERROR) {
 			buffer.append("error: ");
@@ -240,11 +223,6 @@ public class StandardEnvironment implements Serializable, Environment {
 			buffer.append("warning: ");
 			warningCount++;
 		}
-	}
-
-	@Override
-	public void report(Processor<?> processor, Severity severity, CtElement element, String message) {
-		report(processor, severity.toLevel(), element, message);
 	}
 
 	@Override
@@ -279,19 +257,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public void report(Processor<?> processor, Severity severity, CtElement element, String message, ProblemFixer<?>... fix) {
-		// Fix not (yet) used in command-line mode
-		report(processor, severity.toLevel(), element, message);
-	}
-
-	@Override
 	public void report(Processor<?> processor, Level level, CtElement element, String message, ProblemFixer<?>... fixes) {
 		report(processor, level, element, message);
-	}
-
-	@Override
-	public void report(Processor<?> processor, Severity severity, String message) {
-		report(processor, severity.toLevel(), message);
 	}
 
 	@Override

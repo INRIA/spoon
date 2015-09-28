@@ -596,7 +596,7 @@ public class SignaturePrinter implements CtVisitor {
 
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
 		write("<");
-		write(typeParameter.getName());
+		write(typeParameter.getSimpleName());
 		write(">");
 	}
 

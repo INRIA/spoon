@@ -155,7 +155,7 @@ public class AccessTest {
 		List<CtAssignment> l = type.getElements(new TypeFilter<>(CtAssignment.class));
 		assertEquals(3, l.size());
 	}
-	
+
 	@Test
 	public void testRHS() throws Exception {
 		CtType<RHSSample> type = TestUtils.buildClass(RHSSample.class);
@@ -173,8 +173,6 @@ public class AccessTest {
 				"--level", "OFF"
 		});
 
-		for(CtPackage pack: launcher.getFactory().Package().getAllRoots()) {
-			MainTest.checkAssignmentContracts(pack);
-		}
+		MainTest.checkAssignmentContracts(launcher.getFactory().Package().getRootPackage());
 	}
 }

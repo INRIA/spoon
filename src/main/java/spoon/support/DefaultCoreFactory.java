@@ -17,18 +17,8 @@
 
 package spoon.support;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Stack;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
@@ -47,7 +37,6 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
@@ -71,7 +60,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -104,7 +92,6 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtAnnotationFieldAccesImpl;
-import spoon.support.reflect.code.CtArrayAccessImpl;
 import spoon.support.reflect.code.CtArrayReadImpl;
 import spoon.support.reflect.code.CtArrayWriteImpl;
 import spoon.support.reflect.code.CtAssertImpl;
@@ -122,7 +109,6 @@ import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtContinueImpl;
 import spoon.support.reflect.code.CtDoImpl;
 import spoon.support.reflect.code.CtExecutableReferenceExpressionImpl;
-import spoon.support.reflect.code.CtFieldAccessImpl;
 import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.code.CtFieldWriteImpl;
 import spoon.support.reflect.code.CtForEachImpl;
@@ -146,7 +132,6 @@ import spoon.support.reflect.code.CtTryImpl;
 import spoon.support.reflect.code.CtTryWithResourceImpl;
 import spoon.support.reflect.code.CtTypeAccessImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
-import spoon.support.reflect.code.CtVariableAccessImpl;
 import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
@@ -177,6 +162,15 @@ import spoon.support.reflect.reference.CtParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 import spoon.support.util.RtHelper;
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Stack;
 
 /**
  * This class implements a default core factory for Spoon's meta-model. This
@@ -318,12 +312,6 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
-	public <T, E extends CtExpression<?>> CtArrayAccess<T, E> createArrayAccess() {
-		CtArrayAccess<T, E> e = new CtArrayAccessImpl<T, E>();
-		e.setFactory(getMainFactory());
-		return e;
-	}
-
 	@Override
 	public <T> CtArrayRead<T> createArrayRead() {
 		CtArrayRead<T> e = new CtArrayReadImpl<T>();
@@ -432,12 +420,6 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtField<T> createField() {
 		CtField<T> e = new CtFieldImpl<T>();
-		e.setFactory(getMainFactory());
-		return e;
-	}
-
-	public <T> CtFieldAccess<T> createFieldAccess() {
-		CtFieldAccess<T> e = new CtFieldAccessImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -678,12 +660,6 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtUnaryOperator<T> createUnaryOperator() {
 		CtUnaryOperator<T> e = new CtUnaryOperatorImpl<T>();
-		e.setFactory(getMainFactory());
-		return e;
-	}
-
-	public <T> CtVariableAccess<T> createVariableAccess() {
-		CtVariableAccess<T> e = new CtVariableAccessImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
