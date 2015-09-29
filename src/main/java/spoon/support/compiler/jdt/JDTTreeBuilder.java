@@ -142,6 +142,7 @@ import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -381,11 +382,33 @@ public class JDTTreeBuilder extends ASTVisitor {
 				return null;
 			}
 
-			CtExecutableReference<T> ref = factory.Core().createExecutableReference();
-			ref.setDeclaringType(getTypeReference(exec.declaringClass));
-			ref.setType((CtTypeReference<T>) getTypeReference(exec.returnType));
+			final CtExecutableReference<T> ref = factory.Core().createExecutableReference();
 			ref.setSimpleName(new String(exec.selector));
-			ref.setStatic(exec.isStatic());
+			ref.setType((CtTypeReference<T>) getTypeReference(exec.returnType));
+
+			if (exec instanceof ProblemMethodBinding) {
+				// We try to check in imports if there is the correct package of the type.
+				if (context.compilationunitdeclaration != null && context.compilationunitdeclaration.imports != null) {
+					for (ImportReference anImport : context.compilationunitdeclaration.imports) {
+						if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], exec.constantPoolName())) {
+							char[][] packageName = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 2);
+							char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - 2, anImport.getImportName().length - 1);
+							final PackageBinding aPackage = context.compilationunitdeclaration.scope.environment.createPackage(packageName);
+							final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+							ref.setDeclaringType(getTypeReference(declaringType));
+							break;
+						}
+					}
+				}
+				if (exec.isConstructor()) {
+					// super() invocation have a good declaring class.
+					ref.setDeclaringType(getTypeReference(exec.declaringClass));
+				}
+				ref.setStatic(true);
+			} else {
+				ref.setDeclaringType(getTypeReference(exec.declaringClass));
+				ref.setStatic(exec.isStatic());
+			}
 
 			// original() method returns a result not null when the current method is generic.
 			if (exec.original() != null) {
@@ -2245,15 +2268,28 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtInvocation<Object> inv = factory.Core().createInvocation();
 			if (messageSend.binding != null) {
 				inv.setExecutable(references.getExecutableReference(messageSend.binding));
+				if (messageSend.binding instanceof ProblemMethodBinding) {
+					// We are in a static complex in noclasspath mode.
+					if (inv.getExecutable() != null && inv.getExecutable().getDeclaringType() != null) {
+						final CtTypeAccess ta = factory.Core().createTypeAccess();
+						ta.setType(inv.getExecutable().getDeclaringType());
+						inv.setTarget(ta);
+					}
+					if (messageSend.expectedType() != null) {
+						inv.getExecutable().setType(references.getTypeReference(messageSend.expectedType()));
+					}
+				}
 			} else {
 				CtExecutableReference<Object> ref = factory.Core().createExecutableReference();
 				ref.setSimpleName(new String(messageSend.selector));
 				ref.setType(references.getTypeReference(messageSend.expectedType()));
-				if (messageSend.receiver.resolvedType == null && messageSend.receiver instanceof SingleNameReference) {
+				if (messageSend.receiver.resolvedType == null) {
 					// It is crisis dude! static context, we don't have much more information.
-					final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-					typeReference.setSimpleName(new String(((SingleNameReference) messageSend.receiver).binding.readableName()));
-					ref.setDeclaringType(typeReference);
+					if (messageSend.receiver instanceof SingleNameReference || messageSend.receiver instanceof QualifiedNameReference) {
+						final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+						typeReference.setSimpleName(messageSend.receiver.toString());
+						ref.setDeclaringType(typeReference);
+					}
 				} else {
 					ref.setDeclaringType(references.getTypeReference(messageSend.receiver.resolvedType));
 				}
@@ -2591,6 +2627,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
 			ta.setType(references.getTypeReference((TypeBinding) qualifiedNameReference.binding));
 			context.enter(ta, qualifiedNameReference);
+			return false;
+		} else if (qualifiedNameReference.binding instanceof ProblemBinding) {
+			if (context.stack.peek().element instanceof CtInvocation) {
+				final CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
+				final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+				typeReference.setSimpleName(qualifiedNameReference.toString());
+				ta.setType(typeReference);
+				context.enter(ta, qualifiedNameReference);
+			}
 			return false;
 		} else {
 			CtVariableAccess<Object> va = null;
