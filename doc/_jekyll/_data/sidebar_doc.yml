@@ -94,3 +94,24 @@ entries:
           platform: all
           product: all
           version: all
+
+    - title: Quering source code elements
+      audience: writers, designers
+      platform: all
+      product: all
+      version: all
+
+      items:
+        - title: Filter
+          url: /filter.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Path
+          url: /path.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
