@@ -47,8 +47,8 @@ import spoon.support.processing.XmlProcessorProperties;
  * A processor to add/replace/override/remove annotations described in an XML
  * file. This version is based on java.util.regexp, but it can be subclassed to
  * implement other types of matchings. Note that the used XML file is defined by
- * the property {@link #xmlPath}, which can be defined in a property file or a
- * Spoonlet file (spoon.xml) depending on your environment.
+ * the property {@link #xmlPath}, which can be defined in a property file depending
+ * on your environment.
  *
  * @author Didier Donsez
  * @author Renaud Pawlak

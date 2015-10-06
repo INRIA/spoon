@@ -16,29 +16,18 @@
  */
 package spoon;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
-
+import com.martiansoftware.jsap.FlaggedOption;
+import com.martiansoftware.jsap.JSAP;
+import com.martiansoftware.jsap.JSAPException;
+import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.Switch;
+import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
@@ -52,17 +41,17 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
-import spoon.support.compiler.ZipFolder;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.gui.SpoonModelTree;
-import spoon.support.processing.SpoonletXmlHandler;
 
-import com.martiansoftware.jsap.FlaggedOption;
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
-import com.martiansoftware.jsap.JSAPResult;
-import com.martiansoftware.jsap.Switch;
-import com.martiansoftware.jsap.stringparsers.FileStringParser;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * This class implements an integrated command-line launcher for processing
@@ -244,15 +233,6 @@ public class Launcher implements SpoonAPI {
 			opt2.setRequired(false);
 			opt2.setDefault("UTF-8");
 			opt2.setHelp("Forces the compiler to use a specific encoding (UTF-8, UTF-16, ...).");
-			jsap.registerParameter(opt2);
-
-			// setting a spoonlet (packaged processors)
-			opt2 = new FlaggedOption("spoonlet");
-			opt2.setShortFlag('s');
-			opt2.setLongFlag("spoonlet");
-			opt2.setStringParser(JSAP.STRING_PARSER);
-			opt2.setRequired(false);
-			opt2.setHelp("List of spoonlet files to load.");
 			jsap.registerParameter(opt2);
 
 			// setting Input files & Directory
@@ -498,48 +478,6 @@ public class Launcher implements SpoonAPI {
 	 */
 	protected List<Processor<? extends CtElement>> getProcessors() {
 		return processors;
-	}
-
-	/**
-	 * Load content of spoonlet file (template and processor list).
-	 */
-	protected void loadSpoonlet(Factory factory, File spoonletFile) {
-		Environment env = factory.getEnvironment();
-		SpoonFolder folder;
-		try {
-			folder = new ZipFolder(spoonletFile);
-		} catch (IOException e) {
-			env.report(null, Level.ERROR, "Unable to load spoonlet: " + e.getMessage());
-			LOGGER.debug(e.getMessage(), e);
-			return;
-		}
-		List<SpoonResource> spoonletIndex = new ArrayList<SpoonResource>();
-		SpoonFile configFile = null;
-		for (SpoonFile file : folder.getAllFiles()) {
-			if (file.isJava()) {
-				spoonletIndex.add(file);
-			} else if (file.getName().endsWith("spoon.xml")) {
-				// Loading spoonlet properties
-				configFile = file;
-			}
-		}
-
-		if (configFile == null) {
-			env.report(null, Level.ERROR, "No configuration file in spoonlet " + spoonletFile.getName());
-		} else {
-			try {
-				XMLReader xr = XMLReaderFactory.createXMLReader();
-				SpoonletXmlHandler loader = new SpoonletXmlHandler(factory, this, spoonletIndex);
-				xr.setContentHandler(loader);
-				InputStream stream = configFile.getContent();
-				xr.parse(new InputSource(stream));
-				stream.close();
-			} catch (SAXException e) {
-				LOGGER.error(e.getMessage(), e);
-			} catch (IOException e) {
-				LOGGER.error(e.getMessage(), e);
-			}
-		}
 	}
 
 	/**
