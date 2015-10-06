@@ -59,3 +59,38 @@ entries:
           platform: all
           product: all
           version: all
+
+    - title: Spoon Meta model
+      audience: writers, designers
+      platform: all
+      product: all
+      version: all
+
+      items:
+        - title: Structural elements
+          url: /structural_elements.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Code elements
+          url: /code_elements.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: References
+          url: /references.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Create elements with factories
+          url: /factories.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
