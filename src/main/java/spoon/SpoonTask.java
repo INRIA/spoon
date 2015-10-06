@@ -87,10 +87,6 @@ public class SpoonTask extends Java {
 
 	File destination;
 
-	File spoonlet;
-
-	Vector<FileSet> spoonletfileset = new Vector<FileSet>();
-
 	List<ProcessorType> processorTypes = new ArrayList<ProcessorType>();
 
 	File properties;
@@ -149,10 +145,6 @@ public class SpoonTask extends Java {
 	 */
 	public void addTemplateSet(FileSet set) {
 		templatefilesets.addElement(set);
-	}
-
-	public void addSpoonletSet(FileSet set) {
-		spoonletfileset.addElement(set);
 	}
 
 	/**
@@ -216,26 +208,6 @@ public class SpoonTask extends Java {
 
 		createArg().setValue("--compliance");
 		createArg().setValue("" + javaCompliance);
-
-		// Input directories
-		if ((spoonlet != null) || (spoonletfileset.size() > 0)) {
-			createArg().setValue("-s");
-			String f = "";
-			if (spoonlet != null) {
-				f += spoonlet.getAbsolutePath() + File.pathSeparator;
-			}
-			for (int i = 0; i < spoonletfileset.size(); i++) {
-				FileSet fs = spoonletfileset.elementAt(i);
-				DirectoryScanner ds = fs.getDirectoryScanner(getProject());
-				File dir = fs.getDir(getProject());
-				String[] srcs = ds.getIncludedFiles();
-				for (String element : srcs) {
-					f += dir.getAbsolutePath() + File.separatorChar + element
-							+ File.pathSeparator;
-				}
-			}
-			createArg().setValue(f);
-		}
 
 		// output directory
 		if (output != null) {
@@ -347,16 +319,6 @@ public class SpoonTask extends Java {
 	@Override
 	public void setInput(File input) {
 		this.input = input;
-	}
-
-	/**
-	 * Sets a Spoolet to be deployed.
-	 *
-	 * @param spoonlet
-	 * 		the deployment descriptor file (usually spoon.xml)
-	 */
-	public void setSpoonlet(File spoonlet) {
-		this.spoonlet = spoonlet;
 	}
 
 	/**
