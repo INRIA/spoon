@@ -1,12 +1,12 @@
 {% include linkrefs.html %}
 
-## Overview 
+## Spoon
 
 Spoon is an open-source library that enables you to transform (see below) and analyze Java source code (see example) . Spoon provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification. Spoon takes as input source code and produces transformed source code ready to be compiled.
 
-For documentation, there is the [Spoon technical report](https://hal.inria.fr/hal-01078532) and slides [here](http://www.monperrus.net/martin/lecture-slides-source-code-analysis-and-transformation.pdf).
+- If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact Martin Monperrus for this).
 
-If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. "Spoon v2: Large Scale Source Code Analysis and Transformation for Java". Technical Report hal-01078532, Inria. 2014.
+- If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. “Spoon: A Library for Implementing Analyses and Transformations of Java Source Code”. In Software: Practice and Experience, Wiley-Blackwell, 2015. Doi: 10.1002/spe.2346.
 
 ```latex
 @article{pawlak:hal-01169705,
@@ -19,10 +19,6 @@ If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monpe
   doi = {10.1002/spe.2346},
 }
 ```
-
-If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact [Martin Monperrus](http://www.monperrus.net/martin/) for this).
-
-Do you want to improve this site? pull requests on <https://github.com/INRIA/spoon/tree/website> are welcome!
 
 ## News
 
@@ -41,45 +37,9 @@ Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/
 - September 30, 2013: Spoon 1.6 is released.
 - April 12, 2012: Spoon 1.5 is released.
 
-## Using Spoon
-
-To display the AST of a program contained in sourceFolder:
-
-```bash
-$ java -jar spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar -i sourceFolder -g
-```
-
-
-To detect empty catch blocks, the following Spoon code has to be written:
-
-```java
-/**
- * Reports warnings when empty catch blocks are found.
- */
-public class CatchProcessor extends AbstractProcessor<CtCatch> {
-
-	public List<CtCatch> emptyCatchs = new ArrayList<CtCatch>();
-
-	public void process(CtCatch element) {
-		if (element.getBody().getStatements().size() == 0) {
-			emptyCatchs.add(element);
-			getFactory().getEnvironment().report(this, Severity.WARNING,
-					element, "empty catch clause");
-		}
-	}
-
-}
-```
-
-and launched as follows (the main class is spoon.Launcher): 
-
-```bash
-$ java -cp your-bin-folder:spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i sourceFolder -p CatchProcessor
-```
-
-Spoon processes all source files of sourceFolder and writes to the resulting code to the folder "spooned".
-
 ## Download
+
+### Jar file
 
 [v{{site.spoon_release}} JAR](https://gforge.inria.fr/frs/?group_id=73) - [Javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs)
 
