@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;

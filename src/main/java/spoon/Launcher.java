@@ -173,14 +173,6 @@ public class Launcher implements SpoonAPI {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
-			// Verbose
-			sw1 = new Switch("verbose");
-			sw1.setShortFlag('v');
-			sw1.setLongFlag("verbose");
-			sw1.setDefault("false");
-			sw1.setHelp("Argument deprecated, see the argument level. " + "Output messages about what the compiler is doing.");
-			jsap.registerParameter(sw1);
-
 			// Tabs
 			sw1 = new Switch("tabs");
 			sw1.setLongFlag("tabs");
@@ -203,13 +195,6 @@ public class Launcher implements SpoonAPI {
 			opt2.setStringParser(JSAP.STRING_PARSER);
 			opt2.setDefault(Level.OFF.toString());
 			jsap.registerParameter(opt2);
-
-			// Super Verbose
-			sw1 = new Switch("debug");
-			sw1.setLongFlag("vvv");
-			sw1.setDefault("false");
-			sw1.setHelp("Argument deprecated, see the argument level. Generate all debugging info.");
-			jsap.registerParameter(sw1);
 
 			// Auto-import
 			sw1 = new Switch("imports");
@@ -406,13 +391,6 @@ public class Launcher implements SpoonAPI {
 		// environment initialization
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
-		final boolean debug = jsapActualArgs.getBoolean("debug");
-		final boolean verbose = jsapActualArgs.getBoolean("verbose");
-		if (debug) {
-			environment.setLevel("DEBUG");
-		} else if (verbose) {
-			environment.setLevel("INFO");
-		}
 		LOGGER.setLevel(environment.getLevel());
 		environment.setXmlRootFolder(jsapActualArgs.getFile("properties"));
 

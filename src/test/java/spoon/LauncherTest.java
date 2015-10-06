@@ -1,19 +1,18 @@
 package spoon;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.compiler.Environment;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 
-public class LauncherTest extends TestCase {
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
+public class LauncherTest {
 
 	@Test
 	public void testInitEnvironmentDefault() throws Exception {
@@ -26,7 +25,7 @@ public class LauncherTest extends TestCase {
 		Assert.assertFalse(environment.isAutoImports());
 		Assert.assertFalse(environment.isUsingTabulations());
 		Assert.assertFalse(environment.isPreserveLineNumbers());
-		Assert.assertEquals(4, environment.getTabulationSize());
+		assertEquals(4, environment.getTabulationSize());
 		Assert.assertTrue(environment.isCopyResources());
 
 		JavaOutputProcessor processor = (JavaOutputProcessor) environment.getDefaultFileGenerator();
@@ -44,7 +43,7 @@ public class LauncherTest extends TestCase {
 
 		// Main class of Spoon who contain initEnvironment method.
 		final Launcher launcher = new Launcher();
-		launcher.setArgs("--tabs --tabsize 42 --compliance 5 --verbose --with-imports -r --lines -o spooned2 -i src/main/java --encoding UTF-16".split(" "));
+		launcher.setArgs("--tabs --tabsize 42 --compliance 5 --with-imports -r --lines -o spooned2 -i src/main/java --encoding UTF-16".split(" "));
 		launcher.processArguments();
 
 		final Environment environment = launcher.getEnvironment();
@@ -53,8 +52,8 @@ public class LauncherTest extends TestCase {
 		Assert.assertTrue(environment.isAutoImports());
 		Assert.assertTrue(environment.isUsingTabulations());
 		Assert.assertTrue(environment.isPreserveLineNumbers());
-		Assert.assertEquals(42, environment.getTabulationSize());
-		Assert.assertEquals(5, environment.getComplianceLevel());
+		assertEquals(42, environment.getTabulationSize());
+		assertEquals(5, environment.getComplianceLevel());
 		Assert.assertFalse(environment.isCopyResources());
 
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
