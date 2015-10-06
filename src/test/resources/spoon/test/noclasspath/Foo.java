@@ -5,7 +5,7 @@ public class Foo extends Unknown {
 		Unknown x = null;
 		x.method();
 	}
-	
+
 	void m1() throws UnknownException {
 		// x is not known
 		// as the other ones as well
@@ -16,7 +16,7 @@ public class Foo extends Unknown {
 		Unknown x = null;
 		x.first().second().third();
 	}
-	
+
 	void m3(){
 		int x = first().field; // field after call
 	}

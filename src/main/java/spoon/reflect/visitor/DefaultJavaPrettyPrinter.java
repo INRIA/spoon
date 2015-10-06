@@ -1217,7 +1217,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			// It's a method invocation
-			if (invocation.getExecutable().isStatic()) {
+			if (invocation.getExecutable().isStatic() && invocation.getExecutable().getDeclaringType() != null) {
 				CtTypeReference<?> type = invocation.getExecutable().getDeclaringType();
 				context.ignoreGenerics = true;
 				scan(type);
