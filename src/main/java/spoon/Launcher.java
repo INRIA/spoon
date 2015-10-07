@@ -32,10 +32,13 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
@@ -69,6 +72,8 @@ public class Launcher implements SpoonAPI {
 	private SpoonCompiler modelBuilder;
 
 	private String[] commandLineArgs = new String[0];
+
+	private Filter<CtType<?>> typeFilter;
 
 	/**
 	 * Contains the arguments accepted by this launcher (available after
@@ -371,6 +376,15 @@ public class Launcher implements SpoonAPI {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
+			// Generate only java files specified.
+			opt2 = new FlaggedOption("generate-files");
+			opt2.setShortFlag('f');
+			opt2.setLongFlag("generate-files");
+			opt2.setHelp("Generate only java files specified by their fully qualified name and separated by ':'. This argument only works when your output-type is specified at classes.");
+			opt2.setStringParser(JSAP.STRING_PARSER);
+			opt2.setRequired(false);
+			jsap.registerParameter(opt2);
+
 			return jsap;
 		} catch (JSAPException e) {
 			throw new SpoonException(e.getMessage(), e);
@@ -404,6 +418,10 @@ public class Launcher implements SpoonAPI {
 		environment.setGenerateJavadoc(jsapActualArgs.getBoolean("generate-javadoc"));
 
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
+
+		if (getArguments().getString("generate-files") != null) {
+			setFilteringOutputSource(getArguments().getString("generate-files").split(File.pathSeparator));
+		}
 
 		// now we are ready to create a spoon compiler
 		modelBuilder = createCompiler();
@@ -678,7 +696,7 @@ public class Launcher implements SpoonAPI {
 		long tstart = System.currentTimeMillis();
 		try {
 			OutputType outputType = OutputType.fromString(jsapActualArgs.getString("output-type"));
-			modelBuilder.generateProcessedSourceFiles(outputType);
+			modelBuilder.generateProcessedSourceFiles(outputType, typeFilter);
 		} catch (Exception e) {
 			throw new SpoonException(e);
 		}
@@ -717,6 +735,26 @@ public class Launcher implements SpoonAPI {
 	public void setSourceOutputDirectory(File outputDirectory) {
 		modelBuilder.setSourceOutputDirectory(outputDirectory);
 		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory, getEnvironment()));
+	}
+
+	@Override
+	public void setFilteringOutputSource(Filter<CtType<?>> typeFilter) {
+		this.typeFilter = typeFilter;
+	}
+
+	@Override
+	public void setFilteringOutputSource(final String... names) {
+		typeFilter = new AbstractFilter<CtType<?>>(CtType.class) {
+			@Override
+			public boolean matches(CtType<?> element) {
+				for (String generateFile : names) {
+					if (generateFile.equals(element.getQualifiedName())) {
+						return true;
+					}
+				}
+				return false;
+			}
+		};
 	}
 
 	@Override

@@ -4,7 +4,9 @@ import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.Filter;
 
 import java.io.File;
 
@@ -38,6 +40,22 @@ public interface SpoonAPI {
 	 * 		{@link File} for output directory.
 	 */
 	void setSourceOutputDirectory(File outputDirectory);
+
+	/**
+	 * Applies a filter when the output-type is defined on classes.
+	 *
+	 * @param typeFilter
+	 * 		Filter on CtType to know which type Spoon must print.
+	 */
+	void setFilteringOutputSource(Filter<CtType<?>> typeFilter);
+
+	/**
+	 * Creates a filter from names in argument when the output-type is defined on classes.
+	 *
+	 * @param names
+	 * 		Names of class in fully qualified name to know which type Spoon must print.
+	 */
+	void setFilteringOutputSource(String... names);
 
 	/**
 	 * Sets the output directory for binary generated.
@@ -110,5 +128,4 @@ public interface SpoonAPI {
 	 * Creates a new Spoon compiler (for building the model)
 	 */
 	SpoonCompiler createCompiler();
-
 }

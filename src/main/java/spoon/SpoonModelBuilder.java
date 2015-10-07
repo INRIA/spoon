@@ -25,7 +25,9 @@ import java.util.Set;
 import spoon.compiler.SpoonResource;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.Filter;
 
 /**
  * Responsible for building a spoon model from Java source code.
@@ -163,6 +165,18 @@ public interface SpoonModelBuilder {
 	 * 		the output method
 	 */
 	void generateProcessedSourceFiles(OutputType outputType);
+
+	/**
+	 * Generates the source code associated to the classes stored in this
+	 * compiler's factory. The source code is generated in the directory given
+	 * by {@link #getSourceOutputDirectory()}.
+	 *
+	 * @param outputType
+	 * 		the output method
+	 * @param typeFilter
+	 * 		Filter on CtType to know which type Spoon must print.
+	 */
+	void generateProcessedSourceFiles(OutputType outputType, Filter<CtType<?>> typeFilter);
 
 	/**
 	 * Generates the bytecode associated to the classes stored in this
