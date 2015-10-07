@@ -17,9 +17,6 @@
 
 package spoon.support.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -95,6 +92,9 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
 
 public class SignaturePrinter implements CtVisitor {
 
@@ -602,6 +602,19 @@ public class SignaturePrinter implements CtVisitor {
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 		write(ref.getQualifiedName());
+		if (ref.getBounds() != null && !ref.getBounds().isEmpty()) {
+			if (ref.isUpper()) {
+				write(" extends ");
+			} else {
+				write(" super ");
+			}
+			for (CtTypeReference<?> b : ref.getBounds()) {
+				scan(b);
+				write(", ");
+			}
+			clearLast();
+			clearLast();
+		}
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
