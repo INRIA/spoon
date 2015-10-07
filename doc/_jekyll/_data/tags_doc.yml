@@ -4,3 +4,4 @@ allowed-tags:
   - meta-model
   - quering
   - processor
+  - template

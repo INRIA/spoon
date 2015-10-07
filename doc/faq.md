@@ -38,9 +38,6 @@ for(CtSimpleType s : factory.Class().getAll()) {
 {% endhighlight %}
 
 ## Advanced
-### How to implement program transformations with well-typed templates?
-
-See the section Generative Programming with Spoon of the Tutorial.
 
 ### How to prevent Annotation processors from consuming the annotations that they process?
 
