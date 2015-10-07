@@ -3,3 +3,4 @@ allowed-tags:
   - usage
   - meta-model
   - quering
+  - processor
