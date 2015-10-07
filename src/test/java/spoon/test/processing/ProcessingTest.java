@@ -1,13 +1,15 @@
 package spoon.test.processing;
 
-import static org.junit.Assert.assertEquals;
-import static spoon.test.TestUtils.build;
-
 import org.junit.Test;
-
+import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static spoon.test.TestUtils.build;
 
 public class ProcessingTest {
 
@@ -41,4 +43,14 @@ public class ProcessingTest {
 		}
 	}
 
+	@Test
+	public void testProcessorNotFoundThrowAnException() throws Exception {
+		try {
+			new Launcher().run(new String[] {
+					"-p", "fr.inria.gforge.spoon.MakeAnAwesomeTacosProcessor"
+			});
+			fail("The processor doesn't exist. We must throw an exception.");
+		} catch (SpoonException ignore) {
+		}
+	}
 }

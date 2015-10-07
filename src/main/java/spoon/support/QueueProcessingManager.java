@@ -17,12 +17,8 @@
 
 package spoon.support;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import org.apache.log4j.Level;
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
@@ -30,6 +26,11 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.util.Timer;
 import spoon.support.visitor.ProcessingVisitor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * This processing manager implements a blocking processing policy that consists
@@ -77,7 +78,7 @@ public class QueueProcessingManager implements ProcessingManager {
 		try {
 			addProcessor((Class<? extends Processor<?>>) Thread.currentThread().getContextClassLoader().loadClass(qualifiedName));
 		} catch (ClassNotFoundException e) {
-			factory.getEnvironment().report(null, Level.ERROR, "Unable to load processor \"" + qualifiedName + "\" - Check your classpath. Did you use the --precompile option?");
+			throw new SpoonException("Unable to load processor \"" + qualifiedName + "\" - Check your classpath. Did you use the --precompile option?", e);
 		}
 	}
 
