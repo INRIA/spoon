@@ -1,21 +1,26 @@
 package spoon.test.fieldaccesses;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static spoon.test.TestUtils.build;
-
-import java.util.List;
-
 import org.junit.Test;
-
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.TestUtils;
+
+import java.util.List;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static spoon.test.TestUtils.build;
 
 public class FieldAccessTest {
 
@@ -82,7 +87,7 @@ public class FieldAccessTest {
 		assertEquals(
 				"int",
 				expr.getType().getSimpleName());
-		
+
 		// in the model the top-most field access is .length get(0)
 		// and the second one is ".data" get(1)
 		CtFieldAccess<?> fa = expr.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class)).get(1);
@@ -93,12 +98,12 @@ public class FieldAccessTest {
 		assertEquals(
 				"java.lang.Object[]",
 				fa.getType().toString());
-		
+
 		// testing the proxy method setAssignment/getAssignment on local variables
 		var.setAssignment(null);
 		assertEquals(null, var.getAssignment());
 		assertEquals("int a", var.toString());
-		
+
 		// testing the proxy method setAssignment/getAssignment on fields
 		CtField<?> field = type.getElements(
 				new TypeFilter<CtField<?>>(CtField.class)).get(0);
@@ -108,7 +113,7 @@ public class FieldAccessTest {
 		assertEquals("java.lang.Object[] data;", field.toString());
 
 	}
-	
+
 	@Test
 	public void testTargetedAccessPosition() throws Exception{
 		CtType<?> type = build("spoon.test.fieldaccesses", "TargetedAccessPosition");
@@ -116,17 +121,36 @@ public class FieldAccessTest {
 				new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
 		//vars is [t.ta.ta, t.ta]
 		assertEquals(2, vars.size());
-		
+
 		assertEquals(vars.get(1), vars.get(0).getTarget());
-		
+
 		// 6 is length(t.ta.ta) - 1
 		assertEquals(6, vars.get(0).getPosition().getSourceEnd() - vars.get(0).getPosition().getSourceStart());
-		
+
 		// 3 is length(t.ta) - 1
 		assertEquals(3, vars.get(0).getTarget().getPosition().getSourceEnd() - vars.get(0).getTarget().getPosition().getSourceStart());
 
 		// 0 is length(t)-1
 		assertEquals(0, ((CtFieldAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() -
 				((CtFieldAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
+	}
+
+	@Test
+	public void testFieldAccessInLambda() throws Exception {
+		Factory build = null;
+		try {
+			build = TestUtils.build(MyClass.class);
+		} catch (NullPointerException ignore) {
+			fail();
+		}
+
+		final CtFieldAccess logFieldAccess = Query.getElements(build, new TypeFilter<>(CtFieldAccess.class)).get(0);
+
+		assertEquals(Logger.class, logFieldAccess.getType().getActualClass());
+		assertEquals("LOG", logFieldAccess.getVariable().getSimpleName());
+		assertEquals(MyClass.class, logFieldAccess.getVariable().getDeclaringType().getActualClass());
+
+		String expectedLambda = "() -> {\n" + "    spoon.test.fieldaccesses.MyClass.LOG.info(\"bla\");\n" + "}";
+		assertEquals(expectedLambda, logFieldAccess.getParent(CtLambda.class).toString());
 	}
 }
