@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * @author Lionel Seinturier
@@ -28,7 +29,7 @@ public class TypeReferenceTest {
 
 	@Test
 	public void testGetAllExecutablesForInterfaces() throws Exception {
-		
+
 		/*
 		 * This test has been written because getAllExecutables wasn't recursing
 		 * into the type hierarchy for interfaces.
@@ -36,16 +37,10 @@ public class TypeReferenceTest {
 
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
-		spoon.createCompiler(
-				factory,
-				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/reference/Foo.java"))
-				.build();
+		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/java/spoon/test/reference/Foo.java")).build();
 
-		CtInterface<Foo> foo =
-				factory.Package().get("spoon.test.reference").getType("Foo");
-		Collection<CtExecutableReference<?>> execs =
-				foo.getReference().getAllExecutables();
+		CtInterface<Foo> foo = factory.Package().get("spoon.test.reference").getType("Foo");
+		Collection<CtExecutableReference<?>> execs = foo.getReference().getAllExecutables();
 
 		assertEquals(2, execs.size());
 	}
@@ -62,14 +57,12 @@ public class TypeReferenceTest {
 		String referencedQualifiedName = packageName + "." + "ReferencedClass";
 
 		// we only create the model for ReferecingClass
-		List<SpoonResource> fileToBeSpooned = SpoonResourceHelper
-				.resources("./src/test/resources/reference-test/input/" + qualifiedName.replace('.', '/') + ".java");
+		List<SpoonResource> fileToBeSpooned = SpoonResourceHelper.resources("./src/test/resources/reference-test/input/" + qualifiedName.replace('.', '/') + ".java");
 		comp.addInputSources(fileToBeSpooned);
 		assertEquals(1, fileToBeSpooned.size()); // for ReferecingClass
 
 		// Spoon requires the binary version of ReferencedClass
-		List<SpoonResource> classpath = SpoonResourceHelper
-				.resources("./src/test/resources/reference-test/ReferenceTest.jar");
+		List<SpoonResource> classpath = SpoonResourceHelper.resources("./src/test/resources/reference-test/ReferenceTest.jar");
 		String[] dependencyClasspath = new String[] { classpath.get(0).getPath() };
 
 		factory.getEnvironment().setSourceClasspath(dependencyClasspath);
@@ -83,8 +76,7 @@ public class TypeReferenceTest {
 
 		// now we retrieve the reference to ReferencedClass
 		CtTypeReference referencedType = null;
-		ReferenceTypeFilter<CtTypeReference> referenceTypeFilter = new ReferenceTypeFilter<CtTypeReference>(
-				CtTypeReference.class);
+		ReferenceTypeFilter<CtTypeReference> referenceTypeFilter = new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class);
 		List<CtTypeReference> elements = Query.getReferences(theClass, referenceTypeFilter);
 		for (CtTypeReference reference : elements) {
 			if (reference.getQualifiedName().equals(referencedQualifiedName)) {
@@ -102,12 +94,12 @@ public class TypeReferenceTest {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void doNotCloseLoader() throws Exception {
-		
+
 		/* Given the following scenario:
 		 * 	- ClassA has a field of ClassB.
 		 *	- ClassB has a field of ClassC.
 		 * 	- Spoon only models ClassA.
-		 * 
+		 *
 		 * We want to get the field of ClassB, which should be accessible because
 		 * the definitions of ClassB and ClassC were provided in the class path.
 		 */
@@ -119,14 +111,12 @@ public class TypeReferenceTest {
 		String referenceQualifiedName = "spoontest.b.ClassB";
 
 		// we only create the model for ClassA
-		List<SpoonResource> fileToBeSpooned = SpoonResourceHelper
-				.resources("./src/test/resources/reference-test-2/" + qualifiedName.replace('.', '/') + ".java");
+		List<SpoonResource> fileToBeSpooned = SpoonResourceHelper.resources("./src/test/resources/reference-test-2/" + qualifiedName.replace('.', '/') + ".java");
 		comp.addInputSources(fileToBeSpooned);
 		assertEquals(1, fileToBeSpooned.size()); // for ClassA
 
 		// Spoon requires the binary version of dependencies
-		List<SpoonResource> classpath = SpoonResourceHelper
-				.resources("./src/test/resources/reference-test-2/ReferenceTest2.jar");
+		List<SpoonResource> classpath = SpoonResourceHelper.resources("./src/test/resources/reference-test-2/ReferenceTest2.jar");
 		String[] dependencyClasspath = new String[] { classpath.get(0).getPath() };
 
 		factory.getEnvironment().setSourceClasspath(dependencyClasspath);
@@ -166,11 +156,37 @@ public class TypeReferenceTest {
 		assertFalse(nullRef.isSubtypeOf(ref));
 
 	}
-	
-    @Test
-    public void unboxTest() {
-        Factory factory = new Launcher().createFactory();
-        CtTypeReference<Boolean> boxedBoolean = factory.Class().createReference(Boolean.class);
-        assertEquals(boxedBoolean.unbox().getActualClass(), boolean.class);
-    }
+
+	@Test
+	public void unboxTest() {
+		Factory factory = new Launcher().createFactory();
+		CtTypeReference<Boolean> boxedBoolean = factory.Class().createReference(Boolean.class);
+		assertEquals(boxedBoolean.unbox().getActualClass(), boolean.class);
+	}
+
+	@Test
+	public void testToStringEqualityBetweenTwoGenericTypeDifferent() throws Exception {
+		// contract: generic type references with different bounds should not be considered equals
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput", "--noclasspath"});
+		launcher.addInputResource("src/test/java/spoon/test/reference/TypeReferenceTest.java");
+		launcher.run();
+
+		Factory factory = launcher.getFactory();
+		final CtTypeReference<?> firstRef = factory.Type().get(A.Tacos.class).getFormalTypeParameters().get(0);
+		final CtTypeReference<?> secondRef = factory.Type().get(B.Tacos.class).getFormalTypeParameters().get(0);
+
+		assertNotEquals(firstRef.toString(), secondRef.toString());
+		assertNotEquals(firstRef, secondRef);
+	}
+
+	class A {
+		class Tacos<K> {
+		}
+	}
+
+	class B {
+		class Tacos<K extends A> {
+		}
+	}
 }
