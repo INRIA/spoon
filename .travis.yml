@@ -1,6 +1,8 @@
 language: java
 
-install: mvn test javadoc:javadoc site
+sudo: false
+
+install: mvn verify javadoc:javadoc site
 
 jdk:
   - oraclejdk8
