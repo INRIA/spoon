@@ -17,6 +17,8 @@
 
 package spoon.reflect.code;
 
+import spoon.reflect.reference.CtTypeReference;
+
 /**
  * This code element defines a concrete invocation.
  *
@@ -26,4 +28,11 @@ package spoon.reflect.code;
 public interface CtInvocation<T>
 		extends CtAbstractInvocation<T>, CtStatement,
 				CtTargetedExpression<T, CtExpression<?>> {
+	/**
+	 * Return the type returned by the invocation. If the invocation is to a
+	 * method where the returned type is a generic type, this method returns
+	 * the actual type bound to this particular invocation.
+	 */
+	@Override
+	CtTypeReference<T> getType();
 }
