@@ -24,7 +24,6 @@ import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.support.util.Timer;
 import spoon.support.visitor.ProcessingVisitor;
 
 import java.util.ArrayList;
@@ -104,21 +103,6 @@ public class QueueProcessingManager implements ProcessingManager {
 		return visitor;
 	}
 
-	public boolean isToBeApplied(Class<? extends Processor<?>> type) {
-		for (Processor<?> p : getProcessors()) {
-			if (p.getClass() == type) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void process() {
-		Timer.start("process");
-		process(factory.Package().getRootPackage());
-		Timer.stop("process");
-	}
-
 	public void process(Collection<? extends CtElement> elements) {
 		Processor<?> p;
 		while ((p = getProcessors().poll()) != null) {
@@ -155,9 +139,6 @@ public class QueueProcessingManager implements ProcessingManager {
 		factory.getEnvironment().setManager(this);
 	}
 
-	@Override
-	public void clear() {
-		getProcessors().clear();
-	}
+
 
 }
