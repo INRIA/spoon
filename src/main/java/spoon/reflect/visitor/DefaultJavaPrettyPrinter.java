@@ -17,16 +17,6 @@
 
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Stack;
-
 import org.apache.log4j.Level;
 import spoon.compiler.Environment;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -77,8 +67,8 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
@@ -119,6 +109,16 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.util.SortedList;
 import spoon.support.visitor.SignaturePrinter;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Stack;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -1790,8 +1790,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			} else {
 				write(" super ");
 			}
-			for (CtTypeReference<?> b : ref.getBounds()) {
-				scan(b);
+			for (Map.Entry<CtTypeReference<?>, Boolean> entry : ref.getBoundsWithCircular().entrySet()) {
+				if (!entry.getValue()) {
+					scan(entry.getKey());
+				} else {
+					write(entry.getKey().getQualifiedName());
+				}
 				write(" & ");
 			}
 			removeLastChar();

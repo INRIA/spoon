@@ -17,9 +17,6 @@
 
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -65,8 +62,8 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
@@ -93,6 +90,10 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * This visitor implements a deep-search scan on the metamodel.
@@ -671,7 +672,11 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ref.getPackage());
 		scan(ref.getDeclaringType());
 		scanReferences(ref.getActualTypeArguments());
-		scanReferences(ref.getBounds());
+		for (Map.Entry<CtTypeReference<?>, Boolean> entry : ref.getBoundsWithCircular().entrySet()) {
+			if (!entry.getValue()) {
+				scan(entry.getKey());
+			}
+		}
 		exitReference(ref);
 	}
 

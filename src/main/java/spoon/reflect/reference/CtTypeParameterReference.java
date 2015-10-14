@@ -18,6 +18,7 @@
 package spoon.reflect.reference;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This interface defines a reference to a
@@ -29,6 +30,11 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 * Gets the bounds (aka generics) of the referenced parameter.
 	 */
 	List<CtTypeReference<?>> getBounds();
+
+	/**
+	 * Gets the bounds (aka generics) of the referenced parameter with the circular information.
+	 */
+	Map<CtTypeReference<?>, Boolean> getBoundsWithCircular();
 
 	/**
 	 * Returns {@code true} if the bounds are upper bounds.
@@ -49,6 +55,11 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 * Adds a bound.
 	 */
 	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
+
+	/**
+	 * Adds a bound with the posibility to mark it as a circular reference.
+	 */
+	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound, boolean isCircular);
 
 	/**
 	 * Removes a bound.
