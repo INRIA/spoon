@@ -84,7 +84,10 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 					statements.getStatements().size()
 							+ BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		this.statements.addAll(0, statements.getStatements());
+		for (CtStatement statement : statements.getStatements()) {
+			statement.setParent(this);
+			this.statements.add(0, statement);
+		}
 		return (T) this;
 	}
 
@@ -107,6 +110,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			// CtBlock hasn't a parent. So, it isn't in a constructor.
 		}
 		ensureModifiableStatementsList();
+		statement.setParent(this);
 		this.statements.add(0, statement);
 		return (T) this;
 	}

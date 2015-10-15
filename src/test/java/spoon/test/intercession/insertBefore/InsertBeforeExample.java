@@ -1,6 +1,10 @@
 package spoon.test.intercession.insertBefore;
 
 class InsertBeforeExample {
+    public InsertBeforeExample() {
+        super();
+    }
+
     int ifWithoutBraces() {
         // without braces
         if (1==0+1)
