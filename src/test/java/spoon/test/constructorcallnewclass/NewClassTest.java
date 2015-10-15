@@ -13,6 +13,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
 import spoon.test.constructorcallnewclass.testclasses.Bar;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
+import spoon.test.constructorcallnewclass.testclasses.Foo2;
 
 import java.util.List;
 
@@ -123,5 +124,20 @@ public class NewClassTest {
 
 	private void assertType(Class<?> typeExpected, CtNewClass<?> newClass) {
 		assertEquals("New class is typed by the class of the constructor", typeExpected, newClass.getType().getActualClass());
+	}
+
+	@Test
+	public void testMoreThan9NewClass() throws Exception {
+		final Factory build = TestUtils.build(Foo2.class);
+		final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo2.class);
+		List<CtNewClass<?>> elements = foo.getElements(new AbstractFilter<CtNewClass<?>>(CtNewClass.class) {
+			@Override
+			public boolean matches(CtNewClass<?> element) {
+				return true;
+			}
+		});
+		assertEquals(13, elements.size());
+		assertEquals(Foo2.class.getCanonicalName() + "$12", elements.get(11).getAnonymousClass().getQualifiedName());
+		assertEquals(Foo2.class.getCanonicalName() + "$12$1", elements.get(12).getAnonymousClass().getQualifiedName());
 	}
 }

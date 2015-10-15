@@ -1002,7 +1002,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	private String computeAnonymousName(SourceTypeBinding binding) {
 		final String poolName = String.valueOf(binding.constantPoolName());
 		final int lastIndexSeparator = poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
-		return poolName.substring(lastIndexSeparator + 1, lastIndexSeparator + 2);
+		return poolName.substring(lastIndexSeparator + 1, poolName.length());
 	}
 
 	@Override
