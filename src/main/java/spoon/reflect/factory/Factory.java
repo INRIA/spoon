@@ -40,4 +40,6 @@ public interface Factory {
 	EvalFactory Eval(); // used 4 times
 
 	ConstructorFactory Constructor(); // used 3 times
+
+	InternalFactory Internal();
 }

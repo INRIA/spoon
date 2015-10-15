@@ -17,9 +17,6 @@
 
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -65,8 +62,8 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
@@ -84,6 +81,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -93,6 +91,9 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+
+import java.lang.annotation.Annotation;
+import java.util.Collection;
 
 /**
  * This visitor implements a deep-search scan on the metamodel.
@@ -681,6 +682,10 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getDeclaringType());
 		scanReferences(reference.getActualTypeArguments());
 		exitReference(reference);
+	}
+
+	@Override
+	public <T> void visitCtCircularTypeReference(CtCircularTypeReference reference) {
 	}
 
 	@Override
