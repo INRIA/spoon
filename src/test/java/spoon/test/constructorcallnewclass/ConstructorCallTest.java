@@ -2,12 +2,18 @@ package spoon.test.constructorcallnewclass;
 
 import org.junit.Before;
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.test.TestUtils;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
+import spoon.test.constructorcallnewclass.testclasses.Panini;
 
 import java.util.List;
 
@@ -16,10 +22,16 @@ import static org.junit.Assert.assertTrue;
 
 public class ConstructorCallTest {
 	private List<CtConstructorCall<?>> constructorCalls;
+	private List<CtConstructorCall<?>> constructorCallsPanini;
 
 	@Before
 	public void setUp() throws Exception {
-		final Factory factory = TestUtils.build(Foo.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/" + Foo.class.getCanonicalName().replace(".", "/") + ".java");
+		launcher.addInputResource("./src/test/java/" + Panini.class.getCanonicalName().replace(".", "/") + ".java");
+		launcher.setSourceOutputDirectory("./target/spooned");
+		launcher.run();
+		final Factory factory = launcher.getFactory();
 		final CtClass<?> foo = (CtClass<?>) factory.Type().get(Foo.class);
 		constructorCalls = foo.getElements(new AbstractFilter<CtConstructorCall<?>>(CtConstructorCall.class) {
 			@Override
@@ -27,6 +39,8 @@ public class ConstructorCallTest {
 				return true;
 			}
 		});
+		final CtType<Panini> panini = factory.Type().get(Panini.class);
+		constructorCallsPanini = panini.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class));
 	}
 
 	@Test
@@ -59,6 +73,21 @@ public class ConstructorCallTest {
 		assertType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
 		assertHasParameters(1, constructorCall);
+	}
+
+	@Test
+	public void testConstructorCallWithGenericArray() throws Exception {
+		final CtConstructorCall<?> ctConstructorCall = constructorCallsPanini.get(0);
+
+		assertEquals(1, ctConstructorCall.getType().getActualTypeArguments().size());
+		final CtTypeReference<?> implicitArray = ctConstructorCall.getType().getActualTypeArguments().get(0);
+		assertTrue(implicitArray instanceof CtImplicitArrayTypeReference);
+		final CtImplicitArrayTypeReference implicitArrayTyped = (CtImplicitArrayTypeReference) implicitArray;
+		assertEquals("", implicitArrayTyped.toString());
+		assertEquals("Array", implicitArrayTyped.getSimpleName());
+		assertTrue(implicitArrayTyped.getComponentType() instanceof CtImplicitTypeReference);
+		assertEquals("", implicitArrayTyped.getComponentType().toString());
+		assertEquals("AtomicLong", implicitArrayTyped.getComponentType().getSimpleName());
 	}
 
 	private void assertHasParameters(int sizeExpected, CtConstructorCall<?> constructorCall) {

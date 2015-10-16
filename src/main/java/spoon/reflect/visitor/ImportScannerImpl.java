@@ -1,12 +1,5 @@
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
-
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
@@ -19,8 +12,16 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A scanner that calculates the imports for a given model.
@@ -140,7 +141,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public boolean isImported(CtTypeReference<?> ref) {
-		if (imports.containsKey(ref.getSimpleName())) {
+		if (!(ref instanceof CtImplicitTypeReference) && imports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = imports.get(ref.getSimpleName());
 			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
 				return true;

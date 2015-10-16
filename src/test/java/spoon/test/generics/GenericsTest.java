@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -111,8 +112,10 @@ public class GenericsTest {
 		CtField<?> f = clazz.getFields().get(0);
 		CtConstructorCall<?> val = (CtConstructorCall<?>) f.getDefaultExpression();
 
-		// the diamond is resolved to String
-		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).toString());
+		// the diamond is resolved to String but we don't print it, so we use the fully qualified name.
+		assertTrue(val.getType().getActualTypeArguments().get(0) instanceof CtImplicitTypeReference);
+		assertEquals("", val.getType().getActualTypeArguments().get(0).toString());
+		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).getQualifiedName());
 		assertEquals("new java.util.ArrayList<>()",val.toString());
 	}
 

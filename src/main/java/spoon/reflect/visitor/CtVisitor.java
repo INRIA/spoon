@@ -77,9 +77,11 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.internal.CtCircularTypeReference;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -141,6 +143,11 @@ public interface CtVisitor {
 	 * Visits a reference to an array type.
 	 */
 	<T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference);
+
+	/**
+	 * Visits a reference to an implicit array type.
+	 */
+	<T> void visitCtImplicitArrayTypeReference(CtImplicitArrayTypeReference<T> reference);
 
 	/**
 	 * Visits an assert.
@@ -392,7 +399,12 @@ public interface CtVisitor {
 	/**
 	 * Visits a circular reference.
 	 */
-	<T> void visitCtCircularTypeReference(CtCircularTypeReference reference);
+	void visitCtCircularTypeReference(CtCircularTypeReference reference);
+
+	/**
+	 * Visits a reference to an implicit type.
+	 */
+	<T> void visitCtImplicitTypeReference(CtImplicitTypeReference<T> reference);
 
 	/**
 	 * Visits a type access.

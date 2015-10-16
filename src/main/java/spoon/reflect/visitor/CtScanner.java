@@ -79,11 +79,13 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -250,6 +252,11 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getComponentType());
 		scanReferences(reference.getActualTypeArguments());
 		exitReference(reference);
+	}
+
+	@Override
+	public <T> void visitCtImplicitArrayTypeReference(CtImplicitArrayTypeReference<T> reference) {
+		visitCtArrayTypeReference(reference);
 	}
 
 	public <T> void visitCtAssert(CtAssert<T> asserted) {
@@ -685,7 +692,12 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	@Override
-	public <T> void visitCtCircularTypeReference(CtCircularTypeReference reference) {
+	public void visitCtCircularTypeReference(CtCircularTypeReference reference) {
+	}
+
+	@Override
+	public <T> void visitCtImplicitTypeReference(CtImplicitTypeReference<T> reference) {
+		visitCtTypeReference(reference);
 	}
 
 	@Override
