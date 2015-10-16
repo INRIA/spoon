@@ -69,8 +69,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		for (CtConstructor<T> c : constructors) {
 			boolean cont = c.getParameters().size() == parameterTypes.length;
 			for (int i = 0; cont && (i < c.getParameters().size()) && (i < parameterTypes.length); i++) {
-				if (!c.getParameters().get(i).getType().getQualifiedName()
-						.equals(parameterTypes[i].getQualifiedName())) {
+				if (!parameterTypes[i].equals(c.getParameters().get(i).getType())) {
 					cont = false;
 				}
 			}
