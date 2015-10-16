@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtReference;
@@ -40,6 +41,7 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
 import spoon.test.TestUtils;
+import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Tacos;
 
 public class GenericsTest {
@@ -432,5 +434,18 @@ public class GenericsTest {
 		final CtMethod<?> m = aFactory.getMethodsByName("newBeer").get(0);
 		final CtConstructorCall constructorCall1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals("new Beer()", constructorCall1.toString());
+	}
+
+	@Test
+	public void testGenericWithExtendsInDeclaration() throws Exception {
+		final Factory build = TestUtils.build(Panini.class);
+		final CtType<Panini> panini = build.Type().get(Panini.class);
+
+		final CtMethod<?> apply = panini.getMethodsByName("apply").get(0);
+		assertEquals(1, apply.getType().getActualTypeArguments().size());
+		assertEquals("? super java.lang.Object", apply.getType().getActualTypeArguments().get(0).toString());
+
+		assertEquals(1, apply.getParameters().get(0).getType().getActualTypeArguments().size());
+		assertEquals("? extends java.lang.Long", apply.getParameters().get(0).getType().getActualTypeArguments().get(0).toString());
 	}
 }

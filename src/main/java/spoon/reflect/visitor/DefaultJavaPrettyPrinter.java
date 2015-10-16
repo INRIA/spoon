@@ -1794,8 +1794,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			write(ref.getQualifiedName());
 		}
-		if ((!context.isInvocation || "?".equals(ref.getSimpleName())) && !(ref.getBounds() == null) && !ref.getBounds().isEmpty() && !((ref.getBounds().size() == 1) && "java.lang.Object"
-				.equals(ref.getBounds().get(0).getQualifiedName()))) {
+		if ((!context.isInvocation || "?".equals(ref.getSimpleName()))
+				&& ref.getBounds() != null
+				&& !ref.getBounds().isEmpty()) {
 			if (ref.isUpper()) {
 				write(" extends ");
 			} else {
