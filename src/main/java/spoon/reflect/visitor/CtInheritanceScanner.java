@@ -97,6 +97,7 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
@@ -761,6 +762,11 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtGenericElementReference(e);
 		scanCtTypeAnnotableReference(e);
 		scanCtVisitable(e);
+	}
+
+	@Override
+	public <T> void visitCtCircularTypeReference(CtCircularTypeReference e) {
+		visitCtTypeParameterReference(e);
 	}
 
 	@Override

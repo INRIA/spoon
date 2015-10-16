@@ -17,19 +17,6 @@
 
 package spoon.support.compiler.jdt;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -151,7 +138,6 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
-
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -213,6 +199,7 @@ import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -224,6 +211,20 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -439,8 +440,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return ref;
 		}
 
-		// Map<TypeBinding, CtTypeReference<?>> bindingCache = new
-		// HashMap<TypeBinding, CtTypeReference<?>>();
+		final Map<TypeBinding, CtTypeReference> bindingCache = new HashMap<TypeBinding, CtTypeReference>();
 
 		public <T> CtTypeReference<T> getTypeReference(TypeBinding binding, TypeReference ref) {
 			CtTypeReference<T> ctRef = getTypeReference(binding);
@@ -544,7 +544,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 				if (bounds && b.superInterfaces != null && b.superInterfaces != Binding.NO_SUPERINTERFACES) {
 					bounds = false;
-					// bindingCache.put(binding, ref);
+					bindingCache.put(binding, ref);
 					for (int i = 0, length = b.superInterfaces.length; i < length; i++) {
 						TypeBinding tb = b.superInterfaces[i];
 						((CtTypeParameterReference) ref).addBound(getTypeReference(tb));
@@ -574,7 +574,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 
 				if (((WildcardBinding) binding).bound != null && ref instanceof CtTypeParameterReference) {
-					((CtTypeParameterReference) ref).addBound(getTypeReference(((WildcardBinding) binding).bound));
+					if (bindingCache.containsKey(((WildcardBinding) binding).bound)) {
+						final CtCircularTypeReference circularRef = factory.Internal().createCircularTypeReference();
+						final CtTypeReference originalRef = bindingCache.get(((WildcardBinding) binding).bound);
+						circularRef.setPackage(originalRef.getPackage());
+						circularRef.setSimpleName(originalRef.getSimpleName());
+						circularRef.setDeclaringType(originalRef.getDeclaringType());
+						circularRef.setActualTypeArguments(originalRef.getActualTypeArguments());
+						circularRef.setTypeAnnotations(originalRef.getTypeAnnotations());
+						((CtTypeParameterReference) ref).addBound(circularRef);
+					} else {
+						((CtTypeParameterReference) ref).addBound(getTypeReference(((WildcardBinding) binding).bound));
+					}
 				}
 			} else if (binding instanceof LocalTypeBinding) {
 				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
@@ -639,7 +650,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 			}
-			// bindingCache.remove(binding);
+			bindingCache.remove(binding);
 			addTypeAnnotationFromBindingToReference(binding, ref);
 			return (CtTypeReference<T>) ref;
 		}

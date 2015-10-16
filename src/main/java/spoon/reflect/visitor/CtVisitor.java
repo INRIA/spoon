@@ -79,6 +79,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -387,6 +388,11 @@ public interface CtVisitor {
 	 * Visits a reference to a type.
 	 */
 	<T> void visitCtTypeReference(CtTypeReference<T> reference);
+
+	/**
+	 * Visits a circular reference.
+	 */
+	<T> void visitCtCircularTypeReference(CtCircularTypeReference reference);
 
 	/**
 	 * Visits a type access.

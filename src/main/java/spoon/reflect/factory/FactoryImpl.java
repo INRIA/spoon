@@ -17,11 +17,6 @@
 
 package spoon.reflect.factory;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
 import spoon.compiler.Environment;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -35,7 +30,13 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.support.DefaultCoreFactory;
+import spoon.support.DefaultInternalFactory;
 import spoon.support.StandardEnvironment;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Implements {@link Factory}
@@ -251,6 +252,16 @@ public class FactoryImpl implements Factory, Serializable {
 			type = new TypeFactory(this);
 		}
 		return type;
+	}
+
+	private transient InternalFactory internal;
+
+	@Override
+	public InternalFactory Internal() {
+		if (internal == null) {
+			internal = new DefaultInternalFactory(this);
+		}
+		return internal;
 	}
 
 	/**

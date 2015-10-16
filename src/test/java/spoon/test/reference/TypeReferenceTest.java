@@ -5,15 +5,19 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,6 +25,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Lionel Seinturier
@@ -178,6 +184,41 @@ public class TypeReferenceTest {
 
 		assertNotEquals(firstRef.toString(), secondRef.toString());
 		assertNotEquals(firstRef, secondRef);
+	}
+
+	@Test
+	public void testRecursiveTypeReference() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/Tacos.java");
+		launcher.setSourceOutputDirectory("./target/spoon-test");
+		launcher.run();
+
+		final CtInvocation<?> inv = Query.getElements(launcher.getFactory(), new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
+			@Override
+			public boolean matches(CtInvocation<?> element) {
+				return !element.getExecutable().isConstructor() && super.matches(element);
+			}
+		}).get(0);
+
+		assertNotNull(inv.getExecutable());
+		final CtTypeReference<?> returnType = inv.getExecutable().getType();
+		assertNotNull(returnType);
+		assertEquals(1, returnType.getActualTypeArguments().size());
+
+		final CtTypeParameterReference genericType = (CtTypeParameterReference) returnType.getActualTypeArguments().get(0);
+		assertNotNull(genericType);
+		assertEquals(1, genericType.getBounds().size());
+
+		final CtTypeReference<?> extendsGeneric = genericType.getBounds().get(0);
+		assertNotNull(extendsGeneric);
+		assertEquals(1, extendsGeneric.getActualTypeArguments().size());
+
+		final CtTypeParameterReference genericExtends = (CtTypeParameterReference) extendsGeneric.getActualTypeArguments().get(0);
+		assertNotNull(genericExtends);
+		assertEquals(1, genericExtends.getBounds().size());
+
+		final CtTypeReference<?> circularRef = genericExtends.getBounds().get(0);
+		assertTrue(circularRef instanceof CtCircularTypeReference);
 	}
 
 	class A {
