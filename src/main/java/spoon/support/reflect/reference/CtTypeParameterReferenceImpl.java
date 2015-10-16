@@ -17,13 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -31,11 +24,20 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> bounds = CtElementImpl.emptyList();
+	Map<CtTypeReference<?>, Boolean> bounds = new HashMap<CtTypeReference<?>, Boolean>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 
 	boolean upper = true;
 
@@ -50,6 +52,11 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public List<CtTypeReference<?>> getBounds() {
+		return new ArrayList<CtTypeReference<?>>(bounds.keySet());
+	}
+
+	@Override
+	public Map<CtTypeReference<?>, Boolean> getBoundsWithCircular() {
 		return bounds;
 	}
 
@@ -60,7 +67,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
-		this.bounds = bounds;
+		for (CtTypeReference<?> bound : bounds) {
+			this.bounds.put(bound, false);
+		}
 		return (T) this;
 	}
 
@@ -115,10 +124,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public <T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		bounds.add(bound);
+		bounds.put(bound, false);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound, boolean isCircular) {
+		bounds.put(bound, isCircular);
 		return (T) this;
 	}
 
