@@ -1,6 +1,7 @@
 package spoon.reflect.factory;
 
 import spoon.reflect.internal.CtCircularTypeReference;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
 
 /**
@@ -18,4 +19,9 @@ public interface InternalFactory {
 	 * Creates a inference type reference.
 	 */
 	<T> CtImplicitTypeReference<T> createImplicitTypeReference();
+
+	/**
+	 * Creates an implicit array type reference.
+	 */
+	<T> CtImplicitArrayTypeReference<T> createImplicitArrayTypeReference();
 }

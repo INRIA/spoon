@@ -95,6 +95,7 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.internal.CtCircularTypeReference;
@@ -388,6 +389,11 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> e) {
 		visitCtTypeReference(e);
+	}
+
+	@Override
+	public <T> void visitCtImplicitArrayTypeReference(CtImplicitArrayTypeReference<T> reference) {
+		visitCtArrayTypeReference(reference);
 	}
 
 	public <T> void visitCtAssert(CtAssert<T> e) {

@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.internal.CtCircularTypeReference;
@@ -176,6 +177,11 @@ public class SignaturePrinter implements CtVisitor {
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
 		scan(reference.getComponentType());
 		write("[]");
+	}
+
+	@Override
+	public <T> void visitCtImplicitArrayTypeReference(CtImplicitArrayTypeReference<T> reference) {
+		visitCtArrayTypeReference(reference);
 	}
 
 	public <T> void visitCtAssert(CtAssert<T> asserted) {

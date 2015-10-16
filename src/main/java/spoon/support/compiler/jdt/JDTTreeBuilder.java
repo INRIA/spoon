@@ -633,7 +633,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 					// }
 				}
 			} else if (binding instanceof ArrayBinding) {
-				CtArrayTypeReference<Object> arrayref = factory.Core().createArrayTypeReference();
+				CtArrayTypeReference<Object> arrayref;
+				if (isImplicit) {
+					arrayref = factory.Internal().createImplicitArrayTypeReference();
+				} else {
+					arrayref = factory.Core().createArrayTypeReference();
+				}
 				ref = arrayref;
 				for (int i = 1; i < binding.dimensions(); i++) {
 					CtArrayTypeReference<Object> tmp = factory.Core().createArrayTypeReference();

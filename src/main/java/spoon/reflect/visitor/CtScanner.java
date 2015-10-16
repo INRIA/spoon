@@ -79,6 +79,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.internal.CtCircularTypeReference;
@@ -251,6 +252,11 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getComponentType());
 		scanReferences(reference.getActualTypeArguments());
 		exitReference(reference);
+	}
+
+	@Override
+	public <T> void visitCtImplicitArrayTypeReference(CtImplicitArrayTypeReference<T> reference) {
+		visitCtArrayTypeReference(reference);
 	}
 
 	public <T> void visitCtAssert(CtAssert<T> asserted) {

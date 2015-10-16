@@ -88,6 +88,7 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.eval.PartialEvaluator;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.internal.CtCircularTypeReference;
@@ -187,6 +188,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
+		throw new RuntimeException("Unknow Element");
+	}
+
+	@Override
+	public <T> void visitCtImplicitArrayTypeReference(CtImplicitArrayTypeReference<T> reference) {
 		throw new RuntimeException("Unknow Element");
 	}
 

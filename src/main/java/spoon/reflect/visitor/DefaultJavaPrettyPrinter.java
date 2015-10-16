@@ -93,6 +93,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.internal.CtCircularTypeReference;
@@ -639,6 +640,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!context.skipArray) {
 			write("[]");
 		}
+	}
+
+	@Override
+	public <T> void visitCtImplicitArrayTypeReference(CtImplicitArrayTypeReference<T> reference) {
+		// The array type is implicit, we don't print it!
 	}
 
 	public <T> void visitCtAssert(CtAssert<T> asserted) {
