@@ -904,23 +904,27 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(" {").incTab().writeln();
 		List<CtField<?>> l1 = new ArrayList<CtField<?>>();
 		List<CtField<?>> l2 = new ArrayList<CtField<?>>();
-		for (CtField<?> ec : ctEnum.getFields()) {
-			if (ec.getType() == null) {
-				l1.add(ec);
-			} else {
-				l2.add(ec);
+		if (ctEnum.getFields().size() == 0) {
+			writeTabs().write(";").writeln();
+		} else {
+			for (CtField<?> ec : ctEnum.getFields()) {
+				if (ec.getType() == null) {
+					l1.add(ec);
+				} else {
+					l2.add(ec);
+				}
 			}
-		}
-		if (l1.size() > 0) {
-			for (CtField<?> ec : l1) {
-				writeEnumField(ec);
-				write(", ");
+			if (l1.size() > 0) {
+				for (CtField<?> ec : l1) {
+					writeEnumField(ec);
+					write(", ");
+				}
+				removeLastChar();
+				write(";");
 			}
-			removeLastChar();
-			write(";");
-		}
-		for (CtField<?> ec : l2) {
-			writeln().writeTabs().scan(ec);
+			for (CtField<?> ec : l2) {
+				writeln().writeTabs().scan(ec);
+			}
 		}
 		for (CtConstructor<?> c : ctEnum.getConstructors()) {
 			if (!c.isImplicit()) {

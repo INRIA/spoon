@@ -1,15 +1,18 @@
 package spoon.test.enums;
 
-import static org.junit.Assert.assertEquals;
-import static spoon.test.TestUtils.build;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.test.TestUtils;
 import spoon.test.annotation.AnnotationTest;
+import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.Foo;
+
+import static org.junit.Assert.assertEquals;
+import static spoon.test.TestUtils.build;
 
 public class EnumsTest {
 
@@ -41,5 +44,16 @@ public class EnumsTest {
 						+ "@java.lang.Deprecated"
 						+ DefaultJavaPrettyPrinter.LINE_SEPARATOR + "    Bar;}",
 				foo.toString());
+	}
+
+	@Test
+	public void testEnumWithoutField() throws Exception {
+		final Factory factory = TestUtils.build(Burritos.class);
+		final CtType<Burritos> burritos = factory.Type().get(Burritos.class);
+		assertEquals("public enum Burritos {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
+				+ "    ;" + DefaultJavaPrettyPrinter.LINE_SEPARATOR + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
+				+ "    public static void m() {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
+				+ "    }" + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
+				+ "}", burritos.toString());
 	}
 }
