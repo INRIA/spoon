@@ -1,6 +1,7 @@
 package spoon.reflect.factory;
 
 import spoon.reflect.internal.CtCircularTypeReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 
 /**
  * This interface defines the creation methods for internal nodes of the
@@ -11,5 +12,10 @@ public interface InternalFactory {
 	/**
 	 * Creates a circular type reference.
 	 */
-	<T> CtCircularTypeReference createCircularTypeReference();
+	CtCircularTypeReference createCircularTypeReference();
+
+	/**
+	 * Creates a inference type reference.
+	 */
+	<T> CtImplicitTypeReference<T> createImplicitTypeReference();
 }

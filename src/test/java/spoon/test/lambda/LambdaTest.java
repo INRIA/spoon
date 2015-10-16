@@ -11,10 +11,12 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.test.TestUtils;
+import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
 
 import java.io.File;
@@ -26,6 +28,7 @@ import static org.junit.Assert.*;
 public class LambdaTest {
 	private Factory factory;
 	private CtType<Foo> foo;
+	private CtType<Bar> bar;
 	private SpoonCompiler compiler;
 
 	@Before
@@ -42,6 +45,7 @@ public class LambdaTest {
 		compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 
 		foo = factory.Type().get(Foo.class);
+		bar = factory.Type().get(Bar.class);
 	}
 
 	@Test
@@ -67,7 +71,7 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))",
+				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)(( p) -> (p.age) > 10))",
 				lambda);
 	}
 
@@ -86,7 +90,7 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((spoon.test.lambda.testclasses.Foo.CheckPersons)((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))",
+				"((spoon.test.lambda.testclasses.Foo.CheckPersons)(( p1, p2) -> ((p1.age) - (p2.age)) > 0))",
 				lambda);
 	}
 
@@ -151,7 +155,7 @@ public class LambdaTest {
 		assertStatementBody(lambda);
 
 		assertIsWellPrinted(
-				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> {"
+				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)(( p) -> {"
 						+ System.lineSeparator()
 						+ "    p.doSomething();" + System.lineSeparator()
 						+ "    return (p.age) > 10;" + System.lineSeparator()
@@ -177,7 +181,7 @@ public class LambdaTest {
 			}
 		}).get(0);
 		final String expected =
-				"if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {"
+				"if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>)(( p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {"
 						+ System.lineSeparator()
 						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");" + System
 						.lineSeparator()
@@ -188,6 +192,25 @@ public class LambdaTest {
 	@Test
 	public void testCompileLambdaGeneratedBySpoon() throws Exception {
 		TestUtils.canBeBuild(TestUtils.getSpoonedDirectory(getClass()), 8);
+	}
+
+	@Test
+	public void testTypeParameterOfLambdaWithoutType() throws Exception {
+		final CtLambda<?> lambda1 = bar.getElements(new NameFilter<CtLambda<?>>("lambda$1")).get(0);
+		assertEquals(1, lambda1.getParameters().size());
+		final CtParameter<?> ctParameterFirstLambda = lambda1.getParameters().get(0);
+		assertEquals("s", ctParameterFirstLambda.getSimpleName());
+		assertTrue(ctParameterFirstLambda.getType() instanceof CtImplicitTypeReference);
+		assertEquals("", ctParameterFirstLambda.getType().toString());
+		assertEquals("SingleSubscriber", ctParameterFirstLambda.getType().getSimpleName());
+
+		final CtLambda<?> lambda2 = bar.getElements(new NameFilter<CtLambda<?>>("lambda$2")).get(0);
+		assertEquals(2, lambda2.getParameters().size());
+		final CtParameter<?> ctParameterSecondLambda = lambda2.getParameters().get(0);
+		assertEquals("v", ctParameterSecondLambda.getSimpleName());
+		assertTrue(ctParameterSecondLambda.getType() instanceof CtImplicitTypeReference);
+		assertEquals("", ctParameterSecondLambda.getType().toString());
+		assertEquals("?", ctParameterSecondLambda.getType().getSimpleName());
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {

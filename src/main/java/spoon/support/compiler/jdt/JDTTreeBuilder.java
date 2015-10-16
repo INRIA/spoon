@@ -276,6 +276,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean isGenericTypeExplicit = true;
 
+		boolean isLambdaParameterImplicitlyTyped = true;
+
 		/**
 		 * Stack of all parents elements
 		 */
@@ -370,6 +372,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean bounds = false;
 
+		boolean isImplicit = false;
+
 		public CtTypeReference<?> getBoundedTypeReference(TypeBinding binding) {
 			bounds = true;
 			CtTypeReference<?> ref = getTypeReference(binding);
@@ -463,8 +467,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (binding instanceof RawTypeBinding) {
 				ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
 			} else if (binding instanceof ParameterizedTypeBinding) {
-				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
-					ref = factory.Core().createImplicitTypeReference();
+				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+					ref = factory.Internal().createImplicitTypeReference();
 				} else {
 					ref = factory.Core().createTypeReference();
 				}
@@ -481,7 +485,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 				if (((ParameterizedTypeBinding) binding).arguments != null) {
 					for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
+						if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
+							isImplicit = true;
+						}
 						ref.addActualTypeArgument(getTypeReference(b));
+						isImplicit = false;
 					}
 				}
 			} else if (binding instanceof MissingTypeBinding) {
@@ -506,8 +514,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			} else if (binding instanceof BinaryTypeBinding) {
-				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
-					ref = factory.Core().createImplicitTypeReference();
+				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+					ref = factory.Internal().createImplicitTypeReference();
 				} else {
 					ref = factory.Core().createTypeReference();
 				}
@@ -517,11 +525,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 					ref.setPackage(getPackageReference(binding.getPackage()));
 				}
 				ref.setSimpleName(new String(binding.sourceName()));
-
 			} else if (binding instanceof TypeVariableBinding) {
 				boolean oldBounds = bounds;
-				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
-					ref = factory.Core().createImplicitTypeReference();
+				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+					ref = factory.Internal().createImplicitTypeReference();
 				} else {
 					ref = factory.Core().createTypeParameterReference();
 				}
@@ -553,7 +560,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (binding instanceof CaptureBinding) {
 					bounds = false;
 				}
-
 			} else if (binding instanceof BaseTypeBinding) {
 				String name = new String(binding.sourceName());
 				ref = basestypes.get(name);
@@ -563,8 +569,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					basestypes.put(name, ref);
 				}
 			} else if (binding instanceof WildcardBinding) {
-				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
-					ref = factory.Core().createImplicitTypeReference();
+				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+					ref = factory.Internal().createImplicitTypeReference();
 				} else {
 					ref = factory.Core().createTypeParameterReference();
 				}
@@ -588,8 +594,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			} else if (binding instanceof LocalTypeBinding) {
-				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
-					ref = factory.Core().createImplicitTypeReference();
+				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+					ref = factory.Internal().createImplicitTypeReference();
 				} else {
 					ref = factory.Core().createTypeReference();
 				}
@@ -603,8 +609,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			} else if (binding instanceof SourceTypeBinding) {
-				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
-					ref = factory.Core().createImplicitTypeReference();
+				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+					ref = factory.Internal().createImplicitTypeReference();
 				} else {
 					ref = factory.Core().createTypeReference();
 				}
@@ -637,8 +643,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				arrayref.setComponentType(getTypeReference(binding.leafComponentType()));
 			} else if (binding instanceof ProblemReferenceBinding) {
 				// Spoon is able to analyze also without the classpath
-				if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
-					ref = factory.Core().createImplicitTypeReference();
+				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+					ref = factory.Internal().createImplicitTypeReference();
 				} else {
 					ref = factory.Core().createTypeReference();
 				}
@@ -1713,11 +1719,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (argument.type != null) {
 			p.setType(references.getTypeReference(argument.type.resolvedType));
 		} else if (argument.binding != null && argument.binding.type != null) {
+			context.isLambdaParameterImplicitlyTyped = false;
 			if (argument.binding.type instanceof WildcardBinding) {
 				p.setType(references.getTypeReference((((WildcardBinding) argument.binding.type).bound)));
 			} else {
 				p.setType(references.getTypeReference((argument.binding.type)));
 			}
+			context.isLambdaParameterImplicitlyTyped = true;
 		}
 		context.enter(p, argument);
 		if (argument.initialization != null) {

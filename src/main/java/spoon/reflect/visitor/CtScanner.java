@@ -84,6 +84,7 @@ import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -685,7 +686,12 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	@Override
-	public <T> void visitCtCircularTypeReference(CtCircularTypeReference reference) {
+	public void visitCtCircularTypeReference(CtCircularTypeReference reference) {
+	}
+
+	@Override
+	public <T> void visitCtImplicitTypeReference(CtImplicitTypeReference<T> reference) {
+		visitCtTypeReference(reference);
 	}
 
 	@Override

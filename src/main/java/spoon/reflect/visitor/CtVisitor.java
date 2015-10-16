@@ -82,6 +82,7 @@ import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -392,7 +393,12 @@ public interface CtVisitor {
 	/**
 	 * Visits a circular reference.
 	 */
-	<T> void visitCtCircularTypeReference(CtCircularTypeReference reference);
+	void visitCtCircularTypeReference(CtCircularTypeReference reference);
+
+	/**
+	 * Visits a reference to an implicit type.
+	 */
+	<T> void visitCtImplicitTypeReference(CtImplicitTypeReference<T> reference);
 
 	/**
 	 * Visits a type access.
