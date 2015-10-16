@@ -670,7 +670,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			factory.getEnvironment().debugMessage("Generating source using types...");
 			ProcessingManager processing = new QueueProcessingManager(factory);
 			processing.addProcessor(factory.getEnvironment().getDefaultFileGenerator());
-			processing.process();
+			processing.process(factory.Package().getRootPackage());
 		}
 	}
 
@@ -924,7 +924,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			factory.getEnvironment().debugMessage("Loaded processor " + processorName + ".");
 		}
 
-		processing.process();
+		processing.process(factory.Package().getRootPackage());
 	}
 
 	@Override
@@ -938,7 +938,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			factory.getEnvironment().debugMessage("Loaded processor " + processorName + ".");
 		}
 
-		processing.process();
+		processing.process(factory.Package().getRootPackage());
 	}
 
 	protected Environment getEnvironment() {

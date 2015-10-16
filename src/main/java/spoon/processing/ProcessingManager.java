@@ -59,22 +59,10 @@ public interface ProcessingManager extends FactoryAccessor {
 	void addProcessor(String qualifiedName);
 
 	/**
-	 * Returns {@code true} if the manager will apply a given processor type
-	 * when invoking one of the {@code process} methods. To be applied
-	 * processors are the ones that have been added with one of the
-	 * {@code addProcessor} methods.
-	 *
-	 * @see #process(Collection)
-	 * @see #process()
-	 */
-	boolean isToBeApplied(Class<? extends Processor<?>> type);
-
-	/**
 	 * Gets the processors that have been added to the manager and that will be
 	 * applied when invoking one of the {@code process} methods).
 	 *
 	 * @see #process(Collection)
-	 * @see #process()
 	 */
 	Collection<Processor<?>> getProcessors();
 
@@ -99,25 +87,4 @@ public interface ProcessingManager extends FactoryAccessor {
 	 */
 	void process(CtElement element);
 
-	/**
-	 * Processes the entire factory's model with this manager. All the
-	 * processors added to this manager (see {@link #getProcessors()}) should
-	 * be applied before the method returns (blocking implementation) or before
-	 * another call to a <code>process</code> method (non-blocking
-	 * implementation). Processors that have been applied are removed from the
-	 * manager and {@link #getProcessors()} does not contain them anymore.
-	 */
-	void process();
-
-	/**
-	 * Delete the Processors of this ProcessingManager. After the invocation
-	 * of this method, {@link #getProcessors()} returns an empty list.
-	 */
-	void clear();
-
-	/**
-	 * Gets the processor which is currently achieving the processing task if
-	 * any.
-	 */
-	Processor<?> getCurrentProcessor();
 }

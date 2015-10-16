@@ -104,21 +104,6 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		return visitor;
 	}
 
-	public boolean isToBeApplied(Class<? extends Processor<?>> type) {
-		for (Processor<?> p : getProcessors()) {
-			if (p.getClass() == type) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void process() {
-		Timer.start("process");
-		process(getFactory().Package().getRootPackage());
-		Timer.stop("process");
-	}
-
 	public void process(Collection<? extends CtElement> elements) {
 		for (Processor<?> p : getProcessors()) {
 			current = p;
@@ -163,9 +148,5 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		factory.getEnvironment().setManager(this);
 	}
 
-	@Override
-	public void clear() {
-		getProcessors().clear();
-	}
 
 }
