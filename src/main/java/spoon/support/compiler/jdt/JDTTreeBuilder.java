@@ -634,7 +634,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 			} else if (binding instanceof ArrayBinding) {
 				CtArrayTypeReference<Object> arrayref;
-				if (isImplicit) {
+				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
 					arrayref = factory.Internal().createImplicitArrayTypeReference();
 				} else {
 					arrayref = factory.Core().createArrayTypeReference();

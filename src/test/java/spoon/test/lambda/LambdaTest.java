@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -18,6 +19,7 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.test.TestUtils;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
+import spoon.test.lambda.testclasses.Panini;
 
 import java.io.File;
 import java.util.List;
@@ -29,6 +31,7 @@ public class LambdaTest {
 	private Factory factory;
 	private CtType<Foo> foo;
 	private CtType<Bar> bar;
+	private CtType<Object> panini;
 	private SpoonCompiler compiler;
 
 	@Before
@@ -46,6 +49,7 @@ public class LambdaTest {
 
 		foo = factory.Type().get(Foo.class);
 		bar = factory.Type().get(Bar.class);
+		panini = factory.Type().get(Panini.class);
 	}
 
 	@Test
@@ -211,6 +215,23 @@ public class LambdaTest {
 		assertTrue(ctParameterSecondLambda.getType() instanceof CtImplicitTypeReference);
 		assertEquals("", ctParameterSecondLambda.getType().toString());
 		assertEquals("?", ctParameterSecondLambda.getType().getSimpleName());
+	}
+
+	@Test
+	public void testTypeParameterWithImplicitArrayType() throws Exception {
+		final CtLambda<?> lambda = panini.getElements(new NameFilter<CtLambda<?>>("lambda$1")).get(0);
+
+		assertEquals(1, lambda.getParameters().size());
+		final CtParameter<?> ctParameter = lambda.getParameters().get(0);
+		assertEquals("a", ctParameter.getSimpleName());
+		assertTrue(ctParameter.getType() instanceof CtImplicitArrayTypeReference);
+		assertEquals("", ctParameter.getType().toString());
+		assertEquals("Array", ctParameter.getType().getSimpleName());
+
+		final CtImplicitArrayTypeReference typeParameter = (CtImplicitArrayTypeReference) ctParameter.getType();
+		assertTrue(typeParameter.getComponentType() instanceof CtImplicitTypeReference);
+		assertEquals("", typeParameter.getComponentType().toString());
+		assertEquals("Object", typeParameter.getComponentType().getSimpleName());
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {
