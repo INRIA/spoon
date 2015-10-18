@@ -73,6 +73,7 @@ import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -1280,10 +1281,27 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return byteToHex(hi) + byteToHex(lo);
 	}
 
-	private void writeStringLiteral(String value) {
+	private void writeStringLiteral(String value, boolean mayContainsSpecialCharacter) {
+		if (!mayContainsSpecialCharacter) {
+			write(value);
+			return;
+		}
 		// handle some special char.....
 		for (int i = 0; i < value.length(); i++) {
-			switch (value.charAt(i)) {
+			char c = value.charAt(i);
+			if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.BASIC_LATIN) {
+				if (c < 0x10) {
+					write("\\u000" + Integer.toHexString(c));
+				} else if (c < 0x100) {
+					write("\\u00" + Integer.toHexString(c));
+				} else if (c < 0x1000) {
+					write("\\u0" + Integer.toHexString(c));
+				} else {
+					write("\\u" + Integer.toHexString(c));
+				}
+				continue;
+			}
+			switch (c) {
 			case '\b':
 				write("\\b"); //$NON-NLS-1$
 				break;
@@ -1325,13 +1343,34 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(literal.getValue() + "F");
 		} else if (literal.getValue() instanceof Character) {
 			write("'");
-			writeStringLiteral(new String(new char[] { (Character) literal.getValue() }));
+
+			boolean mayContainsSpecialCharacter = true;
+
+			SourcePosition position = literal.getPosition();
+			if (position != null) {
+				// the size of the string in the source code, the -1 is the size of the ' or " in the source code
+				int stringLength = position.getSourceEnd() - position.getSourceStart() - 1;
+				// if the string in the source is not the same as the string in the literal, the string may contains special characters
+				mayContainsSpecialCharacter = stringLength != 1;
+			}
+			writeStringLiteral(new String(new char[] { (Character) literal.getValue() }), mayContainsSpecialCharacter);
+
 			write("'");
 		} else if (literal.getValue() instanceof String) {
 			write('\"');
-			writeStringLiteral((String) literal.getValue());
-			write('\"');
 
+			boolean mayContainsSpecialCharacters = true;
+
+			SourcePosition position = literal.getPosition();
+			if (position != null) {
+				// the size of the string in the source code, the -1 is the size of the ' or " in the source code
+				int stringLength = position.getSourceEnd() - position.getSourceStart() - 1;
+				// if the string in the source is not the same as the string in the literal, the string may contains special characters
+				mayContainsSpecialCharacters = ((String) literal.getValue()).length() != stringLength;
+			}
+			writeStringLiteral((String) literal.getValue(), mayContainsSpecialCharacters);
+
+			write('\"');
 		} else if (literal.getValue() instanceof Class) {
 			write(((Class<?>) literal.getValue()).getName());
 		} else if (literal.getValue() instanceof CtReference) {
