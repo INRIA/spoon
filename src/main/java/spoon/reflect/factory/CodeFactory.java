@@ -398,7 +398,15 @@ public class CodeFactory extends SubFactory {
 	 * @return a type reference.
 	 */
 	public <T> CtTypeReference<T> createCtTypeReference(Class<?> originalClass) {
-		return factory.Core().<T>createTypeReference().<CtTypeReference<T>>setSimpleName(originalClass.getSimpleName()).setPackage(createCtPackageReference(originalClass.getPackage()));
+		if (originalClass == null) {
+			return null;
+		}
+		CtTypeReference<T> typeReference = factory.Core().<T>createTypeReference();
+		typeReference.setSimpleName(originalClass.getSimpleName());
+		if (originalClass.isPrimitive()) {
+			return typeReference;
+		}
+		return typeReference.setPackage(createCtPackageReference(originalClass.getPackage()));
 	}
 
 	/**
