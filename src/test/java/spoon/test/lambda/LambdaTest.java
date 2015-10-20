@@ -20,6 +20,7 @@ import spoon.test.TestUtils;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
 import spoon.test.lambda.testclasses.Panini;
+import spoon.test.lambda.testclasses.Tacos;
 
 import java.io.File;
 import java.util.List;
@@ -32,6 +33,7 @@ public class LambdaTest {
 	private CtType<Foo> foo;
 	private CtType<Bar> bar;
 	private CtType<Object> panini;
+	private CtType<Object> tacos;
 	private SpoonCompiler compiler;
 
 	@Before
@@ -50,6 +52,7 @@ public class LambdaTest {
 		foo = factory.Type().get(Foo.class);
 		bar = factory.Type().get(Bar.class);
 		panini = factory.Type().get(Panini.class);
+		tacos = factory.Type().get(Tacos.class);
 	}
 
 	@Test
@@ -232,6 +235,24 @@ public class LambdaTest {
 		assertTrue(typeParameter.getComponentType() instanceof CtImplicitTypeReference);
 		assertEquals("", typeParameter.getComponentType().toString());
 		assertEquals("Object", typeParameter.getComponentType().getSimpleName());
+	}
+
+	@Test
+	public void testLambdaWithPrimitiveParameter() throws Exception {
+		final CtLambda<?> lambda = tacos.getElements(new NameFilter<CtLambda<?>>("lambda$1")).get(0);
+
+		assertEquals(2, lambda.getParameters().size());
+		final CtParameter<?> firstParam = lambda.getParameters().get(0);
+		assertEquals("rs", firstParam.getSimpleName());
+		assertTrue(firstParam.getType() instanceof CtImplicitTypeReference);
+		assertEquals("", firstParam.getType().toString());
+		assertEquals("ResultSet", firstParam.getType().getSimpleName());
+
+		final CtParameter<?> secondParam = lambda.getParameters().get(1);
+		assertEquals("i", secondParam.getSimpleName());
+		assertTrue(secondParam.getType() instanceof CtImplicitTypeReference);
+		assertEquals("", secondParam.getType().toString());
+		assertEquals("int", secondParam.getType().getSimpleName());
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {

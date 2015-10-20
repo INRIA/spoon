@@ -562,11 +562,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 			} else if (binding instanceof BaseTypeBinding) {
 				String name = new String(binding.sourceName());
-				ref = basestypes.get(name);
-				if (ref == null) {
-					ref = factory.Core().createTypeReference();
+				if (!JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+					ref = factory.Internal().createImplicitTypeReference();
 					ref.setSimpleName(name);
-					basestypes.put(name, ref);
+				} else {
+					ref = basestypes.get(name);
+					if (ref == null) {
+						ref = factory.Core().createTypeReference();
+						ref.setSimpleName(name);
+						basestypes.put(name, ref);
+					}
 				}
 			} else if (binding instanceof WildcardBinding) {
 				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
