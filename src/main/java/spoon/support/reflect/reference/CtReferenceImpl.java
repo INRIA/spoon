@@ -17,20 +17,30 @@
 
 package spoon.support.reflect.reference;
 
-import java.io.Serializable;
-import java.lang.reflect.AnnotatedElement;
-
+import spoon.Launcher;
+import spoon.processing.FactoryAccessor;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.support.reflect.declaration.CtUncomparableException;
+import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
+
+import java.io.Serializable;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.List;
 
 public abstract class CtReferenceImpl implements CtReference, Serializable, Comparable<CtReference> {
 
 	private static final long serialVersionUID = 1L;
 
 	String simplename;
+
+	Object parent;
 
 	transient Factory factory;
 
@@ -79,6 +89,20 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 	}
 
 	@Override
+	public Object getParent() throws ParentNotInitializedException {
+		if (parent == null) {
+			throw new ParentNotInitializedException("parent not initialized for " + getSimpleName() + "(" + this.getClass() + ")");
+		}
+		return parent;
+	}
+
+	@Override
+	public <E extends CtReference> E setParent(Object parent) {
+		this.parent = parent;
+		return (E) this;
+	}
+
+	@Override
 	public String toString() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
 				getFactory().getEnvironment());
@@ -94,5 +118,60 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
+	}
+
+	protected void replace(CtReference reference) {
+		try {
+			replaceIn(this, reference, getParent());
+		} catch (CtUncomparableException e1) {
+			// do nothing
+		} catch (Exception e1) {
+			Launcher.LOGGER.error(e1.getMessage(), e1);
+		}
+	}
+
+	private <T extends FactoryAccessor> void replaceIn(Object toReplace, T replacement, Object parent) throws IllegalArgumentException, IllegalAccessException {
+
+		for (Field f : RtHelper.getAllFields(parent.getClass())) {
+			f.setAccessible(true);
+			Object tmp = f.get(parent);
+
+			if (tmp != null) {
+				if (tmp instanceof List) {
+					@SuppressWarnings("unchecked") List<T> lst = (List<T>) tmp;
+					for (int i = 0; i < lst.size(); i++) {
+						if (lst.get(i) != null && compare(lst.get(i), toReplace)) {
+							lst.remove(i);
+							if (replacement != null) {
+								lst.add(i, getReplacement(replacement, parent));
+							}
+						}
+					}
+				} else if (tmp instanceof Collection) {
+					@SuppressWarnings("unchecked") Collection<T> collect = (Collection<T>) tmp;
+					Object[] array = collect.toArray();
+					for (Object obj : array) {
+						if (compare(obj, toReplace)) {
+							collect.remove(obj);
+							collect.add(getReplacement(replacement, parent));
+						}
+					}
+				} else if (compare(tmp, toReplace)) {
+					f.set(parent, getReplacement(replacement, parent));
+				}
+			}
+		}
+	}
+
+	private <T extends FactoryAccessor> T getReplacement(T replacement, Object parent) {
+		// T ret = replacement.getFactory().Core().clone(replacement);
+		if (replacement instanceof CtReference && parent instanceof CtReference) {
+			((CtReference) replacement).setParent(parent);
+		}
+		return replacement;
+	}
+
+	private boolean compare(Object o1, Object o2) {
+		return o1 == o2;
 	}
 }

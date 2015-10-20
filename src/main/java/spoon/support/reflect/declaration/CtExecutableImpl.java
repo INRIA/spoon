@@ -56,7 +56,9 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <B extends R, T extends CtExecutable<R>> T setBody(CtBlock<B> body) {
-		body.setParent(this);
+		if (body != null) {
+			body.setParent(this);
+		}
 		this.body = body;
 		return (T) this;
 	}
@@ -68,6 +70,10 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtExecutable<R>> T setParameters(List<CtParameter<?>> parameters) {
+		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
+			this.parameters = new ArrayList<CtParameter<?>>(
+					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
 		this.parameters.clear();
 		for (CtParameter<?> p : parameters) {
 			addParameter(p);
@@ -98,7 +104,13 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtExecutable<R>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
-		this.thrownTypes = thrownTypes;
+		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
+			this.thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
+		}
+		this.thrownTypes.clear();
+		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
+			addThrownType(thrownType);
+		}
 		return (T) this;
 	}
 
@@ -107,6 +119,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
 		}
+		throwType.setParent(this);
 		thrownTypes.add(throwType);
 		return (T) this;
 	}

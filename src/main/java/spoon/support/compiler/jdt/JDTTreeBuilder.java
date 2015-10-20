@@ -600,6 +600,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 						ref = factory.Core().createTypeReference();
 						ref.setSimpleName(name);
 						basestypes.put(name, ref);
+					} else {
+						ref = factory.Core().clone(ref);
 					}
 				}
 			} else if (binding instanceof WildcardBinding) {

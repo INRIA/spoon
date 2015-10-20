@@ -70,6 +70,9 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}
@@ -80,6 +83,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 			types = new ArrayList<CtTypeReference<?>>(
 					CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
+		ref.setParent(this);
 		types.add(ref);
 		return (T) this;
 	}

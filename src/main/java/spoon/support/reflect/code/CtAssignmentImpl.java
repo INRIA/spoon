@@ -17,9 +17,6 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -30,6 +27,9 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -85,13 +85,22 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
-		this.typeCasts = casts;
+		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.typeCasts = new ArrayList<CtTypeReference<?>>(CASTS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.typeCasts.clear();
+		for (CtTypeReference<?> cast : casts) {
+			addTypeCast(cast);
+		}
 		return (C) this;
 	}
 
@@ -100,6 +109,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		if (typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			typeCasts = new ArrayList<CtTypeReference<?>>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		type.setParent(this);
 		typeCasts.add(type);
 		return (C) this;
 	}

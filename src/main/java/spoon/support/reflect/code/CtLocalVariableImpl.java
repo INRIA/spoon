@@ -17,9 +17,6 @@
 
 package spoon.support.reflect.code;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtRHSReceiver;
@@ -32,6 +29,9 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVariable<T> {
 	private static final long serialVersionUID = 1L;
@@ -86,6 +86,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}

@@ -17,11 +17,11 @@
 
 package spoon.reflect.reference;
 
+import spoon.reflect.declaration.CtExecutable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
-
-import spoon.reflect.declaration.CtExecutable;
 
 /**
  * This interface defines a reference to a
@@ -125,4 +125,9 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 	 * Tells if the referenced executable is final.
 	 */
 	boolean isFinal();
+
+	/**
+	 * Replaces an executable reference by another one.
+	 */
+	void replace(CtExecutableReference<?> reference);
 }

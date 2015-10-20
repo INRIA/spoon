@@ -294,20 +294,37 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public <C extends CtGenericElementReference> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
-		this.actualTypeArguments = actualTypeArguments;
+		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.actualTypeArguments = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.actualTypeArguments.clear();
+		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
+			addActualTypeArgument(actualTypeArgument);
+		}
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
+		if (declaringType != null) {
+			declaringType.setParent(this);
+		}
 		this.declaringType = declaringType;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtTypeReference<T>> C setPackage(CtPackageReference pack) {
+		if (pack != null) {
+			pack.setParent(this);
+		}
 		this.pack = pack;
 		return (C) this;
+	}
+
+	@Override
+	public void replace(CtTypeReference<?> reference) {
+		super.replace(reference);
 	}
 
 	@Override
@@ -470,6 +487,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		actualTypeArgument.setParent(this);
 		actualTypeArguments.add(actualTypeArgument);
 		return (C) this;
 	}

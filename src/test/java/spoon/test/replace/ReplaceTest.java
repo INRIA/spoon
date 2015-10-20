@@ -7,22 +7,41 @@ import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
+import spoon.support.reflect.reference.CtTypeReferenceImpl;
+import spoon.test.replace.testclasses.Tacos;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class ReplaceTest {
 
@@ -35,17 +54,17 @@ public class ReplaceTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/replace/Foo.java"))
+						.resources("./src/test/java/spoon/test/replace/testclasses"))
 				.build();
 	}
 
 	@Test
 	public void testReplaceSet() throws Exception {
 
-		CtClass<?> foo = factory.Package().get("spoon.test.replace")
+		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
-		CtClass<?> bar = factory.Package().get("spoon.test.replace")
+		CtClass<?> bar = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Bar");
 		assertEquals("Bar", bar.getSimpleName());
 
@@ -69,7 +88,7 @@ public class ReplaceTest {
 
 	@Test
 	public void testReplaceBlock() throws Exception {
-		CtClass<?> foo = factory.Package().get("spoon.test.replace")
+		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 		CtMethod<?> m = foo.getElements(
 				new NameFilter<CtMethod<?>>("foo")).get(0);
@@ -100,7 +119,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceReplace() throws Exception {
 		// bug found by Benoit
-		CtClass<?> foo = factory.Package().get("spoon.test.replace")
+		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
 		CtMethod<?> fooMethod = foo.getElements(
@@ -130,7 +149,7 @@ public class ReplaceTest {
 
 	@Test
 	public void testReplaceStmtByList() {
-		CtClass<?> sample = factory.Package().get("spoon.test.replace")
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
 		// replace retry content by statements
@@ -146,7 +165,7 @@ public class ReplaceTest {
 
 	@Test
 	public void testReplaceField() {
-		CtClass<?> sample = factory.Package().get("spoon.test.replace")
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
 		Assert.assertEquals(factory.Type().createReference(int.class), sample.getField("i").getType());
@@ -170,7 +189,7 @@ public class ReplaceTest {
 
 	@Test
 	public void testReplaceMethod() {
-		CtClass<?> sample = factory.Package().get("spoon.test.replace")
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
 		Assert.assertNotNull(sample.getMethod("foo"));
@@ -187,7 +206,7 @@ public class ReplaceTest {
 
 	@Test
 	public void testReplaceExpression() {
-		CtMethod<?> sample = factory.Package().get("spoon.test.replace")
+		CtMethod<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo").getMethod("foo");
 
 		CtVariable<?> var = sample.getBody().getStatement(0);
@@ -205,7 +224,7 @@ public class ReplaceTest {
 
 	@Test
 	public void testReplaceStatement() {
-		CtMethod<?> sample = factory.Package().get("spoon.test.replace")
+		CtMethod<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo").getMethod("foo");
 
 		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtVariable);
@@ -216,4 +235,106 @@ public class ReplaceTest {
 		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtInvocation);
 	}
 
+	@Test
+	public void testReplaceIntegerReference() throws Exception {
+		// contract: replace a primitive type reference by another one.
+		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
+		final CtMethod<?> aMethod = aTacos.getMethodsByName("m").get(0);
+
+		assertEquals(factory.Type().INTEGER_PRIMITIVE, aMethod.getType());
+
+		aMethod.getType().replace(factory.Type().DOUBLE_PRIMITIVE);
+
+		assertEquals(factory.Type().DOUBLE_PRIMITIVE, aMethod.getType());
+	}
+
+	@Test
+	public void testReplaceAllTypeRefenceWithGenerics() throws Exception {
+		// contract: replace all type references with a generic to the same type reference without generics.
+		final List<CtTypeReference> references = Query.getReferences(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
+			@Override
+			public boolean matches(CtTypeReference reference) {
+				return reference.getActualTypeArguments().size() > 0 && super.matches(reference);
+			}
+		});
+
+		for (CtTypeReference reference : references) {
+			assertTrue(reference.getActualTypeArguments().size() > 0);
+		}
+
+		for (CtTypeReference<?> reference : references) {
+			reference.replace(factory.Type().createReference(reference.getQualifiedName()));
+		}
+
+		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
+		final CtMethod<?> aMethod = aTacos.getMethodsByName("m2").get(0);
+
+		final CtTypeReference<Object> expected = factory.Type().createReference("spoon.test.replace.testclasses.Tacos");
+		assertEquals(expected, aMethod.getType());
+		assertEquals(expected, aMethod.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0).getType());
+	}
+
+	@Test
+	public void testReplaceAPackageReferenceByAnotherOne() throws Exception {
+		// contract: replace a package reference of a reference to another package.
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/reference-package");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtType<Object> panini = launcher.getFactory().Type().get("Panini");
+
+		final CtTypeReference<?> burritos = panini.getReferences(new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
+			@Override
+			public boolean matches(CtTypeReference<?> reference) {
+				return "Burritos".equals(reference.getSimpleName()) && super.matches(reference);
+			}
+		}).get(0);
+
+		assertEquals("com.awesome", burritos.getPackage().toString());
+		assertEquals("com.awesome.Burritos", panini.getMethodsByName("m").get(0).getType().toString());
+
+		burritos.getPackage().replace(launcher.getFactory().Package().createReference("com.best"));
+
+		assertEquals("com.best", burritos.getPackage().toString());
+		assertEquals("com.best.Burritos", panini.getMethodsByName("m").get(0).getType().toString());
+	}
+
+	@Test
+	public void testReplaceAParameterReferenceToFieldReference() throws Exception {
+		// contract: replace a parameter reference to a field reference.
+		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
+
+		final CtInvocation inv = aTacos.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		final CtVariableRead<?> variableRead = (CtVariableRead<?>) inv.getArguments().get(0);
+		final CtParameterReference<?> aParameterReference = (CtParameterReference<?>) variableRead.getVariable();
+		final CtFieldReference<?> aFieldReference = aTacos.getField("field").getReference();
+
+		assertEquals(variableRead.getVariable(), aParameterReference);
+		assertEquals("java.lang.System.err.println(param)", inv.toString());
+
+		aParameterReference.replace(aFieldReference);
+
+		assertEquals(variableRead.getVariable(), aFieldReference);
+		assertEquals("java.lang.System.err.println(field)", inv.toString());
+	}
+
+	@Test
+	public void testReplaceExecutableReferenceByAnotherOne() throws Exception {
+		// contract: replace an executable reference to another one in an invocation.
+		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
+
+		final CtInvocation inv = aTacos.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		final CtExecutableReference oldExecutable = inv.getExecutable();
+		final CtExecutableReference<Object> newExecutable = factory.Executable().createReference("void java.io.PrintStream#print(java.lang.String)");
+
+		assertEquals(inv.getExecutable(), oldExecutable);
+		assertEquals("java.io.PrintStream#println(java.lang.String)", inv.getExecutable().toString());
+
+		oldExecutable.replace(newExecutable);
+
+		assertEquals(inv.getExecutable(), newExecutable);
+		assertEquals("java.io.PrintStream#print(java.lang.String)", inv.getExecutable().toString());
+	}
 }

@@ -47,13 +47,23 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
-		this.typeCasts = casts;
+		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.typeCasts = new ArrayList<CtTypeReference<?>>(
+					CASTS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.typeCasts.clear();
+		for (CtTypeReference<?> cast : casts) {
+			addTypeCast(cast);
+		}
 		return (C) this;
 	}
 
@@ -63,6 +73,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 			typeCasts = new ArrayList<CtTypeReference<?>>(
 					CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		type.setParent(this);
 		typeCasts.add(type);
 		return (C) this;
 	}

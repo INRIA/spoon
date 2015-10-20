@@ -17,11 +17,11 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.reflect.Array;
-
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.lang.reflect.Array;
 
 public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 		implements CtArrayTypeReference<T> {
@@ -45,6 +45,9 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 
 	@Override
 	public <C extends CtArrayTypeReference<T>> C setComponentType(CtTypeReference<?> componentType) {
+		if (componentType != null) {
+			componentType.setParent(this);
+		}
 		this.componentType = componentType;
 		return (C) this;
 	}

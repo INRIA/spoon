@@ -66,6 +66,9 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.returnType = type;
 		return (C) this;
 	}
@@ -100,13 +103,21 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 			formalTypeParameters = new ArrayList<CtTypeReference<?>>(
 					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		formalTypeParameter.setParent(this);
 		formalTypeParameters.add(formalTypeParameter);
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtGenericElement> T setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
-		this.formalTypeParameters = formalTypeParameters;
+		if (this.formalTypeParameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.formalTypeParameters = new ArrayList<CtTypeReference<?>>(
+					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.formalTypeParameters.clear();
+		for (CtTypeReference<?> formalTypeParameter : formalTypeParameters) {
+			addFormalTypeParameter(formalTypeParameter);
+		}
 		return (T) this;
 	}
 

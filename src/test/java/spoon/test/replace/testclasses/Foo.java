@@ -1,4 +1,4 @@
-package spoon.test.replace;
+package spoon.test.replace.testclasses;
 
 class Foo {
 	int i;
@@ -8,7 +8,7 @@ class Foo {
 		z= x+1;
 		System.out.println(z);
 	}
-	
+
 	void bar() {
 		int y = 4;
 	}

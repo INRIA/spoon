@@ -54,7 +54,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (expression != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
-		body.setParent(this);
+		if (body != null) {
+			body.setParent(this);
+		}
 		this.body = body;
 		return (C) this;
 	}
@@ -66,6 +68,10 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C setParameters(List<CtParameter<?>> params) {
+		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
+			this.parameters = new ArrayList<CtParameter<?>>(
+					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
 		this.parameters.clear();
 		for (CtParameter<?> p : params) {
 			addParameter(p);
@@ -97,7 +103,13 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
-		this.thrownTypes = thrownTypes;
+		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
+			this.thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
+		}
+		this.thrownTypes.clear();
+		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
+			addThrownType(thrownType);
+		}
 		return (C) this;
 	}
 
@@ -106,6 +118,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
 		}
+		throwType.setParent(this);
 		thrownTypes.add(throwType);
 		return (C) this;
 	}
@@ -130,7 +143,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (body != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
-		expression.setParent(this);
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		this.expression = expression;
 		return (C) this;
 	}

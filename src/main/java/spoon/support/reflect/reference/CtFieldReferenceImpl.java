@@ -17,11 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.util.Set;
-import java.util.TreeSet;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
@@ -31,6 +26,11 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.RtHelper;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		implements CtFieldReference<T> {
@@ -161,6 +161,9 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 
 	@Override
 	public <C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
+		if (declaringType != null) {
+			declaringType.setParent(this);
+		}
 		this.declaringType = declaringType;
 		return (C) this;
 	}

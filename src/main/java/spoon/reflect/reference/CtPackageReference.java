@@ -33,4 +33,9 @@ public interface CtPackageReference extends CtReference {
 	 * Gets the package element when available in the class path.
 	 */
 	Package getActualPackage();
+
+	/**
+	 * Replace a package reference by another one.
+	 */
+	void replace(CtPackageReference packageReference);
 }
