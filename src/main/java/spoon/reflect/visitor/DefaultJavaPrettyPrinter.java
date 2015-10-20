@@ -1890,10 +1890,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private <T> boolean hasDeclaringTypeWithGenerics(CtTypeReference<T> reference) {
-		// If current reference use generic types, we don't need this hack.
-		if (reference.getActualTypeArguments().size() != 0) {
-			return false;
-		}
 		// If current reference is a class declared in a method, we don't need this hack.
 		if (reference.getDeclaration() == null) {
 			return false;
@@ -1903,6 +1899,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		// If the declaring type isn't a CtType, we don't need this hack.
 		if (reference.getDeclaringType() == null) {
+			return false;
+		}
+		// If current reference use generic types, we don't need this hack.
+		if (reference.getActualTypeArguments().size() != 0
+				&& reference.getDeclaringType().getActualTypeArguments().size() == 0) {
 			return false;
 		}
 		final CtElement declaration = reference.getDeclaringType().getDeclaration();

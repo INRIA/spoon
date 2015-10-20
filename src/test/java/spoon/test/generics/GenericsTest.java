@@ -1,7 +1,6 @@
 package spoon.test.generics;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
 
@@ -31,7 +30,6 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtImplicitTypeReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -42,6 +40,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
 import spoon.test.TestUtils;
 import spoon.test.generics.testclasses.Panini;
+import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
 
 public class GenericsTest {
@@ -447,5 +446,19 @@ public class GenericsTest {
 
 		assertEquals(1, apply.getParameters().get(0).getType().getActualTypeArguments().size());
 		assertEquals("? extends java.lang.Long", apply.getParameters().get(0).getType().getActualTypeArguments().get(0).toString());
+	}
+
+
+	@Test
+	public void testGenericInField() throws Exception {
+		final Factory build = TestUtils.build(Spaghetti.class);
+		final CtType<Panini> aSpaghetti = build.Type().get(Spaghetti.class);
+
+		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<B>.Tester tester;"));
+		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<B>.Tester tester1;"));
+
+		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<B>.That<java.lang.String, java.lang.String> field;"));
+		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<java.lang.String>.That<java.lang.String, java.lang.String> field1;"));
+		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<java.lang.Number>.That<java.lang.String, java.lang.String> field2;"));
 	}
 }
