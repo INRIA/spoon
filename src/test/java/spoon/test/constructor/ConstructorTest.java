@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.constructor.testclasses.AClass;
 import spoon.test.constructor.testclasses.Tacos;
 
 import static org.junit.Assert.assertEquals;
@@ -50,5 +51,14 @@ public class ConstructorTest {
 		}
 		assertEquals(1, ctConstructor.getBody().getStatements().size());
 		assertEquals("super()", ctConstructor.getBody().getStatement(0).toString());
+	}
+
+	@Test
+	public void callParamConstructor() throws Exception {
+		CtClass<Object> aClass = factory.Class().get(AClass.class);
+		CtConstructor<Object> constructor = aClass.getConstructors().iterator().next();
+		assertEquals("{" + System.lineSeparator() +
+				"    enclosingInstance.super();" + System.lineSeparator()
+				+ "}", constructor.getBody().toString());
 	}
 }
