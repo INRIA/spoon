@@ -2,6 +2,7 @@ package spoon.test.fieldaccesses;
 
 import org.junit.Test;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtElement;
@@ -13,6 +14,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
+import spoon.test.fieldaccesses.testclasses.Panini;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -152,5 +154,16 @@ public class FieldAccessTest {
 
 		String expectedLambda = "() -> {\n" + "    spoon.test.fieldaccesses.MyClass.LOG.info(\"bla\");\n" + "}";
 		assertEquals(expectedLambda, logFieldAccess.getParent(CtLambda.class).toString());
+	}
+
+	@Test
+	public void testFieldAccessInAnonymousClass() throws Exception {
+		final Factory factory = TestUtils.build(Panini.class);
+		final CtType<Panini> panini = factory.Type().get(Panini.class);
+
+		final CtFieldRead fieldInAnonymous = panini.getElements(new TypeFilter<>(CtFieldRead.class)).get(0);
+		assertEquals("ingredient", fieldInAnonymous.getTarget().toString());
+		assertEquals("next", fieldInAnonymous.getVariable().getSimpleName());
+		assertEquals("ingredient.next", fieldInAnonymous.toString());
 	}
 }

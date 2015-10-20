@@ -2565,6 +2565,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			fa.setVariable(ref);
 
 			if (qualifiedNameReference.binding != null
+					&& !((FieldBinding) qualifiedNameReference.binding).declaringClass.isAnonymousType()
 					&& qualifiedNameReference.tokens.length - 1 == ((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName.length) {
 				// We get the binding information when we specify the complete fully qualified name of the delcaring class.
 				final ReferenceBinding declaringClass = ((FieldBinding) qualifiedNameReference.binding).declaringClass;
