@@ -2346,9 +2346,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 					e.traverse(this, scope);
 				}
 			}
-			if (messageSend.genericTypeArguments() != null) {
-				for (TypeBinding typeBinding : messageSend.genericTypeArguments()) {
-					inv.getExecutable().addActualTypeArgument(references.getTypeReference(typeBinding));
+			if (messageSend.typeArguments != null) {
+				for (TypeReference typeBinding : messageSend.typeArguments) {
+					inv.getExecutable().addActualTypeArgument(references.getTypeReference(typeBinding.resolvedType));
 				}
 			}
 			context.popArgument(inv);
