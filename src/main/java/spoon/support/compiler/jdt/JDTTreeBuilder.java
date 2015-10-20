@@ -2288,7 +2288,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(MessageSend messageSend, BlockScope scope) {
-		if (messageSend.actualReceiverType == null || !messageSend.actualReceiverType.isAnnotationType()) {
+		if (messageSend.actualReceiverType == null
+				|| !messageSend.actualReceiverType.isAnnotationType()
+				|| messageSend.binding instanceof MethodBinding) {
 			CtInvocation<Object> inv = factory.Core().createInvocation();
 			if (messageSend.binding != null) {
 				inv.setExecutable(references.getExecutableReference(messageSend.binding));
