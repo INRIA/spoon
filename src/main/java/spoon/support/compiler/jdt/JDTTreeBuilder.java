@@ -955,7 +955,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
 				} else if (resolvedType instanceof BinaryTypeBinding && resolvedType.enclosingType() != null && !getModifiers(resolvedType.enclosingType().modifiers).containsAll(modifiers)) {
 					typeDeclaration.superclass.resolvedType = new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
-							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
+							(ReferenceBinding) typeDeclaration.superclass.resolvedType.enclosingType());
 				}
 			}
 			if (typeDeclaration.superclass != null) {

@@ -71,7 +71,9 @@ public class ImportTest {
 		String expected = "visibility.YamlRepresenter.RepresentConfigurationSection";
 		assertEquals(expected, innerClass.getReference().toString());
 
-		expected = "org.yaml.snakeyaml.representer.Representer.RepresentMap";
+		// was org.yaml.snakeyaml.representer.SafeRepresenter.RepresentMap
+		// but RepresentMap is defined in SafeRepresenter
+		expected = "org.yaml.snakeyaml.representer.SafeRepresenter.RepresentMap";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 	}
 
