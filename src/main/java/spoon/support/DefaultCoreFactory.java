@@ -199,7 +199,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		}
 		T result = null;
 		try {
-			if (!(object instanceof CtElement || object instanceof CtReference)) {
+			if (!(object instanceof CtElement)) {
 				return object;
 			}
 			// RP: this should be done first or removed?
@@ -210,30 +210,12 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 			if (object.getClass().isEnum()) {
 				return object;
 			}
-			// System.out.println("cloning " + object + "["
-			// + object.getClass().getSimpleName() + "]");
 			result = (T) object.getClass().newInstance();
 			if (result instanceof CtElement) {
-				// if (cloningContext.isEmpty()) {
-				// //CtElement e = (CtElement)object;
-				// //if(e.isParentInitialized()) {
-				// // cloningContext.push(e.getParent());
-				// //} else {
-				// cloningContext.push(null);
-				// //}
-				// }
 				cloningContext.push((CtElement) result);
 			}
 			for (Field f : RtHelper.getAllFields(object.getClass())) {
-				// if (!clonedFields.contains(f)) {
-				// clonedFields.push(f);
 				f.setAccessible(true);
-				// if (f.getName().equals("parent")) {
-				// // if (!cloningContext.isEmpty()) {
-				// ((CtElement) result).setParent(cloningContext
-				// .get(cloningContext.size() - 2));
-				// // }
-				// } else {
 				if (!f.getName().equals("parent")) {
 					Object fieldValue = f.get(object);
 					if (!Modifier.isFinal(f.getModifiers()) && !Modifier.isStatic(f.getModifiers())) {
@@ -251,28 +233,19 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 							f.set(result, c);
 
 						} else if (fieldValue instanceof Map) {
-							// TODO: ARE THERE REALLY MAP FIELDS IN THE MODEL?
-							// System.err.println(" cloning collection " + f+" :
-							// "+cloningContext.peek().getClass().getSimpleName());
 							Map<Object, Object> m = (Map<Object, Object>) fieldValue.getClass().getMethod("clone").invoke(fieldValue);
-							// m.clear();
 							f.set(result, m);
 							for (Entry<?, ?> e : ((Map<?, ?>) fieldValue).entrySet()) {
 								m.put(e.getKey(), clone(e.getValue(), cloningContext));
 							}
 						} else if ((object instanceof CtReference) && (fieldValue instanceof CtElement)) {
-
 							f.set(result, fieldValue);
 						} else {
-							// System.err.println(" cloning field " + f+" :
-							// "+cloningContext.peek().getClass().getSimpleName());
 							f.set(result, clone(f.get(object), cloningContext));
 						}
 					}
 				}
-				// clonedFields.pop();
 			}
-			// }
 			if (result instanceof CtElement) {
 				cloningContext.pop();
 				if (cloningContext.isEmpty()) {
@@ -280,12 +253,9 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 				} else {
 					((CtElement) result).setParent(cloningContext.peek());
 				}
-				// if (cloningContext.size() == 1)
-				// cloningContext.pop();
 			}
 		} catch (Exception e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
-			//			cloningContext.pop();
 		}
 		return result;
 

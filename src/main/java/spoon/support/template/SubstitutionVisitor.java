@@ -17,11 +17,6 @@
 
 package spoon.support.template;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
@@ -63,6 +58,11 @@ import spoon.template.Local;
 import spoon.template.Parameter;
 import spoon.template.Template;
 import spoon.template.TemplateParameter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeSet;
 
 class SkipException extends SpoonException {
 	private static final long serialVersionUID = 1L;

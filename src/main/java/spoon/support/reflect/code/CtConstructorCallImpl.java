@@ -17,9 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities
-		.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
 		implements CtConstructorCall<T> {

@@ -35,8 +35,10 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
+import spoon.test.TestUtils;
 import spoon.test.replace.testclasses.Tacos;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -238,6 +240,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceIntegerReference() throws Exception {
 		// contract: replace a primitive type reference by another one.
+		final Factory factory = TestUtils.build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 		final CtMethod<?> aMethod = aTacos.getMethodsByName("m").get(0);
 
@@ -251,6 +254,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceAllTypeRefenceWithGenerics() throws Exception {
 		// contract: replace all type references with a generic to the same type reference without generics.
+		final Factory factory = TestUtils.build(Tacos.class);
 		final List<CtTypeReference> references = Query.getReferences(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
@@ -258,13 +262,7 @@ public class ReplaceTest {
 			}
 		});
 
-		for (CtTypeReference reference : references) {
-			assertTrue(reference.getActualTypeArguments().size() > 0);
-		}
-
-		for (CtTypeReference<?> reference : references) {
-			reference.replace(factory.Type().createReference(reference.getQualifiedName()));
-		}
+		references.get(0).replace(factory.Type().createReference(references.get(0).getQualifiedName()));
 
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 		final CtMethod<?> aMethod = aTacos.getMethodsByName("m2").get(0);
@@ -304,6 +302,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceAParameterReferenceToFieldReference() throws Exception {
 		// contract: replace a parameter reference to a field reference.
+		final Factory factory = TestUtils.build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 
 		final CtInvocation inv = aTacos.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
@@ -311,30 +310,31 @@ public class ReplaceTest {
 		final CtParameterReference<?> aParameterReference = (CtParameterReference<?>) variableRead.getVariable();
 		final CtFieldReference<?> aFieldReference = aTacos.getField("field").getReference();
 
-		assertEquals(variableRead.getVariable(), aParameterReference);
+		assertEquals(aParameterReference, variableRead.getVariable());
 		assertEquals("java.lang.System.err.println(param)", inv.toString());
 
 		aParameterReference.replace(aFieldReference);
 
-		assertEquals(variableRead.getVariable(), aFieldReference);
+		assertEquals(aFieldReference, variableRead.getVariable());
 		assertEquals("java.lang.System.err.println(field)", inv.toString());
 	}
 
 	@Test
 	public void testReplaceExecutableReferenceByAnotherOne() throws Exception {
 		// contract: replace an executable reference to another one in an invocation.
+		final Factory factory = TestUtils.build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 
 		final CtInvocation inv = aTacos.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		final CtExecutableReference oldExecutable = inv.getExecutable();
 		final CtExecutableReference<Object> newExecutable = factory.Executable().createReference("void java.io.PrintStream#print(java.lang.String)");
 
-		assertEquals(inv.getExecutable(), oldExecutable);
+		assertEquals(oldExecutable, inv.getExecutable());
 		assertEquals("java.io.PrintStream#println(java.lang.String)", inv.getExecutable().toString());
 
 		oldExecutable.replace(newExecutable);
 
-		assertEquals(inv.getExecutable(), newExecutable);
+		assertEquals(newExecutable, inv.getExecutable());
 		assertEquals("java.io.PrintStream#print(java.lang.String)", inv.getExecutable().toString());
 	}
 }

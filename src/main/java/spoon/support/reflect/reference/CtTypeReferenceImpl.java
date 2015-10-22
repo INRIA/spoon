@@ -78,31 +78,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return this;
 		}
 		if (getSimpleName().equals("int")) {
-			return factory.Type().createReference(Integer.class);
+			return getFactory().Type().createReference(Integer.class);
 		}
 		if (getSimpleName().equals("float")) {
-			return factory.Type().createReference(Float.class);
+			return getFactory().Type().createReference(Float.class);
 		}
 		if (getSimpleName().equals("long")) {
-			return factory.Type().createReference(Long.class);
+			return getFactory().Type().createReference(Long.class);
 		}
 		if (getSimpleName().equals("char")) {
-			return factory.Type().createReference(Character.class);
+			return getFactory().Type().createReference(Character.class);
 		}
 		if (getSimpleName().equals("double")) {
-			return factory.Type().createReference(Double.class);
+			return getFactory().Type().createReference(Double.class);
 		}
 		if (getSimpleName().equals("boolean")) {
-			return factory.Type().createReference(Boolean.class);
+			return getFactory().Type().createReference(Boolean.class);
 		}
 		if (getSimpleName().equals("short")) {
-			return factory.Type().createReference(Short.class);
+			return getFactory().Type().createReference(Short.class);
 		}
 		if (getSimpleName().equals("byte")) {
-			return factory.Type().createReference(Byte.class);
+			return getFactory().Type().createReference(Byte.class);
 		}
 		if (getSimpleName().equals("void")) {
-			return factory.Type().createReference(Void.class);
+			return getFactory().Type().createReference(Void.class);
 		}
 		return this;
 	}
@@ -333,31 +333,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return this;
 		}
 		if (getActualClass() == Integer.class) {
-			return factory.Type().createReference(int.class);
+			return getFactory().Type().createReference(int.class);
 		}
 		if (getActualClass() == Float.class) {
-			return factory.Type().createReference(float.class);
+			return getFactory().Type().createReference(float.class);
 		}
 		if (getActualClass() == Long.class) {
-			return factory.Type().createReference(long.class);
+			return getFactory().Type().createReference(long.class);
 		}
 		if (getActualClass() == Character.class) {
-			return factory.Type().createReference(char.class);
+			return getFactory().Type().createReference(char.class);
 		}
 		if (getActualClass() == Double.class) {
-			return factory.Type().createReference(double.class);
+			return getFactory().Type().createReference(double.class);
 		}
 		if (getActualClass() == Boolean.class) {
-			return factory.Type().createReference(boolean.class);
+			return getFactory().Type().createReference(boolean.class);
 		}
 		if (getActualClass() == Short.class) {
-			return factory.Type().createReference(short.class);
+			return getFactory().Type().createReference(short.class);
 		}
 		if (getActualClass() == Byte.class) {
-			return factory.Type().createReference(byte.class);
+			return getFactory().Type().createReference(byte.class);
 		}
 		if (getActualClass() == Void.class) {
-			return factory.Type().createReference(void.class);
+			return getFactory().Type().createReference(void.class);
 		}
 		return this;
 	}

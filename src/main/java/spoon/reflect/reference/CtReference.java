@@ -17,11 +17,7 @@
 
 package spoon.reflect.reference;
 
-import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.visitor.CtVisitable;
-import spoon.reflect.visitor.Root;
 
 /**
  * This is the root interface for named program element references. References
@@ -32,8 +28,7 @@ import spoon.reflect.visitor.Root;
  *
  * @see spoon.reflect.declaration.CtElement
  */
-@Root
-public interface CtReference extends FactoryAccessor, CtVisitable {
+public interface CtReference extends CtElement {
 
 	/**
 	 * Gets the simple name of referenced element.
@@ -44,22 +39,6 @@ public interface CtReference extends FactoryAccessor, CtVisitable {
 	 * Sets the name of referenced element.
 	 */
 	<T extends CtReference> T setSimpleName(String simpleName);
-
-	/**
-	 * Gets the parent of current reference.
-	 *
-	 * @throws ParentNotInitializedException
-	 * 		when the parent of this element is not initialized
-	 */
-	Object getParent() throws ParentNotInitializedException;
-
-	/**
-	 * Manually sets the parent element of the current element.
-	 *
-	 * @param parent
-	 * 		parent reference.
-	 */
-	<E extends CtReference> E setParent(Object parent);
 
 	/**
 	 * Tries to get the declaration that corresponds to the referenced element.

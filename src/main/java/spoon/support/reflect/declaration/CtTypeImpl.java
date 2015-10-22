@@ -245,7 +245,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public CtPackage getPackage() {
 		if (parent instanceof CtPackage) {
-			return (CtPackage) parent;
+			return (CtPackage) getParent();
 		} else if (parent instanceof CtType) {
 			return ((CtType<?>) parent).getPackage();
 		} else {

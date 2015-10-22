@@ -18,7 +18,6 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -80,7 +79,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 
 	@Override
 	public <E extends T> void replace(CtExpression<E> element) {
-		replace((CtElement) element);
+		super.replace(element);
 	}
 
 	@Override
