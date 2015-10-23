@@ -2,6 +2,7 @@ package spoon.test.refactoring;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtTypeReference;
@@ -89,4 +90,25 @@ public class RefactoringTest {
 		}).get(0);
 		assertEquals("this(\"\")", thisInvocation.toString());
 	}
+
+
+        @Test
+        public void testTransformedInstanceofAfterATransformation() throws Exception {
+                final Launcher launcher = new Launcher();
+                launcher.setArgs(new String[] {
+                                "-i", "src/test/java/spoon/test/refactoring/testclasses",
+                                "-o", "target/spooned/refactoring",
+                                "-p", ThisTransformationProcessor.class.getName()
+                });
+                launcher.run();
+                final CtClass<?> aClassX = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.refactoring.testclasses.AClassX");
+
+                final CtBinaryOperator<?> instanceofInvocation = aClassX.getElements(new AbstractFilter<CtBinaryOperator<?>>(CtBinaryOperator.class) {
+                        @Override
+                        public boolean matches(CtBinaryOperator<?> element) {
+                                return true;
+                        }
+                }).get(0);
+                assertEquals("o instanceof spoon.test.refactoring.testclasses.AClassX", instanceofInvocation.toString());
+        }
 }
