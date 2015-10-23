@@ -2,6 +2,7 @@ package spoon.test.refactoring;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
@@ -9,6 +10,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.refactoring.testclasses.AClass;
 
 import java.util.List;
@@ -91,24 +93,20 @@ public class RefactoringTest {
 		assertEquals("this(\"\")", thisInvocation.toString());
 	}
 
+	@Test
+	public void testTransformedInstanceofAfterATransformation() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "src/test/java/spoon/test/refactoring/testclasses",
+				"-o", "target/spooned/refactoring",
+				"-p", ThisTransformationProcessor.class.getName()
+		});
+		launcher.run();
+		final CtClass<?> aClassX = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.refactoring.testclasses.AClassX");
 
-        @Test
-        public void testTransformedInstanceofAfterATransformation() throws Exception {
-                final Launcher launcher = new Launcher();
-                launcher.setArgs(new String[] {
-                                "-i", "src/test/java/spoon/test/refactoring/testclasses",
-                                "-o", "target/spooned/refactoring",
-                                "-p", ThisTransformationProcessor.class.getName()
-                });
-                launcher.run();
-                final CtClass<?> aClassX = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.refactoring.testclasses.AClassX");
-
-                final CtBinaryOperator<?> instanceofInvocation = aClassX.getElements(new AbstractFilter<CtBinaryOperator<?>>(CtBinaryOperator.class) {
-                        @Override
-                        public boolean matches(CtBinaryOperator<?> element) {
-                                return true;
-                        }
-                }).get(0);
-                assertEquals("o instanceof spoon.test.refactoring.testclasses.AClassX", instanceofInvocation.toString());
-        }
+		final CtBinaryOperator<?> instanceofInvocation = aClassX.getElements(new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class)).get(0);
+		assertEquals(BinaryOperatorKind.INSTANCEOF, instanceofInvocation.getKind());
+		assertEquals("o", instanceofInvocation.getLeftHandOperand().toString());
+		assertEquals("spoon.test.refactoring.testclasses.AClassX", instanceofInvocation.getRightHandOperand().toString());
+	}
 }
