@@ -11,4 +11,8 @@ public class AClass extends AbstractClass {
 		super();
 		this.string = string;
 	}
+
+	public boolean isMySubclass(Object o) {
+	    return o instanceof AClass;
+	}
 }

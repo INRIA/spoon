@@ -473,6 +473,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(literal);
 		scan(literal.getAnnotations());
 		scan(literal.getType());
+		scan(literal.getValue());
 		scanReferences(literal.getTypeCasts());
 		exit(literal);
 	}
