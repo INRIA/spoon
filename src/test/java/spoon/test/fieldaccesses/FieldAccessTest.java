@@ -152,7 +152,7 @@ public class FieldAccessTest {
 		assertEquals("LOG", logFieldAccess.getVariable().getSimpleName());
 		assertEquals(MyClass.class, logFieldAccess.getVariable().getDeclaringType().getActualClass());
 
-		String expectedLambda = "() -> {\n" + "    spoon.test.fieldaccesses.MyClass.LOG.info(\"bla\");\n" + "}";
+		String expectedLambda = "() -> {" + System.lineSeparator() + "    spoon.test.fieldaccesses.MyClass.LOG.info(\"bla\");" + System.lineSeparator() + "}";
 		assertEquals(expectedLambda, logFieldAccess.getParent(CtLambda.class).toString());
 	}
 
