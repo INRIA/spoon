@@ -1223,7 +1223,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write("this");
 			} else {
 				if (invocation.getTarget() != null) {
-					write(invocation.getTarget().getSignature() + '.');
+					scan(invocation.getTarget());
+					write(".");
 				}
 				write("super");
 			}
