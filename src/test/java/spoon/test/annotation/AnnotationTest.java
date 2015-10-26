@@ -54,6 +54,7 @@ import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
 import spoon.test.annotation.testclasses.AnnotationDefaultAnnotation;
+import spoon.test.annotation.testclasses.AnnotationIntrospection;
 import spoon.test.annotation.testclasses.AnnotationRepeated;
 import spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass;
 import spoon.test.annotation.testclasses.AnnotationsRepeated;
@@ -784,6 +785,14 @@ public class AnnotationTest {
 
 		assertEquals(5, processor.elements.size());
 		assertEquals(1, methodProcessor.elements.size());
+	}
+
+	@Test
+	public void testAnnotationIntrospection() throws Exception {
+		CtClass<Object> aClass = factory.Class().get(AnnotationIntrospection.class);
+		CtMethod<?> mMethod = aClass.getMethod("m");
+		CtStatement statement = mMethod.getBody().getStatement(1);
+		assertEquals("annotation.equals(null)", statement.toString());
 	}
 
 	abstract class AbstractElementsProcessor<A extends Annotation, E extends CtElement>
