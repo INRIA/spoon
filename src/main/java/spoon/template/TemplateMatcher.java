@@ -59,7 +59,7 @@ import spoon.support.util.RtHelper;
  */
 public class TemplateMatcher {
 
-	private static List<CtInvocation<?>> getMethods(CtClass<? extends Template<?>> root) {
+	private List<CtInvocation<?>> getMethods(CtClass<? extends Template<?>> root) {
 		CtExecutableReference<?> methodRef = root.getFactory().Executable()
 				.createReference(root.getFactory().Type().createReference(TemplateParameter.class), root.getFactory().Type().createTypeParameterReference("T"), "S");
 		List<CtInvocation<?>> meths = Query.getElements(root, new InvocationFilter(methodRef));
@@ -67,14 +67,14 @@ public class TemplateMatcher {
 		return meths;
 	}
 
-	private static List<String> getTemplateNameParameters(CtClass<? extends Template<?>> templateType) {
+	private List<String> getTemplateNameParameters(CtClass<? extends Template<?>> templateType) {
 		final List<String> ts = new ArrayList<String>();
 		final Collection<String> c = Parameters.getNames(templateType);
 		ts.addAll(c);
 		return ts;
 	}
 
-	private static List<CtTypeReference<?>> getTemplateTypeParameters(final CtClass<? extends Template<?>> templateType) {
+	private List<CtTypeReference<?>> getTemplateTypeParameters(final CtClass<? extends Template<?>> templateType) {
 
 		final List<CtTypeReference<?>> ts = new ArrayList<CtTypeReference<?>>();
 		final Collection<String> c = Parameters.getNames(templateType);
@@ -97,7 +97,7 @@ public class TemplateMatcher {
 		return ts;
 	}
 
-	private static List<CtFieldReference<?>> getVarargs(CtClass<? extends Template<?>> root, List<CtInvocation<?>> variables) {
+	private List<CtFieldReference<?>> getVarargs(CtClass<? extends Template<?>> root, List<CtInvocation<?>> variables) {
 		List<CtFieldReference<?>> fields = new ArrayList<CtFieldReference<?>>();
 		for (CtFieldReference<?> field : root.getReference().getAllFields()) {
 			if (field.getType().getActualClass() == CtStatementList.class) {
@@ -113,9 +113,10 @@ public class TemplateMatcher {
 		return fields;
 	}
 
-	private List<CtElement> finds = new ArrayList<CtElement>();
+	/** the template itself */
+	private CtElement templateRoot;
 
-	private boolean found;
+	private List<CtElement> finds = new ArrayList<CtElement>();
 
 	private Map<Object, Object> matches = new HashMap<Object, Object>();
 
@@ -132,17 +133,14 @@ public class TemplateMatcher {
 	/**
 	 * Constructs a matcher for a given template.
 	 *
-	 * @param templateType
-	 * 		the type of the template
 	 */
-	public TemplateMatcher(CtClass<? extends Template<?>> templateType) {
-		if (templateType == null) {
-			throw new TemplateException("Template type is null. Use the template factory " + "to access a template CtClass and check " + "your template source path.");
-		}
-		variables = TemplateMatcher.getMethods(templateType);
-		typeVariables = TemplateMatcher.getTemplateTypeParameters(templateType);
-		names = TemplateMatcher.getTemplateNameParameters(templateType);
-		varArgs = TemplateMatcher.getVarargs(templateType, variables);
+	public TemplateMatcher(CtElement templateRoot) {
+		this.templateType = templateRoot.getParent(CtClass.class);
+		this.templateRoot = templateRoot;
+		variables = getMethods(templateType);
+		typeVariables = getTemplateTypeParameters(templateType);
+		names = getTemplateNameParameters(templateType);
+		varArgs = getVarargs(templateType, variables);
 		this.templateType = templateType;
 	}
 
@@ -174,32 +172,25 @@ public class TemplateMatcher {
 	}
 
 	/**
-	 * Finds all target program sub-trees that correspond to a template. Once
-	 * this method has been called, {@link #getFinds()} will give the matching
-	 * CtElements if any.
+	 * Finds all target program sub-trees that correspond to a template.
 	 *
 	 * @param targetRoot
 	 * 		the target to be tested for match
-	 * @param templateRoot
-	 * 		the template to match against
-	 * @return true if there is one or more matches
-	 * @see #getFinds()
+	 * @return the matched elements
 	 */
-	public boolean find(CtElement targetRoot, final CtElement templateRoot) {
-		found = false;
+	public List<CtElement> find(final CtElement targetRoot) {
 		new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
 				if (match(element, templateRoot)) {
 					finds.add(element);
-					found = true;
 					// matches.clear();
 				}
 				super.scan(element);
 			}
 		}.scan(targetRoot);
 
-		return found;
+		return finds;
 	}
 
 	private ParameterMatcher findParameterMatcher(CtElement declaration, String name) throws InstantiationException, IllegalAccessException {
@@ -265,19 +256,11 @@ public class TemplateMatcher {
 	}
 
 	/**
-	 * Returns all the elements that correspond to a given template. The
-	 * {@link #find(CtElement, CtElement)} method must have been called before
-	 */
-	public List<CtElement> getFinds() {
-		return finds;
-	}
-
-	/**
 	 * Returns all the matches in a map where the keys are the corresponding
 	 * template parameters. The {@link #match(CtElement, CtElement)} method must
 	 * have been called before.
 	 */
-	public Map<Object, Object> getMatches() {
+	private Map<Object, Object> getMatches() {
 		return matches;
 	}
 
@@ -387,8 +370,7 @@ public class TemplateMatcher {
 					if (!helperMatch(f.get(target), f.get(template))) {
 						return false;
 					}
-				} catch (Exception e) {
-					Launcher.LOGGER.error(e.getMessage(), e);
+				} catch (IllegalAccessException ignore) {
 				}
 			}
 			return true;
@@ -408,11 +390,11 @@ public class TemplateMatcher {
 			} else if (template instanceof CtReference) {
 				// Get parameter
 				CtReference ref = (CtReference) template;
-				Parameter param = ref.getDeclaration().getAnnotation(Parameter.class);
 				ParameterMatcher instance;
-				if (param == null) {
+				if (ref.getDeclaration() == null || ref.getDeclaration().getAnnotation(Parameter.class) == null) {
 					instance = new DefaultParameterMatcher();
 				} else {
+					Parameter param = ref.getDeclaration().getAnnotation(Parameter.class);
 					instance = param.match().newInstance();
 				}
 				return instance.match(this, (CtReference) template, (CtReference) target);
@@ -460,7 +442,7 @@ public class TemplateMatcher {
 	 * @return true if matches
 	 * @see #getMatches()
 	 */
-	public boolean match(CtElement targetRoot, CtElement templateRoot) {
+	private boolean match(CtElement targetRoot, CtElement templateRoot) {
 		return helperMatch(targetRoot, templateRoot);
 	}
 
