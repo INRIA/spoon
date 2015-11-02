@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/INRIA/spoon.svg?branch=master)](https://travis-ci.org/INRIA/spoon)
+[![Travis Build Status](https://travis-ci.org/INRIA/spoon.svg?branch=master)](https://travis-ci.org/INRIA/spoon)
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/github/INRIA/spoon?svg=true)](https://ci.appveyor.com/project/INRIA/spoon)
 
 # Spoon
 
