@@ -11,6 +11,8 @@ Guidelines for pull requests:
 
 **G4**: To achieve a clean commit history after a pull request discussion, commits should be squashed as much as possible.
 
+**G5**: If your pull request contains a critical bug fix of the current release, you must create a pull request to the stable branch.
+
 
 Notes:
 

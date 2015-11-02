@@ -2,7 +2,7 @@
 
 ## Before the release
 
-- Push all bug fixes from stable to master branch
+- Push all critical bug fixes from stable to master branch
 
 ## After release
 
@@ -14,7 +14,10 @@
     - `cd /home/groups/spoon/spoon.git/`
     - `git push origin master`
     - `git push origin spoon-core-X.X.X`
+- Updates stable branch with the new tag created:
+    - `git checkout stable`
+    - `git reset --hard tag-name`
+    - `git push -f upstream stable`
 - Announces release on the mailing list (give credits to the contributors)
 - Announces release on GitHub (if necessary)
 - If necessary, removes all methods deprecated after the release!
--  
