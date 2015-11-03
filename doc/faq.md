@@ -22,9 +22,9 @@ The Spoon metamodel consists of all interfaces that are in packages `spoon.refle
 
 ### How to get a Spoon model programmatically?
 
-{% highlight java %}
+```java
 Launcher spoon = new Launcher();
-spoon.addInputResource(new FileSystemFolder(new File("src/test/resources/spoon/test/api")));
+spoon.addInputResource("src/test/resources/spoon/test/api");
 spoon.run();
 Factory factory = spoon.getFactory();
 // list all packages of the model
@@ -32,10 +32,10 @@ for(CtPackage p : factory.Package().getAll()) {
   System.out.println("package: "+p.getQualifiedName());
 }
 // list all classes of the model
-for(CtSimpleType s : factory.Class().getAll()) {
+for(CtType<?> s : factory.Class().getAll()) {
   System.out.println("class: "+s.getQualifiedName());
 }
-{% endhighlight %}
+```
 
 ## Advanced
 
@@ -43,21 +43,21 @@ for(CtSimpleType s : factory.Class().getAll()) {
 
 By default, whenever an Annotation Processor processes a CtElement it will consume (delete) the processed annotation from it. If you want the annotation to be kept, override the init() method from the `AbstractAnnotationProcessor` class, and call the protected method `clearConsumedAnnotationTypes` like so:
 
-{% highlight xml %}
+```xml
 @Override
 public void init() {
 	super.init();
 	clearConsumedAnnotationTypes();
 }
-{% endhighlight %}
+```
 
 ### How to compare and create type references in a type-safe way?
 
 Use actual classes instead of strings.
 
-{% highlight java %}
+```java
 CtTypeReference t=...
 if(t.getActualClass()==int.class) { ... }
 Factory f=...
 t=f.Type().createReference(int.class);
-{% endhighlight %}
+```
