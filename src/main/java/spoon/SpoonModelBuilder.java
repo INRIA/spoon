@@ -17,15 +17,15 @@
 
 package spoon;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import spoon.compiler.SpoonResource;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Responsible for building a spoon model from Java source code.
@@ -34,7 +34,7 @@ import spoon.reflect.factory.Factory;
  * The Spoon model (see {@link Factory} is built from input sources given as
  * files. Use {@link #build()} to create the Spoon model.
  * Once the model is built and stored in the factory, it
- * can be processed by using a {@link #process(List)}.
+ * can be processed by using a {@link #instantiateAndProcess(List)}.
  * </p>
  *
  * <p>
@@ -146,8 +146,16 @@ public interface SpoonModelBuilder {
 
 	/**
 	 * Processes the Java model with the given processors.
+	 * @see #instantiateAndProcess(List)
 	 */
+	@Deprecated
 	void process(List<String> processorTypes);
+
+	/**
+	 * Takes a list of fully qualified name processors and instantiates them to process
+	 * the Java model.
+	 */
+	void instantiateAndProcess(List<String> processors);
 
 	/**
 	 * Processes the Java model with the given processors.

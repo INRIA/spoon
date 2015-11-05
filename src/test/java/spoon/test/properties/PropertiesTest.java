@@ -29,7 +29,7 @@ public class PropertiesTest {
 						));
 		compiler.build();
 
-		compiler.process(Arrays.asList(SimpleProcessor.class.getName()));
+		compiler.instantiateAndProcess(Arrays.asList(SimpleProcessor.class.getName()));
 		assertEquals(factory.getEnvironment().getErrorCount(), 0);
 	}
 
