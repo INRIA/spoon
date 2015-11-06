@@ -2,7 +2,12 @@ language: java
 
 sudo: false
 
-install: mvn verify javadoc:javadoc site
-
 jdk:
   - oraclejdk8
+
+script:
+  - mvn verify javadoc:javadoc site jacoco:report coveralls:report -Pcoveralls
+
+cache:
+  directories:
+    - $HOME/.m2

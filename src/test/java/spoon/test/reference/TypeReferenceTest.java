@@ -144,6 +144,15 @@ public class TypeReferenceTest {
 
 		// we get ClassB's field of type ClassC
 		Collection<CtFieldReference<?>> fieldsOfB = referencedType.getAllFields();
+		if (fieldsOfB.size() == 2) {
+			// Jacoco instruments all dependencies with an agent.
+			// So, when we use reflection on ClassB, we don't have one field but two fields.
+			// First, it is the field of ClassB. Second, it is the field of Jacoco.
+			final CtFieldReference<?> potentialJacoco = (CtFieldReference<?>) fieldsOfB.toArray()[1];
+			if ("$jacocoData".equals(potentialJacoco.getSimpleName())) {
+				fieldsOfB.remove(potentialJacoco);
+			}
+		}
 		assertEquals(1, fieldsOfB.size());
 
 		CtFieldReference<?> cField = fieldsOfB.iterator().next();
