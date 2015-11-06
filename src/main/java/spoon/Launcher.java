@@ -594,7 +594,7 @@ public class Launcher implements SpoonAPI {
 	 * <li>Template model building in the given factory (if any template source
 	 * is given): {@link SpoonCompiler#build()}.</li>
 	 * <li>Model processing with the list of given processors if any:
-	 * {@link SpoonCompiler#process(List)}.</li>
+	 * {@link SpoonCompiler#instantiateAndProcess(List)}.</li>
 	 * <li>Processed Source code printing and generation (can be disabled with
 	 * {@link OutputType#NO_OUTPUT}):
 	 * {@link SpoonCompiler#generateProcessedSourceFiles(OutputType)}.</li>
@@ -668,7 +668,7 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public void process() {
 		long tstart = System.currentTimeMillis();
-		modelBuilder.process(getProcessorTypes());
+		modelBuilder.instantiateAndProcess(getProcessorTypes());
 		modelBuilder.process(getProcessors());
 		getEnvironment().debugMessage("model processed in " + (System.currentTimeMillis() - tstart) + " ms");
 	}
