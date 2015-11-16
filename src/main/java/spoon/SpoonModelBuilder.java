@@ -145,13 +145,6 @@ public interface SpoonModelBuilder {
 	boolean build();
 
 	/**
-	 * Processes the Java model with the given processors.
-	 * @see #instantiateAndProcess(List)
-	 */
-	@Deprecated
-	void process(List<String> processorTypes);
-
-	/**
 	 * Takes a list of fully qualified name processors and instantiates them to process
 	 * the Java model.
 	 */

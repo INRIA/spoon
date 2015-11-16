@@ -914,11 +914,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public void process(List<String> processorTypes) {
-		instantiateAndProcess(processorTypes);
-	}
-
-	@Override
 	public void instantiateAndProcess(List<String> processors) {
 		initInputClassLoader();
 
