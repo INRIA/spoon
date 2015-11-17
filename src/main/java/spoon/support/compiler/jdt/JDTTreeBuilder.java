@@ -488,7 +488,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 						if (!JDTTreeBuilder.this.context.isGenericTypeExplicit) {
 							isImplicit = true;
 						}
-						ref.addActualTypeArgument(getTypeReference(b));
+						if (bindingCache.containsKey(b)) {
+							ref.addActualTypeArgument(getCtCircularTypeReference(b));
+						} else {
+							ref.addActualTypeArgument(getTypeReference(b));
+						}
 						isImplicit = false;
 					}
 				}
@@ -545,6 +549,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 						return getTypeReference(((CaptureBinding) b).wildcard);
 					} else if (b.superclass != null && b.firstBound == b.superclass) {
 						bounds = false;
+						bindingCache.put(binding, ref);
 						((CtTypeParameterReference) ref).addBound(getTypeReference(b.superclass));
 						bounds = oldBounds;
 					}
@@ -586,13 +591,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 				if (((WildcardBinding) binding).bound != null && ref instanceof CtTypeParameterReference) {
 					if (bindingCache.containsKey(((WildcardBinding) binding).bound)) {
-						final CtCircularTypeReference circularRef = factory.Internal().createCircularTypeReference();
-						final CtTypeReference originalRef = bindingCache.get(((WildcardBinding) binding).bound);
-						circularRef.setPackage(originalRef.getPackage());
-						circularRef.setSimpleName(originalRef.getSimpleName());
-						circularRef.setDeclaringType(originalRef.getDeclaringType());
-						circularRef.setActualTypeArguments(originalRef.getActualTypeArguments());
-						circularRef.setTypeAnnotations(originalRef.getTypeAnnotations());
+						final CtCircularTypeReference circularRef = getCtCircularTypeReference(((WildcardBinding) binding).bound);
 						((CtTypeParameterReference) ref).addBound(circularRef);
 					} else {
 						((CtTypeParameterReference) ref).addBound(getTypeReference(((WildcardBinding) binding).bound));
@@ -669,6 +668,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 			bindingCache.remove(binding);
 			addTypeAnnotationFromBindingToReference(binding, ref);
 			return (CtTypeReference<T>) ref;
+		}
+
+		private CtCircularTypeReference getCtCircularTypeReference(TypeBinding b) {
+			final CtCircularTypeReference circularRef = factory.Internal().createCircularTypeReference();
+			final CtTypeReference originalRef = bindingCache.get(b);
+			circularRef.setPackage(originalRef.getPackage());
+			circularRef.setSimpleName(originalRef.getSimpleName());
+			circularRef.setDeclaringType(originalRef.getDeclaringType());
+			circularRef.setActualTypeArguments(originalRef.getActualTypeArguments());
+			circularRef.setTypeAnnotations(originalRef.getTypeAnnotations());
+			return circularRef;
 		}
 
 		private void addTypeAnnotationFromBindingToReference(TypeBinding resolvedType, CtTypeReference<?> reference) {
