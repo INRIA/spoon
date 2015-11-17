@@ -6,8 +6,10 @@ import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtCircularTypeReference;
@@ -18,6 +20,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.reference.testclasses.EnumValue;
 
 import java.util.Collection;
 import java.util.List;
@@ -227,6 +230,29 @@ public class TypeReferenceTest {
 		assertEquals(1, genericExtends.getBounds().size());
 
 		final CtTypeReference<?> circularRef = genericExtends.getBounds().get(0);
+		assertTrue(circularRef instanceof CtCircularTypeReference);
+	}
+
+	@Test
+	public void testRecursiveTypeReferenceInGenericType() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/EnumValue.java");
+		launcher.setSourceOutputDirectory("./target/spoon-test");
+		launcher.run();
+
+		final CtClass<EnumValue> aClass = launcher.getFactory().Class().get(EnumValue.class);
+		final CtMethod<?> asEnum = aClass.getMethodsByName("asEnum").get(0);
+
+		final CtTypeParameterReference genericType = (CtTypeParameterReference) asEnum.getFormalTypeParameters().get(0);
+		assertNotNull(genericType);
+		assertEquals(1, genericType.getBounds().size());
+
+		final CtTypeReference<?> extendsGeneric = genericType.getBounds().get(0);
+		assertNotNull(extendsGeneric);
+		assertEquals(1, extendsGeneric.getActualTypeArguments().size());
+
+		final CtTypeReference circularRef = extendsGeneric.getActualTypeArguments().get(0);
+		assertNotNull(circularRef);
 		assertTrue(circularRef instanceof CtCircularTypeReference);
 	}
 
