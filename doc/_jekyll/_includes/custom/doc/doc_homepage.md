@@ -6,7 +6,7 @@ Spoon is an open-source library that enables you to transform (see below) and an
 
 - If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact Martin Monperrus for this).
 
-- If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. “Spoon: A Library for Implementing Analyses and Transformations of Java Source Code”. In Software: Practice and Experience, Wiley-Blackwell, 2015. Doi: 10.1002/spe.2346.
+- If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. “[Spoon: A Library for Implementing Analyses and Transformations of Java Source Code](https://hal.archives-ouvertes.fr/hal-01078532/document)”. In Software: Practice and Experience, Wiley-Blackwell, 2015. Doi: 10.1002/spe.2346.
 
 ```latex
 @article{pawlak:hal-01169705,
@@ -17,6 +17,7 @@ Spoon is an open-source library that enables you to transform (see below) and an
   PAGES = {na},
   YEAR = {2015},
   doi = {10.1002/spe.2346},
+  url = {https://hal.archives-ouvertes.fr/hal-01078532/document}
 }
 ```
 
