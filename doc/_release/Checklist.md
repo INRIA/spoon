@@ -16,7 +16,7 @@
     - `git push origin spoon-core-X.X.X`
 - Updates stable branch with the new tag created:
     - `git checkout stable`
-    - `git reset --hard tag-name`
+    - `git reset --hard last-commit-master` # We need two commits from previous release to deploy a hotfix.
     - `git push -f upstream stable`
 - Announces release on the mailing list (give credits to the contributors)
 - Announces release on GitHub (if necessary)
