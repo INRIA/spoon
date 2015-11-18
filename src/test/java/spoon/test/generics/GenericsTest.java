@@ -346,7 +346,7 @@ public class GenericsTest {
 		assertEquals(2, constructorCall2.getType().getActualTypeArguments().size());
 		assertEquals("new spoon.test.generics.testclasses.Tacos<>()", constructorCall2.toString());
 
-		TestUtils.canBeBuild("./target/spooned/spoon/test/generics/testclasses/", 8);
+		TestUtils.canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
 	}
 
 	@Test
@@ -373,7 +373,7 @@ public class GenericsTest {
 		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
 		assertEquals("makeTacos(null)", invocation2.toString());
 
-		TestUtils.canBeBuild("./target/spooned/spoon/test/generics/testclasses/", 8);
+		TestUtils.canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
 	}
 
 	@Test
@@ -397,7 +397,7 @@ public class GenericsTest {
 		assertEquals(2, newClass2.getType().getActualTypeArguments().size());
 		assertEquals("new javax.lang.model.util.SimpleTypeVisitor7<spoon.test.generics.testclasses.Tacos, java.lang.Void>() {}", newClass2.toString());
 
-		TestUtils.canBeBuild("./target/spooned/spoon/test/generics/testclasses/", 8);
+		TestUtils.canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
 	}
 
 	@Test

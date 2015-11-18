@@ -2,6 +2,7 @@ package spoon.test.constructorcallnewclass;
 
 import org.junit.Before;
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
@@ -18,6 +19,7 @@ import spoon.test.constructorcallnewclass.testclasses.Foo2;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -139,5 +141,26 @@ public class NewClassTest {
 		assertEquals(13, elements.size());
 		assertEquals(Foo2.class.getCanonicalName() + "$12", elements.get(11).getAnonymousClass().getQualifiedName());
 		assertEquals(Foo2.class.getCanonicalName() + "$12$1", elements.get(12).getAnonymousClass().getQualifiedName());
+	}
+
+	@Test
+	public void testCtNewClassInNoClasspath() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/new-class");
+		launcher.setSourceOutputDirectory("./target/new-class");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("IndexWriter");
+		final CtNewClass ctNewClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0);
+
+		final CtClass anonymousClass = ctNewClass.getAnonymousClass();
+		assertNotNull(anonymousClass);
+		assertNotNull(anonymousClass.getSuperclass());
+		assertEquals("Lock.With", anonymousClass.getSuperclass().getSimpleName());
+		assertNull(anonymousClass.getSimpleName()); // In noclasspath, we don't have this information.
+		assertEquals(1, anonymousClass.getMethods().size());
+
+		TestUtils.canBeBuilt("./target/new-class", 8, true);
 	}
 }

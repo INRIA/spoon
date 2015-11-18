@@ -2373,13 +2373,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		CtMethod<Object> m = factory.Core().createMethod();
 		m.setSimpleName(new String(methodDeclaration.selector));
-		m.setType(references.getTypeReference(methodDeclaration.returnType.resolvedType));
+		m.setType(references.getTypeReference(methodDeclaration.returnType.resolvedType, methodDeclaration.returnType));
 		m.setModifiers(getModifiers(methodDeclaration.modifiers));
 		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
 		if (methodDeclaration.thrownExceptions != null) {
 			for (TypeReference r : methodDeclaration.thrownExceptions) {
-				CtTypeReference<? extends Throwable> tr = references.getTypeReference(r.resolvedType);
-				m.addThrownType(tr);
+				m.addThrownType(references.<Throwable>getTypeReference(r.resolvedType, r));
 			}
 		}
 
@@ -2753,6 +2752,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				va = factory.Core().createFieldRead();
 			}
+		} else if (singleNameReference.binding == null) {
+			// In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
+			// By default, we assume that when we don't have any information, we create a variable access.
+			if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
+				va = factory.Core().createVariableWrite();
+			} else {
+				va = factory.Core().createVariableRead();
+			}
+			CtLocalVariableReference ref = factory.Core().createLocalVariableReference();
+			ref.setSimpleName(new String(singleNameReference.token));
+			ref.setDeclaration((CtLocalVariable) getLocalVariableDeclaration(ref.getSimpleName()));
+			va.setVariable(ref);
 		}
 		if (va != null) {
 			context.enter(va, singleNameReference);
@@ -3001,8 +3012,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
-		CtType<?> t = createType(localTypeDeclaration);
-		t.setDocComment(getJavaDoc(localTypeDeclaration.javadoc, scope.referenceCompilationUnit()));
+		CtType<?> t;
+		if (localTypeDeclaration.binding == null) {
+			// no classpath mode but JDT returns nothing. We create an empty class.
+			t = factory.Core().createClass();
+			((CtClass) t).setSuperclass(references.getTypeReference(null, localTypeDeclaration.allocation.type));
+		} else {
+			t = createType(localTypeDeclaration);
+		}
+		if (localTypeDeclaration.javadoc != null) {
+			t.setDocComment(getJavaDoc(localTypeDeclaration.javadoc, scope.referenceCompilationUnit()));
+		}
 		context.enter(t, localTypeDeclaration);
 
 		// AST bug HACK (see TypeDeclaration.traverse)

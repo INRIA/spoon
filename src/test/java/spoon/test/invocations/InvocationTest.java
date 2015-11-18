@@ -26,19 +26,17 @@ public class InvocationTest {
 	public void testTypeOfStaticInvocation() throws Exception {
 		SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
-				"-i", "./src/test/java/spoon/test/invocations/testclasses/",
-				"-o", "./target/spooned/"
+				"-i", "./src/test/java/spoon/test/invocations/testclasses/", "-o", "./target/spooned/"
 		});
 		Factory factory = launcher.getFactory();
 		CtClass<?> aClass = factory.Class().get(Foo.class);
 
-		final List<CtInvocation<?>> elements = aClass
-				.getElements(new AbstractFilter<CtInvocation<?>>(CtInvocation.class) {
-					@Override
-					public boolean matches(CtInvocation<?> element) {
-						return element.getTarget() != null;
-					}
-				});
+		final List<CtInvocation<?>> elements = aClass.getElements(new AbstractFilter<CtInvocation<?>>(CtInvocation.class) {
+			@Override
+			public boolean matches(CtInvocation<?> element) {
+				return element.getTarget() != null;
+			}
+		});
 
 		assertEquals(2, elements.size());
 		assertTrue(elements.get(0).getTarget() instanceof CtTypeAccess);
