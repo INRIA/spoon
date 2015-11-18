@@ -10,7 +10,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>4.4.1-SNAPSHOT</version>
+  <version>4.4.1</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -155,7 +155,7 @@
     <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
     <connection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</connection>
     <developerConnection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>spoon-core-4.4.1</tag>
   </scm>
 
   <properties>
