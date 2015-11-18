@@ -402,7 +402,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				l.add(consRef);
 			}
 			Class<?> sc = c.getSuperclass();
-			l.addAll(getFactory().Type().createReference(sc).getAllExecutables());
+			if (sc != null) {
+				l.addAll(getFactory().Type().createReference(sc).getAllExecutables());
+			}
 		} else {
 			return t.getAllExecutables();
 		}

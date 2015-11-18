@@ -3,12 +3,13 @@ package spoon.test.reference;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.reference.testclasses.Burritos;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class ExecutableReferenceTest {
 	@Test
@@ -77,5 +79,21 @@ public class ExecutableReferenceTest {
 		assertNotEquals(staticExecutable, executableOneParameter);
 		assertEquals("Bar#m(java.lang.String)", staticExecutable.toString());
 		assertEquals("Bar.m(\"42\")", invocations.get(3).toString());
+	}
+
+	@Test
+	public void testSuperClassInGetAllExecutables() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/");
+		launcher.setSourceOutputDirectory("./target/spoon-test");
+		launcher.run();
+
+		final CtClass<Burritos> aBurritos = launcher.getFactory().Class().get(Burritos.class);
+		final CtMethod<?> aMethod = aBurritos.getMethodsByName("m").get(0);
+		try {
+			aMethod.getType().getAllExecutables();
+		} catch (NullPointerException e) {
+			fail("We shoudn't have a NullPointerException when we call getAllExecutables.");
+		}
 	}
 }
