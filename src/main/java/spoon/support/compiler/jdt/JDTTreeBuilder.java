@@ -1673,9 +1673,23 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else if (allocationExpression.expectedType() != null) {
 			constructorCall.setType(references.getTypeReference(allocationExpression.expectedType()));
 		}
-		constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
+		if (allocationExpression.binding != null) {
+			constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
+		} else {
+			final CtExecutableReference<Object> ref = factory.Core().createExecutableReference();
+			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
+			ref.setType(references.getTypeReference(null, allocationExpression.type));
+			ref.setDeclaringType(references.getTypeReference(null, allocationExpression.type));
+
+			final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>(allocationExpression.argumentTypes.length);
+			for (TypeBinding b : allocationExpression.argumentTypes) {
+				parameters.add(references.getTypeReference(b));
+			}
+			ref.setParameters(parameters);
+			constructorCall.setExecutable(ref);
+		}
 		if (constructorCall.getExecutable() != null) {
-			constructorCall.getExecutable().setType((CtTypeReference<Object>) constructorCall.getExecutable().getDeclaringType());
+			constructorCall.getExecutable().setType(constructorCall.getType());
 		}
 
 		if (allocationExpression.genericTypeArguments() != null) {

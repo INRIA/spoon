@@ -2,6 +2,7 @@ package spoon.test.executable;
 
 import org.junit.Assert;
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
@@ -12,11 +13,15 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ExecutableRefTest {
 
@@ -31,7 +36,7 @@ public class ExecutableRefTest {
 		Method method = executableReference.getActualMethod();
 		Assert.assertNotNull(method);
 
-		Assert.assertEquals("Hello World",
+		assertEquals("Hello World",
 				method.invoke(null, ((CtLiteral<?>) ctAbstractInvocation.getArguments().get(0)).getValue()));
 	}
 
@@ -46,7 +51,7 @@ public class ExecutableRefTest {
 		Constructor<?> constructor = executableReference.getActualConstructor();
 		Assert.assertNotNull(constructor);
 
-		Assert.assertEquals("Hello World",
+		assertEquals("Hello World",
 				constructor.newInstance(((CtLiteral<?>) ctAbstractInvocation.getArguments().get(0)).getValue()));
 	}
 
@@ -58,8 +63,25 @@ public class ExecutableRefTest {
 		CtExecutableReference<?> ref = method.getReference();
 
 		Method m = ref.getActualMethod();
-		Assert.assertEquals("myMethod", m.getName());
-		Assert.assertEquals(0, m.getExceptionTypes().length);
+		assertEquals("myMethod", m.getName());
+		assertEquals(0, m.getExceptionTypes().length);
+	}
+
+	@Test
+	public void testSameTypeInConstructorCallBetweenItsObjectAndItsExecutable() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/executable/CmiContext_1.2.java");
+		launcher.setSourceOutputDirectory("./target/executable");
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.objectweb.carol.jndi.spi.CmiContext");
+		final List<CtConstructorCall> ctConstructorCalls = aClass.getElements(new TypeFilter<>(CtConstructorCall.class));
+
+		for (CtConstructorCall constructorCall : ctConstructorCalls) {
+			assertNotNull(constructorCall.getExecutable());
+			assertEquals(constructorCall.getExecutable().getType(), constructorCall.getType());
+		}
 	}
 
 	private CtAbstractInvocation<?> getInvocationFromMethod(String methodName) throws Exception {
@@ -69,14 +91,14 @@ public class ExecutableRefTest {
 		Assert.assertNotNull(clazz);
 
 		List<CtMethod<?>> methods = clazz.getMethodsByName(methodName);
-		Assert.assertEquals(1, methods.size());
+		assertEquals(1, methods.size());
 
 		CtMethod<?> ctMethod = methods.get(0);
 		CtBlock<?> ctBody = (CtBlock<?>) ctMethod.getBody();
 		Assert.assertNotNull(ctBody);
 
 		List<CtStatement> ctStatements = ctBody.getStatements();
-		Assert.assertEquals(1, ctStatements.size());
+		assertEquals(1, ctStatements.size());
 
 		CtStatement ctStatement = ctStatements.get(0);
 		Assert.assertTrue(ctStatement instanceof CtAbstractInvocation<?>);
