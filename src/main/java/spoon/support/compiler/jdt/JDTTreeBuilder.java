@@ -789,6 +789,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 
+		public <T> CtVariableReference<T> getVariableReference(ProblemBinding binding) {
+			CtFieldReference<T> ref = factory.Core().createFieldReference();
+			if (binding == null) {
+				return ref;
+			}
+			ref.setSimpleName(new String(binding.name));
+			ref.setType((CtTypeReference<T>) getTypeReference(binding.searchType));
+			return ref;
+		}
+
 		public List<CtTypeReference<?>> getBoundedTypesReferences(TypeBinding[] genericTypeArguments) {
 			List<CtTypeReference<?>> res = new ArrayList<CtTypeReference<?>>(genericTypeArguments.length);
 			for (TypeBinding tb : genericTypeArguments) {
@@ -2666,13 +2676,23 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(ta, qualifiedNameReference);
 			return false;
 		} else if (qualifiedNameReference.binding instanceof ProblemBinding) {
+			CtVariableAccess<Object> va;
 			if (context.stack.peek().element instanceof CtInvocation) {
 				final CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
 				final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 				typeReference.setSimpleName(qualifiedNameReference.toString());
 				ta.setType(typeReference);
 				context.enter(ta, qualifiedNameReference);
+				return false;
+			}  else if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
+				va = factory.Core().createFieldWrite();
+			} else {
+				va = factory.Core().createFieldRead();
 			}
+			va.setVariable(references.getVariableReference((ProblemBinding) qualifiedNameReference.binding));
+			// In no classpath mode and with qualified name, the binding don't have a good name.
+			va.getVariable().setSimpleName(createTypeName(qualifiedNameReference.getName()));
+			context.enter(va, qualifiedNameReference);
 			return false;
 		} else {
 			CtVariableAccess<Object> va = null;
@@ -2758,6 +2778,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				va = factory.Core().createFieldRead();
 			}
+			va.setVariable(references.getVariableReference((ProblemBinding) singleNameReference.binding));
 		} else if (singleNameReference.binding == null) {
 			// In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
 			// By default, we assume that when we don't have any information, we create a variable access.
