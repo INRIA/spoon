@@ -316,10 +316,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 				((CtStatement) current).setLabel(context.label.pop());
 			}
 
-			if (e instanceof CtTypedElement && node instanceof Expression) {
-				if (((CtTypedElement<?>) e).getType() == null && !(e instanceof CtInvocation)) {
-					((CtTypedElement<Object>) e).setType(references.getTypeReference(((Expression) node).resolvedType));
+			try {
+				if (e instanceof CtTypedElement && node instanceof Expression) {
+					if (((CtTypedElement<?>) e).getType() == null) {
+						((CtTypedElement<Object>) e).setType(references.getTypeReference(((Expression) node).resolvedType));
+					}
 				}
+			} catch (UnsupportedOperationException ignore) {
+				// For some element, we throw an UnsupportedOperationException when we call setType().
 			}
 
 		}
@@ -1654,25 +1658,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	private <T extends CtConstructorCall<Object>> T buildCommonPartForCtNewClassAndCtConstructorCall(AllocationExpression allocationExpression, BlockScope scope, T constructorCall) {
-		if (allocationExpression.type != null) {
-			final TypeReference[][] typeArguments = allocationExpression.type.getTypeArguments();
-			// If typeArguments are null or empty, we have an element with a generic type.
-			if (typeArguments != null && typeArguments.length > 0) {
-				context.isGenericTypeExplicit = true;
-				// This loop is necessary because it is the only way to know if the generic type
-				// is implicit or not.
-				for (TypeReference[] typeArgument : typeArguments) {
-					context.isGenericTypeExplicit = typeArgument != null && typeArgument.length > 0;
-					if (context.isGenericTypeExplicit) {
-						break;
-					}
-				}
-			}
-			constructorCall.setType(references.getTypeReference(allocationExpression.type.resolvedType));
-			context.isGenericTypeExplicit = true;
-		} else if (allocationExpression.expectedType() != null) {
-			constructorCall.setType(references.getTypeReference(allocationExpression.expectedType()));
-		}
 		if (allocationExpression.binding != null) {
 			constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
 		} else {
@@ -1688,8 +1673,25 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ref.setParameters(parameters);
 			constructorCall.setExecutable(ref);
 		}
-		if (constructorCall.getExecutable() != null) {
-			constructorCall.getExecutable().setType(constructorCall.getType());
+
+		if (allocationExpression.type != null) {
+			final TypeReference[][] typeArguments = allocationExpression.type.getTypeArguments();
+			// If typeArguments are null or empty, we have an element with a generic type.
+			if (typeArguments != null && typeArguments.length > 0) {
+				context.isGenericTypeExplicit = true;
+				// This loop is necessary because it is the only way to know if the generic type
+				// is implicit or not.
+				for (TypeReference[] typeArgument : typeArguments) {
+					context.isGenericTypeExplicit = typeArgument != null && typeArgument.length > 0;
+					if (context.isGenericTypeExplicit) {
+						break;
+					}
+				}
+			}
+			constructorCall.getExecutable().setType(references.getTypeReference(allocationExpression.type.resolvedType));
+			context.isGenericTypeExplicit = true;
+		} else if (allocationExpression.expectedType() != null) {
+			constructorCall.getExecutable().setType(references.getTypeReference(allocationExpression.expectedType()));
 		}
 
 		if (allocationExpression.genericTypeArguments() != null) {

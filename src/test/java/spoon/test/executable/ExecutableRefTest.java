@@ -80,8 +80,9 @@ public class ExecutableRefTest {
 
 		for (CtConstructorCall constructorCall : ctConstructorCalls) {
 			assertNotNull(constructorCall.getExecutable());
-			assertEquals(constructorCall.getExecutable().getType(), constructorCall.getType());
 		}
+
+		TestUtils.canBeBuilt("./target/executable", 8, true);
 	}
 
 	private CtAbstractInvocation<?> getInvocationFromMethod(String methodName) throws Exception {

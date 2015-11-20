@@ -6,6 +6,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -151,5 +152,15 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
 				&& actualTypeArguments.remove(actualTypeArgument);
+	}
+
+	@Override
+	public CtTypeReference<T> getType() {
+		return getExecutable() == null ? null : getExecutable().getType();
+	}
+
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		throw new UnsupportedOperationException("Uses getExecutable().setType(CtTypeReference<T>)");
 	}
 }
