@@ -16,6 +16,10 @@ In other terms, references are used by meta model elements to reference elements
 in a weak way. Weak references make it more flexible to construct and modify a 
 program model without having to get strong references on all referred elements.
 
+{{site.data.alerts.note}}
+From Spoon 5.0.0, CtReference is a subclass of CtElement.
+{{site.data.alerts.end}}
+
 ![References of the Spoon Java 8 metamodel]({{ "/images/references-elements.png" | prepend: site.baseurl }})
 
 ##  How are references resolved? 
