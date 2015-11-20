@@ -1,11 +1,7 @@
 package spoon.support.compiler.jdt;
 
-import java.util.ArrayList;
-
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
-import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -54,6 +50,8 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
+
+import java.util.ArrayList;
 
 @SuppressWarnings("unchecked")
 public class ParentExiter extends CtInheritanceScanner {
@@ -401,10 +399,10 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtClass) {
 			newClass.setAnonymousClass((CtClass<?>) child);
 			final QualifiedAllocationExpression node = (QualifiedAllocationExpression) jdtTreeBuilder.context.stack.peek().node;
-			final ReferenceBinding[] referenceBindings = ((LocalTypeBinding) node.resolvedType).superInterfaces();
+			final ReferenceBinding[] referenceBindings = node.resolvedType == null ? null : node.resolvedType.superInterfaces();
 			if (referenceBindings != null && referenceBindings.length > 0) {
 				((CtClass<?>) child).addSuperInterface(newClass.getType());
-			} else {
+			} else if (newClass.getType() != null) {
 				((CtClass<?>) child).setSuperclass(newClass.getType());
 			}
 			return;

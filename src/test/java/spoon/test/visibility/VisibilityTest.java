@@ -1,15 +1,6 @@
 package spoon.test.visibility;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static spoon.test.TestUtils.build;
-import static spoon.test.TestUtils.canBeBuild;
-
-import java.io.File;
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
@@ -20,6 +11,14 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.test.TestUtils;
+
+import java.io.File;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static spoon.test.TestUtils.build;
 
 public class VisibilityTest {
     @Test
@@ -60,7 +59,7 @@ public class VisibilityTest {
 		assertNotNull(aFloat);
 		assertEquals(spoon.test.visibility.testclasses.Float.class, aFloat.getActualClass());
 
-		canBeBuild(new File("./target/spooned/spoon/test/visibility_package/testclasses/"), 7);
+		TestUtils.canBeBuilt(new File("./target/spooned/spoon/test/visibility_package/testclasses/"), 7);
 	}
 
 	@Test
@@ -71,7 +70,7 @@ public class VisibilityTest {
 				"-o", "./target/spooned/spoon/test/visibility_generics/testclasses/"
 		});
 
-		canBeBuild("./target/spooned/spoon/test/visibility_generics/testclasses/", 8);
+		TestUtils.canBeBuilt("./target/spooned/spoon/test/visibility_generics/testclasses/", 8);
 	}
 
 	@Test

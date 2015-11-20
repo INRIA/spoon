@@ -56,10 +56,19 @@ public class TestUtils {
 		return build(classToBuild).Class().get(classToBuild);
 	}
 
-	public static void canBeBuild(File outputDirectoryFile, int complianceLevel) {
+	public static void canBeBuilt(File outputDirectoryFile, int complianceLevel) {
+		canBeBuilt(outputDirectoryFile, complianceLevel, false);
+	}
+
+	public static void canBeBuilt(String outputDirectory, int complianceLevel) {
+		canBeBuilt(outputDirectory, complianceLevel, false);
+	}
+
+	public static void canBeBuilt(File outputDirectoryFile, int complianceLevel, boolean noClasspath) {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(complianceLevel);
+		factory.getEnvironment().setNoClasspath(noClasspath);
 		final SpoonCompiler compiler = launcher.createCompiler(factory);
 		compiler.addInputSource(outputDirectoryFile);
 		try {
@@ -69,8 +78,8 @@ public class TestUtils {
 		}
 	}
 
-	public static void canBeBuild(String outputDirectory, int complianceLevel) {
-		canBeBuild(new File(outputDirectory), complianceLevel);
+	public static void canBeBuilt(String outputDirectory, int complianceLevel, boolean noClasspath) {
+		canBeBuilt(new File(outputDirectory), complianceLevel, noClasspath);
 	}
 
 	public static File getSpoonedDirectory(Class testClass) {

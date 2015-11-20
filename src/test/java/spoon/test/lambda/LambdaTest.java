@@ -198,7 +198,7 @@ public class LambdaTest {
 
 	@Test
 	public void testCompileLambdaGeneratedBySpoon() throws Exception {
-		TestUtils.canBeBuild(TestUtils.getSpoonedDirectory(getClass()), 8);
+		TestUtils.canBeBuilt(TestUtils.getSpoonedDirectory(getClass()), 8);
 	}
 
 	@Test

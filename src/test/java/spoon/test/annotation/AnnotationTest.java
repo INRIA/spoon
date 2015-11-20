@@ -621,7 +621,7 @@ public class AnnotationTest {
 
 	@Test
 	public void testOutputGeneratedByTypeAnnotation() throws Exception {
-		TestUtils.canBeBuild(new File("./target/spooned/spoon/test/annotation/testclasses/"), 8);
+		TestUtils.canBeBuilt(new File("./target/spooned/spoon/test/annotation/testclasses/"), 8);
 	}
 
 	@Test
