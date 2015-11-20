@@ -20,6 +20,8 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
+import spoon.test.imports.testclasses.Mole;
+import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.internal.ChildClass;
 
@@ -207,6 +209,42 @@ public class ImportTest {
 
 		// Invocation for a static method without the declaring class specified, a return type and an import *.
 		assertCorrectInvocationWithLimit(new Expected().name("staticE").typeIsNull(false), elements.get(15));
+	}
+
+	@Test
+	public void testImportOfInvocationOfPrivateClass() throws Exception {
+		final Factory factory = getFactory(
+				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
+				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
+
+		ImportScanner importContext = new ImportScannerImpl();
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(Mole.class));
+
+		assertEquals(1, imports.size());
+		assertEquals("spoon.test.imports.testclasses.internal2.Chimichanga", imports.toArray()[0].toString());
+	}
+
+	@Test
+	public void testImportOfInvocationOfStaticMethod() throws Exception {
+		final Factory factory = getFactory(
+				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
+				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
+
+		ImportScanner importContext = new ImportScannerImpl();
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(Pozole.class));
+
+		assertEquals(1, imports.size());
+		assertEquals("spoon.test.imports.testclasses.internal2.Menudo", imports.toArray()[0].toString());
+	}
+
+	private Factory getFactory(String...inputs) {
+		final Launcher launcher = new Launcher();
+		for (String input : inputs) {
+			launcher.addInputResource(input);
+		}
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+		return launcher.getFactory();
 	}
 
 	private void assertCorrectInvocation(Expected expected, CtInvocation<?> ctInvocation) {
