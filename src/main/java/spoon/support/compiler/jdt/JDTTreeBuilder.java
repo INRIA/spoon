@@ -317,7 +317,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 
 			if (e instanceof CtTypedElement && node instanceof Expression) {
-				if (((CtTypedElement<?>) e).getType() == null) {
+				if (((CtTypedElement<?>) e).getType() == null && !(e instanceof CtInvocation)) {
 					((CtTypedElement<Object>) e).setType(references.getTypeReference(((Expression) node).resolvedType));
 				}
 			}
@@ -2045,7 +2045,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtExecutableReference<Object> er = references.getExecutableReference(explicitConstructor.binding);
 		inv.setExecutable(er);
 		inv.getExecutable().setType((CtTypeReference<Object>) inv.getExecutable().getDeclaringType());
-		inv.setType(inv.getExecutable().getType());
 
 		if (explicitConstructor.genericTypeArguments() != null) {
 			inv.getExecutable().setActualTypeArguments(references.getBoundedTypesReferences(explicitConstructor.genericTypeArguments()));
@@ -2343,9 +2342,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 				inv.setExecutable(ref);
 			}
-			// inv
-			// .setType(references
-			// .getTypeReference(messageSend.binding.returnType));
 			context.enter(inv, messageSend);
 			if (!(messageSend.receiver.getClass().equals(ThisReference.class))) {
 				messageSend.receiver.traverse(this, scope);

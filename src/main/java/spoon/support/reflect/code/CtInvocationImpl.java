@@ -17,21 +17,22 @@
 
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities
-		.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import java.util.ArrayList;
+import java.util.List;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
 		implements CtInvocation<T> {
@@ -137,5 +138,15 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		} else {
 			super.replace(element);
 		}
+	}
+
+	@Override
+	public CtTypeReference<T> getType() {
+		return getExecutable() == null ? null : getExecutable().getType();
+	}
+
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		throw new UnsupportedOperationException("Uses getExecutable().setType(CtTypeReference<T>)");
 	}
 }

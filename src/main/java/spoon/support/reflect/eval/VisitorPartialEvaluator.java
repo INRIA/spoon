@@ -531,7 +531,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		CtInvocation<T> i = invocation.getFactory().Core().createInvocation();
-		i.setType(invocation.getType());
 		i.setExecutable(invocation.getExecutable());
 		boolean constant = true;
 		i.setTarget(evaluate(i, invocation.getTarget()));
