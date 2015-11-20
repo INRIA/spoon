@@ -316,10 +316,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 				((CtStatement) current).setLabel(context.label.pop());
 			}
 
-			if (e instanceof CtTypedElement && node instanceof Expression) {
-				if (((CtTypedElement<?>) e).getType() == null && !(e instanceof CtInvocation)) {
-					((CtTypedElement<Object>) e).setType(references.getTypeReference(((Expression) node).resolvedType));
+			try {
+				if (e instanceof CtTypedElement && node instanceof Expression) {
+					if (((CtTypedElement<?>) e).getType() == null) {
+						((CtTypedElement<Object>) e).setType(references.getTypeReference(((Expression) node).resolvedType));
+					}
 				}
+			} catch (UnsupportedOperationException ignore) {
+				// For some element, we throw an UnsupportedOperationException when we call setType().
 			}
 
 		}
@@ -1654,6 +1658,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	private <T extends CtConstructorCall<Object>> T buildCommonPartForCtNewClassAndCtConstructorCall(AllocationExpression allocationExpression, BlockScope scope, T constructorCall) {
+		if (allocationExpression.binding != null) {
+			constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
+		} else {
+			final CtExecutableReference<Object> ref = factory.Core().createExecutableReference();
+			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
+			ref.setType(references.getTypeReference(null, allocationExpression.type));
+			ref.setDeclaringType(references.getTypeReference(null, allocationExpression.type));
+
+			final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>(allocationExpression.argumentTypes.length);
+			for (TypeBinding b : allocationExpression.argumentTypes) {
+				parameters.add(references.getTypeReference(b));
+			}
+			ref.setParameters(parameters);
+			constructorCall.setExecutable(ref);
+		}
+
 		if (allocationExpression.type != null) {
 			final TypeReference[][] typeArguments = allocationExpression.type.getTypeArguments();
 			// If typeArguments are null or empty, we have an element with a generic type.
@@ -1668,14 +1688,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			}
-			constructorCall.setType(references.getTypeReference(allocationExpression.type.resolvedType));
+			constructorCall.getExecutable().setType(references.getTypeReference(allocationExpression.type.resolvedType));
 			context.isGenericTypeExplicit = true;
 		} else if (allocationExpression.expectedType() != null) {
-			constructorCall.setType(references.getTypeReference(allocationExpression.expectedType()));
-		}
-		constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
-		if (constructorCall.getExecutable() != null) {
-			constructorCall.getExecutable().setType((CtTypeReference<Object>) constructorCall.getExecutable().getDeclaringType());
+			constructorCall.getExecutable().setType(references.getTypeReference(allocationExpression.expectedType()));
 		}
 
 		if (allocationExpression.genericTypeArguments() != null) {
