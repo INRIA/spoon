@@ -14,7 +14,7 @@ import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
@@ -31,6 +31,7 @@ import spoon.test.variable.testclasses.VariableAccessSample;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class AccessTest {
 	@Test
@@ -174,5 +175,24 @@ public class AccessTest {
 		});
 
 		MainTest.checkAssignmentContracts(launcher.getFactory().Package().getRootPackage());
+	}
+
+	@Test
+	public void testVariableAccessInNoClasspath() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/variable");
+		launcher.setSourceOutputDirectory("./target/variable/");
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.argouml.uml.ui.behavior.use_cases.PropPanelUseCase");
+		final List<CtFieldRead> elements = aClass.getElements(new TypeFilter<>(CtFieldRead.class));
+
+		for (CtFieldRead element : elements) {
+			assertNotNull(element.getVariable());
+		}
+
+		assertEquals("java.lang.Class mclass = ((java.lang.Class)(ModelFacade.USE_CASE))", elements.get(0).getParent().toString());
+		assertEquals("new PropPanelButton(this , buttonPanel , _navUpIcon , Translator.localize(\"UMLMenu\", \"button.go-up\") , \"navigateNamespace\" , null)", elements.get(2).getParent().toString());
 	}
 }
