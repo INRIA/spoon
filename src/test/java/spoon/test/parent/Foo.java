@@ -20,4 +20,24 @@ class Foo {
 		}
 		return 0;
 	}
+
+	void m() {
+		String one, two, three;
+		one = two = three = "";
+		for(int k =0; k<0; k++) {
+
+		}
+	}
+
+	void internalClass() {
+		class T {
+			void m() {
+				new Object() {
+					void m() {
+						String one, two, three;
+					}
+				};
+			}
+		}
+	}
 }

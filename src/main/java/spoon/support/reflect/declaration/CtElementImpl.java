@@ -346,6 +346,28 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public <E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException {
+		E current = (E) this;
+		while (true) {
+			try {
+				while (current != null && !filter.matches(current)) {
+					current = (E) current.getParent();
+				}
+				break;
+			} catch (ClassCastException e) {
+				// expected, some elements are not of type
+				current = (E) current.getParent();
+			}
+		}
+
+		if (current != null && filter.matches(current)) {
+			return current;
+		}
+		return null;
+	}
+
+	@Override
 	public boolean hasParent(CtElement candidate) throws ParentNotInitializedException {
 		return getParent() == candidate || getParent().hasParent(candidate);
 	}

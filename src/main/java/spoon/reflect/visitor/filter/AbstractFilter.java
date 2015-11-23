@@ -33,7 +33,7 @@ public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 	 * Creates a filter with the type of the potentially matching elements.
 	 */
 	@SuppressWarnings("unchecked")
-	public AbstractFilter(Class<?> type) {
+	public AbstractFilter(Class<? super T> type) {
 		this.type = (Class<T>) type;
 	}
 
