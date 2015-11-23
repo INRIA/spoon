@@ -17,6 +17,7 @@ import java.util.List;
  *     }
  * </code>
  */
+@Deprecated
 public interface CtTypeAnnotableReference {
 
 	/**
@@ -24,11 +25,13 @@ public interface CtTypeAnnotableReference {
 	 *
 	 * For sake of encapsulation, the returned list is unmodifiable.
 	 */
+	@Deprecated
 	List<CtAnnotation<? extends Annotation>> getTypeAnnotations();
 
 	/**
 	 * Sets the type annotations for this type.
 	 */
+	@Deprecated
 	<T extends CtTypeAnnotableReference> T setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations);
 
 	/**
@@ -37,6 +40,7 @@ public interface CtTypeAnnotableReference {
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@Deprecated
 	<T extends CtTypeAnnotableReference> T addTypeAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
@@ -45,5 +49,6 @@ public interface CtTypeAnnotableReference {
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@Deprecated
 	boolean removeTypeAnnotation(CtAnnotation<? extends Annotation> annotation);
 }

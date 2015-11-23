@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
@@ -195,9 +194,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName() + CtType.INNERTTYPE_SEPARATOR + getSimpleName();
 		} else if (getPackage() != null && !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(getPackage().getSimpleName())) {
-			if (!getTypeAnnotations().isEmpty()) {
+			if (!getAnnotations().isEmpty()) {
 				String qualifiedName = getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR;
-				for (CtAnnotation<? extends Annotation> ctAnnotation : getTypeAnnotations()) {
+				for (CtAnnotation<? extends Annotation> ctAnnotation : getAnnotations()) {
 					qualifiedName += "@" + ctAnnotation.getAnnotationType().getQualifiedName() + " ";
 				}
 				qualifiedName += getSimpleName();
@@ -509,30 +508,24 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public List<CtAnnotation<? extends Annotation>> getTypeAnnotations() {
-		return Collections.unmodifiableList(annotations);
+		return Collections.unmodifiableList(getAnnotations());
 	}
 
 	@Override
 	public <C extends CtTypeAnnotableReference> C setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
-		this.annotations = annotations;
+		setAnnotations(annotations);
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtTypeAnnotableReference> C addTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		if (annotation == null) {
-			return (C) this;
-		}
-		if ((List<?>) this.annotations == (List<?>) CtElementImpl.emptyList()) {
-			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		this.annotations.add(annotation);
+		addAnnotation(annotation);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		return annotation != null && this.annotations.remove(annotation);
+		return removeAnnotation(annotation);
 	}
 
 }

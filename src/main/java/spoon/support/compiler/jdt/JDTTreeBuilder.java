@@ -703,7 +703,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			circularRef.setSimpleName(originalRef.getSimpleName());
 			circularRef.setDeclaringType(originalRef.getDeclaringType());
 			circularRef.setActualTypeArguments(originalRef.getActualTypeArguments());
-			circularRef.setTypeAnnotations(originalRef.getTypeAnnotations());
+			circularRef.setAnnotations(originalRef.getAnnotations());
 			return circularRef;
 		}
 
@@ -711,7 +711,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (resolvedType.hasTypeAnnotations()) {
 				final AnnotationBinding[] typeAnnotations = resolvedType.getTypeAnnotations();
 				for (AnnotationBinding typeAnnotation : typeAnnotations) {
-					reference.addTypeAnnotation(getTypeCtAnnotation(typeAnnotation));
+					reference.addAnnotation(getTypeCtAnnotation(typeAnnotation));
 				}
 			}
 		}

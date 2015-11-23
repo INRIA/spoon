@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.code.CtExpressionImpl;
@@ -367,6 +368,12 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		}
 		if (annotatedElement instanceof CtPackage) {
 			return CtAnnotatedElementType.PACKAGE;
+		}
+		if (annotatedElement instanceof CtTypeParameterReference) {
+			return CtAnnotatedElementType.TYPE_PARAMETER;
+		}
+		if (annotatedElement instanceof CtTypeReference) {
+			return CtAnnotatedElementType.TYPE_USE;
 		}
 		return null;
 	}
