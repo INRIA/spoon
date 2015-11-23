@@ -218,4 +218,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * be called to check and fix parents after manipulating the model.
 	 */
 	void updateAllParentsBelow();
+
+	/*
+	 * Deletes the element. For instance, delete a statement from its containing block. Warning: it may result in an incorrect AST, use at your own risk.
+	 */
+	void delete();
 }
