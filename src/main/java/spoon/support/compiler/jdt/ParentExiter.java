@@ -268,7 +268,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtConstructor) {
 			CtConstructor<T> c = (CtConstructor<T>) child;
 			ctClass.addConstructor(c);
-			if (c.getPosition() != null && c.getPosition().equals(ctClass.getPosition())) {
+			if (c.getPosition() != null && c.getPosition().getSourceStart() == -1) {
 				c.setImplicit(true);
 			}
 		}
