@@ -35,7 +35,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		scan(f.getVariable());
 		// scan(fieldAccess.getType());
 		scan(f.getAnnotations());
-		scanReferences(f.getTypeCasts());
+		scan(f.getTypeCasts());
 		scan(f.getVariable());
 		scan(f.getTarget());
 		exit(f);
@@ -57,7 +57,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				&& reference.getDeclaringType().getDeclaringType() == null) {
 			addImport(reference.getDeclaringType());
 		}
-		scanReferences(reference.getActualTypeArguments());
+		scan(reference.getType());
+		scan(reference.getActualTypeArguments());
 		exitReference(reference);
 	}
 
@@ -65,7 +66,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		enter(invocation);
 		scan(invocation.getAnnotations());
-		scanReferences(invocation.getTypeCasts());
+		scan(invocation.getTypeCasts());
 		scan(invocation.getTarget());
 		scan(invocation.getArguments());
 		exit(invocation);

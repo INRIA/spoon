@@ -198,9 +198,9 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -437,6 +437,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				ref.setDeclaringType(getTypeReference(exec.declaringClass));
 				ref.setStatic(exec.isStatic());
+			}
+
+			if (exec.declaringClass instanceof ParameterizedTypeBinding) {
+				ref.setDeclaringType(getTypeReference(exec.declaringClass.actualType()));
 			}
 
 			// original() method returns a result not null when the current method is generic.

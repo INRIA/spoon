@@ -56,8 +56,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
-	List<CtAnnotation<? extends Annotation>> annotations = CtElementImpl.emptyList();
-
 	CtTypeReference<?> declaringType;
 
 	private CtPackageReference pack;

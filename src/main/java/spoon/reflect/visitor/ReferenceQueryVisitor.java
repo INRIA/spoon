@@ -17,10 +17,11 @@
 
 package spoon.reflect.visitor;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtReference;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import spoon.reflect.reference.CtReference;
 
 /**
  * A simple visitor that takes a reference filter and returns all the references
@@ -49,15 +50,15 @@ public class ReferenceQueryVisitor<T extends CtReference> extends CtScanner {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void scan(CtReference reference) {
-		if (reference == null) {
+	public void scan(CtElement element) {
+		if (element == null) {
 			return;
 		}
-		if (filter.getType().isAssignableFrom(reference.getClass())) {
-			if (filter.matches((T) reference)) {
-				result.add((T) reference);
+		if (filter.getType().isAssignableFrom(element.getClass())) {
+			if (filter.matches((T) element)) {
+				result.add((T) element);
 			}
 		}
-		super.scan(reference);
+		super.scan(element);
 	}
 }

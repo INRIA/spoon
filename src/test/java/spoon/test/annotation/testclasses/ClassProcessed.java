@@ -11,7 +11,8 @@ public class ClassProcessed<@TypeAnnotation T> {
 	}
 
 	@GlobalAnnotation
-	public void m() throws @TypeAnnotation Exception {
+	public @TypeAnnotation Void m() throws @TypeAnnotation Exception {
 		new ArrayList<@GlobalAnnotation T>();
+		return null;
 	}
 }

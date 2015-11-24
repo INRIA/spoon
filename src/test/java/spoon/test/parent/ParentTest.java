@@ -31,6 +31,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
@@ -202,6 +203,7 @@ public class ParentTest {
 			@Override
 			public void scan(CtElement e) {
 				if (e==null) { return; }
+				if (e instanceof CtReference) { return; }
 				if (!elementStack.isEmpty()) {
 					assertEquals(elementStack.peek(), e.getParent());
 				}

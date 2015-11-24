@@ -60,7 +60,7 @@ public class TypeReferenceScanner extends CtScanner {
 		scan(f.getVariable());
 		// scan(fieldAccess.getType());
 		scan(f.getAnnotations());
-		scanReferences(f.getTypeCasts());
+		scan(f.getTypeCasts());
 		scan(f.getVariable());
 		scan(f.getTarget());
 		exit(f);
@@ -87,8 +87,7 @@ public class TypeReferenceScanner extends CtScanner {
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
 		enterReference(reference);
-		scanReferences(reference.getActualTypeArguments());
-		scanReferences(reference.getActualTypeArguments());
+		scan(reference.getActualTypeArguments());
 		exitReference(reference);
 	}
 

@@ -769,7 +769,7 @@ public class AnnotationTest {
 		p.addProcessor(processor);
 		p.process(factory.Class().getAll());
 
-		assertEquals(27, processor.elements.size());
+		assertEquals(30, processor.elements.size());
 	}
 
 	@Test
@@ -794,7 +794,7 @@ public class AnnotationTest {
 		p.process(factory.Class().getAll());
 
 		assertEquals(5, processor.elements.size());
-		assertEquals(1, methodProcessor.elements.size());
+		assertEquals(2, methodProcessor.elements.size());
 	}
 
 	@Test
@@ -828,10 +828,12 @@ public class AnnotationTest {
 		}
 	}
 
-	class TypeAnnotationMethodProcessor extends AbstractElementsProcessor<TypeAnnotation, CtMethod<?>> {
+	class TypeAnnotationMethodProcessor extends AbstractElementsProcessor<TypeAnnotation, CtTypeReference<?>> {
 		@Override
-		public void process(TypeAnnotation annotation, CtMethod<?> element) {
-			super.process(annotation, element);
+		public void process(TypeAnnotation annotation, CtTypeReference<?> element) {
+			if (element.getParent() instanceof CtMethod) {
+				super.process(annotation, element);
+			}
 		}
 	}
 

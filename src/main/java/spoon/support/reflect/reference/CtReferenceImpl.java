@@ -24,7 +24,6 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.visitor.SignaturePrinter;
 
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
@@ -37,16 +36,6 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	public CtReferenceImpl() {
 		super();
-	}
-
-	@Override
-	public int compareTo(CtElement o) {
-		SignaturePrinter pr = new SignaturePrinter();
-		pr.scan(this);
-		String current = pr.getSignature();
-		pr.reset();
-		pr.scan(o);
-		return current.compareTo(pr.getSignature());
 	}
 
 	@Override
