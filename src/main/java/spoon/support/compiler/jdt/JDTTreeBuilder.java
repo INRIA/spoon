@@ -2649,7 +2649,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					} else {
 						// case with no complete classpath
 						CtTypeReference<Object> ref2 = factory.Core().createTypeReference();
-						ref2.setSimpleName(new String(qualifiedNameReference.tokens[qualifiedNameReference.tokens.length - 1]));
+						ref2.setSimpleName(new String(qualifiedNameReference.tokens[i + 1]));
+						other.getVariable().setSimpleName(ref2.getSimpleName());
 						other.setType(ref2);
 					}
 

@@ -718,9 +718,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (caseStatement.getCaseExpression() != null) {
 			write("case ");
 			// writing enum case expression
-			if ((caseStatement.getCaseExpression() instanceof CtFieldAccess) && ((CtFieldAccess) caseStatement.getCaseExpression()).getVariable().getType().getQualifiedName()
-					.equals(((CtFieldAccess) caseStatement.getCaseExpression()).getVariable().getDeclaringType().getQualifiedName())) {
-				write(((CtFieldAccess) caseStatement.getCaseExpression()).getVariable().getSimpleName());
+			if ((caseStatement.getCaseExpression() instanceof CtFieldAccess)) {
+				CtFieldReference variable = ((CtFieldAccess) caseStatement.getCaseExpression()).getVariable();
+				if (variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
+					write(variable.getSimpleName());
+				} else {
+					scan(caseStatement.getCaseExpression());
+				}
 			} else {
 				scan(caseStatement.getCaseExpression());
 			}

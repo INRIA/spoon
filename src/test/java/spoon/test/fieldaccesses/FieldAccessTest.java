@@ -1,6 +1,7 @@
 package spoon.test.fieldaccesses;
 
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLambda;
@@ -10,6 +11,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -165,5 +167,36 @@ public class FieldAccessTest {
 		assertEquals("ingredient", fieldInAnonymous.getTarget().toString());
 		assertEquals("next", fieldInAnonymous.getVariable().getSimpleName());
 		assertEquals("ingredient.next", fieldInAnonymous.toString());
+	}
+
+
+	@Test
+	public void testFieldAccessNoClasspath() throws Exception {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/import-resources/fr/inria/");
+		launcher.getEnvironment().setNoClasspath(true);
+
+		launcher.run();
+
+		CtType<?> ctType = launcher.getFactory().Class().get("FooNoClassPath");
+
+		CtFieldAccess ctFieldAccess = ctType
+				.getElements(new TypeFilter<>(CtFieldAccess.class)).get(0);
+		assertEquals("(game.board.width)", ctFieldAccess.toString());
+
+		CtFieldReference ctFieldReferenceWith = ctFieldAccess.getVariable();
+		assertEquals("width", ctFieldReferenceWith.getSimpleName());
+
+		CtFieldAccess ctFieldAccessBoard = (CtFieldAccess) ctFieldAccess.getTarget();
+		assertEquals("game.board", ctFieldAccessBoard.toString());
+
+		CtFieldReference ctFieldReferenceBoard = ctFieldAccessBoard.getVariable();
+		assertEquals("board", ctFieldReferenceBoard.getSimpleName());
+
+		CtFieldAccess ctFieldAccessGame = (CtFieldAccess) ctFieldAccessBoard.getTarget();
+		assertEquals("game.board", ctFieldAccessBoard.toString());
+
+		CtFieldReference ctFieldReferenceGame = ctFieldAccessGame.getVariable();
+		assertEquals("game", ctFieldReferenceGame.getSimpleName());
 	}
 }
