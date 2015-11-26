@@ -6,6 +6,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -107,6 +110,9 @@ public class ParentContractTest<T extends CtVisitable> {
 			if (o instanceof CtParameter && "setDefaultExpression".equals(setter.getName())) continue;
 			if (o instanceof CtCatchVariable && "setDefaultExpression".equals(setter.getName())) continue;
 			if (o instanceof CtConstructor && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtConstructorCall && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtNewClass && "setType".equals(setter.getName())) continue;
 
 			CtElement mockedArgument = (CtElement) mock(setter.getParameters()[0].getType(),  Mockito.withSettings().extraInterfaces(Comparable.class));
 			try {
