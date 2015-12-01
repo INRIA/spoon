@@ -1788,16 +1788,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 		p.setSimpleName(new String(argument.name));
 		p.setVarArgs(argument.isVarArgs());
 		p.setModifiers(getModifiers(argument.modifiers));
-		if (argument.type != null) {
-			p.setType(references.getTypeReference(argument.type.resolvedType));
-		} else if (argument.binding != null && argument.binding.type != null) {
-			context.isLambdaParameterImplicitlyTyped = false;
+		if (argument.binding != null && argument.binding.type != null) {
+			context.isLambdaParameterImplicitlyTyped = argument.type != null;
 			if (argument.binding.type instanceof WildcardBinding) {
 				p.setType(references.getTypeReference((((WildcardBinding) argument.binding.type).bound)));
 			} else {
 				p.setType(references.getTypeReference((argument.binding.type)));
 			}
 			context.isLambdaParameterImplicitlyTyped = true;
+		} else if (argument.type != null) {
+			p.setType(references.getTypeReference(argument.type.resolvedType));
 		}
 		context.enter(p, argument);
 		if (argument.initialization != null) {
