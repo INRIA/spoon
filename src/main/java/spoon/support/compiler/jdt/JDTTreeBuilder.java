@@ -539,6 +539,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 								packageBinding = (PackageBinding) someBinding;
 							} else {
 								packageBinding = context.compilationunitdeclaration.scope.environment.createPackage(chars);
+								if (packageBinding == null) {
+									// Big crisis here. We are already in noclasspath mode since the check `binding instance MissingTypeBinding`
+									// but JDT doesn't support always creation of a package in this mode. So, if we are in this brace, we make
+									// the job of JDT...
+									packageBinding = new PackageBinding(chars, null, context.compilationunitdeclaration.scope.environment);
+								}
 							}
 							ref.setPackage(getPackageReference(packageBinding));
 							break;
@@ -1005,10 +1011,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 				// superclasses aren't in the same package and when their visibilities are "default".
 				List<ModifierKind> modifiers = Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED);
 				final TypeBinding resolvedType = typeDeclaration.superclass.resolvedType;
-				if (resolvedType instanceof MemberTypeBinding && resolvedType.enclosingType() != null && !getModifiers(resolvedType.enclosingType().modifiers).containsAll(modifiers)) {
-					typeDeclaration.superclass.resolvedType = new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
-							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
-				} else if (resolvedType instanceof BinaryTypeBinding && resolvedType.enclosingType() != null && !getModifiers(resolvedType.enclosingType().modifiers).containsAll(modifiers)) {
+				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)
+						&& resolvedType.enclosingType() != null
+						&& typeDeclaration.enclosingType.superclass != null
+						&& !getModifiers(resolvedType.enclosingType().modifiers).containsAll(modifiers)) {
 					typeDeclaration.superclass.resolvedType = new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
 							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
 				}
