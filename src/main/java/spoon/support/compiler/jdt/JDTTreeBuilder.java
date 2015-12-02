@@ -1710,7 +1710,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			constructorCall.setExecutable(ref);
 		}
 
-		if (allocationExpression.type != null) {
+		if (allocationExpression.type != null && allocationExpression.type.resolvedType != null) {
 			final TypeReference[][] typeArguments = allocationExpression.type.getTypeArguments();
 			// If typeArguments are null or empty, we have an element with a generic type.
 			if (typeArguments != null && typeArguments.length > 0) {
@@ -1952,6 +1952,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(CharLiteral charLiteral, BlockScope scope) {
 		CtLiteral<Character> l = factory.Core().createLiteral();
+		charLiteral.computeConstant();
 		l.setValue(charLiteral.constant.charValue());
 		context.enter(l, charLiteral);
 		return true;

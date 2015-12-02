@@ -237,7 +237,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 
 	@Override
 	public <C extends CtExecutableReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
-		declaringType.setParent(this);
+		if (declaringType != null) {
+			declaringType.setParent(this);
+		}
 		this.declaringType = declaringType;
 		return (C) this;
 	}
