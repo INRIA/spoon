@@ -46,13 +46,11 @@ public enum CtAnnotatedElementType {
 
 	/**
 	 * Type parameter declaration
-	 * TODO exists in java 1.8
 	 */
 	TYPE_PARAMETER,
 
 	/**
 	 * Use of a type
-	 * TODO exists in java 1.8
 	 */
 	TYPE_USE
 }

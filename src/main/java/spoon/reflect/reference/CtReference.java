@@ -17,10 +17,7 @@
 
 package spoon.reflect.reference;
 
-import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.CtVisitable;
-import spoon.reflect.visitor.Root;
 
 /**
  * This is the root interface for named program element references. References
@@ -31,8 +28,7 @@ import spoon.reflect.visitor.Root;
  *
  * @see spoon.reflect.declaration.CtElement
  */
-@Root
-public interface CtReference extends FactoryAccessor, CtVisitable {
+public interface CtReference extends CtElement {
 
 	/**
 	 * Gets the simple name of referenced element.

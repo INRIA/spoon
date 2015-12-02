@@ -17,19 +17,7 @@
 
 package spoon.support.reflect.declaration;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
-
 import spoon.Launcher;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.SourcePosition;
@@ -51,6 +39,17 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * Contains the default implementation of most CtElement methods.
  *
@@ -58,7 +57,6 @@ import spoon.support.visitor.TypeReferenceScanner;
  */
 public abstract class CtElementImpl implements CtElement, Serializable, Comparable<CtElement> {
 	private static final long serialVersionUID = 1L;
-
 	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 
@@ -137,28 +135,19 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		return (Collection<T>) EMPTY_LIST;
 	}
 
-	transient Factory factory;
-
 	public String getSignature() {
 		SignaturePrinter pr = new SignaturePrinter();
 		pr.scan(this);
 		return pr.getSignature();
 	}
 
-	public Factory getFactory() {
-		return factory;
-	}
+	transient Factory factory;
 
-	public void setFactory(Factory factory) {
-		this.factory = factory;
-		LOGGER.setLevel(factory.getEnvironment().getLevel());
-	}
+	protected CtElement parent;
 
 	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
 
 	String docComment;
-
-	CtElement parent;
 
 	SourcePosition position;
 
@@ -213,34 +202,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		return docComment;
 	}
 
-	public CtElement getParent() throws ParentNotInitializedException {
-		if (parent == null) {
-			String exceptionMsg = "";
-			if (this instanceof CtNamedElement) {
-				exceptionMsg = ("parent not initialized for " + ((CtNamedElement) this).getSimpleName() + "(" + this.getClass() + ")" + (getPosition() != null ? " " + getPosition() : " (?)"));
-			} else {
-				exceptionMsg = ("parent not initialized for " + this.getClass() + (getPosition() != null ? " " + getPosition() : " (?)"));
-			}
-			throw new ParentNotInitializedException(exceptionMsg);
-		}
-		return parent;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException {
-		if (getParent() == null) {
-			return null;
-		}
-		if (parentType.isAssignableFrom(getParent().getClass())) {
-			return (P) getParent();
-		}
-		return getParent().getParent(parentType);
-	}
-
-	public boolean hasParent(CtElement candidate) throws ParentNotInitializedException {
-		return getParent() == candidate || getParent().hasParent(candidate);
-	}
-
 	public SourcePosition getPosition() {
 		if (position != null) {
 			return position;
@@ -251,62 +212,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	@Override
 	public int hashCode() {
 		return getSignature().hashCode();
-	}
-
-	public void replace(CtElement element) {
-		try {
-			replaceIn(this, element, getParent());
-		} catch (CtUncomparableException e1) {
-			// do nothing
-		} catch (Exception e1) {
-			Launcher.LOGGER.error(e1.getMessage(), e1);
-		}
-	}
-
-	private <T extends FactoryAccessor> void replaceIn(Object toReplace, T replacement, Object parent) throws IllegalArgumentException, IllegalAccessException {
-
-		for (Field f : RtHelper.getAllFields(parent.getClass())) {
-			f.setAccessible(true);
-			Object tmp = f.get(parent);
-
-			if (tmp != null) {
-				if (tmp instanceof List) {
-					@SuppressWarnings("unchecked") List<T> lst = (List<T>) tmp;
-
-					for (int i = 0; i < lst.size(); i++) {
-						if (lst.get(i) != null && compare(lst.get(i), toReplace)) {
-							lst.remove(i);
-							if (replacement != null) {
-								lst.add(i, getReplacement(replacement, parent));
-							}
-						}
-					}
-				} else if (tmp instanceof Collection) {
-					@SuppressWarnings("unchecked") Collection<T> collect = (Collection<T>) tmp;
-					Object[] array = collect.toArray();
-					for (Object obj : array) {
-						if (compare(obj, toReplace)) {
-							collect.remove(obj);
-							collect.add(getReplacement(replacement, parent));
-						}
-					}
-				} else if (compare(tmp, toReplace)) {
-					f.set(parent, getReplacement(replacement, parent));
-				}
-			}
-		}
-	}
-
-	private <T extends FactoryAccessor> T getReplacement(T replacement, Object parent) {
-		// T ret = replacement.getFactory().Core().clone(replacement);
-		if (replacement instanceof CtElement && parent instanceof CtElement) {
-			((CtElement) replacement).setParent((CtElement) parent);
-		}
-		return replacement;
-	}
-
-	private boolean compare(Object o1, Object o2) {
-		return o1 == o2;
 	}
 
 	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
@@ -332,11 +237,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	public <E extends CtElement> E setDocComment(String docComment) {
 		this.docComment = docComment;
-		return (E) this;
-	}
-
-	public <E extends CtElement> E setParent(CtElement parentElement) {
-		this.parent = parentElement;
 		return (E) this;
 	}
 
@@ -399,12 +299,120 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	@Override
-	public void updateAllParentsBelow() {
-		new ModelConsistencyChecker(getFactory().getEnvironment(), true, true).scan(this);
+	public CtElement getParent() throws ParentNotInitializedException {
+		if (parent == null) {
+			String exceptionMsg = "";
+			if (this instanceof CtReference) {
+				exceptionMsg = "parent not initialized for " + ((CtReference) this).getSimpleName() + "(" + this.getClass() + ")";
+			} else {
+				SourcePosition pos = getPosition();
+				if (this instanceof CtNamedElement) {
+					exceptionMsg = ("parent not initialized for " + ((CtNamedElement) this).getSimpleName() + "(" + this.getClass() + ")" + (pos != null ? " " + pos : " (?)"));
+				} else {
+					exceptionMsg = ("parent not initialized for " + this.getClass() + (pos != null ? " " + pos : " (?)"));
+				}
+			}
+			throw new ParentNotInitializedException(exceptionMsg);
+		}
+		return parent;
 	}
 
+	@Override
+	public <E extends CtElement> E setParent(E parent) {
+		this.parent = parent;
+		return (E) this;
+	}
+
+	@Override
 	public boolean isParentInitialized() {
 		return parent != null;
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public <P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException {
+		if (getParent() == null) {
+			return null;
+		}
+		if (parentType.isAssignableFrom(getParent().getClass())) {
+			return (P) getParent();
+		}
+		return getParent().getParent(parentType);
+	}
+
+	@Override
+	public boolean hasParent(CtElement candidate) throws ParentNotInitializedException {
+		return getParent() == candidate || getParent().hasParent(candidate);
+	}
+
+	@Override
+	public void updateAllParentsBelow() {
+		new ModelConsistencyChecker(getFactory().getEnvironment(), true, true).scan(this);
+	}
+
+	@Override
+	public Factory getFactory() {
+		return factory;
+	}
+
+	@Override
+	public void setFactory(Factory factory) {
+		this.factory = factory;
+		LOGGER.setLevel(factory.getEnvironment().getLevel());
+	}
+
+	protected void replace(CtElement element) {
+		try {
+			replaceIn(this, element, getParent());
+		} catch (CtUncomparableException e1) {
+			// do nothing
+		} catch (Exception e1) {
+			Launcher.LOGGER.error(e1.getMessage(), e1);
+		}
+	}
+
+	private <T extends FactoryAccessor> void replaceIn(Object toReplace, T replacement, Object parent) throws IllegalArgumentException, IllegalAccessException {
+
+		for (Field f : RtHelper.getAllFields(parent.getClass())) {
+			f.setAccessible(true);
+			Object tmp = f.get(parent);
+
+			if (tmp != null) {
+				if (tmp instanceof List) {
+					@SuppressWarnings("unchecked") List<T> lst = (List<T>) tmp;
+					for (int i = 0; i < lst.size(); i++) {
+						if (lst.get(i) != null && compare(lst.get(i), toReplace)) {
+							lst.remove(i);
+							if (replacement != null) {
+								lst.add(i, getReplacement(replacement, parent));
+							}
+						}
+					}
+				} else if (tmp instanceof Collection) {
+					@SuppressWarnings("unchecked") Collection<T> collect = (Collection<T>) tmp;
+					Object[] array = collect.toArray();
+					for (Object obj : array) {
+						if (compare(obj, toReplace)) {
+							collect.remove(obj);
+							collect.add(getReplacement(replacement, parent));
+						}
+					}
+				} else if (compare(tmp, toReplace)) {
+					f.set(parent, getReplacement(replacement, parent));
+				}
+			}
+		}
+	}
+
+	private <T extends FactoryAccessor> T getReplacement(T replacement, Object parent) {
+		// T ret = replacement.getFactory().Core().clone(replacement);
+		if (replacement instanceof CtElement && parent instanceof CtElement) {
+			((CtElement) replacement).setParent((CtElement) parent);
+		}
+		return replacement;
+	}
+
+	private boolean compare(Object o1, Object o2) {
+		return o1 == o2;
+	}
 }

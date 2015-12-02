@@ -49,15 +49,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
-
-	List<CtAnnotation<? extends Annotation>> annotations = CtElementImpl.emptyList();
 
 	CtTypeReference<?> declaringType;
 
@@ -78,31 +75,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return this;
 		}
 		if (getSimpleName().equals("int")) {
-			return factory.Type().createReference(Integer.class);
+			return getFactory().Type().createReference(Integer.class);
 		}
 		if (getSimpleName().equals("float")) {
-			return factory.Type().createReference(Float.class);
+			return getFactory().Type().createReference(Float.class);
 		}
 		if (getSimpleName().equals("long")) {
-			return factory.Type().createReference(Long.class);
+			return getFactory().Type().createReference(Long.class);
 		}
 		if (getSimpleName().equals("char")) {
-			return factory.Type().createReference(Character.class);
+			return getFactory().Type().createReference(Character.class);
 		}
 		if (getSimpleName().equals("double")) {
-			return factory.Type().createReference(Double.class);
+			return getFactory().Type().createReference(Double.class);
 		}
 		if (getSimpleName().equals("boolean")) {
-			return factory.Type().createReference(Boolean.class);
+			return getFactory().Type().createReference(Boolean.class);
 		}
 		if (getSimpleName().equals("short")) {
-			return factory.Type().createReference(Short.class);
+			return getFactory().Type().createReference(Short.class);
 		}
 		if (getSimpleName().equals("byte")) {
-			return factory.Type().createReference(Byte.class);
+			return getFactory().Type().createReference(Byte.class);
 		}
 		if (getSimpleName().equals("void")) {
-			return factory.Type().createReference(Void.class);
+			return getFactory().Type().createReference(Void.class);
 		}
 		return this;
 	}
@@ -195,9 +192,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName() + CtType.INNERTTYPE_SEPARATOR + getSimpleName();
 		} else if (getPackage() != null && !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(getPackage().getSimpleName())) {
-			if (!getTypeAnnotations().isEmpty()) {
+			if (!getAnnotations().isEmpty()) {
 				String qualifiedName = getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR;
-				for (CtAnnotation<? extends Annotation> ctAnnotation : getTypeAnnotations()) {
+				for (CtAnnotation<? extends Annotation> ctAnnotation : getAnnotations()) {
 					qualifiedName += "@" + ctAnnotation.getAnnotationType().getQualifiedName() + " ";
 				}
 				qualifiedName += getSimpleName();
@@ -294,20 +291,37 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public <C extends CtGenericElementReference> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
-		this.actualTypeArguments = actualTypeArguments;
+		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.actualTypeArguments = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.actualTypeArguments.clear();
+		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
+			addActualTypeArgument(actualTypeArgument);
+		}
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
+		if (declaringType != null) {
+			declaringType.setParent(this);
+		}
 		this.declaringType = declaringType;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtTypeReference<T>> C setPackage(CtPackageReference pack) {
+		if (pack != null) {
+			pack.setParent(this);
+		}
 		this.pack = pack;
 		return (C) this;
+	}
+
+	@Override
+	public void replace(CtTypeReference<?> reference) {
+		super.replace(reference);
 	}
 
 	@Override
@@ -316,31 +330,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return this;
 		}
 		if (getActualClass() == Integer.class) {
-			return factory.Type().createReference(int.class);
+			return getFactory().Type().createReference(int.class);
 		}
 		if (getActualClass() == Float.class) {
-			return factory.Type().createReference(float.class);
+			return getFactory().Type().createReference(float.class);
 		}
 		if (getActualClass() == Long.class) {
-			return factory.Type().createReference(long.class);
+			return getFactory().Type().createReference(long.class);
 		}
 		if (getActualClass() == Character.class) {
-			return factory.Type().createReference(char.class);
+			return getFactory().Type().createReference(char.class);
 		}
 		if (getActualClass() == Double.class) {
-			return factory.Type().createReference(double.class);
+			return getFactory().Type().createReference(double.class);
 		}
 		if (getActualClass() == Boolean.class) {
-			return factory.Type().createReference(boolean.class);
+			return getFactory().Type().createReference(boolean.class);
 		}
 		if (getActualClass() == Short.class) {
-			return factory.Type().createReference(short.class);
+			return getFactory().Type().createReference(short.class);
 		}
 		if (getActualClass() == Byte.class) {
-			return factory.Type().createReference(byte.class);
+			return getFactory().Type().createReference(byte.class);
 		}
 		if (getActualClass() == Void.class) {
-			return factory.Type().createReference(void.class);
+			return getFactory().Type().createReference(void.class);
 		}
 		return this;
 	}
@@ -470,6 +484,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		actualTypeArgument.setParent(this);
 		actualTypeArguments.add(actualTypeArgument);
 		return (C) this;
 	}
@@ -491,30 +506,24 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public List<CtAnnotation<? extends Annotation>> getTypeAnnotations() {
-		return Collections.unmodifiableList(annotations);
+		return Collections.unmodifiableList(getAnnotations());
 	}
 
 	@Override
 	public <C extends CtTypeAnnotableReference> C setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
-		this.annotations = annotations;
+		setAnnotations(annotations);
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtTypeAnnotableReference> C addTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		if (annotation == null) {
-			return (C) this;
-		}
-		if ((List<?>) this.annotations == (List<?>) CtElementImpl.emptyList()) {
-			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		this.annotations.add(annotation);
+		addAnnotation(annotation);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		return annotation != null && this.annotations.remove(annotation);
+		return removeAnnotation(annotation);
 	}
 
 }

@@ -17,9 +17,6 @@
 
 package spoon.support.reflect.declaration;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.declaration.CtElement;
@@ -32,6 +29,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtField}.
@@ -87,6 +87,9 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}

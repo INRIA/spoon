@@ -17,15 +17,6 @@
 
 package spoon.support.reflect.declaration;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -39,6 +30,15 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
@@ -109,6 +109,10 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
+		if (this.anonymousExecutables == CtElementImpl.<CtAnonymousExecutable>emptyList()) {
+			this.anonymousExecutables = new ArrayList<CtAnonymousExecutable>(
+					ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
+		}
 		this.anonymousExecutables.clear();
 		for (CtAnonymousExecutable exec : anonymousExecutables) {
 			addAnonymousExecutable(exec);
@@ -118,7 +122,13 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
-		this.constructors = constructors;
+		if (this.constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
+			this.constructors = new TreeSet<CtConstructor<T>>();
+		}
+		this.constructors.clear();
+		for (CtConstructor<T> constructor : constructors) {
+			addConstructor(constructor);
+		}
 		return (C) this;
 	}
 
@@ -150,6 +160,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setSuperclass(CtTypeReference<?> superClass) {
+		if (superClass != null) {
+			superClass.setParent(this);
+		}
 		this.superClass = superClass;
 		return (C) this;
 	}

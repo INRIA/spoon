@@ -17,9 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities
-		.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
 		implements CtConstructorCall<T> {
@@ -84,6 +83,9 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public <C extends CtAbstractInvocation<T>> C setArguments(List<CtExpression<?>> arguments) {
+		if (this.arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
+			this.arguments = new ArrayList<CtExpression<?>>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
 		this.arguments.clear();
 		for (CtExpression<?> expr : arguments) {
 			addArgument(expr);
@@ -110,6 +112,9 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public <C extends CtAbstractInvocation<T>> C setExecutable(CtExecutableReference<T> executable) {
+		if (executable != null) {
+			executable.setParent(this);
+		}
 		this.executable = executable;
 		return (C) this;
 	}
@@ -131,9 +136,15 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
-	public <T extends CtGenericElementReference> T setActualTypeArguments(
-			List<CtTypeReference<?>> actualTypeArguments) {
-		this.actualTypeArguments = actualTypeArguments;
+	public <T extends CtGenericElementReference> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
+		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.actualTypeArguments = new ArrayList<CtTypeReference<?>>(
+					CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.actualTypeArguments.clear();
+		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
+			addActualTypeArgument(actualTypeArgument);
+		}
 		return (T) this;
 	}
 
@@ -144,6 +155,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
 					CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		actualTypeArgument.setParent(this);
 		actualTypeArguments.add(actualTypeArgument);
 		return (T) this;
 	}

@@ -17,15 +17,15 @@
 
 package spoon.support.reflect.declaration;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;

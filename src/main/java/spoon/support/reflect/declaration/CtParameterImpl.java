@@ -17,9 +17,6 @@
 
 package spoon.support.reflect.declaration;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtModifiable;
@@ -30,6 +27,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtParameter}.
@@ -76,6 +76,9 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}

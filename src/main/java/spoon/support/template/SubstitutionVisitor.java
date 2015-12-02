@@ -17,11 +17,6 @@
 
 package spoon.support.template;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
@@ -63,6 +58,11 @@ import spoon.template.Local;
 import spoon.template.Parameter;
 import spoon.template.Template;
 import spoon.template.TemplateParameter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeSet;
 
 class SkipException extends SpoonException {
 	private static final long serialVersionUID = 1L;
@@ -594,13 +594,34 @@ public class SubstitutionVisitor extends CtScanner {
 
 	@Override
 	public void scan(CtElement element) {
-		try {
+		if (element instanceof CtReference) {
 			inheritanceScanner.scan(element);
-			super.scan(element);
-		} catch (SkipException e) {
-			// System.out.println(e.getMessage());
-		} catch (UndefinedParameterException upe) {
-			removeEnclosingStatement(element);
+			if (!(element instanceof CtTypeReference)) {
+				// replace parameters in reference names
+				String name = ((CtReference) element).getSimpleName();
+				for (String pname : parameterNames) {
+					if (name.contains(pname)) {
+						name = name.replace(pname, Parameters.getValue(template, pname, null).toString());
+						((CtReference) element).setSimpleName(name);
+					}
+				}
+				super.scan(element);
+			} else {
+				if (!(parameterNames.contains(((CtReference) element).getSimpleName())
+						&& (((CtTypeReference<?>) element).getDeclaringType() != null)
+						&& ((CtTypeReference<?>) element).getDeclaringType().equals(templateRef))) {
+					super.scan(element);
+				}
+			}
+		} else {
+			try {
+				inheritanceScanner.scan(element);
+				super.scan(element);
+			} catch (SkipException e) {
+				// System.out.println(e.getMessage());
+			} catch (UndefinedParameterException upe) {
+				removeEnclosingStatement(element);
+			}
 		}
 	}
 
@@ -609,34 +630,6 @@ public class SubstitutionVisitor extends CtScanner {
 			removeEnclosingStatement(e.getParent());
 		} else {
 			((CtStatement) e).replace(null);
-		}
-	}
-
-	/**
-	 * Replaces parameters in reference names (even if detected as a substring).
-	 */
-	@Override
-	public void scan(CtReference reference) {
-		if (reference == null) {
-			return;
-		}
-		inheritanceScanner.scan(reference);
-		if (!(reference instanceof CtTypeReference)) {
-			// replace parameters in reference names
-			String name = reference.getSimpleName();
-			for (String pname : parameterNames) {
-				if (name.contains(pname)) {
-					name = name.replace(pname, Parameters.getValue(template, pname, null).toString());
-					reference.setSimpleName(name);
-				}
-			}
-			super.scan(reference);
-		} else {
-			if (!(parameterNames.contains(reference.getSimpleName()) && (
-					((CtTypeReference<?>) reference).getDeclaringType() != null) && ((CtTypeReference<?>) reference)
-					.getDeclaringType().equals(templateRef))) {
-				super.scan(reference);
-			}
 		}
 	}
 }

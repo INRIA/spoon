@@ -90,13 +90,21 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 			formalTypeParameters = new ArrayList<CtTypeReference<?>>(
 					CONSTRUCTOR_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		formalTypeParameter.setParent(this);
 		formalTypeParameters.add(formalTypeParameter);
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtGenericElement> T setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
-		this.formalTypeParameters = formalTypeParameters;
+		if (this.formalTypeParameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.formalTypeParameters = new ArrayList<CtTypeReference<?>>(
+					CONSTRUCTOR_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.formalTypeParameters.clear();
+		for (CtTypeReference<?> formalTypeParameter : formalTypeParameters) {
+			addFormalTypeParameter(formalTypeParameter);
+		}
 		return (T) this;
 	}
 

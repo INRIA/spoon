@@ -198,9 +198,9 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -439,6 +439,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setStatic(exec.isStatic());
 			}
 
+			if (exec.declaringClass instanceof ParameterizedTypeBinding) {
+				ref.setDeclaringType(getTypeReference(exec.declaringClass.actualType()));
+			}
+
 			// original() method returns a result not null when the current method is generic.
 			if (exec.original() != null) {
 				final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>(exec.original().parameters.length);
@@ -600,6 +604,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 						ref = factory.Core().createTypeReference();
 						ref.setSimpleName(name);
 						basestypes.put(name, ref);
+					} else {
+						ref = factory.Core().clone(ref);
 					}
 				}
 			} else if (binding instanceof WildcardBinding) {
@@ -701,7 +707,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			circularRef.setSimpleName(originalRef.getSimpleName());
 			circularRef.setDeclaringType(originalRef.getDeclaringType());
 			circularRef.setActualTypeArguments(originalRef.getActualTypeArguments());
-			circularRef.setTypeAnnotations(originalRef.getTypeAnnotations());
+			circularRef.setAnnotations(originalRef.getAnnotations());
 			return circularRef;
 		}
 
@@ -709,7 +715,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (resolvedType.hasTypeAnnotations()) {
 				final AnnotationBinding[] typeAnnotations = resolvedType.getTypeAnnotations();
 				for (AnnotationBinding typeAnnotation : typeAnnotations) {
-					reference.addTypeAnnotation(getTypeCtAnnotation(typeAnnotation));
+					reference.addAnnotation(getTypeCtAnnotation(typeAnnotation));
 				}
 			}
 		}

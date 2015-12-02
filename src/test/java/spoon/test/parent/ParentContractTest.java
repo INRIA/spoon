@@ -1,7 +1,23 @@
 package spoon.test.parent;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
+import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtNewClass;
+import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
+import spoon.reflect.visitor.CtVisitable;
+import spoon.test.TestUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,21 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
-
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.factory.CoreFactory;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.CtVisitable;
-import spoon.test.TestUtils;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 // check that all setters of the metamodel call setParent
 @RunWith(Parameterized.class)
@@ -71,7 +74,7 @@ public class ParentContractTest<T extends CtVisitable> {
 			if (!intf.getSimpleName().startsWith("Ct")) {
 				continue;
 			}
-			
+
 			if (intf.getSimpleName().equals("CtElement")) {
 				continue;
 			}
@@ -79,7 +82,7 @@ public class ParentContractTest<T extends CtVisitable> {
 			// get all setters with take a CtElement as parameter
 			for(Method mth : intf.getDeclaredMethods()) {
 				if ((mth.getName().startsWith("set")
-						|| mth.getName().startsWith("add")) 
+						|| mth.getName().startsWith("add"))
 						&& mth.getParameterTypes().length==1
 						&& CtElement.class.isAssignableFrom(mth.getParameterTypes()[0])
 						) {
@@ -95,23 +98,28 @@ public class ParentContractTest<T extends CtVisitable> {
 		}
 		return toInvoke;
 	}
-	
+
 	@Test
 	public void testContract() throws Throwable {
 		Object o = instance;
 		for (Method setter : getMethodsToInvoke(toTest)) {
-			
+
 			// special case: impossible methods on some objects (they throw an UnsupportedOperationException)
 			if (o instanceof CtAnnotationType && "addMethod".equals(setter.getName())) continue;
+			if (o instanceof CtAnnotationType && "addFormalTypeParameter".equals(setter.getName())) continue;
 			if (o instanceof CtParameter && "setDefaultExpression".equals(setter.getName())) continue;
 			if (o instanceof CtCatchVariable && "setDefaultExpression".equals(setter.getName())) continue;
-			
+			if (o instanceof CtConstructor && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtConstructorCall && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtNewClass && "setType".equals(setter.getName())) continue;
+
 			CtElement mockedArgument = (CtElement) mock(setter.getParameters()[0].getType(),  Mockito.withSettings().extraInterfaces(Comparable.class));
 			try {
 				// we create a fresh object
 				CtElement receiver = (CtElement)factory.Core().clone(o);
 				// we invoke the setter
-				setter.invoke(receiver, new Object[]{mockedArgument});				
+				setter.invoke(receiver, new Object[]{mockedArgument});
 				// we check that setParent has been called
 				verify(mockedArgument).setParent((CtElement) receiver);
 			} catch (AssertionError e) {

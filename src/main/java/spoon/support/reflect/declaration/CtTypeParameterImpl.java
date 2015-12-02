@@ -17,15 +17,14 @@
 
 package spoon.support.reflect.declaration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities
-		.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
+import java.util.ArrayList;
+import java.util.List;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtTypeParameter}.
@@ -51,6 +50,7 @@ public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypePar
 		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		bound.setParent(this);
 		this.bounds.add(bound);
 		return (T) this;
 	}
@@ -67,7 +67,13 @@ public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypePar
 
 	@Override
 	public <T extends CtTypeParameter> T setBounds(List<CtTypeReference<?>> bounds) {
-		this.bounds = bounds;
+		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.bounds.clear();
+		for (CtTypeReference<?> bound : bounds) {
+			addBound(bound);
+		}
 		return (T) this;
 	}
 }

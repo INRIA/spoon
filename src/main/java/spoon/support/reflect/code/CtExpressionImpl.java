@@ -18,7 +18,6 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -47,13 +46,23 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
-		this.typeCasts = casts;
+		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.typeCasts = new ArrayList<CtTypeReference<?>>(
+					CASTS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.typeCasts.clear();
+		for (CtTypeReference<?> cast : casts) {
+			addTypeCast(cast);
+		}
 		return (C) this;
 	}
 
@@ -63,13 +72,14 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 			typeCasts = new ArrayList<CtTypeReference<?>>(
 					CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		type.setParent(this);
 		typeCasts.add(type);
 		return (C) this;
 	}
 
 	@Override
 	public <E extends T> void replace(CtExpression<E> element) {
-		replace((CtElement) element);
+		super.replace(element);
 	}
 
 	@Override

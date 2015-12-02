@@ -40,8 +40,10 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 
 	@Override
 	public <T extends CtThrow> T setThrownExpression(CtExpression<? extends Throwable> expression) {
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		this.throwExpression = expression;
-		throwExpression.setParent(this);
 		return (T) this;
 	}
 

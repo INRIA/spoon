@@ -347,8 +347,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVisitable(e);
 	}
 
-	public <A extends Annotation> void visitCtAnnotationType(
-			CtAnnotationType<A> e) {
+	public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> e) {
 		scanCtType(e);
 		scanCtNamedElement(e);
 		scanCtTypeInformation(e);
@@ -497,9 +496,9 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		visitCtClass(e);
 	}
 
-	public <T> void visitCtExecutableReference(
-			CtExecutableReference<T> e) {
+	public <T> void visitCtExecutableReference(CtExecutableReference<T> e) {
 		scanCtReference(e);
+		scanCtElement(e);
 		scanCtGenericElementReference(e);
 		scanCtVisitable(e);
 	}
@@ -526,6 +525,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtFieldReference(CtFieldReference<T> e) {
 		scanCtVariableReference(e);
 		scanCtReference(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
 	}
 
@@ -597,6 +597,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 			CtLocalVariableReference<T> e) {
 		scanCtVariableReference(e);
 		scanCtReference(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
 	}
 
@@ -614,6 +615,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> e) {
 		scanCtVariableReference(e);
 		scanCtReference(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
 	}
 
@@ -687,6 +689,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public void visitCtPackageReference(CtPackageReference e) {
 		scanCtReference(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
 	}
 
@@ -702,6 +705,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtParameterReference(CtParameterReference<T> e) {
 		scanCtVariableReference(e);
 		scanCtReference(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
 	}
 
@@ -768,6 +772,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypeInformation(e);
 		scanCtGenericElementReference(e);
 		scanCtTypeAnnotableReference(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
 	}
 

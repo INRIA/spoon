@@ -17,19 +17,6 @@
 
 package spoon.support.reflect.declaration;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -49,9 +36,24 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.code.CtExpressionImpl;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotation}.
@@ -130,6 +132,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			elementValues.put(elementName, value);
 			if (value instanceof CtElement) {
 				((CtElement) value).setParent(this);
+			} else if (value instanceof CtReference) {
+				((CtReference) value).setParent(this);
 			}
 		} else {
 			Object o = elementValues.get(elementName);
@@ -312,6 +316,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends CtAnnotation<A>> T setAnnotationType(CtTypeReference<? extends Annotation> annotationType) {
+		if (annotationType != null) {
+			annotationType.setParent(this);
+		}
 		this.annotationType = (CtTypeReference<A>) annotationType;
 		return (T) this;
 	}
@@ -361,6 +368,12 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		}
 		if (annotatedElement instanceof CtPackage) {
 			return CtAnnotatedElementType.PACKAGE;
+		}
+		if (annotatedElement instanceof CtTypeParameterReference) {
+			return CtAnnotatedElementType.TYPE_PARAMETER;
+		}
+		if (annotatedElement instanceof CtTypeReference) {
+			return CtAnnotatedElementType.TYPE_USE;
 		}
 		return null;
 	}

@@ -39,5 +39,4 @@ public interface PartialEvaluator {
 	 * @return the result of the partial evaluation
 	 */
 	<R extends CtCodeElement> R evaluate(CtElement parent, R element);
-
 }

@@ -21,6 +21,9 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 
 	@Override
 	public <C extends CtVariableAccess<T>> C setVariable(CtVariableReference<T> variable) {
+		if (variable != null) {
+			variable.setParent(this);
+		}
 		this.variable = variable;
 		return (C) this;
 	}

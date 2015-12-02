@@ -17,13 +17,13 @@
 
 package spoon.support.reflect.reference;
 
-import java.util.List;
-
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.util.List;
 
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		implements CtParameterReference<T> {
@@ -64,6 +64,9 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
 
 	@Override
 	public <C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable) {
+		if (executable != null) {
+			executable.setParent(this);
+		}
 		this.executable = executable;
 		return (C) this;
 	}

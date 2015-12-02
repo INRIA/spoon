@@ -21,6 +21,9 @@ public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>>
 
 	@Override
 	public <C extends CtExecutableReferenceExpression<T, E>> C setExecutable(CtExecutableReference<T> executable) {
+		if (executable != null) {
+			executable.setParent(this);
+		}
 		this.executable = executable;
 		return (C) this;
 	}

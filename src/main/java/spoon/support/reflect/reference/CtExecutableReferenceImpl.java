@@ -17,16 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -40,6 +30,16 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -179,7 +179,14 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 	public <C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters) {
 		if (this.parameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.parameters = new ArrayList<CtTypeReference<?>>();
-			this.parameters.addAll(parameters);
+		}
+		this.parameters.clear();
+		for (CtTypeReference<?> parameter : parameters) {
+			if (parameter == null) {
+				continue;
+			}
+			parameter.setParent(this);
+			this.parameters.add(parameter);
 		}
 		return (C) this;
 	}
@@ -218,18 +225,28 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 	@Override
 	public <C extends CtGenericElementReference> C setActualTypeArguments(
 			List<CtTypeReference<?>> actualTypeArguments) {
-		this.actualTypeArguments = actualTypeArguments;
+		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.actualTypeArguments = new ArrayList<CtTypeReference<?>>();
+		}
+		this.actualTypeArguments.clear();
+		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
+			addActualTypeArgument(actualTypeArgument);
+		}
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtExecutableReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
+		declaringType.setParent(this);
 		this.declaringType = declaringType;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}
@@ -313,6 +330,11 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 		return m != null && Modifier.isFinal(m.getModifiers());
 	}
 
+	@Override
+	public void replace(CtExecutableReference<?> reference) {
+		super.replace(reference);
+	}
+
 	public Set<ModifierKind> getModifiers() {
 		CtExecutable<T> e = getDeclaration();
 		if (e != null) {
@@ -370,6 +392,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
 					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		actualTypeArgument.setParent(this);
 		actualTypeArguments.add(actualTypeArgument);
 		return (C) this;
 	}

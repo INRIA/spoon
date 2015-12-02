@@ -17,19 +17,19 @@
 
 package spoon.support.reflect.reference;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.List;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		implements CtTypeParameterReference {
@@ -60,7 +60,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
-		this.bounds = bounds;
+		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.bounds.clear();
+		for (CtTypeReference<?> bound : bounds) {
+			addBound(bound);
+		}
 		return (T) this;
 	}
 
@@ -103,6 +109,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
 					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		actualTypeArgument.setParent(this);
 		actualTypeArguments.add(actualTypeArgument);
 		return (C) this;
 	}
@@ -118,6 +125,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		bound.setParent(this);
 		bounds.add(bound);
 		return (T) this;
 	}

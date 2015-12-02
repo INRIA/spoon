@@ -157,28 +157,6 @@ public abstract class CtScanner implements CtVisitor {
 		}
 	}
 
-	/**
-	 * Generically scans a meta-model element reference.
-	 */
-	public void scan(CtReference reference) {
-		if ((reference != null)) {
-			reference.accept(this);
-		}
-
-	}
-
-	/**
-	 * Generically scans a collection of meta-model references.
-	 */
-	public void scanReferences(Collection<? extends CtReference> references) {
-		if ((references != null)) {
-			for (CtReference r : references) {
-				scan(r);
-			}
-		}
-
-	}
-
 	public <A extends Annotation> void visitCtAnnotation(
 			CtAnnotation<A> annotation) {
 		enter(annotation);
@@ -229,7 +207,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(arrayAccess);
 		scan(arrayAccess.getAnnotations());
 		scan(arrayAccess.getType());
-		scanReferences(arrayAccess.getTypeCasts());
+		scan(arrayAccess.getTypeCasts());
 		scan(arrayAccess.getTarget());
 		scan(arrayAccess.getIndexExpression());
 		exit(arrayAccess);
@@ -250,7 +228,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getDeclaringType());
 		scan(reference.getPackage());
 		scan(reference.getComponentType());
-		scanReferences(reference.getActualTypeArguments());
+		scan(reference.getActualTypeArguments());
 		exitReference(reference);
 	}
 
@@ -272,7 +250,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(assignement);
 		scan(assignement.getAnnotations());
 		scan(assignement.getType());
-		scanReferences(assignement.getTypeCasts());
+		scan(assignement.getTypeCasts());
 		scan(assignement.getAssigned());
 		scan(assignement.getAssignment());
 		exit(assignement);
@@ -282,7 +260,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(operator);
 		scan(operator.getAnnotations());
 		scan(operator.getType());
-		scanReferences(operator.getTypeCasts());
+		scan(operator.getTypeCasts());
 		scan(operator.getLeftHandOperand());
 		scan(operator.getRightHandOperand());
 		exit(operator);
@@ -321,8 +299,8 @@ public abstract class CtScanner implements CtVisitor {
 		enter(ctClass);
 		scan(ctClass.getAnnotations());
 		scan(ctClass.getSuperclass());
-		scanReferences(ctClass.getSuperInterfaces());
-		scanReferences(ctClass.getFormalTypeParameters());
+		scan(ctClass.getSuperInterfaces());
+		scan(ctClass.getFormalTypeParameters());
 		scan(ctClass.getAnonymousExecutables());
 		scan(ctClass.getNestedTypes());
 		scan(ctClass.getFields());
@@ -344,8 +322,8 @@ public abstract class CtScanner implements CtVisitor {
 		enter(c);
 		scan(c.getAnnotations());
 		scan(c.getParameters());
-		scanReferences(c.getThrownTypes());
-		scanReferences(c.getFormalTypeParameters());
+		scan(c.getThrownTypes());
+		scan(c.getFormalTypeParameters());
 		scan(c.getBody());
 		exit(c);
 	}
@@ -368,6 +346,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		enter(ctEnum);
 		scan(ctEnum.getAnnotations());
+		scan(ctEnum.getSuperInterfaces());
 		scan(ctEnum.getFields());
 		scan(ctEnum.getConstructors());
 		scan(ctEnum.getMethods());
@@ -380,7 +359,7 @@ public abstract class CtScanner implements CtVisitor {
 		enterReference(reference);
 		scan(reference.getDeclaringType());
 		scan(reference.getType());
-		scanReferences(reference.getActualTypeArguments());
+		scan(reference.getActualTypeArguments());
 		exitReference(reference);
 	}
 
@@ -396,7 +375,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		enter(thisAccess);
 		scan(thisAccess.getType());
-		scanReferences(thisAccess.getTypeCasts());
+		scan(thisAccess.getTypeCasts());
 		scan(thisAccess.getTarget());
 		exit(thisAccess);
 	}
@@ -406,7 +385,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(annotationFieldAccess);
 		scan(annotationFieldAccess.getAnnotations());
 		scan(annotationFieldAccess.getType());
-		scanReferences(annotationFieldAccess.getTypeCasts());
+		scan(annotationFieldAccess.getTypeCasts());
 		scan(annotationFieldAccess.getTarget());
 		scan(annotationFieldAccess.getVariable());
 		exit(annotationFieldAccess);
@@ -450,8 +429,8 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
 		enter(intrface);
 		scan(intrface.getAnnotations());
-		scanReferences(intrface.getSuperInterfaces());
-		scanReferences(intrface.getFormalTypeParameters());
+		scan(intrface.getSuperInterfaces());
+		scan(intrface.getFormalTypeParameters());
 		scan(intrface.getNestedTypes());
 		scan(intrface.getFields());
 		scan(intrface.getMethods());
@@ -462,7 +441,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(invocation);
 		scan(invocation.getAnnotations());
 		scan(invocation.getType());
-		scanReferences(invocation.getTypeCasts());
+		scan(invocation.getTypeCasts());
 		scan(invocation.getTarget());
 		scan(invocation.getExecutable());
 		scan(invocation.getArguments());
@@ -474,7 +453,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(literal.getAnnotations());
 		scan(literal.getType());
 		scan(literal.getValue());
-		scanReferences(literal.getTypeCasts());
+		scan(literal.getTypeCasts());
 		exit(literal);
 	}
 
@@ -511,8 +490,8 @@ public abstract class CtScanner implements CtVisitor {
 		scan(m.getAnnotations());
 		scan(m.getType());
 		scan(m.getParameters());
-		scanReferences(m.getThrownTypes());
-		scanReferences(m.getFormalTypeParameters());
+		scan(m.getThrownTypes());
+		scan(m.getFormalTypeParameters());
 		scan(m.getBody());
 		exit(m);
 	}
@@ -521,7 +500,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(newArray);
 		scan(newArray.getAnnotations());
 		scan(newArray.getType());
-		scanReferences(newArray.getTypeCasts());
+		scan(newArray.getTypeCasts());
 		scan(newArray.getElements());
 		scan(newArray.getDimensionExpressions());
 		exit(newArray);
@@ -531,8 +510,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
 		enter(ctConstructorCall);
 		scan(ctConstructorCall.getAnnotations());
-		scan(ctConstructorCall.getType());
-		scanReferences(ctConstructorCall.getTypeCasts());
+		scan(ctConstructorCall.getTypeCasts());
 		scan(ctConstructorCall.getExecutable());
 		scan(ctConstructorCall.getTarget());
 		scan(ctConstructorCall.getArguments());
@@ -543,7 +521,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(newClass);
 		scan(newClass.getAnnotations());
 		scan(newClass.getType());
-		scanReferences(newClass.getTypeCasts());
+		scan(newClass.getTypeCasts());
 		scan(newClass.getExecutable());
 		scan(newClass.getTarget());
 		scan(newClass.getArguments());
@@ -556,7 +534,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(lambda);
 		scan(lambda.getAnnotations());
 		scan(lambda.getType());
-		scanReferences(lambda.getTypeCasts());
+		scan(lambda.getTypeCasts());
 		scan(lambda.getParameters());
 		scan(lambda.getBody());
 		scan(lambda.getExpression());
@@ -568,7 +546,7 @@ public abstract class CtScanner implements CtVisitor {
 			CtExecutableReferenceExpression<T, E> expression) {
 		enter(expression);
 		scan(expression.getType());
-		scanReferences(expression.getTypeCasts());
+		scan(expression.getTypeCasts());
 		scan(expression.getExecutable());
 		scan(expression.getTarget());
 		exit(expression);
@@ -579,7 +557,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(assignment);
 		scan(assignment.getAnnotations());
 		scan(assignment.getType());
-		scanReferences(assignment.getTypeCasts());
+		scan(assignment.getTypeCasts());
 		scan(assignment.getAssigned());
 		scan(assignment.getAssignment());
 		exit(assignment);
@@ -671,7 +649,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
 		enter(typeParameter);
 		scan(typeParameter.getAnnotations());
-		scanReferences(typeParameter.getBounds());
+		scan(typeParameter.getBounds());
 		exit(typeParameter);
 	}
 
@@ -679,8 +657,8 @@ public abstract class CtScanner implements CtVisitor {
 		enterReference(ref);
 		scan(ref.getPackage());
 		scan(ref.getDeclaringType());
-		scanReferences(ref.getActualTypeArguments());
-		scanReferences(ref.getBounds());
+		scan(ref.getActualTypeArguments());
+		scan(ref.getBounds());
 		exitReference(ref);
 	}
 
@@ -688,7 +666,7 @@ public abstract class CtScanner implements CtVisitor {
 		enterReference(reference);
 		scan(reference.getPackage());
 		scan(reference.getDeclaringType());
-		scanReferences(reference.getActualTypeArguments());
+		scan(reference.getActualTypeArguments());
 		exitReference(reference);
 	}
 
@@ -706,7 +684,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(typeAccess);
 		scan(typeAccess.getAnnotations());
 		scan(typeAccess.getType());
-		scanReferences(typeAccess.getTypeCasts());
+		scan(typeAccess.getTypeCasts());
 		exit(typeAccess);
 	}
 
@@ -714,7 +692,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(operator);
 		scan(operator.getAnnotations());
 		scan(operator.getType());
-		scanReferences(operator.getTypeCasts());
+		scan(operator.getTypeCasts());
 		scan(operator.getOperand());
 		exit(operator);
 	}
@@ -724,7 +702,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(variableAccess);
 		scan(variableAccess.getAnnotations());
 		scan(variableAccess.getType());
-		scanReferences(variableAccess.getTypeCasts());
+		scan(variableAccess.getTypeCasts());
 		scan(variableAccess.getVariable());
 		exit(variableAccess);
 	}
@@ -763,7 +741,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(f);
 		scan(f.getAnnotations());
 		scan(f.getType());
-		scanReferences(f.getTypeCasts());
+		scan(f.getTypeCasts());
 		scan(f.getTarget());
 		scan(f.getVariable());
 		exit(f);
@@ -784,7 +762,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(f);
 		scan(f.getAnnotations());
 		scan(f.getType());
-		scanReferences(f.getTypeCasts());
+		scan(f.getTypeCasts());
 		scan(f.getTarget());
 		exit(f);
 	}

@@ -17,10 +17,6 @@
 
 package spoon.reflect.declaration;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Set;
-
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.reference.CtReference;
@@ -29,6 +25,10 @@ import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.Root;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This interface is the root interface for the metamodel elements (any program
@@ -79,37 +79,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 */
 	String getDocComment();
 
-	/**
-	 * Gets the parent of current element, which can be null. Elements that are
-	 * manually added to the tree may have a null parent if not manually set.
-	 * Note that the parents of an entire tree of elements can be automatically
-	 * set by using the {@link #updateAllParentsBelow()}.
-	 *
-	 * @throws ParentNotInitializedException
-	 * 		when the parent of this element is not initialized
-	 */
-	CtElement getParent() throws ParentNotInitializedException;
-
-	/**
-	 * Tells if this parent has been initialized.
-	 */
-	boolean isParentInitialized();
 
 	/**
 	 * Gets the signature of the element.
 	 */
 	String getSignature();
-
-	/**
-	 * Gets the first parent that matches the given type.
-	 */
-	<P extends CtElement> P getParent(Class<P> parentType)
-			throws ParentNotInitializedException;
-
-	/**
-	 * Tells if the given element is a direct or indirect parent.
-	 */
-	boolean hasParent(CtElement candidate) throws ParentNotInitializedException;
 
 	/**
 	 * Gets the position of this element in input source files
@@ -139,22 +113,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * declaration.
 	 */
 	<E extends CtElement> E setDocComment(String docComment);
-
-	/**
-	 * Manually sets the parent element of the current element. Note that the
-	 * parents of an entire tree of elements can be automatically set by using
-	 * the {@link #updateAllParentsBelow()}.
-	 *
-	 * @param element
-	 * 		parent
-	 */
-	<E extends CtElement> E setParent(CtElement element);
-
-	/**
-	 * Calculates and sets all the parents below this element. This function can
-	 * be called to check and fix parents after manipulating the model.
-	 */
-	void updateAllParentsBelow();
 
 	/**
 	 * Sets the position in the Java source file. Note that this information is
@@ -224,4 +182,40 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 */
 	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
+	/**
+	 * Gets the parent of current reference.
+	 *
+	 * @throws ParentNotInitializedException
+	 * 		when the parent of this element is not initialized
+	 */
+	CtElement getParent() throws ParentNotInitializedException;
+
+	/**
+	 * Gets the first parent that matches the given type.
+	 */
+	<P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException;
+
+	/**
+	 * Manually sets the parent element of the current element.
+	 *
+	 * @param parent
+	 * 		parent reference.
+	 */
+	<E extends CtElement> E setParent(E parent);
+
+	/**
+	 * Tells if this parent has been initialized.
+	 */
+	boolean isParentInitialized();
+
+	/**
+	 * Tells if the given element is a direct or indirect parent.
+	 */
+	boolean hasParent(CtElement candidate) throws ParentNotInitializedException;
+
+	/**
+	 * Calculates and sets all the parents below this element. This function can
+	 * be called to check and fix parents after manipulating the model.
+	 */
+	void updateAllParentsBelow();
 }

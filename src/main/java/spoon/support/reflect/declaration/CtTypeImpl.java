@@ -245,7 +245,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public CtPackage getPackage() {
 		if (parent instanceof CtPackage) {
-			return (CtPackage) parent;
+			return (CtPackage) getParent();
 		} else if (parent instanceof CtType) {
 			return ((CtType<?>) parent).getPackage();
 		} else {
@@ -419,6 +419,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			interfaces = new TreeSet<CtTypeReference<?>>();
 		}
+		interfac.setParent(this);
 		interfaces.add(interfac);
 		return (C) this;
 	}
@@ -445,6 +446,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			formalTypeParameters = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		formalTypeParameter.setParent(this);
 		formalTypeParameters.add(formalTypeParameter);
 		return (C) this;
 	}
@@ -556,7 +558,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtGenericElement> C setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
-		this.formalTypeParameters = formalTypeParameters;
+		if (this.formalTypeParameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.formalTypeParameters = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.formalTypeParameters.clear();
+		for (CtTypeReference<?> formalTypeParameter : formalTypeParameters) {
+			addFormalTypeParameter(formalTypeParameter);
+		}
 		return (C) this;
 	}
 
@@ -571,7 +579,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
-		this.interfaces = interfaces;
+		if (this.interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
+			this.interfaces = new TreeSet<CtTypeReference<?>>();
+		}
+		this.interfaces.clear();
+		for (CtTypeReference<?> anInterface : interfaces) {
+			addSuperInterface(anInterface);
+		}
 		return (C) this;
 	}
 

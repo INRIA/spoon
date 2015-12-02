@@ -17,15 +17,15 @@
 
 package spoon.support.reflect.reference;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.Set;
-import java.util.TreeSet;
-
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.lang.reflect.AnnotatedElement;
+import java.util.Set;
+import java.util.TreeSet;
 
 public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 		implements CtVariableReference<T> {
@@ -49,6 +49,9 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 
 	@Override
 	public <C extends CtVariableReference<T>> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		this.type = type;
 		return (C) this;
 	}
@@ -86,5 +89,10 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 			return v.getModifiers();
 		}
 		return new TreeSet<ModifierKind>();
+	}
+
+	@Override
+	public void replace(CtVariableReference<?> reference) {
+		super.replace(reference);
 	}
 }

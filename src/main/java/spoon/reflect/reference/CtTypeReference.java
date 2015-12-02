@@ -91,4 +91,9 @@ public interface CtTypeReference<T>
 	 * Sets the reference to the declaring package.
 	 */
 	<C extends CtTypeReference<T>> C setPackage(CtPackageReference pack);
+
+	/**
+	 * Replaces a type reference by another one.
+	 */
+	void replace(CtTypeReference<?> reference);
 }

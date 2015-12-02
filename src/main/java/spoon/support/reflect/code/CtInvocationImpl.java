@@ -102,6 +102,9 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	public <C extends CtAbstractInvocation<T>> C setArguments(List<CtExpression<?>> arguments) {
+		if (this.arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
+			this.arguments = new ArrayList<CtExpression<?>>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
 		this.arguments.clear();
 		for (CtExpression<?> expr : arguments) {
 			addArgument(expr);
@@ -111,6 +114,9 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	public <C extends CtAbstractInvocation<T>> C setExecutable(CtExecutableReference<T> executable) {
+		if (executable != null) {
+			executable.setParent(this);
+		}
 		this.executable = executable;
 		return (C) this;
 	}

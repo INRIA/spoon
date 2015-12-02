@@ -16,6 +16,7 @@ import java.util.Set;
 /**
  * Visitor used to get all type annotations (integrated by the Java 8 version).
  */
+@Deprecated
 public class TypeAnnotationVisitor extends CtInheritanceScanner {
 	private final Set<CtAnnotation<? extends Annotation>> annotations =
 			new HashSet<CtAnnotation<? extends Annotation>>();

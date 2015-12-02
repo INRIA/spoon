@@ -17,35 +17,25 @@
 
 package spoon.support.reflect.reference;
 
-import java.io.Serializable;
-import java.lang.reflect.AnnotatedElement;
-
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.visitor.SignaturePrinter;
+import spoon.support.reflect.declaration.CtElementImpl;
 
-public abstract class CtReferenceImpl implements CtReference, Serializable, Comparable<CtReference> {
+import java.io.Serializable;
+import java.lang.reflect.AnnotatedElement;
+
+public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	String simplename;
 
-	transient Factory factory;
-
 	public CtReferenceImpl() {
 		super();
-	}
-
-	@Override
-	public int compareTo(CtReference o) {
-		SignaturePrinter pr = new SignaturePrinter();
-		pr.scan(this);
-		String current = pr.getSignature();
-		pr.reset();
-		pr.scan(o);
-		return current.compareTo(pr.getSignature());
 	}
 
 	@Override
@@ -79,6 +69,11 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 	}
 
 	@Override
+	public CtElement getDeclaration() {
+		throw new UnsupportedOperationException("Cannot get the declaration for all references. See CtTypeReference#getDeclaration.");
+	}
+
+	@Override
 	public String toString() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
 				getFactory().getEnvironment());
@@ -87,12 +82,7 @@ public abstract class CtReferenceImpl implements CtReference, Serializable, Comp
 	}
 
 	@Override
-	public Factory getFactory() {
-		return factory;
-	}
-
-	@Override
-	public void setFactory(Factory factory) {
-		this.factory = factory;
+	public void accept(CtVisitor visitor) {
+		throw new UnsupportedOperationException("Must be implemented in subclasses.");
 	}
 }
