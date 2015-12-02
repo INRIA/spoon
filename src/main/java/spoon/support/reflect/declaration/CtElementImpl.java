@@ -222,6 +222,11 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		return (E) this;
 	}
 
+	@Override
+	public void delete() {
+		replace(null);
+	}
+
 	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if ((List<?>) this.annotations == (List<?>) emptyList()) {
 			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
