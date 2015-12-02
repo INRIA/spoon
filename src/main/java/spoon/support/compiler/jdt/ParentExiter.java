@@ -172,7 +172,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable e) {
 		if (child instanceof CtBlock) {
-			e.setBody((CtBlock<?>) child);
+			e.setBody((CtBlock) child);
 			return;
 		}
 		super.visitCtAnonymousExecutable(e);

@@ -10,6 +10,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
@@ -113,6 +114,9 @@ public class ParentContractTest<T extends CtVisitable> {
 			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
 			if (o instanceof CtConstructorCall && "setType".equals(setter.getName())) continue;
 			if (o instanceof CtNewClass && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtAnonymousExecutable && ("addParameter".equals(setter.getName()) || "setParameters".equals(setter.getName()))) continue;
+			if (o instanceof CtAnonymousExecutable && ("addThrownType".equals(setter.getName()) || "setThrownTypes".equals(setter.getName()))) continue;
+			if (o instanceof CtAnonymousExecutable && "setType".equals(setter.getName())) continue;
 
 			CtElement mockedArgument = (CtElement) mock(setter.getParameters()[0].getType(),  Mockito.withSettings().extraInterfaces(Comparable.class));
 			try {

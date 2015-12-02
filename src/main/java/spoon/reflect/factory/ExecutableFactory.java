@@ -17,10 +17,6 @@
 
 package spoon.reflect.factory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -31,6 +27,10 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import static java.util.Arrays.asList;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
@@ -53,7 +53,7 @@ public class ExecutableFactory extends SubFactory {
 	/**
 	 * Creates an anonymous executable (initializer block) in a target class).
 	 */
-	public CtAnonymousExecutable createAnonymous(CtClass<?> target, CtBlock<?> body) {
+	public CtAnonymousExecutable createAnonymous(CtClass<?> target, CtBlock<Void> body) {
 		CtAnonymousExecutable a = factory.Core().createAnonymousExecutable();
 		target.addAnonymousExecutable(a);
 		a.setBody(body);

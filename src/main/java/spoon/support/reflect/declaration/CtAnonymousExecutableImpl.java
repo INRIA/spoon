@@ -17,20 +17,23 @@
 
 package spoon.support.reflect.declaration;
 
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
-public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonymousExecutable {
+public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;
-
-	CtBlock<?> body;
 
 	Set<ModifierKind> modifiers = emptySet();
 
@@ -51,11 +54,6 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonym
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
 		return !modifiers.isEmpty() && modifiers.remove(modifier);
-	}
-
-	@Override
-	public CtBlock<?> getBody() {
-		return body;
 	}
 
 	@Override
@@ -88,13 +86,6 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonym
 	}
 
 	@Override
-	public <T extends CtAnonymousExecutable> T setBody(CtBlock<?> block) {
-		block.setParent(this);
-		body = block;
-		return (T) this;
-	}
-
-	@Override
 	public <T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers) {
 		this.modifiers = modifiers;
 		return (T) this;
@@ -112,4 +103,63 @@ public class CtAnonymousExecutableImpl extends CtElementImpl implements CtAnonym
 		return (T) this;
 	}
 
+	@Override
+	public List<CtParameter<?>> getParameters() {
+		throw new UnsupportedOperationException("You can't have parameters in a anonymous executable");
+	}
+
+	@Override
+	public CtExecutable setParameters(List list) {
+		throw new UnsupportedOperationException("You can't have parameters in a anonymous executable");
+	}
+
+	@Override
+	public CtExecutable addParameter(CtParameter parameter) {
+		throw new UnsupportedOperationException("You can't have parameters in a anonymous executable");
+	}
+
+	@Override
+	public boolean removeParameter(CtParameter parameter) {
+		throw new UnsupportedOperationException("You can't have parameters in a anonymous executable");
+	}
+
+	@Override
+	public Set<CtTypeReference<? extends Throwable>> getThrownTypes() {
+		throw new UnsupportedOperationException("You can't have throw types in a anonymous executable");
+	}
+
+	@Override
+	public CtExecutable setThrownTypes(Set thrownTypes) {
+		throw new UnsupportedOperationException("You can't have throw types in a anonymous executable");
+	}
+
+	@Override
+	public CtExecutable addThrownType(CtTypeReference throwType) {
+		throw new UnsupportedOperationException("You can't have throw types in a anonymous executable");
+	}
+
+	@Override
+	public boolean removeThrownType(CtTypeReference throwType) {
+		throw new UnsupportedOperationException("You can't have throw types in a anonymous executable");
+	}
+
+	@Override
+	public String getSimpleName() {
+		throw new UnsupportedOperationException("You can't have a name in a anonymous executable");
+	}
+
+	@Override
+	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		throw new UnsupportedOperationException("You can't have a name in a anonymous executable");
+	}
+
+	@Override
+	public CtTypeReference<Void> getType() {
+		throw new UnsupportedOperationException("An anonymous executable isn't typed");
+	}
+
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
+		throw new UnsupportedOperationException("An anonymous executable isn't typed");
+	}
 }
