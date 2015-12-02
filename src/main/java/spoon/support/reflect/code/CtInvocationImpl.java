@@ -153,6 +153,9 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
-		throw new UnsupportedOperationException("Uses getExecutable().setType(CtTypeReference<T>)");
+		if (getExecutable() != null) {
+			getExecutable().setType(type);
+		}
+		return (C) this;
 	}
 }
