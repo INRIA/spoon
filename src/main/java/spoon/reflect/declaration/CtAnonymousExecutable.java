@@ -17,27 +17,10 @@
 
 package spoon.reflect.declaration;
 
-import spoon.reflect.code.CtBlock;
-
 /**
  * This element defines an anonymous executable block declaration in a class.
  *
  * @see spoon.reflect.declaration.CtClass
  */
-public interface CtAnonymousExecutable extends CtTypeMember {
-
-	/**
-	 * Gets the executable block.
-	 *
-	 * @return the representation of this executable
-	 */
-	CtBlock<?> getBody();
-
-	/**
-	 * Sets the executable block.
-	 *
-	 * @param block
-	 * 		the representation of this executable
-	 */
-	<T extends CtAnonymousExecutable> T setBody(CtBlock<?> block);
+public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember {
 }

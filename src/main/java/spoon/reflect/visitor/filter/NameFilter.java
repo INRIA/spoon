@@ -22,7 +22,11 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	}
 
 	public boolean matches(T element) {
-		return name.equals(element.getSimpleName());
+		try {
+			return name.equals(element.getSimpleName());
+		} catch (UnsupportedOperationException e) {
+			return false;
+		}
 	}
 
 	@SuppressWarnings("unchecked")

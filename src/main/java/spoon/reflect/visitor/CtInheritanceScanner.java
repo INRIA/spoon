@@ -359,11 +359,13 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable e) {
-		scanCtElement(e);
-		scanCtModifiable(e);
+		scanCtExecutable(e);
+		scanCtNamedElement(e);
+		scanCtTypedElement(e);
 		scanCtTypeMember(e);
+		scanCtModifiable(e);
+		scanCtElement(e);
 		scanCtVisitable(e);
-
 	}
 
 	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
