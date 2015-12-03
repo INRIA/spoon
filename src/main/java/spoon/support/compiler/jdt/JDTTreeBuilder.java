@@ -216,6 +216,7 @@ import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -1014,7 +1015,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)
 						&& resolvedType.enclosingType() != null
 						&& typeDeclaration.enclosingType.superclass != null
-						&& !getModifiers(resolvedType.enclosingType().modifiers).containsAll(modifiers)) {
+						&& Collections.disjoint(modifiers, getModifiers(resolvedType.enclosingType().modifiers))) {
 					typeDeclaration.superclass.resolvedType = new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
 							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
 				}
