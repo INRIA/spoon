@@ -13,7 +13,7 @@ public class LiteralTest {
 	@Test
 	public void testCharLiteralInNoClasspath() throws Exception {
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/");
+		launcher.addInputResource("./src/test/resources/noclasspath/SecondaryIndexManager.java");
 		launcher.setSourceOutputDirectory("./target/literal");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
