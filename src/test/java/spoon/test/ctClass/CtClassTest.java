@@ -64,4 +64,22 @@ public class CtClassTest {
 
 		TestUtils.canBeBuilt("./target/class", 8, true);
 	}
+
+	@Test
+	public void testNoClasspathWithSuperClassOfAClassInAnInterface() throws Exception {
+		// contract: When we specify a superclass which is declared in an interface and
+		// where the visibility is okay, we must use it.
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/draw2d");
+		launcher.setSourceOutputDirectory("./target/draw2d");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.eclipse.draw2d.parts.ScrollableThumbnail");
+		final CtType<?> innerClass = aClass.getNestedType("ClickScrollerAndDragTransferrer");
+		assertEquals("org.eclipse.draw2d.MouseMotionListener$Stub", innerClass.getSuperclass().getQualifiedName());
+
+		TestUtils.canBeBuilt("./target/draw2d", 8, true);
+	}
 }
