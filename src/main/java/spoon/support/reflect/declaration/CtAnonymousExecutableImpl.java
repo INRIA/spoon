@@ -105,7 +105,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	public List<CtParameter<?>> getParameters() {
-		throw new UnsupportedOperationException("You can't have parameters in a anonymous executable");
+		return emptyList();
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	public Set<CtTypeReference<? extends Throwable>> getThrownTypes() {
-		throw new UnsupportedOperationException("You can't have throw types in a anonymous executable");
+		return emptySet();
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	public String getSimpleName() {
-		throw new UnsupportedOperationException("You can't have a name in a anonymous executable");
+		return "";
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	public CtTypeReference<Void> getType() {
-		throw new UnsupportedOperationException("An anonymous executable isn't typed");
+		return factory.Type().VOID_PRIMITIVE;
 	}
 
 	@Override
