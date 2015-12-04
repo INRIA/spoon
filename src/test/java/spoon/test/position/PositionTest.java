@@ -32,7 +32,7 @@ public class PositionTest {
 
 		SourcePosition position = foo.getPosition();
 
-		assertEquals(3, position.getLine());
+		assertEquals(4, position.getLine());
 		assertEquals(6, position.getEndLine());
 
 		assertEquals(42, position.getSourceStart());
@@ -99,6 +99,21 @@ public class PositionTest {
 		assertEquals(98, positionParam1.getSourceEnd());
 
 		assertEquals("int parm1", contentAtPosition(classContent, positionParam1));
+
+
+		CtMethod<?> method2 = foo.getMethodsByName("mWithDoc").get(0);
+		SourcePosition position2 = method2.getPosition();
+
+		assertEquals(13, position2.getLine());
+		assertEquals(15, position2.getEndLine());
+
+		assertEquals("/**\n"
+				+ "\t * Mathod with javadoc\n"
+				+ "\t * @param parm1 the parameter\n"
+				+ "\t */\n"
+				+ "\tint mWithDoc(int parm1) {\n"
+				+ "\t\treturn parm1;\n"
+				+ "\t}", contentAtPosition(classContent, position2));
 	}
 
 	@Test

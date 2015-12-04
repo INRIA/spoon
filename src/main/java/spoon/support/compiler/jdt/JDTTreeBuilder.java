@@ -191,6 +191,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -297,23 +298,25 @@ public class JDTTreeBuilder extends ASTVisitor {
 			// aststack.push(node);
 			if (compilationunitdeclaration != null) {
 				CoreFactory cf = factory.Core();
-				int sourceStart = node.sourceStart;
+				int sourceStartDeclaration = node.sourceStart;
+				int sourceStartSource = node.sourceStart;
 				int sourceEnd = node.sourceEnd;
 				if (node instanceof AbstractVariableDeclaration) {
-					sourceStart = ((AbstractVariableDeclaration) node).declarationSourceStart;
+					sourceStartDeclaration = ((AbstractVariableDeclaration) node).declarationSourceStart;
 					sourceEnd = ((AbstractVariableDeclaration) node).declarationSourceEnd;
 				} else if  (node instanceof TypeDeclaration) {
-					sourceStart = ((TypeDeclaration) node).declarationSourceStart;
+					sourceStartDeclaration = ((TypeDeclaration) node).declarationSourceStart;
 					sourceEnd = ((TypeDeclaration) node).declarationSourceEnd;
 				} else if ((e instanceof CtBlock) && (node instanceof AbstractMethodDeclaration)) {
-					sourceStart = ((AbstractMethodDeclaration) node).bodyStart - 1;
+					sourceStartDeclaration = ((AbstractMethodDeclaration) node).bodyStart - 1;
 					sourceEnd = ((AbstractMethodDeclaration) node).bodyEnd + 1;
 				} else if ((node instanceof AbstractMethodDeclaration)) {
 					if (((AbstractMethodDeclaration) node).bodyStart == 0) {
-						sourceStart = -1;
+						sourceStartDeclaration = -1;
+						sourceStartSource = -1;
 						sourceEnd = -1;
 					} else {
-						sourceStart = ((AbstractMethodDeclaration) node).declarationSourceStart;
+						sourceStartDeclaration = ((AbstractMethodDeclaration) node).declarationSourceStart;
 						sourceEnd = ((AbstractMethodDeclaration) node).declarationSourceEnd;
 					}
 				}
@@ -322,8 +325,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 						sourceEnd = ((Expression) node).statementEnd;
 					}
 				}
+				if (!(e instanceof CtNamedElement)) {
+					sourceStartSource = sourceStartDeclaration;
+				}
 				CompilationUnit cu = factory.CompilationUnit().create(new String(compilationunitdeclaration.getFileName()));
-				e.setPosition(cf.createSourcePosition(cu, sourceStart, sourceEnd, compilationunitdeclaration.compilationResult.lineSeparatorPositions));
+				e.setPosition(cf.createSourcePosition(cu, sourceStartDeclaration, sourceStartSource, sourceEnd, compilationunitdeclaration.compilationResult.lineSeparatorPositions));
 			}
 			ASTPair pair = stack.peek();
 			CtElement current = pair.element;
@@ -2672,7 +2678,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					CompilationUnit cu = factory.CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
 					int sourceEnd = (int) (positions[i]);
 					final int[] lineSeparatorPositions = context.compilationunitdeclaration.compilationResult.lineSeparatorPositions;
-					fa.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions));
+					fa.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions));
 					fa = other;
 					i++;
 				}
@@ -2714,7 +2720,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					CompilationUnit cu = factory.CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
 					int sourceEnd = (int) (positions[i]);
 					final int[] lineSeparatorPositions = context.compilationunitdeclaration.compilationResult.lineSeparatorPositions;
-					va.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions));
+					va.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions));
 					va = other;
 					i++;
 				}

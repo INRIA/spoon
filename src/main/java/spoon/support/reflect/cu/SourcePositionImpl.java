@@ -93,14 +93,15 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	int[] lineSeparatorPositions;
 
-	private int sourceStart, sourceEnd;
+	private int sourceStart, sourceEnd, line;
 
-	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
+	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStartDeclaration, int sourceStartSource, int sourceEnd, int[] lineSeparatorPositions) {
 		super();
 		this.compilationUnit = compilationUnit;
-		this.sourceStart = sourceStart;
+		this.sourceStart = sourceStartDeclaration;
 		this.sourceEnd = sourceEnd;
 		this.lineSeparatorPositions = lineSeparatorPositions;
+		this.line = searchLineNumber(lineSeparatorPositions, sourceStartSource);
 	}
 
 	public int getColumn() {
@@ -119,7 +120,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	}
 
 	public int getLine() {
-		return searchLineNumber(lineSeparatorPositions, sourceStart);
+		return line;
 	}
 
 	public int getEndLine() {
