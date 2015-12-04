@@ -17,7 +17,6 @@
 
 package spoon.support.reflect.reference;
 
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
@@ -66,11 +65,6 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		}
 		this.simplename = simplename;
 		return (T) this;
-	}
-
-	@Override
-	public CtElement getDeclaration() {
-		throw new UnsupportedOperationException("Cannot get the declaration for all references. See CtTypeReference#getDeclaration.");
 	}
 
 	@Override
