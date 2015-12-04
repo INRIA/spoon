@@ -9,6 +9,9 @@
 - Uploads archives on Maven Central
 - Uploads archives on INRIA's forge
 - Updates Spoon's website
+    - News
+    - Jar file link
+    - Maven versions
 - Updates README of the GitHub project
 - Retrieves all commits and tag from INRIA's repo to GitHub
     - `cd /home/groups/spoon/spoon.git/`
