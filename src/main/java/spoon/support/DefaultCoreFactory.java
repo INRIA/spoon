@@ -238,7 +238,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 							for (Entry<?, ?> e : ((Map<?, ?>) fieldValue).entrySet()) {
 								m.put(e.getKey(), clone(e.getValue(), cloningContext));
 							}
-						} else if ((object instanceof CtReference) && (fieldValue instanceof CtElement)) {
+						} else if ((object instanceof CtReference) && (fieldValue instanceof CtElement) && !(fieldValue instanceof CtReference)) {
 							f.set(result, fieldValue);
 						} else {
 							f.set(result, clone(f.get(object), cloningContext));

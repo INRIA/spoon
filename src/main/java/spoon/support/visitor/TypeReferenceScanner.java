@@ -68,10 +68,10 @@ public class TypeReferenceScanner extends CtScanner {
 
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getDeclaringType());
 		// scan(reference.getType());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	//	public <T> boolean isImported(CtTypeReference<T> ref) {
@@ -86,9 +86,9 @@ public class TypeReferenceScanner extends CtScanner {
 	@Override
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getActualTypeArguments());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	@Override

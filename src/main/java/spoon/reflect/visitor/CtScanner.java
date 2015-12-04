@@ -116,24 +116,10 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	/**
-	 * This method is upcalled by the scanner when entering a scanned element
-	 * reference. To be overridden to implement specific scanners.
-	 */
-	protected void enterReference(CtReference e) {
-	}
-
-	/**
 	 * This method is upcalled by the scanner when exiting a scanned element. To
 	 * be overridden to implement specific scanners.
 	 */
 	protected void exit(CtElement e) {
-	}
-
-	/**
-	 * This method is upcalled by the scanner when exiting a scanned element
-	 * reference. To be overridden to implement specific scanners.
-	 */
-	protected void exitReference(CtReference e) {
 	}
 
 	/**
@@ -224,12 +210,12 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getDeclaringType());
 		scan(reference.getPackage());
 		scan(reference.getComponentType());
 		scan(reference.getActualTypeArguments());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	@Override
@@ -356,11 +342,11 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getDeclaringType());
 		scan(reference.getType());
 		scan(reference.getActualTypeArguments());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	public <T> void visitCtField(CtField<T> f) {
@@ -392,10 +378,10 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getDeclaringType());
 		scan(reference.getType());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	public void visitCtFor(CtFor forLoop) {
@@ -440,7 +426,6 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		enter(invocation);
 		scan(invocation.getAnnotations());
-		scan(invocation.getType());
 		scan(invocation.getTypeCasts());
 		scan(invocation.getTarget());
 		scan(invocation.getExecutable());
@@ -467,9 +452,9 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtLocalVariableReference(
 			CtLocalVariableReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getType());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
@@ -480,9 +465,9 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getType());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	public <T> void visitCtMethod(CtMethod<T> m) {
@@ -572,8 +557,8 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	public void visitCtPackageReference(CtPackageReference reference) {
-		enterReference(reference);
-		exitReference(reference);
+		enter(reference);
+		exit(reference);
 	}
 
 	public <T> void visitCtParameter(CtParameter<T> parameter) {
@@ -584,9 +569,9 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getType());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
@@ -654,20 +639,20 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		enterReference(ref);
+		enter(ref);
 		scan(ref.getPackage());
 		scan(ref.getDeclaringType());
 		scan(ref.getActualTypeArguments());
 		scan(ref.getBounds());
-		exitReference(ref);
+		exit(ref);
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getPackage());
 		scan(reference.getDeclaringType());
 		scan(reference.getActualTypeArguments());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	@Override

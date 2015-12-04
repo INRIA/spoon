@@ -17,14 +17,12 @@
 
 package spoon.support.gui;
 
-import java.util.Stack;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtScanner;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Stack;
 
 public class SpoonTreeBuilder extends CtScanner {
 	Stack<DefaultMutableTreeNode> nodes;
@@ -67,18 +65,6 @@ public class SpoonTreeBuilder extends CtScanner {
 	public void enter(CtElement element) {
 		createNode(element);
 		super.enter(element);
-	}
-
-	@Override
-	public void enterReference(CtReference e) {
-		createNode(e);
-		super.enterReference(e);
-	}
-
-	@Override
-	public void exitReference(CtReference e) {
-		nodes.pop();
-		super.exitReference(e);
 	}
 
 	@Override

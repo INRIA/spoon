@@ -17,12 +17,12 @@
 
 package spoon.reflect.visitor;
 
-import java.util.Stack;
-
 import org.apache.log4j.Level;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+
+import java.util.Stack;
 
 /**
  * This scanner checks that a program model is consistent with regards to the
@@ -65,10 +65,6 @@ public class ModelConsistencyChecker extends CtScanner {
 		if (!stack.isEmpty()) {
 			if (!element.isParentInitialized() || element.getParent() != stack.peek()) {
 				if ((!element.isParentInitialized() && fixNullParents) || (element.getParent() != stack.peek() && fixInconsistencies)) {
-					// System.out.println("fixing inconsistent parent: "
-					// + element.getClass() + " - "
-					// + element.getPosition() + " - "
-					// + stack.peek().getPosition());
 					element.setParent(stack.peek());
 				} else {
 					final String name = element instanceof CtNamedElement ? " - " + ((CtNamedElement) element).getSimpleName() : "";
