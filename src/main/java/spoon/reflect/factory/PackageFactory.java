@@ -58,7 +58,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 
 		@Override
 		public String getSimpleName() {
-			return "";
+			return super.getSimpleName();
 		}
 
 		@Override

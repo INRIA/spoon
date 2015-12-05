@@ -61,9 +61,9 @@ public class ClassFactory extends TypeFactory {
 		CtClass<T> c = factory.Core().createClass();
 		c.setSimpleName(simpleName);
 		if (owner.getTypes().contains(c)) {
-			owner.getTypes().remove(c);
+			owner.removeType(c);
 		}
-		owner.getTypes().add(c);
+		owner.addType(c);
 		c.setParent(owner);
 		return c;
 	}
