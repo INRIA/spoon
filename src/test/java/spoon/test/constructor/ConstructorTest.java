@@ -4,13 +4,17 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
 import spoon.test.constructor.testclasses.AClass;
 import spoon.test.constructor.testclasses.Tacos;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -60,5 +64,19 @@ public class ConstructorTest {
 		assertEquals("{" + System.lineSeparator() +
 				"    enclosingInstance.super();" + System.lineSeparator()
 				+ "}", constructor.getBody().toString());
+	}
+
+	@Test
+	public void testConstructorCallFactory() throws Exception {
+		CtTypeReference<ArrayList> ctTypeReference = factory.Code()
+				.createCtTypeReference(ArrayList.class);
+		CtConstructorCall<ArrayList> constructorCall = factory.Code()
+				.createConstructorCall(ctTypeReference);
+		assertEquals("new java.util.ArrayList()", constructorCall.toString());
+
+		CtConstructorCall<ArrayList> constructorCallWithParameter = factory.Code()
+				.createConstructorCall(ctTypeReference, constructorCall);
+
+		assertEquals("new java.util.ArrayList(new java.util.ArrayList())", constructorCallWithParameter.toString());
 	}
 }

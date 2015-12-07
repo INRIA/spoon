@@ -25,6 +25,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
@@ -52,6 +53,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -100,6 +102,33 @@ public class CodeFactory extends SubFactory {
 		@SuppressWarnings({ "rawtypes", "unchecked" }) CtTypeReference<Class<T>> classType = (CtTypeReference) factory.Type().createReference(Class.class);
 		CtFieldReference<Class<T>> field = factory.Core().<Class<T>>createFieldReference().setDeclaringType(type).setType(classType).setSimpleName("class");
 		return factory.Core().<Class<T>>createFieldRead().<CtFieldRead<Class<T>>>setType(classType).<CtFieldRead<Class<T>>>setVariable(field);
+	}
+
+	/**
+	 * Creates a constructor call. The correct constructor is inferred based on parameters
+	 *
+	 * @param type the decelerating type of the constructor
+	 * @param parameters the arguments of the constructor call
+	 * @param <T> the actual type of the decelerating type of the constructor if available
+	 * @return the constructor call
+	 */
+	public <T> CtConstructorCall<T> createConstructorCall(CtTypeReference<T> type, CtExpression<?>...parameters) {
+		CtConstructorCall<T> constructorCall = factory.Core()
+				.createConstructorCall();
+		CtExecutableReference<T> executableReference = factory.Core()
+				.createExecutableReference();
+		executableReference.setType(type);
+		executableReference.setDeclaringType(type);
+		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
+		List<CtTypeReference<?>> typeReferences = new ArrayList<CtTypeReference<?>>();
+		for (int i = 0; i < parameters.length; i++) {
+			CtExpression<?> parameter = parameters[i];
+			typeReferences.add(parameter.getType());
+		}
+		executableReference.setParameters(typeReferences);
+		constructorCall.setArguments(Arrays.asList(parameters));
+		constructorCall.setExecutable(executableReference);
+		return constructorCall;
 	}
 
 	/**

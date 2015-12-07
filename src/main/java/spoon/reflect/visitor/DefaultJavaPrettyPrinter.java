@@ -94,14 +94,14 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
-import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -1573,8 +1573,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		// call and the declaring type of the type of the constructor call are equals or not.
 		// If yes, Bar is a intern class of Foo and we don't need to print fully qualified name.
 		// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593
-		if (getTopLevelType(ctConstructorCall).getReference().equals(ctConstructorCall.getType().getDeclaringType())
-				&& ctConstructorCall.getType().getDeclaringType().getActualTypeArguments().size() > 0) {
+		CtType<?> topLevelType = getTopLevelType(ctConstructorCall);
+		CtTypeReference<?> constructorDeclaringType = ctConstructorCall.getType().getDeclaringType();
+		if (topLevelType != null
+				&& topLevelType.getReference().equals(constructorDeclaringType)
+				&& constructorDeclaringType.getActualTypeArguments().size() > 0) {
 			context.ignoreEnclosingClass = true;
 		}
 
@@ -1603,8 +1606,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(ctConstructorCall);
 	}
 
+	/**
+	 * Get the top level type. The method returns null if the parent is not initialized.
+	 * @param e the element
+	 * @return the top level types or null if not initialized.
+	 */
 	private CtType<?> getTopLevelType(CtElement e) {
-		final CtType parent = e.getParent(CtType.class);
+		CtType parent;
+		try {
+			parent = e.getParent(CtType.class);
+		} catch (ParentNotInitializedException ex) {
+			parent = null;
+		}
 		if (parent == null && this instanceof CtType) {
 			return (CtType<?>) this;
 		}
@@ -1612,7 +1625,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private CtType<?> getTypeParent(CtType<?> parent) {
-		final CtType typeParent = parent.getParent(CtType.class);
+		if (parent == null) {
+			return null;
+		}
+		CtType typeParent;
+		try {
+			typeParent = parent.getParent(CtType.class);
+		} catch (ParentNotInitializedException ex) {
+			typeParent = null;
+		}
 		if (typeParent == null) {
 			return parent;
 		}
