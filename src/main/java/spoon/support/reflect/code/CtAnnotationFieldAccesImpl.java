@@ -1,6 +1,6 @@
-/*
+/**
+ * Copyright (C) 2006-2015 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
- * Copyright (C) 2013 INRIA <nicolas.petitprez@inria.fr>
  *
  * This software is governed by the CeCILL-C License under French law and
  * abiding by the rules of distribution of free software. You can use, modify

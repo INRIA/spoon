@@ -528,6 +528,35 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>2.11</version>
+            <configuration>
+              <header>LICENSE-short.txt</header>
+              <excludes>
+                <exclude>**/README</exclude>
+                <exclude>**/*.yml</exclude>
+                <exclude>*.xml</exclude>
+                <exclude>*.txt</exclude>
+                <exclude>*.md</exclude>
+                <exclude>doc/**</exclude>
+                <exclude>spooned/**</exclude>
+                <exclude>src/main/resources/**</exclude>
+                <exclude>src/main/assembly/**</exclude>
+                <exclude>src/test/**</exclude>
+                <exclude>src/changes/**</exclude>
+                <exclude>src/site/**</exclude>
+              </excludes>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
