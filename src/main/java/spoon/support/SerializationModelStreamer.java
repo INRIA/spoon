@@ -17,18 +17,17 @@
 
 package spoon.support;
 
+import spoon.Launcher;
+import spoon.reflect.ModelStreamer;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.CtScanner;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-
-import spoon.Launcher;
-import spoon.reflect.ModelStreamer;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.CtScanner;
 
 /**
  * This class provides a regular Java serialization-based implementation of the
@@ -57,12 +56,6 @@ public class SerializationModelStreamer implements ModelStreamer {
 				public void enter(CtElement e) {
 					e.setFactory(f);
 					super.enter(e);
-				}
-
-				@Override
-				protected void enterReference(CtReference e) {
-					e.setFactory(f);
-					super.enterReference(e);
 				}
 			}.scan(f.Package().getAll());
 			ois.close();

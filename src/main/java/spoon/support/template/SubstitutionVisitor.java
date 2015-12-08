@@ -445,7 +445,7 @@ public class SubstitutionVisitor extends CtScanner {
 				if (o instanceof Class) {
 					t = factory.Type().createReference(((Class<?>) o));
 				} else if (o instanceof CtTypeReference) {
-					t = (CtTypeReference<?>) o;
+					t = factory.Core().clone((CtTypeReference<?>) o);
 					reference.setActualTypeArguments(t.getActualTypeArguments());
 				} else {
 					throw new RuntimeException(

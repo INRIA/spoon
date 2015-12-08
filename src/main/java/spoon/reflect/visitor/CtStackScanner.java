@@ -17,10 +17,9 @@
 
 package spoon.reflect.visitor;
 
-import java.util.Stack;
-
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.reference.CtReference;
+
+import java.util.Stack;
 
 /**
  * This class defines a scanner that maintains a scanning stack for contextual
@@ -40,11 +39,6 @@ public class CtStackScanner extends CtScanner {
 	protected Stack<CtElement> elementStack = new Stack<CtElement>();
 
 	/**
-	 * The stack of element references.
-	 */
-	protected Stack<CtReference> referenceStack = new Stack<CtReference>();
-
-	/**
 	 * Pops the element.
 	 */
 	protected void exit(CtElement e) {
@@ -56,29 +50,10 @@ public class CtStackScanner extends CtScanner {
 	}
 
 	/**
-	 * Pops the element reference.
-	 */
-	protected void exitReference(CtReference e) {
-		CtReference ret = referenceStack.pop();
-		if (ret != e) {
-			throw new RuntimeException("Unconsitant Stack");
-		}
-		super.exitReference(e);
-	}
-
-	/**
 	 * Pushes the element.
 	 */
 	protected void enter(CtElement e) {
 		elementStack.push(e);
 		super.enter(e);
-	}
-
-	/**
-	 * Pushes the element reference.
-	 */
-	protected void enterReference(CtReference e) {
-		referenceStack.push(e);
-		super.enterReference(e);
 	}
 }

@@ -43,23 +43,23 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		scan(reference.getDeclaringType());
 		// scan(reference.getType());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	@Override
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
-		enterReference(reference);
+		enter(reference);
 		if (reference.getDeclaringType() != null
 				&& reference.getDeclaringType().getDeclaringType() == null) {
 			addImport(reference.getDeclaringType());
 		}
 		scan(reference.getType());
 		scan(reference.getActualTypeArguments());
-		exitReference(reference);
+		exit(reference);
 	}
 
 	@Override
