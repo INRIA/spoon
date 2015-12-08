@@ -3,9 +3,13 @@ package spoon.test.snippets;
 import org.junit.Test;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeSnippetExpression;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
 import spoon.test.TestUtils;
 
@@ -62,5 +66,18 @@ public class SnippetTest {
 		final CtExpression<Object> thirdCompile = snippet.compile();
 		assertTrue(thirdCompile instanceof CtBinaryOperator);
 		assertEquals("1 > 3", thirdCompile.toString());
+	}
+
+	@Test
+	public void testCompileSnippetWithContext() throws Exception {
+		// contract: a snippet object can be compiled with a context in the factory.
+		try {
+			// Add a class in the context.
+			factory.Class().create("AClass");
+			// Try to compile a snippet with a context.
+			factory.Code().createCodeSnippetStatement("int i = 1;").compile();
+		} catch (ClassCastException e) {
+			fail();
+		}
 	}
 }
