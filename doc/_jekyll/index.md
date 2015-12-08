@@ -5,6 +5,6 @@ type: first_page
 homepage: true
 ---
 {% if site.project == "doc_designers" %}
-{% include custom/doc/doc_homepage.md %}
+{% include_relative doc_homepage.md %}
 {% endif %}
 

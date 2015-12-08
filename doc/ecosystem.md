@@ -19,7 +19,7 @@ Link of the project [here](https://github.com/SpoonLabs/spoon-maven-plugin).
 
 ## Not maintained anymore:
 
-### SpoonJDT
+## SpoonJDT
 
 [legacy] SpoonJDT provides an Eclipse plugin that allows for tight integration of Spoon within the Eclipse environment. With SpoonJDT, a set of validations and transformations packaged as a Spoonlet can occur on the fly and the reports are well-integrated into the Eclipse JDT.
 

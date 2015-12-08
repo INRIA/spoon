@@ -86,6 +86,8 @@ Snapshot version:
 </repositories>
 ```
 
+To know more about the usage of Spoon, you can read the documentation in the ["Usage" section](http://spoon.gforge.inria.fr/command_line.html#).
+
 ### Eclipse IDE Setup
 
 In order to generate the Eclipse project files required for importing run the following commands from the root spoon directory (requires Maven):

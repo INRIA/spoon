@@ -5,6 +5,24 @@ keywords: gradle, usage, java, plugin
 last_updated: October 1, 2015
 ---
 
+## Dependency
+
+```groovy
+compile 'fr.inria.gforge.spoon:spoon-core:{{site.spoon_release}}'
+```
+
+Think to specify repository of eclipse for JDT dependency:
+
+```groovy
+repositories {
+  maven {
+    url 'https://repo.eclipse.org/content/repositories/eclipse-staging/'
+  }
+}
+```
+
+## Plugin
+
 A Gradle plugin allows easily Spoon when using Gradle.
 This plugin isn't available in Maven Central yet. Clone the Git project 
 on your computer and install it on your system. To do that, clone the 
