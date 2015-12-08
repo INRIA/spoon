@@ -3,11 +3,14 @@ package spoon.test.processing;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static spoon.test.TestUtils.build;
 
@@ -41,6 +44,20 @@ public class ProcessingTest {
 							+ constructor.getSimpleName(), "int i = 0;",
 					constructor.getBody().getStatement(1).toString());
 		}
+			
+		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().INTEGER_PRIMITIVE);
+    String myBeforeStatementAsString = "int before";
+    for (CtSwitch<?> ctSwitch : constructor.getElements(new TypeFilter<CtSwitch<?>>(CtSwitch.class))) {
+      ctSwitch.insertBefore(type.getFactory().Code()
+        .createCodeSnippetStatement(myBeforeStatementAsString));
+    }
+    assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(3).toString());
+    assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
+    assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
+
+    assertFalse("switch should not be the same", constructor.getBody().getStatement(6).equals(constructor.getBody().getStatement(8)));
+    assertFalse("switch should not be the same", constructor.getBody().getStatement(6).toString().equals(constructor.getBody().getStatement(8).toString()));
+		
 	}
 
 	@Test
