@@ -196,6 +196,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	<P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException;
 
 	/**
+	 * Gets the first parent that matches the filter.
+	 * If the receiver (this) matches the filter, it is also returned
+	 */
+	<E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException;
+
+	/**
 	 * Manually sets the parent element of the current element.
 	 *
 	 * @param parent

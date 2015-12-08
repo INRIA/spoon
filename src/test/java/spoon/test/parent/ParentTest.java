@@ -2,9 +2,9 @@ package spoon.test.parent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Stack;
 
 import org.junit.Assert;
@@ -16,12 +16,14 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -29,13 +31,12 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
@@ -213,6 +214,53 @@ public class ParentTest {
 			};
 		}.scan(pack);
 
+	}
+
+	@Test
+	public void testGetParentWithFilter() throws Exception {
+		// addType should set Parent
+		CtClass<Foo> clazz = (CtClass<Foo>) factory.Class().getAll().get(0);
+
+		CtMethod<Object> m = clazz.getMethod("m");
+		// get three = "" in one = two = three = "";
+		CtExpression statement = ((CtAssignment)((CtAssignment)m.getBody().getStatement(3)).getAssignment()).getAssignment();
+		CtPackage ctPackage = statement.getParent(new TypeFilter<CtPackage>(CtPackage.class));
+		assertEquals(Foo.class.getPackage().getName(), ctPackage.getQualifiedName());
+
+		CtStatement ctStatement = statement
+				.getParent(new AbstractFilter<CtStatement>(CtStatement.class) {
+					@Override
+					public boolean matches(CtStatement element) {
+						return element.getParent() instanceof CtStatementList && super.matches(element);
+					}
+				});
+		// the filter has to return one = two = three = ""
+		assertEquals(m.getBody().getStatement(3), ctStatement);
+
+		m = clazz.getMethod("internalClass");
+		CtStatement ctStatement1 = m.getElements(
+				new AbstractFilter<CtStatement>(CtStatement.class) {
+					@Override
+					public boolean matches(CtStatement element) {
+						return element instanceof CtLocalVariable && super.matches(element);
+					}
+				}).get(0);
+
+		// get the top class
+		ctStatement1.getParent(CtType.class);
+		CtType parent = ctStatement1
+				.getParent(new AbstractFilter<CtType>(CtType.class) {
+					@Override
+					public boolean matches(CtType element) {
+						return !element.isAnonymous() && element.isTopLevel() && super.matches(element);
+					}
+				});
+		assertEquals(clazz, parent);
+		assertNotEquals(ctStatement1.getParent(CtType.class), parent);
+
+		// not present element
+		CtWhile ctWhile = ctStatement1.getParent(new TypeFilter<CtWhile>(CtWhile.class));
+		assertEquals(null, ctWhile);
 	}
 
 }
