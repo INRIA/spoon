@@ -13,6 +13,11 @@ public class CheckBound {
       throw new IndexOutOfBoundsException();
   }
 
+  public void foo2() {
+	if (new ArrayList<>().size() > 11)
+	  throw new IndexOutOfBoundsException();
+  }	
+
   public void bar() {
     if (l.size() > 10)
       throw new IndexOutOfBoundsException();
@@ -31,6 +36,7 @@ public class CheckBound {
   }
 
   public void bov() {
+    System.out.println("noise");
     if (new ArrayList<>().size() > 10) // no block
       System.out.println();
   }

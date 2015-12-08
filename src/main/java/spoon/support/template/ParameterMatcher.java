@@ -18,7 +18,6 @@
 package spoon.support.template;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.reference.CtReference;
 import spoon.template.TemplateMatcher;
 
 /**
@@ -47,19 +46,5 @@ public interface ParameterMatcher {
 	 * @return true if matching
 	 */
 	boolean match(TemplateMatcher templateMatcher, CtElement template, CtElement toMatch);
-
-	/**
-	 * To be defined to implement a matching strategy for template parameter(s).
-	 *
-	 * @param templateMatcher
-	 * 		the instance of the matcher that is currently performing the
-	 * 		matching (up-caller)
-	 * @param template
-	 * 		the template reference to match against
-	 * @param toMatch
-	 * 		the reference to be tested for a match
-	 * @return true if matching
-	 */
-	boolean match(TemplateMatcher templateMatcher, CtReference template, CtReference toMatch);
 
 }

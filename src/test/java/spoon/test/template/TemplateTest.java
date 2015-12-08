@@ -184,6 +184,37 @@ public class TemplateTest {
 			assertEquals(1, matcher.find(klass).size());
 		}
 
+		{// testing matcher3
+			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> klass = factory.Class().get(CheckBound.class);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0)).getBody().getStatement(0);
+			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+			assertEquals(2, matcher.find(klass).size());
+		}
+
+		{// testing matcher4
+			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> klass = factory.Class().get(CheckBound.class);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher4")).get(0)).getBody().getStatement(0);
+			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+			assertEquals(3, matcher.find(klass).size());
+		}
+		
+		{// testing matcher5
+			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> klass = factory.Class().get(CheckBound.class);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0)).getBody().getStatement(0);
+			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+			assertEquals(6, matcher.find(klass).size());
+		}
+
+		{// testing matcher6
+			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> klass = factory.Class().get(CheckBound.class);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher6")).get(0)).getBody().getStatement(0);
+			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+			assertEquals(2, matcher.find(klass).size());
+		}
 	}
 
 }
