@@ -3,6 +3,8 @@
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/github/INRIA/spoon?svg=true)](https://ci.appveyor.com/project/INRIA/spoon)
 [![Coverage Status](https://coveralls.io/repos/INRIA/spoon/badge.png)](https://coveralls.io/r/INRIA/spoon)
 
+[Continuous Integration server non regression at large scale](https://ci.inria.fr/sos/)
+
 # Spoon
 
 Spoon is an open-source library for analyzing and transforming Java source code. External contributions as pull requests are welcome!
