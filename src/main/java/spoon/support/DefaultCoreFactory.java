@@ -663,8 +663,8 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		this.mainFactory = mainFactory;
 	}
 
-	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int start, int end, int[] lineSeparatorPositions) {
-		return new SourcePositionImpl(compilationUnit, start, end, lineSeparatorPositions);
+	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startDeclaration, int startSource, int end, int[] lineSeparatorPositions) {
+		return new SourcePositionImpl(compilationUnit, startDeclaration, startSource, end, lineSeparatorPositions);
 	}
 
 	public CompilationUnit createCompilationUnit() {

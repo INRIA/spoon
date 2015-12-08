@@ -356,7 +356,7 @@ public interface CoreFactory {
 	 */
 	SourcePosition createSourcePosition(
 			CompilationUnit compilationUnit,
-			int start, int end, int[] lineSeparatorPositions);
+			int startDeclaration, int startSource, int end, int[] lineSeparatorPositions);
 
 	/**
 	 * Creates a statement list.

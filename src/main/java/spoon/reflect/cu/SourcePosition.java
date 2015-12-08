@@ -45,6 +45,7 @@ public interface SourcePosition {
 	/**
 	 * Gets the line in the source file (1 indexed). Prefer using
 	 * {@link #getSourceStart()}}.
+	 * For CtNamedElement the line is where the name is declared.
 	 */
 	int getLine();
 
