@@ -13,6 +13,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
@@ -22,6 +23,7 @@ import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FieldAccessFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.OverriddenMethodFilter;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
@@ -235,5 +237,78 @@ public class FilterTest {
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
 		assertEquals(0, Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aTostada.getMethodsByName("make").get(0).getReference())).size());
+	}
+
+	@Test
+	public void testOverriddenMethodFromAbstractClass() throws Exception {
+		// contract: When we declare an abstract method on an abstract class, we must return an empty list
+		// when we ask all overriden methods from this declaration.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
+
+		assertEquals(0, Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aClass.getMethodsByName("prepare").get(0).getReference())).size());
+	}
+
+	@Test
+	public void testOverriddenMethodsFromSubClassOfAbstractClass() throws Exception {
+		// contract: When we ask all overridden methods from an overriding method, we must returns all methods
+		// above and not below.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
+
+		final List<CtMethod<?>> overridenMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aTostada.getMethodsByName("prepare").get(0).getReference()));
+		assertEquals(1, overridenMethods.size());
+		assertEquals(AbstractTostada.class, overridenMethods.get(0).getParent(CtClass.class).getActualClass());
+
+		final CtClass<SubTostada> aSubTostada = launcher.getFactory().Class().get(SubTostada.class);
+		final List<CtMethod<?>> overridenMethodsFromSub = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aSubTostada.getMethodsByName("prepare").get(0).getReference()));
+		assertEquals(2, overridenMethodsFromSub.size());
+		assertEquals(AbstractTostada.class, overridenMethodsFromSub.get(0).getParent(CtClass.class).getActualClass());
+		assertEquals(Tostada.class, overridenMethodsFromSub.get(1).getParent(CtClass.class).getActualClass());
+	}
+
+	@Test
+	public void testOverriddenMethodFromInterface() throws Exception {
+		// contract: When we declare a method in an interface, we must return an empty list
+		// when we ask all overridden methods from this declaration.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtInterface<ITostada> aITostada = launcher.getFactory().Interface().get(ITostada.class);
+
+		final List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0).getReference()));
+		assertEquals(0, overridingMethods.size());
+	}
+
+	@Test
+	public void testOverriddenMethodFromSubClassOfInterface() throws Exception {
+		// contract: When we ask all overridden methods from an overriding method, we must returns all methods
+		// above and not below.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtClass<AbstractTostada> anAbstractTostada = launcher.getFactory().Class().get(AbstractTostada.class);
+
+		final List<CtMethod<?>> overriddenMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(anAbstractTostada.getMethodsByName("make").get(0).getReference()));
+		assertEquals(1, overriddenMethods.size());
+		assertEquals(ITostada.class, overriddenMethods.get(0).getParent(CtInterface.class).getActualClass());
+
+		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
+		final List<CtMethod<?>> overriddenMethodsFromSub = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aTostada.getMethodsByName("make").get(0).getReference()));
+		assertEquals(2, overriddenMethodsFromSub.size());
+		assertEquals(AbstractTostada.class, overriddenMethodsFromSub.get(0).getParent(CtType.class).getActualClass());
+		assertEquals(ITostada.class, overriddenMethodsFromSub.get(1).getParent(CtType.class).getActualClass());
 	}
 }
