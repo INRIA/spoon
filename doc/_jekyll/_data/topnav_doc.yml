@@ -39,7 +39,13 @@ topnav:
       platform: all
       product: all
       version: all
-    - title: Github Repo
+    - title: Jenkins
+      external_url: https://ci.inria.fr/sos/
+      audience: writers, designers
+      platform: all
+      product: all
+      version: all
+    - title: Github
       external_url: https://github.com/INRIA/spoon
       audience: writers, designers
       platform: all

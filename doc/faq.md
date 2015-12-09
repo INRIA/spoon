@@ -14,7 +14,7 @@ Go [here](http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss) and fill 
 
 See <https://github.com/INRIA/spoon/>.
 
-## What is the meaning of each digit in the version X.Y.Z of spoon?
+### What is the meaning of each digit in the version X.Y.Z of spoon?
 
 - X is the digit for the major version (major new features or major incompatible API changes).
 - Y is the digit for the minor version (bug fixes or minor API changes).
