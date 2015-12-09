@@ -229,6 +229,9 @@ public class SignaturePrinter implements CtVisitor {
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
 		write("case (");
 		scan(caseStatement.getCaseExpression());
+		for (CtStatement statement : caseStatement.getStatements()) {
+			scan(statement);
+		}
 		write(")");
 	}
 

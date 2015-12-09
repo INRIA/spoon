@@ -181,8 +181,10 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 			}
 
 			@Override
-			void insertFromFirstStatement(CtBlock<?> block, CtStatement target, CtStatementList statementsToBeInserted) {
-				int indexOfTargetElement = block.getStatements().indexOf(target);
+			void insertFromFirstStatement(CtBlock<?> block, CtStatement target,
+					CtStatementList statementsToBeInserted) {
+				// check the reference not the equality
+				int indexOfTargetElement = indexOfReference(block.getStatements(), target);
 				for (CtStatement s : statementsToBeInserted) {
 					s.setParent(block);
 					block.getStatements().add(indexOfTargetElement++, s);
@@ -191,7 +193,8 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 
 			@Override
 			<T extends CtElement> void insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted) {
-				int indexOfTargetElement = statements.indexOf(target);
+				// check the reference not the equality
+				int indexOfTargetElement = indexOfReference(statements, target);
 				for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
 					final CtStatement newStatement = statementsToBeInserted.getStatements().get(j);
 					newStatement.setParent(statements.get(indexOfTargetElement).getParent());
@@ -207,7 +210,8 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 
 			@Override
 			void insertFromFirstStatement(CtBlock<?> block, CtStatement target, CtStatementList statementsToBeInserted) {
-				int indexOfTargetElement = block.getStatements().indexOf(target);
+				// check the reference not the equality
+				int indexOfTargetElement = indexOfReference(block.getStatements(), target);
 				for (CtStatement s : statementsToBeInserted) {
 					s.setParent(block);
 					block.getStatements().add(++indexOfTargetElement, s);
@@ -216,7 +220,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 
 			@Override
 			<T extends CtElement> void insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted) {
-				int indexOfTargetElement = statements.indexOf(target) + 1;
+				int indexOfTargetElement = indexOfReference(statements, target) + 1;
 				for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
 					final CtStatement newStatement = statementsToBeInserted.getStatements().get(j);
 					newStatement.setParent(target.getParent());
@@ -225,6 +229,17 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 			}
 		};
 
+		public int indexOfReference(List statements, CtElement target) {
+			int indexOfTargetElement = -1;
+			// check the reference not the equality
+			for (int i = 0; i < statements.size(); i++) {
+				if (statements.get(i) == target) {
+					indexOfTargetElement = i;
+					break;
+				}
+			}
+			return indexOfTargetElement;
+		}
 		abstract void insert(CtBlock<?> block, CtStatementList statementsToBeInserted);
 		abstract void insertFromFirstStatement(CtBlock<?> block, CtStatement target, CtStatementList statementsToBeInserted);
 		abstract <T extends CtElement> void insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted);

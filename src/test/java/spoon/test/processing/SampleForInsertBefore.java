@@ -11,6 +11,19 @@ public class SampleForInsertBefore {
 		this(j, 0);
 		new Thread() {
 		};
+		switch (j) {
+      default:
+        break;
+    }
+    switch (j) {
+      default:
+        break;
+    }
+    switch (j) {
+      default: {
+        break;
+      }
+    }
 	}
 
 	public SampleForInsertBefore(int j, int k) {
