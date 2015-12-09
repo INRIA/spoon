@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2006-2015 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
@@ -16,29 +16,32 @@
  */
 package spoon.reflect.visitor.filter;
 
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Filter;
 
+/**
+ * Gets all overriding method from the method given.
+ */
 public class OverridingMethodFilter implements Filter<CtMethod<?>> {
-	private final CtExecutableReference<?> executableReference;
+	private final CtMethod<?> method;
 
-	public OverridingMethodFilter(CtExecutableReference<?> executableReference) {
-		this.executableReference = executableReference;
+	/**
+	 * Creates a new overriding method filter.
+	 *
+	 * @param method
+	 * 		the executable to be tested for being invoked
+	 */
+	public OverridingMethodFilter(CtMethod<?> method) {
+		this.method = method;
 	}
 
 	@Override
 	public boolean matches(CtMethod<?> element) {
-		final CtExecutable<?> declaration = executableReference.getDeclaration();
-		if (declaration == null) {
-			return false;
-		}
-		final CtType expectedParent = declaration.getParent(CtType.class);
+		final CtType expectedParent = method.getParent(CtType.class);
 		final CtType<?> currentParent = element.getParent(CtType.class);
 		return currentParent.isAssignableFrom(expectedParent.getReference()) //
 				&& !currentParent.equals(expectedParent) //
-				&& element.getReference().isOverriding(executableReference);
+				&& element.getReference().isOverriding(method.getReference());
 	}
 }

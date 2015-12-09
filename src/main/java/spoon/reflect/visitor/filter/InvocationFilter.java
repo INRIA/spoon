@@ -17,6 +17,7 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Filter;
 
@@ -36,6 +37,16 @@ public class InvocationFilter implements Filter<CtInvocation<?>> {
 	 */
 	public InvocationFilter(CtExecutableReference<?> executable) {
 		this.executable = executable;
+	}
+
+	/**
+	 * Creates a new invocation filter.
+	 *
+	 * @param method
+	 * 		the executable to be tested for being invoked.
+	 */
+	public InvocationFilter(CtMethod<?> method) {
+		this(method.getReference());
 	}
 
 	@Override
