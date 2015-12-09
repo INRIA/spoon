@@ -231,8 +231,8 @@ public class SignaturePrinter implements CtVisitor {
 		write("case (");
 		scan(caseStatement.getCaseExpression());
 		for (CtStatement statement : caseStatement.getStatements()) {
-      scan(statement);
-    }
+			scan(statement);
+		}
 		write(")");
 	}
 
