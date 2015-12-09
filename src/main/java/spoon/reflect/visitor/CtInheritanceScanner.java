@@ -297,6 +297,27 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void scanCtVariable(CtVariable<T> v) {
 	}
 
+
+	/**
+	 * Scans an array access (read and write).
+	 */
+	public <T, E extends CtExpression<?>> void scanCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
+	}
+
+	/**
+	 * Scans a field access (read and write).
+	 */
+	public <T> void scanCtFieldAccess(CtFieldAccess<T> fieldAccess) {
+	}
+
+	/**
+	 * Scans a variable access (read and write).
+	 */
+	public <T> void scanCtVariableAccess(CtVariableAccess<T> variableAccess) {
+	}
+
+	@Override
+	@Deprecated
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
 		visitCtVariableRead(f);
 		scanCtTargetedExpression(f);
@@ -304,12 +325,16 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
-		visitCtFieldAccess(fieldRead);
+		scanCtFieldAccess(fieldRead);
+		visitCtVariableRead(fieldRead);
+		scanCtTargetedExpression(fieldRead);
 	}
 
 	@Override
 	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
-		visitCtFieldAccess(fieldWrite);
+		scanCtFieldAccess(fieldWrite);
+		visitCtVariableRead(fieldWrite);
+		scanCtTargetedExpression(fieldWrite);
 	}
 
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
@@ -367,8 +392,9 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVisitable(e);
 	}
 
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
-			CtArrayAccess<T, E> e) {
+	@Override
+	@Deprecated
+	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> e) {
 		scanCtTargetedExpression(e);
 		scanCtExpression(e);
 		scanCtCodeElement(e);
@@ -379,12 +405,24 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	@Override
 	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
-		visitCtArrayAccess(arrayRead);
+		scanCtArrayAccess(arrayRead);
+		scanCtTargetedExpression(arrayRead);
+		scanCtExpression(arrayRead);
+		scanCtCodeElement(arrayRead);
+		scanCtTypedElement(arrayRead);
+		scanCtElement(arrayRead);
+		scanCtVisitable(arrayRead);
 	}
 
 	@Override
 	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
-		visitCtArrayAccess(arrayWrite);
+		scanCtArrayAccess(arrayWrite);
+		scanCtTargetedExpression(arrayWrite);
+		scanCtExpression(arrayWrite);
+		scanCtCodeElement(arrayWrite);
+		scanCtTypedElement(arrayWrite);
+		scanCtElement(arrayWrite);
+		scanCtVisitable(arrayWrite);
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> e) {
@@ -806,6 +844,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	@Override
+	@Deprecated
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> e) {
 		scanCtExpression(e);
 		scanCtCodeElement(e);
@@ -814,13 +853,24 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVisitable(e);
 	}
 
+	@Override
 	public <T> void visitCtVariableRead(CtVariableRead<T> e) {
-		visitCtVariableAccess(e);
+		scanCtVariableAccess(e);
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	@Override
 	public <T> void visitCtVariableWrite(CtVariableWrite<T> e) {
-		visitCtVariableAccess(e);
+		scanCtVariableAccess(e);
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(

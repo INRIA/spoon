@@ -187,8 +187,7 @@ public abstract class CtScanner implements CtVisitor {
 		exit(anonymousExec);
 	}
 
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
-			CtArrayAccess<T, E> arrayAccess) {
+	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
 		enter(arrayAccess);
 		scan(arrayAccess.getAnnotations());
 		scan(arrayAccess.getType());
@@ -200,12 +199,24 @@ public abstract class CtScanner implements CtVisitor {
 
 	@Override
 	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
-		visitCtArrayAccess(arrayRead);
+		enter(arrayRead);
+		scan(arrayRead.getAnnotations());
+		scan(arrayRead.getType());
+		scan(arrayRead.getTypeCasts());
+		scan(arrayRead.getTarget());
+		scan(arrayRead.getIndexExpression());
+		exit(arrayRead);
 	}
 
 	@Override
 	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
-		visitCtArrayAccess(arrayWrite);
+		enter(arrayWrite);
+		scan(arrayWrite.getAnnotations());
+		scan(arrayWrite.getType());
+		scan(arrayWrite.getTypeCasts());
+		scan(arrayWrite.getTarget());
+		scan(arrayWrite.getIndexExpression());
+		exit(arrayWrite);
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
@@ -691,13 +702,24 @@ public abstract class CtScanner implements CtVisitor {
 		exit(variableAccess);
 	}
 
+	@Override
 	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
-		visitCtVariableAccess(variableRead);
+		enter(variableRead);
+		scan(variableRead.getAnnotations());
+		scan(variableRead.getType());
+		scan(variableRead.getTypeCasts());
+		scan(variableRead.getVariable());
+		exit(variableRead);
 	}
 
 	@Override
 	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
-		visitCtVariableAccess(variableWrite);
+		enter(variableWrite);
+		scan(variableWrite.getAnnotations());
+		scan(variableWrite.getType());
+		scan(variableWrite.getTypeCasts());
+		scan(variableWrite.getVariable());
+		exit(variableWrite);
 	}
 
 	public void visitCtWhile(CtWhile whileLoop) {
@@ -733,12 +755,24 @@ public abstract class CtScanner implements CtVisitor {
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
-		visitCtFieldAccess(fieldRead);
+		enter(fieldRead);
+		scan(fieldRead.getAnnotations());
+		scan(fieldRead.getType());
+		scan(fieldRead.getTypeCasts());
+		scan(fieldRead.getTarget());
+		scan(fieldRead.getVariable());
+		exit(fieldRead);
 	}
 
 	@Override
 	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
-		visitCtFieldAccess(fieldWrite);
+		enter(fieldWrite);
+		scan(fieldWrite.getAnnotations());
+		scan(fieldWrite.getType());
+		scan(fieldWrite.getTypeCasts());
+		scan(fieldWrite.getTarget());
+		scan(fieldWrite.getVariable());
+		exit(fieldWrite);
 	}
 
 	@Override

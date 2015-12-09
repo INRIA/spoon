@@ -19,6 +19,8 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -196,14 +198,34 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
+		if (visitArrayAccess(arrayAccess)) {
+			super.visitCtArrayAccess(arrayAccess);
+		}
+	}
+
+	@Override
+	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
+		if (visitArrayAccess(arrayRead)) {
+			super.visitCtArrayAccess(arrayRead);
+		}
+	}
+
+	@Override
+	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
+		if (visitArrayAccess(arrayWrite)) {
+			super.visitCtArrayAccess(arrayWrite);
+		}
+	}
+
+	private <T, E extends CtExpression<?>> boolean visitArrayAccess(CtArrayAccess<T, E> arrayAccess) {
 		if (this.jdtTreeBuilder.context.arguments.size() > 0 && this.jdtTreeBuilder.context.arguments.peek() == arrayAccess) {
 			arrayAccess.setIndexExpression((CtExpression<Integer>) child);
-			return;
+			return false;
 		} else if (arrayAccess.getTarget() == null) {
 			arrayAccess.setTarget((E) child);
-			return;
+			return false;
 		}
-		super.visitCtArrayAccess(arrayAccess);
+		return true;
 	}
 
 	@Override

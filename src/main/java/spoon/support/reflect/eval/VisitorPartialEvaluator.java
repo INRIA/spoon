@@ -178,12 +178,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	@Override
 	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
-		visitCtArrayAccess(arrayRead);
+		setResult(arrayRead.getFactory().Core().clone(arrayRead));
 	}
 
 	@Override
 	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
-		visitCtArrayAccess(arrayWrite);
+		setResult(arrayWrite.getFactory().Core().clone(arrayWrite));
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
@@ -410,6 +410,20 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	@Override
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
+		visitFieldAccess(fieldAccess);
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		visitFieldAccess(fieldRead);
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visitFieldAccess(fieldWrite);
+	}
+
+	private <T> void visitFieldAccess(CtFieldAccess<T> fieldAccess) {
 		if (fieldAccess.getVariable().getSimpleName().equals("class")) {
 			Class<?> c = fieldAccess.getVariable().getDeclaringType().getActualClass();
 			if (c != null) {
@@ -432,16 +446,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			return;
 		}
 		setResult(fieldAccess.getFactory().Core().clone(fieldAccess));
-	}
-
-	@Override
-	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
-		visitCtFieldAccess(fieldRead);
-	}
-
-	@Override
-	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
-		visitCtFieldAccess(fieldWrite);
 	}
 
 	@Override
@@ -761,21 +765,26 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	@Override
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
+		visitVariableAccess(variableAccess);
+	}
+
+	@Override
+	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+		visitVariableAccess(variableRead);
+	}
+
+	@Override
+	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
+		visitVariableAccess(variableWrite);
+	}
+
+	private <T> void visitVariableAccess(CtVariableAccess<T> variableAccess) {
 		CtVariable<?> v = variableAccess.getVariable().getDeclaration();
 		if (v != null && v.hasModifier(ModifierKind.FINAL) && v.getDefaultExpression() != null) {
 			setResult(evaluate(v, v.getDefaultExpression()));
 		} else {
 			setResult(variableAccess.getFactory().Core().clone(variableAccess));
 		}
-	}
-
-	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
-		visitCtVariableAccess(variableRead);
-	}
-
-	@Override
-	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
-		visitCtVariableAccess(variableWrite);
 	}
 
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> variableAssignment) {

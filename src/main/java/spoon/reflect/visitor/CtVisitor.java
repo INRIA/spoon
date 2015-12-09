@@ -126,6 +126,7 @@ public interface CtVisitor {
 	/**
 	 * Visits an array access.
 	 */
+	@Deprecated
 	<T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess);
 
 	/**
@@ -418,6 +419,7 @@ public interface CtVisitor {
 	/**
 	 * Visits a variable access (read and write).
 	 */
+	@Deprecated
 	<T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess);
 
 	/**
@@ -440,6 +442,7 @@ public interface CtVisitor {
 	/**
 	 * Visits a field access (read and write).
 	 */
+	@Deprecated
 	<T> void visitCtFieldAccess(CtFieldAccess<T> f);
 
 	/**

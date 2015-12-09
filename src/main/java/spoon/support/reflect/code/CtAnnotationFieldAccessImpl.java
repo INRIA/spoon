@@ -19,7 +19,7 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtAnnotationFieldAccesImpl<T> extends CtFieldAccessImpl<T>
+public class CtAnnotationFieldAccessImpl<T> extends CtFieldAccessImpl<T>
 		implements CtAnnotationFieldAccess<T> {
 	private static final long serialVersionUID = 1L;
 

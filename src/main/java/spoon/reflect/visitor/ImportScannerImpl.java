@@ -18,6 +18,8 @@ package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -49,12 +51,33 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
 		enter(f);
 		scan(f.getVariable());
-		// scan(fieldAccess.getType());
 		scan(f.getAnnotations());
 		scan(f.getTypeCasts());
 		scan(f.getVariable());
 		scan(f.getTarget());
 		exit(f);
+	}
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		enter(fieldRead);
+		scan(fieldRead.getVariable());
+		scan(fieldRead.getAnnotations());
+		scan(fieldRead.getTypeCasts());
+		scan(fieldRead.getVariable());
+		scan(fieldRead.getTarget());
+		exit(fieldRead);
+	}
+
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		enter(fieldWrite);
+		scan(fieldWrite.getVariable());
+		scan(fieldWrite.getAnnotations());
+		scan(fieldWrite.getTypeCasts());
+		scan(fieldWrite.getVariable());
+		scan(fieldWrite.getTarget());
+		exit(fieldWrite);
 	}
 
 	@Override
