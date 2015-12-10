@@ -7,6 +7,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -16,12 +17,14 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FieldAccessFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
+import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodFilter;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
@@ -41,6 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class FilterTest {
@@ -310,5 +315,36 @@ public class FilterTest {
 		assertEquals(2, overriddenMethodsFromSub.size());
 		assertEquals(AbstractTostada.class, overriddenMethodsFromSub.get(0).getParent(CtType.class).getActualClass());
 		assertEquals(ITostada.class, overriddenMethodsFromSub.get(1).getParent(CtType.class).getActualClass());
+	}
+
+	@Test
+	public void testInvocationFilterWithExecutableInLibrary() throws Exception {
+		// contract: When we have an invocation of an executable declared in a library,
+		// we can filter it and get the executable of the invocation.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtClass<Tacos> aTacos = launcher.getFactory().Class().get(Tacos.class);
+		final CtInvocation<?> invSize = aTacos.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
+			@Override
+			public boolean matches(CtInvocation<?> element) {
+				if (element.getExecutable() == null) {
+					return false;
+				}
+				return "size".equals(element.getExecutable().getSimpleName()) && super.matches(element);
+			}
+		}).get(0);
+
+		final List<CtInvocation<?>> invocations = aTacos.getElements(new InvocationFilter(invSize.getExecutable()));
+
+		assertEquals(1, invocations.size());
+		final CtInvocation<?> expectedInv = invocations.get(0);
+		assertNotNull(expectedInv);
+		final CtExecutableReference<?> expectedExecutable = expectedInv.getExecutable();
+		assertNotNull(expectedExecutable);
+		assertNull(expectedExecutable.getDeclaration());
+		assertEquals("size", expectedExecutable.getSimpleName());
 	}
 }

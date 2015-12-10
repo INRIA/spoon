@@ -17,6 +17,8 @@
 
 package spoon.test.filters.testclasses;
 
+import java.util.ArrayList;
+
 public class Tacos implements ITostada {
 	@Override
 	public ITostada make() {
@@ -24,5 +26,7 @@ public class Tacos implements ITostada {
 	}
 
 	public void prepare() {
+		final ArrayList<String> strings = new ArrayList<String>();
+		strings.size();
 	}
 }
