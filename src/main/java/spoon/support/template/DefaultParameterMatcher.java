@@ -17,7 +17,6 @@
 package spoon.support.template;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.reference.CtReference;
 import spoon.template.TemplateMatcher;
 
 /**
@@ -35,16 +34,6 @@ public class DefaultParameterMatcher implements ParameterMatcher {
 	 */
 	public boolean match(TemplateMatcher templateMatcher, CtElement template,
 			CtElement toMatch) {
-		return true;
-	}
-
-	/**
-	 * Default implementation.
-	 *
-	 * @return always <code>true</code>.
-	 */
-	public boolean match(TemplateMatcher templateMatcher, CtReference template,
-			CtReference toMatch) {
 		return true;
 	}
 
