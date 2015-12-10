@@ -21,13 +21,13 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.visitor.processors.CheckVisitorProcessor;
 
-public class CtInheritanceScannerMethodsTest {
+public class CtVisitorTest {
 	@Test
-	public void testMethodsInInheritanceScanner() throws Exception {
-		// contract: CtInheritanceScanner must declare all scanner and visitor methods.
+	public void testMethodsInVisitor() throws Exception {
+		// contract: CtVisitor must declare all visit methods.
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addProcessor(new CheckVisitorProcessor(CtInheritanceScanner.class).withScanners().withVisitors());
+		launcher.addProcessor(new CheckVisitorProcessor(CtVisitor.class).withVisitors());
 		launcher.setSourceOutputDirectory("./target/trash");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -37,7 +37,7 @@ public class CtInheritanceScannerMethodsTest {
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
-		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtInheritanceScanner.java");
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtVisitor.java");
 		launcher.run();
 
 		// All assertions are in the processor.

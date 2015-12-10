@@ -22,17 +22,25 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.CtVisitor;
 
 import java.util.Collections;
 import java.util.List;
 
-public class CheckModelProcessor extends AbstractProcessor<CtClass<?>> {
-	private final FailureStrategy failure;
+/**
+ * Used to check if a visitor (or a sub class) have all scanner and visitor methods necessary.
+ *
+ * @param <T>
+ * 		Visitor to analyse.
+ */
+public class CheckVisitorProcessor<T extends CtVisitor> extends AbstractProcessor<CtClass<?>> {
+	private Class<T> visitor;
 	private final List<String> excludingClasses = Collections.singletonList("CompilationUnitVirtualImpl");
+	private boolean hasScanners;
+	private boolean hasVisitors;
 
-	public CheckModelProcessor(FailureStrategy failure) {
-		this.failure = failure;
+	public CheckVisitorProcessor(Class<T> visitor) {
+		this.visitor = visitor;
 	}
 
 	@Override
@@ -46,31 +54,46 @@ public class CheckModelProcessor extends AbstractProcessor<CtClass<?>> {
 
 	@Override
 	public void process(CtClass<?> element) {
-		final CtType<CtInheritanceScanner> scanner = getFactory().Type().get(CtInheritanceScanner.class);
+		final CtType<CtVisitor> visitor = getFactory().Type().get(this.visitor);
 		final String qualifiedName = element.getQualifiedName().replace(".support.", ".");
 		final String interfaceName = qualifiedName.substring(0, qualifiedName.lastIndexOf("Impl"));
 		final CtType<Object> theInterface = getFactory().Type().get(interfaceName);
 
-		checkMethod(scanner, theInterface, element.getModifiers().contains(ModifierKind.ABSTRACT));
+		if (hasScanners) {
+			checkPresenceScanMethods(visitor, theInterface, element.getModifiers().contains(ModifierKind.ABSTRACT));
+		}
+		if (hasVisitors) {
+			checkPresenceVisitMethods(visitor, theInterface, element.getModifiers().contains(ModifierKind.ABSTRACT));
+		}
 	}
 
-	private void checkMethod(CtType<CtInheritanceScanner> scanner, CtType<Object> theInterface, boolean isAbstract) {
-		int nbScanner = isAbstract ? 1 : 0, nbVisit = isAbstract ? 0 : 1;
-		final List<CtMethod<?>> scanners = scanner.getMethodsByName("scan" + theInterface.getSimpleName());
+	public CheckVisitorProcessor withScanners() {
+		hasScanners = true;
+		return this;
+	}
+
+	public CheckVisitorProcessor withVisitors() {
+		hasVisitors = true;
+		return this;
+	}
+
+	private void checkPresenceScanMethods(CtType<CtVisitor> visitorType, CtType<Object> element, boolean isAbstract) {
+		int nbScanner = isAbstract ? 1 : 0;
+		final List<CtMethod<?>> scanners = visitorType.getMethodsByName("scan" + element.getSimpleName());
 		if (scanners.size() != nbScanner) {
 			if (!(scanners.size() > 0 && scanners.get(0).getAnnotation(Deprecated.class) != null)) {
-				failure.fail("You should have " + nbScanner + " scanner and " + nbVisit + " visit methods for the element " + theInterface.getSimpleName() + " in the CtInheritanceScanner.");
-			}
-		}
-		final List<CtMethod<?>> visits = scanner.getMethodsByName("visit" + theInterface.getSimpleName());
-		if (visits.size() != nbVisit) {
-			if (!(visits.size() > 0 && visits.get(0).getAnnotation(Deprecated.class) != null)) {
-				failure.fail("You should have " + nbScanner + " scanner and " + nbVisit + " visit methods for the element " + theInterface.getSimpleName() + " in the CtInheritanceScanner.");
+				throw new AssertionError("You should have " + nbScanner + " scanner methods for the element " + element.getSimpleName() + " in the CtInheritanceScanner.");
 			}
 		}
 	}
 
-	public interface FailureStrategy {
-		void fail(String message);
+	private void checkPresenceVisitMethods(CtType<CtVisitor> visitorType, CtType<Object> element, boolean isAbstract) {
+		int nbVisit = isAbstract ? 0 : 1;
+		final List<CtMethod<?>> visits = visitorType.getMethodsByName("visit" + element.getSimpleName());
+		if (visits.size() != nbVisit) {
+			if (!(visits.size() > 0 && visits.get(0).getAnnotation(Deprecated.class) != null)) {
+				throw new AssertionError("You should have " + nbVisit + " visit methods for the element " + element.getSimpleName() + " in the CtInheritanceScanner.");
+			}
+		}
 	}
 }
