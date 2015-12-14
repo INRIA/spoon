@@ -95,7 +95,8 @@ import java.lang.annotation.Annotation;
 /**
  * This interface defines the visitor for the Spoon metamodel, as defined in
  * {@link spoon.reflect.declaration}, {@link spoon.reflect.code}, and
- * {@link spoon.reflect.reference}.
+ * {@link spoon.reflect.reference}. It declares a visit method for each
+ * element of the AST.
  */
 public interface CtVisitor {
 	/**
@@ -126,6 +127,7 @@ public interface CtVisitor {
 	/**
 	 * Visits an array access.
 	 */
+	@Deprecated
 	<T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess);
 
 	/**
@@ -418,6 +420,7 @@ public interface CtVisitor {
 	/**
 	 * Visits a variable access (read and write).
 	 */
+	@Deprecated
 	<T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess);
 
 	/**
@@ -435,11 +438,15 @@ public interface CtVisitor {
 	 */
 	void visitCtWhile(CtWhile whileLoop);
 
+	/**
+	 * Visits a field of an annotation.
+	 */
 	<T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess);
 
 	/**
 	 * Visits a field access (read and write).
 	 */
+	@Deprecated
 	<T> void visitCtFieldAccess(CtFieldAccess<T> f);
 
 	/**
@@ -452,5 +459,8 @@ public interface CtVisitor {
 	 */
 	<T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite);
 
+	/**
+	 * Visits an access to a super invocation.
+	 */
 	<T> void visitCtSuperAccess(CtSuperAccess<T> f);
 }

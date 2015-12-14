@@ -1,9 +1,15 @@
 package spoon.reflect.visitor;
 
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
+import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.factory.Factory;
+import spoon.test.TestUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,25 +17,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
-
-import spoon.reflect.factory.CoreFactory;
-import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
-
-import java.lang.reflect.InvocationTargetException;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
- * 
+ *
  * Tests the main contract of CtInheritanceScanner
- * 
- * Can be called with 
+ *
+ * Can be called with
  * $ mvn test -D test=spoon.reflect.visitor.CtInheritanceScannerTest
- * 
+ *
  * Created by nicolas on 25/02/2015.
  */
 @RunWith(Parameterized.class)
@@ -74,20 +72,28 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 				continue;
 			}
 			Method mth=null;
-			
+
 			// if a method visitX exists, it must be invoked
-			try {				
+			try {
 				mth = CtInheritanceScanner.class.getDeclaredMethod("visit" + intf.getSimpleName(), intf);
+				if (mth.getAnnotation(Deprecated.class) != null) {
+					// if the method visitX exists with a deprecated annotation, it mustn't be invoked.
+					mth = null;
+				}
 			} catch (NoSuchMethodException ex) {
 				// no such method, nothing
 			}
 			if (mth!=null && !toInvoke.contains(mth)) {
 				toInvoke.add(mth);
 			}
-			
+
 			// if a method scanX exists, it must be invoked
-			try {				
+			try {
 				mth = CtInheritanceScanner.class.getDeclaredMethod("scan" + intf.getSimpleName(), intf);
+				if (mth.getAnnotation(Deprecated.class) != null) {
+					// if the method scanX exists with a deprecated annotation, it mustn't be invoked.
+					mth = null;
+				}
 			} catch (NoSuchMethodException ex) {
 				// no such method, nothing
 			}

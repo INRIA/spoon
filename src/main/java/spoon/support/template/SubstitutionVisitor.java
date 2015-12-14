@@ -23,6 +23,8 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -242,6 +244,20 @@ public class SubstitutionVisitor extends CtScanner {
 		 */
 		@Override
 		public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
+			visitFieldAccess(fieldAccess);
+		}
+
+		@Override
+		public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+			visitFieldAccess(fieldRead);
+		}
+
+		@Override
+		public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+			visitFieldAccess(fieldWrite);
+		}
+
+		private <T> void visitFieldAccess(CtFieldAccess<T> fieldAccess) {
 			CtFieldReference<?> ref = fieldAccess.getVariable();
 			if ("length".equals(ref.getSimpleName())) {
 				if (fieldAccess.getTarget() instanceof CtFieldAccess) {
@@ -472,10 +488,29 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		@SuppressWarnings("unchecked")
 		public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
+			if (visitVariableAccess(variableAccess)) {
+				super.visitCtVariableAccess(variableAccess);
+			}
+		}
+
+		@Override
+		public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+			if (visitVariableAccess(variableRead)) {
+				super.visitCtVariableRead(variableRead);
+			}
+		}
+
+		@Override
+		public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
+			if (visitVariableAccess(variableWrite)) {
+				super.visitCtVariableWrite(variableWrite);
+			}
+		}
+
+		private <T> boolean visitVariableAccess(CtVariableAccess<T> variableAccess) {
 			if (variableAccess instanceof CtSuperAccess) {
 				// A CtSuperAccess don't have a variable.
-				super.visitCtVariableAccess(variableAccess);
-				return;
+				return true;
 			}
 			String name = variableAccess.getVariable().getSimpleName();
 			for (String pname : parameterNames) {
@@ -519,17 +554,7 @@ public class SubstitutionVisitor extends CtScanner {
 				}
 				variableAccess.setType(t);
 			}
-			super.visitCtVariableAccess(variableAccess);
-		}
-
-		@Override
-		public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
-			visitCtVariableAccess(variableRead);
-		}
-
-		@Override
-		public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
-			visitCtVariableAccess(variableWrite);
+			return true;
 		}
 	}
 

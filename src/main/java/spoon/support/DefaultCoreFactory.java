@@ -89,7 +89,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.reflect.code.CtAnnotationFieldAccesImpl;
+import spoon.support.reflect.code.CtAnnotationFieldAccessImpl;
 import spoon.support.reflect.code.CtArrayReadImpl;
 import spoon.support.reflect.code.CtArrayWriteImpl;
 import spoon.support.reflect.code.CtAssertImpl;
@@ -406,7 +406,7 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	}
 
 	public <T> CtAnnotationFieldAccess<T> createAnnotationFieldAccess() {
-		CtAnnotationFieldAccess<T> e = new CtAnnotationFieldAccesImpl<T>();
+		CtAnnotationFieldAccess<T> e = new CtAnnotationFieldAccessImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

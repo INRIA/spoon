@@ -155,22 +155,25 @@ public class SignaturePrinter implements CtVisitor {
 		scan(e.getBody());
 	}
 
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(
-			CtArrayAccess<T, E> arrayAccess) {
-		scan(arrayAccess.getTarget());
-		write("[");
-		scan(arrayAccess.getIndexExpression());
-		write("]");
+	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
+		printCtArrayAccess(arrayAccess);
 	}
 
 	@Override
 	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
-		visitCtArrayAccess(arrayRead);
+		printCtArrayAccess(arrayRead);
 	}
 
 	@Override
 	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
-		visitCtArrayAccess(arrayWrite);
+		printCtArrayAccess(arrayWrite);
+	}
+
+	public <T, E extends CtExpression<?>> void printCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
+		scan(arrayAccess.getTarget());
+		write("[");
+		scan(arrayAccess.getIndexExpression());
+		write("]");
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
@@ -656,13 +659,14 @@ public class SignaturePrinter implements CtVisitor {
 		scan(variableAccess.getVariable());
 	}
 
+	@Override
 	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
-		visitCtVariableAccess(variableRead);
+		scan(variableRead.getVariable());
 	}
 
 	@Override
 	public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
-		visitCtVariableAccess(variableWrite);
+		scan(variableWrite.getVariable());
 	}
 
 	public void visitCtWhile(CtWhile whileLoop) {
@@ -684,12 +688,12 @@ public class SignaturePrinter implements CtVisitor {
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
-		visitCtFieldAccess(fieldRead);
+		scan(fieldRead.getVariable());
 	}
 
 	@Override
 	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
-		visitCtFieldAccess(fieldWrite);
+		scan(fieldWrite.getVariable());
 	}
 
 	@Override
