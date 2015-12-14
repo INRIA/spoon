@@ -128,6 +128,7 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
@@ -692,7 +693,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					arrayref = tmp;
 				}
 				arrayref.setComponentType(getTypeReference(binding.leafComponentType()));
-			} else if (binding instanceof ProblemReferenceBinding) {
+			} else if (binding instanceof ProblemReferenceBinding || binding instanceof PolyTypeBinding) {
 				// Spoon is able to analyze also without the classpath
 				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
 					ref = factory.Internal().createImplicitTypeReference();
