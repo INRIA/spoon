@@ -215,10 +215,16 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 
 	@Override
 	public boolean isOverriding(CtExecutableReference<?> executable) {
-		if (!this.getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
+		if (getDeclaringType().isAnonymous()) {
+			if (!getDeclaringType().getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
+				return false;
+			}
+		} else if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
 			return false;
 		}
-		return getSimpleName().equals(executable.getSimpleName());
+		return getSimpleName().equals(executable.getSimpleName())
+				&& getParameters().equals(executable.getParameters())
+				&& getActualTypeArguments().equals(executable.getActualTypeArguments());
 	}
 
 	@Override

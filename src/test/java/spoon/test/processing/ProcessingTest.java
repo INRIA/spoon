@@ -3,7 +3,6 @@ package spoon.test.processing;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -86,7 +85,6 @@ public class ProcessingTest {
 			ctSwitch.insertAfter(type.getFactory().Code()
 					.createCodeSnippetStatement(myBeforeStatementAsString));
 		}
-		System.out.println(type);
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(3).toString());
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());

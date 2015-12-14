@@ -16,41 +16,32 @@
  */
 package spoon.reflect.visitor.filter;
 
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 
 /**
- * This simple filter matches all the accesses to a given executable or any
- * executable that overrides it.
+ * Gets all overriding method from the method given.
  */
-public class InvocationFilter implements Filter<CtInvocation<?>> {
-
-	private CtExecutableReference<?> executable;
-
-	/**
-	 * Creates a new invocation filter.
-	 *
-	 * @param executable
-	 * 		the executable to be tested for being invoked
-	 */
-	public InvocationFilter(CtExecutableReference<?> executable) {
-		this.executable = executable;
-	}
+public class OverridingMethodFilter implements Filter<CtMethod<?>> {
+	private final CtMethod<?> method;
 
 	/**
-	 * Creates a new invocation filter.
+	 * Creates a new overriding method filter.
 	 *
 	 * @param method
-	 * 		the executable to be tested for being invoked.
+	 * 		the executable to be tested for being invoked
 	 */
-	public InvocationFilter(CtMethod<?> method) {
-		this(method.getReference());
+	public OverridingMethodFilter(CtMethod<?> method) {
+		this.method = method;
 	}
 
 	@Override
-	public boolean matches(CtInvocation<?> invocation) {
-		return invocation.getExecutable().isOverriding(executable);
+	public boolean matches(CtMethod<?> element) {
+		final CtType expectedParent = method.getParent(CtType.class);
+		final CtType<?> currentParent = element.getParent(CtType.class);
+		return currentParent.isAssignableFrom(expectedParent.getReference()) //
+				&& !currentParent.equals(expectedParent) //
+				&& element.getReference().isOverriding(method.getReference());
 	}
 }
