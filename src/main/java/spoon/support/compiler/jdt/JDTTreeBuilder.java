@@ -157,7 +157,6 @@ import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -749,7 +748,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else if (value instanceof FieldBinding) {
 				return getVariableReference((FieldBinding) value);
 			} else if (value instanceof BinaryTypeBinding) {
-				return buildFieldReadClass(getTypeReference((BinaryTypeBinding) value));
+				return factory.Code().createClassAccess(getTypeReference((BinaryTypeBinding) value));
 			} else if (value instanceof Object[]) {
 				Collection<Object> values = new ArrayList<Object>();
 				for (Object currentValue : (Object[]) value) {
@@ -1328,6 +1327,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference, ClassScope scope) {
+		if (skipTypeInAnnotation) {
+			skipTypeInAnnotation = false;
+			return;
+		}
+		context.exit(parameterizedQualifiedTypeReference);
+	}
+
+	@Override
+	public void endVisit(ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference, BlockScope scope) {
 		if (skipTypeInAnnotation) {
 			skipTypeInAnnotation = false;
 			return;
@@ -1973,26 +1981,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ClassLiteralAccess classLiteral, BlockScope scope) {
-		CtFieldRead<?> fieldRead = buildFieldReadClass(references.getTypeReference(classLiteral.targetType));
-
-		context.enter(fieldRead, classLiteral);
+		context.enter(factory.Code().createClassAccess(references.getTypeReference(classLiteral.targetType)), classLiteral);
 		return false;
-	}
-
-	private <T> CtFieldRead<T> buildFieldReadClass(CtTypeReference<T> ref) {
-		CtTypeAccess<T> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(ref);
-
-		CtFieldReference<T> fieldReference = factory.Core().createFieldReference();
-		fieldReference.setSimpleName("class");
-		fieldReference.setType(ref);
-		fieldReference.setDeclaringType(ref);
-
-		CtFieldRead<T> fieldRead = factory.Core().createFieldRead();
-		fieldRead.setType(ref);
-		fieldRead.setVariable(fieldReference);
-		fieldRead.setTarget(typeAccess);
-		return fieldRead;
 	}
 
 	@Override
@@ -2293,9 +2283,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(InstanceOfExpression instanceOfExpression, BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
 		op.setKind(BinaryOperatorKind.INSTANCEOF);
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references.getBoundedTypeReference(instanceOfExpression.type.resolvedType));
-		op.setRightHandOperand(l);
 		context.enter(op, instanceOfExpression);
 		return true;
 	}
@@ -2555,13 +2542,24 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public boolean visit(ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference, BlockScope scope) {
+		if (skipTypeInAnnotation) {
+			return true;
+		}
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(parameterizedQualifiedTypeReference.resolvedType));
+		context.enter(typeAccess, parameterizedQualifiedTypeReference);
+		return true;
+	}
+
+	@Override
 	public boolean visit(ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference, ClassScope scope) {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references.getBoundedTypeReference(parameterizedQualifiedTypeReference.resolvedType));
-		context.enter(l, parameterizedQualifiedTypeReference);
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(parameterizedQualifiedTypeReference.resolvedType));
+		context.enter(typeAccess, parameterizedQualifiedTypeReference);
 		return true;
 	}
 
@@ -2570,9 +2568,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references.getBoundedTypeReference(parameterizedSingleTypeReference.resolvedType));
-		context.enter(l, parameterizedSingleTypeReference);
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(parameterizedSingleTypeReference.resolvedType));
+		context.enter(typeAccess, parameterizedSingleTypeReference);
 		return true;
 	}
 
@@ -2581,9 +2579,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references.getBoundedTypeReference(parameterizedSingleTypeReference.resolvedType));
-		context.enter(l, parameterizedSingleTypeReference);
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(parameterizedSingleTypeReference.resolvedType));
+		context.enter(typeAccess, parameterizedSingleTypeReference);
 		return super.visit(parameterizedSingleTypeReference, scope);
 	}
 
@@ -2779,9 +2777,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references.getTypeReference(arg0.resolvedType));
-		context.enter(l, arg0);
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(arg0.resolvedType));
+		context.enter(typeAccess, arg0);
 		return true; // do nothing by default, keep traversing
 	}
 
@@ -2915,18 +2913,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		// if(context.annotationValueName.peek().equals("value")) return true;
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references.getTypeReference(singleTypeReference.resolvedType));
-		context.enter(l, singleTypeReference);
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(singleTypeReference.resolvedType));
+		context.enter(typeAccess, singleTypeReference);
 		return true; // do nothing by default, keep traversing
 	}
 
 	@Override
 	public boolean visit(SingleTypeReference singleTypeReference, ClassScope scope) {
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references.getTypeReference(singleTypeReference.resolvedType));
-		context.enter(l, singleTypeReference);
+		CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(singleTypeReference.resolvedType));
+		context.enter(typeAccess, singleTypeReference);
 		return true; // do nothing by default, keep traversing
 	}
 

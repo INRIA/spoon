@@ -21,6 +21,7 @@ import spoon.test.annotation.testclasses.TypeAnnotation;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Pozole<A extends Annotation> {
@@ -31,5 +32,13 @@ public class Pozole<A extends Annotation> {
 	}
 
 	void addDeliciousIngredient(java.lang.Class<? extends A> ingredient) {
+	}
+
+	public void eat() {
+		Object a = null;
+		if (a instanceof String) {
+		}
+		if (a instanceof Collection<?>) {
+		}
 	}
 }

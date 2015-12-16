@@ -7,7 +7,6 @@ import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
@@ -121,7 +120,7 @@ public class MethodReferenceTest {
 
 		assertTypedBy(Supplier.class, reference.getType());
 		assertTargetedBy(TEST_CLASS + "Type<java.lang.String>", reference.getTarget());
-		assertTrue(reference.getTarget() instanceof CtLiteral);
+		assertTrue(reference.getTarget() instanceof CtTypeAccess);
 		assertIsConstructorReference(reference.getExecutable());
 
 		assertIsWellPrinted(methodReference, reference);
@@ -134,7 +133,7 @@ public class MethodReferenceTest {
 
 		assertTypedBy(Supplier.class, reference.getType());
 		assertTargetedBy("java.util.HashSet<" + TEST_CLASS + "Person>", reference.getTarget());
-		assertTrue(reference.getTarget() instanceof CtLiteral);
+		assertTrue(reference.getTarget() instanceof CtTypeAccess);
 		assertIsConstructorReference(reference.getExecutable());
 
 		assertIsWellPrinted(methodReference, reference);

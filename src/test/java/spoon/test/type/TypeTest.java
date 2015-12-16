@@ -19,6 +19,7 @@ package spoon.test.type;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
@@ -82,8 +83,33 @@ public class TypeTest {
 		CtBinaryOperator<?> op = (CtBinaryOperator<?>) ass.getDefaultExpression();
 		assertEquals("Class", op.getLeftHandOperand().getType().getSimpleName());
 		assertFalse(op.getLeftHandOperand().getType().isPrimitive());
-		assertEquals("short", op.getRightHandOperand().getType().getSimpleName());
+		assertEquals("Class", op.getRightHandOperand().getType().getSimpleName());
 		assertTrue(op.getRightHandOperand() instanceof CtFieldRead);
-		assertTrue(op.getRightHandOperand().getType().isPrimitive());
+		assertFalse(op.getRightHandOperand().getType().isPrimitive());
+	}
+
+	@Test
+	public void testTypeAccessForTypeAccessInInstanceOf() throws Exception {
+		// contract: the right hand operator must be a CtTypeAccess.
+		final String target = "./target/type";
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
+		launcher.setSourceOutputDirectory(target);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
+		final CtMethod<?> eat = aPozole.getMethodsByName("eat").get(0);
+
+		final List<CtTypeAccess<?>> typeAccesses = eat.getElements(new TypeFilter<CtTypeAccess<?>>(CtTypeAccess.class));
+		assertEquals(2, typeAccesses.size());
+
+		assertTrue(typeAccesses.get(0).getParent() instanceof CtBinaryOperator);
+		assertEquals(BinaryOperatorKind.INSTANCEOF, ((CtBinaryOperator) typeAccesses.get(0).getParent()).getKind());
+		assertEquals("a instanceof java.lang.String", typeAccesses.get(0).getParent().toString());
+
+		assertTrue(typeAccesses.get(1).getParent() instanceof CtBinaryOperator);
+		assertEquals(BinaryOperatorKind.INSTANCEOF, ((CtBinaryOperator) typeAccesses.get(1).getParent()).getKind());
+		assertEquals("a instanceof java.util.Collection<?>", typeAccesses.get(1).getParent().toString());
 	}
 }
