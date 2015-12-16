@@ -298,7 +298,11 @@ public class SignaturePrinter implements CtVisitor {
 		write("(");
 		if (reference.getParameters().size() > 0) {
 			for (CtTypeReference<?> param : reference.getParameters()) {
-				scan(param);
+				if (param != null && !"null".equals(param.getSimpleName())) {
+					scan(param);
+				} else {
+					write(CtExecutableReference.UNKNOWN_TYPE);
+				}
 				write(", ");
 			}
 			clearLast();

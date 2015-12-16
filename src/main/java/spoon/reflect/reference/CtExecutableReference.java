@@ -32,6 +32,8 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 
 	String CONSTRUCTOR_NAME = "<init>";
 
+	String UNKNOWN_TYPE = "<unknown>";
+
 	/**
 	 * Tells if this is a reference to a constructor.
 	 */
