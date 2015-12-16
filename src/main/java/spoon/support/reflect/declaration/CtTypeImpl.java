@@ -87,6 +87,17 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public <F, C extends CtType<T>> C addField(int index, CtField<F> field) {
+		if (!this.fields.contains(field)) {
+			field.setParent(this);
+			this.fields.add(index, field);
+		}
+
+		// field already exists
+		return (C) this;
+	}
+
+	@Override
 	public <F> boolean removeField(CtField<F> field) {
 		return this.fields.remove(field);
 	}
