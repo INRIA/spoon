@@ -12,6 +12,7 @@ import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.parent.ParentTest;
 
@@ -60,6 +61,45 @@ public class MainTest {
 
 		// assignments
 		checkAssignmentContracts(pack);
+
+		// scanners
+		checkContractCtScanner(pack);
+	}
+
+	private void checkContractCtScanner(CtPackage pack) {
+		class Counter {
+			int scan, enter, exit = 0;
+		}
+
+		final Counter counter = new Counter();
+
+		new CtScanner() {
+
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					counter.scan++;
+				}
+				super.scan(element);
+			}
+
+			@Override
+			public void enter(CtElement element) {
+				counter.enter++;
+				super.enter(element);
+			}
+
+			@Override
+			public void exit(CtElement element) {
+				counter.exit++;
+				super.exit(element);
+			}
+
+		}.visitCtPackage(pack);
+
+		assertTrue(counter.enter == counter.exit);
+		// there is one scan less, because we start with visit
+		assertTrue(counter.enter == counter.scan + 1);
 	}
 
 	public static void checkAssignmentContracts(CtElement pack) {
