@@ -33,6 +33,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -178,10 +179,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		String name = this.jdtTreeBuilder.context.annotationValueName.peek();
 		Object value = child;
 
-		if (value instanceof CtVariableAccess) {
+		if (value instanceof CtVariableAccess && !"class".equals(((CtVariableAccess) value).getVariable().getSimpleName())) {
 			value = ((CtVariableAccess<?>) value).getVariable();
-		} else if (value instanceof CtFieldReference && ((CtFieldReference<?>) value).getSimpleName().equals("class")) {
-			value = ((CtFieldReference<?>) value).getType();
 		}
 		annotation.addValue(name, value);
 		super.visitCtAnnotation(annotation);

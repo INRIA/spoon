@@ -1948,7 +1948,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+		enterCtExpression(typeAccess);
 		scan(typeAccess.getType());
+		exitCtExpression(typeAccess);
 	}
 
 	public void visitCtTypeReferenceWithoutGenerics(CtTypeReference<?> ref) {
@@ -2043,10 +2045,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Writes an annotation element.
 	 */
 	public DefaultJavaPrettyPrinter writeAnnotationElement(Factory factory, Object value) {
-		if (value instanceof CtTypeReference) {
-			context.ignoreGenerics = true;
-			scan((CtTypeReference<?>) value).write(".class");
-			context.ignoreGenerics = false;
+		if (value instanceof CtTypeAccess) {
+			scan((CtTypeAccess) value).write(".class");
 		} else if (value instanceof CtFieldReference) {
 			scan(((CtFieldReference<?>) value).getDeclaringType());
 			write("." + ((CtFieldReference<?>) value).getSimpleName());

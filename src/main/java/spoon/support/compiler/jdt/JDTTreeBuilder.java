@@ -749,7 +749,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else if (value instanceof FieldBinding) {
 				return getVariableReference((FieldBinding) value);
 			} else if (value instanceof BinaryTypeBinding) {
-				return getTypeReference((BinaryTypeBinding) value);
+				return buildFieldReadClass(getTypeReference((BinaryTypeBinding) value));
 			} else if (value instanceof Object[]) {
 				Collection<Object> values = new ArrayList<Object>();
 				for (Object currentValue : (Object[]) value) {
@@ -1973,18 +1973,26 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ClassLiteralAccess classLiteral, BlockScope scope) {
-		CtTypeReference<Class<Object>> ref = references.getTypeReference(classLiteral.targetType);
-		CtFieldReference<Class<Object>> fr = factory.Core().createFieldReference();
-		fr.setSimpleName("class");
-		fr.setType(ref);
-		fr.setDeclaringType(ref);
+		CtFieldRead<?> fieldRead = buildFieldReadClass(references.getTypeReference(classLiteral.targetType));
 
-		CtFieldRead<Class<Object>> fa = factory.Core().createFieldRead();
-		fa.setType(ref);
-		fa.setVariable(fr);
+		context.enter(fieldRead, classLiteral);
+		return false;
+	}
 
-		context.enter(fa, classLiteral);
-		return true;
+	private <T> CtFieldRead<T> buildFieldReadClass(CtTypeReference<T> ref) {
+		CtTypeAccess<T> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(ref);
+
+		CtFieldReference<T> fieldReference = factory.Core().createFieldReference();
+		fieldReference.setSimpleName("class");
+		fieldReference.setType(ref);
+		fieldReference.setDeclaringType(ref);
+
+		CtFieldRead<T> fieldRead = factory.Core().createFieldRead();
+		fieldRead.setType(ref);
+		fieldRead.setVariable(fieldReference);
+		fieldRead.setTarget(typeAccess);
+		return fieldRead;
 	}
 
 	@Override

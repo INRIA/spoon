@@ -225,6 +225,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getPackage());
 		scan(reference.getComponentType());
 		scan(reference.getActualTypeArguments());
+		scan(reference.getAnnotations());
 		exit(reference);
 	}
 
@@ -356,6 +357,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getDeclaringType());
 		scan(reference.getType());
 		scan(reference.getActualTypeArguments());
+		scan(reference.getAnnotations());
 		exit(reference);
 	}
 
@@ -391,6 +393,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(reference);
 		scan(reference.getDeclaringType());
 		scan(reference.getType());
+		scan(reference.getAnnotations());
 		exit(reference);
 	}
 
@@ -464,6 +467,7 @@ public abstract class CtScanner implements CtVisitor {
 			CtLocalVariableReference<T> reference) {
 		enter(reference);
 		scan(reference.getType());
+		scan(reference.getAnnotations());
 		exit(reference);
 	}
 
@@ -477,6 +481,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
 		enter(reference);
 		scan(reference.getType());
+		scan(reference.getAnnotations());
 		exit(reference);
 	}
 
@@ -581,6 +586,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
 		enter(reference);
 		scan(reference.getType());
+		scan(reference.getAnnotations());
 		exit(reference);
 	}
 
@@ -653,6 +659,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ref.getPackage());
 		scan(ref.getDeclaringType());
 		scan(ref.getActualTypeArguments());
+		scan(ref.getAnnotations());
 		scan(ref.getBounds());
 		exit(ref);
 	}
@@ -662,6 +669,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getPackage());
 		scan(reference.getDeclaringType());
 		scan(reference.getActualTypeArguments());
+		scan(reference.getAnnotations());
 		exit(reference);
 	}
 
