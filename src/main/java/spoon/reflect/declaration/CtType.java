@@ -16,10 +16,10 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.reference.CtTypeReference;
+
 import java.util.List;
 import java.util.Set;
-
-import spoon.reflect.reference.CtTypeReference;
 
 /**
  * This abstract element defines a super-type for classes and interfaces, which
@@ -98,6 +98,14 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<F, C extends CtType<T>> C addField(CtField<F> field);
+
+	/**
+	 * add a field at a given position.
+	 *
+	 * @param field
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	<F, C extends CtType<T>> C addField(int index, CtField<F> field);
 
 	/**
 	 * remove a Field
