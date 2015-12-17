@@ -69,7 +69,6 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -87,44 +86,16 @@ import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 
+/** Provides an empty implementation of CtVIsitor.
+ *  See {@link CtScanner} for a much more powerful implementation of CtVisitor.
+ */
 public abstract class CtAbstractVisitor implements CtVisitor {
-	/**
-	 * Generically scans a collection of meta-model elements.
-	 */
-	public void scan(Collection<? extends CtElement> elements) {
-		if (elements != null) {
-			for (CtElement e : elements) {
-				scan(e);
-			}
-		}
-	}
-
-	/**
-	 * Generically scans a meta-model element.
-	 */
-	public void scan(CtElement element) {
-		if (element != null) {
-			element.accept(this);
-		}
-	}
-
-	/**
-	 * Generically scans a meta-model element reference.
-	 */
-	public void scan(CtReference reference) {
-		if (reference != null) {
-			reference.accept(this);
-		}
-	}
-
 	@Override
 	public <A extends Annotation> void visitCtAnnotation(
 			CtAnnotation<A> annotation) {
