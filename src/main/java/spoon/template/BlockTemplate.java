@@ -18,6 +18,7 @@ package spoon.template;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -47,6 +48,12 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	}
 
 	public CtBlock<?> apply(CtType<?> targetType) {
+		if(targetType.getFactory().Class().get(this.getClass()) == null) {
+			CtType templateClass = getTemplateClass();
+			CtPackage orCreate = targetType.getFactory().Package().getOrCreate(templateClass.getPackage().getQualifiedName());
+			orCreate.addType(templateClass);
+		}
+
 		CtClass<? extends BlockTemplate> c;
 		c = targetType.getFactory().Class().get(this.getClass());
 		if (c == null) {

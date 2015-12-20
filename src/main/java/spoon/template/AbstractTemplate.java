@@ -17,11 +17,17 @@
 package spoon.template;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 
+import jd.ide.intellij.JavaDecompiler;
+import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.compiler.SpoonCompiler;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.template.Parameters;
 
 /**
@@ -68,4 +74,24 @@ public abstract class AbstractTemplate<T extends CtElement> implements Template<
 		throw new TemplateException("no factory found in this template");
 	}
 
+
+	protected CtType getTemplateClass() {
+		URL resource = this.getClass().getClassLoader().getResource(this.getClass().getName().replaceAll("\\.", "/") + ".class");
+		if (resource != null) {
+			JavaDecompiler decompiler = new JavaDecompiler();
+			String entry1 = resource.getPath();
+			String classString = decompiler.decompile("/", entry1);
+
+			Launcher spoon = new Launcher();
+			spoon.getEnvironment().setNoClasspath(true);
+			SpoonCompiler compiler = new JDTSnippetCompiler(spoon.getFactory(), classString);
+			try {
+				compiler.build();
+			} catch (Exception e) {
+
+			}
+			return spoon.getFactory().Type().getAll().get(0);
+		}
+		return null;
+	}
 }
