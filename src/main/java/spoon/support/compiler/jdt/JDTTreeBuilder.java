@@ -2391,10 +2391,36 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setType(references.getTypeReference(messageSend.expectedType()));
 				if (messageSend.receiver.resolvedType == null) {
 					// It is crisis dude! static context, we don't have much more information.
-					if (messageSend.receiver instanceof SingleNameReference || messageSend.receiver instanceof QualifiedNameReference) {
+					if (messageSend.receiver instanceof SingleNameReference) {
 						final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 						typeReference.setSimpleName(messageSend.receiver.toString());
+						if (context.compilationunitdeclaration != null && context.compilationunitdeclaration.imports != null) {
+							for (ImportReference anImport : context.compilationunitdeclaration.imports) {
+								if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], ((SingleNameReference) messageSend.receiver).token)) {
+									char[][] packageName = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
+									CtPackageReference packageRef = factory.Core().createPackageReference();
+									packageRef.setSimpleName(CharOperation.toString(packageName));
+									typeReference.setPackage(packageRef);
+									break;
+								}
+							}
+						}
 						ref.setDeclaringType(typeReference);
+					} else if (messageSend.receiver instanceof QualifiedNameReference) {
+						QualifiedNameReference qualifiedNameReference = (QualifiedNameReference) messageSend.receiver;
+
+						char[][] packageName = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 2);
+						char[][] className = CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 2, qualifiedNameReference.tokens.length - 1);
+						if (packageName.length > 0) {
+							final PackageBinding aPackage = context.compilationunitdeclaration.scope.environment.createPackage(packageName);
+							final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+
+							ref.setDeclaringType(references.getTypeReference(declaringType));
+						} else {
+							final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+							typeReference.setSimpleName(messageSend.receiver.toString());
+							ref.setDeclaringType(typeReference);
+						}
 					}
 				} else {
 					ref.setDeclaringType(references.getTypeReference(messageSend.receiver.resolvedType));
@@ -2827,6 +2853,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 				final CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
 				final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 				typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
+				if (context.compilationunitdeclaration != null && context.compilationunitdeclaration.imports != null) {
+					for (ImportReference anImport : context.compilationunitdeclaration.imports) {
+						if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], singleNameReference.token)) {
+							char[][] packageName = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
+							CtPackageReference packageRef = factory.Core().createPackageReference();
+							packageRef.setSimpleName(CharOperation.toString(packageName));
+							typeReference.setPackage(packageRef);
+							break;
+						}
+					}
+				}
 				ta.setType(typeReference);
 				context.enter(ta, singleNameReference);
 				return true;

@@ -193,6 +193,6 @@ public class AccessTest {
 		}
 
 		assertEquals("java.lang.Class mclass = ((java.lang.Class)(ModelFacade.USE_CASE))", elements.get(0).getParent().toString());
-		assertEquals("new PropPanelButton(this , buttonPanel , _navUpIcon , Translator.localize(\"UMLMenu\", \"button.go-up\") , \"navigateNamespace\" , null)", elements.get(2).getParent().toString());
+		assertEquals("new PropPanelButton(this , buttonPanel , _navUpIcon , org.argouml.i18n.Translator.localize(\"UMLMenu\", \"button.go-up\") , \"navigateNamespace\" , null)", elements.get(2).getParent().toString());
 	}
 }
