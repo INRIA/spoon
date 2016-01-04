@@ -97,7 +97,12 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 /**
- * This visitor implements a deep-search scan on the metamodel.
+ * This visitor implements a deep-search scan on the model.
+ *
+ * Ensures that all children nodes are visited once, a visit means three method
+ * calls, one call to "enter", one call to "exit" and one call to scan.
+ *
+ * Is used by the processing and filtering engine.
  */
 public abstract class CtScanner implements CtVisitor {
 	/**
@@ -667,6 +672,8 @@ public abstract class CtScanner implements CtVisitor {
 
 	@Override
 	public void visitCtCircularTypeReference(CtCircularTypeReference reference) {
+		enter(reference);
+		exit(reference);
 	}
 
 	@Override
@@ -730,16 +737,19 @@ public abstract class CtScanner implements CtVisitor {
 		exit(whileLoop);
 	}
 
-	public <T> void visitCtCodeSnippetExpression(
-			CtCodeSnippetExpression<T> expression) {
+	public <T> void visitCtCodeSnippetExpression(CtCodeSnippetExpression<T> expression) {
+		enter(expression);
+		exit(expression);
 	}
 
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
+		enter(statement);
+		exit(statement);
 	}
 
-	public <T> void visitCtUnboundVariableReference(
-			CtUnboundVariableReference<T> reference) {
-
+	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
+		enter(reference);
+		exit(reference);
 	}
 
 	@Override
