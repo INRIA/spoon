@@ -36,6 +36,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
@@ -99,8 +100,19 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtFieldAccess<Class<T>> createClassAccess(CtTypeReference<T> type) {
 		@SuppressWarnings({ "rawtypes", "unchecked" }) CtTypeReference<Class<T>> classType = (CtTypeReference) factory.Type().createReference(Class.class);
-		CtFieldReference<Class<T>> field = factory.Core().<Class<T>>createFieldReference().setDeclaringType(type).setType(classType).setSimpleName("class");
-		return factory.Core().<Class<T>>createFieldRead().<CtFieldRead<Class<T>>>setType(classType).<CtFieldRead<Class<T>>>setVariable(field);
+		CtTypeAccess<T> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(type);
+
+		CtFieldReference<Class<T>> fieldReference = factory.Core().createFieldReference();
+		fieldReference.setSimpleName("class");
+		fieldReference.setType(classType);
+		fieldReference.setDeclaringType(type);
+
+		CtFieldRead<Class<T>> fieldRead = factory.Core().createFieldRead();
+		fieldRead.setType(classType);
+		fieldRead.setVariable(fieldReference);
+		fieldRead.setTarget(typeAccess);
+		return fieldRead;
 	}
 
 	/**

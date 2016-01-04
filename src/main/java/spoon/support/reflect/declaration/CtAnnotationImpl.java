@@ -35,7 +35,6 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -48,6 +47,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -131,8 +131,12 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			elementValues.put(elementName, value);
 			if (value instanceof CtElement) {
 				((CtElement) value).setParent(this);
-			} else if (value instanceof CtReference) {
-				((CtReference) value).setParent(this);
+			} else if (value instanceof Collection) {
+				for (Object element : (Collection) value) {
+					if (element instanceof CtElement) {
+						((CtElement) element).setParent(this);
+					}
+				}
 			}
 		} else {
 			Object o = elementValues.get(elementName);

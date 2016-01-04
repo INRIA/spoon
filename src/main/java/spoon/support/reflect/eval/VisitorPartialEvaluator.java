@@ -424,12 +424,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	private <T> void visitFieldAccess(CtFieldAccess<T> fieldAccess) {
-		if (fieldAccess.getVariable().getSimpleName().equals("class")) {
-			Class<?> c = fieldAccess.getVariable().getDeclaringType().getActualClass();
-			if (c != null) {
-				CtLiteral<Class<?>> l = fieldAccess.getFactory().Core().createLiteral();
-				l.setValue(c);
-				setResult(l);
+		if ("class".equals(fieldAccess.getVariable().getSimpleName())) {
+			Class<?> actualClass = fieldAccess.getVariable().getDeclaringType().getActualClass();
+			if (actualClass != null) {
+				CtLiteral<Class<?>> literal = fieldAccess.getFactory().Core().createLiteral();
+				literal.setValue(actualClass);
+				setResult(literal);
 				return;
 			}
 		}
