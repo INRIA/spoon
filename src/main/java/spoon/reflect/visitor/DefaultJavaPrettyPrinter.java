@@ -1949,7 +1949,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
 		enterCtExpression(typeAccess);
-		scan(typeAccess.getType());
+		scan(typeAccess.getAccessedType());
 		exitCtExpression(typeAccess);
 	}
 

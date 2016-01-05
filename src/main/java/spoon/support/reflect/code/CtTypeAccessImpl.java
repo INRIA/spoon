@@ -17,11 +17,45 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtTypeAccessImpl<T> extends CtExpressionImpl<T> implements CtTypeAccess<T> {
+public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTypeAccess<A> {
+	private CtTypeReference<Void> voidType;
+	private CtTypeReference<A> type;
+
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtTypeAccess(this);
+	}
+
+	@Override
+	public CtTypeReference<A> getAccessedType() {
+		return type;
+	}
+
+	@Override
+	public <C extends CtTypeAccess<A>> C setAccessedType(CtTypeReference<A> accessedType) {
+		if (accessedType != null) {
+			accessedType.setParent(this);
+		}
+		type = accessedType;
+		return (C) this;
+	}
+
+	@Override
+	public CtTypeReference<Void> getType() {
+		if (voidType == null) {
+			voidType = getFactory().Core().clone(getFactory().Type().VOID_PRIMITIVE);
+			voidType.setParent(this);
+		}
+		return voidType;
+	}
+
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
+		// type is used in setAccessedType now.
+		return (C) this;
 	}
 }
