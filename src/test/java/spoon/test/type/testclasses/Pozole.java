@@ -19,6 +19,7 @@ package spoon.test.type.testclasses;
 
 import spoon.test.annotation.testclasses.TypeAnnotation;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,5 +49,9 @@ public class Pozole<A extends Annotation> {
 		}
 		if (a instanceof java.lang.Object[]) {
 		}
+	}
+
+	public void prepare() {
+		final Runnable runnable = (Runnable & Serializable) () -> System.err.println("");
 	}
 }

@@ -121,6 +121,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.eclipse.jdt.internal.compiler.lookup.ElementValuePair;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.IntersectionTypeBinding18;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
@@ -735,6 +736,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref = factory.Core().createTypeReference();
 				ref.setSimpleName(new String(binding.sourceName()));
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+			} else if (binding instanceof IntersectionTypeBinding18) {
+				ref = getTypeReference(binding.getIntersectingTypes()[0]);
 			} else {
 				throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 			}
