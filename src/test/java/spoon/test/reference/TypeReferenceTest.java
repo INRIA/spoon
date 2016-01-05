@@ -23,7 +23,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -254,6 +256,40 @@ public class TypeReferenceTest {
 		final CtTypeReference circularRef = extendsGeneric.getActualTypeArguments().get(0);
 		assertNotNull(circularRef);
 		assertTrue(circularRef instanceof CtCircularTypeReference);
+	}
+
+	@Test
+	public void testPackageInNoClasspath () {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Demo.java");
+		launcher.setSourceOutputDirectory("./target/class");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("Demo");
+		final Set<CtTypeReference<?>> referencedTypes = aClass.getReferencedTypes();
+
+		boolean containsDemoReference = false;
+		boolean containsVoidReference = false;
+		boolean containsStringReference = false;
+		boolean containsJoinerReference = false;
+
+		for (Iterator<CtTypeReference<?>> iterator = referencedTypes.iterator(); iterator.hasNext(); ) {
+			CtTypeReference<?> reference = iterator.next();
+			if (reference.toString().equals("Demo")) {
+				containsDemoReference = true;
+			} else if (reference.toString().equals("void")) {
+				containsVoidReference = true;
+			} else if (reference.toString().equals("java.lang.String")) {
+				containsStringReference = true;
+			} else if (reference.toString().equals("com.google.common.base.Joiner")) {
+				containsJoinerReference = true;
+			}
+		}
+		assertTrue("Reference to Demo is missing", containsDemoReference);
+		assertTrue("Reference to void is missing", containsVoidReference);
+		assertTrue("Reference to String is missing", containsStringReference);
+		assertTrue("Reference to Joiner is missing", containsJoinerReference);
 	}
 
 	class A {

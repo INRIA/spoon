@@ -206,6 +206,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
@@ -279,6 +280,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		boolean isGenericTypeExplicit = true;
 
 		boolean isLambdaParameterImplicitlyTyped = true;
+
+		boolean ignoreComputeImports = false;
 
 		/**
 		 * Stack of all parents elements
@@ -411,6 +414,57 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return ref;
 		}
 
+		/**
+		 * Try to get the declaring reference (package or type) from imports of the current
+		 * compilation unit declaration (current class). This method returns a CtReference
+		 * which can be a CtTypeReference if it retrieves the information in an static import,
+		 * a CtPackageReference if it retrieves the information in an standard import, otherwise
+		 * it returns null.
+		 *
+		 * @param expectedName
+		 * 		Name expected in imports.
+		 * @return CtReference which can be a CtTypeReference, a CtPackageReference or null.
+		 */
+		public CtReference getDeclaringReferenceFromImports(char[] expectedName) {
+			if (context.compilationunitdeclaration != null && context.compilationunitdeclaration.imports != null) {
+				for (ImportReference anImport : context.compilationunitdeclaration.imports) {
+					if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], expectedName)) {
+						if (anImport.isStatic()) {
+							int indexDeclaring = 2;
+							if ((anImport.bits & ASTNode.OnDemand) != 0) {
+								// With .*
+								indexDeclaring = 1;
+							}
+							char[][] packageName = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - indexDeclaring);
+							char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - indexDeclaring, anImport.getImportName().length - (indexDeclaring - 1));
+							final PackageBinding aPackage = context.compilationunitdeclaration.scope.environment.createPackage(packageName);
+							final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+							context.ignoreComputeImports = true;
+							final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
+							context.ignoreComputeImports = false;
+							return typeReference;
+						} else {
+							char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
+							Binding someBinding = context.compilationunitdeclaration.scope.findImport(chars, false, false);
+							PackageBinding packageBinding;
+							if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
+								packageBinding = (PackageBinding) someBinding;
+							} else {
+								packageBinding = context.compilationunitdeclaration.scope.environment.createPackage(chars);
+								if (packageBinding == null) {
+									// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
+									// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
+									packageBinding = new PackageBinding(chars, null, context.compilationunitdeclaration.scope.environment);
+								}
+							}
+							return getPackageReference(packageBinding);
+						}
+					}
+				}
+			}
+			return null;
+		}
+
 		@SuppressWarnings("unchecked")
 		public <T> CtExecutableReference<T> getExecutableReference(MethodBinding exec) {
 			if (exec == null) {
@@ -422,18 +476,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ref.setType((CtTypeReference<T>) getTypeReference(exec.returnType));
 
 			if (exec instanceof ProblemMethodBinding) {
-				// We try to check in imports if there is the correct package of the type.
-				if (context.compilationunitdeclaration != null && context.compilationunitdeclaration.imports != null) {
-					for (ImportReference anImport : context.compilationunitdeclaration.imports) {
-						if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], exec.constantPoolName())) {
-							char[][] packageName = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 2);
-							char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - 2, anImport.getImportName().length - 1);
-							final PackageBinding aPackage = context.compilationunitdeclaration.scope.environment.createPackage(packageName);
-							final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
-							ref.setDeclaringType(getTypeReference(declaringType));
-							break;
-						}
-					}
+				final CtReference declaringType = getDeclaringReferenceFromImports(exec.constantPoolName());
+				if (declaringType instanceof CtTypeReference) {
+					ref.setDeclaringType((CtTypeReference<?>) declaringType);
 				}
 				if (exec.isConstructor()) {
 					// super() invocation have a good declaring class.
@@ -534,27 +579,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref = factory.Core().createTypeReference();
 				ref.setSimpleName(new String(binding.sourceName()));
 				ref.setPackage(getPackageReference(binding.getPackage()));
-				// We try to check in imports if there is the correct package of the type.
-				if (context.compilationunitdeclaration != null && context.compilationunitdeclaration.imports != null) {
-					for (ImportReference anImport : context.compilationunitdeclaration.imports) {
-						if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], binding.sourceName())) {
-							char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
-							Binding someBinding = context.compilationunitdeclaration.scope.findImport(chars, false, false);
-							PackageBinding packageBinding;
-							if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
-								packageBinding = (PackageBinding) someBinding;
-							} else {
-								packageBinding = context.compilationunitdeclaration.scope.environment.createPackage(chars);
-								if (packageBinding == null) {
-									// Big crisis here. We are already in noclasspath mode since the check `binding instance MissingTypeBinding`
-									// but JDT doesn't support always creation of a package in this mode. So, if we are in this brace, we make
-									// the job of JDT...
-									packageBinding = new PackageBinding(chars, null, context.compilationunitdeclaration.scope.environment);
-								}
-							}
-							ref.setPackage(getPackageReference(packageBinding));
-							break;
-						}
+				if (!context.ignoreComputeImports) {
+					final CtReference declaring = references.getDeclaringReferenceFromImports(binding.sourceName());
+					if (declaring instanceof CtPackageReference) {
+						ref.setPackage((CtPackageReference) declaring);
+					} else if (declaring instanceof CtTypeReference) {
+						ref.setDeclaringType((CtTypeReference) declaring);
 					}
 				}
 			} else if (binding instanceof BinaryTypeBinding) {
@@ -2386,10 +2416,31 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setType(references.getTypeReference(messageSend.expectedType()));
 				if (messageSend.receiver.resolvedType == null) {
 					// It is crisis dude! static context, we don't have much more information.
-					if (messageSend.receiver instanceof SingleNameReference || messageSend.receiver instanceof QualifiedNameReference) {
-						final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+					if (messageSend.receiver instanceof SingleNameReference) {
+						CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 						typeReference.setSimpleName(messageSend.receiver.toString());
+						final CtReference declaring = references.getDeclaringReferenceFromImports(((SingleNameReference) messageSend.receiver).token);
+						if (declaring instanceof CtPackageReference) {
+							typeReference.setPackage((CtPackageReference) declaring);
+						} else if (declaring instanceof CtTypeReference) {
+							typeReference = (CtTypeReference<Object>) declaring;
+						}
 						ref.setDeclaringType(typeReference);
+					} else if (messageSend.receiver instanceof QualifiedNameReference) {
+						QualifiedNameReference qualifiedNameReference = (QualifiedNameReference) messageSend.receiver;
+
+						char[][] packageName = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
+						char[][] className = CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length);
+						if (packageName.length > 0) {
+							final PackageBinding aPackage = context.compilationunitdeclaration.scope.environment.createPackage(packageName);
+							final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+
+							ref.setDeclaringType(references.getTypeReference(declaringType));
+						} else {
+							final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+							typeReference.setSimpleName(messageSend.receiver.toString());
+							ref.setDeclaringType(typeReference);
+						}
 					}
 				} else {
 					ref.setDeclaringType(references.getTypeReference(messageSend.receiver.resolvedType));
@@ -2753,8 +2804,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 				va = factory.Core().createFieldRead();
 			}
 			va.setVariable(references.getVariableReference((ProblemBinding) qualifiedNameReference.binding));
+			// In no classpath mode and with qualified name, the type given by JDT is wrong...
+			if (va.getVariable() instanceof CtFieldReference) {
+				final char[][] declaringClass = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
+				final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(null, declaringClass);
+				((CtFieldReference) va.getVariable()).setDeclaringType(references.getTypeReference(declaringType));
+				((CtFieldReference) va.getVariable()).setStatic(true);
+			}
 			// In no classpath mode and with qualified name, the binding don't have a good name.
-			va.getVariable().setSimpleName(createTypeName(qualifiedNameReference.getName()));
+			va.getVariable().setSimpleName(createTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
 			context.enter(va, qualifiedNameReference);
 			return false;
 		} else {
@@ -2831,8 +2889,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation) {
 				final CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
-				final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+				CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 				typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
+				final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
+				if (declaring instanceof CtPackageReference) {
+					typeReference.setPackage((CtPackageReference) declaring);
+				} else if (declaring instanceof CtTypeReference) {
+					typeReference = (CtTypeReference<Object>) declaring;
+				}
 				ta.setType(typeReference);
 				context.enter(ta, singleNameReference);
 				return true;
