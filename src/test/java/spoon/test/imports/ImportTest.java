@@ -187,13 +187,13 @@ public class ImportTest {
 		assertCorrectInvocation(new Expected().name("makeBurritos").target("Tacos.Burritos").declaringType("Burritos").typeIsNull(false), elements.get(7));
 
 		// Invocation for a static method in an inner class with the declaring class specified.
-		assertCorrectInvocation(new Expected().name("staticD").target("C.D").declaringType("C.D").typeIsNull(true), elements.get(8));
+		assertCorrectInvocation(new Expected().name("staticD").target("C.D").declaringType("D").typeIsNull(true), elements.get(8));
 
 		// Invocation for a static method in an inner class without the declaring class specified.
 		assertCorrectInvocation(new Expected().name("staticD").target("pack2.C.D").declaringType("D").typeIsNull(true), elements.get(9));
 
 		// Invocation for a static method in an inner class with the declaring class specified and a return type.
-		assertCorrectInvocation(new Expected().name("staticD").target("C.D").declaringType("C.D").typeIsNull(false), elements.get(10));
+		assertCorrectInvocation(new Expected().name("staticD").target("C.D").declaringType("D").typeIsNull(false), elements.get(10));
 
 		// Invocation for a static method in an inner class without the declaring class specified and a return type.
 		assertCorrectInvocation(new Expected().name("staticD").target("pack2.C.D").declaringType("D").typeIsNull(false), elements.get(11));
