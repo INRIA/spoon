@@ -2798,8 +2798,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 				va = factory.Core().createFieldRead();
 			}
 			va.setVariable(references.getVariableReference((ProblemBinding) qualifiedNameReference.binding));
+			// In no classpath mode and with qualified name, the type given by JDT is wrong...
+			if (va.getVariable() instanceof CtFieldReference) {
+				final char[][] declaringClass = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
+				final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(null, declaringClass);
+				((CtFieldReference) va.getVariable()).setDeclaringType(references.getTypeReference(declaringType));
+				((CtFieldReference) va.getVariable()).setStatic(true);
+			}
 			// In no classpath mode and with qualified name, the binding don't have a good name.
-			va.getVariable().setSimpleName(createTypeName(qualifiedNameReference.getName()));
+			va.getVariable().setSimpleName(createTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
 			context.enter(va, qualifiedNameReference);
 			return false;
 		} else {
