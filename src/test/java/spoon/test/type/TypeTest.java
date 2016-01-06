@@ -112,4 +112,31 @@ public class TypeTest {
 		assertEquals(BinaryOperatorKind.INSTANCEOF, ((CtBinaryOperator) typeAccesses.get(1).getParent()).getKind());
 		assertEquals("a instanceof java.util.Collection<?>", typeAccesses.get(1).getParent().toString());
 	}
+
+	@Test
+	public void testTypeAccessOfArrayObjectInFullyQualifiedName() throws Exception {
+		// contract: A type access in fully qualified name must to rewrite well.
+		final String target = "./target/type";
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
+		launcher.setSourceOutputDirectory(target);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
+		final CtMethod<?> season = aPozole.getMethodsByName("season").get(0);
+
+		final List<CtTypeAccess<?>> typeAccesses = season.getElements(new TypeFilter<CtTypeAccess<?>>(CtTypeAccess.class));
+		assertEquals(2, typeAccesses.size());
+
+		assertTrue(typeAccesses.get(0).getParent() instanceof CtBinaryOperator);
+		assertEquals(BinaryOperatorKind.INSTANCEOF, ((CtBinaryOperator) typeAccesses.get(0).getParent()).getKind());
+		assertEquals("a instanceof java.lang.Object[]", typeAccesses.get(0).getParent().toString());
+
+		assertTrue(typeAccesses.get(1).getParent() instanceof CtBinaryOperator);
+		assertEquals(BinaryOperatorKind.INSTANCEOF, ((CtBinaryOperator) typeAccesses.get(1).getParent()).getKind());
+		assertEquals("a instanceof java.lang.Object[]", typeAccesses.get(1).getParent().toString());
+
+		TestUtils.canBeBuilt(target, 8, true);
+	}
 }

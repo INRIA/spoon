@@ -29,6 +29,7 @@ import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
+import org.eclipse.jdt.internal.compiler.ast.ArrayQualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ArrayReference;
 import org.eclipse.jdt.internal.compiler.ast.ArrayTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.AssertStatement;
@@ -1165,6 +1166,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(ArrayTypeReference arrayTypeReference, ClassScope scope) {
+		context.exit(arrayTypeReference);
+	}
+
+	@Override
+	public void endVisit(ArrayQualifiedTypeReference arrayQualifiedTypeReference, BlockScope scope) {
+		context.exit(arrayQualifiedTypeReference);
+	}
+
+	@Override
+	public void endVisit(ArrayQualifiedTypeReference arrayQualifiedTypeReference, ClassScope scope) {
+		context.exit(arrayQualifiedTypeReference);
+	}
+
+	@Override
 	public void endVisit(AssertStatement assertStatement, BlockScope scope) {
 		context.exit(assertStatement);
 	}
@@ -1916,10 +1932,28 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayTypeReference arrayTypeReference, BlockScope scope) {
-		CtLiteral<CtTypeReference<?>> l = factory.Core().createLiteral();
-		l.setValue(references.getTypeReference(arrayTypeReference.resolvedType));
-		context.enter(l, arrayTypeReference);
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(arrayTypeReference.resolvedType));
+		context.enter(typeAccess, arrayTypeReference);
 		return true;
+	}
+
+	@Override
+	public boolean visit(ArrayTypeReference arrayTypeReference, ClassScope scope) {
+		return visit(arrayTypeReference, (BlockScope) null);
+	}
+
+	@Override
+	public boolean visit(ArrayQualifiedTypeReference arrayQualifiedTypeReference, BlockScope scope) {
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setType(references.getTypeReference(arrayQualifiedTypeReference.resolvedType));
+		context.enter(typeAccess, arrayQualifiedTypeReference);
+		return true;
+	}
+
+	@Override
+	public boolean visit(ArrayQualifiedTypeReference arrayQualifiedTypeReference, ClassScope scope) {
+		return visit(arrayQualifiedTypeReference, (BlockScope) null);
 	}
 
 	@Override
