@@ -650,7 +650,7 @@ public class SignaturePrinter implements CtVisitor {
 
 	@Override
 	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
-		scan(typeAccess.getType());
+		scan(typeAccess.getAccessedType());
 	}
 
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {

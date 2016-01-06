@@ -16,13 +16,47 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.reference.CtTypeReference;
+
 /**
  * This code element defines an access to a type.
  *
  * In Java, it is generally of the form: <code>Type</code>.
  *
- * @param <T>
- * 		type in the expression.
+ * For example, you can have:
+ *
+ * <pre>
+ *     Type.staticField
+ *     Type.staticMethod()
+ *     Type::method
+ *     t instanceof Type
+ *     Type.class
+ * </pre>
+ *
+ * @param <A>
+ * 		Access type of the expression.
  */
-public interface CtTypeAccess<T> extends CtExpression<T> {
+public interface CtTypeAccess<A> extends CtExpression<Void> {
+	/**
+	 * Returns type represented and contained in the type access.
+	 *
+	 * @return CtTypeReference.
+	 */
+	CtTypeReference<A> getAccessedType();
+
+	/**
+	 * Set the accessed type.
+	 *
+	 * @param accessedType
+	 * 		CtTypeReference.
+	 */
+	<C extends CtTypeAccess<A>> C setAccessedType(CtTypeReference<A> accessedType);
+
+	/**
+	 * Returns always VOID.
+	 *
+	 * @see #getAccessedType() to get the accessed type.
+	 */
+	@Override
+	CtTypeReference<Void> getType();
 }

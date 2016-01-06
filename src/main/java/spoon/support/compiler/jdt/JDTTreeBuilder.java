@@ -1932,9 +1932,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayTypeReference arrayTypeReference, BlockScope scope) {
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(arrayTypeReference.resolvedType));
-		context.enter(typeAccess, arrayTypeReference);
+		context.enter(factory.Code().createTypeAccess(references.getTypeReference(arrayTypeReference.resolvedType)), arrayTypeReference);
 		return true;
 	}
 
@@ -1945,9 +1943,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayQualifiedTypeReference arrayQualifiedTypeReference, BlockScope scope) {
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(arrayQualifiedTypeReference.resolvedType));
-		context.enter(typeAccess, arrayQualifiedTypeReference);
+		context.enter(factory.Code().createTypeAccess(references.getTypeReference(arrayQualifiedTypeReference.resolvedType)), arrayQualifiedTypeReference);
 		return true;
 	}
 
@@ -2436,8 +2432,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (messageSend.binding instanceof ProblemMethodBinding) {
 					// We are in a static complex in noclasspath mode.
 					if (inv.getExecutable() != null && inv.getExecutable().getDeclaringType() != null) {
-						final CtTypeAccess ta = factory.Core().createTypeAccess();
-						ta.setType(inv.getExecutable().getDeclaringType());
+						final CtTypeAccess ta = factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType());
 						inv.setTarget(ta);
 					}
 					if (messageSend.expectedType() != null) {
@@ -2631,8 +2626,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(parameterizedQualifiedTypeReference.resolvedType));
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.getTypeReference(parameterizedQualifiedTypeReference.resolvedType));
 		context.enter(typeAccess, parameterizedQualifiedTypeReference);
 		return true;
 	}
@@ -2642,8 +2636,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(parameterizedQualifiedTypeReference.resolvedType));
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.getTypeReference(parameterizedQualifiedTypeReference.resolvedType));
 		context.enter(typeAccess, parameterizedQualifiedTypeReference);
 		return true;
 	}
@@ -2653,8 +2646,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(parameterizedSingleTypeReference.resolvedType));
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.getTypeReference(parameterizedSingleTypeReference.resolvedType));
 		context.enter(typeAccess, parameterizedSingleTypeReference);
 		return true;
 	}
@@ -2664,8 +2656,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(parameterizedSingleTypeReference.resolvedType));
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.getTypeReference(parameterizedSingleTypeReference.resolvedType));
 		context.enter(typeAccess, parameterizedSingleTypeReference);
 		return super.visit(parameterizedSingleTypeReference, scope);
 	}
@@ -2819,17 +2810,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(va, qualifiedNameReference);
 			return false;
 		} else if (qualifiedNameReference.binding instanceof TypeBinding) {
-			CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
-			ta.setType(references.getTypeReference((TypeBinding) qualifiedNameReference.binding));
+			CtTypeAccess<Object> ta = factory.Code().createTypeAccess(references.getTypeReference((TypeBinding) qualifiedNameReference.binding));
 			context.enter(ta, qualifiedNameReference);
 			return false;
 		} else if (qualifiedNameReference.binding instanceof ProblemBinding) {
 			CtVariableAccess<Object> va;
 			if (context.stack.peek().element instanceof CtInvocation) {
-				final CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
 				final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 				typeReference.setSimpleName(qualifiedNameReference.toString());
-				ta.setType(typeReference);
+				final CtTypeAccess<Object> ta = factory.Code().createTypeAccess(typeReference);
 				context.enter(ta, qualifiedNameReference);
 				return false;
 			}  else if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
@@ -2869,8 +2858,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(arg0.resolvedType));
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.getTypeReference(arg0.resolvedType));
 		context.enter(typeAccess, arg0);
 		return true; // do nothing by default, keep traversing
 	}
@@ -2917,12 +2905,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 			va.setVariable(references.getVariableReference((VariableBinding) singleNameReference.binding));
 		} else if (singleNameReference.binding instanceof TypeBinding) {
-			CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
-			ta.setType(references.getTypeReference((TypeBinding) singleNameReference.binding));
+			CtTypeAccess<Object> ta = factory.Code().createTypeAccess(references.getTypeReference((TypeBinding) singleNameReference.binding));
 			context.enter(ta, singleNameReference);
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation) {
-				final CtTypeAccess<Object> ta = factory.Core().createTypeAccess();
 				CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 				typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
 				final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
@@ -2931,7 +2917,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				} else if (declaring instanceof CtTypeReference) {
 					typeReference = (CtTypeReference<Object>) declaring;
 				}
-				ta.setType(typeReference);
+				final CtTypeAccess<Object> ta = factory.Code().createTypeAccess(typeReference);
 				context.enter(ta, singleNameReference);
 				return true;
 			} else if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
@@ -2967,8 +2953,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtTypeReference<Object> typeRefOfSuper = references.getTypeReference(qualifiedSuperReference.qualification.resolvedType);
 		final CtSuperAccess<Object> superAccess = factory.Core().createSuperAccess();
 
-		CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(typeRefOfSuper);
+		CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(typeRefOfSuper);
 		superAccess.setTarget(typeAccess);
 
 		context.enter(superAccess, qualifiedSuperReference);
@@ -2988,8 +2973,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		thisAccess.setImplicit(qualifiedThisReference.isImplicitThis());
 		thisAccess.setType(typeRefOfThis);
 
-		CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(typeRefOfThis);
+		CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(typeRefOfThis);
 		thisAccess.setTarget(typeAccess);
 
 		context.enter(thisAccess, qualifiedThisReference);
@@ -3011,16 +2995,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(singleTypeReference.resolvedType));
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.getTypeReference(singleTypeReference.resolvedType));
 		context.enter(typeAccess, singleTypeReference);
 		return true; // do nothing by default, keep traversing
 	}
 
 	@Override
 	public boolean visit(SingleTypeReference singleTypeReference, ClassScope scope) {
-		CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(references.getTypeReference(singleTypeReference.resolvedType));
+		CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.getTypeReference(singleTypeReference.resolvedType));
 		context.enter(typeAccess, singleTypeReference);
 		return true; // do nothing by default, keep traversing
 	}

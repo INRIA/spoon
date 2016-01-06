@@ -90,6 +90,18 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
+	 * Creates a accessed type.
+	 * @param accessedType a type reference to the accessed type.
+	 * @param <T> the type of the expression.
+	 * @return a accessed type expression.
+	 */
+	public <T> CtTypeAccess<T> createTypeAccess(CtTypeReference<T> accessedType) {
+		final CtTypeAccess<T> typeAccess = factory.Core().createTypeAccess();
+		typeAccess.setAccessedType(accessedType);
+		return typeAccess;
+	}
+
+	/**
 	 * Creates a class access expression of the form <code>C.class</code>.
 	 *
 	 * @param <T>
@@ -100,8 +112,7 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtFieldAccess<Class<T>> createClassAccess(CtTypeReference<T> type) {
 		@SuppressWarnings({ "rawtypes", "unchecked" }) CtTypeReference<Class<T>> classType = (CtTypeReference) factory.Type().createReference(Class.class);
-		CtTypeAccess<T> typeAccess = factory.Core().createTypeAccess();
-		typeAccess.setType(type);
+		CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(type);
 
 		CtFieldReference<Class<T>> fieldReference = factory.Core().createFieldReference();
 		fieldReference.setSimpleName("class");
