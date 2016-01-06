@@ -41,4 +41,12 @@ public class Pozole<A extends Annotation> {
 		if (a instanceof Collection<?>) {
 		}
 	}
+
+	public void season() {
+		Object a = null;
+		if (a instanceof Object[]) {
+		}
+		if (a instanceof java.lang.Object[]) {
+		}
+	}
 }
