@@ -1003,12 +1003,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
+		context.ignoreGenerics = true;
 		if (f.getTarget() != null) {
 			scan(f.getTarget());
 			write(".");
 			context.ignoreStaticAccess = true;
 		}
-		context.ignoreGenerics = true;
 		scan(f.getVariable());
 
 		context.ignoreGenerics = false;

@@ -2746,6 +2746,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			// StaticAccessTest#testReferences test to have an example about that.
 			if (ref.isStatic()) {
 				ref.setDeclaringType(references.getTypeReference(qualifiedNameReference.actualReceiverType));
+				fa.setTarget(factory.Code().createTypeAccess(ref.getDeclaringType()));
 			}
 			fa.setVariable(ref);
 
@@ -2922,6 +2923,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 				va = factory.Core().createFieldRead();
 			}
 			va.setVariable(references.getVariableReference(singleNameReference.fieldBinding()));
+			if (va.getVariable() instanceof CtFieldReference) {
+				final CtFieldReference<Object> ref = (CtFieldReference<Object>) va.getVariable();
+
+				if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
+					final CtTypeAccess typeAccess = factory.Code().createTypeAccess(ref.getDeclaringType());
+					((CtFieldAccess) va).setTarget(typeAccess);
+				}
+			}
 		} else if (singleNameReference.binding instanceof VariableBinding) {
 			if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
 				va = factory.Core().createVariableWrite();
