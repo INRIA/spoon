@@ -732,6 +732,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 					ref = factory.Core().createTypeReference();
 				}
 				ref.setSimpleName(new String(binding.readableName()));
+				final CtReference declaring = references.getDeclaringReferenceFromImports(binding.sourceName());
+				if (declaring instanceof CtPackageReference) {
+					ref.setPackage((CtPackageReference) declaring);
+				}
 			} else if (binding instanceof SpoonReferenceBinding) {
 				ref = factory.Core().createTypeReference();
 				ref.setSimpleName(new String(binding.sourceName()));
@@ -1024,7 +1028,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtEnum<?> e = factory.Core().createEnum();
 			if (typeDeclaration.superInterfaces != null) {
 				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					e.addSuperInterface(references.getTypeReference(ref.resolvedType));
+					final CtTypeReference<Object> currentInterface = references.getTypeReference(ref.resolvedType);
+					e.addSuperInterface(currentInterface);
+					insertGenericTypesInNoClasspathFromJDTInSpoon(ref, currentInterface);
 				}
 			}
 			type = e;
@@ -1032,7 +1038,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtInterface<?> interf = factory.Core().createInterface();
 			if (typeDeclaration.superInterfaces != null) {
 				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					interf.addSuperInterface(references.getTypeReference(ref.resolvedType));
+					final CtTypeReference<Object> currentInterface = references.getTypeReference(ref.resolvedType);
+					interf.addSuperInterface(currentInterface);
+					insertGenericTypesInNoClasspathFromJDTInSpoon(ref, currentInterface);
 				}
 			}
 			if (typeDeclaration.typeParameters != null) {
@@ -1060,7 +1068,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 			}
 			if (typeDeclaration.superclass != null) {
-				cl.setSuperclass(references.getTypeReference(typeDeclaration.superclass.resolvedType));
+				final CtTypeReference<Object> superClass = references.getTypeReference(typeDeclaration.superclass.resolvedType);
+				cl.setSuperclass(superClass);
+				insertGenericTypesInNoClasspathFromJDTInSpoon(typeDeclaration.superclass, superClass);
 			}
 
 			// If the current class is an anonymous class with a super interface and generic types, we add generic
@@ -1080,7 +1090,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			if (typeDeclaration.superInterfaces != null) {
 				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					cl.addSuperInterface(references.getTypeReference(ref.resolvedType));
+					final CtTypeReference<Object> currentInterface = references.getTypeReference(ref.resolvedType);
+					cl.addSuperInterface(currentInterface);
+					insertGenericTypesInNoClasspathFromJDTInSpoon(ref, currentInterface);
 				}
 			}
 			if (typeDeclaration.typeParameters != null) {
@@ -1106,6 +1118,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
 
 		return type;
+	}
+
+	private void insertGenericTypesInNoClasspathFromJDTInSpoon(TypeReference original, CtTypeReference<Object> type) {
+		if (original.resolvedType instanceof ProblemReferenceBinding && original.getTypeArguments() != null) {
+			for (TypeReference[] typeReferences : original.getTypeArguments()) {
+				for (TypeReference typeReference : typeReferences) {
+					type.addActualTypeArgument(references.getTypeReference(typeReference.resolvedType));
+				}
+			}
+		}
 	}
 
 	class SpoonReferenceBinding extends ReferenceBinding {
@@ -3232,19 +3254,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			return true;
 		} else {
-			CtType<?> type = createType(typeDeclaration);
-
-			type.setDocComment(getJavaDoc(typeDeclaration.javadoc, scope.referenceContext));
-
 			CtPackage pack = null;
 			if (typeDeclaration.binding.fPackage.shortReadableName() != null && typeDeclaration.binding.fPackage.shortReadableName().length > 0) {
 				pack = factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.shortReadableName()));
 			} else {
 				pack = factory.Package().getOrCreate(CtPackage.TOP_LEVEL_PACKAGE_NAME);
 			}
-			pack.addType(type);
 			context.enter(pack, typeDeclaration);
 			context.compilationunitdeclaration = scope.referenceContext;
+			CtType<?> type = createType(typeDeclaration);
+			pack.addType(type);
+
+			type.setDocComment(getJavaDoc(typeDeclaration.javadoc, scope.referenceContext));
 			context.enter(type, typeDeclaration);
 
 			// AST bug HACK
