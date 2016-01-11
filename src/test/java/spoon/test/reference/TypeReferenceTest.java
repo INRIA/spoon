@@ -262,7 +262,7 @@ public class TypeReferenceTest {
 	public void testPackageInNoClasspath () {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Demo.java");
-		launcher.setSourceOutputDirectory("./target/class");
+		launcher.setSourceOutputDirectory("./target/class-declaration");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
 
@@ -290,6 +290,32 @@ public class TypeReferenceTest {
 		assertTrue("Reference to void is missing", containsVoidReference);
 		assertTrue("Reference to String is missing", containsStringReference);
 		assertTrue("Reference to Joiner is missing", containsJoinerReference);
+	}
+
+	@Test
+	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspath() throws Exception {
+		// contract: Gets the import of a type specified in the declaration of a class.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Demo.java");
+		launcher.setSourceOutputDirectory("./target/class-declaration");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("Demo");
+
+		assertNotNull(aClass.getSuperclass());
+		assertEquals("com.google.common.base.Function", aClass.getSuperclass().getQualifiedName());
+		assertEquals(2, aClass.getSuperclass().getActualTypeArguments().size());
+		assertEquals("java.lang.String", aClass.getSuperclass().getActualTypeArguments().get(0).toString());
+		assertEquals("java.lang.String", aClass.getSuperclass().getActualTypeArguments().get(1).toString());
+
+		assertEquals(1, aClass.getSuperInterfaces().size());
+		for (CtTypeReference<?> superInterface : aClass.getSuperInterfaces()) {
+			assertEquals("com.google.common.base.Function", superInterface.getQualifiedName());
+			assertEquals(2, superInterface.getActualTypeArguments().size());
+			assertEquals("java.lang.String", superInterface.getActualTypeArguments().get(0).toString());
+			assertEquals("java.lang.String", superInterface.getActualTypeArguments().get(1).toString());
+		}
 	}
 
 	class A {
