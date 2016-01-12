@@ -1,6 +1,7 @@
 package spoon.test.serializable;
 
 import static org.junit.Assert.*;
+import static spoon.test.TestUtils.build;
 
 import org.junit.Test;
 
@@ -53,6 +54,11 @@ public class SerializableTest {
 				
 	}
 
+	@Test
+	public void testSerialFile() throws Exception {
+		CtType<?> type = build("spoon.test.serializable", "Dummy");
+		byte[] ser = ByteSerialization.serialize(type);
+		CtType<?> des = (CtType<?>) ByteSerialization.deserialize(ser);
+	}
 	
-
 }

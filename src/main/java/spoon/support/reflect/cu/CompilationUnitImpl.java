@@ -2,6 +2,7 @@ package spoon.support.reflect.cu;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,9 +17,11 @@ import spoon.reflect.factory.Factory;
 import static spoon.reflect.ModelElementContainerDefaultCapacities
 		.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
-public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
+public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor, Serializable {
 
-	Factory factory;
+	private static final long serialVersionUID = 1L;
+
+	transient Factory factory;
 
 	List<CtType<?>> declaredTypes = new ArrayList<CtType<?>>(
 			COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
@@ -27,7 +30,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return declaredTypes;
 	}
 
-	File file;
+	transient File file;
 
 	public File getFile() {
 		return file;

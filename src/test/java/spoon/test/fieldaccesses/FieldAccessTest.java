@@ -1,10 +1,13 @@
 package spoon.test.fieldaccesses;
 
 import org.junit.Test;
+
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -21,6 +24,7 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.test.TestUtils.build;
 
@@ -116,6 +120,17 @@ public class FieldAccessTest {
 
 	}
 
+	@Test
+	public void testBUG20160112() throws Exception {
+		CtType<?> type = build("spoon.test.fieldaccesses", "BUG20160112");
+		assertEquals("BUG20160112", type.getSimpleName());
+		CtOperatorAssignment<?, ?> ass = type.getElements(
+				new TypeFilter<CtOperatorAssignment<?,?>>(CtOperatorAssignment.class)).get(0);
+		assertNotNull("z+=a.us", ass);
+		CtExpression<?> righthand = ass.getAssignment();
+		assertTrue("a.us should be CtFieldRead", righthand instanceof CtFieldRead);
+	}
+	
 	@Test
 	public void testTargetedAccessPosition() throws Exception{
 		CtType<?> type = build("spoon.test.fieldaccesses", "TargetedAccessPosition");

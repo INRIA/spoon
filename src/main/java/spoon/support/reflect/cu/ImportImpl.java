@@ -1,12 +1,16 @@
 package spoon.support.reflect.cu;
 
+import java.io.Serializable;
+
 import spoon.reflect.cu.Import;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
-public class ImportImpl implements Import {
+public class ImportImpl implements Import, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public ImportImpl(CtTypeReference<?> type) {
 		reference = type;
