@@ -16,6 +16,12 @@
  */
 package spoon.support.reflect.cu;
 
+import spoon.processing.FactoryAccessor;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.Import;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -23,14 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import spoon.processing.FactoryAccessor;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.Import;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities
-		.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 

@@ -16,11 +16,11 @@
  */
 package spoon.support.reflect.cu;
 
-import java.io.File;
-import java.io.Serializable;
-
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * This class represents the position of a Java program element in a source
@@ -165,7 +165,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return result;
 	}
 
-	CompilationUnit compilationUnit;
+	transient CompilationUnit compilationUnit;
 
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;
