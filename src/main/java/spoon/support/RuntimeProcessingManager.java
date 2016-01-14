@@ -16,11 +16,8 @@
  */
 package spoon.support;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.log4j.Level;
+import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
@@ -28,6 +25,10 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.util.Timer;
 import spoon.support.visitor.ProcessingVisitor;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This processing manager implements a blocking processing policy that consists
@@ -114,13 +115,16 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	 * Recursively processes elements and their children with a given processor.
 	 */
 	public void process(Collection<? extends CtElement> elements, Processor<?> processor) {
-		getFactory().getEnvironment().debugMessage("processing with '" + processor.getClass().getName() + "'...");
-		current = processor;
-		Timer.start(processor.getClass().getName());
-		for (CtElement e : elements) {
-			process(e, processor);
+		try {
+			getFactory().getEnvironment().debugMessage("processing with '" + processor.getClass().getName() + "'...");
+			current = processor;
+			Timer.start(processor.getClass().getName());
+			for (CtElement e : elements) {
+				process(e, processor);
+			}
+			Timer.stop(processor.getClass().getName());
+		} catch (ProcessInterruption ignored) {
 		}
-		Timer.stop(processor.getClass().getName());
 	}
 
 	public void process(CtElement element) {
