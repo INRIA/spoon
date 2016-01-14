@@ -22,6 +22,8 @@ package spoon.reflect.code;
  * In Java, it is a usage of a array outside an assignment. For example,
  * <code>System.out.println(array[0]);</code>
  *
+ * If you process this element, keep in mind that you will process array[0]++ too.
+ *
  * @param <T>
  * 		type of the array
  */

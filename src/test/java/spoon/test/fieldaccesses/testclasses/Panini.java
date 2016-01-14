@@ -1,6 +1,7 @@
 package spoon.test.fieldaccesses.testclasses;
 
 public class Panini {
+	int i;
 
 	public Sandwich m() {
 		return new Sandwich() {
@@ -10,6 +11,11 @@ public class Panini {
 				return ingredient.next;
 			}
 		};
+	}
+
+	public void make() {
+		i++;
+		++i;
 	}
 
 	abstract class Sandwich {
