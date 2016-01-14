@@ -2,6 +2,7 @@ For contributing to Spoon, the recommended way is to create a pull request (PR) 
 
 Guidelines for pull requests:
 
+**G0**: The pull request contains a single bug fix or a single feature. 
 
 **G1**: The pull request must contain a test case specifying the new feature or highlighting the bug. 
 
@@ -20,5 +21,5 @@ Notes:
 1. Pull requests with test cases only are welcome.
 1. Commit messages start with a verb: "adds support", "fixes bug", ...
 1. We encourage long commit messages.
-1. G2 is specified in SpoonFormatterPrefs.xml.
+1. G2 is specified in the checkstyle rules.
 1. If there is no activity on an issue or on a pull request for 3 months it's closed.
