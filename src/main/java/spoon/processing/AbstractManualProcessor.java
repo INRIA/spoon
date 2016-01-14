@@ -16,11 +16,11 @@
  */
 package spoon.processing;
 
-import java.util.Set;
-
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+
+import java.util.Set;
 
 /**
  * This class defines an abstract processor to be subclassed by the user for
@@ -99,5 +99,10 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 
 	public final void initProperties(ProcessorProperties properties) {
 		AbstractProcessor.initProperties(this, properties);
+	}
+
+	@Override
+	public void interrupt() {
+		throw new ProcessInterruption();
 	}
 }

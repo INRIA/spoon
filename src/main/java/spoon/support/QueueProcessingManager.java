@@ -19,6 +19,7 @@ package spoon.support;
 import org.apache.log4j.Level;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
+import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
@@ -105,26 +106,34 @@ public class QueueProcessingManager implements ProcessingManager {
 	public void process(Collection<? extends CtElement> elements) {
 		Processor<?> p;
 		while ((p = getProcessors().poll()) != null) {
-			getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
-			current = p;
-			p.initProperties(AbstractProcessor.loadProperties(p));
-			p.init();
-			p.process();
-			for (CtElement e : new ArrayList<CtElement>(elements)) {
-				process(e, p);
+			try {
+				getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
+				current = p;
+				p.initProperties(AbstractProcessor.loadProperties(p));
+				p.init();
+				p.process();
+				for (CtElement e : new ArrayList<CtElement>(elements)) {
+					process(e, p);
+				}
+			} catch (ProcessInterruption ignore) {
+			} finally {
+				p.processingDone();
 			}
-			p.processingDone();
 		}
 	}
 
 	public void process(CtElement element) {
 		Processor<?> p;
 		while ((p = getProcessors().poll()) != null) {
-			current = p;
-			p.init();
-			p.process();
-			process(element, p);
-			p.processingDone();
+			try {
+				current = p;
+				p.init();
+				p.process();
+				process(element, p);
+			} catch (ProcessInterruption ignore) {
+			} finally {
+				p.processingDone();
+			}
 		}
 	}
 

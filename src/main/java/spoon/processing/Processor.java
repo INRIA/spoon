@@ -16,10 +16,10 @@
  */
 package spoon.processing;
 
-import java.util.Set;
-
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
+
+import java.util.Set;
 
 /**
  * This interface defines a generic code processor. To define a new processor,
@@ -122,4 +122,10 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	 */
 	void initProperties(ProcessorProperties properties);
 
+	/**
+	 * Interrupts the processing of this processor but changes on your AST are kept
+	 * and the invocation of this method doesn't interrupt the processing of all
+	 * processors specified in the {@link ProcessingManager}.
+	 */
+	void interrupt();
 }

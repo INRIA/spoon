@@ -19,7 +19,9 @@ of the processor class. There is also an optional overridable method for queryin
 elements at a finer grain.
 
 The process method takes the requested element as input and does the analysis 
-(here detecting empty catch blocks).
+(here detecting empty catch blocks). At any time, you can interrupt the processing 
+of the model with a call to `interrupt()` (this stops all processors, and proceeds 
+with the next step which is usually pretty-printing the code to disk).
 
 Since a real world analysis combines multiple queries, multiple processors can 
 be used at the same time. The launcher applies them in the order they have been declared. 

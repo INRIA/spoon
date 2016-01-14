@@ -16,19 +16,19 @@
  */
 package spoon.processing;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.log4j.Level;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.util.RtHelper;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class defines an abstract processor to be subclassed by the user for
@@ -172,4 +172,8 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 		this.factory = factory;
 	}
 
+	@Override
+	public void interrupt() {
+		throw new ProcessInterruption();
+	}
 }
