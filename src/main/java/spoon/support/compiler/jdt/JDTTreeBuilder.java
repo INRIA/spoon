@@ -439,7 +439,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 							}
 							char[][] packageName = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - indexDeclaring);
 							char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - indexDeclaring, anImport.getImportName().length - (indexDeclaring - 1));
-							final PackageBinding aPackage = context.compilationunitdeclaration.scope.environment.createPackage(packageName);
+							PackageBinding aPackage;
+							if (packageName.length != 0) {
+								aPackage = context.compilationunitdeclaration.scope.environment.createPackage(packageName);
+							} else {
+								aPackage = null;
+							}
 							final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
 							context.ignoreComputeImports = true;
 							final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
@@ -478,9 +483,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ref.setType((CtTypeReference<T>) getTypeReference(exec.returnType));
 
 			if (exec instanceof ProblemMethodBinding) {
-				final CtReference declaringType = getDeclaringReferenceFromImports(exec.constantPoolName());
-				if (declaringType instanceof CtTypeReference) {
-					ref.setDeclaringType((CtTypeReference<?>) declaringType);
+				if (exec.declaringClass != null && Arrays.asList(exec.declaringClass.methods()).contains(exec)) {
+					ref.setDeclaringType(getTypeReference(exec.declaringClass));
+				} else {
+					final CtReference declaringType = getDeclaringReferenceFromImports(exec.constantPoolName());
+					if (declaringType instanceof CtTypeReference) {
+						ref.setDeclaringType((CtTypeReference<?>) declaringType);
+					}
 				}
 				if (exec.isConstructor()) {
 					// super() invocation have a good declaring class.
@@ -548,6 +557,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (binding instanceof RawTypeBinding) {
 				ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
 			} else if (binding instanceof ParameterizedTypeBinding) {
+				if (binding.actualType() != null && binding.actualType() instanceof LocalTypeBinding) {
+					// When we define a nested class in a method and when the enclosing class of this method
+					// is a parameterized type binding, JDT give a ParameterizedTypeBinding for the nested class
+					// and hide the real class in actualType().
+					return getTypeReference(binding.actualType());
+				}
 				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
 					ref = factory.Internal().createImplicitTypeReference();
 				} else {
@@ -2509,7 +2524,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 				inv.setExecutable(ref);
 			}
 			context.enter(inv, messageSend);
-			if (!(messageSend.receiver.getClass().equals(ThisReference.class))) {
+			if (messageSend.receiver.isImplicitThis()) {
+				if (inv.getExecutable().getDeclaringType() != null && inv.getExecutable().isStatic()) {
+					inv.setTarget(factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType()));
+				} else if (inv.getExecutable().getDeclaringType() != null && !inv.getExecutable().isStatic()) {
+					messageSend.receiver.traverse(this, scope);
+					if (inv.getTarget() instanceof CtThisAccess) {
+						((CtThisAccess) inv.getTarget()).setTarget(factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType()));
+					}
+				} else if (!(messageSend.binding() instanceof ProblemMethodBinding)) {
+					messageSend.receiver.traverse(this, scope);
+				}
+			} else {
 				messageSend.receiver.traverse(this, scope);
 			}
 			context.pushArgument(inv);
@@ -2929,6 +2955,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
 					final CtTypeAccess typeAccess = factory.Code().createTypeAccess(ref.getDeclaringType());
 					((CtFieldAccess) va).setTarget(typeAccess);
+					System.err.println("");
 				}
 			}
 		} else if (singleNameReference.binding instanceof VariableBinding) {
@@ -3019,6 +3046,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtThisAccess<Object> thisAccess = factory.Core().createThisAccess();
 		thisAccess.setImplicit(thisReference.isImplicitThis());
 		thisAccess.setType(references.getTypeReference(thisReference.resolvedType));
+		thisAccess.setTarget(factory.Code().createTypeAccess(thisAccess.getType()));
 
 		context.enter(thisAccess, thisReference);
 		return true;

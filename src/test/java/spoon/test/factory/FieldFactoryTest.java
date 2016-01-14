@@ -12,6 +12,7 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.test.targeted.testclasses.Bar;
 import spoon.test.targeted.testclasses.Foo;
+import spoon.test.targeted.testclasses.SuperClass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,7 +46,7 @@ public class FieldFactoryTest {
 	public void testCreateFromSource() throws Exception {
 
 		CtClass<?> target = build("spoon.test", "SampleClass");
-		Factory factory = build(Foo.class, Bar.class);
+		Factory factory = build(Foo.class, Bar.class, SuperClass.class);
 		final CtClass<Object> type = factory.Class().get(Foo.class);
 		CtField<?> source = type.getField("i");
 		FieldFactory ff = type.getFactory().Field();

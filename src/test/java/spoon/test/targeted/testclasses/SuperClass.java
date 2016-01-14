@@ -17,10 +17,7 @@
 
 package spoon.test.targeted.testclasses;
 
-public class Bar {
-	static int FIELD = 1;
-	public static void staticMethodBar() {
-	}
-	public void methodBar() {
+public class SuperClass {
+	void superMethod() {
 	}
 }
