@@ -128,6 +128,9 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtField<T> getDeclaration() {
+		if (declaringType == null) {
+			return null;
+		}
 		CtType<?> type = declaringType.getDeclaration();
 		if ((declaringType != null) && (type != null)) {
 			return (CtField<T>) type.getField(getSimpleName());

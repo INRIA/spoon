@@ -10,6 +10,11 @@ public class Foo<T> extends SuperClass {
 	Foo foo;
 	Bar bar;
 	Fii.Fuu fuu;
+	final static int p;
+
+	static {
+		p = 0;
+	}
 
 	public void m() {
 		int x;
@@ -23,6 +28,16 @@ public class Foo<T> extends SuperClass {
 		x = FIELD;
 		Bar.FIELD = x;
 		FIELD = x;
+	}
+
+	public void field() {
+		int x = this.i;
+		x = i;
+		x = this.bar.i;
+		x = bar.i;
+		x = this.o;
+		x = o;
+		x = fuu.p;
 	}
 
 	public void inv() {
@@ -48,11 +63,18 @@ public class Foo<T> extends SuperClass {
 
 	private Foo method() {
 		class NestedTypeScanner {
+			Foo type;
 			public void checkType(Foo type) {
 				this.checkType(type);
 			}
+			public void checkField() {
+				Foo inner = this.type;
+				inner = type;
+			}
 		}
 		return new Foo(0, 0) {
+			int i;
+
 			@Override
 			public void m() {
 				Foo.this.invStatic();
@@ -60,6 +82,9 @@ public class Foo<T> extends SuperClass {
 			}
 
 			public void invStatic() {
+				int inner = Foo.this.i;
+				inner = this.i;
+				inner = i;
 			}
 		};
 	}
@@ -72,6 +97,7 @@ public class Foo<T> extends SuperClass {
 		j = k;
 	}
 	class InnerClass {
+		int i;
 		public void innerInv() {
 			inv();
 			Foo.this.inv();
@@ -83,12 +109,22 @@ public class Foo<T> extends SuperClass {
 			this.method();
 		}
 
+		public void innerField() {
+			int x = this.i;
+			x = i;
+			x = Foo.this.i;
+			x = Foo.k;
+			x = Foo.this.o;
+			x = o;
+		}
+
 		void method() {
 		}
 	}
 
 	public static class Fii {
 		public static class Fuu {
+			int p;
 			static void m() {
 			}
 			void method() {

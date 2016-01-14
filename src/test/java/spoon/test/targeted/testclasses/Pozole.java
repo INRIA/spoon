@@ -17,11 +17,10 @@
 
 package spoon.test.targeted.testclasses;
 
-public class Bar {
-	static int FIELD = 1;
-	int i;
-	public static void staticMethodBar() {
-	}
-	public void methodBar() {
+public class Pozole<T> {
+	T[] data;
+
+	public Pozole(Pozole<T> v1) {
+		final T[] data = ((Pozole<T>) v1).data;
 	}
 }

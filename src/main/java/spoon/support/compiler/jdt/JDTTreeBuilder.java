@@ -2773,12 +2773,19 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (ref.isStatic()) {
 				ref.setDeclaringType(references.getTypeReference(qualifiedNameReference.actualReceiverType));
 				fa.setTarget(factory.Code().createTypeAccess(ref.getDeclaringType()));
+			} else if (!ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
+				final CtTypeReference<Object> type = references.getTypeReference(qualifiedNameReference.actualReceiverType);
+				final CtThisAccess<?> thisAccess = factory.Code().createThisAccess(type);
+				thisAccess.setTarget(factory.Code().createTypeAccess(type));
+				thisAccess.setImplicit(true);
+				((CtFieldAccess) fa).setTarget(thisAccess);
 			}
 			fa.setVariable(ref);
 
 			if (qualifiedNameReference.binding != null
 					&& !((FieldBinding) qualifiedNameReference.binding).declaringClass.isAnonymousType()
-					&& qualifiedNameReference.tokens.length - 1 == ((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName.length) {
+					&& qualifiedNameReference.tokens.length - 1 == ((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName.length
+					&& CharOperation.equals(CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1), ((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName)) {
 				// We get the binding information when we specify the complete fully qualified name of the delcaring class.
 				final ReferenceBinding declaringClass = ((FieldBinding) qualifiedNameReference.binding).declaringClass;
 				final CtTypeReference<Object> typeReference = references.getTypeReference(declaringClass);
@@ -2883,8 +2890,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (va.getVariable() instanceof CtFieldReference) {
 				final char[][] declaringClass = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
 				final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(null, declaringClass);
-				((CtFieldReference) va.getVariable()).setDeclaringType(references.getTypeReference(declaringType));
+				final CtTypeReference<Object> declaringRef = references.getTypeReference(declaringType);
+				((CtFieldReference) va.getVariable()).setDeclaringType(declaringRef);
 				((CtFieldReference) va.getVariable()).setStatic(true);
+				((CtFieldAccess) va).setTarget(factory.Code().createTypeAccess(declaringRef));
 			}
 			// In no classpath mode and with qualified name, the binding don't have a good name.
 			va.getVariable().setSimpleName(createTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
@@ -2955,7 +2964,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
 					final CtTypeAccess typeAccess = factory.Code().createTypeAccess(ref.getDeclaringType());
 					((CtFieldAccess) va).setTarget(typeAccess);
-					System.err.println("");
+				} else if (!ref.isStatic()) {
+					final CtTypeReference<Object> type = references.getTypeReference(singleNameReference.actualReceiverType);
+					final CtThisAccess<?> thisAccess = factory.Code().createThisAccess(type);
+					thisAccess.setTarget(factory.Code().createTypeAccess(type));
+					thisAccess.setImplicit(true);
+					((CtFieldAccess) va).setTarget(thisAccess);
 				}
 			}
 		} else if (singleNameReference.binding instanceof VariableBinding) {
@@ -2987,6 +3001,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 				va = factory.Core().createFieldRead();
 			}
 			va.setVariable(references.getVariableReference((ProblemBinding) singleNameReference.binding));
+			final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
+			if (declaring instanceof CtTypeReference && va.getVariable() instanceof CtFieldReference) {
+				final CtTypeReference<Object> declaringRef = (CtTypeReference<Object>) declaring;
+				((CtFieldAccess) va).setTarget(factory.Code().createTypeAccess(declaringRef));
+				((CtFieldReference) va.getVariable()).setDeclaringType(declaringRef);
+				((CtFieldReference) va.getVariable()).setStatic(true);
+			}
 		} else if (singleNameReference.binding == null) {
 			// In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
 			// By default, we assume that when we don't have any information, we create a variable access.

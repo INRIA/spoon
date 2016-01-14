@@ -1003,10 +1003,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
-		context.ignoreGenerics = true;
+		if (f.getVariable().isStatic() && f.getTarget() instanceof CtTypeAccess) {
+			context.ignoreGenerics = true;
+		}
 		if (f.getTarget() != null) {
-			scan(f.getTarget());
-			write(".");
+			if (!isInitializeStaticFinalField(f.getTarget())) {
+				scan(f.getTarget());
+				if (!f.getTarget().isImplicit()) {
+					write(".");
+				}
+			}
 			context.ignoreStaticAccess = true;
 		}
 		scan(f.getVariable());
@@ -1014,6 +1020,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.ignoreGenerics = false;
 		context.ignoreStaticAccess = false;
 		exitCtExpression(f);
+	}
+
+	/**
+	 * Check if the target expression is a static final field initialized in a static anonymous block.
+	 */
+	private <T> boolean isInitializeStaticFinalField(CtExpression<T> targetExp) {
+		final CtElement parent = targetExp.getParent();
+		if (parent instanceof CtFieldWrite && targetExp.equals(((CtFieldWrite) parent).getTarget())
+				&& targetExp.getParent(CtAnonymousExecutable.class) != null
+				&& ((CtFieldWrite) parent).getVariable() != null
+				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.STATIC)) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override

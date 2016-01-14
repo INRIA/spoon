@@ -12,6 +12,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -27,9 +28,11 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
+import spoon.test.TestUtils;
 import spoon.test.targeted.testclasses.Bar;
 import spoon.test.targeted.testclasses.Foo;
 import spoon.test.targeted.testclasses.InternalSuperCall;
+import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 
 import java.util.List;
@@ -92,7 +95,8 @@ public class TargetedExpressionTest {
 		assertEquals(2, elements.size());
 
 		assertEquals("Target is CtThisAccessImpl if there is a 'this' explicit.", CtThisAccessImpl.class, elements.get(0).getTarget().getClass());
-		assertNull("Targets is null if there isn't a 'this' explicit.", elements.get(1).getTarget());
+		assertNotNull("Target isn't null if there is a 'this' explicit.", elements.get(1).getTarget());
+		assertTrue(elements.get(1).getTarget().isImplicit());
 	}
 
 	@Test
@@ -111,59 +115,171 @@ public class TargetedExpressionTest {
 	}
 
 	@Test
-	public void testStaticTargets() throws Exception {
+	public void testCastWriteWithGenerics() throws Exception {
+		final Factory factory = TestUtils.build(Pozole.class);
+		final CtClass<Object> aPozole = factory.Class().get(Pozole.class);
+		final CtConstructor<Object> aConstructor = aPozole.getConstructor(aPozole.getReference());
+
+		final List<CtFieldRead> elements = aConstructor.getElements(new TypeFilter<>(CtFieldRead.class));
+		assertEquals(1, elements.size());
+		assertEquals("((spoon.test.targeted.testclasses.Pozole<T>)(v1))", elements.get(0).getTarget().toString());
+	}
+
+	@Test
+	public void testTargetsOfFieldAccess() throws Exception {
+		final Factory factory = build(Foo.class, Bar.class, SuperClass.class);
+		final CtClass<Foo> type = factory.Class().get(Foo.class);
+		final CtTypeReference<Foo> expectedType = type.getReference();
+		final CtTypeReference<Bar> expectedBarType = factory.Class().<Bar>get(Bar.class).getReference();
+		final CtTypeReference<SuperClass> expectedSuperClassType = factory.Class().<SuperClass>get(SuperClass.class).getReference();
+		final CtTypeReference<Foo.Fii.Fuu> expectedFuuType = factory.Class().<Foo.Fii.Fuu>get(Foo.Fii.Fuu.class).getReference();
+		final CtMethod<?> fieldMethod = type.getMethodsByName("field").get(0);
+
+		final CtThisAccess<Foo> expectedThisAccess = type.getFactory().Core().createThisAccess();
+		expectedThisAccess.setType(expectedType);
+
+		final List<CtFieldAccess<?>> elements = fieldMethod.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
+		assertEquals(10, elements.size());
+		assertFieldAccess(new Expected().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.i"), elements.get(0));
+		assertFieldAccess(new Expected().declaringType(expectedType).target(expectedThisAccess).result("i"), elements.get(1));
+		assertFieldAccess(new Expected().declaringType(expectedBarType).target(elements.get(3)).result("spoon.test.targeted.testclasses.Foo.this.bar.i"), elements.get(2));
+		assertFieldAccess(new Expected().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.bar"), elements.get(3));
+		assertFieldAccess(new Expected().declaringType(expectedBarType).target(elements.get(5)).result("bar.i"), elements.get(4));
+		assertFieldAccess(new Expected().declaringType(expectedType).target(expectedThisAccess).result("bar"), elements.get(5));
+		assertFieldAccess(new Expected().declaringType(expectedSuperClassType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.o"), elements.get(6));
+		assertFieldAccess(new Expected().declaringType(expectedSuperClassType).target(expectedThisAccess).result("o"), elements.get(7));
+		assertFieldAccess(new Expected().declaringType(expectedFuuType).target(elements.get(9)).result("fuu.p"), elements.get(8));
+		assertFieldAccess(new Expected().declaringType(expectedType).target(expectedThisAccess).result("fuu"), elements.get(9));
+	}
+
+	@Test
+	public void testTargetsOfStaticFieldAccess() throws Exception {
 		final Factory factory = build(Foo.class, Bar.class, SuperClass.class);
 		final CtClass<Foo> type = factory.Class().get(Foo.class);
 		final CtTypeReference<Foo> expectedType = type.getReference();
 		final CtTypeReference<Bar> expectedBarType = factory.Class().<Bar>get(Bar.class).getReference();
 		final CtMethod<?> constructor = type.getMethodsByName("m").get(0);
 
-		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
-		assertEquals(10, elements.size());
-
-		assertTrue(elements.get(0) instanceof CtFieldRead);
-		assertTrue(elements.get(1) instanceof CtFieldRead);
-		assertTrue(elements.get(2) instanceof CtFieldRead);
-
-		assertTrue(elements.get(3) instanceof CtFieldWrite);
-		assertTrue(elements.get(4) instanceof CtFieldWrite);
-		assertTrue(elements.get(5) instanceof CtFieldWrite);
-
-		assertTrue(elements.get(6) instanceof CtFieldRead);
-		assertTrue(elements.get(7) instanceof CtFieldRead);
-
-		assertTrue(elements.get(8) instanceof CtFieldWrite);
-		assertTrue(elements.get(9) instanceof CtFieldWrite);
-
-		// contract for static calls, declaring type of all variables are the same.
-		assertEquals(expectedType, elements.get(0).getVariable().getDeclaringType());
-		assertEquals(expectedType, elements.get(1).getVariable().getDeclaringType());
-		assertEquals(expectedType, elements.get(2).getVariable().getDeclaringType());
-		assertEquals(expectedType, elements.get(3).getVariable().getDeclaringType());
-		assertEquals(expectedType, elements.get(4).getVariable().getDeclaringType());
-		assertEquals(expectedType, elements.get(5).getVariable().getDeclaringType());
-
-		assertEquals(expectedBarType, elements.get(6).getVariable().getDeclaringType());
-		assertEquals(expectedBarType, elements.get(7).getVariable().getDeclaringType());
-		assertEquals(expectedBarType, elements.get(8).getVariable().getDeclaringType());
-		assertEquals(expectedBarType, elements.get(9).getVariable().getDeclaringType());
-
-		// contract for static calls getTarget() have a this or type access.
 		final CtThisAccess<Foo> exepectedThisAccess = type.getFactory().Core().createThisAccess();
 		exepectedThisAccess.setType(expectedType);
 		final CtTypeAccess<Foo> expectedTypeAccess = type.getFactory().Code().createTypeAccess(expectedType);
 		final CtTypeAccess<Bar> expectedBarTypeAccess = type.getFactory().Code().createTypeAccess(expectedBarType);
 
-		assertEquals(exepectedThisAccess, elements.get(0).getTarget());
-		assertEquals(expectedTypeAccess, elements.get(1).getTarget());
-		assertEquals(expectedTypeAccess, elements.get(2).getTarget());
-		assertEquals(exepectedThisAccess, elements.get(3).getTarget());
-		assertEquals(expectedTypeAccess, elements.get(4).getTarget());
-		assertEquals(expectedTypeAccess, elements.get(5).getTarget());
-		assertEquals(expectedBarTypeAccess, elements.get(6).getTarget());
-		assertEquals(expectedBarTypeAccess, elements.get(7).getTarget());
-		assertEquals(expectedBarTypeAccess, elements.get(8).getTarget());
-		assertEquals(expectedBarTypeAccess, elements.get(9).getTarget());
+		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
+		assertEquals(10, elements.size());
+		assertFieldAccess(new Expected().type(CtFieldRead.class).declaringType(expectedType).target(exepectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.k"), elements.get(0));
+		assertFieldAccess(new Expected().type(CtFieldRead.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(1));
+		assertFieldAccess(new Expected().type(CtFieldRead.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(2));
+		assertFieldAccess(new Expected().type(CtFieldWrite.class).declaringType(expectedType).target(exepectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.k"), elements.get(3));
+		assertFieldAccess(new Expected().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(4));
+		assertFieldAccess(new Expected().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(5));
+		assertFieldAccess(new Expected().type(CtFieldRead.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(6));
+		assertFieldAccess(new Expected().type(CtFieldRead.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(7));
+		assertFieldAccess(new Expected().type(CtFieldWrite.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(8));
+		assertFieldAccess(new Expected().type(CtFieldWrite.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(9));
+
+		final CtAnonymousExecutable staticInit = type.getAnonymousExecutables().get(0);
+		final List<CtFieldAccess<?>> staticElements = staticInit.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(1, staticElements.size());
+		assertFieldAccess(new Expected().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("p"), staticElements.get(0));
+	}
+
+	@Test
+	public void testTargetsOfFieldAccessInInnerClass() throws Exception {
+		final Factory factory = build(Foo.class, Bar.class, SuperClass.class);
+		final CtClass<Foo> type = factory.Class().get(Foo.class);
+		final CtTypeReference<Foo> expectedType = type.getReference();
+		final CtTypeReference<SuperClass> expectedSuperClassType = factory.Class().<SuperClass>get(SuperClass.class).getReference();
+		final CtType<InnerClass> innerClass = type.getNestedType("InnerClass");
+		final CtTypeReference<InnerClass> expectedInnerClass = innerClass.getReference();
+		final CtType<?> nestedTypeScanner = type.getNestedType("NestedTypeScanner");
+		final CtTypeReference<?> expectedNested = nestedTypeScanner.getReference();
+		expectedNested.<CtTypeReference>setDeclaringType(null);
+
+		final CtTypeAccess<Foo> fooTypeAccess = factory.Code().createTypeAccess(expectedType);
+		final CtThisAccess<Foo> expectedThisAccess = factory.Core().createThisAccess();
+		expectedThisAccess.setType(expectedType);
+		expectedThisAccess.setImplicit(true);
+		final CtThisAccess<SuperClass> expectedSuperThisAccess = factory.Core().createThisAccess();
+		expectedSuperThisAccess.setType(expectedSuperClassType);
+		expectedSuperThisAccess.setImplicit(true);
+		final CtThisAccess<InnerClass> expectedInnerClassAccess = factory.Core().createThisAccess();
+		expectedInnerClassAccess.setType(expectedInnerClass);
+		expectedInnerClassAccess.setImplicit(true);
+		final CtThisAccess expectedNestedAccess = factory.Core().createThisAccess();
+		expectedNestedAccess.setType(expectedNested);
+
+		final CtMethod<?> innerInvMethod = innerClass.getMethodsByName("innerField").get(0);
+		final List<CtFieldAccess<?>> elements = innerInvMethod.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(6, elements.size());
+		assertFieldAccess(new Expected().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("spoon.test.targeted.testclasses.Foo.InnerClass.this.i"), elements.get(0));
+		assertFieldAccess(new Expected().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("i"), elements.get(1));
+		assertFieldAccess(new Expected().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.i"), elements.get(2));
+		assertFieldAccess(new Expected().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(3));
+		assertFieldAccess(new Expected().declaringType(expectedSuperClassType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.o"), elements.get(4));
+		assertFieldAccess(new Expected().declaringType(expectedSuperClassType).target(expectedThisAccess).result("o"), elements.get(5));
+
+		final List<CtFieldAccess<?>> newElements = nestedTypeScanner.getMethodsByName("checkField").get(0).getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(2, newElements.size());
+		assertFieldAccess(new Expected().declaringType(expectedNested).target(expectedNestedAccess).result("NestedTypeScanner.this.type"), newElements.get(0));
+		assertFieldAccess(new Expected().declaringType(expectedNested).target(expectedNestedAccess).result("type"), newElements.get(1));
+	}
+
+	@Test
+	public void testTargetsOfFieldInAnonymousClass() throws Exception {
+		final Factory factory = build(Foo.class, Bar.class, SuperClass.class);
+		final CtClass<Foo> type = factory.Class().get(Foo.class);
+		final CtTypeReference<Foo> expectedType = type.getReference();
+		final CtClass<?> anonymousClass = type.getElements(new TypeFilter<CtClass>(CtClass.class) {
+			@Override
+			public boolean matches(CtClass element) {
+				return element.isAnonymous() && super.matches(element);
+			}
+		}).get(0);
+		final CtTypeReference<?> expectedAnonymousType = anonymousClass.getReference();
+		final CtThisAccess<Foo> expectedThisAccess = factory.Core().createThisAccess();
+		expectedThisAccess.setType(expectedType);
+		final CtThisAccess expectedAnonymousThisAccess = factory.Core().createThisAccess();
+		expectedAnonymousThisAccess.setType(expectedAnonymousType);
+
+		final CtMethod<?> method = anonymousClass.getMethodsByName("invStatic").get(0);
+		final List<CtFieldAccess> elements = method.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(3, elements.size());
+		assertFieldAccess(new Expected().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.i"), elements.get(0));
+		assertFieldAccess(new Expected().declaringType(expectedAnonymousType).target(expectedAnonymousThisAccess).result("this.i"), elements.get(1));
+		assertFieldAccess(new Expected().declaringType(expectedAnonymousType).target(expectedAnonymousThisAccess).result("i"), elements.get(2));
+	}
+
+	@Test
+	public void testStaticTargetsOfFieldAccessNoClasspath() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Foo.java");
+		launcher.setSourceOutputDirectory("./target/noclasspath");
+		launcher.run();
+
+		final CtClass<Object> foo = launcher.getFactory().Class().get("Foo");
+		final CtTypeReference<Object> expectedFoo = foo.getReference();
+		final CtTypeReference<Object> bar = launcher.getFactory().Class().create("Bar").getReference();
+		final CtTypeReference<Object> fiiFuu = launcher.getFactory().Class().create("Fii.Fuu").getReference();
+		final CtThisAccess<Object> exepectedThisAccess = launcher.getFactory().Core().createThisAccess();
+		exepectedThisAccess.setType(expectedFoo);
+		final CtTypeAccess<Object> expectedTypeAccess = launcher.getFactory().Code().createTypeAccess(foo.getReference());
+		final CtTypeAccess<Object> expectedBarTypeAccess = launcher.getFactory().Code().createTypeAccess(bar);
+
+		final CtMethod<?> fieldMethod = foo.getMethodsByName("field").get(0);
+		final List<CtFieldAccess<?>> elements = fieldMethod.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(10, elements.size());
+		assertFieldAccess(new Expected().declaringType(expectedFoo).target(CtConstructorCallImpl.class).result("new Foo().i"), elements.get(0));
+		assertFieldAccess(new Expected().declaringType(expectedFoo).target(elements.get(2)).result("foo.i"), elements.get(1));
+		assertFieldAccess(new Expected().declaringType(expectedFoo).target(exepectedThisAccess).result("foo"), elements.get(2));
+		assertFieldAccess(new Expected().declaringType(expectedFoo).target(exepectedThisAccess).result("Foo.this.i"), elements.get(3));
+		assertFieldAccess(new Expected().declaringType(expectedFoo).target(exepectedThisAccess).result("foo"), elements.get(4));
+		assertFieldAccess(new Expected().declaringType(expectedFoo).target(expectedTypeAccess).result("Foo.staticField"), elements.get(5));
+		assertFieldAccess(new Expected().result("staticField"), elements.get(6));
+		assertFieldAccess(new Expected().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticFieldBar"), elements.get(7));
+		assertFieldAccess(new Expected().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticFieldBar"), elements.get(8));
+		assertFieldAccess(new Expected().declaringType(fiiFuu).target(launcher.getFactory().Code().createTypeAccess(fiiFuu)).result("Fii.Fuu.i"), elements.get(9));
 	}
 
 	@Test
@@ -325,6 +441,21 @@ public class TargetedExpressionTest {
 		assertInvocation(new Expected().declaringType(fiiFuu).target(launcher.getFactory().Code().createTypeAccess(fiiFuu)).result("Fii.Fuu.m()"), elements.get(7));
 	}
 
+	private void assertFieldAccess(Expected expected, CtFieldAccess<?> fieldAccess) {
+		assertEquals(expected.declaringType, fieldAccess.getVariable().getDeclaringType());
+		if (expected.targetClass != null) {
+			assertEquals(expected.targetClass, fieldAccess.getTarget().getClass());
+		} else if (expected.targetString != null) {
+			assertEquals(expected.targetString, fieldAccess.getTarget().toString());
+		} else {
+			assertEquals(expected.target, fieldAccess.getTarget());
+		}
+		assertEquals(expected.result, fieldAccess.toString());
+		if (expected.type != null) {
+			assertTrue(expected.type.isInstance(fieldAccess));
+		}
+	}
+
 	private void assertInvocation(Expected expected, CtInvocation<?> invocation) {
 		assertEquals(expected.declaringType, invocation.getExecutable().getDeclaringType());
 		if (expected.targetClass != null) {
@@ -338,11 +469,17 @@ public class TargetedExpressionTest {
 	}
 
 	private class Expected {
+		Class<? extends CtExpression> type;
 		Class<? extends CtExpression> targetClass;
 		String targetString;
 		CtExpression<?> target;
 		CtTypeReference<?> declaringType;
 		String result;
+
+		public Expected type(Class<? extends CtExpression> type) {
+			this.type = type;
+			return this;
+		}
 
 		public Expected target(Class<? extends CtExpression> target) {
 			this.targetClass = target;
