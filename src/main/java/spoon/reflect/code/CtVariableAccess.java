@@ -21,6 +21,8 @@ import spoon.reflect.reference.CtVariableReference;
 /**
  * This code element defines an access to a variable (read and write).
  *
+ * If you process this element, keep in mind that you will process var++ too.
+ *
  * @param <T>
  * 		type of the variable
  */

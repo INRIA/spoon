@@ -6,7 +6,8 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -198,5 +199,28 @@ public class FieldAccessTest {
 
 		CtFieldReference ctFieldReferenceGame = ctFieldAccessGame.getVariable();
 		assertEquals("game", ctFieldReferenceGame.getSimpleName());
+	}
+
+	@Test
+	public void testIncrementationOnAVarIsAUnaryOperator() throws Exception {
+		// contract: When we use var++, the variable is a read access with an unary operator.
+		final CtType<Panini> aMole = TestUtils.buildClass(Panini.class);
+		final CtMethod<?> make = aMole.getMethodsByName("make").get(0);
+		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
+
+		final CtFieldRead<Object> fieldRead = aMole.getFactory().Core().createFieldRead();
+		final CtFieldReference fieldReference = aMole.getField("i").getReference();
+		fieldRead.setVariable(fieldReference);
+
+		assertEquals(2, unaryOperators.size());
+		final CtUnaryOperator<?> first = unaryOperators.get(0);
+		assertEquals(UnaryOperatorKind.POSTINC, first.getKind());
+		assertEquals(fieldRead, first.getOperand());
+		assertEquals("(i)++", first.toString());
+
+		final CtUnaryOperator<?> second = unaryOperators.get(1);
+		assertEquals(UnaryOperatorKind.PREINC, second.getKind());
+		assertEquals(fieldRead, second.getOperand());
+		assertEquals("++(i)", second.toString());
 	}
 }

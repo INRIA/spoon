@@ -22,6 +22,8 @@ package spoon.reflect.code;
  * In Java, it is a usage of a field inside an assignment. For example,
  * <code>this.field = "new value";</code>
  *
+ * If you process this element, keep in mind that you won't process field++.
+ *
  * @param <T>
  * 		type of the field
  */
