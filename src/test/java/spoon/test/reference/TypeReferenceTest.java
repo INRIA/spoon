@@ -318,6 +318,35 @@ public class TypeReferenceTest {
 		}
 	}
 
+	@Test
+	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspathWithGenerics() throws Exception {
+		// contract: Gets the import of a type specified in the declaration of a class.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Demo2.java");
+		launcher.setSourceOutputDirectory("./target/class-declaration");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("Demo2");
+		Set<CtTypeReference<?>> superInterfaces = aClass.getSuperInterfaces();
+		final CtTypeReference superInterface = superInterfaces.toArray(new CtTypeReference[superInterfaces.size()])[0];
+		assertEquals("Bar", superInterface.getSimpleName());
+		assertEquals(2, superInterface.getActualTypeArguments().size());
+		final CtTypeReference<?> first = superInterface.getActualTypeArguments().get(0);
+		assertTrue(first instanceof CtTypeParameterReference);
+		assertEquals("?", first.getSimpleName());
+		final CtTypeReference<?> second = superInterface.getActualTypeArguments().get(1);
+		assertTrue(second instanceof CtTypeParameterReference);
+		assertEquals("?", second.getSimpleName());
+		final List<CtTypeReference<?>> bounds = ((CtTypeParameterReference) second).getBounds();
+		assertEquals(1, bounds.size());
+		assertEquals("Tacos", bounds.get(0).getSimpleName());
+		assertEquals(1, bounds.get(0).getActualTypeArguments().size());
+		assertEquals("?", bounds.get(0).getActualTypeArguments().get(0).getSimpleName());
+		assertEquals("example.FooBar", superInterface.getDeclaringType().getQualifiedName());
+		assertEquals("example.FooBar<?, ? extends Tacos<?>>.Bar<?, ? extends Tacos<?>>", superInterface.toString());
+	}
+
 	class A {
 		class Tacos<K> {
 		}
