@@ -2763,7 +2763,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				int sourceStart = (int) (positions[0] >>> 32);
 				for (FieldBinding b : qualifiedNameReference.otherBindings) {
 					CtFieldAccess<Object> other;
-					if (qualifiedNameReference.otherBindings.length == i + 1 && context.stack.peek().element instanceof CtAssignment) {
+					if (qualifiedNameReference.otherBindings.length == i + 1 && context.stack.peek().element instanceof CtAssignment && context.assigned) {
 						other = factory.Core().createFieldWrite();
 					} else {
 						other = factory.Core().createFieldRead();
