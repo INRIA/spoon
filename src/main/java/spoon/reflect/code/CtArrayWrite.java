@@ -19,8 +19,13 @@ package spoon.reflect.code;
 /**
  * This code element defines an write access to an array.
  *
- * In Java, it is a usage of a array inside an assignment. For example,
- * <code>array[0] = "new value";</code>
+ * In Java, it is a usage of a array inside an assignment.
+ *
+ * For example:
+ * <pre>
+ *     array[0] = "new value";
+ *     array[0] += "";
+ * </pre>
  *
  * If you process this element, keep in mind that you won't process array[0]++.
  *

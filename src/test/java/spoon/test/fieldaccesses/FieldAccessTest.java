@@ -2,12 +2,16 @@ package spoon.test.fieldaccesses;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -222,5 +226,28 @@ public class FieldAccessTest {
 		assertEquals(UnaryOperatorKind.PREINC, second.getKind());
 		assertEquals(fieldRead, second.getOperand());
 		assertEquals("++(i)", second.toString());
+	}
+
+	@Test
+	public void testFieldWriteWithPlusEqualsOperation() throws Exception {
+		// contract: When we use var += value, the var is a write access.
+		final CtType<Panini> aPanini = TestUtils.buildClass(Panini.class);
+		final CtMethod<?> prepare = aPanini.getMethodsByName("prepare").get(0);
+
+		final List<CtFieldWrite<?>> fields = prepare.getElements(new TypeFilter<>(CtFieldWrite.class));
+		assertEquals(1, fields.size());
+		assertEquals(aPanini.getField("i").getReference(), fields.get(0).getVariable());
+		assertEquals("i += 0", fields.get(0).getParent().toString());
+		assertEquals("i", fields.get(0).toString());
+
+		final List<CtVariableWrite<?>> variables = prepare.getElements(new TypeFilter<>(CtVariableWrite.class));
+		assertEquals(1, variables.size());
+		assertEquals("j += 0", variables.get(0).getParent().toString());
+		assertEquals("j", variables.get(0).toString());
+
+		final List<CtArrayWrite<?>> arrays = prepare.getElements(new TypeFilter<>(CtArrayWrite.class));
+		assertEquals(1, arrays.size());
+		assertEquals("array[0] += 0", arrays.get(0).getParent().toString());
+		assertEquals("array[0]", arrays.get(0).toString());
 	}
 }
