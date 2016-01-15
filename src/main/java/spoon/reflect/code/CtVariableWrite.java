@@ -19,8 +19,13 @@ package spoon.reflect.code;
 /**
  * This code element defines a write to a variable.
  *
- * In Java, it is a usage of a variable inside an assignment. For example,
- * <code>variable = "new value";</code>
+ * In Java, it is a usage of a variable inside an assignment.
+ *
+ * For example:
+ * <pre>
+ *     variable = "new value";
+ *     variable += "";
+ * </pre>
  *
  * If you process this element, keep in mind that you won't process var++.
  *

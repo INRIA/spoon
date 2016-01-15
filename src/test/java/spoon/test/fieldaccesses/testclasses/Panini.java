@@ -18,6 +18,14 @@ public class Panini {
 		++i;
 	}
 
+	public void prepare() {
+		i += 0;
+		int j = 0;
+		j += 0;
+		int[] array = {};
+		array[0] += 0;
+	}
+
 	abstract class Sandwich {
 		abstract int m();
 	}
