@@ -31,6 +31,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSuperAccess;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -329,7 +330,7 @@ public class SubstitutionVisitor extends CtScanner {
 						.getTarget() instanceof CtFieldAccess))) {
 					fa = (CtFieldAccess<?>) ((CtArrayAccess<?, CtExpression<?>>) invocation.getTarget()).getTarget();
 				}
-				if ((fa != null) && (fa.getTarget() == null)) {
+				if ((fa != null) && (fa.getTarget() == null || fa.getTarget() instanceof CtThisAccess)) {
 					TemplateParameter<?> tparamValue = (TemplateParameter<?>) Parameters
 							.getValue(template, fa.getVariable().getSimpleName(), Parameters.getIndex(fa));
 					CtCodeElement r = null;

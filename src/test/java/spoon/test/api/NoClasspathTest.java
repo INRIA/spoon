@@ -35,12 +35,12 @@ public class NoClasspathTest {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.getEnvironment().setLevel("OFF");
-		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath");
+		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath/fields");
 		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 		Factory factory = spoon.getFactory();
-		CtClass<Object> clazz = factory.Class().get("Foo"); 
-		
+		CtClass<Object> clazz = factory.Class().get("Foo");
+
 		assertEquals("Foo", clazz.getSimpleName());
 		CtTypeReference<?> superclass = clazz.getSuperclass();
 		// "Unknown" is not in the classpath at all
@@ -48,17 +48,17 @@ public class NoClasspathTest {
 		try {
 			superclass.getActualClass();
 			fail();
-		} catch (SpoonClassNotFoundException e) { 
+		} catch (SpoonClassNotFoundException e) {
 			// expected
 		}
 		assertNull(superclass.getDeclaration());
-		
+
 		// now we really make sure we don't have the class in the classpath
 		try {
 			superclass.getActualClass();
-			fail(); 
-		} catch (SpoonException e) {} 
-		
+			fail();
+		} catch (SpoonException e) {}
+
 		{
 			CtMethod<?> method = clazz.getMethod("method", new CtTypeReference[0]);
 			assertNotNull(method);
@@ -68,7 +68,7 @@ public class NoClasspathTest {
 			assertEquals("method", c.getExecutable().getSimpleName());
 			assertEquals("x.method()", method.getBody().getStatement(1).toString());
 		}
-		
+
 		{
 			CtMethod<?> method = clazz.getMethod("m2", new CtTypeReference[0]);
 			assertNotNull(method);
@@ -87,7 +87,7 @@ public class NoClasspathTest {
 			invocations.get(0);
 			assertEquals("x.y.z.method()", method.getBody().getStatement(0).toString());
 		}
-		
+
 		{
 			CtMethod<?> method = clazz.getMethod("m3",new CtTypeReference[0]);
 			assertNotNull(method);
@@ -97,12 +97,12 @@ public class NoClasspathTest {
 			CtLocalVariable<?> statement = method.getBody().getStatement(0);
 			CtFieldAccess<?>  fa = (CtFieldAccess<?>) statement.getDefaultExpression();
 			assertTrue(fa.getTarget() instanceof CtInvocation);
-			assertEquals("field", fa.getVariable().getSimpleName());			
+			assertEquals("field", fa.getVariable().getSimpleName());
 			assertEquals("int x = first().field", statement.toString());
 		}
 
 	}
-	
+
 	@Test
 	public void testBug20141021() {
 		// 2014/10/21 NPE is noclasspath mode on a large open-source project
@@ -111,11 +111,11 @@ public class NoClasspathTest {
 		Factory f = spoon.getFactory();
 		CtExecutableReference<Object> ref = f.Core().createExecutableReference();
 		ref.setSimpleName("foo");
-		
+
 		SignaturePrinter pr = new SignaturePrinter();
 		pr.scan(ref);
-		String s = pr.getSignature();	
-		
+		String s = pr.getSignature();
+
 		assertEquals("#foo()", s);
 	}
 
@@ -136,5 +136,5 @@ public class NoClasspathTest {
 
 		assertEquals(true, ctReturn.getReferencedTypes().contains(expectedType));
 	}
-	
+
 }

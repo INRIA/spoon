@@ -1003,12 +1003,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
+		if (f.getVariable().isStatic() && f.getTarget() instanceof CtTypeAccess) {
+			context.ignoreGenerics = true;
+		}
 		if (f.getTarget() != null) {
-			scan(f.getTarget());
-			write(".");
+			if (!isInitializeStaticFinalField(f.getTarget())) {
+				scan(f.getTarget());
+				if (!f.getTarget().isImplicit()) {
+					write(".");
+				}
+			}
 			context.ignoreStaticAccess = true;
 		}
-		context.ignoreGenerics = true;
 		scan(f.getVariable());
 
 		context.ignoreGenerics = false;
@@ -1016,20 +1022,49 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(f);
 	}
 
+	/**
+	 * Check if the target expression is a static final field initialized in a static anonymous block.
+	 */
+	private <T> boolean isInitializeStaticFinalField(CtExpression<T> targetExp) {
+		final CtElement parent = targetExp.getParent();
+		if (parent instanceof CtFieldWrite && targetExp.equals(((CtFieldWrite) parent).getTarget())
+				&& targetExp.getParent(CtAnonymousExecutable.class) != null
+				&& ((CtFieldWrite) parent).getVariable() != null
+				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.STATIC)) {
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		enterCtExpression(thisAccess);
-		if (thisAccess.getTarget() != null && thisAccess.isImplicit()) {
-			throw new RuntimeException("inconsistent this definition");
-		}
-		if (thisAccess.getTarget() != null) {
-			visitCtTypeReferenceWithoutGenerics(thisAccess.getType());
-			write(".");
+		if (thisAccess.getTarget() != null && thisAccess.getTarget() instanceof CtTypeAccess
+				&& !isInitializeFinalField(thisAccess)
+				&& !thisAccess.isImplicit()) {
+			final CtTypeReference accessedType = ((CtTypeAccess) thisAccess.getTarget()).getAccessedType();
+			if (!accessedType.isAnonymous()) {
+				visitCtTypeReferenceWithoutGenerics(accessedType);
+				write(".");
+			}
 		}
 		if (!thisAccess.isImplicit()) {
 			write("this");
 		}
 		exitCtExpression(thisAccess);
+	}
+
+	/**
+	 * Check if the this access expression is a target of a private final field in a constructor.
+	 */
+	private <T> boolean isInitializeFinalField(CtThisAccess<T> thisAccess) {
+		final CtElement parent = thisAccess.getParent();
+		if (parent instanceof CtFieldWrite && thisAccess.equals(((CtFieldWrite) parent).getTarget())
+				&& ((CtFieldWrite) parent).getVariable() != null && ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.FINAL)
+				&& thisAccess.getParent(CtConstructor.class) != null) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -1237,19 +1272,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			// It's a method invocation
-			if (invocation.getExecutable().isStatic() && invocation.getExecutable().getDeclaringType() != null) {
-				CtTypeReference<?> type = invocation.getExecutable().getDeclaringType();
-				context.ignoreGenerics = true;
-				scan(type);
-				context.ignoreGenerics = false;
-				write(".");
-			} else if (invocation.getTarget() != null) {
+			if (invocation.getTarget() != null) {
+				if (invocation.getTarget() instanceof CtTypeAccess) {
+					context.ignoreGenerics = true;
+				}
 				context.enterTarget();
 				scan(invocation.getTarget());
 				context.exitTarget();
-				write(".");
-			} else if (invocation.getExecutable().getActualTypeArguments() != null && invocation.getExecutable().getActualTypeArguments().size() > 0) {
-				write("this.");
+				context.ignoreGenerics = false;
+				if (!invocation.getTarget().isImplicit()) {
+					write(".");
+				}
 			}
 			writeActualTypeArguments(invocation.getExecutable());
 			// TODO: this does not work because the invocation does not have the

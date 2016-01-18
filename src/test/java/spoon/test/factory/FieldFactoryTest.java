@@ -6,9 +6,13 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FieldFactory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.test.targeted.testclasses.Bar;
+import spoon.test.targeted.testclasses.Foo;
+import spoon.test.targeted.testclasses.SuperClass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,7 +46,8 @@ public class FieldFactoryTest {
 	public void testCreateFromSource() throws Exception {
 
 		CtClass<?> target = build("spoon.test", "SampleClass");
-		CtClass<?> type = build("spoon.test.targeted.testclasses", "Foo");
+		Factory factory = build(Foo.class, Bar.class, SuperClass.class);
+		final CtClass<Object> type = factory.Class().get(Foo.class);
 		CtField<?> source = type.getField("i");
 		FieldFactory ff = type.getFactory().Field();
 		TypeFactory tf = type.getFactory().Type();
