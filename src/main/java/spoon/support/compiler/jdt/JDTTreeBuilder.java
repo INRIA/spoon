@@ -228,6 +228,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -538,12 +540,127 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		public <T> CtTypeReference<T> getTypeReference(TypeBinding binding, TypeReference ref) {
 			CtTypeReference<T> ctRef = getTypeReference(binding);
-			if (ctRef != null) {
+			if (ctRef != null && isCorrectTypeReference(ref)) {
+				insertGenericTypesInNoClasspathFromJDTInSpoon(ref, ctRef);
 				return ctRef;
 			}
-			ctRef = factory.Core().createTypeReference();
-			ctRef.setSimpleName(new String(createTypeName(ref.getTypeName())));
-			return ctRef;
+			return getTypeReference(ref);
+		}
+
+		/**
+		 * In no classpath, the model of the super interface isn't always correct.
+		 */
+		private boolean isCorrectTypeReference(TypeReference ref) {
+			if (ref.resolvedType == null) {
+				return false;
+			}
+			if (!(ref.resolvedType instanceof ProblemReferenceBinding)) {
+				return true;
+			}
+			final String[] compoundName = CharOperation.charArrayToStringArray(((ProblemReferenceBinding) ref.resolvedType).compoundName);
+			final String[] typeName = CharOperation.charArrayToStringArray(ref.getTypeName());
+			if (compoundName.length == 0 || typeName.length == 0) {
+				return false;
+			}
+			return compoundName[compoundName.length - 1].equals(typeName[typeName.length - 1]);
+		}
+
+		private <T> void insertGenericTypesInNoClasspathFromJDTInSpoon(TypeReference original, CtTypeReference<T> type) {
+			if (original.resolvedType instanceof ProblemReferenceBinding && original.getTypeArguments() != null) {
+				for (TypeReference[] typeReferences : original.getTypeArguments()) {
+					for (TypeReference typeReference : typeReferences) {
+						type.addActualTypeArgument(references.getTypeReference(typeReference.resolvedType));
+					}
+				}
+			}
+		}
+
+		/**
+		 * JDT doesn't returns a correct AST with the resolved type of the reference.
+		 * This method try to build a correct Spoon AST from the name of the JDT
+		 * reference, thanks to the parsing of the string, the name parameterized from
+		 * the JDT reference and java convention.
+		 * Returns a complete Spoon AST when the name is correct, otherwise a spoon type
+		 * reference with a name that correspond to the name of the JDT type reference.
+		 */
+		public <T> CtTypeReference<T> getTypeReference(TypeReference ref) {
+			CtTypeReference<T> res = null;
+			CtReference current = null;
+			final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
+			for (int index = namesParameterized.length - 1; index >= 0; index--) {
+				// Start at the end to get the class name first.
+				CtReference main = getTypeReference(namesParameterized[index]);
+				if (main == null) {
+					main = factory.Package().createReference(namesParameterized[index]);
+				}
+				if (main instanceof CtTypeReference && index == namesParameterized.length - 1) {
+					res = (CtTypeReference<T>) main;
+				}
+				if (main instanceof CtPackageReference) {
+					if (current instanceof CtTypeReference) {
+						((CtTypeReference<T>) current).setPackage((CtPackageReference) main);
+					} else if (current instanceof CtPackage) {
+						((CtPackage) current).addPackage((CtPackage) main);
+					}
+				} else if (current instanceof CtTypeReference) {
+					((CtTypeReference) current).setDeclaringType((CtTypeReference<?>) main);
+				}
+				current = main;
+			}
+			if (res == null) {
+				return factory.Type().<T>createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+			}
+			return res;
+		}
+
+		/**
+		 * Try to build a CtTypeReference from a simple name with specified generic types but
+		 * returns null if the name doesn't correspond to a type (not start by an upper case).
+		 */
+		public <T> CtTypeReference<T> getTypeReference(String name) {
+			CtTypeReference<T> main = null;
+			if (name.matches(".*(<.+>)")) {
+				main = factory.Core().createTypeReference();
+				Pattern pattern = Pattern.compile("([^<]+)<(.+)>");
+				Matcher m = pattern.matcher(name);
+				if (m.find()) {
+					main.setSimpleName(m.group(1));
+					final String[] split = m.group(2).split(",");
+					for (String parameter : split) {
+						((CtTypeReference) main).addActualTypeArgument(getTypeParameterReference(parameter.trim()));
+					}
+				}
+			} else if (Character.isUpperCase(name.charAt(0))) {
+				main = factory.Core().createTypeReference();
+				main.setSimpleName(name);
+			}
+			return main;
+		}
+
+		/**
+		 * Try to build a CtTypeParameterReference from a single name with specified generic types but
+		 * keep in mind that if you give wrong data in the strong, reference will be wrong.
+		 */
+		public CtTypeParameterReference getTypeParameterReference(String name) {
+			CtTypeParameterReference param = factory.Core().createTypeParameterReference();
+			if (name.contains("extends") || name.contains("super")) {
+				String[] split = name.contains("extends") ? name.split("extends") : name.split("super");
+				param.setSimpleName(split[0].trim());
+				param.addBound(getTypeReference(split[split.length - 1].trim()));
+			} else if (name.matches(".*(<.+>)")) {
+				Pattern pattern = Pattern.compile("([^<]+)<(.+)>");
+				Matcher m = pattern.matcher(name);
+				if (m.find()) {
+					param.setSimpleName(m.group(1));
+					final String[] split = m.group(2).split(",");
+					for (String parameter : split) {
+						param.addActualTypeArgument(getTypeParameterReference(parameter.trim()));
+					}
+				}
+			} else {
+				param.setSimpleName(name);
+			}
+			return param;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -1043,9 +1160,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtEnum<?> e = factory.Core().createEnum();
 			if (typeDeclaration.superInterfaces != null) {
 				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					final CtTypeReference<Object> currentInterface = references.getTypeReference(ref.resolvedType);
-					e.addSuperInterface(currentInterface);
-					insertGenericTypesInNoClasspathFromJDTInSpoon(ref, currentInterface);
+					e.addSuperInterface(references.getTypeReference(ref.resolvedType, ref));
 				}
 			}
 			type = e;
@@ -1053,9 +1168,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtInterface<?> interf = factory.Core().createInterface();
 			if (typeDeclaration.superInterfaces != null) {
 				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					final CtTypeReference<Object> currentInterface = references.getTypeReference(ref.resolvedType);
-					interf.addSuperInterface(currentInterface);
-					insertGenericTypesInNoClasspathFromJDTInSpoon(ref, currentInterface);
+					interf.addSuperInterface(references.getTypeReference(ref.resolvedType, ref));
 				}
 			}
 			if (typeDeclaration.typeParameters != null) {
@@ -1083,9 +1196,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 			}
 			if (typeDeclaration.superclass != null) {
-				final CtTypeReference<Object> superClass = references.getTypeReference(typeDeclaration.superclass.resolvedType);
-				cl.setSuperclass(superClass);
-				insertGenericTypesInNoClasspathFromJDTInSpoon(typeDeclaration.superclass, superClass);
+				cl.setSuperclass(references.getTypeReference(typeDeclaration.superclass.resolvedType, typeDeclaration.superclass));
 			}
 
 			// If the current class is an anonymous class with a super interface and generic types, we add generic
@@ -1105,9 +1216,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			if (typeDeclaration.superInterfaces != null) {
 				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					final CtTypeReference<Object> currentInterface = references.getTypeReference(ref.resolvedType);
-					cl.addSuperInterface(currentInterface);
-					insertGenericTypesInNoClasspathFromJDTInSpoon(ref, currentInterface);
+					cl.addSuperInterface(references.getTypeReference(ref.resolvedType, ref));
 				}
 			}
 			if (typeDeclaration.typeParameters != null) {
@@ -1133,16 +1242,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
 
 		return type;
-	}
-
-	private void insertGenericTypesInNoClasspathFromJDTInSpoon(TypeReference original, CtTypeReference<Object> type) {
-		if (original.resolvedType instanceof ProblemReferenceBinding && original.getTypeArguments() != null) {
-			for (TypeReference[] typeReferences : original.getTypeArguments()) {
-				for (TypeReference typeReference : typeReferences) {
-					type.addActualTypeArgument(references.getTypeReference(typeReference.resolvedType));
-				}
-			}
-		}
 	}
 
 	class SpoonReferenceBinding extends ReferenceBinding {

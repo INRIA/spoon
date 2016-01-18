@@ -157,7 +157,10 @@ public class NewClassTest {
 		final CtClass anonymousClass = ctNewClass.getAnonymousClass();
 		assertNotNull(anonymousClass);
 		assertNotNull(anonymousClass.getSuperclass());
-		assertEquals("Lock.With", anonymousClass.getSuperclass().getSimpleName());
+		assertEquals("With", anonymousClass.getSuperclass().getSimpleName());
+		assertEquals("Lock$With", anonymousClass.getSuperclass().getQualifiedName());
+		assertEquals("Lock", anonymousClass.getSuperclass().getDeclaringType().getSimpleName());
+		assertEquals("Lock.With", anonymousClass.getSuperclass().toString());
 		assertNull(anonymousClass.getSimpleName()); // In noclasspath, we don't have this information.
 		assertEquals(1, anonymousClass.getMethods().size());
 
