@@ -48,13 +48,17 @@ R6) When feasible, the text version of a Spoon model is close to the original on
 
 # Ecosystem
 
-[SpoonLabs](http://github.com/SpoonLabs) is a group GitHub for software libraries and applications built on top of Spoon.
+[SpoonLabs](http://github.com/SpoonLabs) is a GitHub group for software libraries and applications built on top of Spoon.
 
-You can found plugins for [Maven](https://github.com/SpoonLabs/spoon-maven-plugin) and [Gradle](https://github.com/SpoonLabs/spoon-gradle-plugin) to run spoon on a target project with some processors if necessary.
+You can find plugins for [Maven](https://github.com/SpoonLabs/spoon-maven-plugin) and [Gradle](https://github.com/SpoonLabs/spoon-gradle-plugin) to run spoon on a target project with some processors if necessary.
 
-There are also project which merge spoon with other open source projects like [spooet](https://github.com/SpoonLabs/spooet), a Spoon printer implemented with [JavaPoet](https://github.com/square/javapoet).
-
-And so many other projects! All contributions are welcome in this group!
+Here are some projects already using Spoon:
+- [Spooet](https://github.com/SpoonLabs/spooet): A Spoon printer implemented with JavaPoet.
+- [Metamutor](https://github.com/SpoonLabs/metamutator): A muta-mutation tool for Java.
+- [Astor](https://github.com/SpoonLabs/astor): Evolutionary automatic software repair tool for Java. 
+- [Nopol](https://github.com/SpoonLabs/nopol): Automatic repair system developed at the University of Lille and Inria.
+- [Gumtree Spoon AST diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff): Computes the AST difference between two Spoon abstract syntax trees.
+- Yours?
 
 # Download
 
