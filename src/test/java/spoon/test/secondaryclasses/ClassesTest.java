@@ -1,29 +1,32 @@
 package spoon.test.secondaryclasses;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static spoon.test.TestUtils.build;
-
-import java.awt.event.ActionListener;
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.secondaryclasses.AnonymousClass.I;
+import spoon.test.secondaryclasses.testclasses.Pozole;
+
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.test.TestUtils.build;
+import static spoon.test.TestUtils.buildClass;
 
 public class ClassesTest {
 
@@ -131,4 +134,15 @@ public class ClassesTest {
 		assertEquals(0, f.getEnvironment().getErrorCount());
 	}
 
+	@Test
+	public void testAnonymousClassInStaticField() throws Exception {
+		final CtType<Pozole> type = buildClass(Pozole.class);
+
+		final CtNewClass<?> anonymousClass = type.getField("CONFLICT_HOOK").getElements(new TypeFilter<>(CtNewClass.class)).get(1);
+		final CtVariableRead<?> ctVariableRead = anonymousClass.getElements(new TypeFilter<>(CtVariableRead.class)).get(2);
+		final CtVariable<?> declaration = ctVariableRead.getVariable().getDeclaration();
+
+		assertNotNull(declaration);
+		assertEquals("int i", declaration.toString());
+	}
 }

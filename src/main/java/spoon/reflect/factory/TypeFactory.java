@@ -16,10 +16,7 @@
  */
 package spoon.reflect.factory;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -27,6 +24,11 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The {@link CtType} sub-factory.
@@ -174,7 +176,7 @@ public class TypeFactory extends SubFactory {
 	 * @return a found type or null if does not exist
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> CtType<T> get(String qualifiedName) {
+	public <T> CtType<T> get(final String qualifiedName) {
 		int inertTypeIndex = qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		if (inertTypeIndex > 0) {
 			String s = qualifiedName.substring(0, inertTypeIndex);
@@ -182,7 +184,25 @@ public class TypeFactory extends SubFactory {
 			if (t == null) {
 				return null;
 			}
-			return t.getNestedType(qualifiedName.substring(inertTypeIndex + 1));
+			String className = qualifiedName.substring(inertTypeIndex + 1);
+			try {
+				// If the class name can't be parsed in integer, the method throws an exception.
+				// If the class name is an integer, the class is an anonymous class, otherwise,
+				// it is a standard class.
+				Integer.parseInt(className);
+				final List<CtNewClass> anonymousClasses = t.getElements(new TypeFilter<CtNewClass>(CtNewClass.class) {
+					@Override
+					public boolean matches(CtNewClass element) {
+						return super.matches(element) && element.getAnonymousClass().getQualifiedName().equals(qualifiedName);
+					}
+				});
+				if (anonymousClasses.size() == 0) {
+					return null;
+				}
+				return anonymousClasses.get(0).getAnonymousClass();
+			} catch (NumberFormatException e) {
+				return t.getNestedType(className);
+			}
 		}
 
 		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
