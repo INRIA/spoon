@@ -553,7 +553,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				return (e instanceof CtTargetedExpression) || (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator);
 			}
 			if (e.getParent() instanceof CtTargetedExpression) {
-				return (e instanceof CtBinaryOperator) || (e instanceof CtAssignment) || (e instanceof CtConditional);
+				return (e instanceof CtBinaryOperator) || (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator);
 			}
 		} catch (ParentNotInitializedException ex) {
 			// nothing we accept not to have a parent
