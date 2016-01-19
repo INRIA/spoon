@@ -82,7 +82,7 @@ public class TargetedExpressionTest {
 		CtClass<?> c = type.getElements(new NameFilter<CtClass<?>>("InnerClass")).get(0);
 		assertEquals("InnerClass", c.getSimpleName());
 		CtConstructor<?> ctr = c.getConstructor(type.getFactory().Type().createReference(boolean.class));
-		assertEquals("InnerClass.this.b = b", ctr.getBody().getLastStatement().toString());
+		assertEquals("this.b = b", ctr.getBody().getLastStatement().toString());
 	}
 
 	@Test
@@ -439,6 +439,25 @@ public class TargetedExpressionTest {
 		assertInvocation(new Expected().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticMethodBar()"), elements.get(5));
 		assertInvocation(new Expected().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticMethodBar()"), elements.get(6));
 		assertInvocation(new Expected().declaringType(fiiFuu).target(launcher.getFactory().Code().createTypeAccess(fiiFuu)).result("Fii.Fuu.m()"), elements.get(7));
+	}
+
+	@Test
+	public void testInitializeFieldAccessInNoclasspathMode() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Foo.java");
+		launcher.setSourceOutputDirectory("./target/noclasspath");
+		launcher.run();
+
+		final CtClass<Object> foo = launcher.getFactory().Class().get("Foo");
+		final CtTypeReference<Object> expectedFoo = foo.getReference();
+		final CtThisAccess<Object> exepectedThisAccess = launcher.getFactory().Core().createThisAccess();
+		exepectedThisAccess.setType(expectedFoo);
+
+		final CtConstructor<Object> constructor = foo.getConstructor();
+		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(1, elements.size());
+		assertFieldAccess(new Expected().declaringType(expectedFoo).target(exepectedThisAccess).result("this.bar"), elements.get(0));
 	}
 
 	private void assertFieldAccess(Expected expected, CtFieldAccess<?> fieldAccess) {

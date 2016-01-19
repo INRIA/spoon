@@ -1040,7 +1040,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		enterCtExpression(thisAccess);
 		if (thisAccess.getTarget() != null && thisAccess.getTarget() instanceof CtTypeAccess
-				&& !isInitializeFinalField(thisAccess)
+				&& !tryToInitializeFinalFieldInConstructor(thisAccess)
 				&& !thisAccess.isImplicit()) {
 			final CtTypeReference accessedType = ((CtTypeAccess) thisAccess.getTarget()).getAccessedType();
 			if (!accessedType.isAnonymous()) {
@@ -1057,14 +1057,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Check if the this access expression is a target of a private final field in a constructor.
 	 */
-	private <T> boolean isInitializeFinalField(CtThisAccess<T> thisAccess) {
+	private <T> boolean tryToInitializeFinalFieldInConstructor(CtThisAccess<T> thisAccess) {
 		final CtElement parent = thisAccess.getParent();
-		if (parent instanceof CtFieldWrite && thisAccess.equals(((CtFieldWrite) parent).getTarget())
-				&& ((CtFieldWrite) parent).getVariable() != null && ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.FINAL)
-				&& thisAccess.getParent(CtConstructor.class) != null) {
+		if (!(parent instanceof CtFieldWrite) || !thisAccess.equals(((CtFieldWrite) parent).getTarget()) || thisAccess.getParent(CtConstructor.class) == null) {
+			return false;
+		}
+		final CtFieldReference variable = ((CtFieldWrite) parent).getVariable();
+		if (variable == null) {
+			return false;
+		}
+		final CtField declaration = variable.getDeclaration();
+		if (declaration == null) {
 			return true;
 		}
-		return false;
+		return variable.getDeclaration().getModifiers().contains(ModifierKind.FINAL);
 	}
 
 	@Override
