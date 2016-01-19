@@ -15,6 +15,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
@@ -194,5 +195,22 @@ public class AccessTest {
 
 		assertEquals("java.lang.Class mclass = ((java.lang.Class)(org.argouml.model.ModelFacade.USE_CASE))", elements.get(0).getParent().toString());
 		assertEquals("new org.argouml.uml.ui.PropPanelButton(org.argouml.uml.ui.behavior.use_cases.PropPanelUseCase.this , buttonPanel , _navUpIcon , org.argouml.i18n.Translator.localize(\"UMLMenu\", \"button.go-up\") , \"navigateNamespace\" , null)", elements.get(2).getParent().toString());
+	}
+
+	@Test
+	public void testAccessToStringOnPostIncrement() throws Exception {
+		// contract: a target to a post increment on a variable access write brackets.
+		Factory factory = TestUtils.createFactory();
+		CtClass<?> clazz = factory.Code().createCodeSnippetStatement( //
+				"class X {" //
+						+ "public void foo() {" //
+						+ " Integer i = 1;" //
+						+ " (i++).toString();" //
+						+ " int k = 0;" //
+						+ " k++;" //
+						+ "}};").compile();
+		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
+		assertEquals("(i++).toString()", foo.getBody().getStatement(1).toString());
+		assertEquals("k++", foo.getBody().getStatement(3).toString());
 	}
 }
