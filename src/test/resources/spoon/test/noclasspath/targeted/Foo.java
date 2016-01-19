@@ -5,6 +5,10 @@ import static Bar.staticFieldBar;
 public class Foo extends Unknown {
 	Foo foo;
 
+	public Foo() {
+		this.bar = null;
+	}
+
 	public void inv() {
 		new Foo(0, 0).staticMethod();
 		foo.staticMethod();
