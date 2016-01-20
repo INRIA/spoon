@@ -24,8 +24,6 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
@@ -216,14 +214,7 @@ public class TypeFactory extends SubFactory {
 		}
 
 		if (pack == null) {
-			// The fully qualified name doesn't contain always the package. i.e. a class
-			// declared in a method. In this case, try to get the class from its name
-			// in the AST contained in the factory.
-			final List<CtType<T>> elements = Query.getElements(factory, new NameFilter<CtType<T>>(qualifiedName));
-			if (elements.size() == 0) {
-				return null;
-			}
-			return elements.get(0);
+			return null;
 		}
 
 		return (CtType<T>) pack.getType(qualifiedName.substring(packageIndex + 1));

@@ -33,6 +33,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
@@ -56,6 +57,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
 	CtTypeReference<?> declaringType;
+
+	CtExecutableReference<?> declaringExecutable;
 
 	private CtPackageReference pack;
 
@@ -157,6 +160,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaration() {
+		if (!isPrimitive() && !isAnonymous() && getDeclaringExecutable() != null && getDeclaringExecutable().getDeclaration() != null) {
+			final List<CtType<T>> elements = getDeclaringExecutable().getDeclaration().getElements(new NameFilter<CtType<T>>(getSimpleName()));
+			if (elements.size() == 0) {
+				return null;
+			}
+			return elements.get(0);
+		}
 		if (!isPrimitive() && !isAnonymous()) {
 			return (CtType<T>) getFactory().Type().get(getQualifiedName());
 		}
@@ -182,13 +192,20 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	public CtExecutableReference<?> getDeclaringExecutable() {
+		return declaringExecutable;
+	}
+
+	@Override
 	public CtPackageReference getPackage() {
 		return pack;
 	}
 
 	@Override
 	public String getQualifiedName() {
-		if (getDeclaringType() != null) {
+		if (getDeclaringExecutable() != null) {
+			return getSimpleName();
+		} else if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName() + CtType.INNERTTYPE_SEPARATOR + getSimpleName();
 		} else if (getPackage() != null && !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(getPackage().getSimpleName())) {
 			if (!getAnnotations().isEmpty()) {
@@ -306,6 +323,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			declaringType.setParent(this);
 		}
 		this.declaringType = declaringType;
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtTypeReference<T>> C setDeclaringExecutable(CtExecutableReference<?> declaringExecutable) {
+		if (this.declaringExecutable != null) {
+			this.declaringExecutable.setParent(this);
+		}
+		this.declaringExecutable = declaringExecutable;
 		return (C) this;
 	}
 

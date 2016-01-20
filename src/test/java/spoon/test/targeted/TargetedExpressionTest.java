@@ -32,6 +32,7 @@ import spoon.test.targeted.testclasses.Foo;
 import spoon.test.targeted.testclasses.InternalSuperCall;
 import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
+import spoon.test.targeted.testclasses.Tapas;
 
 import java.util.List;
 
@@ -40,6 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
+import static spoon.test.TestUtils.buildClass;
 
 public class TargetedExpressionTest {
 	@Test
@@ -456,6 +458,22 @@ public class TargetedExpressionTest {
 		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, elements.size());
 		assertFieldAccess(new Expected().declaringType(expectedFoo).target(exepectedThisAccess).result("this.bar"), elements.get(0));
+	}
+
+	@Test
+	public void testClassDeclaredInALambda() throws Exception {
+		// contract: A class can be declared in a lambda expression where we use final fields.
+		final CtType<Tapas> type = buildClass(Tapas.class);
+		final CtTypeReference<Object> expectedInner = type.getFactory().Type().createReference("InnerSubscriber");
+
+		final CtThisAccess<Object> exepectedThisAccess = type.getFactory().Core().createThisAccess();
+		exepectedThisAccess.setType(expectedInner);
+
+		final List<CtFieldAccess<?>> elements = type.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(3, elements.size());
+		assertFieldAccess(new Expected().declaringType(expectedInner).target(exepectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index"), elements.get(0));
+		assertFieldAccess(new Expected().declaringType(expectedInner).target(exepectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index"), elements.get(1));
+		assertFieldAccess(new Expected().declaringType(expectedInner).target(exepectedThisAccess).type(CtFieldWrite.class).result("this.index"), elements.get(2));
 	}
 
 	private void assertFieldAccess(Expected expected, CtFieldAccess<?> fieldAccess) {
