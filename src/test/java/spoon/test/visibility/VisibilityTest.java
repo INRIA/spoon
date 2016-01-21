@@ -5,13 +5,20 @@ import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
 import spoon.compiler.SpoonCompiler;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.TestUtils;
+import spoon.test.visibility.testclasses.A;
+import spoon.test.visibility.testclasses.A2;
 
 import java.io.File;
 import java.util.List;
@@ -63,14 +70,48 @@ public class VisibilityTest {
 	}
 
 	@Test
-	public void testComplexVisibilityWithGenerics() throws Exception {
+	public void testFullyQualifiedNameOfTypeReferenceWithGeneric() throws Exception {
+		// contract: Generics are written when there are specified in the return type of a method.
+		final String target = "./target/spooned/spoon/test/visibility_generics/testclasses/";
 		final SpoonAPI launcher = new Launcher();
-		launcher.run(new String[] {
-				"-i", "./src/test/java/spoon/test/visibility/testclasses/A.java",
-				"-o", "./target/spooned/spoon/test/visibility_generics/testclasses/"
-		});
+		launcher.addInputResource("./src/test/java/spoon/test/visibility/testclasses/A.java");
+		launcher.addInputResource("./src/test/java/spoon/test/visibility/testclasses/A2.java");
+		launcher.addInputResource("./src/test/java/spoon/test/visibility/testclasses/Foo.java");
+		launcher.setSourceOutputDirectory(target);
+		launcher.run();
 
-		TestUtils.canBeBuilt("./target/spooned/spoon/test/visibility_generics/testclasses/", 8);
+		final CtClass<A> aClass = launcher.getFactory().Class().get(A.class);
+		CtType<?> nestedB = aClass.getNestedType("B");
+		List<CtFieldAccess> elements = nestedB.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(1, elements.size());
+		assertEquals("(spoon.test.visibility.testclasses.A.B.i)", elements.get(0).toString());
+
+		CtMethod<?> instanceOf = aClass.getMethodsByName("instanceOf").get(0);
+		List<CtBinaryOperator> elements1 = instanceOf.getElements(new TypeFilter<>(CtBinaryOperator.class));
+		assertEquals(1, elements1.size());
+		assertEquals("spoon.test.visibility.testclasses.A.B", elements1.get(0).getRightHandOperand().toString());
+
+		CtMethod<?> returnType = aClass.getMethodsByName("returnType").get(0);
+		assertEquals("spoon.test.visibility.testclasses.A<T>.C<T>", returnType.getType().toString());
+
+		final CtClass<A2> secondClass = launcher.getFactory().Class().get(A2.class);
+		nestedB = secondClass.getNestedType("B");
+		elements = nestedB.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(1, elements.size());
+		assertEquals("(spoon.test.visibility.testclasses.A2.B.i)", elements.get(0).toString());
+
+		instanceOf = secondClass.getMethodsByName("instanceOf").get(0);
+		elements1 = instanceOf.getElements(new TypeFilter<>(CtBinaryOperator.class));
+		assertEquals(1, elements1.size());
+		assertEquals("spoon.test.visibility.testclasses.A2.B", elements1.get(0).getRightHandOperand().toString());
+
+		returnType = secondClass.getMethodsByName("returnType").get(0);
+		assertEquals("spoon.test.visibility.testclasses.A2.C<java.lang.String>", returnType.getType().toString());
+
+		returnType = secondClass.getMethodsByName("returnType2").get(0);
+		assertEquals("spoon.test.visibility.testclasses.Foo<java.lang.String>.Bar<java.lang.String>", returnType.getType().toString());
+
+		TestUtils.canBeBuilt(target, 8);
 	}
 
 	@Test
