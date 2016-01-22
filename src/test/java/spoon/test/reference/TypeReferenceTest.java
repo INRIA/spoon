@@ -5,6 +5,7 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
@@ -345,6 +346,25 @@ public class TypeReferenceTest {
 		assertEquals("?", bounds.get(0).getActualTypeArguments().get(0).getSimpleName());
 		assertEquals("example.FooBar", superInterface.getDeclaringType().getQualifiedName());
 		assertEquals("example.FooBar<?, ? extends Tacos<?>>.Bar<?, ? extends Tacos<?>>", superInterface.toString());
+	}
+
+	@Test
+	public void testArgumentOfAInvocationIsNotATypeAccess() throws Exception {
+		// contract: In no classpath, an unknown field specified as argument isn't a CtTypeAccess.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Demo3.java");
+		launcher.setSourceOutputDirectory("./target/class-declaration");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> demo3 = launcher.getFactory().Class().get("Demo3");
+		final List<CtFieldRead> fields = demo3.getElements(new TypeFilter<CtFieldRead>(CtFieldRead.class) {
+			@Override
+			public boolean matches(CtFieldRead element) {
+				return "bar".equals(element.getVariable().getSimpleName()) && super.matches(element);
+			}
+		});
+		assertEquals(1, fields.size());
 	}
 
 	class A {
