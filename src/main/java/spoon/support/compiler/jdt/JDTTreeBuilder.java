@@ -3082,7 +3082,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtTypeAccess<Object> ta = factory.Code().createTypeAccess(references.getTypeReference((TypeBinding) singleNameReference.binding));
 			context.enter(ta, singleNameReference);
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
-			if (context.stack.peek().element instanceof CtInvocation) {
+			if (context.stack.peek().element instanceof CtInvocation
+					&& CharOperation.charToString(singleNameReference.token).equals(((CtInvocation) context.stack.peek().element).getExecutable().getDeclaringType().getSimpleName())) {
 				CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 				typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
 				final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
