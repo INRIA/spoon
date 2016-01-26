@@ -1,13 +1,7 @@
 package spoon.test.pkg;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
@@ -17,6 +11,11 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
 import spoon.test.pkg.name.PackageTestClass;
+
+import java.io.File;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PackageTest {
 	@Test
@@ -44,7 +43,7 @@ public class PackageTest {
 		Assert.assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
 		Assert.assertEquals(1, ctPackage.getPosition().getLine());
 		Assert.assertEquals(1, ctPackage.getAnnotations().size());
-		Assert.assertEquals("\n This is test\n JavaDoc.\n \n", ctPackage.getDocComment());
+		Assert.assertEquals("This is test\n JavaDoc.", ctPackage.getDocComment());
 
 		CtAnnotation<?> annotation = ctPackage.getAnnotations().get(0);
 		Assert.assertEquals(Deprecated.class, annotation.getAnnotationType().getActualClass());

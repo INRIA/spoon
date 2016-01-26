@@ -1553,7 +1553,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("/** ").writeln().writeTabs();
 			String[] lines = e.getDocComment().split("\n");
 			for (int i = 0; i < lines.length; i++) {
-				String com = lines[i].trim();
+				String com = lines[i];
 				if ("".equals(com) && (i == 0 || i == lines.length - 1)) {
 					continue;
 				}
@@ -1563,7 +1563,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					write(" * " + com).writeln().writeTabs();
 				}
 			}
-			write(" */").writeln();
+			write(" */").writeln().writeTabs();
 		}
 		// Write element parameters (Annotations)
 		writeAnnotations(e);
