@@ -199,7 +199,7 @@ public class TemplateTest {
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
 		}
-		
+
 		{// testing matcher5
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
@@ -217,4 +217,17 @@ public class TemplateTest {
 		}
 	}
 
+	@Test
+	public void testExtensionBlock() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/template/Logger.java");
+		launcher.addInputResource("./src/test/java/spoon/test/template/LoggerTemplate.java");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.addProcessor(new LoggerTemplateProcessor());
+		try {
+			launcher.run();
+		} catch (ClassCastException ignored) {
+			fail();
+		}
+	}
 }
