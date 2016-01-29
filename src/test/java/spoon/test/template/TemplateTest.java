@@ -224,6 +224,7 @@ public class TemplateTest {
 		launcher.addInputResource("./src/test/java/spoon/test/template/LoggerTemplate.java");
 		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.addProcessor(new LoggerTemplateProcessor());
+		launcher.getEnvironment().setSourceClasspath(System.getProperty("java.class.path").split(":"));
 		try {
 			launcher.run();
 		} catch (ClassCastException ignored) {
