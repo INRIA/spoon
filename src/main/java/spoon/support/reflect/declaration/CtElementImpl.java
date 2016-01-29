@@ -387,7 +387,8 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
-	protected void replace(CtElement element) {
+	@Override
+	public void replace(CtElement element) {
 		try {
 			replaceIn(this, element, getParent());
 		} catch (CtUncomparableException e1) {
