@@ -21,6 +21,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.TestUtils;
 import spoon.test.reference.testclasses.EnumValue;
 
 import java.util.Collection;
@@ -365,6 +366,30 @@ public class TypeReferenceTest {
 			}
 		});
 		assertEquals(1, fields.size());
+	}
+
+	@Test
+	public void testInvocationWithFieldAccessInNoClasspath() throws Exception {
+		// contract: In no classpath mode, if we have field accesses in an invocation, we should build field access and not type access.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Demo4.java");
+		launcher.setSourceOutputDirectory("./target/class-declaration");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> demo4 = launcher.getFactory().Class().get("Demo4");
+		final CtMethod<?> doSomething = demo4.getMethodsByName("doSomething").get(0);
+		final CtInvocation topInvocation = doSomething.getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		assertNotNull(topInvocation.getTarget());
+		assertTrue(topInvocation.getTarget() instanceof CtInvocation);
+		assertNotNull(((CtInvocation) topInvocation.getTarget()).getTarget());
+		assertTrue(((CtInvocation) topInvocation.getTarget()).getTarget() instanceof CtFieldRead);
+		assertEquals(1, topInvocation.getArguments().size());
+		assertTrue(topInvocation.getArguments().get(0) instanceof CtFieldRead);
+		assertEquals("a.foo().bar(b)", topInvocation.toString());
+
+		// Class concerned by this bug.
+		TestUtils.canBeBuilt("./src/test/resources/noclasspath/TestBot.java", 8, true);
 	}
 
 	class A {
