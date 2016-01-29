@@ -348,7 +348,7 @@ public class SubstitutionVisitor extends CtScanner {
 						// the return
 						((CtReturn<?>) invocation.getParent()).replace((CtStatement) r);
 					} else {
-						invocation.replace((CtExpression) r);
+						invocation.replace(r);
 					}
 				}
 				// do not visit the invocation if replaced
