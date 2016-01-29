@@ -17,6 +17,7 @@
 package spoon.reflect.factory;
 
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -185,6 +186,19 @@ public class TypeFactory extends SubFactory {
 				return null;
 			}
 			String className = qualifiedName.substring(inertTypeIndex + 1);
+			final CtTypeReference<T> reference = t.getReference();
+			if (reference.isLocalType()) {
+				final List<CtClass<T>> enclosingClasses = t.getElements(new TypeFilter<CtClass<T>>(CtClass.class) {
+					@Override
+					public boolean matches(CtClass<T> element) {
+						return super.matches(element) && element.getQualifiedName().equals(qualifiedName);
+					}
+				});
+				if (enclosingClasses.size() == 0) {
+					return null;
+				}
+				return enclosingClasses.get(0);
+			}
 			try {
 				// If the class name can't be parsed in integer, the method throws an exception.
 				// If the class name is an integer, the class is an anonymous class, otherwise,

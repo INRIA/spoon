@@ -34,6 +34,14 @@ public interface CtTypeReference<T>
 	String NULL_TYPE_NAME = "<nulltype>";
 
 	/**
+	 * Returns the simple (unqualified) name of this element.
+	 * Following the compilation convention, if the type is a local type,
+	 * the name starts with a numeric prefix (e.g. local class Foo has simple name 1Foo).
+	 */
+	@Override
+	String getSimpleName();
+
+	/**
 	 * Gets the Java runtime class of the referenced type.
 	 *
 	 * @return the Java class or null if the class is not found (not in
@@ -62,13 +70,6 @@ public interface CtTypeReference<T>
 	CtTypeReference<?> getDeclaringType();
 
 	/**
-	 * Gets the executable that declares the referenced type.
-	 *
-	 * @return the declaring executable if the type reference is a local class; null in other cases.
-	 */
-	CtExecutableReference<?> getDeclaringExecutable();
-
-	/**
 	 * Gets the package of the referenced type.
 	 *
 	 * @return the declaring package or null if this if a inner class
@@ -92,12 +93,6 @@ public interface CtTypeReference<T>
 	 * referenced type is not a inner type.
 	 */
 	<C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> type);
-
-	/**
-	 * Sets the reference to the declaring executable. Should be set to null if
-	 * the referenced type is not a local type.
-	 */
-	<C extends CtTypeReference<T>> C setDeclaringExecutable(CtExecutableReference<?> declaringExecutable);
 
 	/**
 	 * Sets the reference to the declaring package.

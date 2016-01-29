@@ -34,6 +34,14 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	String INNERTTYPE_SEPARATOR = "$";
 
 	/**
+	 * Returns the simple (unqualified) name of this element.
+	 * Following the compilation convention, if the type is a local type,
+	 * the name starts with a numeric prefix (e.g. local class Foo has simple name 1Foo).
+	 */
+	@Override
+	String getSimpleName();
+
+	/**
 	 * Returns the types used by this type.
 	 *
 	 * @param includeSamePackage
