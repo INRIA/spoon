@@ -1030,13 +1030,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 
 		for (String s : lines) {
-			if (s.startsWith("/**")) {
-				ret.append(s.replaceAll("/\\*+", ""));
-			} else if (s.endsWith("*/")) {
-				ret.append(s.replaceAll("\\*+/$", "").replaceAll("^ *\\*+", ""));
+			String cleanUpLine = s.trim();
+			if (cleanUpLine.startsWith("/**")) {
+				cleanUpLine = cleanUpLine.replaceAll("/\\*+", "");
+			} else if (cleanUpLine.endsWith("*/")) {
+				cleanUpLine = cleanUpLine.replaceAll("\\*+/$", "").replaceAll("^[ \t]*\\*+", "");
 			} else {
-				ret.append(s.replaceAll("^ *\\*+", ""));
+				cleanUpLine = cleanUpLine.replaceAll("^[ \t]*\\*+", "");
 			}
+			ret.append(cleanUpLine);
 			ret.append("\n");
 		}
 		// clean '\r'
@@ -1046,7 +1048,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ret2.append(ret.charAt(i));
 			}
 		}
-		return ret2.toString();
+		return ret2.toString().trim();
 	}
 
 	public static Set<ModifierKind> getModifiers(int mod) {
