@@ -62,13 +62,6 @@ public interface CtTypeReference<T>
 	CtTypeReference<?> getDeclaringType();
 
 	/**
-	 * Gets the executable that declares the referenced type.
-	 *
-	 * @return the declaring executable if the type reference is a local class; null in other cases.
-	 */
-	CtExecutableReference<?> getDeclaringExecutable();
-
-	/**
 	 * Gets the package of the referenced type.
 	 *
 	 * @return the declaring package or null if this if a inner class
@@ -92,12 +85,6 @@ public interface CtTypeReference<T>
 	 * referenced type is not a inner type.
 	 */
 	<C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> type);
-
-	/**
-	 * Sets the reference to the declaring executable. Should be set to null if
-	 * the referenced type is not a local type.
-	 */
-	<C extends CtTypeReference<T>> C setDeclaringExecutable(CtExecutableReference<?> declaringExecutable);
 
 	/**
 	 * Sets the reference to the declaring package.

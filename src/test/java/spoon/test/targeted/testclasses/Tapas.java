@@ -33,7 +33,6 @@ public class Tapas<T> {
 				public InnerSubscriber(int index) {
 					this.index = index;
 				}
-
 			}
 		};
 	}
