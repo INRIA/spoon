@@ -32,6 +32,7 @@ import spoon.test.targeted.testclasses.Foo;
 import spoon.test.targeted.testclasses.InternalSuperCall;
 import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
+import spoon.test.targeted.testclasses.Tapas;
 
 import java.util.List;
 
@@ -40,6 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.test.TestUtils.build;
+import static spoon.test.TestUtils.buildClass;
 
 public class TargetedExpressionTest {
 	@Test
@@ -77,8 +79,8 @@ public class TargetedExpressionTest {
 				"spoon.test.targeted.testclasses.InnerClassThisAccess.this.method()",
 				meth1.getBody().getStatements().get(0).toString());
 
-		CtClass<?> c = type.getElements(new NameFilter<CtClass<?>>("InnerClass")).get(0);
-		assertEquals("InnerClass", c.getSimpleName());
+		CtClass<?> c = type.getElements(new NameFilter<CtClass<?>>("1InnerClass")).get(0);
+		assertEquals("1InnerClass", c.getSimpleName());
 		CtConstructor<?> ctr = c.getConstructor(type.getFactory().Type().createReference(boolean.class));
 		assertEquals("this.b = b", ctr.getBody().getLastStatement().toString());
 	}
@@ -190,9 +192,8 @@ public class TargetedExpressionTest {
 		final CtTypeReference<SuperClass> expectedSuperClassType = factory.Class().<SuperClass>get(SuperClass.class).getReference();
 		final CtType<InnerClass> innerClass = type.getNestedType("InnerClass");
 		final CtTypeReference<InnerClass> expectedInnerClass = innerClass.getReference();
-		final CtType<?> nestedTypeScanner = type.getNestedType("NestedTypeScanner");
+		final CtType<?> nestedTypeScanner = type.getNestedType("1NestedTypeScanner");
 		final CtTypeReference<?> expectedNested = nestedTypeScanner.getReference();
-		expectedNested.<CtTypeReference>setDeclaringType(null);
 
 		final CtTypeAccess<Foo> fooTypeAccess = factory.Code().createTypeAccess(expectedType);
 		final CtThisAccess<Foo> expectedThisAccess = factory.Core().createThisAccess();
@@ -350,9 +351,8 @@ public class TargetedExpressionTest {
 		final CtTypeReference<SuperClass> expectedSuperClassType = factory.Class().<SuperClass>get(SuperClass.class).getReference();
 		final CtType<InnerClass> innerClass = type.getNestedType("InnerClass");
 		final CtTypeReference<InnerClass> expectedInnerClass = innerClass.getReference();
-		final CtType<?> nestedTypeScanner = type.getNestedType("NestedTypeScanner");
+		final CtType<?> nestedTypeScanner = type.getNestedType("1NestedTypeScanner");
 		final CtTypeReference<?> expectedNested = nestedTypeScanner.getReference();
-		expectedNested.<CtTypeReference>setDeclaringType(null);
 
 		final CtTypeAccess<Foo> fooTypeAccess = factory.Code().createTypeAccess(expectedType);
 		final CtThisAccess<Foo> expectedThisAccess = factory.Core().createThisAccess();
@@ -456,6 +456,28 @@ public class TargetedExpressionTest {
 		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, elements.size());
 		assertFieldAccess(new Expected().declaringType(expectedFoo).target(exepectedThisAccess).result("this.bar"), elements.get(0));
+	}
+
+	@Test
+	public void testClassDeclaredInALambda() throws Exception {
+		// contract: A class can be declared in a lambda expression where we use final fields.
+		final CtType<Tapas> type = buildClass(Tapas.class);
+		final List<CtFieldAccess<?>> elements = type.getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(3, elements.size());
+
+		final CtThisAccess<Object> exepectedThisAccess = type.getFactory().Core().createThisAccess();
+
+		final CtTypeReference<Object> firstExpected = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$1$InnerSubscriber");
+		exepectedThisAccess.setType(firstExpected);
+		assertFieldAccess(new Expected().declaringType(firstExpected).target(exepectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index"), elements.get(0));
+
+		final CtTypeReference<Object> secondExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$3InnerSubscriber");
+		exepectedThisAccess.setType(secondExpectedInner);
+		assertFieldAccess(new Expected().declaringType(secondExpectedInner).target(exepectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index"), elements.get(1));
+
+		final CtTypeReference<Object> thirdExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$4InnerSubscriber");
+		exepectedThisAccess.setType(thirdExpectedInner);
+		assertFieldAccess(new Expected().declaringType(thirdExpectedInner).target(exepectedThisAccess).type(CtFieldWrite.class).result("this.index"), elements.get(2));
 	}
 
 	private void assertFieldAccess(Expected expected, CtFieldAccess<?> fieldAccess) {

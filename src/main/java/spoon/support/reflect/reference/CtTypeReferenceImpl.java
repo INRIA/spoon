@@ -17,7 +17,6 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
-import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
@@ -32,7 +31,6 @@ import spoon.reflect.reference.CtTypeAnnotableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
@@ -47,6 +45,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -157,23 +157,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaration() {
-		if (!isPrimitive() && !isAnonymous()) {
-			return (CtType<T>) getFactory().Type().get(getQualifiedName());
-		}
-		if (!isPrimitive() && isAnonymous()) {
-			final CtType<?> rootType = getFactory().Type().get(getDeclaringType().getQualifiedName());
-			final List<CtNewClass<T>> elements = rootType.getElements(new AbstractFilter<CtNewClass<T>>(CtNewClass.class) {
-				@Override
-				public boolean matches(CtNewClass<T> element) {
-					return getQualifiedName().equals(element.getAnonymousClass().getQualifiedName());
-				}
-			});
-			if (elements.size()  == 0) {
-				return null;
-			}
-			return (CtType<T>) elements.get(0).getAnonymousClass();
-		}
-		return null;
+		return getFactory().Type().get(getQualifiedName());
 	}
 
 	@Override
@@ -476,6 +460,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean isEnclosingType() {
+		final Pattern pattern = Pattern.compile("^([0-9]+)([a-zA-Z]+)$");
+		final Matcher m = pattern.matcher(getSimpleName());
+		return m.find();
 	}
 
 	@Override

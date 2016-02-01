@@ -16,12 +16,12 @@
  */
 package spoon.reflect.declaration;
 
-import java.util.Collection;
-import java.util.Set;
-
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Returns information that can be obtained both at compile-time and run-time
@@ -58,6 +58,11 @@ public interface CtTypeInformation {
 	 * Return {@code true} if the referenced type is a anonymous type
 	 */
 	boolean isAnonymous();
+
+	/**
+	 * Return {@code true} if the referenced type is declared in a executable.
+	 */
+	boolean isEnclosingType();
 
 	/**
 	 * Returns true if this type is an interface.

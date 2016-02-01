@@ -17,6 +17,7 @@
 package spoon.reflect.factory;
 
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -24,8 +25,6 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
@@ -187,6 +186,19 @@ public class TypeFactory extends SubFactory {
 				return null;
 			}
 			String className = qualifiedName.substring(inertTypeIndex + 1);
+			final CtTypeReference<T> reference = t.getReference();
+			if (reference.isEnclosingType()) {
+				final List<CtClass<T>> enclosingClasses = t.getElements(new TypeFilter<CtClass<T>>(CtClass.class) {
+					@Override
+					public boolean matches(CtClass<T> element) {
+						return super.matches(element) && element.getQualifiedName().equals(qualifiedName);
+					}
+				});
+				if (enclosingClasses.size() == 0) {
+					return null;
+				}
+				return enclosingClasses.get(0);
+			}
 			try {
 				// If the class name can't be parsed in integer, the method throws an exception.
 				// If the class name is an integer, the class is an anonymous class, otherwise,
@@ -216,14 +228,7 @@ public class TypeFactory extends SubFactory {
 		}
 
 		if (pack == null) {
-			// The fully qualified name doesn't contain always the package. i.e. a class
-			// declared in a method. In this case, try to get the class from its name
-			// in the AST contained in the factory.
-			final List<CtType<T>> elements = Query.getElements(factory, new NameFilter<CtType<T>>(qualifiedName));
-			if (elements.size() == 0) {
-				return null;
-			}
-			return elements.get(0);
+			return null;
 		}
 
 		return (CtType<T>) pack.getType(qualifiedName.substring(packageIndex + 1));

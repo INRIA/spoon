@@ -781,7 +781,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		SortedList<CtElement> lst = new SortedList<CtElement>(new CtLineElementComparator());
 		if (ctClass.getSimpleName() != null && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
-			write("class " + ctClass.getSimpleName());
+			if (ctClass.isEnclosingType()) {
+				write("class " + ctClass.getSimpleName().replaceAll("^[0-9]*", ""));
+			} else {
+				write("class " + ctClass.getSimpleName());
+			}
 
 			writeFormalTypeParameters(ctClass.getFormalTypeParameters());
 
@@ -1043,7 +1047,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				&& !tryToInitializeFinalFieldInConstructor(thisAccess)
 				&& !thisAccess.isImplicit()) {
 			final CtTypeReference accessedType = ((CtTypeAccess) thisAccess.getTarget()).getAccessedType();
-			if (!accessedType.isAnonymous()) {
+			if (accessedType.isEnclosingType()) {
+				write(accessedType.getSimpleName().replaceAll("^[0-9]*", "") + ".");
+			} else if (!accessedType.isAnonymous()) {
 				visitCtTypeReferenceWithoutGenerics(accessedType);
 				write(".");
 			}
@@ -1931,11 +1937,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
-				if (!context.ignoreEnclosingClass) {
+				if (!context.ignoreEnclosingClass && !ref.isEnclosingType()) {
 					scan(ref.getDeclaringType());
 					write(".");
 				}
-				write(ref.getSimpleName());
+				if (ref.isEnclosingType()) {
+					write(ref.getSimpleName().replaceAll("^[0-9]*", ""));
+				} else {
+					write(ref.getSimpleName());
+				}
 			} else {
 				write(ref.getQualifiedName());
 			}
@@ -1964,7 +1974,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public void visitCtTypeReferenceWithoutGenerics(CtTypeReference<?> ref) {
 		if (ref.getDeclaringType() != null) {
-			if (!context.ignoreEnclosingClass) {
+			if (!context.ignoreEnclosingClass && !ref.getDeclaringType().isAnonymous()) {
 				visitCtTypeReferenceWithoutGenerics(ref.getDeclaringType());
 				write(".");
 			}
