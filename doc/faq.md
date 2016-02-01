@@ -67,3 +67,17 @@ if(t.getActualClass()==int.class) { ... }
 Factory f=...
 t=f.Type().createReference(int.class);
 ```
+
+## How to parametrized the JDT compiler arguments?
+
+`SpoonModelBuilder` exposes a method named `build(JDTBuilder)`. This method compiles the target source code with data specified in the JDTBuilder parameter.
+
+```java
+final String[] builder = new JDTBuilderImpl() //
+		.classpathOptions(new ClasspathOptions().classpath(TEST_CLASSPATH).bootclasspath(TEST_CLASSPATH).binaries(".").encoding("UTF-8")) //
+		.complianceOptions(new ComplianceOptions().compliance(8)) //
+		.annotationProcessingOptions(new AnnotationProcessingOptions().compileProcessors()) //
+		.advancedOptions(new AdvancedOptions().continueExecution().enableJavadoc().preserveUnusedVars()) //
+		.sources(new SourceOptions().sources(".")) //
+		.build();
+```
