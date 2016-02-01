@@ -44,7 +44,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
@@ -149,6 +151,8 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	String docComment;
 
 	SourcePosition position;
+
+	Map<String, Object> metadata = new HashMap<String, Object>();
 
 	public CtElementImpl() {
 		super();
@@ -441,5 +445,21 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	private boolean compare(Object o1, Object o2) {
 		return o1 == o2;
+	}
+
+	@Override
+	public <E extends CtElement> E putMetadata(String key, Object val) {
+		metadata.put(key, val);
+		return (E) this;
+	}
+
+	@Override
+	public Object getMetadata(String key) {
+		return metadata.get(key);
+	}
+
+	@Override
+	public Set<String> getMetadataKeys() {
+		return metadata.keySet();
 	}
 }

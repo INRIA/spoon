@@ -5,20 +5,20 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.util.List;
+
 import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -26,9 +26,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.test.TestUtils;
-
-import java.io.File;
-import java.util.List;
 
 public class IntercessionTest {
 	Factory factory = TestUtils.createFactory();

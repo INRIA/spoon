@@ -233,4 +233,19 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * Deletes the element. For instance, delete a statement from its containing block. Warning: it may result in an incorrect AST, use at your own risk.
 	 */
 	void delete();
+
+	/*
+	 * Saves metadata inside an Element.
+	 */
+	<E extends CtElement> E putMetadata(String key, Object val);
+
+	/*
+	 * Retrieves metadata stored in an element. Returns null if it does not exist.
+	 */
+	Object getMetadata(String key);
+
+	/*
+	 * Returns the metadata keys stored in an element.
+	 */
+	Set<String> getMetadataKeys();
 }
