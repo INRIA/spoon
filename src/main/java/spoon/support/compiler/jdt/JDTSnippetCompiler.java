@@ -16,20 +16,22 @@
  */
 package spoon.support.compiler.jdt;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-
 import spoon.SpoonException;
 import spoon.compiler.Environment;
+import spoon.compiler.builder.AdvancedOptions;
+import spoon.compiler.builder.ClasspathOptions;
+import spoon.compiler.builder.ComplianceOptions;
+import spoon.compiler.builder.JDTBuilder;
+import spoon.compiler.builder.JDTBuilderImpl;
+import spoon.compiler.builder.SourceOptions;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.VirtualFile;
+
+import java.io.File;
+import java.util.Arrays;
 
 public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
@@ -40,6 +42,11 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	@Override
 	public boolean build() {
+		return build(null);
+	}
+
+	@Override
+	public boolean build(JDTBuilder builder) {
 		if (factory == null) {
 			throw new SpoonException("Factory not initialized");
 		}
@@ -48,72 +55,40 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		factory.getEnvironment().debugMessage("compiling sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
-		srcSuccess = buildSources();
+		srcSuccess = buildSources(builder);
 		reportProblems(factory.getEnvironment());
 		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
-		t = System.currentTimeMillis();
 		return srcSuccess;
 	}
 
 	@Override
-	protected boolean buildSources() {
+	protected boolean buildSources(JDTBuilder jdtBuilder) {
 		if (sources.getAllJavaFiles().isEmpty()) {
 			return true;
 		}
-		// long t=System.currentTimeMillis();
-		// Build input
 		JDTBatchCompiler batchCompiler = createBatchCompiler();
-		List<String> args = new ArrayList<String>();
-		args.add("-1." + javaCompliance);
-		if (encoding != null) {
-			args.add("-encoding");
-			args.add(encoding);
-		}
-		args.add("-preserveAllLocals");
-		args.add("-enableJavadoc");
-		args.add("-noExit");
-		// args.add("-d");
-		// args.add("none");
 
-		if (getSourceClasspath() != null) {
-			args.add("-cp");
-			args.add(computeJdtClassPath());
+		File source = createTmpJavaFile(new File("."));
+		String[] args;
+		if (jdtBuilder == null) {
+			args = new JDTBuilderImpl() //
+					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(getSourceClasspath())) //
+					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
+					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
+					.sources(new SourceOptions().sources(source.getPath())) //
+					.build();
 		} else {
-			ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-			if (currentClassLoader instanceof URLClassLoader) {
-				URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
-				if (urls != null && urls.length > 0) {
-					String classpath = ".";
-					for (URL url : urls) {
-						classpath += File.pathSeparator + url.getFile();
-					}
-					if (classpath != null) {
-						args.add("-cp");
-						args.add(classpath);
-					}
-				}
-			}
+			args = jdtBuilder.build();
 		}
-		// args.add("-nowarn");
-		// Set<String> paths = new HashSet<String>();
-		// for (SpoonFile file : sources.getAllJavaFiles()) {
-		// // We can not use file.getPath() because of in-memory code or files
-		// // within archives
-		// paths.add(file.getParent().getPath());
-		// }
-		// args.addAll(paths);
-		// args.addAll(sources.getRootJavaPaths());
 
-		File f = createTmpJavaFile(new File("."));
-		args.add(f.getPath());
-		getFactory().getEnvironment().debugMessage("build args: " + args);
+		getFactory().getEnvironment().debugMessage("build args: " + Arrays.toString(args));
 
-		batchCompiler.configure(args.toArray(new String[0]));
+		batchCompiler.configure(args);
 
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources.getAllJavaFiles());
 
-		if (f != null && f.exists()) {
-			f.delete();
+		if (source.exists()) {
+			source.delete();
 		}
 
 		// here we build the model
@@ -128,7 +103,5 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 	@Override
 	protected void report(Environment environment, CategorizedProblem problem) {
 		throw new SnippetCompilationError(problem.getMessage() + "at line " + problem.getSourceLineNumber());
-
 	}
-
 }

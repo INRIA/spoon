@@ -3,15 +3,14 @@ package spoon.support.compiler.classpath;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
+import spoon.compiler.builder.ClasspathOptions;
+import spoon.reflect.factory.Factory;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
-import spoon.reflect.factory.Factory;
-import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 public class ComputeClasspathTest {
 
@@ -48,32 +47,8 @@ public class ComputeClasspathTest {
 	}
 
 	@Test
-	public void testTemplateClasspath()
-			throws NoSuchMethodException, InvocationTargetException,
-			IllegalAccessException {
-
-		// load protected method which computes the template classpath
-		Method method = this.compilerClass
-				.getDeclaredMethod("computeTemplateClasspath");
-		method.setAccessible(true);
-
-		this.compiler.setTemplateClasspath(this.systemClasspath);
-
-		Assert.assertEquals(TEST_CLASSPATH, method.invoke(this.compiler));
-	}
-
-	@Test
-	public void testSourceClasspath()
-			throws NoSuchMethodException, InvocationTargetException,
-			IllegalAccessException {
-
-		// load protected method which computes the source classpath
-		Method method = this.compilerClass
-				.getDeclaredMethod("computeJdtClassPath");
-		method.setAccessible(true);
-
-		this.compiler.setSourceClasspath(this.systemClasspath);
-
-		Assert.assertEquals(TEST_CLASSPATH, method.invoke(this.compiler));
+	public void testSourceClasspath() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		final ClasspathOptions options = new ClasspathOptions().classpath(systemClasspath);
+		Assert.assertEquals("-cp " + TEST_CLASSPATH, String.join(" ", options.build()));
 	}
 }
