@@ -345,6 +345,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public boolean isLocalType() {
+		return getReference().isLocalType();
+	}
+
+	@Override
 	public CtTypeReference<?> getSuperclass() {
 		// overridden in CtClassImpl
 		return null;

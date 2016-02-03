@@ -4,7 +4,9 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -16,9 +18,14 @@ import spoon.support.template.Parameters;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 
+import java.io.File;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TemplateTest {
 
@@ -199,7 +206,7 @@ public class TemplateTest {
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
 		}
-		
+
 		{// testing matcher5
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
@@ -217,4 +224,28 @@ public class TemplateTest {
 		}
 	}
 
+	@Test
+	public void testExtensionBlock() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/template/Logger.java");
+		launcher.addInputResource("./src/test/java/spoon/test/template/LoggerTemplate.java");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.addProcessor(new LoggerTemplateProcessor());
+		launcher.getEnvironment().setSourceClasspath(System.getProperty("java.class.path").split(File.pathSeparator));
+		try {
+			launcher.run();
+		} catch (ClassCastException ignored) {
+			fail();
+		}
+
+		final CtClass<Logger> aLogger = launcher.getFactory().Class().get(Logger.class);
+		final CtMethod aMethod = aLogger.getMethodsByName("enter").get(0);
+		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
+		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
+		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatements().size() > 1);
+	}
 }

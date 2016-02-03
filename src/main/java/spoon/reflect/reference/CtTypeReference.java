@@ -34,6 +34,14 @@ public interface CtTypeReference<T>
 	String NULL_TYPE_NAME = "<nulltype>";
 
 	/**
+	 * Returns the simple (unqualified) name of this element.
+	 * Following the compilation convention, if the type is a local type,
+	 * the name starts with a numeric prefix (e.g. local class Foo has simple name 1Foo).
+	 */
+	@Override
+	String getSimpleName();
+
+	/**
 	 * Gets the Java runtime class of the referenced type.
 	 *
 	 * @return the Java class or null if the class is not found (not in
