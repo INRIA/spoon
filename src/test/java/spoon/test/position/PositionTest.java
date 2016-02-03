@@ -7,11 +7,11 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
 import spoon.test.position.testclasses.FooClazz;
 import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,12 +21,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.*;
 
 public class PositionTest {
 
 	@Test
 	public void testPositionClass() throws Exception {
-		final Factory build = TestUtils.build(FooClazz.class);
+		final Factory build = build(FooClazz.class);
 		final CtType<FooClazz> foo = build.Type().get(FooClazz.class);
 		String classContent = getClassContent(foo);
 
@@ -45,7 +46,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionField() throws Exception {
-		final Factory build = TestUtils.build(FooField.class);
+		final Factory build = build(FooField.class);
 		final CtType<FooField> foo = build.Type().get(FooField.class);
 		String classContent = getClassContent(foo);
 
@@ -73,7 +74,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionMethod() throws Exception {
-		final Factory build = TestUtils.build(FooMethod.class);
+		final Factory build = build(FooMethod.class);
 		final CtType<FooMethod> foo = build.Type().get(FooMethod.class);
 		String classContent = getClassContent(foo);
 
@@ -118,7 +119,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionStatement() throws Exception {
-		final Factory build = TestUtils.build(FooStatement.class);
+		final Factory build = build(FooStatement.class);
 		final CtType<FooStatement> foo = build.Type().get(FooStatement.class);
 		String classContent = getClassContent(foo);
 

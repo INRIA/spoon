@@ -1,7 +1,7 @@
 package spoon.test.eval;
 
 import static org.junit.Assert.assertEquals;
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
 
 import org.junit.Test;
 
@@ -14,14 +14,14 @@ public class EvalTest {
 	public void testStringConcatenation() throws Exception {
 		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
-		
+
 		CtBlock<?> b = type.getMethodsByName("testStrings").get(0).getBody();
 		assertEquals(4, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		b = type.getMethodsByName("testInts").get(0).getBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals(0, b.getStatements().size());		
+		assertEquals(0, b.getStatements().size());
 	}
 
 

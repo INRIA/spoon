@@ -22,7 +22,6 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.fieldaccesses.testclasses.Panini;
 
 import java.util.List;
@@ -32,7 +31,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class FieldAccessTest {
 
@@ -162,7 +162,7 @@ public class FieldAccessTest {
 	public void testFieldAccessInLambda() throws Exception {
 		Factory build = null;
 		try {
-			build = TestUtils.build(MyClass.class);
+			build = build(MyClass.class);
 		} catch (NullPointerException ignore) {
 			fail();
 		}
@@ -179,7 +179,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testFieldAccessInAnonymousClass() throws Exception {
-		final Factory factory = TestUtils.build(Panini.class);
+		final Factory factory = build(Panini.class);
 		final CtType<Panini> panini = factory.Type().get(Panini.class);
 
 		final CtFieldRead fieldInAnonymous = panini.getElements(new TypeFilter<>(CtFieldRead.class)).get(0);
@@ -222,7 +222,7 @@ public class FieldAccessTest {
 	@Test
 	public void testIncrementationOnAVarIsAUnaryOperator() throws Exception {
 		// contract: When we use var++, the variable is a read access with an unary operator.
-		final CtType<Panini> aMole = TestUtils.buildClass(Panini.class);
+		final CtType<Panini> aMole = buildClass(Panini.class);
 		final CtMethod<?> make = aMole.getMethodsByName("make").get(0);
 		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
 
@@ -245,7 +245,7 @@ public class FieldAccessTest {
 	@Test
 	public void testFieldWriteWithPlusEqualsOperation() throws Exception {
 		// contract: When we use var += value, the var is a write access.
-		final CtType<Panini> aPanini = TestUtils.buildClass(Panini.class);
+		final CtType<Panini> aPanini = buildClass(Panini.class);
 		final CtMethod<?> prepare = aPanini.getMethodsByName("prepare").get(0);
 
 		final List<CtFieldWrite<?>> fields = prepare.getElements(new TypeFilter<>(CtFieldWrite.class));

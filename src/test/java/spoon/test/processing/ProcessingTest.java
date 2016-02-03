@@ -12,7 +12,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class ProcessingTest {
 

@@ -7,7 +7,6 @@ import spoon.SpoonAPI;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -16,7 +15,6 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.visibility.testclasses.A;
 import spoon.test.visibility.testclasses.A2;
 
@@ -25,7 +23,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class VisibilityTest {
     @Test
@@ -66,7 +65,7 @@ public class VisibilityTest {
 		assertNotNull(aFloat);
 		assertEquals(spoon.test.visibility.testclasses.Float.class, aFloat.getActualClass());
 
-		TestUtils.canBeBuilt(new File("./target/spooned/spoon/test/visibility_package/testclasses/"), 7);
+		canBeBuilt(new File("./target/spooned/spoon/test/visibility_package/testclasses/"), 7);
 	}
 
 	@Test
@@ -111,7 +110,7 @@ public class VisibilityTest {
 		returnType = secondClass.getMethodsByName("returnType2").get(0);
 		assertEquals("spoon.test.visibility.testclasses.Foo<java.lang.String>.Bar<java.lang.String>", returnType.getType().toString());
 
-		TestUtils.canBeBuilt(target, 8);
+		canBeBuilt(target, 8);
 	}
 
 	@Test

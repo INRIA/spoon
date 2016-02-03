@@ -1,16 +1,15 @@
 package spoon.test.strings;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static spoon.test.TestUtils.build;
-
 import org.junit.Test;
-
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class StringTest {
 

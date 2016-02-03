@@ -1,13 +1,6 @@
 package spoon.test.prettyprinter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
@@ -21,8 +14,14 @@ import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.prettyprinter.testclasses.AClass;
+
+import java.io.File;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class DefaultPrettyPrinterTest {
 	private static final String nl = System.lineSeparator();
@@ -155,7 +154,7 @@ public class DefaultPrettyPrinterTest {
 
 	@Test
 	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() throws Exception {
-		Factory factory = TestUtils.build( spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.class, spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class );
+		Factory factory = build( spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.class, spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class );
 		factory.getEnvironment().setAutoImports(true);
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get( spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class );
@@ -223,7 +222,7 @@ public class DefaultPrettyPrinterTest {
 
 	@Test
 	public void useFullyQualifiedNamesInCtElementImpl_toString() throws Exception {
-		Factory factory = TestUtils.build( AClass.class );
+		Factory factory = build( AClass.class );
 		factory.getEnvironment().setAutoImports(false);
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get( AClass.class );

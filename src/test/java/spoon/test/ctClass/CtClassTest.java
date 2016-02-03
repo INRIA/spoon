@@ -8,7 +8,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.test.TestUtils;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 
@@ -17,14 +16,16 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static spoon.test.TestUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class CtClassTest {
 
-	@Test
-	public void getConstructor() throws Exception {
-		final Factory build = TestUtils.build(Foo.class);
-		final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
+    @Test
+    public void getConstructor() throws Exception {
+        final Factory build = build(Foo.class);
+        final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
 
 		assertEquals(3, foo.getConstructors().size());
 
@@ -66,7 +67,7 @@ public class CtClassTest {
 		assertEquals("daikon.FileIO$Processor", staticClass.getSuperclass().getQualifiedName());
 		assertNull(aClass.getSuperclass());
 
-		TestUtils.canBeBuilt("./target/class", 8, true);
+		canBeBuilt("./target/class", 8, true);
 	}
 
 	@Test
@@ -84,7 +85,7 @@ public class CtClassTest {
 		final CtType<?> innerClass = aClass.getNestedType("ClickScrollerAndDragTransferrer");
 		assertEquals("org.eclipse.draw2d.MouseMotionListener$Stub", innerClass.getSuperclass().getQualifiedName());
 
-		TestUtils.canBeBuilt("./target/draw2d", 8, true);
+		canBeBuilt("./target/draw2d", 8, true);
 	}
 
 	@Test

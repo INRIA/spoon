@@ -17,7 +17,7 @@ import spoon.test.targeted.testclasses.SuperClass;
 import java.util.HashSet;
 import java.util.Set;
 
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class FieldFactoryTest {
 

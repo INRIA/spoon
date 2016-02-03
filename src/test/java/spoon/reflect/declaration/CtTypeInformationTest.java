@@ -9,19 +9,19 @@ import spoon.reflect.declaration.testclasses.Subinterface;
 import spoon.reflect.declaration.testclasses.TestInterface;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.test.TestUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class CtTypeInformationTest {
 	private Factory factory;
 
 	@Before
 	public void setUp() throws Exception {
-		factory = TestUtils.build(ExtendsObject.class, Subclass.class, Subinterface.class, TestInterface.class);
+		factory = build(ExtendsObject.class, Subclass.class, Subinterface.class, TestInterface.class);
 	}
 
 	@Test

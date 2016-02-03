@@ -11,7 +11,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.constructorcallnewclass.testclasses.Bar;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Foo2;
@@ -23,13 +22,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.*;
 
 public class NewClassTest {
 	private List<CtNewClass<?>> newClasses;
 
 	@Before
 	public void setUp() throws Exception {
-		final Factory build = TestUtils.build(Foo.class);
+		final Factory build = build(Foo.class);
 		final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
 		newClasses = foo.getElements(new AbstractFilter<CtNewClass<?>>(CtNewClass.class) {
 			@Override
@@ -85,7 +85,7 @@ public class NewClassTest {
 	public void testNewClassInEnumeration() throws Exception {
 		Factory factory = null;
 		try {
-			factory = TestUtils.build(Bar.class);
+			factory = build(Bar.class);
 		} catch (NullPointerException e) {
 			fail();
 		}
@@ -130,7 +130,7 @@ public class NewClassTest {
 
 	@Test
 	public void testMoreThan9NewClass() throws Exception {
-		final Factory build = TestUtils.build(Foo2.class);
+		final Factory build = build(Foo2.class);
 		final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo2.class);
 		List<CtNewClass<?>> elements = foo.getElements(new AbstractFilter<CtNewClass<?>>(CtNewClass.class) {
 			@Override
@@ -164,6 +164,6 @@ public class NewClassTest {
 		assertNull(anonymousClass.getSimpleName()); // In noclasspath, we don't have this information.
 		assertEquals(1, anonymousClass.getMethods().size());
 
-		TestUtils.canBeBuilt("./target/new-class", 8, true);
+		canBeBuilt("./target/new-class", 8, true);
 	}
 }

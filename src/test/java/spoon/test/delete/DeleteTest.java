@@ -10,12 +10,12 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.delete.testclasses.Adobada;
 
 import java.lang.annotation.Annotation;
@@ -25,11 +25,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class DeleteTest {
 	@Test
 	public void testDeleteAStatementInAnonymousExecutable() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final List<CtAnonymousExecutable> anonymousExecutables = adobada.getAnonymousExecutables();
@@ -46,7 +47,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteAStatementInStaticAnonymousExecutable() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final List<CtAnonymousExecutable> anonymousExecutables = adobada.getAnonymousExecutables();
@@ -63,7 +64,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteAStatementInConstructor() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtConstructor<Adobada> constructor = adobada.getConstructor();
@@ -79,7 +80,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteAStatementInMethod() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m");
@@ -95,7 +96,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteReturn() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m2");
@@ -111,7 +112,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteStatementInCase() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m3");
@@ -128,7 +129,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteACaseOfASwitch() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m3");
@@ -145,7 +146,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteMethod() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);
@@ -160,7 +161,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteParameterOfMethod() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);
@@ -176,7 +177,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteBodyOfAMethod() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m");
@@ -190,7 +191,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteAnnotationOnAClass() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		assertEquals(1, adobada.getAnnotations().size());
@@ -204,7 +205,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteAClassTopLevel() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 		final CtPackage aPackage = adobada.getParent(CtPackage.class);
 
@@ -218,7 +219,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteConditionInACondition() throws Exception {
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);
@@ -233,8 +234,7 @@ public class DeleteTest {
 
 	@Test
 	public void testDeleteChainOfAssignment() throws Exception {
-
-		final Factory factory = TestUtils.build(Adobada.class);
+		final Factory factory = build(Adobada.class);
 		final CtClass<Adobada> adobada = factory.Class().get(Adobada.class);
 
 		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);

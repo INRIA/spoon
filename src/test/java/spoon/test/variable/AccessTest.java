@@ -21,7 +21,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.main.MainTest;
 import spoon.test.variable.testclasses.ArrayAccessSample;
 import spoon.test.variable.testclasses.FieldAccessSample;
@@ -33,11 +32,14 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class AccessTest {
 	@Test
 	public void testCanVisitVariableAccessAndSubClasses() throws Exception {
-		final Factory factory = TestUtils.build(VariableAccessSample.class);
+		final Factory factory = build(VariableAccessSample.class);
 
 		final List<CtVariableRead<?>> variablesRead =
 				Query.getElements(factory,
@@ -75,7 +77,7 @@ public class AccessTest {
 
 	@Test
 	public void testCanVisitFieldAccessAndSubClasses() throws Exception {
-		final Factory factory = TestUtils.build(FieldAccessSample.class);
+		final Factory factory = build(FieldAccessSample.class);
 
 		final List<CtFieldRead<?>> fieldsRead =
 				Query.getElements(factory,
@@ -113,7 +115,7 @@ public class AccessTest {
 
 	@Test
 	public void testCanVisitArrayAccessAndSubClasses() throws Exception {
-		final Factory factory = TestUtils.build(ArrayAccessSample.class);
+		final Factory factory = build(ArrayAccessSample.class);
 
 		final List<CtArrayRead<?>> arraysRead =
 				Query.getElements(factory,
@@ -153,14 +155,14 @@ public class AccessTest {
 
 	@Test
 	public void testStackedAssignments() throws Exception {
-		CtType<StackedAssignmentSample> type = TestUtils.buildClass(StackedAssignmentSample.class);
+		CtType<StackedAssignmentSample> type = buildClass(StackedAssignmentSample.class);
 		List<CtAssignment> l = type.getElements(new TypeFilter<>(CtAssignment.class));
 		assertEquals(3, l.size());
 	}
 
 	@Test
 	public void testRHS() throws Exception {
-		CtType<RHSSample> type = TestUtils.buildClass(RHSSample.class);
+		CtType<RHSSample> type = buildClass(RHSSample.class);
 		assertEquals(4,  type.getElements(new TypeFilter<>(CtRHSReceiver.class)).size());
 	}
 
@@ -200,7 +202,7 @@ public class AccessTest {
 	@Test
 	public void testAccessToStringOnPostIncrement() throws Exception {
 		// contract: a target to a post increment on a variable access write brackets.
-		Factory factory = TestUtils.createFactory();
+		Factory factory = createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement( //
 				"class X {" //
 						+ "public void foo() {" //

@@ -14,7 +14,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -22,6 +21,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ExecutableRefTest {
 
@@ -57,7 +58,7 @@ public class ExecutableRefTest {
 
 	@Test
 	public void testGetActualClassTest() throws Exception {
-		Factory factory = TestUtils.build(ExecutableRefTestSource.class, MyIntf.class);
+		Factory factory = build(ExecutableRefTestSource.class, MyIntf.class);
 
 		CtMethod<?> method = factory.Class().get(ExecutableRefTestSource.class).getMethod("myMethod");
 		CtExecutableReference<?> ref = method.getReference();
@@ -76,17 +77,17 @@ public class ExecutableRefTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.objectweb.carol.jndi.spi.CmiContext");
-		final List<CtConstructorCall> ctConstructorCalls = aClass.getElements(new TypeFilter<>(CtConstructorCall.class));
+		final List<CtConstructorCall> ctConstructorCalls = aClass.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class));
 
 		for (CtConstructorCall constructorCall : ctConstructorCalls) {
 			assertNotNull(constructorCall.getExecutable());
 		}
 
-		TestUtils.canBeBuilt("./target/executable", 8, true);
+		canBeBuilt("./target/executable", 8, true);
 	}
 
 	private CtAbstractInvocation<?> getInvocationFromMethod(String methodName) throws Exception {
-		Factory factory = TestUtils.build(ExecutableRefTestSource.class, MyIntf.class);
+		Factory factory = build(ExecutableRefTestSource.class, MyIntf.class);
 
 		CtClass<ExecutableRefTestSource> clazz = factory.Class().get(ExecutableRefTestSource.class);
 		Assert.assertNotNull(clazz);

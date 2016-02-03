@@ -19,7 +19,6 @@ import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitable;
-import spoon.test.TestUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,12 +29,13 @@ import java.util.Queue;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 // check that all setters of the metamodel call setParent
 @RunWith(Parameterized.class)
 public class ParentContractTest<T extends CtVisitable> {
 
-	private static Factory factory = TestUtils.createFactory();
+	private static Factory factory = createFactory();
 
 	@Parameterized.Parameters(name = "{0}")
 	public static Collection<Object[]> data() throws Exception {

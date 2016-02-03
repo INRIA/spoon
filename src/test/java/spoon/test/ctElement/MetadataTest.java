@@ -5,12 +5,12 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
 import spoon.test.ctElement.testclasses.Returner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class MetadataTest {
 
@@ -18,7 +18,7 @@ public class MetadataTest {
 	@Test
 	public void testMetadata() throws Exception {
 
-		final Factory factory = TestUtils.build(Returner.class);
+		final Factory factory = build(Returner.class);
 		final CtClass<Returner> returnerClass = factory.Class().get(Returner.class);
 		final CtMethod<?> staticMethod = returnerClass.getMethodsByName("get").get(0);
 		final CtReturn<Integer> ret = staticMethod.getBody().getLastStatement();

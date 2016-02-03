@@ -7,7 +7,7 @@ import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class VariableAccessTest {
 

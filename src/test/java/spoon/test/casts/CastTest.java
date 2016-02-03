@@ -4,20 +4,19 @@ import org.junit.Test;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
+import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class CastTest {
-	Factory factory = TestUtils.createFactory();
+	Factory factory = ModelUtils.createFactory();
 	@Test
 	public void testCast1() {
 		CtClass<?> clazz = factory

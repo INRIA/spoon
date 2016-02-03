@@ -2,6 +2,7 @@ package spoon.test.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +15,12 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
 
 public class BlockTest {
 
 	@Test
 	public void testIterationStatements() {
-		Factory factory = TestUtils.createFactory();
+		Factory factory = createFactory();
 		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
@@ -47,7 +47,7 @@ public class BlockTest {
 	public void testAddEmptyBlock() {
 		// specifies a bug found by Benoit Cornu on August 7 2014
 
-		Factory factory = TestUtils.createFactory();
+		Factory factory = createFactory();
 		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(

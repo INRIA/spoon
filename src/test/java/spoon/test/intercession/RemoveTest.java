@@ -1,6 +1,7 @@
 package spoon.test.intercession;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 import org.junit.Test;
 
@@ -9,13 +10,12 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
 
 public class RemoveTest {
 
 	  @Test
 	  public void testRemoveAllStatements() {
-		Factory factory = TestUtils.createFactory();
+		Factory factory = createFactory();
 	    CtClass<?> clazz = factory
 	        .Code()
 	        .createCodeSnippetStatement(
@@ -25,14 +25,14 @@ public class RemoveTest {
 	    CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
 	    CtBlock<?> body = foo.getBody();
-	    
+
 	    assertEquals(2,body.getStatements().size());
-	    
+
 	    for (CtStatement s : body) {
 	    	body.removeStatement(s);
 	    }
-	    
-	    assertEquals(0,body.getStatements().size());	    
-	  }	  
-	  
+
+	    assertEquals(0,body.getStatements().size());
+	  }
+
 }

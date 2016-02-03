@@ -1,16 +1,15 @@
 package spoon.test.limits.utils;
 
-import static org.junit.Assert.assertEquals;
-import static spoon.test.TestUtils.build;
-
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class InternalTest {
 

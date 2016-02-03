@@ -21,7 +21,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.reference.testclasses.EnumValue;
 
 import java.util.Collection;
@@ -34,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 /**
  * @author Lionel Seinturier
@@ -389,7 +389,7 @@ public class TypeReferenceTest {
 		assertEquals("a.foo().bar(b)", topInvocation.toString());
 
 		// Class concerned by this bug.
-		TestUtils.canBeBuilt("./src/test/resources/noclasspath/TestBot.java", 8, true);
+		canBeBuilt("./src/test/resources/noclasspath/TestBot.java", 8, true);
 	}
 
 	class A {

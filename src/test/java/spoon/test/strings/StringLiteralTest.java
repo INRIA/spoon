@@ -1,19 +1,18 @@
 package spoon.test.strings;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
-
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
+
+import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class StringLiteralTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void testSnippetFullClass() {
-		Factory factory = TestUtils.createFactory();
+		Factory factory = createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement(
 				"class StringValueUTF {\n" +
 				"	String f0 = \"toto\";\n" +

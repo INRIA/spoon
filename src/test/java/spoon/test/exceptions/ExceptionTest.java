@@ -1,18 +1,17 @@
 package spoon.test.exceptions;
 
-import static org.junit.Assert.fail;
-
-import java.io.FileNotFoundException;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
+
+import java.io.FileNotFoundException;
+
+import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class ExceptionTest {
 
@@ -53,7 +52,7 @@ public class ExceptionTest {
 	@Test
 	public void testExceptionInSnippet() {
 		try {
-			Factory factory = TestUtils.createFactory();
+			Factory factory = createFactory();
 			factory
 					.Code()
 					.createCodeSnippetStatement(
@@ -87,12 +86,12 @@ public class ExceptionTest {
 			// you're trying to give source code in the classpath, this should be accepted but causes a warn log entry
 		}
 	}
-	
+
 	@Test(expected=ModelBuildingException.class)
 	public void testExceptionDuplicateClass() throws Exception {
 			Launcher spoon = new Launcher();
 			Factory factory = spoon.createFactory();
-			
+
 			// contains twice the same class in the same package
 			// an exception should be thrown, even in noclasspath mode
 			spoon.createCompiler(

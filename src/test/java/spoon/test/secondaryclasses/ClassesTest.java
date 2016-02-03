@@ -25,8 +25,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static spoon.test.TestUtils.build;
-import static spoon.test.TestUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class ClassesTest {
 

@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.test.TestUtils.build;
-import static spoon.test.TestUtils.createFactory;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 import java.io.File;
 import java.util.List;
