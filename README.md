@@ -68,7 +68,7 @@ Stable version:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
 </dependency>
 ```
 
