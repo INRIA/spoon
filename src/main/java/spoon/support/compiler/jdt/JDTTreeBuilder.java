@@ -816,6 +816,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 					ref.setSimpleName(new String(binding.sourceName()));
 					if (((LocalTypeBinding) binding).enclosingMethod == null && binding.enclosingType() != null && binding.enclosingType() instanceof LocalTypeBinding) {
 						ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+					} else if (binding.enclosingMethod() != null) {
+						ref.setSimpleName(computeAnonymousName((SourceTypeBinding) binding));
+						ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 					}
 				}
 			} else if (binding instanceof SourceTypeBinding) {
@@ -1228,7 +1231,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		}
 		if (type instanceof CtClass) {
-			if (typeDeclaration.binding.isAnonymousType()) {
+			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
 				type.setSimpleName(computeAnonymousName(typeDeclaration.binding));
 			} else {
 				type.setSimpleName(new String(typeDeclaration.name));

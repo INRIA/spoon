@@ -16,12 +16,12 @@
  */
 package spoon.reflect.declaration;
 
-import java.util.Collection;
-import java.util.Set;
-
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Returns information that can be obtained both at compile-time and run-time
@@ -58,6 +58,27 @@ public interface CtTypeInformation {
 	 * Return {@code true} if the referenced type is a anonymous type
 	 */
 	boolean isAnonymous();
+
+	/**
+	 * Return {@code true} if the referenced type is declared in an executable.
+	 * e.g. a type declared in a method or a lambda.
+	 *
+	 * This corresponds to <code>isLocalClass</code> of <code>java.lang.Class</code>.
+	 *
+	 * <pre>
+	 *     // Type declared in a method.
+	 *     public void make() {
+	 *         class Cook {
+	 *         }
+	 *     }
+	 *     // Type declared in a lambda.
+	 *     s -&gt; {
+	 *         class Cook {
+	 *         }
+	 *     }
+	 * </pre>
+	 */
+	boolean isLocalType();
 
 	/**
 	 * Returns true if this type is an interface.
