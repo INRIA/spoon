@@ -78,6 +78,7 @@ import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtGenericElement;
@@ -551,6 +552,11 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+	}
+
+	@Override
+	public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
+		visitCtField(enumValue);
 	}
 
 	public <T> void visitCtThisAccess(CtThisAccess<T> e) {

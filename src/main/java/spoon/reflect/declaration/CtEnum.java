@@ -22,9 +22,43 @@ import java.util.List;
  * This element represents an enumeration declaration.
  */
 public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
+	/**
+	 * Adds an enum value.
+	 *
+	 * @param enumValue
+	 * 		An enum value.
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	<C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue);
+
+	/**
+	 * Removes en enum value.
+	 *
+	 * @param enumValue
+	 * 		An enum value.
+	 * @return <tt>true</tt> if this element changed as a result of the call
+	 */
+	boolean removeEnumValue(CtEnumValue<?> enumValue);
+
+	/**
+	 * Gets an enum value by its name.
+	 *
+	 * @param name
+	 * 		Name of the enum value.
+	 * @return An enum value.
+	 */
+	CtEnumValue<?> getEnumValue(String name);
+
+	/**
+	 * Gets all enum values of the enumeration.
+	 *
+	 * @return All enum values.
+	 */
+	List<CtEnumValue<?>> getEnumValues();
 
 	/**
 	 * Returns the set of predefined constant values of this enum
 	 */
+	@Deprecated
 	List<CtField<?>> getValues();
 }

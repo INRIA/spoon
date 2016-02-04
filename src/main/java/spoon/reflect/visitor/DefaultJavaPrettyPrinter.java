@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -113,7 +114,6 @@ import spoon.support.util.SortedList;
 import spoon.support.visitor.SignaturePrinter;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -879,30 +879,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		// write(";");
 	}
 
-	private void writeEnumField(CtField<?> f) {
-		visitCtNamedElement(f);
-		write(f.getSimpleName());
-		if (f.getDefaultExpression() != null) {
-			CtConstructorCall<?> constructorCall = (CtConstructorCall<?>) f.getDefaultExpression();
-			if (constructorCall.getArguments().size() > 0) {
-				write("(");
-				boolean first = true;
-				for (CtExpression<?> ctexpr : constructorCall.getArguments()) {
-					if (first) {
-						first = false;
-					} else {
-						write(",");
-					}
-					scan(ctexpr);
-				}
-				write(")");
-			}
-			if (constructorCall instanceof CtNewClass) {
-				scan(((CtNewClass<?>) constructorCall).getAnonymousClass());
-			}
-		}
-	}
-
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		visitCtType(ctEnum);
 		write("enum " + ctEnum.getSimpleName());
@@ -916,30 +892,24 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		context.currentThis.push(ctEnum.getReference());
 		write(" {").incTab().writeln();
-		List<CtField<?>> l1 = new ArrayList<CtField<?>>();
-		List<CtField<?>> l2 = new ArrayList<CtField<?>>();
-		if (ctEnum.getFields().size() == 0) {
+
+		if (ctEnum.getEnumValues().size() == 0) {
 			writeTabs().write(";").writeln();
 		} else {
-			for (CtField<?> ec : ctEnum.getFields()) {
-				if (ec.getType() == null) {
-					l1.add(ec);
-				} else {
-					l2.add(ec);
-				}
+			for (CtEnumValue<?> enumValue : ctEnum.getEnumValues()) {
+				scan(enumValue);
+				write(", ");
 			}
-			if (l1.size() > 0) {
-				for (CtField<?> ec : l1) {
-					writeEnumField(ec);
-					write(", ");
-				}
-				removeLastChar();
-				write(";");
-			}
-			for (CtField<?> ec : l2) {
-				writeln().writeTabs().scan(ec);
+			removeLastChar();
+			write(";");
+		}
+
+		for (CtField<?> field : ctEnum.getFields()) {
+			if (!(field instanceof CtEnumValue)) {
+				writeln().writeTabs().scan(field);
 			}
 		}
+
 		for (CtConstructor<?> c : ctEnum.getConstructors()) {
 			if (!c.isImplicit()) {
 				writeln().writeTabs().scan(c);
@@ -988,6 +958,31 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 		write(";");
+	}
+
+	@Override
+	public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
+		visitCtNamedElement(enumValue);
+		write(enumValue.getSimpleName());
+		if (enumValue.getDefaultExpression() != null) {
+			CtConstructorCall<?> constructorCall = (CtConstructorCall<?>) enumValue.getDefaultExpression();
+			if (constructorCall.getArguments().size() > 0) {
+				write("(");
+				boolean first = true;
+				for (CtExpression<?> ctexpr : constructorCall.getArguments()) {
+					if (first) {
+						first = false;
+					} else {
+						write(",");
+					}
+					scan(ctexpr);
+				}
+				write(")");
+			}
+			if (constructorCall instanceof CtNewClass) {
+				scan(((CtNewClass<?>) constructorCall).getAnonymousClass());
+			}
+		}
 	}
 
 	@Override

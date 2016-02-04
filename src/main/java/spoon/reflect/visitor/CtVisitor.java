@@ -70,6 +70,7 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -224,6 +225,11 @@ public interface CtVisitor {
 	 * Visits a field declaration.
 	 */
 	<T> void visitCtField(CtField<T> f);
+
+	/**
+	 * Visits an enum value declaration.
+	 */
+	<T> void visitCtEnumValue(CtEnumValue<T> enumValue);
 
 	/**
 	 * Visits a this access.

@@ -69,6 +69,7 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -214,6 +215,11 @@ public interface CoreFactory {
 	 * Creates a field.
 	 */
 	<T> CtField<T> createField();
+
+	/**
+	 * Creates an enum value.
+	 */
+	<T> CtEnumValue<T> createEnumValue();
 
 	/**
 	 * Creates a field read access.
@@ -463,5 +469,4 @@ public interface CoreFactory {
 	 * @return
 	 */
 	<T> CtAnnotationFieldAccess<T> createAnnotationFieldAccess();
-
 }

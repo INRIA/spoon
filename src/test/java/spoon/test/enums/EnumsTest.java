@@ -21,8 +21,8 @@ public class EnumsTest {
 		CtEnum<Regular> enumeration = build("spoon.test.enums", "Regular");
 		assertEquals("Regular", enumeration.getSimpleName());
 		assertEquals(3, Regular.values().length);
-		assertEquals(3, enumeration.getValues().size());
-		assertEquals("A", enumeration.getValues().get(0).getSimpleName());
+		assertEquals(3, enumeration.getEnumValues().size());
+		assertEquals("A", enumeration.getEnumValues().get(0).getSimpleName());
 		assertEquals(5, enumeration.getFields().size());
 	}
 
