@@ -547,6 +547,9 @@
                 <exclude>src/test/**</exclude>
                 <exclude>src/changes/**</exclude>
                 <exclude>src/site/**</exclude>
+                <exclude>target/**</exclude>
+                <exclude>bin/**</exclude>
+                <exclude>build/**</exclude>
               </excludes>
             </configuration>
             <executions>
