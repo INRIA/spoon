@@ -168,8 +168,8 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		if (!(o instanceof CtElement)) {
 			return false;
 		}
-		String current = getSignature();
-		String other = ((CtElement) o).getSignature();
+		String current = toString();
+		String other = ((CtElement) o).toString();
 		return current.equals(other);
 	}
 
