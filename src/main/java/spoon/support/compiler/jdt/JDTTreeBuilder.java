@@ -2358,11 +2358,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(FieldDeclaration fieldDeclaration, MethodScope scope) {
-		CtField<Object> field = factory.Core().createField();
-		field.setSimpleName(new String(fieldDeclaration.name));
+		CtField<Object> field;
 		if (fieldDeclaration.type != null) {
+			field = factory.Core().createField();
 			field.setType(references.getTypeReference(fieldDeclaration.type.resolvedType));
+		} else {
+			field = factory.Core().createEnumValue();
+			if (fieldDeclaration.binding != null) {
+				field.setType(references.getVariableReference(fieldDeclaration.binding).getType());
+			}
 		}
+		field.setSimpleName(new String(fieldDeclaration.name));
 		field.setModifiers(getModifiers(fieldDeclaration.modifiers));
 
 		field.setDocComment(getJavaDoc(fieldDeclaration.javadoc, scope.referenceCompilationUnit()));

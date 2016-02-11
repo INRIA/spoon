@@ -71,6 +71,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -143,6 +144,7 @@ import spoon.support.reflect.declaration.CtClassImpl;
 import spoon.support.reflect.declaration.CtConstructorImpl;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtEnumImpl;
+import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
@@ -387,6 +389,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public <T> CtField<T> createField() {
 		CtField<T> e = new CtFieldImpl<T>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtEnumValue<T> createEnumValue() {
+		CtEnumValue<T> e = new CtEnumValueImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

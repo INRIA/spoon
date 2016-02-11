@@ -16,20 +16,22 @@
  */
 package spoon.support.reflect.declaration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T>
-		implements CtEnum<T> {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
+
+	private List<CtEnumValue<?>> enumValues = CtElementImpl.<CtEnumValue<?>>emptyList();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -51,15 +53,54 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T>
 		return false;
 	}
 
+	@Override
+	public <C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue) {
+		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
+			enumValues = new ArrayList<CtEnumValue<?>>();
+		}
+		if (!enumValues.contains(enumValue)) {
+			enumValue.setParent(this);
+			enumValues.add(enumValue);
+		}
+
+		// enum value already exists.
+		return (C) this;
+	}
+
+	@Override
+	public boolean removeEnumValue(CtEnumValue<?> enumValue) {
+		return enumValues.remove(enumValue);
+	}
+
+	@Override
+	public CtEnumValue<?> getEnumValue(String name) {
+		for (CtEnumValue<?> enumValue : enumValues) {
+			if (enumValue.getSimpleName().equals(name)) {
+				return enumValue;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public List<CtEnumValue<?>> getEnumValues() {
+		return Collections.unmodifiableList(enumValues);
+	}
+
+	@Override
 	public List<CtField<?>> getValues() {
 		List<CtField<?>> result = new ArrayList<CtField<?>>();
-		for (CtField<?> field : getFields()) {
-			if (field.getType() == null // this is null for enum values
-					) {
-				result.add(field);
-			}
+		for (CtField<?> field : getEnumValues()) {
+			result.add(field);
 		}
 		return Collections.unmodifiableList(result);
 	}
 
+	@Override
+	public List<CtField<?>> getFields() {
+		List<CtField<?>> result = new ArrayList<CtField<?>>();
+		result.addAll(getEnumValues());
+		result.addAll(super.getFields());
+		return result;
+	}
 }

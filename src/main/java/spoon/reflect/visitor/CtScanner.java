@@ -72,6 +72,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -372,6 +373,15 @@ public abstract class CtScanner implements CtVisitor {
 		scan(f.getType());
 		scan(f.getDefaultExpression());
 		exit(f);
+	}
+
+	@Override
+	public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
+		enter(enumValue);
+		scan(enumValue.getAnnotations());
+		scan(enumValue.getType());
+		scan(enumValue.getDefaultExpression());
+		exit(enumValue);
 	}
 
 	@Override

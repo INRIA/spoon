@@ -58,6 +58,8 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtGenericElement;
@@ -134,6 +136,8 @@ public class ParentExiter extends CtInheritanceScanner {
 			}
 			type.addNestedType((CtType<?>) child);
 			return;
+		} else if (child instanceof CtEnumValue && type instanceof CtEnum) {
+			((CtEnum) type).addEnumValue((CtEnumValue) child);
 		} else if (child instanceof CtField) {
 			type.addField((CtField<?>) child);
 			return;

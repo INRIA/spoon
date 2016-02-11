@@ -72,6 +72,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -314,6 +315,11 @@ public class SignaturePrinter implements CtVisitor {
 	public <T> void visitCtField(CtField<T> f) {
 		scan(f.getType());
 		write(" ").write(f.getSimpleName());
+	}
+
+	@Override
+	public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
+		visitCtField(enumValue);
 	}
 
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {

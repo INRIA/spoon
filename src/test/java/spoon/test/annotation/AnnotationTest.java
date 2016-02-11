@@ -35,6 +35,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -296,7 +297,7 @@ public class AnnotationTest {
 		assertTrue(annotations.get(0).getAnnotatedElement().equals(enumeration));
 		assertEquals(CtAnnotatedElementType.TYPE, annotations.get(0).getAnnotatedElementType());
 
-		List<CtField<?>> fields = enumeration.getValues();
+		List<CtEnumValue<?>> fields = enumeration.getEnumValues();
 		assertEquals(3, fields.size());
 
 		annotations = fields.get(0).getAnnotations();

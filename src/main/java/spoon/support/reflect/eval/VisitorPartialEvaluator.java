@@ -75,6 +75,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -406,6 +407,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	public <T> void visitCtField(CtField<T> f) {
 		throw new RuntimeException("Unknow Element");
+	}
+
+	@Override
+	public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
+		throw new RuntimeException("Unknown Element");
 	}
 
 	@Override
