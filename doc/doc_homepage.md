@@ -25,6 +25,7 @@ Spoon is an open-source library that enables you to transform (see below) and an
 
 Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/spoon). :-)
 
+- February 12, 2016: Spoon 5.0.2 is released.
 - February 3, 2016: Spoon 5.0.1 is released.
 - January 25, 2016: Spoon 5.0.0 is released.
 - November 18, 2015: Spoon 4.4.1 is released.

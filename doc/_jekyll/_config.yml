@@ -18,8 +18,8 @@ include: [_jekyll]
 # variables
 
 sidebar_tagline: Spoon
-sidebar_version: version 5.0.1
-spoon_release: "5.0.1"
+sidebar_version: version 5.0.2
+spoon_release: "5.0.2"
 spoon_snapshot: "5.1.0-SNAPSHOT"
 
 exclude:
