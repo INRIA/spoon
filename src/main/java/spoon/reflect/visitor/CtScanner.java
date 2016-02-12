@@ -36,7 +36,6 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
@@ -61,7 +60,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -79,13 +77,13 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -719,16 +717,6 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	@Override
-	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
-		enter(variableAccess);
-		scan(variableAccess.getAnnotations());
-		scan(variableAccess.getType());
-		scan(variableAccess.getTypeCasts());
-		scan(variableAccess.getVariable());
-		exit(variableAccess);
-	}
-
-	@Override
 	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
 		enter(variableRead);
 		scan(variableRead.getAnnotations());
@@ -769,17 +757,6 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
 		enter(reference);
 		exit(reference);
-	}
-
-	@Override
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
-		enter(f);
-		scan(f.getAnnotations());
-		scan(f.getType());
-		scan(f.getTypeCasts());
-		scan(f.getTarget());
-		scan(f.getVariable());
-		exit(f);
 	}
 
 	@Override

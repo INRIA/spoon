@@ -415,11 +415,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	@Override
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-		visitFieldAccess(fieldAccess);
-	}
-
-	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 		visitFieldAccess(fieldRead);
 	}
@@ -767,11 +762,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			return;
 		}
 		setResult(operator.getFactory().Core().clone(operator));
-	}
-
-	@Override
-	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
-		visitVariableAccess(variableAccess);
 	}
 
 	@Override

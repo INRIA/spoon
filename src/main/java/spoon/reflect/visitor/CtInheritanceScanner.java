@@ -107,7 +107,6 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeAnnotableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
@@ -288,12 +287,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	/**
-	 * Scans a type annotation.
-	 */
-	public void scanCtTypeAnnotableReference(CtTypeAnnotableReference e) {
-	}
-
-	/**
 	 * Scans an abstract variable declaration.
 	 */
 	public <T> void scanCtVariable(CtVariable<T> v) {
@@ -316,13 +309,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans a variable access (read and write).
 	 */
 	public <T> void scanCtVariableAccess(CtVariableAccess<T> variableAccess) {
-	}
-
-	@Override
-	@Deprecated
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
-		visitCtVariableRead(f);
-		scanCtTargetedExpression(f);
 	}
 
 	@Override
@@ -390,17 +376,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypedElement(e);
 		scanCtTypeMember(e);
 		scanCtModifiable(e);
-		scanCtElement(e);
-		scanCtVisitable(e);
-	}
-
-	@Override
-	@Deprecated
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> e) {
-		scanCtTargetedExpression(e);
-		scanCtExpression(e);
-		scanCtCodeElement(e);
-		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
@@ -817,7 +792,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtReference(e);
 		scanCtTypeInformation(e);
 		scanCtGenericElementReference(e);
-		scanCtTypeAnnotableReference(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
@@ -844,16 +818,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> e) {
 		scanCtExpression(e);
 		scanCtStatement(e);
-		scanCtCodeElement(e);
-		scanCtTypedElement(e);
-		scanCtElement(e);
-		scanCtVisitable(e);
-	}
-
-	@Override
-	@Deprecated
-	public <T> void visitCtVariableAccess(CtVariableAccess<T> e) {
-		scanCtExpression(e);
 		scanCtCodeElement(e);
 		scanCtTypedElement(e);
 		scanCtElement(e);

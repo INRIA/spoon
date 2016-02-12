@@ -17,7 +17,6 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtInvocation;
@@ -27,10 +26,10 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -46,17 +45,6 @@ import java.util.TreeMap;
  */
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private Map<String, CtTypeReference<?>> imports = new TreeMap<String, CtTypeReference<?>>();
-
-	@Override
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
-		enter(f);
-		scan(f.getVariable());
-		scan(f.getAnnotations());
-		scan(f.getTypeCasts());
-		scan(f.getVariable());
-		scan(f.getTarget());
-		exit(f);
-	}
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {

@@ -17,7 +17,6 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
@@ -36,7 +35,6 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
@@ -60,7 +58,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -124,12 +121,6 @@ public interface CtVisitor {
 	 * Visits an anonymous executable.
 	 */
 	void visitCtAnonymousExecutable(CtAnonymousExecutable anonymousExec);
-
-	/**
-	 * Visits an array access.
-	 */
-	@Deprecated
-	<T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess);
 
 	/**
 	 * Visits an array read access.
@@ -424,12 +415,6 @@ public interface CtVisitor {
 	<T> void visitCtUnaryOperator(CtUnaryOperator<T> operator);
 
 	/**
-	 * Visits a variable access (read and write).
-	 */
-	@Deprecated
-	<T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess);
-
-	/**
 	 * Visits a variable read access.
 	 */
 	<T> void visitCtVariableRead(CtVariableRead<T> variableRead);
@@ -448,12 +433,6 @@ public interface CtVisitor {
 	 * Visits a field of an annotation.
 	 */
 	<T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess);
-
-	/**
-	 * Visits a field access (read and write).
-	 */
-	@Deprecated
-	<T> void visitCtFieldAccess(CtFieldAccess<T> f);
 
 	/**
 	 * Visits a field read access.

@@ -17,7 +17,6 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
@@ -36,7 +35,6 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
@@ -61,7 +59,6 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
@@ -77,13 +74,13 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -122,11 +119,6 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable anonymousExec) {
-
-	}
-
-	@Override
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
 
 	}
 
@@ -409,11 +401,6 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	}
 
 	@Override
-	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
-
-	}
-
-	@Override
 	public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
 
 	}
@@ -443,11 +430,6 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
-
-	}
-
-	@Override
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
 
 	}
 

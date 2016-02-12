@@ -16,7 +16,6 @@
  */
 package spoon.support.visitor;
 
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -70,17 +69,6 @@ public class TypeReferenceScanner extends CtScanner {
 	 */
 	private <T> boolean addReference(CtTypeReference<T> ref) {
 		return references.add(ref);
-	}
-
-	@Override
-	public <T> void visitCtFieldAccess(CtFieldAccess<T> f) {
-		enter(f);
-		scan(f.getVariable());
-		scan(f.getAnnotations());
-		scan(f.getTypeCasts());
-		scan(f.getVariable());
-		scan(f.getTarget());
-		exit(f);
 	}
 
 	@Override
