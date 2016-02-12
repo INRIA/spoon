@@ -1,7 +1,16 @@
 package spoon.test.targeted;
 
-import com.sun.org.apache.bcel.internal.classfile.InnerClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+
+import java.util.List;
+
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -26,6 +35,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
+import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.test.targeted.testclasses.Bar;
 import spoon.test.targeted.testclasses.Foo;
 import spoon.test.targeted.testclasses.InternalSuperCall;
@@ -33,39 +43,25 @@ import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 import spoon.test.targeted.testclasses.Tapas;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
+import com.sun.org.apache.bcel.internal.classfile.InnerClass;
 
 public class TargetedExpressionTest {
 	@Test
 	public void testCtSuperAccess() throws Exception {
 		final Factory factory = build(InternalSuperCall.class);
 		final CtClass<?> ctClass = factory.Class().get(InternalSuperCall.class);
-		final List<CtSuperAccess<?>> superAccesses = ctClass.getElements(new AbstractFilter<CtSuperAccess<?>>(CtSuperAccess.class) {
-			@Override
-			public boolean matches(CtSuperAccess<?> element) {
-				return super.matches(element);
-			}
-		});
-		assertEquals(2, superAccesses.size());
-		assertNull(superAccesses.get(0).getTarget());
-		assertNotNull(superAccesses.get(1).getTarget());
 
 		CtMethod<?> method = ctClass.getElements(new NameFilter<CtMethod<?>>("methode")).get(0);
 		assertEquals(
 				"spoon.test.targeted.testclasses.InternalSuperCall.super.toString()",
 				method.getBody().getStatements().get(0).toString());
+		assertNotNull(method.getElements(new TypeFilter<>(CtSuperAccess.class)).get(0).getTarget());
 
-		CtMethod<?> toString = ctClass.getElements(new NameFilter<CtMethod<?>>("toString")).get(0);
+		CtMethod<?> toStringMethod = ctClass.getElements(new NameFilter<CtMethod<?>>("toString")).get(0);
 		assertEquals(
 				"return super.toString()",
-				toString.getBody().getStatements().get(0).toString());
+				toStringMethod.getBody().getStatements().get(0).toString());
+		assertNull(toStringMethod.getElements(new TypeFilter<>(CtSuperAccess.class)).get(0).getTarget());
 	}
 
 	@Test
@@ -500,13 +496,13 @@ public class TargetedExpressionTest {
 	}
 
 	private void assertEqualsInvocation(ExpectedTargetedExpression expected, CtInvocation<?> invocation) {
-		assertEquals(expected.declaringType, invocation.getExecutable().getDeclaringType());
+		assertEquals("declaring type not identical", expected.declaringType, invocation.getExecutable().getDeclaringType());
 		if (expected.targetClass != null) {
 			assertEquals(expected.targetClass, invocation.getTarget().getClass());
 		} else if (expected.targetString != null) {
 			assertEquals(expected.targetString, invocation.getTarget().toString());
 		} else {
-			assertEquals(expected.target, invocation.getTarget());
+			assertEquals("target is not equal ", expected.target, invocation.getTarget());
 		}
 		assertEquals(expected.result, invocation.toString());
 	}

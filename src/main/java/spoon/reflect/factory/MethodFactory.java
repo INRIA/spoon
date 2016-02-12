@@ -116,7 +116,6 @@ public class MethodFactory extends ExecutableFactory {
 	public <T> CtMethod<T> create(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference<T> returnType, String name, List<CtParameter<?>> parameters,
 			Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		CtMethod<T> method = factory.Core().createMethod();
-		target.addMethod(method);
 		if (modifiers != null) {
 			method.setModifiers(modifiers);
 		}
@@ -128,6 +127,7 @@ public class MethodFactory extends ExecutableFactory {
 		if (thrownTypes != null) {
 			method.setThrownTypes(thrownTypes);
 		}
+		target.addMethod(method);
 		return method;
 	}
 

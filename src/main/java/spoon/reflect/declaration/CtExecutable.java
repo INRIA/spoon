@@ -103,4 +103,9 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	boolean removeThrownType(CtTypeReference<? extends Throwable> throwType);
+
+	/**
+	 * Gets the signature of this method or constructor as specified by chapter "8.4.2 Method Signature" of the Java specification
+	 */
+	String getSignature();
 }

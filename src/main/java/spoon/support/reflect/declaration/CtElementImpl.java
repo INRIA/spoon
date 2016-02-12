@@ -16,7 +16,21 @@
  */
 package spoon.support.reflect.declaration;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
+
 import spoon.Launcher;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.SourcePosition;
@@ -35,21 +49,10 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.util.RtHelper;
+import spoon.support.visitor.EqualVisitor;
+import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
-
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * Contains the default implementation of most CtElement methods.
@@ -139,7 +142,15 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	public String getSignature() {
 		SignaturePrinter pr = new SignaturePrinter();
 		pr.scan(this);
-		return pr.getSignature();
+		String sig = pr.getSignature();
+
+		// we have a signature return it
+		if (sig.length() > 0) {
+			return sig;
+		}
+
+		// else fallback to backward compatibility
+		return getDeepRepresentation(this);
 	}
 
 	transient Factory factory;
@@ -158,23 +169,38 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		super();
 	}
 
+	/** the ordering  between CtElement is lexicographic,
+	 * based on the deep representation
+	 * which is also used in {@link #equals(Object)}.
+	 */
 	public int compareTo(CtElement o) {
-		String current = getSignature();
-		String other = o.getSignature();
+		String current = getDeepRepresentation(this);
+		String other = getDeepRepresentation(o);
 		if (current.length() <= 0 || other.length() <= 0) {
 			throw new ClassCastException("Unable to compare elements");
 		}
 		return current.compareTo(other);
 	}
 
+	private String getDeepRepresentation(CtElement elem) {
+		EqualVisitor prThis = new EqualVisitor();
+		prThis.scan(elem);
+		return  prThis.getRepresentation();
+	}
+
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof CtElement)) {
-			return false;
+	public final boolean equals(Object o) {
+		boolean ret = false;
+		if ((o instanceof CtElement)) {
+			String current = getDeepRepresentation(this);
+			String other = getDeepRepresentation((CtElement) o);
+			ret = current.equals(other);
 		}
-		String current = getSignature();
-		String other = ((CtElement) o).getSignature();
-		return current.equals(other);
+		// neat online testing of core Java contract
+		if (ret && this.hashCode() != o.hashCode()) {
+			throw new IllegalStateException("violation of equal/hashcode contract between \n" + getDeepRepresentation(this) + "\nand\n" + getDeepRepresentation((CtElement) o) + "\n");
+		}
+		return ret;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -213,8 +239,10 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	@Override
-	public int hashCode() {
-		return getSignature().hashCode();
+	public final int hashCode() {
+		HashcodeVisitor pr = new HashcodeVisitor();
+		pr.scan(this);
+		return pr.getHasCode();
 	}
 
 	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {

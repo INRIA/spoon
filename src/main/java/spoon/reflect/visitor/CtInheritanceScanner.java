@@ -168,15 +168,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	/**
-	 * Generically scans a meta-model element reference.
-	 */
-	public void scan(CtReference reference) {
-		if (reference != null) {
-			reference.accept(this);
-		}
-	}
-
-	/**
 	 * Scans an abstract invocation.
 	 */
 	public <T> void scanCtAbstractInvocation(CtAbstractInvocation<T> a) {

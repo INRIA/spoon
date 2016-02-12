@@ -56,21 +56,6 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (!(object instanceof CtVariableReference)) {
-			return false;
-		}
-		CtVariableReference<?> ref = (CtVariableReference<?>) object;
-		return this.type.equals(ref.getType())
-				&& simplename.equals(ref.getSimpleName());
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-
-	@Override
 	protected AnnotatedElement getActualAnnotatedElement() {
 		// this is never available through reflection
 		return null;

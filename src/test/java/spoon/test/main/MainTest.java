@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
@@ -19,6 +20,7 @@ import spoon.test.parent.ParentTest;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -64,7 +66,9 @@ public class MainTest {
 
 		// scanners
 		checkContractCtScanner(pack);
+		
 	}
+
 
 	private void checkContractCtScanner(CtPackage pack) {
 		class Counter {
