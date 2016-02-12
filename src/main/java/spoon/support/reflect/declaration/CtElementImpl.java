@@ -152,7 +152,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	SourcePosition position;
 
-	Map<String, Object> metadata = new HashMap<String, Object>();
+	Map<String, Object> metadata;
 
 	public CtElementImpl() {
 		super();
@@ -449,12 +449,18 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public <E extends CtElement> E putMetadata(String key, Object val) {
+		if (metadata == null) {
+			metadata = new HashMap<String, Object>();
+		}
 		metadata.put(key, val);
 		return (E) this;
 	}
 
 	@Override
 	public Object getMetadata(String key) {
+		if (metadata == null) {
+			return null;
+		}
 		return metadata.get(key);
 	}
 
