@@ -839,7 +839,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtNamedElement(c);
 		writeModifiers(c);
 		writeFormalTypeParameters(c.getFormalTypeParameters());
-		write(c.getDeclaringType().getSimpleName());
+		if (c.getDeclaringType().isLocalType()) {
+			write(c.getDeclaringType().getSimpleName().replaceAll("^[0-9]*", ""));
+		} else {
+			write(c.getDeclaringType().getSimpleName());
+		}
 		write("(");
 		if (c.getParameters().size() > 0) {
 			for (CtParameter<?> p : c.getParameters()) {
