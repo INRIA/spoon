@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -50,7 +51,6 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
-import spoon.test.TestUtils;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
@@ -632,7 +632,7 @@ public class AnnotationTest {
 
 	@Test
 	public void testOutputGeneratedByTypeAnnotation() throws Exception {
-		TestUtils.canBeBuilt(new File("./target/spooned/spoon/test/annotation/testclasses/"), 8);
+		canBeBuilt(new File("./target/spooned/spoon/test/annotation/testclasses/"), 8);
 	}
 
 	@Test

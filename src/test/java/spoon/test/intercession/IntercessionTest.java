@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 import java.io.File;
 import java.util.List;
@@ -25,10 +26,9 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.test.TestUtils;
 
 public class IntercessionTest {
-	Factory factory = TestUtils.createFactory();
+	Factory factory = createFactory();
 	@Test
 	public void testInsertBegin() {
 		CtClass<?> clazz = factory

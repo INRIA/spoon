@@ -1,14 +1,13 @@
 package spoon.test.arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static spoon.test.TestUtils.build;
-
 import org.junit.Test;
-
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class ArraysTest {
 

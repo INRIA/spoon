@@ -22,16 +22,16 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
 
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class FieldTest {
 	@Test
 	public void testAddAFieldInAClassAtAPositionGiven() throws Exception {
-		final Factory factory = TestUtils.createFactory();
+		final Factory factory = createFactory();
 		final CtClass<Object> fieldClass = factory.Class().create("FieldClass");
 
 		final HashSet<ModifierKind> modifiers = new HashSet<ModifierKind>();

@@ -26,12 +26,10 @@ import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.type.testclasses.Pozole;
 
 import java.util.List;
@@ -39,6 +37,8 @@ import java.util.List;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class TypeTest {
 	@Test
@@ -65,12 +65,12 @@ public class TypeTest {
 			assertTrue(fieldClass.getTarget() instanceof CtTypeAccess);
 		}
 
-		TestUtils.canBeBuilt(target, 8, true);
+		canBeBuilt(target, 8, true);
 	}
 
 	@Test
 	public void testTypeAccessOnPrimitive() throws Exception {
-		Factory factory = TestUtils.createFactory();
+		Factory factory = createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement( //
 				"class X {" //
 						+ "public void foo() {" //
@@ -138,7 +138,7 @@ public class TypeTest {
 		assertEquals(BinaryOperatorKind.INSTANCEOF, ((CtBinaryOperator) typeAccesses.get(1).getParent()).getKind());
 		assertEquals("a instanceof java.lang.Object[]", typeAccesses.get(1).getParent().toString());
 
-		TestUtils.canBeBuilt(target, 8, true);
+		canBeBuilt(target, 8, true);
 	}
 
 	@Test
@@ -159,6 +159,6 @@ public class TypeTest {
 		assertEquals(1, lambdas.get(0).getTypeCasts().size());
 		assertEquals("java.lang.Runnable", lambdas.get(0).getTypeCasts().get(0).toString());
 
-		TestUtils.canBeBuilt(target, 8, true);
+		canBeBuilt(target, 8, true);
 	}
 }

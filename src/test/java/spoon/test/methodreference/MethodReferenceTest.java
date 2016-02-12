@@ -16,7 +16,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.methodreference.testclasses.Foo;
 
 import java.io.File;
@@ -26,6 +25,7 @@ import java.util.function.Supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class MethodReferenceTest {
 	private static final String TEST_CLASS = "spoon.test.methodreference.testclasses.Foo.";
@@ -141,7 +141,7 @@ public class MethodReferenceTest {
 
 	@Test
 	public void testCompileMethodReferenceGeneratedBySpoon() throws Exception {
-		TestUtils.canBeBuilt(new File("./target/spooned/spoon/test/methodreference/testclasses/"), 8);
+		canBeBuilt(new File("./target/spooned/spoon/test/methodreference/testclasses/"), 8);
 	}
 
 	@Test

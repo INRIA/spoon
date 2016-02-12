@@ -2,6 +2,7 @@ package spoon.test.ctCase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 import java.util.List;
 
@@ -13,7 +14,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class SwitchCaseTest {
@@ -34,7 +34,7 @@ public class SwitchCaseTest {
 		assertEquals(3, statements.size());
 		assertTrue(statements.get(1) == newStatement);
 	}
-	
+
 	@Test
 	public void insertBeforeStatementInSwitchCaseWithoutException() throws Exception {
 		String packageName = "spoon.test.ctCase";
@@ -51,12 +51,12 @@ public class SwitchCaseTest {
 		assertEquals(3, statements.size());
 		assertTrue(statements.get(0) == newStatement);
 	}
-	
+
 	private <T extends CtElement> List<T> elementsOfType(Class<T> type, Factory factory) {
 		return (List) Query.getElements(factory, new TypeFilter<>(type));
 	}
-	
+
 	private Factory factoryFor(String packageName, String className) throws Exception {
-		return TestUtils.build(packageName, className).getFactory();
+		return build(packageName, className).getFactory();
 	}
 }

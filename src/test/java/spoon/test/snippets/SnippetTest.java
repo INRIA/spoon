@@ -3,22 +3,18 @@ package spoon.test.snippets;
 import org.junit.Test;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeSnippetExpression;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class SnippetTest {
-	Factory factory = TestUtils.createFactory();
+	Factory factory = createFactory();
 	@Test
 	public void testSnippetFullClass() {
 		CtClass<?> clazz = factory
@@ -48,7 +44,7 @@ public class SnippetTest {
 	@Test
 	public void testCompileSnippetSeveralTimes() throws Exception {
 		// contract: a snippet object can be reused several times
-		final Factory factory = TestUtils.createFactory();
+		final Factory factory = createFactory();
 		final CtCodeSnippetExpression<Object> snippet = factory.Code().createCodeSnippetExpression("1 > 2");
 
 		// Compile a first time the snippet.

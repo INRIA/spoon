@@ -10,7 +10,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.test.TestUtils;
 import spoon.test.invocations.testclasses.Bar;
 import spoon.test.invocations.testclasses.Foo;
 
@@ -20,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class InvocationTest {
 	@Test
@@ -45,7 +45,7 @@ public class InvocationTest {
 
 	@Test
 	public void testTargetNullForStaticMethod() throws Exception {
-		final Factory factory = TestUtils.build(Bar.class);
+		final Factory factory = build(Bar.class);
 		final CtClass<Bar> barClass = factory.Class().get(Bar.class);
 		final CtMethod<?> staticMethod = barClass.getMethodsByName("staticMethod").get(0);
 		final CtExecutableReference<?> reference = factory.Method().createReference(staticMethod);

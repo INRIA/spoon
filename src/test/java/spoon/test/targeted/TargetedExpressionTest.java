@@ -26,7 +26,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
-import spoon.test.TestUtils;
 import spoon.test.targeted.testclasses.Bar;
 import spoon.test.targeted.testclasses.Foo;
 import spoon.test.targeted.testclasses.InternalSuperCall;
@@ -40,8 +39,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static spoon.test.TestUtils.build;
-import static spoon.test.TestUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class TargetedExpressionTest {
 	@Test
@@ -116,7 +115,7 @@ public class TargetedExpressionTest {
 
 	@Test
 	public void testCastWriteWithGenerics() throws Exception {
-		final Factory factory = TestUtils.build(Pozole.class);
+		final Factory factory = build(Pozole.class);
 		final CtClass<Object> aPozole = factory.Class().get(Pozole.class);
 		final CtConstructor<Object> aConstructor = aPozole.getConstructor(aPozole.getReference());
 

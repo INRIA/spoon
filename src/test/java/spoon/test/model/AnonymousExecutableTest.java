@@ -1,21 +1,20 @@
 package spoon.test.model;
 
-import static org.junit.Assert.assertEquals;
-import static spoon.test.TestUtils.build;
-
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.build;
+
 public class AnonymousExecutableTest {
 
 	@Test
-	public void testStatements() throws Exception {		
+	public void testStatements() throws Exception {
 		CtType<?> type = build("spoon.test.model", "AnonymousExecutableClass");
 		CtAnonymousExecutable anonexec =
 			type.

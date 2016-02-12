@@ -2,7 +2,9 @@ package spoon.test.generics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -38,7 +41,6 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
-import spoon.test.TestUtils;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
@@ -103,7 +105,7 @@ public class GenericsTest {
 
 	@Test
 	public void testDiamond1() {
-		Factory factory = TestUtils.createFactory();
+		Factory factory = createFactory();
 		CtClass<?> clazz = factory
 				.Code()
 				.createCodeSnippetStatement(
@@ -346,7 +348,7 @@ public class GenericsTest {
 		assertEquals(2, constructorCall2.getType().getActualTypeArguments().size());
 		assertEquals("new spoon.test.generics.testclasses.Tacos<>()", constructorCall2.toString());
 
-		TestUtils.canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
+		canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
 	}
 
 	@Test
@@ -373,7 +375,7 @@ public class GenericsTest {
 		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
 		assertEquals("spoon.test.generics.testclasses.Tacos.this.makeTacos(null)", invocation2.toString());
 
-		TestUtils.canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
+		canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
 	}
 
 	@Test
@@ -397,7 +399,7 @@ public class GenericsTest {
 		assertEquals(2, newClass2.getType().getActualTypeArguments().size());
 		assertEquals("new javax.lang.model.util.SimpleTypeVisitor7<spoon.test.generics.testclasses.Tacos, java.lang.Void>() {}", newClass2.toString());
 
-		TestUtils.canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
+		canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
 	}
 
 	@Test
@@ -437,7 +439,7 @@ public class GenericsTest {
 
 	@Test
 	public void testGenericWithExtendsInDeclaration() throws Exception {
-		final Factory build = TestUtils.build(Panini.class);
+		final Factory build = build(Panini.class);
 		final CtType<Panini> panini = build.Type().get(Panini.class);
 
 		final CtMethod<?> apply = panini.getMethodsByName("apply").get(0);
@@ -451,7 +453,7 @@ public class GenericsTest {
 
 	@Test
 	public void testGenericInField() throws Exception {
-		final Factory build = TestUtils.build(Spaghetti.class);
+		final Factory build = build(Spaghetti.class);
 		final CtType<Panini> aSpaghetti = build.Type().get(Spaghetti.class);
 
 		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<B>.Tester tester;"));

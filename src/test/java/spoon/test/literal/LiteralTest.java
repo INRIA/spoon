@@ -5,9 +5,9 @@ import spoon.Launcher;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class LiteralTest {
 	@Test
@@ -27,6 +27,6 @@ public class LiteralTest {
 		}).get(0);
 
 		assertEquals(':', (char) charLiteral.getValue());
-		TestUtils.canBeBuilt("./target/literal", 8, true);
+		canBeBuilt("./target/literal", 8, true);
 	}
 }

@@ -7,7 +7,6 @@ import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
-import spoon.test.TestUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,6 +19,7 @@ import java.util.Queue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 /**
  *
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(Parameterized.class)
 public class CtInheritanceScannerTest<T extends CtVisitable> {
 
-	private static Factory factory = TestUtils.createFactory();
+	private static Factory factory = createFactory();
 
 	@Parameterized.Parameters(name = "{0}")
 	public static Collection<Object[]> data() throws Exception {

@@ -16,7 +16,6 @@ import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.test.TestUtils;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
 import spoon.test.lambda.testclasses.Panini;
@@ -27,6 +26,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static org.junit.Assert.*;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.getBuildDirectory;
+import static spoon.testing.utils.ModelUtils.getSpoonedDirectory;
 
 public class LambdaTest {
 	private Factory factory;
@@ -43,8 +45,8 @@ public class LambdaTest {
 		factory.getEnvironment().setComplianceLevel(8);
 		compiler = launcher.createCompiler(this.factory);
 
-		compiler.setSourceOutputDirectory(TestUtils.getSpoonedDirectory(getClass()));
-		compiler.setBinaryOutputDirectory(TestUtils.getBuildDirectory(getClass()));
+		compiler.setSourceOutputDirectory(getSpoonedDirectory(getClass()));
+		compiler.setBinaryOutputDirectory(getBuildDirectory(getClass()));
 		compiler.addInputSource(new File("./src/test/java/spoon/test/lambda/testclasses/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
@@ -198,7 +200,7 @@ public class LambdaTest {
 
 	@Test
 	public void testCompileLambdaGeneratedBySpoon() throws Exception {
-		TestUtils.canBeBuilt(TestUtils.getSpoonedDirectory(getClass()), 8);
+		canBeBuilt(getSpoonedDirectory(getClass()), 8);
 	}
 
 	@Test

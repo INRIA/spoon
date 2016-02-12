@@ -12,7 +12,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
@@ -25,25 +24,18 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
-import spoon.support.reflect.reference.CtTypeReferenceImpl;
-import spoon.test.TestUtils;
 import spoon.test.replace.testclasses.Tacos;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class ReplaceTest {
 
@@ -240,7 +232,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceIntegerReference() throws Exception {
 		// contract: replace a primitive type reference by another one.
-		final Factory factory = TestUtils.build(Tacos.class);
+		final Factory factory = build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 		final CtMethod<?> aMethod = aTacos.getMethodsByName("m").get(0);
 
@@ -254,7 +246,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceAllTypeRefenceWithGenerics() throws Exception {
 		// contract: replace all type references with a generic to the same type reference without generics.
-		final Factory factory = TestUtils.build(Tacos.class);
+		final Factory factory = build(Tacos.class);
 		final List<CtTypeReference> references = Query.getReferences(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
@@ -302,7 +294,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceAParameterReferenceToFieldReference() throws Exception {
 		// contract: replace a parameter reference to a field reference.
-		final Factory factory = TestUtils.build(Tacos.class);
+		final Factory factory = build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 
 		final CtInvocation inv = aTacos.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
@@ -322,7 +314,7 @@ public class ReplaceTest {
 	@Test
 	public void testReplaceExecutableReferenceByAnotherOne() throws Exception {
 		// contract: replace an executable reference to another one in an invocation.
-		final Factory factory = TestUtils.build(Tacos.class);
+		final Factory factory = build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 
 		final CtInvocation inv = aTacos.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);

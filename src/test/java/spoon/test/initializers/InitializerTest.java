@@ -1,11 +1,6 @@
 package spoon.test.initializers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static spoon.test.TestUtils.build;
-
 import org.junit.Test;
-
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -14,6 +9,10 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class InitializerTest {
 	@Test

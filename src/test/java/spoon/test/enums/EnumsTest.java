@@ -6,13 +6,12 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.test.TestUtils;
 import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.Foo;
 
 import static org.junit.Assert.assertEquals;
-import static spoon.test.TestUtils.build;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class EnumsTest {
 
@@ -48,7 +47,7 @@ public class EnumsTest {
 
 	@Test
 	public void testEnumWithoutField() throws Exception {
-		final Factory factory = TestUtils.build(Burritos.class);
+		final Factory factory = build(Burritos.class);
 		final CtType<Burritos> burritos = factory.Type().get(Burritos.class);
 		assertEquals("public enum Burritos {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
 				+ "    ;" + DefaultJavaPrettyPrinter.LINE_SEPARATOR + DefaultJavaPrettyPrinter.LINE_SEPARATOR //

@@ -1,19 +1,9 @@
 package spoon.test.factory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static spoon.test.TestUtils.build;
-import static spoon.test.TestUtils.buildClass;
-import static spoon.test.TestUtils.createFactory;
-
-import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -23,11 +13,15 @@ import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.reflect.declaration.CtMethodImpl;
-import spoon.test.TestUtils;
 import spoon.test.factory.testclasses.Foo;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class FactoryTest {
 
@@ -65,11 +59,11 @@ public class FactoryTest {
 			}
 		};
 
-		CtClass<?> type = TestUtils.build("spoon.test", "SampleClass", launcher.getFactory());
+		CtClass<?> type = build("spoon.test", "SampleClass", launcher.getFactory());
 
 		CtMethod<?> m = type.getMethodsByName("method3").get(0);
 
-		Assert.assertTrue(m instanceof MyCtMethod);
+		assertTrue(m instanceof MyCtMethod);
 	}
 
 	@Test

@@ -10,7 +10,6 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.constructor.testclasses.AClass;
 import spoon.test.constructor.testclasses.Tacos;
 
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ConstructorTest {
 	private Factory factory;
@@ -42,7 +42,7 @@ public class ConstructorTest {
 		assertEquals(2, ctConstructor.getBody().getStatements().size());
 		assertEquals("super()", ctConstructor.getBody().getStatement(0).toString());
 
-		TestUtils.canBeBuilt("./target/spooned/spoon/test/constructor/testclasses/", 8);
+		canBeBuilt("./target/spooned/spoon/test/constructor/testclasses/", 8);
 	}
 
 	@Test

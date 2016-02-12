@@ -171,3 +171,24 @@ entries:
             platform: all
             product: all
             version: all
+
+    - title: Testing
+      audience: writers, designers
+      platform: all
+      product: all
+      version: all
+
+      items:
+          - title: Quickstart
+            url: /testing_quickstart.html
+            audience: writers, designers
+            platform: all
+            product: all
+            version: all
+
+          - title: Assertions
+            url: /testing_assertions.html
+            audience: writers, designers
+            platform: all
+            product: all
+            version: all

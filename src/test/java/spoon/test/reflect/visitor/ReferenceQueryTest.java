@@ -1,17 +1,16 @@
 package spoon.test.reflect.visitor;
 
-import static spoon.test.TestUtils.build;
-
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+
+import java.util.List;
+
+import static spoon.testing.utils.ModelUtils.build;
 
 public class ReferenceQueryTest {
 	@Test

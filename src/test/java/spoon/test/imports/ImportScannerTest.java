@@ -1,14 +1,6 @@
 package spoon.test.imports;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.security.AccessControlException;
-import java.util.Collection;
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
@@ -20,7 +12,14 @@ import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.test.TestUtils;
+
+import java.security.AccessControlException;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 /**
  * Created by gerard on 14/10/2014.
@@ -33,7 +32,7 @@ public class ImportScannerTest {
 		String className = "SampleImportClass";
 		String qualifiedName = packageName + "." + className;
 
-		Factory aFactory = TestUtils.build(packageName, className).getFactory();
+		Factory aFactory = build(packageName, className).getFactory();
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();

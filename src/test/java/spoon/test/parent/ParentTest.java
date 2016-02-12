@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 import java.util.Stack;
 
@@ -39,7 +40,6 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.TestUtils;
 import spoon.test.replace.testclasses.Tacos;
 
 public class ParentTest {
@@ -140,7 +140,7 @@ public class ParentTest {
 	@Test
 	public void testParentOfCtVariableReference() throws Exception {
 		// contract: parent of a variable reference is the element which call getVariable().
-		final Factory factory = TestUtils.build(Tacos.class);
+		final Factory factory = build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 
 		final CtInvocation inv = aTacos.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
@@ -154,7 +154,7 @@ public class ParentTest {
 	@Test
 	public void testParentOfCtExecutableReference() throws Exception {
 		// contract: parent of a executable reference is the element which call getExecutable().
-		final Factory factory = TestUtils.build(Tacos.class);
+		final Factory factory = build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 
 		final CtInvocation inv = aTacos.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
@@ -167,7 +167,7 @@ public class ParentTest {
 	@Test
 	public void testParentOfGenericInTypeReference() throws Exception {
 		// contract: parent of a generic in a type reference is the type reference.
-		final Factory factory = TestUtils.build(Tacos.class);
+		final Factory factory = build(Tacos.class);
 		final CtTypeReference referenceWithGeneric = Query.getReferences(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
@@ -183,7 +183,7 @@ public class ParentTest {
 	@Test
 	public void testParentOfPrimitiveReference() throws Exception {
 		// contract: parent of a primitive different isn't different of other type. Its parent is the element which used this type.
-		final Factory factory = TestUtils.build(Tacos.class);
+		final Factory factory = build(Tacos.class);
 		final CtType<Tacos> aTacos = factory.Type().get(Tacos.class);
 		final CtMethod<?> aMethod = aTacos.getMethodsByName("m").get(0);
 
