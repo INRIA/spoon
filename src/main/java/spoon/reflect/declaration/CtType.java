@@ -32,6 +32,10 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * The string separator in a Java innertype qualified name.
 	 */
 	String INNERTTYPE_SEPARATOR = "$";
+	/**
+	 * Used in no classpath when we don't have any information to build the name of the type.
+	 */
+	String NAME_UNKNOWN = "<unknown>";
 
 	/**
 	 * Returns the simple (unqualified) name of this element.

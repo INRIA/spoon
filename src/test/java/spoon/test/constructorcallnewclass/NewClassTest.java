@@ -6,6 +6,7 @@ import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -161,7 +162,7 @@ public class NewClassTest {
 		assertEquals("Lock$With", anonymousClass.getSuperclass().getQualifiedName());
 		assertEquals("Lock", anonymousClass.getSuperclass().getDeclaringType().getSimpleName());
 		assertEquals("Lock.With", anonymousClass.getSuperclass().toString());
-		assertNull(anonymousClass.getSimpleName()); // In noclasspath, we don't have this information.
+		assertEquals(CtType.NAME_UNKNOWN, anonymousClass.getSimpleName()); // In noclasspath, we don't have this information.
 		assertEquals(1, anonymousClass.getMethods().size());
 
 		canBeBuilt("./target/new-class", 8, true);

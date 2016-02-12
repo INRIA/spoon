@@ -7,6 +7,7 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -390,6 +391,40 @@ public class TypeReferenceTest {
 
 		// Class concerned by this bug.
 		canBeBuilt("./src/test/resources/noclasspath/TestBot.java", 8, true);
+	}
+
+	@Test
+	public void testAnnotationOnMethodWithPrimitiveReturnTypeInNoClasspath() throws Exception {
+		// contract: In no classpath mode, if we have an annotation declared on a method and overridden
+		// from a super class in an anonymous class, we should rewrite correctly the annotation and don't
+		// throw a NPE.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/A.java");
+		launcher.setSourceOutputDirectory("./target/class-declaration");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("A");
+		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
+		final CtMethod run = anonymousClass.getMethod("run");
+		assertNotNull(run);
+		assertEquals(1, run.getAnnotations().size());
+		assertEquals("@Override" + System.lineSeparator(), run.getAnnotations().get(0).toString());
+	}
+
+	@Test
+	public void testAnonymousClassesHaveAnEmptyStringForItsNameInNoClasspath() throws Exception {
+		// contract: In no classpath mode, a type reference have an empty string for its name.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/A.java");
+		launcher.setSourceOutputDirectory("./target/class-declaration");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("A");
+		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
+		assertEquals(CtType.NAME_UNKNOWN, anonymousClass.getReference().getSimpleName());
+		assertEquals(7, aClass.getReferencedTypes().size());
 	}
 
 	class A {
