@@ -87,7 +87,6 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			return ret;
 		}
 	}
-
 	private static final long serialVersionUID = 1L;
 
 	CtTypeReference<A> annotationType;
@@ -100,16 +99,17 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		public Object put(String key, Object value) {
 			if (value instanceof Class[]) {
 				Class<?>[] valsNew = (Class<?>[]) value;
-				ArrayList<CtTypeReference<?>> ret = new ArrayList<CtTypeReference<?>>(valsNew.length);
+				ArrayList<CtFieldAccess<?>> ret = new ArrayList<CtFieldAccess<?>>(valsNew.length);
 
 				for (int i = 0; i < valsNew.length; i++) {
 					Class<?> class1 = valsNew[i];
-					ret.add(i, getFactory().Type().createReference(class1));
+					final CtTypeReference classRef = getFactory().Type().createReference(class1);
+					ret.add(i, getFactory().Code().createClassAccess(classRef));
 				}
 				return super.put(key, ret);
 			}
 			if (value instanceof Class) {
-				return super.put(key, getFactory().Type().createReference((Class<?>) value));
+				return super.put(key, getFactory().Code().createClassAccess(getFactory().Type().createReference((Class<?>) value)));
 			}
 			return super.put(key, value);
 
@@ -161,9 +161,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@SuppressWarnings("unchecked")
 	public A getActualAnnotation() {
-		return (A) Proxy.newProxyInstance(annotationType.getActualClass().getClassLoader(), new Class[] {
-						annotationType.getActualClass()
-				}, new AnnotationInvocationHandler(this));
+		return (A) Proxy.newProxyInstance(annotationType.getActualClass().getClassLoader(), new Class[] { annotationType.getActualClass() }, new AnnotationInvocationHandler(this));
 	}
 
 	@SuppressWarnings("unchecked")
