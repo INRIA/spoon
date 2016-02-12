@@ -2558,7 +2558,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	private <A extends java.lang.annotation.Annotation> boolean visitMarkerAnnoation(MarkerAnnotation annotation, BlockScope scope) {
 		CtAnnotation<A> a = factory.Core().createAnnotation();
-		CtTypeReference<A> t = references.getTypeReference(annotation.resolvedType);
+		CtTypeReference<A> t = references.getTypeReference(annotation.resolvedType, annotation.type);
 		a.setAnnotationType(t);
 		context.enter(a, annotation);
 		skipTypeInAnnotation = true;
@@ -2738,7 +2738,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	private boolean isContainsInTypeAnnotation(TypeBinding binding, Annotation a) {
-		return !binding.hasTypeAnnotations() || !containsInTypeAnnotation(a, binding.getTypeAnnotations());
+		return binding == null || !binding.hasTypeAnnotations() || !containsInTypeAnnotation(a, binding.getTypeAnnotations());
 	}
 
 	private boolean containsInTypeAnnotation(Annotation a, AnnotationBinding[] typeAnnotations) {
