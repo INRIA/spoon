@@ -3379,6 +3379,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (localTypeDeclaration.binding == null) {
 			// no classpath mode but JDT returns nothing. We create an empty class.
 			t = factory.Core().createClass();
+			t.setSimpleName(CtType.NAME_UNKNOWN);
 			((CtClass) t).setSuperclass(references.getTypeReference(null, localTypeDeclaration.allocation.type));
 		} else {
 			t = createType(localTypeDeclaration);
