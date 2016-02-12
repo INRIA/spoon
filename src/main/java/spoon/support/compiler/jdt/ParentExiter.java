@@ -198,23 +198,16 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
-		if (visitArrayAccess(arrayAccess)) {
-			super.visitCtArrayAccess(arrayAccess);
-		}
-	}
-
-	@Override
 	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
 		if (visitArrayAccess(arrayRead)) {
-			super.visitCtArrayAccess(arrayRead);
+			super.visitCtArrayRead(arrayRead);
 		}
 	}
 
 	@Override
 	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
 		if (visitArrayAccess(arrayWrite)) {
-			super.visitCtArrayAccess(arrayWrite);
+			super.visitCtArrayWrite(arrayWrite);
 		}
 	}
 

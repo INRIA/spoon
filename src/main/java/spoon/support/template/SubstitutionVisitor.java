@@ -240,14 +240,6 @@ public class SubstitutionVisitor extends CtScanner {
 			super.visitCtForEach(foreach);
 		}
 
-		/**
-		 * Replaces direct field parameter accesses.
-		 */
-		@Override
-		public <T> void visitCtFieldAccess(CtFieldAccess<T> fieldAccess) {
-			visitFieldAccess(fieldAccess);
-		}
-
 		@Override
 		public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 			visitFieldAccess(fieldRead);
@@ -484,14 +476,6 @@ public class SubstitutionVisitor extends CtScanner {
 				}
 			}
 			super.visitCtTypeReference(reference);
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
-			if (visitVariableAccess(variableAccess)) {
-				super.visitCtVariableAccess(variableAccess);
-			}
 		}
 
 		@Override

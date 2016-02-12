@@ -27,7 +27,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtTypeAnnotableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -41,7 +40,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -497,27 +495,4 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return t.isInterface();
 		}
 	}
-
-	@Override
-	public List<CtAnnotation<? extends Annotation>> getTypeAnnotations() {
-		return Collections.unmodifiableList(getAnnotations());
-	}
-
-	@Override
-	public <C extends CtTypeAnnotableReference> C setTypeAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
-		setAnnotations(annotations);
-		return (C) this;
-	}
-
-	@Override
-	public <C extends CtTypeAnnotableReference> C addTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		addAnnotation(annotation);
-		return (C) this;
-	}
-
-	@Override
-	public boolean removeTypeAnnotation(CtAnnotation<? extends Annotation> annotation) {
-		return removeAnnotation(annotation);
-	}
-
 }
