@@ -398,7 +398,7 @@ public class AnnotationTest {
 		assertEquals("Type of the new class must use an annotation", 1, typeAnnotations.size());
 		assertEquals("Type of the new class is typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
-		assertEquals("New class with an type annotation must be well printed", "new java.lang.@spoon.test.annotation.testclasses.TypeAnnotation String()", ctConstructorCall.toString());
+		assertEquals("New class with an type annotation must be well printed", "new java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String()", ctConstructorCall.toString());
 	}
 
 	@Test
@@ -417,7 +417,7 @@ public class AnnotationTest {
 		assertEquals("Cast with a type annotation must have it in its model", 1, typeAnnotations.size());
 		assertEquals("Type annotation in the cast must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
-		assertEquals("Cast with an type annotation must be well printed", "((java.lang.@spoon.test.annotation.testclasses.TypeAnnotation String)(s))", returnedExpression.toString());
+		assertEquals("Cast with an type annotation must be well printed", "((java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String)(s))", returnedExpression.toString());
 	}
 
 	@Test
@@ -431,7 +431,7 @@ public class AnnotationTest {
 		assertEquals("Thrown type with a type annotation must have it in its model", 1, typeAnnotations.size());
 		assertEquals("Type annotation with the thrown type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
-		assertEquals("Thrown type with an type annotation must be well printed", "public void m() throws java.lang.@spoon.test.annotation.testclasses.TypeAnnotation Exception {"
+		assertEquals("Thrown type with an type annotation must be well printed", "public void m() throws java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "Exception {"
 						+ System.lineSeparator() + "}", method.toString());
 	}
 
@@ -446,7 +446,7 @@ public class AnnotationTest {
 		assertEquals("Return type with a type annotation must have it in its model", 1, typeAnnotations.size());
 		assertEquals("Type annotation with the return type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
-		assertEquals("Return type with an type annotation must be well printed", "public java.lang.@spoon.test.annotation.testclasses.TypeAnnotation String m3() {"
+		assertEquals("Return type with an type annotation must be well printed", "public java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String m3() {"
 						+ System.lineSeparator()
 						+ "    return \"\";"
 						+ System.lineSeparator() + "}", method.toString());
@@ -464,7 +464,7 @@ public class AnnotationTest {
 		assertEquals("Parameter type with a type annotation must have it in its model", 1, typeAnnotations.size());
 		assertEquals("Type annotation with the parameter type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
-		assertEquals("Parameter type with an type annotation must be well printed", "java.lang.@spoon.test.annotation.testclasses.TypeAnnotation String param", ctParameter.toString());
+		assertEquals("Parameter type with an type annotation must be well printed", "java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String param", ctParameter.toString());
 	}
 
 	@Test
@@ -484,7 +484,7 @@ public class AnnotationTest {
 		assertEquals("Local variable type with a type annotation must have it in its model", 1, typeAnnotations.size());
 		assertEquals("Type annotation with the local variable type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
-		assertEquals("Local variable type with an type annotation must be well printed", "java.lang.@spoon.test.annotation.testclasses.TypeAnnotation String s = \"\"", ctLocalVariable.toString());
+		assertEquals("Local variable type with an type annotation must be well printed", "java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String s = \"\"", ctLocalVariable.toString());
 	}
 
 	@Test
@@ -494,7 +494,7 @@ public class AnnotationTest {
 		final CtClass<?> innerClass = ctClass.getElements(new NameFilter<CtClass<?>>("DummyClass")).get(0);
 		final CtTypeReference<?> extendsActual = innerClass.getSuperclass();
 		final List<CtAnnotation<? extends Annotation>> extendsTypeAnnotations = extendsActual.getAnnotations();
-		final String superClassExpected = "spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation AnnotArrayInnerClass";
+		final String superClassExpected = "spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "AnnotArrayInnerClass";
 		assertEquals("Extends with a type annotation must have it in its model", 1, extendsTypeAnnotations.size());
 		assertEquals("Type annotation on a extends must be typed by TypeAnnotation", TypeAnnotation.class, extendsTypeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, extendsTypeAnnotations.get(0).getAnnotatedElementType());
@@ -503,7 +503,7 @@ public class AnnotationTest {
 		final Set<CtTypeReference<?>> superInterfaces = innerClass.getSuperInterfaces();
 		final CtTypeReference<?> firstSuperInterface = superInterfaces.toArray(new CtTypeReference<?>[0])[0];
 		final List<CtAnnotation<? extends Annotation>> implementsTypeAnnotations = firstSuperInterface.getAnnotations();
-		final String superInterfaceExpected = "spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation BasicAnnotation";
+		final String superInterfaceExpected = "spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation";
 		assertEquals("Implements with a type annotation must have it in its model", 1, implementsTypeAnnotations.size());
 		assertEquals("Type annotation on a extends must be typed by TypeAnnotation", TypeAnnotation.class, implementsTypeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, implementsTypeAnnotations.get(0).getAnnotatedElementType());
@@ -513,7 +513,7 @@ public class AnnotationTest {
 		final Set<CtTypeReference<?>> superInterfacesOfEnum = enumActual.getSuperInterfaces();
 		final CtTypeReference<?> firstSuperInterfaceOfEnum = superInterfacesOfEnum.toArray(new CtTypeReference<?>[0])[0];
 		final List<CtAnnotation<? extends Annotation>> enumTypeAnnotations = firstSuperInterfaceOfEnum.getAnnotations();
-		final String enumExpected = "public enum DummyEnum implements spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation BasicAnnotation {" + System.lineSeparator() + "    ;" + System.lineSeparator() + "}";
+		final String enumExpected = "public enum DummyEnum implements spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation {" + System.lineSeparator() + "    ;" + System.lineSeparator() + "}";
 		assertEquals("Implements in a enum with a type annotation must have it in its model", 1, enumTypeAnnotations.size());
 		assertEquals("Type annotation on a implements in a enum must be typed by TypeAnnotation", TypeAnnotation.class, enumTypeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, enumTypeAnnotations.get(0).getAnnotatedElementType());
@@ -523,7 +523,7 @@ public class AnnotationTest {
 		final Set<CtTypeReference<?>> superInterfacesOfInterface = interfaceActual.getSuperInterfaces();
 		final CtTypeReference<?> firstSuperInterfaceOfInterface = superInterfacesOfInterface.toArray(new CtTypeReference<?>[0])[0];
 		final List<CtAnnotation<? extends Annotation>> interfaceTypeAnnotations = firstSuperInterfaceOfInterface.getAnnotations();
-		final String interfaceExpected = "public interface DummyInterface extends spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation BasicAnnotation {}";
+		final String interfaceExpected = "public interface DummyInterface extends spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation {}";
 		assertEquals("Implements in a interface with a type annotation must have it in its model", 1, interfaceTypeAnnotations.size());
 		assertEquals("Type annotation on a implements in a enum must be typed by TypeAnnotation", TypeAnnotation.class, interfaceTypeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, interfaceTypeAnnotations.get(0).getAnnotatedElementType());
@@ -587,7 +587,7 @@ public class AnnotationTest {
 		assertTrue(secondTypeReference instanceof CtImplicitTypeReference);
 		assertEquals("Object", secondTypeReference.getSimpleName());
 
-		final String expectedThirdStatement = "java.util.List<spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation BasicAnnotation> list3 = new java.util.ArrayList<spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation BasicAnnotation>()";
+		final String expectedThirdStatement = "java.util.List<spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation> list3 = new java.util.ArrayList<spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation>()";
 		assertEquals("Type in generic parameter with an type annotation must be well printed", expectedThirdStatement, body.getStatement(2).toString());
 	}
 

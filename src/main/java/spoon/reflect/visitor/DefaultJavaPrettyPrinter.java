@@ -1929,11 +1929,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					scan(ref.getDeclaringType());
 					write(".");
 				}
+				writeAnnotations(ref);
 				if (ref.isLocalType()) {
 					write(ref.getSimpleName().replaceAll("^[0-9]*", ""));
 				} else {
 					write(ref.getSimpleName());
 				}
+			} else if (ref.getPackage() != null) {
+				if (!CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(ref.getPackage().getSimpleName())) {
+					scan(ref.getPackage()).write(CtPackage.PACKAGE_SEPARATOR);
+				}
+				writeAnnotations(ref);
+				write(ref.getSimpleName());
 			} else {
 				write(ref.getQualifiedName());
 			}
