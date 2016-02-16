@@ -19,8 +19,7 @@ package spoon.reflect.reference;
 import java.util.List;
 
 /**
- * This interface defines a reference to a
- * {@link spoon.reflect.declaration.CtTypeParameter}.
+ * This interface defines a reference to a type parameter (aka generics).
  */
 public interface CtTypeParameterReference extends CtTypeReference<Object> {
 

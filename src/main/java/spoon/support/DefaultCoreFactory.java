@@ -77,7 +77,6 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -151,7 +150,6 @@ import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
-import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
@@ -600,12 +598,6 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	@Override
 	public CtTryWithResource createTryWithResource() {
 		CtTryWithResource e = new CtTryWithResourceImpl();
-		e.setFactory(getMainFactory());
-		return e;
-	}
-
-	public CtTypeParameter createTypeParameter() {
-		CtTypeParameter e = new CtTypeParameterImpl();
 		e.setFactory(getMainFactory());
 		return e;
 	}

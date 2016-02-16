@@ -73,7 +73,6 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
@@ -379,11 +378,6 @@ public interface CtVisitor {
 	 * Visits a <code>try</code> with resource statement.
 	 */
 	void visitCtTryWithResource(CtTryWithResource tryWithResource);
-
-	/**
-	 * Visits a type parameter declaration.
-	 */
-	void visitCtTypeParameter(CtTypeParameter typeParameter);
 
 	/**
 	 * Visits a reference to a type parameter.

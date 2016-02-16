@@ -83,7 +83,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -718,10 +717,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 		visitCtTry(tryWithResource);
-	}
-
-	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		throw new RuntimeException("Unknow Element");
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {

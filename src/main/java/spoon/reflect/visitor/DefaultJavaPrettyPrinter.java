@@ -89,7 +89,6 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
@@ -1860,14 +1859,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (tryWithResource.getFinalizer() != null) {
 			write(" finally ");
 			scan(tryWithResource.getFinalizer());
-		}
-	}
-
-	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		write(typeParameter.getSimpleName());
-		if (typeParameter.getSuperType() != null) {
-			write(" extends ");
-			scan(typeParameter.getSuperType());
 		}
 	}
 

@@ -18,10 +18,8 @@ package spoon.reflect.factory;
 
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -347,37 +345,6 @@ public class TypeFactory extends SubFactory {
 	 */
 	protected int hasPackage(String qualifiedName) {
 		return qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
-	}
-
-	/**
-	 * Creates a type parameter with no bounds.
-	 *
-	 * @param owner
-	 * 		the owning declaration
-	 * @param name
-	 * 		the name of the formal parameter
-	 */
-	public CtTypeParameter createTypeParameter(CtElement owner, String name) {
-		CtTypeParameter typeParam = factory.Core().createTypeParameter();
-		typeParam.setSimpleName(name);
-		return typeParam;
-	}
-
-	/**
-	 * Creates a type parameter.
-	 *
-	 * @param owner
-	 * 		the owning declaration
-	 * @param name
-	 * 		the name of the formal parameter
-	 * @param bounds
-	 * 		the bounds
-	 */
-	public CtTypeParameter createTypeParameter(CtElement owner, String name, List<CtTypeReference<?>> bounds) {
-		CtTypeParameter typeParam = factory.Core().createTypeParameter();
-		typeParam.setSimpleName(name);
-		typeParam.setSuperType(createIntersectionTypeReference(bounds));
-		return typeParam;
 	}
 
 	/**
