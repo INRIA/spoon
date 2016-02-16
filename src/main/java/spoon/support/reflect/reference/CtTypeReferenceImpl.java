@@ -17,7 +17,6 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -33,7 +32,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -173,14 +171,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName() + CtType.INNERTTYPE_SEPARATOR + getSimpleName();
 		} else if (getPackage() != null && !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(getPackage().getSimpleName())) {
-			if (!getAnnotations().isEmpty()) {
-				String qualifiedName = getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR;
-				for (CtAnnotation<? extends Annotation> ctAnnotation : getAnnotations()) {
-					qualifiedName += "@" + ctAnnotation.getAnnotationType().getQualifiedName() + " ";
-				}
-				qualifiedName += getSimpleName();
-				return qualifiedName;
-			}
 			return getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR + getSimpleName();
 		} else {
 			return getSimpleName();
