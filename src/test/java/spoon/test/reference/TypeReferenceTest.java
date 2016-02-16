@@ -224,18 +224,29 @@ public class TypeReferenceTest {
 
 		final CtTypeParameterReference genericType = (CtTypeParameterReference) returnType.getActualTypeArguments().get(0);
 		assertNotNull(genericType);
-		assertEquals(1, genericType.getBounds().size());
+		assertNotNull(genericType.getBoundingType());
 
-		final CtTypeReference<?> extendsGeneric = genericType.getBounds().get(0);
+		// Deprecated.
+		CtTypeReference<?> extendsGeneric = genericType.getBounds().get(0);
 		assertNotNull(extendsGeneric);
 		assertEquals(1, extendsGeneric.getActualTypeArguments().size());
 
-		final CtTypeParameterReference genericExtends = (CtTypeParameterReference) extendsGeneric.getActualTypeArguments().get(0);
+		CtTypeParameterReference genericExtends = (CtTypeParameterReference) extendsGeneric.getActualTypeArguments().get(0);
 		assertNotNull(genericExtends);
-		assertEquals(1, genericExtends.getBounds().size());
+		assertNotNull(genericExtends.getBounds().get(0));
 
-		final CtTypeReference<?> circularRef = genericExtends.getBounds().get(0);
-		assertTrue(circularRef instanceof CtCircularTypeReference);
+		assertTrue(genericExtends.getBounds().get(0) instanceof CtCircularTypeReference);
+
+		// New.
+		extendsGeneric = genericType.getBoundingType();
+		assertNotNull(extendsGeneric);
+		assertEquals(1, extendsGeneric.getActualTypeArguments().size());
+
+		genericExtends = (CtTypeParameterReference) extendsGeneric.getActualTypeArguments().get(0);
+		assertNotNull(genericExtends);
+		assertNotNull(genericExtends.getBoundingType());
+
+		assertTrue(genericExtends.getBoundingType() instanceof CtCircularTypeReference);
 	}
 
 	@Test
@@ -250,9 +261,9 @@ public class TypeReferenceTest {
 
 		final CtTypeParameterReference genericType = (CtTypeParameterReference) asEnum.getFormalTypeParameters().get(0);
 		assertNotNull(genericType);
-		assertEquals(1, genericType.getBounds().size());
+		assertNotNull(genericType.getBoundingType());
 
-		final CtTypeReference<?> extendsGeneric = genericType.getBounds().get(0);
+		final CtTypeReference<?> extendsGeneric = genericType.getBoundingType();
 		assertNotNull(extendsGeneric);
 		assertEquals(1, extendsGeneric.getActualTypeArguments().size());
 
@@ -341,11 +352,17 @@ public class TypeReferenceTest {
 		final CtTypeReference<?> second = superInterface.getActualTypeArguments().get(1);
 		assertTrue(second instanceof CtTypeParameterReference);
 		assertEquals("?", second.getSimpleName());
+
 		final List<CtTypeReference<?>> bounds = ((CtTypeParameterReference) second).getBounds();
 		assertEquals(1, bounds.size());
 		assertEquals("Tacos", bounds.get(0).getSimpleName());
 		assertEquals(1, bounds.get(0).getActualTypeArguments().size());
 		assertEquals("?", bounds.get(0).getActualTypeArguments().get(0).getSimpleName());
+
+		final CtTypeReference<?> bound = ((CtTypeParameterReference) second).getBoundingType();
+		assertEquals("Tacos", bound.getSimpleName());
+		assertEquals(1, bound.getActualTypeArguments().size());
+		assertEquals("?", bound.getActualTypeArguments().get(0).getSimpleName());
 		assertEquals("example.FooBar", superInterface.getDeclaringType().getQualifiedName());
 		assertEquals("example.FooBar<?, ? extends Tacos<?>>.Bar<?, ? extends Tacos<?>>", superInterface.toString());
 	}

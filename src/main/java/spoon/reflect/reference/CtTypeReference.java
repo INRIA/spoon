@@ -101,4 +101,9 @@ public interface CtTypeReference<T> extends CtReference, CtGenericElementReferen
 	 * Replaces a type reference by another one.
 	 */
 	void replace(CtTypeReference<?> reference);
+
+	/**
+	 * Casts the type reference in {@link CtIntersectionTypeReference}.
+	 */
+	CtIntersectionTypeReference<T> asCtIntersectionTypeReference();
 }

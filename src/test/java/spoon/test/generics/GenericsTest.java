@@ -34,16 +34,12 @@ import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -73,8 +69,8 @@ public class GenericsTest {
 		CtTypeParameterReference generic = (CtTypeParameterReference) type
 				.getFormalTypeParameters().get(0);
 		assertEquals("V", generic.getSimpleName());
-		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic
-				.getBounds().toString());
+		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBounds().toString());
+		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBoundingType().asCtIntersectionTypeReference().getBounds().toString());
 
 		CtMethod<?> node5 = type.getElements(
 				new NameFilter<CtMethod<?>>("node5")).get(0);

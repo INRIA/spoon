@@ -27,31 +27,56 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Gets the bounds (aka generics) of the referenced parameter.
 	 */
+	@Deprecated
 	List<CtTypeReference<?>> getBounds();
 
 	/**
-	 * Returns {@code true} if the bounds are upper bounds.
+	 * Returns {@code true} if the bounds are in <code>extends</code> clause.
+	 * {@code false} means a <code>super</code> clause.
 	 */
 	boolean isUpper();
 
 	/**
 	 * Sets the bounds (aka generics) of the referenced parameter.
 	 */
+	@Deprecated
 	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
-	 * Set to {@code true} if the bounds are upper bounds.
+	 * Set to {@code true} to write <code>extends</code> clause for bounds types.
 	 */
 	<T extends CtTypeParameterReference> T setUpper(boolean upper);
 
 	/**
 	 * Adds a bound.
 	 */
+	@Deprecated
 	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
 	 */
+	@Deprecated
 	boolean removeBound(CtTypeReference<?> bound);
 
+	/**
+	 * A type parameter can have an <code>extends</code> clause which declare
+	 * one ({@link CtTypeReference} or more ({@link CtIntersectionTypeReference} references.
+	 * <pre>
+	 *     // Extends with generics.
+	 *     T extends Interface1
+	 *     // Intersection type with generics.
+	 *     T extends Interface1 & Interface2
+	 *     // Type in cast.
+	 *     (Runnable) () -> System.out.println("");
+	 *     // Intersection type with casts.
+	 *     (Runnable & Serializable) () -> System.out.println("");
+	 * </pre>
+	 */
+	CtTypeReference<?> getBoundingType();
+
+	/**
+	 * Sets the <code>extends</code> clause of the type parameter.
+	 */
+	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 }

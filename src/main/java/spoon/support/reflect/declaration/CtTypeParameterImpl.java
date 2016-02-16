@@ -17,13 +17,13 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtTypeParameter}.
@@ -33,7 +33,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_C
 public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypeParameter {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> bounds = emptyList();
+	CtTypeReference<?> superType;
 
 	public CtTypeParameterImpl() {
 		super();
@@ -46,33 +46,68 @@ public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypePar
 
 	@Override
 	public <T extends CtTypeParameter> T addBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		if (bound == null) {
+			return (T) this;
 		}
-		bound.setParent(this);
-		this.bounds.add(bound);
+		if (getSuperType() == null) {
+			setSuperType(bound);
+		} else if (getSuperType() instanceof CtIntersectionTypeReference<?>) {
+			getSuperType().asCtIntersectionTypeReference().addBound(bound);
+		} else {
+			setSuperType(getFactory().Type().createIntersectionTypeReference(Arrays.asList(getSuperType(), bound)));
+		}
 		return (T) this;
 	}
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		return bounds != CtElementImpl.<CtTypeReference<?>>emptyList() && this.bounds.remove(bound);
+		if (bound == null || getSuperType() == null) {
+			return false;
+		}
+		if (getSuperType() instanceof CtIntersectionTypeReference<?>) {
+			return getSuperType().asCtIntersectionTypeReference().removeBound(bound);
+		} else {
+			setSuperType(null);
+			return true;
+		}
 	}
 
 	@Override
 	public List<CtTypeReference<?>> getBounds() {
-		return bounds;
+		if (getSuperType() instanceof CtIntersectionTypeReference<?>) {
+			return getSuperType().asCtIntersectionTypeReference().getBounds();
+		} else if (getSuperType() != null) {
+			return Collections.<CtTypeReference<?>>singletonList(getSuperType());
+		}
+		return emptyList();
 	}
 
 	@Override
 	public <T extends CtTypeParameter> T setBounds(List<CtTypeReference<?>> bounds) {
-		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		if (bounds == null) {
+			return (T) this;
 		}
-		this.bounds.clear();
-		for (CtTypeReference<?> bound : bounds) {
-			addBound(bound);
+		if (getSuperType() instanceof CtIntersectionTypeReference<?>) {
+			getSuperType().asCtIntersectionTypeReference().setBounds(bounds);
+		} else if (bounds.size() > 1) {
+			setSuperType(getFactory().Type().createIntersectionTypeReference(bounds));
+		} else {
+			setSuperType(bounds.get(0));
 		}
+		return (T) this;
+	}
+
+	@Override
+	public CtTypeReference<?> getSuperType() {
+		return superType;
+	}
+
+	@Override
+	public <T extends CtTypeParameter> T setSuperType(CtTypeReference<?> superType) {
+		if (superType != null) {
+			superType.setParent(this);
+		}
+		this.superType = superType;
 		return (T) this;
 	}
 }

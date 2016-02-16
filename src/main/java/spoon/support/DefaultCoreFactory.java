@@ -84,6 +84,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -155,6 +156,7 @@ import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
+import spoon.support.reflect.reference.CtIntersectionTypeReferenceImpl;
 import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
 import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
@@ -610,6 +612,13 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public CtTypeParameterReference createTypeParameterReference() {
 		CtTypeParameterReference e = new CtTypeParameterReferenceImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReference() {
+		CtIntersectionTypeReference<T> e = new CtIntersectionTypeReferenceImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

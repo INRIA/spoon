@@ -29,13 +29,18 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtIntersectionTypeReference;
+import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.type.testclasses.Pozole;
 
+import java.io.Serializable;
 import java.util.List;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -142,7 +147,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testIntersectionBindingReturnsFirstType() throws Exception {
+	public void testIntersectionTypeReferenceInGenericsAndCasts() throws Exception {
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
@@ -153,11 +158,65 @@ public class TypeTest {
 		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
 		final CtMethod<?> prepare = aPozole.getMethodsByName("prepare").get(0);
 
+		// Intersection type in generic types.
+		final List<CtClass> localTypes = prepare.getElements(new TypeFilter<>(CtClass.class));
+		assertEquals(1, localTypes.size());
+
+		final CtTypeParameterReference generic = (CtTypeParameterReference) localTypes.get(0).getFormalTypeParameters().get(0);
+		assertNotNull(generic);
+		assertEquals("T", generic.getSimpleName());
+		assertNotNull(generic.getBoundingType());
+		assertTrue(generic.getBoundingType() instanceof CtIntersectionTypeReference);
+		assertEquals("java.lang.Runnable & java.io.Serializable", generic.getBoundingType().toString());
+		final CtIntersectionTypeReference<?> superType = generic.getBoundingType().asCtIntersectionTypeReference();
+		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), superType.getBounds().get(0));
+		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), superType.getBounds().get(1));
+
+		// Intersection type in casts.
+		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
+		assertEquals(1, lambdas.size());
+
+		assertEquals(1, lambdas.get(0).getTypeCasts().size());
+		assertTrue(lambdas.get(0).getTypeCasts().get(0) instanceof CtIntersectionTypeReference);
+		final CtIntersectionTypeReference<?> intersectionType = lambdas.get(0).getTypeCasts().get(0).asCtIntersectionTypeReference();
+		assertEquals("java.lang.Runnable & java.io.Serializable", intersectionType.toString());
+		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), intersectionType.getBounds().get(0));
+		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), intersectionType.getBounds().get(1));
+
+		canBeBuilt(target, 8, true);
+	}
+
+	@Test
+	public void testTypeReferenceInGenericsAndCasts() throws Exception {
+		final String target = "./target/type";
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
+		launcher.setSourceOutputDirectory(target);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
+		final CtMethod<?> prepare = aPozole.getMethodsByName("finish").get(0);
+
+		// Intersection type in generic types.
+		final List<CtClass> localTypes = prepare.getElements(new TypeFilter<>(CtClass.class));
+		assertEquals(1, localTypes.size());
+
+		final CtTypeParameterReference generic = (CtTypeParameterReference) localTypes.get(0).getFormalTypeParameters().get(0);
+		assertNotNull(generic);
+		assertEquals("T", generic.getSimpleName());
+		assertNotNull(generic.getBoundingType());
+		assertTrue(generic.getBoundingType() instanceof CtTypeReference);
+		assertEquals("java.lang.Runnable", generic.getBoundingType().toString());
+		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), generic.getBoundingType());
+
+		// Intersection type in casts.
 		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
 		assertEquals(1, lambdas.size());
 
 		assertEquals(1, lambdas.get(0).getTypeCasts().size());
 		assertEquals("java.lang.Runnable", lambdas.get(0).getTypeCasts().get(0).toString());
+		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), lambdas.get(0).getTypeCasts().get(0));
 
 		canBeBuilt(target, 8, true);
 	}

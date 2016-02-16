@@ -52,6 +52,14 @@ public class Pozole<A extends Annotation> {
 	}
 
 	public void prepare() {
+		class Test<T extends Runnable & Serializable> {
+		}
 		final Runnable runnable = (Runnable & Serializable) () -> System.err.println("");
+	}
+
+	public void finish() {
+		class Test<T extends Runnable> {
+		}
+		final Runnable runnable = (Runnable) () -> System.err.println("");
 	}
 }

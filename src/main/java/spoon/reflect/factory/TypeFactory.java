@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -375,7 +376,7 @@ public class TypeFactory extends SubFactory {
 	public CtTypeParameter createTypeParameter(CtElement owner, String name, List<CtTypeReference<?>> bounds) {
 		CtTypeParameter typeParam = factory.Core().createTypeParameter();
 		typeParam.setSimpleName(name);
-		typeParam.setBounds(bounds);
+		typeParam.setSuperType(createIntersectionTypeReference(bounds));
 		return typeParam;
 	}
 
@@ -402,8 +403,26 @@ public class TypeFactory extends SubFactory {
 	public CtTypeParameterReference createTypeParameterReference(String name, List<CtTypeReference<?>> bounds) {
 		CtTypeParameterReference typeParam = factory.Core().createTypeParameterReference();
 		typeParam.setSimpleName(name);
-		typeParam.setBounds(bounds);
+		typeParam.setBoundingType(createIntersectionTypeReference(bounds));
 		return typeParam;
+	}
+
+	/**
+	 * Creates an intersection type reference.
+	 *
+	 * @param bounds
+	 * 		List of bounds saved in the intersection type. The first bound will be the intersection type.
+	 * @param <T>
+	 * 		Type of the first bound.
+	 */
+	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReference(List<CtTypeReference<?>> bounds) {
+		final CtIntersectionTypeReference<T> intersectionRef = factory.Core().createIntersectionTypeReference();
+		intersectionRef.setSimpleName(bounds.get(0).getSimpleName());
+		intersectionRef.setDeclaringType(bounds.get(0).getDeclaringType());
+		intersectionRef.setPackage(bounds.get(0).getPackage());
+		intersectionRef.setActualTypeArguments(bounds.get(0).getActualTypeArguments());
+		intersectionRef.setBounds(bounds);
+		return intersectionRef;
 	}
 
 }

@@ -80,6 +80,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -402,6 +403,11 @@ public interface CoreFactory {
 	 * Creates a type parameter reference.
 	 */
 	CtTypeParameterReference createTypeParameterReference();
+
+	/**
+	 * Creates an intersection type reference.
+	 */
+	<T> CtIntersectionTypeReference<T> createIntersectionTypeReference();
 
 	/**
 	 * Creates a type reference.

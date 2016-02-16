@@ -84,6 +84,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -663,7 +664,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
 		enter(typeParameter);
 		scan(typeParameter.getAnnotations());
-		scan(typeParameter.getBounds());
+		scan(typeParameter.getSuperType());
 		exit(typeParameter);
 	}
 
@@ -673,8 +674,15 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ref.getDeclaringType());
 		scan(ref.getActualTypeArguments());
 		scan(ref.getAnnotations());
-		scan(ref.getBounds());
+		scan(ref.getBoundingType());
 		exit(ref);
+	}
+
+	@Override
+	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
+		enter(reference);
+		scan(reference.getBounds());
+		exit(reference);
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {

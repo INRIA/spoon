@@ -16,9 +16,10 @@
  */
 package spoon.reflect.declaration;
 
-import java.util.List;
-
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
 
 /**
  * This element defines a type parameter (aka generics).
@@ -30,22 +31,37 @@ public interface CtTypeParameter extends CtNamedElement {
 	 * the <i>extends</i> clause. If there is no explicit <i>extends</i> clause,
 	 * then <tt>java.lang.Object</tt> is considered to be the sole bound.
 	 */
+	@Deprecated
 	List<CtTypeReference<?>> getBounds();
 
 	/**
 	 * Sets the bounds of this type parameter.
 	 */
+	@Deprecated
 	<T extends CtTypeParameter> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * @param bounds
 	 * @return
 	 */
+	@Deprecated
 	<T extends CtTypeParameter> T addBound(CtTypeReference<?> bounds);
 
 	/**
 	 * @param bounds
 	 * @return
 	 */
+	@Deprecated
 	boolean removeBound(CtTypeReference<?> bounds);
+
+	/**
+	 * A type parameter can have an <code>extends</code> clause which declare
+	 * one ({@link CtTypeReference} or more ({@link CtIntersectionTypeReference} references.
+	 */
+	CtTypeReference<?> getSuperType();
+
+	/**
+	 * Sets the <code>extends</code> clause of the type parameter.
+	 */
+	<T extends CtTypeParameter> T setSuperType(CtTypeReference<?> superType);
 }

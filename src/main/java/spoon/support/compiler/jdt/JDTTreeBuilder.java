@@ -646,7 +646,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (name.contains("extends") || name.contains("super")) {
 				String[] split = name.contains("extends") ? name.split("extends") : name.split("super");
 				param.setSimpleName(split[0].trim());
-				param.addBound(getTypeReference(split[split.length - 1].trim()));
+				param.setBoundingType(getTypeReference(split[split.length - 1].trim()));
 			} else if (name.matches(".*(<.+>)")) {
 				Pattern pattern = Pattern.compile("([^<]+)<(.+)>");
 				Matcher m = pattern.matcher(name);
@@ -754,17 +754,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 					} else if (b.superclass != null && b.firstBound == b.superclass) {
 						bounds = false;
 						bindingCache.put(binding, ref);
-						((CtTypeParameterReference) ref).addBound(getTypeReference(b.superclass));
+						((CtTypeParameterReference) ref).setBoundingType(getTypeReference(b.superclass));
 						bounds = oldBounds;
 					}
 				}
 				if (bounds && b.superInterfaces != null && b.superInterfaces != Binding.NO_SUPERINTERFACES) {
 					bounds = false;
 					bindingCache.put(binding, ref);
-					for (int i = 0, length = b.superInterfaces.length; i < length; i++) {
-						TypeBinding tb = b.superInterfaces[i];
-						((CtTypeParameterReference) ref).addBound(getTypeReference(tb));
+					List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>(b.superInterfaces.length);
+					for (ReferenceBinding superInterface : b.superInterfaces) {
+						bounds.add(getTypeReference(superInterface));
 					}
+					((CtTypeParameterReference) ref).setBoundingType(factory.Type().createIntersectionTypeReference(bounds));
 				}
 				if (binding instanceof CaptureBinding) {
 					bounds = false;
@@ -798,9 +799,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (((WildcardBinding) binding).bound != null && ref instanceof CtTypeParameterReference) {
 					if (bindingCache.containsKey(((WildcardBinding) binding).bound)) {
 						final CtCircularTypeReference circularRef = getCtCircularTypeReference(((WildcardBinding) binding).bound);
-						((CtTypeParameterReference) ref).addBound(circularRef);
+						((CtTypeParameterReference) ref).setBoundingType(circularRef);
 					} else {
-						((CtTypeParameterReference) ref).addBound(getTypeReference(((WildcardBinding) binding).bound));
+						((CtTypeParameterReference) ref).setBoundingType(getTypeReference(((WildcardBinding) binding).bound));
 					}
 				}
 			} else if (binding instanceof LocalTypeBinding) {
@@ -876,7 +877,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setSimpleName(new String(binding.sourceName()));
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else if (binding instanceof IntersectionTypeBinding18) {
-				ref = getTypeReference(binding.getIntersectingTypes()[0]);
+				List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>(binding.getIntersectingTypes().length);
+				for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
+					bounds.add(getTypeReference(superInterface));
+				}
+				ref = factory.Type().createIntersectionTypeReference(bounds);
 			} else {
 				throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 			}
