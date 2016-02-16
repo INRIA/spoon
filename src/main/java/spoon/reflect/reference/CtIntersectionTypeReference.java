@@ -25,7 +25,7 @@ public interface CtIntersectionTypeReference<T> extends CtTypeReference<T> {
 	/**
 	 * Gets the bounds of the intersection type. Note that the first bound correspond to the current intersection type.
 	 * <pre>
-	 *     T extends Interface1 & Interface2 // CtTypeParameterReference#getBoundingType == Interface1 and getBounds().get(0) == Interface1
+	 *     T extends Interface1 &amp; Interface2 // CtTypeParameterReference#getBoundingType == Interface1 and getBounds().get(0) == Interface1
 	 * </pre>
 	 */
 	List<CtTypeReference<?>> getBounds();

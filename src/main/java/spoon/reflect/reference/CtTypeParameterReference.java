@@ -65,11 +65,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *     // Extends with generics.
 	 *     T extends Interface1
 	 *     // Intersection type with generics.
-	 *     T extends Interface1 & Interface2
-	 *     // Type in cast.
-	 *     (Runnable) () -> System.out.println("");
-	 *     // Intersection type with casts.
-	 *     (Runnable & Serializable) () -> System.out.println("");
+	 *     T extends Interface1 &amp; Interface2
 	 * </pre>
 	 */
 	CtTypeReference<?> getBoundingType();

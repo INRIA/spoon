@@ -353,12 +353,14 @@ public class TypeReferenceTest {
 		assertTrue(second instanceof CtTypeParameterReference);
 		assertEquals("?", second.getSimpleName());
 
+		// Deprecated.
 		final List<CtTypeReference<?>> bounds = ((CtTypeParameterReference) second).getBounds();
 		assertEquals(1, bounds.size());
 		assertEquals("Tacos", bounds.get(0).getSimpleName());
 		assertEquals(1, bounds.get(0).getActualTypeArguments().size());
 		assertEquals("?", bounds.get(0).getActualTypeArguments().get(0).getSimpleName());
 
+		// New.
 		final CtTypeReference<?> bound = ((CtTypeParameterReference) second).getBoundingType();
 		assertEquals("Tacos", bound.getSimpleName());
 		assertEquals(1, bound.getActualTypeArguments().size());
