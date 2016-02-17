@@ -1617,11 +1617,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		// call and the declaring type of the type of the constructor call are equals or not.
 		// If yes, Bar is a intern class of Foo and we don't need to print fully qualified name.
 		// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593
-		CtType<?> topLevelType = getTopLevelType(ctConstructorCall);
-		CtTypeReference<?> constructorDeclaringType = ctConstructorCall.getType().getDeclaringType();
-		if (topLevelType != null
-				&& topLevelType.getReference().equals(constructorDeclaringType)
-				&& constructorDeclaringType.getActualTypeArguments().size() > 0) {
+		if (hasDeclaringTypeWithGenerics(ctConstructorCall.getType())) {
 			context.ignoreEnclosingClass = true;
 		}
 
@@ -1650,38 +1646,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(ctConstructorCall);
 	}
 
-	/**
-	 * Get the top level type. The method returns null if the parent is not initialized.
-	 * @param e the element
-	 * @return the top level types or null if not initialized.
-	 */
-	private CtType<?> getTopLevelType(CtElement e) {
-		CtType parent;
-		try {
-			parent = e.getParent(CtType.class);
-		} catch (ParentNotInitializedException ex) {
-			parent = null;
+	private <T> boolean hasDeclaringTypeWithGenerics(CtTypeReference<T> reference) {
+		// We don't have a declaring type, it can't have generics.
+		if (reference == null) {
+			return false;
 		}
-		if (parent == null && this instanceof CtType) {
-			return (CtType<?>) this;
+		// If the declaring type isn't a type, we don't need this hack.
+		if (reference.getDeclaringType() == null) {
+			return false;
 		}
-		return getTypeParent(parent);
-	}
-
-	private CtType<?> getTypeParent(CtType<?> parent) {
-		if (parent == null) {
-			return null;
+		// If current reference is a class declared in a method, we don't need this hack.
+		if (reference.isLocalType()) {
+			return false;
 		}
-		CtType typeParent;
-		try {
-			typeParent = parent.getParent(CtType.class);
-		} catch (ParentNotInitializedException ex) {
-			typeParent = null;
+		// If declaring type have generics, we return true.
+		if (reference.getDeclaringType().getActualTypeArguments().size() != 0) {
+			return true;
 		}
-		if (typeParent == null) {
-			return parent;
-		}
-		return getTypeParent(typeParent);
+		// Checks if the declaring type has generic types.
+		return hasDeclaringTypeWithGenerics(reference.getDeclaringType());
 	}
 
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
