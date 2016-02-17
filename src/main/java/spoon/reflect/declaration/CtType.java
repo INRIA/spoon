@@ -104,7 +104,16 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	boolean isTopLevel();
 
 	/**
-	 * add a Field
+	 * Adds a field at the top of the type (before static block).
+	 * Note that the position of these field will be negative to be written at the top of the type.
+	 *
+	 * @param field
+	 * @return <tt>true</tt> if the field is added.
+	 */
+	<F, C extends CtType<T>> C addFieldAtTop(CtField<F> field);
+
+	/**
+	 * add a field at the end of the field list.
 	 *
 	 * @param field
 	 * @return <tt>true</tt> if this element changed as a result of the call

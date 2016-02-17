@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -73,6 +74,22 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	public CtTypeImpl() {
 		super();
+	}
+
+	@Override
+	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
+		if (!this.fields.contains(field)) {
+			field.setParent(this);
+			CompilationUnit compilationUnit = null;
+			if (getPosition() != null) {
+				compilationUnit = getPosition().getCompilationUnit();
+			}
+			field.setPosition(getFactory().Core().createSourcePosition(compilationUnit, -1, -1, -1, new int[0]));
+			this.fields.add(field);
+		}
+
+		// field already exists
+		return (C) this;
 	}
 
 	@Override

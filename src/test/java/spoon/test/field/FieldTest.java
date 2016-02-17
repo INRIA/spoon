@@ -19,13 +19,21 @@ package spoon.test.field;
 
 import org.junit.Test;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.support.reflect.cu.CtLineElementComparator;
+import spoon.support.util.SortedList;
+import spoon.test.field.testclasses.AddFieldAtTop;
 
+import java.io.File;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.testing.Assert.assertThat;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class FieldTest {
@@ -51,6 +59,30 @@ public class FieldTest {
 		assertEquals(first, fieldClass.getFields().get(0));
 		assertEquals(third, fieldClass.getFields().get(1));
 		assertEquals(second, fieldClass.getFields().get(2));
+	}
+
+	@Test
+	public void testAddFieldsAtTop() throws Exception {
+		// contract: When we use CtType#addFieldAtTop, field added should be printed at the top of the type.
+		final CtClass<AddFieldAtTop> aClass = (CtClass<AddFieldAtTop>) buildClass(AddFieldAtTop.class);
+
+		assertEquals(1, aClass.getFields().size());
+
+		final CtField<String> generated = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().STRING, "generated");
+		aClass.addFieldAtTop(generated);
+		final CtField<String> generated2 = aClass.getFactory().Field().create(null, new HashSet<>(), aClass.getFactory().Type().STRING, "generated2");
+		aClass.addFieldAtTop(generated2);
+
+		assertEquals(3, aClass.getFields().size());
+		// For now, DefaultJavaPrettyPrinter sorts elements according to their position.
+		final SortedList<CtElement> sorted = new SortedList<CtElement>(new CtLineElementComparator());
+		sorted.addAll(aClass.getFields());
+		sorted.addAll(aClass.getAnonymousExecutables());
+		assertEquals(generated, sorted.get(0));
+		assertEquals(generated2, sorted.get(1));
+		assertEquals(aClass.getAnonymousExecutables().get(0), sorted.get(2));
+
+		assertThat(aClass).isEqualTo(build(new File("./src/test/resources/expected/AddFieldAtTop.java")).Type().get("AddFieldAtTop"));
 	}
 
 	private CtField<Integer> createField(Factory factory, HashSet<ModifierKind> modifiers, String name) {
