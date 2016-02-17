@@ -1,16 +1,6 @@
 package spoon.test.generics;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
-import static spoon.testing.utils.ModelUtils.createFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
@@ -32,7 +22,6 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtImplicitTypeReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -44,6 +33,20 @@ import spoon.support.StandardEnvironment;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.Assert.assertThat;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class GenericsTest {
 
@@ -450,7 +453,6 @@ public class GenericsTest {
 		assertEquals("? extends java.lang.Long", apply.getParameters().get(0).getType().getActualTypeArguments().get(0).toString());
 	}
 
-
 	@Test
 	public void testGenericInField() throws Exception {
 		final Factory build = build(Spaghetti.class);
@@ -462,5 +464,26 @@ public class GenericsTest {
 		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<B>.That<java.lang.String, java.lang.String> field;"));
 		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<java.lang.String>.That<java.lang.String, java.lang.String> field1;"));
 		assertTrue(aSpaghetti.toString().contains("private spoon.test.generics.testclasses.Spaghetti<java.lang.Number>.That<java.lang.String, java.lang.String> field2;"));
+	}
+
+	@Test
+	public void testGenericsInQualifiedNameInConstructorCall() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/java/spoon/test/generics/testclasses/",
+				"-o", "./target/spooned/"
+		});
+
+		final CtClass<Tacos> aTacos = launcher.getFactory().Class().get(Tacos.class);
+		final CtType<?> burritos = aTacos.getNestedType("Burritos");
+
+		final List<CtConstructorCall> elements = burritos.getElements(new TypeFilter<>(CtConstructorCall.class));
+		assertEquals(2, elements.size());
+		assertEquals(0, elements.get(0).getExecutable().getType().getActualTypeArguments().size());
+		assertNotNull(elements.get(0).getType().getDeclaringType());
+		assertEquals("new Pozole()", elements.get(0).toString());
+		assertEquals(2, elements.get(1).getExecutable().getType().getActualTypeArguments().size());
+		assertNotNull(elements.get(1).getType().getDeclaringType());
+		assertEquals("new Burritos<K, V>()", elements.get(1).toString());
 	}
 }

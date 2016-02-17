@@ -1,11 +1,8 @@
 package spoon.test.generics.testclasses;
 
 import javax.lang.model.util.SimpleTypeVisitor7;
-import java.util.AbstractSet;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class Tacos<K, V extends String> implements ITacos<V> {
 
@@ -50,6 +47,17 @@ public class Tacos<K, V extends String> implements ITacos<V> {
 	}
 
 	class Burritos<K, V> implements IBurritos<K, V> {
+		Tacos<K, String>.Burritos<K, V> burritos;
+		public Tacos<K, String>.Burritos<K, V> b() {
+			new Burritos<K, V>();
+			return null;
+		}
+		class Pozole {
+			public Tacos<K, String>.Burritos<K, V>.Pozole p() {
+				new Pozole();
+				return null;
+			}
+		}
 	}
 
 	public class BeerFactory {
