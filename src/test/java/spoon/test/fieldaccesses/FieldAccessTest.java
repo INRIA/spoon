@@ -7,14 +7,17 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
@@ -23,6 +26,7 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
+import spoon.test.fieldaccesses.testclasses.Tacos;
 import spoon.testing.Assert;
 
 import java.util.List;
@@ -277,5 +281,48 @@ public class FieldAccessTest {
 		assertEquals(1, elements.size());
 		assertTrue(elements.get(0).getType().getDeclaringType().isAnonymous());
 		assertThat(elements.get(0)).isEqualTo("private final Test test = new Test();");
+	}
+
+	@Test
+	public void testFieldAccessDeclaredInADefaultClass() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Tacos.java");
+		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/internal/Foo.java");
+		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/internal/Bar.java");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
+		final CtType<Object> aFoo = launcher.getFactory().Type().get("spoon.test.fieldaccesses.testclasses.internal.Foo");
+		final CtTypeAccess<Object> aFooAccess = launcher.getFactory().Code().createTypeAccess(aFoo.getReference());
+		final CtType<Object> aSubInner = launcher.getFactory().Type().get("spoon.test.fieldaccesses.testclasses.internal.Bar$Inner$SubInner");
+		aFoo.addNestedType(aSubInner);
+		final CtTypeAccess<Object> aSubInnerAccess = launcher.getFactory().Code().createTypeAccess(aSubInner.getReference());
+		final CtType<Object> aKnowOrder = launcher.getFactory().Type().get("spoon.test.fieldaccesses.testclasses.internal.Bar$Inner$KnownOrder");
+		aFoo.addNestedType(aKnowOrder);
+		final CtTypeAccess<Object> aKnownOrderAccess = launcher.getFactory().Code().createTypeAccess(aKnowOrder.getReference());
+		final CtMethod<Object> aMethod = aTacos.getMethod("m");
+		final List<CtInvocation<?>> invs = aMethod.getElements(new TypeFilter<>(CtInvocation.class));
+
+		assertEquals(aFooAccess, ((CtFieldAccess) invs.get(0).getArguments().get(0)).getTarget());
+		assertEquals("inv(spoon.test.fieldaccesses.testclasses.internal.Foo.i)", invs.get(0).toString());
+		assertEquals(aFooAccess, ((CtFieldAccess) invs.get(1).getArguments().get(0)).getTarget());
+		assertEquals("inv(spoon.test.fieldaccesses.testclasses.internal.Foo.i)", invs.get(1).toString());
+		assertEquals(aSubInnerAccess, ((CtFieldAccess) invs.get(2).getArguments().get(0)).getTarget());
+		assertEquals("inv(spoon.test.fieldaccesses.testclasses.internal.Foo.SubInner.j)", invs.get(2).toString());
+		assertEquals(aSubInnerAccess, ((CtFieldAccess) invs.get(3).getArguments().get(0)).getTarget());
+		assertEquals("inv(spoon.test.fieldaccesses.testclasses.internal.Foo.SubInner.j)", invs.get(3).toString());
+		assertEquals(aKnownOrderAccess, ((CtFieldAccess) invs.get(4).getArguments().get(0)).getTarget());
+		assertEquals("runIteratorTest(spoon.test.fieldaccesses.testclasses.internal.Foo.KnownOrder.KNOWN_ORDER)", invs.get(4).toString());
+		assertEquals(aKnownOrderAccess, ((CtFieldAccess) invs.get(5).getArguments().get(0)).getTarget());
+		assertEquals("runIteratorTest(spoon.test.fieldaccesses.testclasses.internal.Foo.KnownOrder.KNOWN_ORDER)", invs.get(5).toString());
+
+		final CtParameter<?> aKnownOrderParameter = aTacos.getMethod("runIteratorTest", aKnowOrder.getReference()).getParameters().get(0);
+		assertEquals(aKnowOrder.getReference(), aKnownOrderParameter.getType());
+		assertEquals("spoon.test.fieldaccesses.testclasses.internal.Foo.KnownOrder knownOrder", aKnownOrderParameter.toString());
+
+		final CtParameter<?> aSubInnerParameter = aTacos.getMethod("inv", aSubInner.getReference()).getParameters().get(0);
+		assertEquals(aSubInner.getReference(), aSubInnerParameter.getType());
+		assertEquals("spoon.test.fieldaccesses.testclasses.internal.Foo.SubInner foo", aSubInnerParameter.toString());
 	}
 }
