@@ -3,17 +3,16 @@ package spoon.test.fieldaccesses;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -23,6 +22,8 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.fieldaccesses.testclasses.Panini;
+import spoon.test.fieldaccesses.testclasses.Pozole;
+import spoon.testing.Assert;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -31,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.Assert.*;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -263,5 +265,17 @@ public class FieldAccessTest {
 		assertEquals(1, arrays.size());
 		assertEquals("array[0] += 0", arrays.get(0).getParent().toString());
 		assertEquals("array[0]", arrays.get(0).toString());
+	}
+
+	@Test
+	public void testTypeDeclaredInAnonymousClass() throws Exception {
+		// contract: Type declared in an anonymous class shouldn't include the anonymous qualified name
+		// in its own fully qualified name.
+		final CtType<Pozole> aPozole = buildClass(Pozole.class);
+		final List<CtField> elements = aPozole.getElements(new TypeFilter<>(CtField.class));
+
+		assertEquals(1, elements.size());
+		assertTrue(elements.get(0).getType().getDeclaringType().isAnonymous());
+		assertThat(elements.get(0)).isEqualTo("private final Test test = new Test();");
 	}
 }
