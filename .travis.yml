@@ -4,7 +4,9 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn verify javadoc:javadoc site jacoco:report coveralls:report -Pcoveralls
+  # Verify includes checkstyle, license and animal sniffer.
+  - mvn verify javadoc:javadoc site
+  - mvn test jacoco:report coveralls:report -Pcoveralls --fail-never
 
 cache:
   directories:
