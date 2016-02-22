@@ -402,6 +402,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (methods == CtElementImpl.<CtMethod<?>>emptySet()) {
 			methods = new TreeSet<CtMethod<?>>();
 		}
+		for (CtMethod m: new ArrayList<CtMethod<?>>(methods)) {
+			if (m.getSignature().equals(method.getSignature())) {
+				// replace old method by new one (based on signature and not equality)
+				// we have to do it by hand
+				methods.remove(m);
+			} else {
+				// checking contract signature implies equal
+				if (m.equals(method)) {
+					throw new AssertionError("violation of core contract! different signature but same equal");
+				}
+			}
+		}
 		method.setParent(this);
 		methods.add(method);
 		return (C) this;
@@ -625,18 +637,32 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return l;
 	}
 
+	/** puts all methods of from in destination based on signatures only */
+	private void addAllBasedOnSignature(Set<CtMethod<?>> from, Set<CtMethod<?>> destination) {
+		List<String> signatures = new ArrayList<String>();
+		for (CtMethod<?> m: destination) {
+			signatures.add(m.getSignature());
+		}
+
+		for (CtMethod<?> m: from) {
+			if (!signatures.contains(m.getSignature())) {
+				destination.add(m);
+			}
+		}
+	}
+
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> l = new HashSet<CtMethod<?>>(getMethods());
 		if ((getSuperclass() != null) && (getSuperclass().getDeclaration() != null)) {
 			CtType<?> t = getSuperclass().getDeclaration();
-			l.addAll(t.getAllMethods());
+			addAllBasedOnSignature(t.getAllMethods(), l);
 		}
 
 		for (CtTypeReference<?> ref : getSuperInterfaces()) {
 			if (ref.getDeclaration() != null) {
 				CtType<?> t = ref.getDeclaration();
-				l.addAll(t.getAllMethods());
+				addAllBasedOnSignature(t.getAllMethods(), l);
 			}
 		}
 

@@ -41,17 +41,15 @@ public class EqualTest {
 		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getStatement(0);
 
 		CtLiteral<?> argument1 = (CtLiteral<?>) invo.getArguments().get(0);
-
-		String signatureArg1= argument1.getSignature();
 		
-		assertEquals(realParam1 , signatureArg1);
+		assertEquals(realParam1 , argument1.toString());
 		
 		
 		CtReturn<?> returnStatement = (CtReturn<?>) method.getBody().getStatement(1);
 		
 		CtLiteral<?> returnExp = (CtLiteral<?>) returnStatement.getReturnedExpression();
 		
-		assertEquals(realParam1 , returnExp.getSignature() );
+		assertEquals(realParam1 , returnExp.toString() );
 		
 		try{
 			assertEquals(argument1, returnExp);

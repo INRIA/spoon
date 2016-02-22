@@ -1,20 +1,20 @@
 package spoon.reflect.declaration;
 
+import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.build;
+
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import spoon.reflect.declaration.testclasses.ExtendsObject;
 import spoon.reflect.declaration.testclasses.Subclass;
 import spoon.reflect.declaration.testclasses.Subinterface;
 import spoon.reflect.declaration.testclasses.TestInterface;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static spoon.testing.utils.ModelUtils.build;
 
 public class CtTypeInformationTest {
 	private Factory factory;
@@ -54,11 +54,8 @@ public class CtTypeInformationTest {
 		CtMethod<?> fooConcrete = type.getMethodsByName("foo").get(0);
 		CtMethod<?> fooAbstract = type2.getMethodsByName("foo").get(0);
 		assertEquals(fooConcrete.getSignature(), fooAbstract.getSignature());
-		// and they are in considered the same in a set
-		Set<CtMethod<?>> l = new HashSet<CtMethod<?>>();
-		l.add(fooConcrete);
-		l.add(fooAbstract);
-		assertEquals(1, l.size());
+		// yet they are different AST node
+		Assert.assertNotEquals(fooConcrete, fooAbstract);
 
 		assertEquals(type.getMethodsByName("foo").get(0).getSignature(),
 				type2.getMethodsByName("foo").get(0).getSignature());

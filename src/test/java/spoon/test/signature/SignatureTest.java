@@ -1,15 +1,22 @@
 package spoon.test.signature;
 
-import static org.junit.Assert.*;
-
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.List;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonCompiler;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
@@ -19,10 +26,12 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
@@ -51,7 +60,6 @@ public class SignatureTest {
 		CtExpression<?> lit = returnEl.getReturnedExpression();
 		assertTrue(lit instanceof CtLiteral);
 		assertEquals("null", lit.toString());
-		assertEquals("null", lit.getSignature());
 
 		// since the signature is null, CtElement.equals throws an exception and
 		// should not
@@ -77,7 +85,7 @@ public class SignatureTest {
 
 		String unboundVarAccess = "Complex.I";
 
-		String content = "" + "class X {" + "public Object foo() {"
+		String content = "" + "class X {" + "public Object foo(java.util.List<String> l) {"
 				+ " Integer.toString(" + unboundVarAccess + ");"
 				+ " return null;" + "}};";
 
@@ -91,18 +99,14 @@ public class SignatureTest {
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
 
 		CtMethod<?> method = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+		assertEquals("java.lang.Object foo(java.util.List)", method.getSignature());
+
 
 		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getStatement(0);
 
 		CtExpression<?> argument1 = invo.getArguments().get(0);
 
-		String signatureUnbound = argument1.getSignature();
-
-		assertTrue(unboundVarAccess.equals(signatureUnbound));
-
-		String toStringUnbound = argument1.toString();
-
-		assertTrue(unboundVarAccess.equals(toStringUnbound));
+		assertEquals(unboundVarAccess, argument1.toString());
 
 	}
 
@@ -110,8 +114,7 @@ public class SignatureTest {
 	public void testLiteralSignature(){
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
 				new StandardEnvironment());
-		String stConstant = "\"hello\"";
-		CtStatement sta1 = (factory).Code().createCodeSnippetStatement("System.out.println("+stConstant+")")
+		CtStatement sta1 = (factory).Code().createCodeSnippetStatement("System.out.println(\"hello\")")
 				.compile();
 
 		CtStatement sta2 = (factory).Code().createCodeSnippetStatement("String hello =\"t1\"; System.out.println(hello)")
@@ -122,17 +125,13 @@ public class SignatureTest {
 		String signature1 = sta1.getSignature();
 		String signature2 = sta2bis.getSignature();
 
-		assertFalse(signature1.equals(signature2));
-		assertFalse(sta1.equals(sta2bis));
+		assertFalse(sta1.equals(sta2bis));// equals depends on deep equality
 
-		String signatureParameterWithQuotes = ((CtInvocation<?>)sta1).getArguments().get(0).getSignature();
-		assertEquals(stConstant,signatureParameterWithQuotes);
+		String parameterWithQuotes = ((CtInvocation<?>)sta1).getArguments().get(0).toString();
+		assertEquals("\"hello\"",parameterWithQuotes);
 
 		CtStatement stb1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(20)")
 				.compile();
-
-		String signatureParameterWithoutQuotes = ((CtInvocation<?>)stb1).getArguments().get(0).getSignature();
-		assertEquals("20",signatureParameterWithoutQuotes);
 	}
 
 	@Test
@@ -145,10 +144,9 @@ public class SignatureTest {
 		CtStatement sta2 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(Integer.MIN_VALUE)")
 				.compile();
 
-		String signature1 = sta1.getSignature();
-		String signature2 = sta2.getSignature();
-
-		assertFalse(signature1.equals(signature2));
+		String signature1 = ((CtInvocation)sta1).getExecutable().getSignature();
+		String signature2 = ((CtInvocation)sta2).getExecutable().getSignature();
+		assertEquals(signature1,  signature2);
 		assertFalse(sta1.equals(sta2));
 
 
@@ -157,21 +155,22 @@ public class SignatureTest {
 
 		CtStatement stb2 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(30)")
 				.compile();
-
+		String signature1b = ((CtInvocation)sta1).getExecutable().getSignature();
+		String signature2b = ((CtInvocation)sta2).getExecutable().getSignature();
+		assertEquals(signature1b,  signature2b);
 		assertFalse(stb1.equals(stb2));
-		assertFalse(sta1.getSignature().equals(sta2.getSignature()));
 
 
 		CtStatement stc1 = (factory).Code().createCodeSnippetStatement("String.format(\"format1\",\"f2\" )")
 				.compile();
-
 		CtStatement stc2 = (factory).Code().createCodeSnippetStatement("String.format(\"format2\",\"f2\" )")
 				.compile();
-
-		assertFalse(stc2.equals(stc1));
-		assertFalse(stc2.getSignature().equals(stc1.getSignature()));
-
+		String signaturestc1 = ((CtInvocation)sta1).getExecutable().getSignature();
+		String signaturestc2 = ((CtInvocation)sta2).getExecutable().getSignature();
+		assertEquals(signaturestc1,  signaturestc2);
+		assertFalse(stc1.equals(stc2));
 	}
+	
 	@Test
 	public void testMethodInvocationSignatureWithVariableAccess() throws Exception{
 
@@ -207,47 +206,39 @@ public class SignatureTest {
 
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
-		CtMethod<?> methodString = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+		CtMethod<?> methodInteger = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+		assertEquals("java.lang.Object foo(int)", methodInteger.getSignature());
 
-		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodString.getBody().getStatement(1);
-		String signatureInvoToInt = invoToInt1.getSignature();
+		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodInteger.getBody().getStatement(1);
 		CtExpression<?> argumentToInt1 = invoToInt1.getArguments().get(0);
 
 		//----------From the second method we take the Method Inv
-		CtMethod<?> methodInt = (CtMethod<?>) clazz1.getAllMethods().toArray()[1];
-		CtInvocation<?> invoToString = (CtInvocation<?>) methodInt.getBody().getStatement(1);
+		CtMethod<?> methodString = (CtMethod<?>) clazz1.getAllMethods().toArray()[1];
+		assertEquals("java.lang.Object foo(java.lang.String)", methodString.getSignature());
+
+		CtInvocation<?> invoToString = (CtInvocation<?>) methodString.getBody().getStatement(1);
 		CtExpression<?> argumentToString = invoToString.getArguments().get(0);
 
-		String signatureInvoToString = invoToString.getSignature();
 		//we compare the signatures of " this.foo(s);"	from both methods
-		assertNotEquals(signatureInvoToInt, signatureInvoToString);
+		assertNotEquals(invoToInt1, invoToString);
 
 
 		//Now we check that we have two invocation to "foo(s)",
 		//but one invocation is with var 's' type integer, the other var 's' type int
-		String sigArgToInt1 = argumentToInt1.getSignature();
-		String sigArgToString1 = argumentToString.getSignature();
-
-		assertNotEquals(sigArgToInt1, sigArgToString1);
+		assertNotEquals(argumentToInt1, argumentToString);
 
 		/// ***SECOND PART, passing Parameters
-		CtInvocation<?> invoToString2 = (CtInvocation<?>) methodString.getBody().getStatement(2);
+		CtInvocation<?> invoToString2 = (CtInvocation<?>) methodInteger.getBody().getStatement(2);
 		CtExpression<?> argumentToString2 = invoToString2.getArguments().get(0);
-		String signatureInvoToString2 = argumentToString2.getSignature();
 
-
-		CtInvocation<?> invoToInt2 = (CtInvocation<?>) methodInt.getBody().getStatement(2);
+		CtInvocation<?> invoToInt2 = (CtInvocation<?>) methodString.getBody().getStatement(2);
 		CtExpression<?> argumentToInt2 = invoToInt2.getArguments().get(0);
-		String signatureInvoToInt2 = argumentToInt2.getSignature();
 		///
 
-		String sigParString = invoToString2.getSignature();
-		String sigParInteger =  invoToInt2.getSignature();
-
 		//Compare the method invo signature (same real argument's name, different type)
-		assertNotEquals(sigParString,sigParInteger);
+		assertNotEquals(invoToString2,invoToInt2);
 		//Compare signature of parameters (same var name, different type)
-		assertNotEquals(signatureInvoToString2,signatureInvoToInt2);
+		assertNotEquals(argumentToString2,argumentToInt2);
 
 
 	}
@@ -261,7 +252,7 @@ public class SignatureTest {
 
 
 		String content = "" + "class PR {"
-				+ "public Object foo(String p) {"
+				+ "public java.io.File foo(String p) {"
 				+ " this.mfield = p; 	"
 				+ " return null;"
 				+ "}"
@@ -282,16 +273,15 @@ public class SignatureTest {
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
 		CtMethod<?> methodString = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+		assertEquals("java.io.File foo(java.lang.String)", methodString.getSignature());
 
 		CtAssignment<?,?> invoToInt1 = (CtAssignment<?,?>) methodString.getBody().getStatement(0);
 
-		String sigAssign = invoToInt1.getSignature();
-
 		CtExpression<?> left = invoToInt1.getAssigned();
-		String sigleft = left.getSignature();
-		assertNotEquals("",sigleft.trim());
+		assertEquals("PR.this.mfield",left.toString());
+		assertEquals(null,left.getType());// null because noclasspath
+		assertEquals("PR.this.mfield = p",invoToInt1.toString());
 
-		assertTrue(sigAssign.contains("<no type>"));
 
 	}
 
@@ -314,5 +304,29 @@ public class SignatureTest {
 		for (CtExecutableReference reference : references) {
 			assertNotEquals("#addField(null, null)", reference.getSignature());
 		}
+	}
+	
+	@Test
+	public void testBugSignature() throws Exception {
+		// contract: two methods with same name and return type yet different argument types
+		// must have different signatures
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		SpoonCompiler comp = launcher.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.resources("./src/main/java/spoon/SpoonModelBuilder.java"));
+		comp.build();
+		CtType<?> ctClass = (CtType<?>) comp.getFactory().Type().get(SpoonModelBuilder.class);
+		List<CtMethod<?>> methods = ctClass.getElements(new NameFilter<CtMethod<?>>("addInputSource"));
+		assertEquals(2, methods.size());
+		CtMethod<?> method = methods.get(0);
+		assertEquals(
+				"void addInputSource(java.io.File)",
+				method.getSignature());
+		CtMethod<?> method2 = methods.get(1);
+		assertEquals(
+				"void addInputSource(spoon.compiler.SpoonResource)",
+				method2.getSignature());
+		assertNotEquals(method, method2);
+	
 	}
 }

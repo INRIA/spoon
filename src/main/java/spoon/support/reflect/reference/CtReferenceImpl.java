@@ -36,16 +36,6 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		super();
 	}
 
-	@Override
-	public int hashCode() {
-		return toString().hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof CtReference && compareTo((CtReference) object) == 0;
-	}
-
 	protected abstract AnnotatedElement getActualAnnotatedElement();
 
 	@Override

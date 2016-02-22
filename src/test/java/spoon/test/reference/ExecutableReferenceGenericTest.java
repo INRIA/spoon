@@ -20,6 +20,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -209,16 +210,20 @@ public class ExecutableReferenceGenericTest {
 
 	@Test
 	public void testExecutableReferences() throws Exception {
-		List<CtClass<?>> classes = Query.getElements(factory, new TypeFilter<CtClass<?>>(CtClass.class));
-
-		List<CtExecutableReference<?>> refsExecutableClass1 = Query.getReferences(classes.get(0),
+		// factory has loaded MyClass, MyClass2 and MyClass3
+		
+		CtClass<?> classMyClass = Query.getElements(factory, new NameFilter<CtClass>("MyClass")).get(0);
+		assertEquals("MyClass", classMyClass.getSimpleName());
+		List<CtExecutableReference<?>> refsExecutableClass1 = Query.getReferences(classMyClass,
 				new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 					public boolean matches(CtExecutableReference<?> reference) {
 						return true;
 					}
 				});
 
-		List<CtExecutableReference<?>> refsExecutableClass2 = Query.getReferences(classes.get(1),
+		CtClass<?> classMyClass2 =  Query.getElements(factory, new NameFilter<CtClass>("MyClass2")).get(0);
+		assertEquals("MyClass2", classMyClass2.getSimpleName());
+		List<CtExecutableReference<?>> refsExecutableClass2 = Query.getReferences(classMyClass2,
 				new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 					public boolean matches(CtExecutableReference<?> reference) {
 						return true;

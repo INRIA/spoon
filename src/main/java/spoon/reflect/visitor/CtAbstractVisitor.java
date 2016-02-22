@@ -16,6 +16,8 @@
  */
 package spoon.reflect.visitor;
 
+import java.lang.annotation.Annotation;
+
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -87,8 +89,6 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
-
-import java.lang.annotation.Annotation;
 
 /** Provides an empty implementation of CtVIsitor.
  *  See {@link CtScanner} for a much more powerful implementation of CtVisitor.

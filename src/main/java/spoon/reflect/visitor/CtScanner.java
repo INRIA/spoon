@@ -501,10 +501,10 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		enter(m);
 		scan(m.getAnnotations());
+		scan(m.getFormalTypeParameters());
 		scan(m.getType());
 		scan(m.getParameters());
 		scan(m.getThrownTypes());
-		scan(m.getFormalTypeParameters());
 		scan(m.getBody());
 		exit(m);
 	}

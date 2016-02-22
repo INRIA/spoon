@@ -9,6 +9,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -20,6 +21,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -57,7 +59,8 @@ public class IntercessionTest {
 								+ " String foo=\"toto\";" + "}" + "};")
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
-
+		CtMethod<?> fooClone = factory.Core().clone(foo);
+		Assert.assertEquals(foo, fooClone);		
 		CtBlock<?> body = foo.getBody();
 		assertEquals(2, body.getStatements().size());
 
@@ -66,6 +69,35 @@ public class IntercessionTest {
 		body.insertEnd(returnStmt);
 		assertEquals(3, body.getStatements().size());
 		assertSame(returnStmt, body.getStatements().get(2));
+		
+		Assert.assertNotEquals(foo, fooClone);
+		
+	}
+
+	@Test
+	public void testEqualConstructor() {
+		CtClass<?> clazz = factory
+				.Code()
+				.createCodeSnippetStatement(
+						"" + "class X { public X() {} };")
+				.compile();
+		CtConstructor<?> foo = (CtConstructor<?>) clazz.getConstructors().toArray()[0];
+		CtConstructor<?> fooClone = factory.Core().clone(foo);
+		Assert.assertEquals(foo, fooClone);		
+		
+		CtBlock<?> body = foo.getBody();
+		
+		// there is an implicit call to super()
+		assertEquals(1, body.getStatements().size());
+		assertEquals("super()", body.getStatements().get(0).toString());
+
+		// adding a new statement;
+		CtStatement stmt = factory.Core().createCodeSnippetStatement();
+		body.insertEnd(stmt);
+		assertEquals(2, body.getStatements().size());
+		
+		// constructor are not equals anymore
+		Assert.assertNotEquals(foo, fooClone);		
 	}
 
 	@Test
