@@ -1908,7 +1908,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(ref.getSimpleName());
 		} else {
 			if (ref.getDeclaringType() != null) {
-				if (!context.ignoreEnclosingClass && !ref.isLocalType()) {
+				if (!context.ignoreEnclosingClass && !ref.isLocalType() && !ref.getDeclaringType().isAnonymous()) {
 					scan(ref.getDeclaringType());
 					write(".");
 				}
