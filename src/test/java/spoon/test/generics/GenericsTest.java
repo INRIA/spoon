@@ -30,9 +30,11 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
+import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.*;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -483,5 +486,16 @@ public class GenericsTest {
 		assertEquals(2, elements.get(1).getExecutable().getType().getActualTypeArguments().size());
 		assertNotNull(elements.get(1).getType().getDeclaringType());
 		assertEquals("new Burritos<K, V>()", elements.get(1).toString());
+	}
+
+	@Test
+	public void testGenericsOnLocalType() throws Exception {
+		// contract: A local type can have actual generic types.
+		final CtType<Mole> aMole = buildClass(Mole.class);
+		final CtMethod<Object> cook = aMole.getMethod("cook");
+		final CtConstructorCall<?> newCook = cook.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+
+		assertEquals(1, newCook.getType().getActualTypeArguments().size());
+		assertEquals("new Cook<java.lang.String>()", newCook.toString());
 	}
 }

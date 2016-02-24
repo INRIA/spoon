@@ -678,21 +678,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 					// When we define a nested class in a method and when the enclosing class of this method
 					// is a parameterized type binding, JDT give a ParameterizedTypeBinding for the nested class
 					// and hide the real class in actualType().
-					return getTypeReference(binding.actualType());
-				}
-				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					ref = factory.Internal().createImplicitTypeReference();
+					ref = getTypeReference(binding.actualType());
 				} else {
-					ref = factory.Core().createTypeReference();
-				}
-				if (binding.isAnonymousType()) {
-					ref.setSimpleName("");
-				} else {
-					ref.setSimpleName(String.valueOf(binding.sourceName()));
-					if (binding.enclosingType() != null) {
-						ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+					if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
+						ref = factory.Internal().createImplicitTypeReference();
 					} else {
-						ref.setPackage(getPackageReference(binding.getPackage()));
+						ref = factory.Core().createTypeReference();
+					}
+					if (binding.isAnonymousType()) {
+						ref.setSimpleName("");
+					} else {
+						ref.setSimpleName(String.valueOf(binding.sourceName()));
+						if (binding.enclosingType() != null) {
+							ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+						} else {
+							ref.setPackage(getPackageReference(binding.getPackage()));
+						}
 					}
 				}
 
