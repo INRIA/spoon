@@ -76,7 +76,6 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
@@ -84,6 +83,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -660,21 +660,21 @@ public abstract class CtScanner implements CtVisitor {
 		exit(tryWithResource);
 	}
 
-	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		enter(typeParameter);
-		scan(typeParameter.getAnnotations());
-		scan(typeParameter.getBounds());
-		exit(typeParameter);
-	}
-
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 		enter(ref);
 		scan(ref.getPackage());
 		scan(ref.getDeclaringType());
 		scan(ref.getActualTypeArguments());
 		scan(ref.getAnnotations());
-		scan(ref.getBounds());
+		scan(ref.getBoundingType());
 		exit(ref);
+	}
+
+	@Override
+	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
+		enter(reference);
+		scan(reference.getBounds());
+		exit(reference);
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {

@@ -14,38 +14,34 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.declaration;
+package spoon.reflect.reference;
 
 import java.util.List;
 
-import spoon.reflect.reference.CtTypeReference;
-
 /**
- * This element defines a type parameter (aka generics).
+ * This interface defines a reference to an intersection type in generics or in casts.
  */
-public interface CtTypeParameter extends CtNamedElement {
-
+public interface CtIntersectionTypeReference<T> extends CtTypeReference<T> {
 	/**
-	 * Returns the bounds of this type parameter. These are the types given by
-	 * the <i>extends</i> clause. If there is no explicit <i>extends</i> clause,
-	 * then <tt>java.lang.Object</tt> is considered to be the sole bound.
+	 * Gets the bounds of the intersection type. Note that the first bound correspond to the current intersection type.
+	 * <pre>
+	 *     T extends Interface1 &amp; Interface2 // CtTypeParameterReference#getBoundingType == Interface1 and getBounds().get(0) == Interface1
+	 * </pre>
 	 */
 	List<CtTypeReference<?>> getBounds();
 
 	/**
-	 * Sets the bounds of this type parameter.
+	 * Sets the bounds of the intersection type.
 	 */
-	<T extends CtTypeParameter> T setBounds(List<CtTypeReference<?>> bounds);
+	<C extends CtIntersectionTypeReference> C setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
-	 * @param bounds
-	 * @return
+	 * Adds a bound.
 	 */
-	<T extends CtTypeParameter> T addBound(CtTypeReference<?> bounds);
+	<C extends CtIntersectionTypeReference> C addBound(CtTypeReference<?> bound);
 
 	/**
-	 * @param bounds
-	 * @return
+	 * Removes a bound.
 	 */
-	boolean removeBound(CtTypeReference<?> bounds);
+	boolean removeBound(CtTypeReference<?> bound);
 }

@@ -14,65 +14,58 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.declaration;
+package spoon.support.reflect.reference;
 
-import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
 
-/**
- * The implementation for {@link spoon.reflect.declaration.CtTypeParameter}.
- *
- * @author Renaud Pawlak
- */
-public class CtTypeParameterImpl extends CtNamedElementImpl implements CtTypeParameter {
-	private static final long serialVersionUID = 1L;
-
-	List<CtTypeReference<?>> bounds = emptyList();
-
-	public CtTypeParameterImpl() {
-		super();
-	}
+public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtIntersectionTypeReference<T> {
+	List<CtTypeReference<?>> bounds = CtElementImpl.emptyList();
 
 	@Override
-	public void accept(CtVisitor v) {
-		v.visitCtTypeParameter(this);
-	}
-
-	@Override
-	public <T extends CtTypeParameter> T addBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		bound.setParent(this);
-		this.bounds.add(bound);
-		return (T) this;
-	}
-
-	@Override
-	public boolean removeBound(CtTypeReference<?> bound) {
-		return bounds != CtElementImpl.<CtTypeReference<?>>emptyList() && this.bounds.remove(bound);
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtIntersectionTypeReference(this);
 	}
 
 	@Override
 	public List<CtTypeReference<?>> getBounds() {
-		return bounds;
+		return Collections.unmodifiableList(bounds);
 	}
 
 	@Override
-	public <T extends CtTypeParameter> T setBounds(List<CtTypeReference<?>> bounds) {
+	public <C extends CtIntersectionTypeReference> C setBounds(List<CtTypeReference<?>> bounds) {
 		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.bounds.clear();
-		for (CtTypeReference<?> bound : bounds) {
+		final List<CtTypeReference<?>> newBounds = new ArrayList<CtTypeReference<?>>();
+		newBounds.addAll(bounds);
+		for (CtTypeReference<?> bound : newBounds) {
 			addBound(bound);
 		}
-		return (T) this;
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtIntersectionTypeReference> C addBound(CtTypeReference<?> bound) {
+		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		bound.setParent(this);
+		bounds.add(bound);
+		return (C) this;
+	}
+
+	@Override
+	public boolean removeBound(CtTypeReference<?> bound) {
+		return bounds != CtElementImpl.<CtTypeReference<?>>emptyList() && bounds.remove(bound);
 	}
 }

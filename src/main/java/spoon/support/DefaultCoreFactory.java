@@ -77,13 +77,13 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -150,11 +150,11 @@ import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
-import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
+import spoon.support.reflect.reference.CtIntersectionTypeReferenceImpl;
 import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
 import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
@@ -602,14 +602,15 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 		return e;
 	}
 
-	public CtTypeParameter createTypeParameter() {
-		CtTypeParameter e = new CtTypeParameterImpl();
+	public CtTypeParameterReference createTypeParameterReference() {
+		CtTypeParameterReference e = new CtTypeParameterReferenceImpl();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
-	public CtTypeParameterReference createTypeParameterReference() {
-		CtTypeParameterReference e = new CtTypeParameterReferenceImpl();
+	@Override
+	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReference() {
+		CtIntersectionTypeReference<T> e = new CtIntersectionTypeReferenceImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

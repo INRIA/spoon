@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
@@ -217,7 +218,7 @@ public class IntercessionTest {
 
 					if (!setter.getDeclaringType()
 							   .getSimpleName()
-							   .equals(((CtTypeParameterReference) ctTypeReference).getBounds().get(0).getSimpleName())) {
+							   .equals(((CtTypeParameterReference) ctTypeReference).getBoundingType().asCtIntersectionTypeReference().getBounds().get(0).getSimpleName())) {
 						fail("Your setter " + methodLog +
 									 " has a type reference who don't extends " +
 									 setter.getDeclaringType().getSimpleName());

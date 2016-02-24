@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.reference.CtGenericElementReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -25,16 +26,16 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
-public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
-		implements CtTypeParameterReference {
+public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> bounds = CtElementImpl.emptyList();
+	CtTypeReference<?> superType;
 
 	boolean upper = true;
 
@@ -49,7 +50,12 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public List<CtTypeReference<?>> getBounds() {
-		return bounds;
+		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
+			return getBoundingType().asCtIntersectionTypeReference().getBounds();
+		} else if (getBoundingType() != null) {
+			return Collections.<CtTypeReference<?>>singletonList(getBoundingType());
+		}
+		return emptyList();
 	}
 
 	@Override
@@ -59,12 +65,15 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
-		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		if (bounds == null) {
+			return (T) this;
 		}
-		this.bounds.clear();
-		for (CtTypeReference<?> bound : bounds) {
-			addBound(bound);
+		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
+			getBoundingType().asCtIntersectionTypeReference().setBounds(bounds);
+		} else if (bounds.size() > 1) {
+			setBoundingType(getFactory().Type().createIntersectionTypeReference(bounds));
+		} else {
+			setBoundingType(bounds.get(0));
 		}
 		return (T) this;
 	}
@@ -94,10 +103,10 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
-			if (getBounds().isEmpty()) {
+			if (getBoundingType() == null) {
 				return Object.class;
 			}
-			return (Class<Object>) getBounds().get(0).getActualClass();
+			return (Class<Object>) getBoundingType().getActualClass();
 		}
 		return null;
 	}
@@ -121,17 +130,44 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object>
 
 	@Override
 	public <T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		if (bound == null) {
+			return (T) this;
 		}
-		bound.setParent(this);
-		bounds.add(bound);
+		if (getBoundingType() == null) {
+			setBoundingType(bound);
+		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
+			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
+		} else {
+			setBoundingType(getFactory().Type().createIntersectionTypeReference(Arrays.asList(getBoundingType(), bound)));
+		}
 		return (T) this;
 	}
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		return bounds != CtElementImpl.<CtTypeReference<?>>emptyList() && bounds.remove(bound);
+		if (bound == null || getBoundingType() == null) {
+			return false;
+		}
+		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
+			return getBoundingType().asCtIntersectionTypeReference().removeBound(bound);
+		} else {
+			setBoundingType(null);
+			return true;
+		}
+	}
+
+	@Override
+	public CtTypeReference<?> getBoundingType() {
+		return superType;
+	}
+
+	@Override
+	public <T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType) {
+		if (superType != null) {
+			superType.setParent(this);
+		}
+		this.superType = superType;
+		return (T) this;
 	}
 
 	@Override

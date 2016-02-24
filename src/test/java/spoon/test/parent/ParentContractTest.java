@@ -107,6 +107,7 @@ public class ParentContractTest<T extends CtVisitable> {
 		for (Method setter : getMethodsToInvoke(toTest)) {
 
 			// special case: impossible methods on some objects (they throw an UnsupportedOperationException)
+			if (setter.getAnnotation(Deprecated.class) != null) continue;
 			if (o instanceof CtAnnotationType && "addMethod".equals(setter.getName())) continue;
 			if (o instanceof CtAnnotationType && "addFormalTypeParameter".equals(setter.getName())) continue;
 			if (o instanceof CtParameter && "setDefaultExpression".equals(setter.getName())) continue;

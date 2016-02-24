@@ -16,8 +16,6 @@
  */
 package spoon.support.visitor;
 
-import java.lang.annotation.Annotation;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -75,7 +73,6 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
@@ -91,6 +88,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.lang.annotation.Annotation;
 
 /**
  * Responsible for computing a deep representation of the object. Used by {@link CtElementImpl#equals(Object)} for deep equality.
@@ -587,13 +586,6 @@ public class EqualVisitor extends CtScanner {
 			scan(c);
 		}
 		scan(tryWithResource.getFinalizer());
-	}
-
-	@Override
-	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		write("<");
-		write(typeParameter.getSimpleName());
-		write(">");
 	}
 
 	@Override

@@ -89,7 +89,6 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
@@ -101,6 +100,7 @@ import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -1862,18 +1862,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		write(typeParameter.getSimpleName());
-		if (!typeParameter.getBounds().isEmpty()) {
-			write(" extends ");
-			for (CtTypeReference<?> ref : typeParameter.getBounds()) {
-				scan(ref);
-				write(" & ");
-			}
-			removeLastChar();
-		}
-	}
-
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 		writeAnnotations(ref);
 		if (importsContext.isImported(ref)) {
@@ -1881,20 +1869,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			write(ref.getQualifiedName());
 		}
-		if ((!context.isInvocation || "?".equals(ref.getSimpleName()))
-				&& ref.getBounds() != null
-				&& !ref.getBounds().isEmpty()) {
+		if ((!context.isInvocation || "?".equals(ref.getSimpleName())) && ref.getBoundingType() != null) {
 			if (ref.isUpper()) {
 				write(" extends ");
 			} else {
 				write(" super ");
 			}
-			for (CtTypeReference<?> b : ref.getBounds()) {
-				scan(b);
-				write(" & ");
-			}
-			removeLastChar();
+			scan(ref.getBoundingType());
 		}
+	}
+
+	@Override
+	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
+		for (CtTypeReference<?> bound : reference.getBounds()) {
+			scan(bound);
+			write(" & ");
+		}
+		removeLastChar();
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> ref) {

@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
@@ -78,20 +79,24 @@ public class SignaturePrinter extends  CtInheritanceScanner {
 	@Override
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 		write(ref.getQualifiedName());
-		if (ref.getBounds() != null && !ref.getBounds().isEmpty()) {
+		if (ref.getBoundingType() != null) {
 			if (ref.isUpper()) {
 				write(" extends ");
 			} else {
 				write(" super ");
 			}
-			for (CtTypeReference<?> b: ref.getBounds()) {
-				scan(b);
-				write(",");
-			}
-			if (ref.getBounds().size() > 0) {
-				clearLast();
-			}
+			scan(ref.getBoundingType());
 		}
+	}
+
+	@Override
+	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
+		for (CtTypeReference<?> bound : reference.getBounds()) {
+			scan(bound);
+			write(", ");
+		}
+		clearLast();
+		clearLast();
 	}
 
 	@Override
@@ -107,8 +112,6 @@ public class SignaturePrinter extends  CtInheritanceScanner {
 		}
 		write(")");
 	}
-
-
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
@@ -141,7 +144,6 @@ public class SignaturePrinter extends  CtInheritanceScanner {
 		signature.deleteCharAt(signature.length() - 1);
 		return this;
 	}
-
 
 	protected SignaturePrinter write(String value) {
 		signature.append(value);

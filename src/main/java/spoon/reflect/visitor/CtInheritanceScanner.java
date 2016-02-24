@@ -66,8 +66,8 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
@@ -92,17 +92,17 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
+import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
-import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -769,13 +769,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		visitCtTry(e);
 	}
 
-	public void visitCtTypeParameter(CtTypeParameter e) {
-		scanCtNamedElement(e);
-		scanCtElement(e);
-		scanCtVisitable(e);
+	public void visitCtTypeParameterReference(CtTypeParameterReference e) {
+		visitCtTypeReference(e);
 	}
 
-	public void visitCtTypeParameterReference(CtTypeParameterReference e) {
+	@Override
+	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> e) {
 		visitCtTypeReference(e);
 	}
 

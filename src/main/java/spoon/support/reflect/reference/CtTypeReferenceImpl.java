@@ -25,6 +25,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -293,6 +294,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public void replace(CtTypeReference<?> reference) {
 		super.replace(reference);
+	}
+
+	@Override
+	public CtIntersectionTypeReference<T> asCtIntersectionTypeReference() {
+		return (CtIntersectionTypeReference<T>) this;
 	}
 
 	@Override

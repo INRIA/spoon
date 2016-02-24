@@ -83,7 +83,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -96,6 +95,7 @@ import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtGenericElementReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -719,12 +719,13 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		visitCtTry(tryWithResource);
 	}
 
-	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
+	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 		throw new RuntimeException("Unknow Element");
 	}
 
-	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		throw new RuntimeException("Unknow Element");
+	@Override
+	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
+		throw new RuntimeException("Unknown Element");
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
