@@ -763,6 +763,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 					bounds = false;
 					bindingCache.put(binding, ref);
 					List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>(b.superInterfaces.length);
+					if (((CtTypeParameterReference) ref).getBoundingType() != null) {
+						bounds.add(((CtTypeParameterReference) ref).getBoundingType());
+					}
 					for (ReferenceBinding superInterface : b.superInterfaces) {
 						bounds.add(getTypeReference(superInterface));
 					}
