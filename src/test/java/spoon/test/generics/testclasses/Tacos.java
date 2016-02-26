@@ -52,11 +52,17 @@ public class Tacos<K, V extends String> implements ITacos<V> {
 			new Burritos<K, V>();
 			return null;
 		}
+
 		class Pozole {
 			public Tacos<K, String>.Burritos<K, V>.Pozole p() {
 				new Pozole();
 				return null;
 			}
+		}
+
+		@Override
+		public IBurritos<K, V> make() {
+			return new Burritos<K, V>() {};
 		}
 	}
 
