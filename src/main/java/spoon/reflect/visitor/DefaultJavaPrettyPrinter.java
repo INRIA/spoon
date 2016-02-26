@@ -1613,10 +1613,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			context.ignoreEnclosingClass = true;
 		}
 
-		// JDT doesn't support new Foo<K>.Bar(); So we check that the parent of the constructor
-		// call and the declaring type of the type of the constructor call are equals or not.
-		// If yes, Bar is a intern class of Foo and we don't need to print fully qualified name.
-		// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593
 		if (hasDeclaringTypeWithGenerics(ctConstructorCall.getType())) {
 			context.ignoreEnclosingClass = true;
 		}
@@ -1646,6 +1642,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(ctConstructorCall);
 	}
 
+	/**
+	 * JDT doesn't support <code>new Foo<K>.Bar()</code>. To avoid reprint this kind of type reference,
+	 * we check that the reference has a declaring type with generics.
+	 * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593
+	 *
+	 * @param reference
+	 * 		Type reference concerned by the bug.
+	 * @return true if a declaring type have generic types.
+	 */
 	private <T> boolean hasDeclaringTypeWithGenerics(CtTypeReference<T> reference) {
 		// We don't have a declaring type, it can't have generics.
 		if (reference == null) {
@@ -1677,12 +1682,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		write("new ");
 		if (newClass.getAnonymousClass().getSuperclass() != null) {
+			if (hasDeclaringTypeWithGenerics(newClass.getAnonymousClass().getSuperclass())) {
+				context.ignoreEnclosingClass = true;
+			}
 			scan(newClass.getAnonymousClass().getSuperclass());
 		} else if (newClass.getAnonymousClass().getSuperInterfaces().size() > 0) {
 			for (CtTypeReference<?> ref : newClass.getAnonymousClass().getSuperInterfaces()) {
+				if (hasDeclaringTypeWithGenerics(ref)) {
+					context.ignoreEnclosingClass = true;
+				}
 				scan(ref);
 			}
 		}
+		context.ignoreEnclosingClass = false;
+
 		write("(");
 		for (CtExpression<?> exp : newClass.getArguments()) {
 			scan(exp);

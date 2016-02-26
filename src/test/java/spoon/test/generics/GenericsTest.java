@@ -1,5 +1,6 @@
 package spoon.test.generics;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
@@ -478,13 +479,20 @@ public class GenericsTest {
 		final CtType<?> burritos = aTacos.getNestedType("Burritos");
 
 		final List<CtConstructorCall> elements = burritos.getElements(new TypeFilter<>(CtConstructorCall.class));
-		assertEquals(2, elements.size());
+		assertEquals(3, elements.size());
+
+		// Constructor call.
 		assertEquals(0, elements.get(0).getExecutable().getType().getActualTypeArguments().size());
 		assertNotNull(elements.get(0).getType().getDeclaringType());
 		assertEquals("new Pozole()", elements.get(0).toString());
+		assertEquals(2, elements.get(2).getExecutable().getType().getActualTypeArguments().size());
+		assertNotNull(elements.get(2).getType().getDeclaringType());
+		assertEquals("new Burritos<K, V>()", elements.get(2).toString());
+
+		// New class.
 		assertEquals(2, elements.get(1).getExecutable().getType().getActualTypeArguments().size());
 		assertNotNull(elements.get(1).getType().getDeclaringType());
-		assertEquals("new Burritos<K, V>()", elements.get(1).toString());
+		assertEquals("new Burritos<K, V>() {}", elements.get(1).toString());
 	}
 
 	@Test
