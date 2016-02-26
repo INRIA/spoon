@@ -401,6 +401,153 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return s;
 	}
 
+	/**
+	 * Checks if a type is specified in imports.
+	 *
+	 * @param typeName
+	 * 		Type name.
+	 * @return qualified name of the expected type.
+	 */
+	private String hasTypeInImports(String typeName) {
+		if (typeName == null) {
+			return null;
+		}
+		for (ImportReference anImport : context.compilationunitdeclaration.imports) {
+			final String importType = CharOperation.charToString(anImport.getImportName()[anImport.getImportName().length - 1]);
+			if (importType != null && importType.equals(typeName)) {
+				return CharOperation.toString(anImport.getImportName());
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks to know if a name is a package or not.
+	 *
+	 * @param packageName
+	 * 		Package name.
+	 * @return boolean
+	 */
+	private boolean isPackage(char[][] packageName) {
+		for (CompilationUnitDeclaration unit : ((TreeBuilderCompiler) context.compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess) {
+			final char[][] tokens = unit.currentPackage.tokens;
+			if (packageName.length > tokens.length) {
+				continue;
+			}
+			boolean isFound = true;
+			for (int i = 0; i < packageName.length; i++) {
+				char[] chars = packageName[i];
+				if (!CharOperation.equals(chars, tokens[i])) {
+					isFound = false;
+					break;
+				}
+			}
+			if (isFound) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Searches a type in the project.
+	 *
+	 * @param qualifiedName
+	 * 		Qualified name of the expected type.
+	 * @return type binding.
+	 */
+	private TypeBinding searchTypeBinding(String qualifiedName) {
+		if (qualifiedName == null) {
+			return null;
+		}
+		for (CompilationUnitDeclaration unitsToProcess : ((TreeBuilderCompiler) context.compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess) {
+			for (TypeDeclaration type : unitsToProcess.types) {
+				if (qualifiedName.equals(CharOperation.toString(type.binding.compoundName))) {
+					return type.binding;
+				}
+				if (type.memberTypes != null) {
+					for (TypeDeclaration memberType : type.memberTypes) {
+						if (qualifiedName.equals(CharOperation.toString(memberType.binding.compoundName))) {
+							return type.binding;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Searches a type from an entry-point according to a simple name.
+	 *
+	 * @param type
+	 * 		Entry-point to search.
+	 * @param simpleName
+	 * 		Expected type name.
+	 * @return type binding.
+	 */
+	private TypeBinding searchTypeBinding(ReferenceBinding type, String simpleName) {
+		if (simpleName == null || type == null) {
+			return null;
+		}
+
+		if (type.memberTypes() != null) {
+			for (ReferenceBinding memberType : type.memberTypes()) {
+				if (simpleName.equals(CharOperation.charToString(memberType.sourceName()))) {
+					return memberType;
+				}
+			}
+		}
+
+		return searchTypeBinding(type.superclass(), simpleName);
+	}
+
+	/**
+	 * Builds a type reference from a qualified name when a type specified in the name isn't available.
+	 *
+	 * @param tokens
+	 * 		Qualified name.
+	 * @param receiverType
+	 * 		Last type in the qualified name.
+	 * @param enclosingType
+	 * 		Enclosing type of the type name.
+	 * @param listener
+	 * 		Listener to know if we must build the type reference.
+	 * @return a type reference.
+	 */
+	private <T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, TypeBinding receiverType, ReferenceBinding enclosingType, OnAccessListener listener) {
+		if (enclosingType != null && Collections.disjoint(Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED), getModifiers(enclosingType.modifiers))) {
+			String access = "";
+			int i = 0;
+			for (; i < tokens.length; i++) {
+				final char[][] qualified = Arrays.copyOfRange(tokens, 0, i + 1);
+				if (!isPackage(qualified)) {
+					access = CharOperation.toString(qualified);
+					break;
+				}
+			}
+			if (!access.contains(CtPackage.PACKAGE_SEPARATOR)) {
+				access = hasTypeInImports(access);
+			}
+			final TypeBinding accessBinding = searchTypeBinding(access);
+			if (accessBinding != null && listener.onAccess(tokens, i)) {
+				final TypeBinding superClassBinding = searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
+				if (superClassBinding != null) {
+					return  references.getTypeReference(superClassBinding.clone(accessBinding));
+				} else {
+					return references.getTypeReference(receiverType);
+				}
+			} else {
+				return references.getTypeReference(receiverType);
+			}
+		}
+		return null;
+	}
+
+	interface OnAccessListener {
+		boolean onAccess(char[][] tokens, int index);
+	}
+
 	public class ReferenceBuilder {
 
 		Map<String, CtTypeReference<?>> basestypes = new TreeMap<String, CtTypeReference<?>>();
@@ -2019,6 +2166,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else if (argument.type != null) {
 			p.setType(references.getTypeReference(argument.type.resolvedType));
 		}
+
+		final TypeBinding receiverType = argument.type != null ? argument.type.resolvedType : null;
+		if (receiverType != null && argument.type instanceof QualifiedTypeReference) {
+			final QualifiedTypeReference qualifiedNameReference = (QualifiedTypeReference) argument.type;
+			final CtTypeReference<Object> ref = getQualifiedTypeReference(qualifiedNameReference.tokens, receiverType, receiverType.enclosingType(), new OnAccessListener() {
+				@Override
+				public boolean onAccess(char[][] tokens, int index) {
+					return true;
+				}
+			});
+			if (ref != null) {
+				p.setType(ref);
+			}
+		}
+
 		context.enter(p, argument);
 		if (argument.initialization != null) {
 			argument.initialization.traverse(this, scope);
@@ -2890,7 +3052,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 			// Only set the declaring type if we are in a static context. See
 			// StaticAccessTest#testReferences test to have an example about that.
 			if (ref.isStatic()) {
-				ref.setDeclaringType(references.getTypeReference(qualifiedNameReference.actualReceiverType));
+				final TypeBinding receiverType = qualifiedNameReference.actualReceiverType;
+				if (receiverType != null) {
+					final CtTypeReference<Object> qualifiedRef = getQualifiedTypeReference(qualifiedNameReference.tokens, receiverType, qualifiedNameReference.fieldBinding().declaringClass.enclosingType(), new OnAccessListener() {
+						@Override
+						public boolean onAccess(char[][] tokens, int index) {
+							return !CharOperation.equals(tokens[index + 1], tokens[tokens.length - 1]);
+						}
+					});
+					if (qualifiedRef != null) {
+						ref.setDeclaringType(qualifiedRef);
+					} else {
+						ref.setDeclaringType(references.getTypeReference(receiverType));
+					}
+				}
 				fa.setTarget(factory.Code().createTypeAccess(ref.getDeclaringType()));
 			} else if (!ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
 				final CtTypeReference<Object> type = references.getTypeReference(qualifiedNameReference.actualReceiverType);

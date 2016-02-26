@@ -34,7 +34,6 @@ import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +41,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.*;
 import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
