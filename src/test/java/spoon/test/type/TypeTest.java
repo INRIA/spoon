@@ -28,11 +28,13 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.type.testclasses.Mole;
 import spoon.test.type.testclasses.Pozole;
 
 import java.io.Serializable;
@@ -42,6 +44,7 @@ import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -219,5 +222,20 @@ public class TypeTest {
 		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), lambdas.get(0).getTypeCasts().get(0));
 
 		canBeBuilt(target, 8, true);
+	}
+
+	@Test
+	public void testIntersectionTypeOnTopLevelType() throws Exception {
+		final CtType<Mole> aMole = buildClass(Mole.class);
+
+		assertEquals(1, aMole.getFormalTypeParameters().size());
+		assertTrue(aMole.getFormalTypeParameters().get(0) instanceof CtTypeParameterReference);
+		final CtTypeParameterReference ref = (CtTypeParameterReference) aMole.getFormalTypeParameters().get(0);
+		assertNotNull(ref.getBoundingType());
+		assertTrue(ref.getBoundingType() instanceof CtIntersectionTypeReference);
+		assertEquals(2, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().size());
+		assertEquals(Number.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().get(0).getActualClass());
+		assertEquals(Comparable.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().get(1).getActualClass());
+		assertEquals("public class Mole<NUMBER extends java.lang.Number & java.lang.Comparable<NUMBER>> {}", aMole.toString());
 	}
 }
