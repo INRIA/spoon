@@ -1440,7 +1440,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-		enterCtStatement(localVariable);
+		if (!context.noTypeDecl) {
+			enterCtStatement(localVariable);
+		}
 		writeLocalVariable(localVariable);
 	}
 
