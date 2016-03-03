@@ -21,6 +21,7 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
 public abstract class CtFieldAccessImpl<T> extends CtVariableReadImpl<T> implements CtFieldAccess<T> {
@@ -51,5 +52,10 @@ public abstract class CtFieldAccessImpl<T> extends CtVariableReadImpl<T> impleme
 	@Override
 	public <C extends CtVariableAccess<T>> C setVariable(CtVariableReference<T> variable) {
 		return super.setVariable(variable);
+	}
+
+	@Override
+	public CtTypeReference<T> getType() {
+		return getVariable() == null ? null : getVariable().getType();
 	}
 }
