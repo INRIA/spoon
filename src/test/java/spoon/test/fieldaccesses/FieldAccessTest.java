@@ -28,6 +28,7 @@ import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
 import spoon.testing.Assert;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -324,5 +325,14 @@ public class FieldAccessTest {
 		final CtParameter<?> aSubInnerParameter = aTacos.getMethod("inv", aSubInner.getReference()).getParameters().get(0);
 		assertEquals(aSubInner.getReference(), aSubInnerParameter.getType());
 		assertEquals("spoon.test.fieldaccesses.testclasses.internal.Foo.SubInner foo", aSubInnerParameter.toString());
+	}
+
+	@Test
+	public void testTypeOfFieldAccess() throws Exception {
+		CtType<Panini> aPanini = ModelUtils.buildClass(Panini.class);
+		List<CtFieldAccess> fieldAccesses = aPanini.getMethod("prepare").getElements(new TypeFilter<>(CtFieldAccess.class));
+		assertEquals(1, fieldAccesses.size());
+		assertNotNull(fieldAccesses.get(0).getType());
+		assertEquals(fieldAccesses.get(0).getVariable().getType(), fieldAccesses.get(0).getType());
 	}
 }

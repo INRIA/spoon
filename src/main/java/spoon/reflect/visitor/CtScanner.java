@@ -763,7 +763,6 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 		enter(fieldRead);
 		scan(fieldRead.getAnnotations());
-		scan(fieldRead.getType());
 		scan(fieldRead.getTypeCasts());
 		scan(fieldRead.getTarget());
 		scan(fieldRead.getVariable());
@@ -774,7 +773,6 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 		enter(fieldWrite);
 		scan(fieldWrite.getAnnotations());
-		scan(fieldWrite.getType());
 		scan(fieldWrite.getTypeCasts());
 		scan(fieldWrite.getTarget());
 		scan(fieldWrite.getVariable());
