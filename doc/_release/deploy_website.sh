@@ -8,7 +8,7 @@ REPO="https://github.com/INRIA/spoon.git"
 DIR=temp-spoon-clone
 DIR_WEBSITE=${DIR}/doc/
 
-USER_SERVER="paligot"
+USER_SERVER="spoon-bot"
 WEBSITE_SERVER="${USER_SERVER}@scm.gforge.inria.fr"
 SOURCE="_site/"
 HOST_DESTINATION="/home/groups/spoon/"
@@ -65,6 +65,9 @@ if [ "$?" -ne 0 ]; then
     echo "Error when you tried to retrieve the repositories folder!"
     exit 1
 fi
+
+# Remove backups older than 3 days.
+ssh $WEBSITE_SERVER "find ${HOST_DESTINATION}${FOLDER_DESTINATION}-* -mtime +3 -type d -exec rm -rf {} \;"
 
 # Come back at the root of the temp project.
 cd ../..
