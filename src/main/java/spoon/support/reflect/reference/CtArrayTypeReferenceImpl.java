@@ -43,6 +43,15 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 	}
 
 	@Override
+	public CtTypeReference<?> getArrayType() {
+		return getLastComponentTypeReference(componentType);
+	}
+
+	private CtTypeReference<?> getLastComponentTypeReference(CtTypeReference<?> component) {
+		return component instanceof CtArrayTypeReference ? getLastComponentTypeReference(((CtArrayTypeReference) component).getComponentType()) : component;
+	}
+
+	@Override
 	public <C extends CtArrayTypeReference<T>> C setComponentType(CtTypeReference<?> componentType) {
 		if (componentType != null) {
 			componentType.setParent(this);

@@ -61,7 +61,7 @@ public class IntercessionTest {
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtMethod<?> fooClone = factory.Core().clone(foo);
-		Assert.assertEquals(foo, fooClone);		
+		Assert.assertEquals(foo, fooClone);
 		CtBlock<?> body = foo.getBody();
 		assertEquals(2, body.getStatements().size());
 
@@ -70,9 +70,9 @@ public class IntercessionTest {
 		body.insertEnd(returnStmt);
 		assertEquals(3, body.getStatements().size());
 		assertSame(returnStmt, body.getStatements().get(2));
-		
+
 		Assert.assertNotEquals(foo, fooClone);
-		
+
 	}
 
 	@Test
@@ -84,10 +84,10 @@ public class IntercessionTest {
 				.compile();
 		CtConstructor<?> foo = (CtConstructor<?>) clazz.getConstructors().toArray()[0];
 		CtConstructor<?> fooClone = factory.Core().clone(foo);
-		Assert.assertEquals(foo, fooClone);		
-		
+		Assert.assertEquals(foo, fooClone);
+
 		CtBlock<?> body = foo.getBody();
-		
+
 		// there is an implicit call to super()
 		assertEquals(1, body.getStatements().size());
 		assertEquals("super()", body.getStatements().get(0).toString());
@@ -96,9 +96,9 @@ public class IntercessionTest {
 		CtStatement stmt = factory.Core().createCodeSnippetStatement();
 		body.insertEnd(stmt);
 		assertEquals(2, body.getStatements().size());
-		
+
 		// constructor are not equals anymore
-		Assert.assertNotEquals(foo, fooClone);		
+		Assert.assertNotEquals(foo, fooClone);
 	}
 
 	@Test
@@ -218,7 +218,7 @@ public class IntercessionTest {
 
 					if (!setter.getDeclaringType()
 							   .getSimpleName()
-							   .equals(((CtTypeParameterReference) ctTypeReference).getBoundingType().asCtIntersectionTypeReference().getBounds().get(0).getSimpleName())) {
+							   .equals(((CtTypeParameterReference) ctTypeReference).getBoundingType().getSimpleName())) {
 						fail("Your setter " + methodLog +
 									 " has a type reference who don't extends " +
 									 setter.getDeclaringType().getSimpleName());

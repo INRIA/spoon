@@ -140,7 +140,7 @@ public class TypeTest {
 
 		assertTrue(typeAccesses.get(0).getParent() instanceof CtBinaryOperator);
 		assertEquals(BinaryOperatorKind.INSTANCEOF, ((CtBinaryOperator) typeAccesses.get(0).getParent()).getKind());
-		assertEquals("a instanceof java.lang.Object[]", typeAccesses.get(0).getParent().toString());
+		assertEquals("a instanceof java.lang.@spoon.test.annotation.testclasses.TypeAnnotation(integer = 1)" + System.lineSeparator() + "Object[]", typeAccesses.get(0).getParent().toString());
 
 		assertTrue(typeAccesses.get(1).getParent() instanceof CtBinaryOperator);
 		assertEquals(BinaryOperatorKind.INSTANCEOF, ((CtBinaryOperator) typeAccesses.get(1).getParent()).getKind());

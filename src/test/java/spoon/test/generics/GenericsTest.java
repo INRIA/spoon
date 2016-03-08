@@ -1,6 +1,5 @@
 package spoon.test.generics;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;

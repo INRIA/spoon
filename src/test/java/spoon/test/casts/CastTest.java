@@ -1,12 +1,15 @@
 package spoon.test.casts;
 
 import org.junit.Test;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -14,6 +17,7 @@ import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
 import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class CastTest {
 	Factory factory = ModelUtils.createFactory();
@@ -86,5 +90,14 @@ public class CastTest {
 		assertEquals("T", getValueMethod.getParameters().get(0).getType().getActualTypeArguments().get(0).toString());
 
 		assertEquals(type.getFactory().Class().INTEGER, getValueInvocation.getType());
+	}
+
+	@Test
+	public void testTypeAnnotationOnCast() throws Exception {
+		final CtType<Castings> aCastings = buildClass(Castings.class);
+		final CtLocalVariable local = aCastings.getMethod("bar").getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+
+		assertEquals(1, ((CtTypeReference) local.getDefaultExpression().getTypeCasts().get(0)).getAnnotations().size());
+		assertEquals("((java.lang.@spoon.test.casts.Castings.TypeAnnotation(integer = 1)" + System.lineSeparator() + "String)(\"\"))", local.getDefaultExpression().toString());
 	}
 }

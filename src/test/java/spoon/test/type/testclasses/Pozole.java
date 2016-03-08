@@ -45,7 +45,7 @@ public class Pozole<A extends Annotation> {
 
 	public void season() {
 		Object a = null;
-		if (a instanceof Object[]) {
+		if (a instanceof @TypeAnnotation(integer = 1) Object[]) {
 		}
 		if (a instanceof java.lang.Object[]) {
 		}

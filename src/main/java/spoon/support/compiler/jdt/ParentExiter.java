@@ -68,6 +68,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
@@ -108,6 +109,9 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void scanCtGenericElement(CtGenericElement e) {
+		if (this.jdtTreeBuilder.context.isTypeParameter && child instanceof CtTypeParameterReference) {
+			e.addFormalTypeParameter((CtTypeParameterReference) child);
+		}
 		return;
 	}
 
@@ -121,7 +125,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T, E extends CtExpression<?>> void scanCtTargetedExpression(CtTargetedExpression<T, E> targetedExpression) {
-		if (!this.jdtTreeBuilder.context.target.isEmpty() && this.jdtTreeBuilder.context.target.peek() == targetedExpression) {
+		if (!this.jdtTreeBuilder.context.target.isEmpty() && this.jdtTreeBuilder.context.target.peek() == targetedExpression && child instanceof CtExpression) {
 			targetedExpression.setTarget((E) child);
 			return;
 		}
@@ -162,29 +166,11 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(CtAnnotation<A> annotation) {
-
-		// //GANYMEDE FIX: JDT now inserts a simpletyperef below annotations
-		// that points
-		// //to the type of the annotation. The JDTTreeBuilder supposes that
-		// this simpletyperef is
-		// //in fact part of a member/value pair, and will try to construct
-		// the pair. I think it is safe to
-		// // ignore this, but we should really migrate to the JDT Binding
-		// API since this will only get worse
-		// // Just to be safe I upcall the visitCtAnnotation in the
-		// inheritance scanner.
-		// if(context.annotationValueName.isEmpty()){
-		// super.visitCtAnnotation(annotation);
-		// return;
-		// }
-
-		String name = this.jdtTreeBuilder.context.annotationValueName.peek();
-		Object value = child;
-
-		if (value instanceof CtVariableAccess && !"class".equals(((CtVariableAccess) value).getVariable().getSimpleName())) {
-			value = ((CtVariableAccess<?>) value).getVariable();
+		if (child instanceof CtVariableAccess && !"class".equals(((CtVariableAccess) child).getVariable().getSimpleName())) {
+			annotation.addValue(this.jdtTreeBuilder.context.annotationValueName.peek(), ((CtVariableAccess<?>) child).getVariable());
+		} else if (child instanceof CtExpression) {
+			annotation.addValue(this.jdtTreeBuilder.context.annotationValueName.peek(), child);
 		}
-		annotation.addValue(name, value);
 		super.visitCtAnnotation(annotation);
 	}
 
@@ -212,12 +198,14 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	private <T, E extends CtExpression<?>> boolean visitArrayAccess(CtArrayAccess<T, E> arrayAccess) {
-		if (this.jdtTreeBuilder.context.arguments.size() > 0 && this.jdtTreeBuilder.context.arguments.peek() == arrayAccess) {
-			arrayAccess.setIndexExpression((CtExpression<Integer>) child);
-			return false;
-		} else if (arrayAccess.getTarget() == null) {
-			arrayAccess.setTarget((E) child);
-			return false;
+		if (child instanceof CtExpression) {
+			if (this.jdtTreeBuilder.context.arguments.size() > 0 && this.jdtTreeBuilder.context.arguments.peek() == arrayAccess) {
+				arrayAccess.setIndexExpression((CtExpression<Integer>) child);
+				return false;
+			} else if (arrayAccess.getTarget() == null) {
+				arrayAccess.setTarget((E) child);
+				return false;
+			}
 		}
 		return true;
 	}
@@ -238,12 +226,14 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
-		if (assignement.getAssigned() == null) {
-			assignement.setAssigned((CtExpression<T>) child);
-			return;
-		} else if (assignement.getAssignment() == null) {
-			assignement.setAssignment((CtExpression<A>) child);
-			return;
+		if (child instanceof CtExpression) {
+			if (assignement.getAssigned() == null) {
+				assignement.setAssigned((CtExpression<T>) child);
+				return;
+			} else if (assignement.getAssignment() == null) {
+				assignement.setAssignment((CtExpression<A>) child);
+				return;
+			}
 		}
 		super.visitCtAssignment(assignement);
 	}
@@ -393,24 +383,28 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-		if (this.jdtTreeBuilder.context.isArgument(invocation) && child instanceof CtExpression) {
-			invocation.addArgument((CtExpression<?>) child);
-			return;
-		} else if (child instanceof CtExpression) {
-			invocation.setTarget((CtExpression<?>) child);
-			return;
+		if (child instanceof CtExpression) {
+			if (this.jdtTreeBuilder.context.isArgument(invocation)) {
+				invocation.addArgument((CtExpression<?>) child);
+				return;
+			} else {
+				invocation.setTarget((CtExpression<?>) child);
+				return;
+			}
 		}
 		super.visitCtInvocation(invocation);
 	}
 
 	@Override
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
-		if (this.jdtTreeBuilder.context.isArgument(newArray)) {
-			newArray.addDimensionExpression((CtExpression<Integer>) child);
-			return;
-		} else if (child instanceof CtExpression) {
-			newArray.addElement((CtExpression<?>) child);
-			return;
+		if (child instanceof CtExpression) {
+			if (this.jdtTreeBuilder.context.isArgument(newArray)) {
+				newArray.addDimensionExpression((CtExpression<Integer>) child);
+				return;
+			} else {
+				newArray.addElement((CtExpression<?>) child);
+				return;
+			}
 		}
 	}
 
@@ -517,7 +511,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtThrow(CtThrow throwStatement) {
-		if (throwStatement.getThrownExpression() == null) {
+		if (throwStatement.getThrownExpression() == null && child instanceof CtExpression) {
 			throwStatement.setThrownExpression((CtExpression<? extends Throwable>) child);
 			return;
 		}
