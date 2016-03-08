@@ -23,6 +23,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -444,6 +445,17 @@ public class TypeReferenceTest {
 		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
 		assertEquals(CtType.NAME_UNKNOWN, anonymousClass.getReference().getSimpleName());
 		assertEquals(7, aClass.getReferencedTypes().size());
+	}
+
+	@Test
+	public void testShortTypeReference() throws Exception {
+
+		CtTypeReference<Short> aShort = ModelUtils.createFactory().Type().SHORT;
+		CtTypeReference<Short> shortPrimitive = ModelUtils.createFactory().Type().SHORT_PRIMITIVE;
+
+		assertEquals(Short.class, aShort.getActualClass());
+		assertEquals(short.class, shortPrimitive.getActualClass());
+
 	}
 
 	class A {

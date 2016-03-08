@@ -54,6 +54,8 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Long> LONG_PRIMITIVE = createReference(long.class);
 	public final CtTypeReference<Float> FLOAT_PRIMITIVE = createReference(float.class);
 	public final CtTypeReference<Double> DOUBLE_PRIMITIVE = createReference(double.class);
+	public final CtTypeReference<Short> SHORT = createReference(Short.class);
+	public final CtTypeReference<Short> SHORT_PRIMITIVE = createReference(short.class);
 	public final CtTypeReference<Date> DATE = createReference(Date.class);
 	public final CtTypeReference<Object> OBJECT = createReference(Object.class);
 
