@@ -16,12 +16,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -30,9 +24,18 @@ import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonFile;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 // we use a fully qualified name to make it clear we are extending jdt
 class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
@@ -84,10 +87,39 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 			units = l.toArray(new CompilationUnit[0]);
 		}
 		if (useFactory) {
+			List<CompilationUnit> unitList = new ArrayList<CompilationUnit>();
 			for (int i = 0; i < units.length; i++) {
 				CompilationUnit unit = units[i];
-				units[i] = new CompilationUnitWrapper(this.jdtCompiler, unit);
+				unitList.add(new CompilationUnitWrapper(this.jdtCompiler, unit));
 			}
+			for (int i = 0; i < jdtCompiler.getFactory().Type().getAll().size(); i++) {
+				CtType<?> ctType = jdtCompiler.getFactory().Type().getAll().get(i);
+				if(ctType.getPosition() != null) {
+					continue;
+				}
+				CtPackage pack = ctType.getPackage();
+				File directory = jdtCompiler.getSourceOutputDirectory();
+				// create package directory
+				File packageDir;
+				if (pack.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+					packageDir = new File(directory.getAbsolutePath());
+				} else {
+					// Create current package dir
+					packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
+				}
+				if (!packageDir.exists()) {
+					if (!packageDir.mkdirs()) {
+						throw new RuntimeException("Error creating output directory");
+					}
+				}
+
+				// print type
+				File file = new File(packageDir.getAbsolutePath() + File.separatorChar + ctType.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+
+				CompilationUnit unit = new CompilationUnit(null, file.getAbsolutePath(), "UTF-8");
+				unitList.add(new CompilationUnitWrapper(this.jdtCompiler, unit));
+			}
+			units = unitList.toArray(new CompilationUnit[]{});
 		}
 		return units;
 	}

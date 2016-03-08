@@ -18,8 +18,9 @@ package spoon.support.compiler.jdt;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-
 import spoon.Launcher;
+
+import java.io.FileInputStream;
 
 class CompilationUnitWrapper extends CompilationUnit {
 
@@ -47,6 +48,15 @@ class CompilationUnitWrapper extends CompilationUnit {
 					this.jdtCompiler.loadedContent.put(s, content);
 					return content;
 				}
+			} catch (Exception e) {
+				Launcher.LOGGER.error(e.getMessage(), e);
+			}
+		} else {
+			try {
+				char[] content = IOUtils
+                        .toCharArray(new FileInputStream(s));
+				this.jdtCompiler.loadedContent.put(s, content);
+				return content;
 			} catch (Exception e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
