@@ -23,8 +23,17 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 
 	/**
 	 * Gets the type of the elements contained in this array.
+	 * e.g., if you have the array <code>int[][][]</code>,
+	 * this method returns a type reference for <code>int[][]</code>.
 	 */
 	CtTypeReference<?> getComponentType();
+
+	/**
+	 * Gets the type of the array elements at the finest grain.
+	 * e.g., if you have the array <code>int[][][]</code>,
+	 * this method returns a type reference to "int".
+	 */
+	CtTypeReference<?> getArrayType();
 
 	/**
 	 * Sets the type of the elements contained in this array.

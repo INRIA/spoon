@@ -8,14 +8,19 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtIntersectionTypeReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.constructor.testclasses.AClass;
 import spoon.test.constructor.testclasses.Tacos;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -78,5 +83,45 @@ public class ConstructorTest {
 				.createConstructorCall(ctTypeReference, constructorCall);
 
 		assertEquals("new java.util.ArrayList(new java.util.ArrayList())", constructorCallWithParameter.toString());
+	}
+
+	@Test
+	public void testTypeAnnotationOnExceptionDeclaredInConstructors() throws Exception {
+		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
+
+		assertEquals(1, aConstructor.getThrownTypes().size());
+		Set<CtTypeReference<? extends Throwable>> thrownTypes = aConstructor.getThrownTypes();
+		final CtTypeReference[] thrownTypesReference = thrownTypes.toArray(new CtTypeReference[thrownTypes.size()]);
+		assertEquals(1, thrownTypesReference.length);
+		assertEquals(1, thrownTypesReference[0].getAnnotations().size());
+		assertEquals("java.lang.@spoon.test.constructor.testclasses.Tacos.TypeAnnotation(integer = 1)" + System.lineSeparator() + "Exception", thrownTypesReference[0].toString());
+	}
+
+	@Test
+	public void testTypeAnnotationWithConstructorsOnFormalType() throws Exception {
+		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
+
+		assertEquals(1, aConstructor.getFormalTypeParameters().size());
+		CtTypeParameterReference genericT = (CtTypeParameterReference) aConstructor.getFormalTypeParameters().get(0);
+		assertEquals("T", genericT.getSimpleName());
+		assertEquals(1, genericT.getAnnotations().size());
+
+		assertNotNull(genericT.getBoundingType());
+		assertTrue(genericT.getBoundingType() instanceof CtIntersectionTypeReference);
+		CtIntersectionTypeReference<?> bounds = genericT.getBoundingType().asCtIntersectionTypeReference();
+
+		CtTypeReference<?> genericTacos = bounds.getBounds().get(0);
+		assertEquals("Tacos", genericTacos.getSimpleName());
+		assertEquals(1, genericTacos.getAnnotations().size());
+
+		assertEquals(1, genericTacos.getActualTypeArguments().size());
+		CtTypeParameterReference wildcard = (CtTypeParameterReference) genericTacos.getActualTypeArguments().get(0);
+		assertEquals("?", wildcard.getSimpleName());
+		assertEquals(1, wildcard.getAnnotations().size());
+		assertEquals("C", wildcard.getBoundingType().getSimpleName());
+		assertEquals(1, wildcard.getBoundingType().getAnnotations().size());
+
+		assertEquals("Serializable", bounds.getBounds().get(1).getSimpleName());
+		assertEquals(1, bounds.getBounds().get(1).getAnnotations().size());
 	}
 }

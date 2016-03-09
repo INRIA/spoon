@@ -68,8 +68,9 @@ public class NewClassTest {
 		assertHasParameters(0, newClass.getArguments());
 		assertIsAnonymous(newClass.getAnonymousClass());
 		assertSuperInterface(Foo.Tacos.class, newClass.getAnonymousClass());
+		CtTypeReference[] ctTypeReferences = newClass.getAnonymousClass().getSuperInterfaces().toArray(new CtTypeReference[0]);
 		assertEquals("Super interface is typed by the class of the constructor", String.class,
-				newClass.getAnonymousClass().getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualTypeArguments().get(0).getActualClass());
+				ctTypeReferences[0].getActualTypeArguments().get(0).getActualClass());
 	}
 
 	@Test

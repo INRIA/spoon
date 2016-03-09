@@ -2,7 +2,7 @@ package spoon.test.constructor.testclasses;
 
 @SuppressWarnings("rawtypes")
 //raw types, where used, are used purposely
-public class AClass extends AAClass<String>.BBClass<Number> {
+public class AClass extends @Tacos.TypeAnnotation AAClass<@Tacos.TypeAnnotation String>.@Tacos.TypeAnnotation BBClass<@Tacos.TypeAnnotation Number> {
 
     public AClass(final AAClass<String> enclosingInstance) {
         enclosingInstance.super();

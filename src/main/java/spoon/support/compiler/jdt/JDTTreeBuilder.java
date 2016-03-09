@@ -119,7 +119,6 @@ import org.eclipse.jdt.internal.compiler.lookup.CaptureBinding;
 import org.eclipse.jdt.internal.compiler.lookup.CatchParameterBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
-import org.eclipse.jdt.internal.compiler.lookup.ElementValuePair;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.IntersectionTypeBinding18;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
@@ -136,6 +135,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
@@ -183,14 +183,13 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
@@ -218,7 +217,6 @@ import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -286,6 +284,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		boolean isLambdaParameterImplicitlyTyped = true;
 
 		boolean ignoreComputeImports = false;
+
+		boolean isTypeParameter = false;
 
 		/**
 		 * Stack of all parents elements
@@ -694,6 +694,23 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return getTypeReference(ref);
 		}
 
+		public CtTypeReference<Object> getTypeParameterReference(TypeBinding binding, TypeReference ref) {
+			CtTypeReference<Object> ctRef = getTypeReference(binding);
+			if (ctRef != null && isCorrectTypeReference(ref)) {
+				if (!(ctRef instanceof CtTypeParameterReference)) {
+					CtTypeParameterReference typeParameterRef = factory.Core().createTypeParameterReference();
+					typeParameterRef.setSimpleName(ctRef.getSimpleName());
+					typeParameterRef.setDeclaringType(ctRef.getDeclaringType());
+					typeParameterRef.setPackage(ctRef.getPackage());
+					typeParameterRef.setActualTypeArguments(ctRef.getActualTypeArguments());
+					ctRef = typeParameterRef;
+				}
+				insertGenericTypesInNoClasspathFromJDTInSpoon(ref, ctRef);
+				return ctRef;
+			}
+			return getTypeParameterReference(CharOperation.toString(ref.getParameterizedTypeName()));
+		}
+
 		/**
 		 * In no classpath, the model of the super interface isn't always correct.
 		 */
@@ -767,9 +784,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 		public <T> CtTypeReference<T> getTypeReference(String name) {
 			CtTypeReference<T> main = null;
 			if (name.matches(".*(<.+>)")) {
-				main = factory.Core().createTypeReference();
 				Pattern pattern = Pattern.compile("([^<]+)<(.+)>");
 				Matcher m = pattern.matcher(name);
+				if (name.startsWith("?")) {
+					main = (CtTypeReference) factory.Core().createTypeParameterReference();
+				} else {
+					main = factory.Core().createTypeReference();
+				}
 				if (m.find()) {
 					main.setSimpleName(m.group(1));
 					final String[] split = m.group(2).split(",");
@@ -780,6 +801,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else if (Character.isUpperCase(name.charAt(0))) {
 				main = factory.Core().createTypeReference();
 				main.setSimpleName(name);
+			} else if (name.startsWith("?")) {
+				return (CtTypeReference) factory.Type().createTypeParameterReference(name);
 			}
 			return main;
 		}
@@ -1037,7 +1060,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 				throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 			}
 			bindingCache.remove(binding);
-			addTypeAnnotationFromBindingToReference(binding, ref);
 			return (CtTypeReference<T>) ref;
 		}
 
@@ -1050,42 +1072,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			circularRef.setActualTypeArguments(originalRef.getActualTypeArguments());
 			circularRef.setAnnotations(originalRef.getAnnotations());
 			return circularRef;
-		}
-
-		private void addTypeAnnotationFromBindingToReference(TypeBinding resolvedType, CtTypeReference<?> reference) {
-			if (resolvedType.hasTypeAnnotations()) {
-				final AnnotationBinding[] typeAnnotations = resolvedType.getTypeAnnotations();
-				for (AnnotationBinding typeAnnotation : typeAnnotations) {
-					reference.addAnnotation(getTypeCtAnnotation(typeAnnotation));
-				}
-			}
-		}
-
-		public <A extends java.lang.annotation.Annotation> CtAnnotation<A> getTypeCtAnnotation(AnnotationBinding annotationBinding) {
-			CtAnnotation<A> a = factory.Core().createAnnotation();
-			CtTypeReference<A> t = references.getTypeReference(annotationBinding.getAnnotationType());
-			a.setAnnotationType(t);
-			for (ElementValuePair valuePair : annotationBinding.getElementValuePairs()) {
-				a.addValue(String.valueOf(valuePair.getName()), buildValuePairAnnotation(valuePair.getValue()));
-			}
-			return a;
-		}
-
-		private Object buildValuePairAnnotation(Object value) {
-			if (value instanceof AnnotationBinding) {
-				return getTypeCtAnnotation((AnnotationBinding) value);
-			} else if (value instanceof FieldBinding) {
-				return getVariableReference((FieldBinding) value);
-			} else if (value instanceof BinaryTypeBinding) {
-				return factory.Code().createClassAccess(getTypeReference((BinaryTypeBinding) value));
-			} else if (value instanceof Object[]) {
-				Collection<Object> values = new ArrayList<Object>();
-				for (Object currentValue : (Object[]) value) {
-					values.add(buildValuePairAnnotation(currentValue));
-				}
-				return values;
-			}
-			return value;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -1293,6 +1279,81 @@ public class JDTTreeBuilder extends ASTVisitor {
 		LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
+	private <T> CtTypeReference<T> buildTypeReferenceInternal(CtTypeReference<T> typeReference, TypeReference type, Scope scope) {
+		if (type == null) {
+			return null;
+		}
+		CtTypeReference<?> currentReference = typeReference;
+
+		for (int position = type.getTypeName().length - 1; position >= 0; position--) {
+			if (currentReference == null) {
+				break;
+			}
+			context.enter(currentReference, type);
+			if (type.annotations != null && type.annotations.length - 1 <= position && type.annotations[position] != null && type.annotations[position].length > 0) {
+				for (Annotation annotation : type.annotations[position]) {
+					if (scope instanceof ClassScope) {
+						annotation.traverse(this, (ClassScope) scope);
+					} else if (scope instanceof BlockScope) {
+						annotation.traverse(this, (BlockScope) scope);
+					} else {
+						annotation.traverse(this, (BlockScope) null);
+					}
+				}
+			}
+			if (type.getTypeArguments() != null && type.getTypeArguments().length - 1 <= position && type.getTypeArguments()[position] != null && type.getTypeArguments()[position].length > 0) {
+				currentReference.getActualTypeArguments().clear();
+				for (TypeReference typeArgument : type.getTypeArguments()[position]) {
+					if (typeArgument instanceof Wildcard || typeArgument.resolvedType instanceof WildcardBinding || typeArgument.resolvedType instanceof TypeVariableBinding) {
+						currentReference.addActualTypeArgument(buildTypeParameterReference(typeArgument, scope));
+					} else {
+						currentReference.addActualTypeArgument(buildTypeReference(typeArgument, scope));
+					}
+				}
+			}
+			if (type instanceof Wildcard && typeReference instanceof CtTypeParameterReference) {
+				((CtTypeParameterReference) typeReference).setBoundingType(buildTypeReference(((Wildcard) type).bound, scope));
+			}
+			context.exit(type);
+			currentReference = currentReference.getDeclaringType();
+		}
+		return typeReference;
+	}
+
+	/**
+	 * Builds a type reference from a {@link TypeReference}.
+	 *
+	 * @param type
+	 * 		Type from JDT.
+	 * @param scope
+	 * 		Scope of the parent element.
+	 * @param <T>
+	 * 		Type of the type reference.
+	 * @return a type reference.
+	 */
+	private <T> CtTypeReference<T> buildTypeReference(TypeReference type, Scope scope) {
+		if (type == null) {
+			return null;
+		}
+		return buildTypeReferenceInternal(references.<T>getTypeReference(type.resolvedType, type), type, scope);
+	}
+
+	/**
+	 * Builds a type parameter reference from a {@link TypeReference}
+	 *
+	 * @param type
+	 * 		Type from JDT.
+	 * @param scope
+	 * 		Scope of the parent element.
+	 * @return a type parameter reference.
+	 */
+	private CtTypeParameterReference buildTypeParameterReference(TypeReference type, Scope scope) {
+		if (type == null) {
+			return null;
+		}
+		return (CtTypeParameterReference) this.buildTypeReferenceInternal(references.getTypeParameterReference(type.resolvedType, type), type, scope);
+	}
+
 	private void createExpression(StringLiteralConcatenation literal, BlockScope scope, List<Expression> rst) {
 		if (rst.isEmpty()) {
 			return;
@@ -1318,28 +1379,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
 			type = factory.Core().<java.lang.annotation.Annotation>createAnnotationType();
 		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
-			CtEnum<?> e = factory.Core().createEnum();
-			if (typeDeclaration.superInterfaces != null) {
-				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					e.addSuperInterface(references.getTypeReference(ref.resolvedType, ref));
-				}
-			}
-			type = e;
+			type = factory.Core().createEnum();
 		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccInterface) != 0) {
-			CtInterface<?> interf = factory.Core().createInterface();
-			if (typeDeclaration.superInterfaces != null) {
-				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					interf.addSuperInterface(references.getTypeReference(ref.resolvedType, ref));
-				}
-			}
-			if (typeDeclaration.typeParameters != null) {
-				for (TypeParameter p : typeDeclaration.typeParameters) {
-					interf.addFormalTypeParameter(references.getBoundedTypeReference(p.binding));
-				}
-			}
-			type = interf;
+			type = factory.Core().createInterface();
 		} else {
-			CtClass<?> cl = factory.Core().createClass();
+			type = factory.Core().createClass();
+		}
+		context.enter(type, typeDeclaration);
+
+		if (typeDeclaration.superInterfaces != null) {
+			for (TypeReference ref : typeDeclaration.superInterfaces) {
+				final CtTypeReference superInterface = buildTypeReference(ref, null);
+				type.addSuperInterface(superInterface);
+			}
+		}
+
+		if (type instanceof CtClass) {
 			if (typeDeclaration.superclass != null && typeDeclaration.superclass.resolvedType != null && typeDeclaration.enclosingType != null && !new String(
 					typeDeclaration.superclass.resolvedType.qualifiedPackageName()).equals(new String(typeDeclaration.binding.qualifiedPackageName()))) {
 
@@ -1357,7 +1412,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 			}
 			if (typeDeclaration.superclass != null) {
-				cl.setSuperclass(references.getTypeReference(typeDeclaration.superclass.resolvedType, typeDeclaration.superclass));
+				((CtClass) type).setSuperclass(buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 			}
 
 			// If the current class is an anonymous class with a super interface and generic types, we add generic
@@ -1369,24 +1424,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 					final ParameterizedTypeBinding resolvedType = (ParameterizedTypeBinding) superInterface.resolvedType;
 					if (resolvedType.arguments != null) {
 						for (TypeBinding b : resolvedType.arguments) {
-							cl.addFormalTypeParameter(references.getTypeReference(b));
+							type.addFormalTypeParameter(references.getTypeReference(b));
 						}
 					}
 				}
 			}
-
-			if (typeDeclaration.superInterfaces != null) {
-				for (TypeReference ref : typeDeclaration.superInterfaces) {
-					cl.addSuperInterface(references.getTypeReference(ref.resolvedType, ref));
-				}
-			}
-			if (typeDeclaration.typeParameters != null) {
-				for (TypeParameter p : typeDeclaration.typeParameters) {
-					cl.addFormalTypeParameter(references.getBoundedTypeReference(p.binding));
-				}
-			}
-			type = cl;
-
 		}
 		if (type instanceof CtClass) {
 			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
@@ -1423,6 +1465,57 @@ public class JDTTreeBuilder extends ASTVisitor {
 		final String poolName = String.valueOf(binding.constantPoolName());
 		final int lastIndexSeparator = poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		return poolName.substring(lastIndexSeparator + 1, poolName.length());
+	}
+
+	/**
+	 * When an annotation is specified on a method, a local declaration or an argument, JDT doesn't know
+	 * if the annotation is specified on the type or on the element. Due to this method, if the annotation
+	 * is compatible with types, we substitute the annotation from the element to the type of this element.
+	 *
+	 * @param typedElement
+	 * 		Element annotated.
+	 * @param a
+	 * 		Annotation of the element.
+	 * @param elementType
+	 * 		Type of the annotation.
+	 */
+	private void substituteAnnotation(CtTypedElement<Object> typedElement, Annotation a, CtAnnotatedElementType elementType) {
+		if (hasAnnotationWithType(a, elementType)) {
+			CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = typedElement.getAnnotations().get(typedElement.getAnnotations().size() - 1);
+			typedElement.removeAnnotation(targetAnnotation);
+			typedElement.getType().addAnnotation(targetAnnotation);
+		}
+	}
+
+	/**
+	 * Check if the annotation is declared with the given element type.
+	 *
+	 * @param a
+	 * 		An annotation.
+	 * @param elementType
+	 * 		Type of the annotation.
+	 * @return true if the annotation is compitble with the given element type.
+	 */
+	private boolean hasAnnotationWithType(Annotation a, CtAnnotatedElementType elementType) {
+		if (a.resolvedType == null) {
+			return false;
+		}
+		for (AnnotationBinding annotation : a.resolvedType.getAnnotations()) {
+			if (!"Target".equals(CharOperation.charToString(annotation.getAnnotationType().sourceName()))) {
+				continue;
+			}
+			Object value = annotation.getElementValuePairs()[0].value;
+			if (value == null || !value.getClass().isArray()) {
+				continue;
+			}
+			Object[] fields = (Object[]) value;
+			for (Object field : fields) {
+				if (field instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) field).name))) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -1629,9 +1722,28 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(NormalAnnotation annotation, ClassScope scope) {
+		context.exit(annotation);
+		skipTypeInAnnotation = false;
+	}
+
+	@Override
+	public void endVisit(MarkerAnnotation annotation, ClassScope scope) {
+		context.exit(annotation);
+		skipTypeInAnnotation = false;
+	}
+
+	@Override
 	public void endVisit(MarkerAnnotation annotation, BlockScope scope) {
 		context.exit(annotation);
 		skipTypeInAnnotation = false;
+	}
+
+	@Override
+	public void endVisit(MemberValuePair pair, ClassScope scope) {
+		if (!context.annotationValueName.pop().equals(new String(pair.name))) {
+			throw new RuntimeException("Unconsistant Stack");
+		}
 	}
 
 	@Override
@@ -1775,6 +1887,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(SingleTypeReference singleTypeReference, ClassScope scope) {
+		if (skipTypeInAnnotation) {
+			skipTypeInAnnotation = false;
+			return;
+		}
 		context.exit(singleTypeReference);
 	}
 
@@ -1832,6 +1948,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(TryStatement tryStatement, BlockScope scope) {
 		context.exit(tryStatement);
+	}
+
+	@Override
+	public void endVisit(TypeParameter typeParameter, BlockScope scope) {
+		context.exit(typeParameter);
+		context.isTypeParameter = false;
+	}
+
+	@Override
+	public void endVisit(TypeParameter typeParameter, ClassScope scope) {
+		context.exit(typeParameter);
+		context.isTypeParameter = false;
 	}
 
 	@Override
@@ -2061,6 +2189,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	private <T extends CtConstructorCall<Object>> T buildCommonPartForCtNewClassAndCtConstructorCall(AllocationExpression allocationExpression, BlockScope scope, T constructorCall) {
+		context.enter(constructorCall, allocationExpression);
+
 		if (allocationExpression.binding != null) {
 			constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
 		} else {
@@ -2091,17 +2221,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			}
-			constructorCall.getExecutable().setType(references.getTypeReference(allocationExpression.type.resolvedType));
+			constructorCall.getExecutable().setType(buildTypeReference(allocationExpression.type, scope));
 			context.isGenericTypeExplicit = true;
 		} else if (allocationExpression.expectedType() != null) {
 			constructorCall.getExecutable().setType(references.getTypeReference(allocationExpression.expectedType()));
 		}
 
-		if (allocationExpression.genericTypeArguments() != null) {
-			constructorCall.setActualTypeArguments(references.getBoundedTypesReferences(allocationExpression.genericTypeArguments()));
+		if (allocationExpression.typeArguments != null) {
+			for (TypeReference typeArgument : allocationExpression.typeArguments) {
+				constructorCall.addActualTypeArgument(buildTypeReference(typeArgument, scope));
+			}
 		}
-
-		context.enter(constructorCall, allocationExpression);
 
 		if (allocationExpression.enclosingInstance() != null) {
 			context.target.push(constructorCall);
@@ -2131,13 +2261,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(AnnotationMethodDeclaration annotationTypeDeclaration, ClassScope classScope) {
 		CtField<Object> f = factory.Core().createField();
 		f.setSimpleName(new String(annotationTypeDeclaration.selector));
-		f.setType(references.getTypeReference(annotationTypeDeclaration.binding.returnType));
 		context.enter(f, annotationTypeDeclaration);
 
+		f.setType(buildTypeReference(annotationTypeDeclaration.returnType, classScope));
+
 		if (annotationTypeDeclaration.annotations != null) {
-			int annotationsLength = annotationTypeDeclaration.annotations.length;
-			for (int i = 0; i < annotationsLength; i++) {
-				annotationTypeDeclaration.annotations[i].traverse(this, annotationTypeDeclaration.scope);
+			for (Annotation a : annotationTypeDeclaration.annotations) {
+				a.traverse(this, annotationTypeDeclaration.scope);
+				substituteAnnotation(f, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -2188,21 +2319,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (argument.annotations != null) {
 			for (Annotation a : argument.annotations) {
-				// TODO Sorry for that but there is a bug in JDT : https://bugs.eclipse.org/bugs/show_bug.cgi?id=459528
-				if (isContainsInTypeAnnotation(argument.type.resolvedType, a)) {
-					a.traverse(this, scope);
-				}
+				a.traverse(this, scope);
+				substituteAnnotation(p, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
+
 		return false;
 	}
 
 	@Override
 	public boolean visit(ArrayAllocationExpression arrayAllocationExpression, BlockScope scope) {
 		CtNewArray<Object> array = factory.Core().createNewArray();
-		array.setType(references.getTypeReference(arrayAllocationExpression.resolvedType));
-
 		context.enter(array, arrayAllocationExpression);
+
+		final CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayAllocationExpression.resolvedType);
+		arrayType.getArrayType().setAnnotations(buildTypeReference(arrayAllocationExpression.type, scope).getAnnotations());
+		array.setType(arrayType);
 
 		context.pushArgument(array);
 		if (arrayAllocationExpression.dimensions != null) {
@@ -2247,7 +2379,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayTypeReference arrayTypeReference, BlockScope scope) {
-		context.enter(factory.Code().createTypeAccess(references.getTypeReference(arrayTypeReference.resolvedType)), arrayTypeReference);
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+
+		context.enter(typeAccess, arrayTypeReference);
+
+		final CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayTypeReference.resolvedType);
+		arrayType.getArrayType().setAnnotations(buildTypeReference(arrayTypeReference, scope).getAnnotations());
+		typeAccess.setAccessedType(arrayType);
+
 		return true;
 	}
 
@@ -2258,7 +2397,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayQualifiedTypeReference arrayQualifiedTypeReference, BlockScope scope) {
-		context.enter(factory.Code().createTypeAccess(references.getTypeReference(arrayQualifiedTypeReference.resolvedType)), arrayQualifiedTypeReference);
+		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
+
+		context.enter(typeAccess, arrayQualifiedTypeReference);
+
+		final CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayQualifiedTypeReference.resolvedType);
+		arrayType.getArrayType().setAnnotations(buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
+		typeAccess.setAccessedType(arrayType);
+
 		return true;
 	}
 
@@ -2338,9 +2484,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(CastExpression castExpression, BlockScope scope) {
-		final TypeBinding resolvedType = castExpression.resolvedType;
-		final CtTypeReference<Object> castReference = references.getTypeReference(resolvedType);
-		context.casts.add(castReference);
+		context.casts.add(buildTypeReference(castExpression.type, scope));
 		castExpression.expression.traverse(this, scope);
 		return false;
 	}
@@ -2413,13 +2557,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (constructorDeclaration.thrownExceptions != null) {
 			for (TypeReference r : constructorDeclaration.thrownExceptions) {
-				CtTypeReference<? extends Throwable> tr = references.getTypeReference(r.resolvedType);
-				c.addThrownType(tr);
+				// Cast scope to BlockScope because some members values with potential
+				// type annotations don't override traverse method with ClassScope.
+				// Thanks JDT...
+				CtTypeReference<? extends Throwable> throwType = buildTypeReference(r, (BlockScope) null);
+				c.addThrownType(throwType);
 			}
 		}
-		if (constructorDeclaration.binding != null) {
-			for (TypeBinding b : constructorDeclaration.binding.typeVariables) {
-				c.addFormalTypeParameter(references.getBoundedTypeReference(b));
+
+		if (constructorDeclaration.typeParameters() != null) {
+			for (TypeParameter typeParameter : constructorDeclaration.typeParameters()) {
+				typeParameter.traverse(this, scope);
 			}
 		}
 
@@ -2438,6 +2586,50 @@ public class JDTTreeBuilder extends ASTVisitor {
 				s.traverse(this, constructorDeclaration.scope);
 			}
 		}
+		return false;
+	}
+
+	@Override
+	public boolean visit(TypeParameter typeParameter, ClassScope scope) {
+		return visitTypeParameter(typeParameter, scope);
+	}
+
+	@Override
+	public boolean visit(TypeParameter typeParameter, BlockScope scope) {
+		return visitTypeParameter(typeParameter, scope);
+	}
+
+	public boolean visitTypeParameter(TypeParameter typeParameter, Scope scope) {
+		final CtTypeParameterReference typeParameterRef = factory.Core().createTypeParameterReference();
+		context.isTypeParameter = true;
+		context.enter(typeParameterRef, typeParameter);
+
+		typeParameterRef.setSimpleName(CharOperation.charToString(typeParameter.name));
+
+		// Extends of the generic type.
+		typeParameterRef.setBoundingType(buildTypeReference(typeParameter.type, (BlockScope) null));
+
+		// Annotations.
+		if (typeParameter.annotations != null) {
+			int length = typeParameter.annotations.length;
+
+			for (int i = 0; i < length; ++i) {
+				typeParameter.annotations[i].traverse(this, (BlockScope) null);
+			}
+		}
+
+		// Bounds with the extend type: T extends String & Serializer
+		if (typeParameter.bounds != null) {
+			int length = typeParameter.bounds.length;
+
+			final List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>();
+			bounds.add(typeParameterRef.getBoundingType());
+			for (int i = 0; i < length; ++i) {
+				bounds.add(buildTypeReference(typeParameter.bounds[i], (BlockScope) null));
+			}
+			typeParameterRef.setBoundingType(factory.Type().createIntersectionTypeReference(bounds));
+		}
+
 		return false;
 	}
 
@@ -2532,9 +2724,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtField<Object> field;
 		if (fieldDeclaration.type != null) {
 			field = factory.Core().createField();
-			field.setType(references.getTypeReference(fieldDeclaration.type.resolvedType));
+			context.enter(field, fieldDeclaration);
+			field.setType(buildTypeReference(fieldDeclaration.type, scope));
 		} else {
 			field = factory.Core().createEnumValue();
+			context.enter(field, fieldDeclaration);
 			if (fieldDeclaration.binding != null) {
 				field.setType(references.getVariableReference(fieldDeclaration.binding).getType());
 			}
@@ -2543,8 +2737,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		field.setModifiers(getModifiers(fieldDeclaration.modifiers));
 
 		field.setDocComment(getJavaDoc(fieldDeclaration.javadoc, scope.referenceCompilationUnit()));
-
-		context.enter(field, fieldDeclaration);
 
 		if (fieldDeclaration.annotations != null) {
 			int annotationsLength = fieldDeclaration.annotations.length;
@@ -2690,7 +2882,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
 		v.setSimpleName(new String(localDeclaration.name));
-		v.setType(references.getTypeReference(localDeclaration.type.resolvedType));
+		v.setType(buildTypeReference(localDeclaration.type, scope));
 		v.setModifiers(getModifiers(localDeclaration.modifiers));
 		context.enter(v, localDeclaration);
 
@@ -2702,10 +2894,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (localDeclaration.annotations != null) {
 			for (Annotation a : localDeclaration.annotations) {
-				// TODO Sorry for that but there is a bug in JDT : https://bugs.eclipse.org/bugs/show_bug.cgi?id=459528
-				if (isContainsInTypeAnnotation(localDeclaration.type.resolvedType, a)) {
-					a.traverse(this, scope);
-				}
+				a.traverse(this, scope);
+				substituteAnnotation(v, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -2723,16 +2913,46 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(MarkerAnnotation annotation, BlockScope scope) {
-		return visitMarkerAnnoation(annotation, scope);
+	public boolean visit(NormalAnnotation annotation, ClassScope scope) {
+		return visitNormalAnnotation(annotation, scope);
 	}
 
-	private <A extends java.lang.annotation.Annotation> boolean visitMarkerAnnoation(MarkerAnnotation annotation, BlockScope scope) {
+	@Override
+	public boolean visit(NormalAnnotation annotation, BlockScope scope) {
+		return visitNormalAnnotation(annotation, scope);
+	}
+
+	@Override
+	public boolean visit(MarkerAnnotation annotation, ClassScope scope) {
+		return visitMarkerAnnotation(annotation, scope);
+	}
+
+	@Override
+	public boolean visit(MarkerAnnotation annotation, BlockScope scope) {
+		return visitMarkerAnnotation(annotation, scope);
+	}
+
+	private <A extends java.lang.annotation.Annotation> boolean visitNormalAnnotation(NormalAnnotation annotation, Scope scope) {
+		CtAnnotation<A> a = factory.Core().createAnnotation();
+		CtTypeReference<A> r = references.getTypeReference(annotation.resolvedType);
+		a.setAnnotationType(r);
+		context.enter(a, annotation);
+		skipTypeInAnnotation = true;
+		return true;
+	}
+
+	private <A extends java.lang.annotation.Annotation> boolean visitMarkerAnnotation(Annotation annotation, Scope scope) {
 		CtAnnotation<A> a = factory.Core().createAnnotation();
 		CtTypeReference<A> t = references.getTypeReference(annotation.resolvedType, annotation.type);
 		a.setAnnotationType(t);
 		context.enter(a, annotation);
 		skipTypeInAnnotation = true;
+		return true;
+	}
+
+	@Override
+	public boolean visit(MemberValuePair pair, ClassScope scope) {
+		context.annotationValueName.push(new String(pair.name));
 		return true;
 	}
 
@@ -2852,20 +3072,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		CtMethod<Object> m = factory.Core().createMethod();
 		m.setSimpleName(new String(methodDeclaration.selector));
-		m.setType(references.getTypeReference(methodDeclaration.returnType.resolvedType, methodDeclaration.returnType));
+		m.setType(buildTypeReference(methodDeclaration.returnType, scope));
 		m.setModifiers(getModifiers(methodDeclaration.modifiers));
 		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
+
+		context.enter(m, methodDeclaration);
+
 		if (methodDeclaration.thrownExceptions != null) {
 			for (TypeReference r : methodDeclaration.thrownExceptions) {
-				m.addThrownType(references.<Throwable>getTypeReference(r.resolvedType, r));
+				CtTypeReference<Throwable> throwType = buildTypeReference(r, scope);
+				m.addThrownType(throwType);
 			}
 		}
 
-		// this may happen when working
-		if (methodDeclaration.binding != null) {
-			// with incomplete classpath
-			for (TypeBinding b : methodDeclaration.binding.typeVariables) {
-				m.addFormalTypeParameter(references.getBoundedTypeReference(b));
+		if (methodDeclaration.typeParameters() != null) {
+			for (TypeParameter typeParameter : methodDeclaration.typeParameters()) {
+				typeParameter.traverse(this, scope);
 			}
 		}
 
@@ -2877,14 +3099,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			// null scope for "+methodDeclaration
 		}
 
-		context.enter(m, methodDeclaration);
-
 		if (methodDeclaration.annotations != null) {
 			for (Annotation a : methodDeclaration.annotations) {
-				// TODO Sorry for that but there is a bug in JDT : https://bugs.eclipse.org/bugs/show_bug.cgi?id=459528
-				if (isContainsInTypeAnnotation(methodDeclaration.returnType.resolvedType, a)) {
-					a.traverse(this, methodDeclaration.scope);
-				}
+				a.traverse(this, methodDeclaration.scope);
+				substituteAnnotation(m, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -2906,33 +3124,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 		return false;
-	}
-
-	private boolean isContainsInTypeAnnotation(TypeBinding binding, Annotation a) {
-		return binding == null || !binding.hasTypeAnnotations() || !containsInTypeAnnotation(a, binding.getTypeAnnotations());
-	}
-
-	private boolean containsInTypeAnnotation(Annotation a, AnnotationBinding[] typeAnnotations) {
-		for (AnnotationBinding typeAnnotation : typeAnnotations) {
-			if (typeAnnotation.getAnnotationType().equals(a.resolvedType)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public boolean visit(NormalAnnotation annotation, BlockScope scope) {
-		return visitNormalAnnotation(annotation, scope);
-	}
-
-	private <A extends java.lang.annotation.Annotation> boolean visitNormalAnnotation(NormalAnnotation annotation, BlockScope scope) {
-		CtAnnotation<A> a = factory.Core().createAnnotation();
-		CtTypeReference<A> r = references.getTypeReference(annotation.resolvedType);
-		a.setAnnotationType(r);
-		context.enter(a, annotation);
-		skipTypeInAnnotation = true;
-		return true;
 	}
 
 	@Override
@@ -3380,6 +3571,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(SingleTypeReference singleTypeReference, ClassScope scope) {
+		if (skipTypeInAnnotation) {
+			return true;
+		}
 		CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.getTypeReference(singleTypeReference.resolvedType));
 		context.enter(typeAccess, singleTypeReference);
 		return true; // do nothing by default, keep traversing
@@ -3565,13 +3759,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 			t = factory.Core().createClass();
 			t.setSimpleName(CtType.NAME_UNKNOWN);
 			((CtClass) t).setSuperclass(references.getTypeReference(null, localTypeDeclaration.allocation.type));
+			context.enter(t, localTypeDeclaration);
 		} else {
 			t = createType(localTypeDeclaration);
 		}
 		if (localTypeDeclaration.javadoc != null) {
 			t.setDocComment(getJavaDoc(localTypeDeclaration.javadoc, scope.referenceCompilationUnit()));
 		}
-		context.enter(t, localTypeDeclaration);
 
 		// AST bug HACK (see TypeDeclaration.traverse)
 		if (localTypeDeclaration.fields != null) {
@@ -3592,8 +3786,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		CtType<?> type = createType(memberTypeDeclaration);
 		type.setDocComment(getJavaDoc(memberTypeDeclaration.javadoc, scope.referenceCompilationUnit()));
-		context.enter(type, memberTypeDeclaration);
-
 		return true;
 	}
 
@@ -3620,12 +3812,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 			pack.addType(type);
 
 			type.setDocComment(getJavaDoc(typeDeclaration.javadoc, scope.referenceContext));
-			context.enter(type, typeDeclaration);
 
 			// AST bug HACK
 			if (typeDeclaration.annotations != null) {
 				for (Annotation a : typeDeclaration.annotations) {
 					a.traverse(this, (BlockScope) null);
+				}
+			}
+
+			if (typeDeclaration.typeParameters != null) {
+				for (TypeParameter p : typeDeclaration.typeParameters) {
+					p.traverse(this, (BlockScope) null);
 				}
 			}
 

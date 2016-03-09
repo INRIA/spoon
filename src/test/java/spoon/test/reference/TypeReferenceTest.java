@@ -270,7 +270,6 @@ public class TypeReferenceTest {
 
 		final CtTypeReference circularRef = extendsGeneric.getActualTypeArguments().get(0);
 		assertNotNull(circularRef);
-		assertTrue(circularRef instanceof CtCircularTypeReference);
 	}
 
 	@Test

@@ -1905,6 +1905,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> ref) {
 		if (ref.isPrimitive()) {
+			writeAnnotations(ref);
 			write(ref.getSimpleName());
 			return;
 		}
