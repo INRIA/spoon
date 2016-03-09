@@ -29,6 +29,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -448,4 +449,9 @@ public interface CtVisitor {
 	 * Visits an access to a super invocation.
 	 */
 	<T> void visitCtSuperAccess(CtSuperAccess<T> f);
+
+	/**
+	 * Visits a comment
+	 */
+	void visitCtComment(CtComment comment);
 }

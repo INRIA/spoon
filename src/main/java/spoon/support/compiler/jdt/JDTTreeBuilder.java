@@ -63,7 +63,6 @@ import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
 import org.eclipse.jdt.internal.compiler.ast.IntLiteral;
-import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.LabeledStatement;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
@@ -152,6 +151,7 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -170,6 +170,7 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
@@ -313,7 +314,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				} else if  (node instanceof TypeDeclaration) {
 					sourceStartDeclaration = ((TypeDeclaration) node).declarationSourceStart;
 					sourceEnd = ((TypeDeclaration) node).declarationSourceEnd;
-				} else if ((e instanceof CtBlock) && (node instanceof AbstractMethodDeclaration)) {
+				} else if ((e instanceof CtStatementList) && (node instanceof AbstractMethodDeclaration)) {
 					sourceStartDeclaration = ((AbstractMethodDeclaration) node).bodyStart - 1;
 					sourceEnd = ((AbstractMethodDeclaration) node).bodyEnd + 1;
 				} else if ((node instanceof AbstractMethodDeclaration)) {
@@ -1165,37 +1166,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 	}
 
-	public static String cleanJavadoc(String doc) {
-		StringBuffer ret = new StringBuffer();
-		String[] lines = doc.split("\n");
-
-		// limit case
-		if (lines.length == 1) {
-			return lines[0].replaceAll("^/\\*+", "").replaceAll("\\*+/$", "");
-		}
-
-		for (String s : lines) {
-			String cleanUpLine = s.trim();
-			if (cleanUpLine.startsWith("/**")) {
-				cleanUpLine = cleanUpLine.replaceAll("/\\*+", "");
-			} else if (cleanUpLine.endsWith("*/")) {
-				cleanUpLine = cleanUpLine.replaceAll("\\*+/$", "").replaceAll("^[ \t]*\\*+", "");
-			} else {
-				cleanUpLine = cleanUpLine.replaceAll("^[ \t]*\\*+", "");
-			}
-			ret.append(cleanUpLine);
-			ret.append("\n");
-		}
-		// clean '\r'
-		StringBuffer ret2 = new StringBuffer();
-		for (int i = 0; i < ret.length(); i++) {
-			if (ret.charAt(i) != '\r') {
-				ret2.append(ret.charAt(i));
-			}
-		}
-		return ret2.toString().trim();
-	}
-
 	public static Set<ModifierKind> getModifiers(int mod) {
 		Set<ModifierKind> ret = EnumSet.noneOf(ModifierKind.class);
 		if ((mod & ClassFileConstants.AccPublic) != 0) {
@@ -1442,7 +1412,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		// Setting modifiers
 		type.setModifiers(getModifiers(typeDeclaration.modifiers));
-		// type.setDocComment(getJavaDoc(typeDeclaration.javadoc));
 
 		return type;
 	}
@@ -2047,19 +2016,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return context.getCreatedTypes();
 	}
 
-	public String getJavaDoc(Javadoc javadoc, CompilationUnitDeclaration declaration) {
-		if (javadoc != null) {
-			try {
-				String s = new String(declaration.compilationResult.compilationUnit.getContents(), javadoc.sourceStart, javadoc.sourceEnd - javadoc.sourceStart + 1);
-				return cleanJavadoc(s);
-			} catch (StringIndexOutOfBoundsException e) {
-				// BCUTAG trouver cause
-				return null;
-			}
-		}
-		return null;
-	}
-
 	protected <T> CtLocalVariable<T> getLocalVariableDeclaration(final String name) {
 		List<CtElement> reversedElements = new ArrayList<CtElement>(context.stack.size());
 		for (ASTPair element : context.stack) {
@@ -2541,8 +2497,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtConstructor<?> c = factory.Core().createConstructor();
 		c.setModifiers(getModifiers(constructorDeclaration.modifiers));
 
-		c.setDocComment(getJavaDoc(constructorDeclaration.javadoc, scope.referenceCompilationUnit()));
-
 		context.enter(c, constructorDeclaration);
 
 		if (constructorDeclaration.annotations != null) {
@@ -2741,8 +2695,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		field.setSimpleName(new String(fieldDeclaration.name));
 		field.setModifiers(getModifiers(fieldDeclaration.modifiers));
-
-		field.setDocComment(getJavaDoc(fieldDeclaration.javadoc, context.compilationunitdeclaration));
 
 		if (fieldDeclaration.annotations != null) {
 			int annotationsLength = fieldDeclaration.annotations.length;
@@ -3095,14 +3047,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			for (TypeParameter typeParameter : methodDeclaration.typeParameters()) {
 				typeParameter.traverse(this, scope);
 			}
-		}
-
-		if (scope != null) {
-			m.setDocComment(getJavaDoc(methodDeclaration.javadoc, scope.referenceCompilationUnit()));
-		} else if (methodDeclaration.scope != null) {
-			m.setDocComment(getJavaDoc(methodDeclaration.javadoc, methodDeclaration.scope.referenceCompilationUnit()));
-		} else {
-			// null scope for "+methodDeclaration
 		}
 
 		if (methodDeclaration.annotations != null) {
@@ -3769,9 +3713,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else {
 			t = createType(localTypeDeclaration);
 		}
-		if (localTypeDeclaration.javadoc != null) {
-			t.setDocComment(getJavaDoc(localTypeDeclaration.javadoc, scope.referenceCompilationUnit()));
-		}
 
 		// AST bug HACK (see TypeDeclaration.traverse)
 		if (localTypeDeclaration.fields != null) {
@@ -3791,7 +3732,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		CtType<?> type = createType(memberTypeDeclaration);
-		type.setDocComment(getJavaDoc(memberTypeDeclaration.javadoc, scope.referenceCompilationUnit()));
 		return true;
 	}
 
@@ -3799,7 +3739,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		if (new String(typeDeclaration.name).equals("package-info")) {
 			CtPackage pack = factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName()));
-			pack.setDocComment(this.getJavaDoc(typeDeclaration.javadoc, scope.referenceContext));
+			String s = new String(typeDeclaration.compilationResult.compilationUnit.getContents(), typeDeclaration.javadoc.sourceStart, typeDeclaration.javadoc.sourceEnd - typeDeclaration.javadoc.sourceStart + 1);
+			pack.addComment(factory.Code().createComment(JDTCommentBuilder.cleanComment(s), CtComment.CommentType.JAVADOC));
 
 			context.compilationunitdeclaration = scope.referenceContext;
 			context.enter(pack, typeDeclaration);
@@ -3816,8 +3757,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.compilationunitdeclaration = scope.referenceContext;
 			CtType<?> type = createType(typeDeclaration);
 			pack.addType(type);
-
-			type.setDocComment(getJavaDoc(typeDeclaration.javadoc, scope.referenceContext));
 
 			// AST bug HACK
 			if (typeDeclaration.annotations != null) {

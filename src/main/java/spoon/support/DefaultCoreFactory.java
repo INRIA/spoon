@@ -30,6 +30,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -103,6 +104,7 @@ import spoon.support.reflect.code.CtCatchImpl;
 import spoon.support.reflect.code.CtCatchVariableImpl;
 import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
 import spoon.support.reflect.code.CtCodeSnippetStatementImpl;
+import spoon.support.reflect.code.CtCommentImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtContinueImpl;
@@ -654,6 +656,14 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 
 	public CtCodeSnippetStatement createCodeSnippetStatement() {
 		CtCodeSnippetStatement e = new CtCodeSnippetStatementImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public CtComment createComment() {
+		CtComment e = new CtCommentImpl();
+		e.setCommentType(CtComment.CommentType.BLOCK);
+		e.setContent("");
 		e.setFactory(getMainFactory());
 		return e;
 	}

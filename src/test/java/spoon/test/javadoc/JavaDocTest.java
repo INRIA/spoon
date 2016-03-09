@@ -23,7 +23,7 @@ public class JavaDocTest {
 		CtClass<?> aClass = factory.Class().get(Bar.class);
 		
 		Assert.assertEquals("public class Bar {" + System.lineSeparator()
-				+ "    /** " + System.lineSeparator()
+				+ "    /**" + System.lineSeparator()
 				+ "     * Creates an annotation type." + System.lineSeparator()
 				+ "     * " + System.lineSeparator()
 				+ "     *  @param owner" + System.lineSeparator()

@@ -16,23 +16,10 @@
  */
 package spoon.support.reflect.declaration;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
-
 import spoon.Launcher;
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
@@ -54,6 +41,19 @@ import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
+
 /**
  * Contains the default implementation of most CtElement methods.
  *
@@ -63,6 +63,8 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	private static final long serialVersionUID = 1L;
 	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
+
+	private List<CtComment> comments = new ArrayList<CtComment>();
 
 	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet
 	// because we need clear() for all set* methods
@@ -159,8 +161,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
 
-	String docComment;
-
 	SourcePosition position;
 
 	Map<String, Object> metadata;
@@ -189,7 +189,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	@Override
-	public final boolean equals(Object o) {
+	public boolean equals(Object o) {
 		boolean ret = false;
 		if ((o instanceof CtElement)) {
 			String current = getDeepRepresentation(this);
@@ -228,7 +228,12 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	public String getDocComment() {
-		return docComment;
+		for (CtComment ctComment : comments) {
+			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
+				return ctComment.getContent();
+			}
+		}
+		return null;
 	}
 
 	public SourcePosition getPosition() {
@@ -239,7 +244,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		HashcodeVisitor pr = new HashcodeVisitor();
 		pr.scan(this);
 		return pr.getHasCode();
@@ -272,7 +277,13 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	public <E extends CtElement> E setDocComment(String docComment) {
-		this.docComment = docComment;
+		for (CtComment ctComment : comments) {
+			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
+				ctComment.setContent(docComment);
+				return (E) this;
+			}
+		}
+		this.addComment(factory.Code().createComment(docComment, CtComment.CommentType.JAVADOC));
 		return (E) this;
 	}
 
@@ -495,5 +506,33 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	@Override
 	public Set<String> getMetadataKeys() {
 		return metadata.keySet();
+	}
+
+
+	@Override
+	public List<CtComment> getComments() {
+		return Collections.unmodifiableList(comments);
+	}
+
+	@Override
+	public <E extends CtElement> E addComment(CtComment comment) {
+		comments.add(comment);
+		comment.setParent(this);
+		return (E) this;
+	}
+
+	@Override
+	public <E extends CtElement> E removeComment(CtComment comment) {
+		comments.remove(comment);
+		return (E) this;
+	}
+
+	@Override
+	public <E extends CtElement> E setComments(List<CtComment> comments) {
+		this.comments = new ArrayList<CtComment>();
+		for (CtComment comment : comments) {
+			this.addComment(comment);
+		}
+		return (E) this;
 	}
 }

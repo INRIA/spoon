@@ -17,6 +17,7 @@
 package spoon.reflect.declaration;
 
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -74,7 +75,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 
 	/**
 	 * Returns the text of the documentation ("javadoc") comment of this
-	 * element.
+	 * element. The documentation is also accessible via {@link #getComments()}.
 	 */
 	String getDocComment();
 
@@ -119,7 +120,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 
 	/**
 	 * Sets the text of the documentation ("javadoc") comment of this
-	 * declaration.
+	 * declaration. This API will set the content of the first javadoc
+	 * {@link CtComment} or create a new  javadoc {@link CtComment} if
+	 * no javadoc {@link CtComment} is available on this object.
 	 */
 	<E extends CtElement> E setDocComment(String docComment);
 
@@ -253,4 +256,28 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * Returns the metadata keys stored in an element.
 	 */
 	Set<String> getMetadataKeys();
+
+	/**
+	 * Set the comment list
+	 */
+	<E extends CtElement> E setComments(List<CtComment> comments);
+
+	/**
+	 * The list of comments
+	 * @return the list of comment
+	 */
+	List<CtComment> getComments();
+
+	/**
+	 * Add a comment to the current element
+	 * <code>element.addComment(element.getFactory().Code().createComment("comment", CtComment.CommentType.INLINE)</code>
+	 * @param comment the comment
+	 */
+	<E extends CtElement> E addComment(CtComment comment);
+
+	/**
+	 * Remove a comment
+	 * @param comment the comment to remove
+	 */
+	<E extends CtElement> E removeComment(CtComment comment);
 }

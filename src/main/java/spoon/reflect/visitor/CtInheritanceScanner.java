@@ -33,6 +33,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -832,6 +833,14 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+	}
+
+	@Override
+	public void visitCtComment(CtComment e) {
+		scanCtElement(e);
+		scanCtVisitable(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(
