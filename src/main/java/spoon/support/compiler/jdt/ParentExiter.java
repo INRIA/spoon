@@ -51,7 +51,6 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -166,9 +165,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(CtAnnotation<A> annotation) {
-		if (child instanceof CtVariableAccess && !"class".equals(((CtVariableAccess) child).getVariable().getSimpleName())) {
-			annotation.addValue(this.jdtTreeBuilder.context.annotationValueName.peek(), ((CtVariableAccess<?>) child).getVariable());
-		} else if (child instanceof CtExpression) {
+		if (child instanceof CtExpression) {
 			annotation.addValue(this.jdtTreeBuilder.context.annotationValueName.peek(), child);
 		}
 		super.visitCtAnnotation(annotation);

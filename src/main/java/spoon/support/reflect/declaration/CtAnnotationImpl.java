@@ -300,6 +300,11 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return (T) ret;
 	}
 
+	@Override
+	public <T extends CtExpression> T getValue(String key) {
+		return (T) this.elementValues.get(key);
+	}
+
 	public Map<String, Object> getElementValues() {
 		return Collections.unmodifiableMap(elementValues);
 	}

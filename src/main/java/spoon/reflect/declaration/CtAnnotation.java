@@ -16,11 +16,11 @@
  */
 package spoon.reflect.declaration;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * This element defines an annotation, declared on a given annotated element.
@@ -60,6 +60,15 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
 	 * @return the value or null if not found
 	 */
 	<T> T getElementValue(String key);
+
+	/**
+	 * Gets a value for a given key without any conversion.
+	 *
+	 * @param key
+	 * 		Name of searched value.
+	 * @return the value expression or null if not found.
+	 */
+	<T extends CtExpression> T getValue(String key);
 
 	/**
 	 * Returns this annotation's elements and their values. This is returned in
