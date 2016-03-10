@@ -9,8 +9,10 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotationValues;
+import spoon.testing.utils.ModelUtils;
 
 import java.lang.annotation.Annotation;
 
@@ -21,6 +23,7 @@ import static spoon.test.annotation.AnnotationValuesTest.Request.on;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class AnnotationValuesTest {
+	static int i;
 	@Test
 	public void testValuesOnJava7Annotation() throws Exception {
 		CtType<AnnotationValues> aClass = buildClass(AnnotationValues.class);
@@ -54,6 +57,31 @@ public class AnnotationValuesTest {
 		on(ctAnnotation).giveMeAnnotationValue("e").isTypedBy(CtFieldAccess.class);
 		on(ctAnnotation).giveMeAnnotationValue("ia").isTypedBy(CtAnnotation.class);
 		on(ctAnnotation).giveMeAnnotationValue("ias").isTypedBy(CtNewArray.class);
+	}
+
+	@Test
+	public void testCtAnnotationAPI() throws Exception {
+		Factory factory = ModelUtils.createFactory();
+		CtAnnotation<Annotation> annotation = factory.Core().createAnnotation();
+		annotation.addValue("integers", 7);
+
+		on(annotation).giveMeAnnotationValue("integers").isTypedBy(CtLiteral.class);
+
+		annotation.addValue("integers", 42);
+
+		on(annotation).giveMeAnnotationValue("integers").isTypedBy(CtNewArray.class);
+
+		annotation.addValue("classes", String.class);
+
+		on(annotation).giveMeAnnotationValue("classes").isTypedBy(CtFieldAccess.class);
+
+		annotation.addValue("classes", Integer.class);
+
+		on(annotation).giveMeAnnotationValue("classes").isTypedBy(CtNewArray.class);
+
+		annotation.addValue("field", AnnotationValuesTest.class.getDeclaredField("i"));
+
+		on(annotation).giveMeAnnotationValue("field").isTypedBy(CtFieldAccess.class);
 	}
 
 	static class Request {

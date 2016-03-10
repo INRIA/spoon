@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -84,8 +85,8 @@ public class FactoryTest {
 
 		assertEquals(1, foo.getAnnotations().size());
 		assertEquals(2, foo.getAnnotations().get(0).getElementValues().size());
-		assertTrue(foo.getAnnotations().get(0).getElementValues().get("classes") instanceof List); // this should change in a next release.
-		assertEquals(1, ((List<CtExpression>) foo.getAnnotations().get(0).getElementValues().get("classes")).size());
-		assertEquals("spoon.test.factory.testclasses.Foo.class", ((List<CtExpression>) foo.getAnnotations().get(0).getElementValues().get("classes")).get(0).toString());
+		assertTrue(foo.getAnnotations().get(0).getElementValues().get("classes") instanceof CtNewArray);
+		assertEquals(1, ((CtNewArray) foo.getAnnotations().get(0).getElementValues().get("classes")).getElements().size());
+		assertEquals("spoon.test.factory.testclasses.Foo.class", ((CtNewArray) foo.getAnnotations().get(0).getElementValues().get("classes")).getElements().get(0).toString());
 	}
 }

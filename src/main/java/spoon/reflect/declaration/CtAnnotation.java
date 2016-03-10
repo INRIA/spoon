@@ -17,6 +17,9 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -59,6 +62,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
 	 * 		name of searched value
 	 * @return the value or null if not found
 	 */
+	@Deprecated
 	<T> T getElementValue(String key);
 
 	/**
@@ -79,11 +83,29 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
 	 * Note that <code>getElementValue("key")</code> is not completely similar
 	 * to <code>getElementValues().get("key")</code> since the former converts
 	 * type references into the actual types.
+	 * </p>
+	 *
+	 * <p>
+	 *     Content changed: A class access (e.g., String.class) is saved as a
+	 *     CtFieldAccess and no more a CtFieldReference.
+	 * </p>
+	 *
+	 * @return this annotation's element names and their values, or an empty map
+	 * if there are none
+	 * @see #getValues()
+	 */
+	@Deprecated
+	Map<String, Object> getElementValues();
+
+	/**
+	 * Returns this annotation's elements and their values. This is returned in
+	 * the form of a map that associates element names with their corresponding
+	 * values.
 	 *
 	 * @return this annotation's element names and their values, or an empty map
 	 * if there are none
 	 */
-	Map<String, Object> getElementValues();
+	Map<String, CtExpression> getValues();
 
 	/**
 	 * Sets the annotation's type.
@@ -119,4 +141,24 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
 	 * Adds a new key-value pair for this annotation
 	 */
 	<T extends CtAnnotation<A>> T addValue(String elementName, Object value);
+
+	/**
+	 * Adds a new key-literal pair for this annotation.
+	 */
+	<T extends CtAnnotation<A>> T addValue(String elementName, CtLiteral<?> value);
+
+	/**
+	 * Adds a new key-array pair for this annotation.
+	 */
+	<T extends CtAnnotation<A>> T addValue(String elementName, CtNewArray<? extends CtExpression> value);
+
+	/**
+	 * Adds a new key-field access pair for this annotation.
+	 */
+	<T extends CtAnnotation<A>> T addValue(String elementName, CtFieldAccess<?> value);
+
+	/**
+	 * Adds a new key-annotation pair for this annotation.
+	 */
+	<T extends CtAnnotation<A>> T addValue(String elementName, CtAnnotation<?> value);
 }
