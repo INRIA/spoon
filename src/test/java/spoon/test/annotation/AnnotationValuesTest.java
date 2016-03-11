@@ -7,6 +7,7 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -16,14 +17,17 @@ import spoon.testing.utils.ModelUtils;
 
 import java.lang.annotation.Annotation;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.test.annotation.AnnotationValuesTest.Request.on;
 import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class AnnotationValuesTest {
 	static int i;
+
 	@Test
 	public void testValuesOnJava7Annotation() throws Exception {
 		CtType<AnnotationValues> aClass = buildClass(AnnotationValues.class);
@@ -84,6 +88,20 @@ public class AnnotationValuesTest {
 		on(annotation).giveMeAnnotationValue("field").isTypedBy(CtFieldAccess.class);
 	}
 
+	@Test
+	public void testAnnotationFactory() throws Exception {
+		final Factory factory = createFactory();
+		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
+
+		on(target).isNotAnnotated();
+		CtAnnotation<SuppressWarnings> annotation = factory.Annotation().annotate(target, SuppressWarnings.class, "value", "test");
+		on(target).giveMeAnnotation(SuppressWarnings.class);
+		on(annotation).giveMeAnnotationValue("value").isTypedBy(CtLiteral.class);
+
+		annotation = factory.Annotation().annotate(target, SuppressWarnings.class, "value", "test2");
+		on(annotation).giveMeAnnotationValue("value").isTypedBy(CtNewArray.class);
+	}
+
 	static class Request {
 		private static Request myself = new Request();
 		private static CtElement element;
@@ -100,6 +118,7 @@ public class AnnotationValuesTest {
 					return ctAnnotation;
 				}
 			}
+			fail("Annotation isn't present on the current element.");
 			return null;
 		}
 
@@ -123,6 +142,11 @@ public class AnnotationValuesTest {
 			} catch (ClassCastException e) {
 				fail("The given element can't be cast by the given type.");
 			}
+			return myself;
+		}
+
+		public Request isNotAnnotated() {
+			assertEquals(0, element.getAnnotations().size());
 			return myself;
 		}
 	}
