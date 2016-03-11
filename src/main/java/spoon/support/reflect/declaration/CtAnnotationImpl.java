@@ -17,12 +17,15 @@
 package spoon.support.reflect.declaration;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -46,7 +49,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -60,62 +62,11 @@ import java.util.TreeMap;
  * @author Renaud Pawlak
  */
 public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> implements CtAnnotation<A> {
-	class AnnotationInvocationHandler implements InvocationHandler {
-		CtAnnotation<? extends Annotation> annotation;
-
-		AnnotationInvocationHandler(CtAnnotation<? extends Annotation> annotation) {
-			super();
-			this.annotation = annotation;
-		}
-
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			String fieldname = method.getName();
-			if ("toString".equals(fieldname)) {
-				return CtAnnotationImpl.this.toString();
-			} else if ("annotationType".equals(fieldname)) {
-				return annotation.getAnnotationType().getActualClass();
-			}
-			Object ret = getElementValue(fieldname);
-
-			// This is done here because return types should not be CT types;
-			// CtLiteral<String> vs String.
-			if (ret instanceof CtLiteral<?>) {
-				CtLiteral<?> l = (CtLiteral<?>) ret;
-				return l.getValue();
-			}
-
-			return ret;
-		}
-	}
 	private static final long serialVersionUID = 1L;
 
 	CtTypeReference<A> annotationType;
 
-	private Map<String, Object> elementValues = new TreeMap<String, Object>() {
-
-		private static final long serialVersionUID = 3501647177461995350L;
-
-		@Override
-		public Object put(String key, Object value) {
-			if (value instanceof Class[]) {
-				Class<?>[] valsNew = (Class<?>[]) value;
-				ArrayList<CtFieldAccess<?>> ret = new ArrayList<CtFieldAccess<?>>(valsNew.length);
-
-				for (int i = 0; i < valsNew.length; i++) {
-					Class<?> class1 = valsNew[i];
-					final CtTypeReference classRef = getFactory().Type().createReference(class1);
-					ret.add(i, getFactory().Code().createClassAccess(classRef));
-				}
-				return super.put(key, ret);
-			}
-			if (value instanceof Class) {
-				return super.put(key, getFactory().Code().createClassAccess(getFactory().Type().createReference((Class<?>) value)));
-			}
-			return super.put(key, value);
-
-		}
-
-	};
+	private Map<String, CtExpression> elementValues = new TreeMap<String, CtExpression>();
 
 	public CtAnnotationImpl() {
 		super();
@@ -127,41 +78,105 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@Override
 	public <T extends CtAnnotation<A>> T addValue(String elementName, Object value) {
-		if (!elementValues.containsKey(elementName)) {
-			elementValues.put(elementName, value);
-			if (value instanceof CtElement) {
-				((CtElement) value).setParent(this);
-			} else if (value instanceof Collection) {
-				for (Object element : (Collection) value) {
-					if (element instanceof CtElement) {
-						((CtElement) element).setParent(this);
+		if (value instanceof CtExpression) {
+			return addValueExpression(elementName, (CtExpression<?>) value);
+		}
+		return addValueExpression(elementName, convertValueToExpression(value));
+	}
+
+	private CtExpression convertValueToExpression(Object value) {
+		CtExpression res;
+		if (value.getClass().isArray()) {
+			// Value should be converted to a CtNewArray.
+			res = getFactory().Core().createNewArray();
+			Object[] values = (Object[]) value;
+			res.setType(getFactory().Type().createArrayReference(getFactory().Type().createReference(values[0].getClass())));
+			for (Object o : values) {
+				((CtNewArray) res).addElement(convertValueToExpression(o));
+			}
+		} else if (value instanceof Collection) {
+			// Value should be converted to a CtNewArray.
+			res = getFactory().Core().createNewArray();
+			Collection values = (Collection) value;
+			res.setType(getFactory().Type().createArrayReference(getFactory().Type().createReference(values.toArray()[0].getClass())));
+			for (Object o : values) {
+				((CtNewArray) res).addElement(convertValueToExpression(o));
+			}
+		} else if (value instanceof Class) {
+			// Value should be a field access to a .class.
+			res = getFactory().Code().createClassAccess(getFactory().Type().createReference((Class) value));
+		} else if (value instanceof Field) {
+			// Value should be a field access to a field.
+			CtFieldReference<Object> variable = getFactory().Field().createReference((Field) value);
+			variable.setStatic(true);
+			CtTypeAccess target = getFactory().Code().createTypeAccess(getFactory().Type().createReference(((Field) value).getDeclaringClass()));
+			CtFieldRead fieldRead = getFactory().Core().createFieldRead();
+			fieldRead.setVariable(variable);
+			fieldRead.setTarget(target);
+			fieldRead.setType(target.getAccessedType());
+			res = fieldRead;
+		} else if (isPrimitive(value.getClass()) || value instanceof String) {
+			// Value should be a literal.
+			res = getFactory().Code().createLiteral(value);
+		} else {
+			throw new SpoonException("Please, submit a valid value.");
+		}
+		return res;
+	}
+
+	private boolean isPrimitive(Class c) {
+		return c.isPrimitive() || c == Byte.class || c == Short.class || c == Integer.class || c == Long.class || c == Float.class || c == Double.class || c == Boolean.class || c == Character.class;
+	}
+
+	private <T extends CtAnnotation<A>> T addValueExpression(String elementName, CtExpression<?> expression) {
+		if (elementValues.containsKey(elementName)) {
+			// Update value of the existing one.
+			final CtExpression ctExpression = (CtExpression) elementValues.get(elementName);
+			if (ctExpression instanceof CtNewArray) {
+				// Already an array, add the value inside it.
+				if (expression instanceof CtNewArray) {
+					List<CtExpression<?>> elements = ((CtNewArray) expression).getElements();
+					for (CtExpression expInArray : elements) {
+						((CtNewArray) ctExpression).addElement(expInArray);
 					}
+				} else {
+					((CtNewArray) ctExpression).addElement(expression);
 				}
+			} else {
+				// Switch the value to a CtNewArray.
+				CtNewArray<Object> newArray = getFactory().Core().createNewArray();
+				newArray.setType(ctExpression.getType());
+				newArray.setParent(this);
+				newArray.addElement(ctExpression);
+				newArray.addElement(expression);
+				elementValues.put(elementName, newArray);
 			}
 		} else {
-			Object o = elementValues.get(elementName);
-			if (o.getClass().isArray()) {
-				List<Object> tmp = new ArrayList<Object>();
-				Object[] old = (Object[]) o;
-				for (Object a : old) {
-					tmp.add(a);
-				}
-				tmp.add(value);
-				// recursive call
-				addValue(elementName, tmp.toArray());
-			} else {
-				// transform a single value into an array
-				elementValues.put(elementName, new Object[] { o });
-				// recursive call
-				addValue(elementName, value);
-			}
+			// Add the new value.
+			elementValues.put(elementName, expression);
+			expression.setParent(this);
 		}
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public A getActualAnnotation() {
-		return (A) Proxy.newProxyInstance(annotationType.getActualClass().getClassLoader(), new Class[] { annotationType.getActualClass() }, new AnnotationInvocationHandler(this));
+	@Override
+	public <T extends CtAnnotation<A>> T addValue(String elementName, CtLiteral<?> value) {
+		return addValueExpression(elementName, value);
+	}
+
+	@Override
+	public <T extends CtAnnotation<A>> T addValue(String elementName, CtNewArray<? extends CtExpression> value) {
+		return addValueExpression(elementName, value);
+	}
+
+	@Override
+	public <T extends CtAnnotation<A>> T addValue(String elementName, CtFieldAccess<?> value) {
+		return addValueExpression(elementName, value);
+	}
+
+	@Override
+	public <T extends CtAnnotation<A>> T addValue(String elementName, CtAnnotation<?> value) {
+		return addValueExpression(elementName, value);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -292,7 +307,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 				ret = Short.parseShort(ret.toString());
 			}
 		}
-		if (type.isArray() && ret.getClass() != type) {
+		if (type.isArray() && ret != null && ret.getClass() != type) {
 			final Object array = Array.newInstance(ret.getClass(), 1);
 			((Object[]) array)[0] = ret;
 			ret = array;
@@ -300,7 +315,21 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return (T) ret;
 	}
 
+	@Override
+	public <T extends CtExpression> T getValue(String key) {
+		return (T) this.elementValues.get(key);
+	}
+
 	public Map<String, Object> getElementValues() {
+		TreeMap<String, Object> res = new TreeMap<String, Object>();
+		for (Entry<String, CtExpression> elementValue : elementValues.entrySet()) {
+			res.put(elementValue.getKey(), elementValue.getValue());
+		}
+		return res;
+	}
+
+	@Override
+	public Map<String, CtExpression> getValues() {
 		return Collections.unmodifiableMap(elementValues);
 	}
 
@@ -377,5 +406,37 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			return CtAnnotatedElementType.TYPE_USE;
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public A getActualAnnotation() {
+		class AnnotationInvocationHandler implements InvocationHandler {
+			CtAnnotation<? extends Annotation> annotation;
+
+			AnnotationInvocationHandler(CtAnnotation<? extends Annotation> annotation) {
+				super();
+				this.annotation = annotation;
+			}
+
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				String fieldname = method.getName();
+				if ("toString".equals(fieldname)) {
+					return CtAnnotationImpl.this.toString();
+				} else if ("annotationType".equals(fieldname)) {
+					return annotation.getAnnotationType().getActualClass();
+				}
+				Object ret = getElementValue(fieldname);
+
+				// This is done here because return types should not be CT types;
+				// CtLiteral<String> vs String.
+				if (ret instanceof CtLiteral<?>) {
+					CtLiteral<?> l = (CtLiteral<?>) ret;
+					return l.getValue();
+				}
+
+				return ret;
+			}
+		}
+		return (A) Proxy.newProxyInstance(annotationType.getActualClass().getClassLoader(), new Class[] { annotationType.getActualClass() }, new AnnotationInvocationHandler(this));
 	}
 }

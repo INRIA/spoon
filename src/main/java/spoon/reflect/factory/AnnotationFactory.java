@@ -16,11 +16,6 @@
  */
 package spoon.reflect.factory;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
@@ -29,6 +24,10 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Collection;
 
 /**
  * The {@link CtAnnotationType} sub-factory.
@@ -108,42 +107,29 @@ public class AnnotationFactory extends TypeFactory {
 	 * 		the value of the annotation element
 	 * @return the created/updated annotation
 	 */
-	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, Class<A> annotationType,
-			String annotationElementName, Object value) {
-		CtAnnotation<A> annotation = element.getAnnotation(factory.Type().createReference(annotationType));
-		if (annotation == null) {
-			annotation = factory.Core().createAnnotation();
-			annotation.setAnnotationType(factory.Type().createReference(annotationType));
-			element.addAnnotation(annotation);
-		}
+	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, Class<A> annotationType, String annotationElementName, Object value) {
+		final CtAnnotation<A> annotation = annotate(element, annotationType);
 		boolean isArray;
-
 		// try with CT reflection
-		CtAnnotationType<A> annotationtype = ((CtAnnotationType<A>) annotation.getAnnotationType().getDeclaration());
-		if (annotationtype != null) {
-			CtField<?> e = annotationtype.getField(annotationElementName);
+		CtAnnotationType<A> ctAnnotationType = ((CtAnnotationType<A>) annotation.getAnnotationType().getDeclaration());
+		if (ctAnnotationType != null) {
+			CtField<?> e = ctAnnotationType.getField(annotationElementName);
 			isArray = (e.getType() instanceof CtArrayTypeReference);
 		} else {
-			Method m = null;
+			Method m;
 			try {
 				m = annotation.getAnnotationType().getActualClass().getMethod(annotationElementName, new Class[0]);
 			} catch (Exception ex) {
-				throw new RuntimeException(
-						"undefined element '" + annotationElementName + "' for annotation '" + annotationType.getName()
-								+ "'");
+				throw new RuntimeException("undefined element '" + annotationElementName + "' for annotation '" + annotationType.getName() + "'");
 			}
 			isArray = m.getReturnType().isArray();
 		}
 		if (isArray == (value instanceof Collection || value.getClass().isArray())) {
 			annotation.addValue(annotationElementName, value);
+		} else if (isArray) {
+			annotation.addValue(annotationElementName, value);
 		} else {
-			if (isArray) {
-				List<Object> l = annotation.getElementValue(annotationElementName);
-				l.add(value);
-			} else {
-				throw new RuntimeException("cannot assing an array to a non-array annotation element");
-			}
-
+			throw new RuntimeException("cannot assing an array to a non-array annotation element");
 		}
 		return annotation;
 	}
