@@ -84,17 +84,22 @@ public class ProcessingVisitor extends CtScanner {
 		// sure the state is setup correctly before using this method.
 		if (p.getTraversalStrategy() == TraversalStrategy.PRE_ORDER ||
 				p.getTraversalStrategy() == TraversalStrategy.PRE_POST_ORDER) {
-			// Setup the traversal state before using isToBeProcessed.
+			// Setup the traversal state of the processor before using
+			// isToBeProcessed.
 			p.setTraversalState(TraversalStrategy.PRE_ORDER);
+			// Setup our own traversal state in order to determine the state
+			// within the visit methods.
+			setTraversalState(TraversalStrategy.PRE_ORDER);
 			if (canBeProcessed(p, e) && p.isToBeProcessed(e)) {
 				p.process(e);
 			}
 		}
 		super.scan(e); // process children
-		// The same applies for POST_PROCESS.
+		// The same applies for POST_ORDER.
 		if (p.getTraversalStrategy() == TraversalStrategy.POST_ORDER ||
 				p.getTraversalStrategy() == TraversalStrategy.PRE_POST_ORDER) {
 			p.setTraversalState(TraversalStrategy.POST_ORDER);
+			setTraversalState(TraversalStrategy.POST_ORDER);
 			if (canBeProcessed(p, e) && p.isToBeProcessed(e)) {
 				p.process(e);
 			}
