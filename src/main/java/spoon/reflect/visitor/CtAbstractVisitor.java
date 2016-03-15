@@ -18,6 +18,7 @@ package spoon.reflect.visitor;
 
 import java.lang.annotation.Annotation;
 
+import spoon.processing.TraversalStrategy;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -94,6 +95,28 @@ import spoon.reflect.reference.CtUnboundVariableReference;
  *  See {@link CtScanner} for a much more powerful implementation of CtVisitor.
  */
 public abstract class CtAbstractVisitor implements CtVisitor {
+
+	private TraversalStrategy traversalState = TraversalStrategy.POST_ORDER;
+
+	@Override
+	public TraversalStrategy getTraversalState() {
+		return traversalState;
+	}
+
+	@Override
+	public void setTraversalState(TraversalStrategy state) {
+		if (state == null) {
+			throw new IllegalArgumentException(
+					"The given state must not be null");
+		} else if (state != TraversalStrategy.PRE_ORDER &&
+				state != TraversalStrategy.POST_ORDER) {
+			throw new IllegalArgumentException(
+					"The given state must either be 'PRE_ORDER' or" +
+							"'POST_ORDER'");
+		}
+		traversalState = state;
+	}
+
 	@Override
 	public <A extends Annotation> void visitCtAnnotation(
 			CtAnnotation<A> annotation) {

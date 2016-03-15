@@ -78,17 +78,29 @@ public class ProcessingVisitor extends CtScanner {
 		if (e == null) {
 			return;
 		}
-		Processor<CtElement> p = (Processor<CtElement>) processor;
-		if (p.getTraversalStrategy() == TraversalStrategy.PRE_ORDER
-				&& canBeProcessed(p, e)) {
-			if (p.isToBeProcessed(e)) {
+		final Processor<CtElement> p = (Processor<CtElement>) processor;
+		// Since the method 'isToBeProcessed' is part of the Processor class
+		// and, thus, could make usage of the traversal state, we have to make
+		// sure the state is setup correctly before using this method.
+		if (p.getTraversalStrategy() == TraversalStrategy.PRE_ORDER ||
+				p.getTraversalStrategy() == TraversalStrategy.PRE_POST_ORDER) {
+			// Setup the traversal state of the processor before using
+			// isToBeProcessed.
+			p.setTraversalState(TraversalStrategy.PRE_ORDER);
+			if (canBeProcessed(p, e) && p.isToBeProcessed(e)) {
 				p.process(e);
 			}
+			// Setup our own traversal state in order to determine the state
+			// within the visit methods.
+			setTraversalState(TraversalStrategy.PRE_ORDER);
+			super.scan(e);
 		}
-		super.scan(e);
-		if (p.getTraversalStrategy() == TraversalStrategy.POST_ORDER
-				&& canBeProcessed(p, e)) {
-			if (p.isToBeProcessed(e)) {
+		if (p.getTraversalStrategy() == TraversalStrategy.POST_ORDER ||
+				p.getTraversalStrategy() == TraversalStrategy.PRE_POST_ORDER) {
+			setTraversalState(TraversalStrategy.POST_ORDER);
+			super.scan(e);
+			p.setTraversalState(TraversalStrategy.POST_ORDER);
+			if (canBeProcessed(p, e) && p.isToBeProcessed(e)) {
 				p.process(e);
 			}
 		}

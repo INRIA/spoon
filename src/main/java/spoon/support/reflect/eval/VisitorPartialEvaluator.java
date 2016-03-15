@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.eval;
 
+import spoon.processing.TraversalStrategy;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -119,6 +120,8 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	boolean flowEnded = false;
 
 	CtCodeElement result;
+
+	private TraversalStrategy traversalState = TraversalStrategy.POST_ORDER;
 
 	Number convert(CtTypeReference<?> type, Number n) {
 		if ((type.getActualClass() == int.class) || (type.getActualClass() == Integer.class)) {
@@ -832,5 +835,24 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	@Override
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
 		setResult(f.getFactory().Core().clone(f));
+	}
+
+	@Override
+	public TraversalStrategy getTraversalState() {
+		return traversalState;
+	}
+
+	@Override
+	public void setTraversalState(TraversalStrategy state) {
+		if (state == null) {
+			throw new IllegalArgumentException(
+					"The given state must not be null");
+		} else if (state != TraversalStrategy.PRE_ORDER &&
+				state != TraversalStrategy.POST_ORDER) {
+			throw new IllegalArgumentException(
+					"The given state must either be 'PRE_ORDER' or" +
+							"'POST_ORDER'");
+		}
+		traversalState = state;
 	}
 }

@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.processing.TraversalStrategy;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -97,6 +98,31 @@ import java.lang.annotation.Annotation;
  * element of the AST.
  */
 public interface CtVisitor {
+
+	/**
+	 * Returns the current traversal state of the visitor assigned by using
+	 * {@link #setTraversalState(TraversalStrategy)}. The returned state is
+	 * either {@link TraversalStrategy#PRE_ORDER} or
+	 * {@link TraversalStrategy#POST_ORDER}. The default state is
+	 * {@link TraversalStrategy#POST_ORDER} making sure this method never
+	 * returns {@code null}.
+	 *
+	 * @return	The current traversal state, never {@code null}.
+	 */
+	TraversalStrategy getTraversalState();
+
+	/**
+	 * Sets the current traversal state of the visitor. The given state must
+	 * either be {@link TraversalStrategy#PRE_ORDER} or
+	 * {@link TraversalStrategy#POST_ORDER}.
+	 *
+	 * @param state	The current traversal state.
+	 * @throws IllegalArgumentException	If {@code state} is {@code null} or
+	 * 				neither {@link TraversalStrategy#PRE_ORDER} nor
+	 * 				{@link TraversalStrategy#POST_ORDER}.
+	 */
+	void setTraversalState(TraversalStrategy state);
+
 	/**
 	 * Visits an annotation.
 	 */

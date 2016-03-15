@@ -18,6 +18,7 @@ package spoon.reflect.visitor;
 
 import org.apache.log4j.Level;
 import spoon.compiler.Environment;
+import spoon.processing.TraversalStrategy;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -125,6 +126,8 @@ import java.util.Stack;
  * A visitor for generating Java code from the program compile-time model.
  */
 public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
+
+	private TraversalStrategy traversalState = TraversalStrategy.POST_ORDER;
 
 	/**
 	 * Java file extension (.java).
@@ -2311,5 +2314,24 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
 		write(reference.getSimpleName());
+	}
+
+	@Override
+	public TraversalStrategy getTraversalState() {
+		return traversalState;
+	}
+
+	@Override
+	public void setTraversalState(TraversalStrategy state) {
+		if (state == null) {
+			throw new IllegalArgumentException(
+					"The given state must not be null");
+		} else if (state != TraversalStrategy.PRE_ORDER &&
+				state != TraversalStrategy.POST_ORDER) {
+			throw new IllegalArgumentException(
+					"The given state must either be 'PRE_ORDER' or" +
+							"'POST_ORDER'");
+		}
+		traversalState = state;
 	}
 }
