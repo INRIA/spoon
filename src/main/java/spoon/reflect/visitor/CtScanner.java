@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.processing.TraversalStrategy;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -104,6 +105,9 @@ import java.util.Collection;
  * Is used by the processing and filtering engine.
  */
 public abstract class CtScanner implements CtVisitor {
+
+	private TraversalStrategy traversalState = TraversalStrategy.POST_ORDER;
+
 	/**
 	 * Default constructor.
 	 */
@@ -787,5 +791,24 @@ public abstract class CtScanner implements CtVisitor {
 		scan(f.getTypeCasts());
 		scan(f.getTarget());
 		exit(f);
+	}
+
+	@Override
+	public TraversalStrategy getTraversalState() {
+		return traversalState;
+	}
+
+	@Override
+	public void setTraversalState(TraversalStrategy state) {
+		if (state == null) {
+			throw new IllegalArgumentException(
+					"The given state must not be null");
+		} else if (state != TraversalStrategy.PRE_ORDER &&
+				state != TraversalStrategy.POST_ORDER) {
+			throw new IllegalArgumentException(
+					"The given state must either be 'PRE_ORDER' or" +
+							"'POST_ORDER'");
+		}
+		traversalState = state;
 	}
 }
