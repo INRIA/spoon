@@ -37,6 +37,12 @@ public enum TraversalStrategy {
 	 * elements before the parents. This implies that child elements that are
 	 * removed by a processor will still be processed before they are removed.
 	 */
-	POST_ORDER
+	POST_ORDER,
 
+	/**
+	 * When this strategy is selected, the processor will traverse the parent
+	 * elements before and after the children. Thus, it's a combination of
+	 * {@link #PRE_ORDER} and {@link #POST_ORDER}.
+	 */
+	PRE_POST_ORDER
 }

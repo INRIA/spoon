@@ -31,6 +31,8 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 
 	Factory factory;
 
+	private TraversalStrategy traversalState = TraversalStrategy.POST_ORDER;
+
 	/**
 	 * Empty constructor only for all processors (invoked by Spoon).
 	 */
@@ -64,6 +66,25 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	 */
 	public final TraversalStrategy getTraversalStrategy() {
 		return TraversalStrategy.POST_ORDER;
+	}
+
+	@Override
+	public TraversalStrategy getTraversalState() {
+		return traversalState;
+	}
+
+	@Override
+	public void setTraversalState(TraversalStrategy state) {
+		if (state == null) {
+			throw new IllegalArgumentException(
+					"The given state must not be null");
+		} else if (state != TraversalStrategy.PRE_ORDER &&
+				state != TraversalStrategy.POST_ORDER) {
+			throw new IllegalArgumentException(
+					"The given state must either be 'PRE_ORDER' or" +
+							"'POST_ORDER'");
+		}
+		traversalState = state;
 	}
 
 	public void init() {

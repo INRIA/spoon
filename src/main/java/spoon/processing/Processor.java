@@ -37,6 +37,30 @@ public interface Processor<E extends CtElement> extends FactoryAccessor {
 	TraversalStrategy getTraversalStrategy();
 
 	/**
+	 * Returns the current traversal state of the processor assigned by using
+	 * {@link #setTraversalState(TraversalStrategy)}. The returned state is
+	 * either {@link TraversalStrategy#PRE_ORDER} or
+	 * {@link TraversalStrategy#POST_ORDER}. The default state is
+	 * {@link TraversalStrategy#POST_ORDER} making sure this method never
+	 * returns {@code null}.
+	 *
+	 * @return	The current traversal state, never {@code null}.
+	 */
+	TraversalStrategy getTraversalState();
+
+	/**
+	 * Sets the current traversal state of the processor. The given state must
+	 * either be {@link TraversalStrategy#PRE_ORDER} or
+	 * {@link TraversalStrategy#POST_ORDER}.
+	 *
+	 * @param state	The current traversal state.
+	 * @throws IllegalArgumentException	If {@code state} is {@code null} or
+	 * 				neither {@link TraversalStrategy#PRE_ORDER} nor
+	 * 				{@link TraversalStrategy#POST_ORDER}.
+	 */
+	void setTraversalState(TraversalStrategy state);
+
+	/**
 	 * Gets the environment of this processor.
 	 */
 	Environment getEnvironment();
