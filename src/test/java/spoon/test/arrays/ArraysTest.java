@@ -1,9 +1,16 @@
 package spoon.test.arrays;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +34,32 @@ public class ArraysTest {
 		assertEquals("java.lang.reflect.Array", x.getType().getQualifiedName());
 		assertEquals("int", ((CtArrayTypeReference<?>) x.getType()).getComponentType().getSimpleName());
 		assertTrue(((CtArrayTypeReference<?>) x.getType()).getComponentType().getActualClass().equals(int.class));
+	}
+
+	@Test
+	public void testInitializeWithNewArray() throws Exception {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Foo.java");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		CtType<Object> aType = launcher.getFactory().Type().get("com.example.Foo");
+
+		final List<CtNewArray> elements = aType.getElements(new TypeFilter<>(CtNewArray.class));
+		assertEquals(2, elements.size());
+
+		final CtNewArray attribute = elements.get(0);
+		assertEquals(1, attribute.getDimensionExpressions().size());
+		assertEquals(0, ((CtLiteral) attribute.getDimensionExpressions().get(0)).getValue());
+		assertTrue(attribute.getType() instanceof CtArrayTypeReference);
+		assertEquals("new java.lang.String[0]", attribute.toString());
+
+		final CtNewArray local = elements.get(1);
+		assertEquals(1, local.getDimensionExpressions().size());
+		assertTrue(local.getDimensionExpressions().get(0) instanceof CtInvocation);
+		assertTrue(local.getType() instanceof CtArrayTypeReference);
+		assertEquals("new Type[list.size()]", local.toString());
 	}
 
 }
