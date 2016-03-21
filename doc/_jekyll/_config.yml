@@ -18,9 +18,9 @@ include: [_jekyll]
 # variables
 
 sidebar_tagline: Spoon
-sidebar_version: version 5.0.2
-spoon_release: "5.0.2"
-spoon_snapshot: "5.1.0-SNAPSHOT"
+sidebar_version: version 5.1.0
+spoon_release: "5.1.0"
+spoon_snapshot: "5.2.0-SNAPSHOT"
 
 exclude:
   - _site
