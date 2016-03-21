@@ -2295,7 +2295,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 			context.isLambdaParameterImplicitlyTyped = true;
 		} else if (argument.type != null) {
-			p.setType(references.getTypeReference(argument.type.resolvedType));
+			p.setType(references.getTypeReference(argument.type));
 		}
 
 		final TypeBinding receiverType = argument.type != null ? argument.type.resolvedType : null;
@@ -2332,7 +2332,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtNewArray<Object> array = factory.Core().createNewArray();
 		context.enter(array, arrayAllocationExpression);
 
-		final CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayAllocationExpression.resolvedType);
+		CtTypeReference<?> typeReference;
+		if (arrayAllocationExpression.resolvedType != null) {
+			typeReference = references.getTypeReference(arrayAllocationExpression.resolvedType.leafComponentType(), arrayAllocationExpression.type);
+		} else {
+			typeReference = references.getTypeReference(arrayAllocationExpression.type);
+		}
+		final CtArrayTypeReference arrayType = factory.Type().createArrayReference(typeReference, arrayAllocationExpression.dimensions.length);
 		arrayType.getArrayType().setAnnotations(buildTypeReference(arrayAllocationExpression.type, scope).getAnnotations());
 		array.setType(arrayType);
 

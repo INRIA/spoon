@@ -773,7 +773,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		SortedList<CtElement> lst = new SortedList<CtElement>(new CtLineElementComparator());
-		if (ctClass.getSimpleName() != null && !ctClass.isAnonymous()) {
+		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
 			if (ctClass.isLocalType()) {
 				write("class " + ctClass.getSimpleName().replaceAll("^[0-9]*", ""));
