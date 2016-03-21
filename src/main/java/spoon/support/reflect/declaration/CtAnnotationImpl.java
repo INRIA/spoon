@@ -51,7 +51,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -331,7 +330,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@Override
 	public Map<String, CtExpression> getValues() {
-		return Collections.unmodifiableMap(elementValues);
+		return elementValues;
 	}
 
 	private Object getReflectValue(String fieldname) {

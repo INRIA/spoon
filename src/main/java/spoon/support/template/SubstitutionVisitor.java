@@ -312,6 +312,9 @@ public class SubstitutionVisitor extends CtScanner {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T> void visitCtInvocation(CtInvocation<T> invocation) {
+			if (invocation.getExecutable().getDeclaringType() == null) {
+				System.err.println(invocation.getExecutable());
+			}
 			if (invocation.getExecutable().isOverriding(S)) {
 				CtFieldAccess<?> fa = null;
 				if ((invocation.getTarget() instanceof CtFieldAccess)) {

@@ -228,7 +228,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
-		return Collections.unmodifiableList(annotations);
+		return annotations;
 	}
 
 	public String getDocComment() {

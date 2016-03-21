@@ -95,6 +95,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * This visitor implements a deep-search scan on the model.
@@ -152,7 +153,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(annotation);
 		scan(annotation.getAnnotationType());
 		scan(annotation.getAnnotations());
-		scan(annotation.getElementValues().values());
+		scan(annotation.getValues());
 		exit(annotation);
 	}
 
@@ -169,6 +170,11 @@ public abstract class CtScanner implements CtVisitor {
 		}
 		if (o instanceof Collection<?>) {
 			for (Object obj : (Collection<?>) o) {
+				scan(obj);
+			}
+		}
+		if (o instanceof Map<?, ?>) {
+			for (Object obj : ((Map) o).values()) {
 				scan(obj);
 			}
 		}
