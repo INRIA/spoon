@@ -21,6 +21,8 @@ import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import spoon.Launcher;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 class CompilationUnitWrapper extends CompilationUnit {
 
@@ -37,30 +39,33 @@ class CompilationUnitWrapper extends CompilationUnit {
 	@Override
 	public char[] getContents() {
 		String s = new String(getFileName());
-		if (this.jdtCompiler.factory != null
-				&& this.jdtCompiler.factory.CompilationUnit().getMap().containsKey(s)) {
-			try {
-				if (this.jdtCompiler.loadedContent.containsKey(s)) {
-					return this.jdtCompiler.loadedContent.get(s);
-				} else {
-					char[] content = IOUtils
-							.toCharArray(this.jdtCompiler.getCompilationUnitInputStream(s));
-					this.jdtCompiler.loadedContent.put(s, content);
-					return content;
-				}
-			} catch (Exception e) {
-				Launcher.LOGGER.error(e.getMessage(), e);
-			}
+		if (jdtCompiler.loadedContent.containsKey(s)) {
+			return jdtCompiler.loadedContent.get(s);
+		}
+
+		InputStream stream = null;
+		if (jdtCompiler.factory != null && jdtCompiler.factory.CompilationUnit().getMap().containsKey(s)) {
+			stream = jdtCompiler.getCompilationUnitInputStream(s);
 		} else {
 			try {
-				char[] content = IOUtils
-                        .toCharArray(new FileInputStream(s));
-				this.jdtCompiler.loadedContent.put(s, content);
-				return content;
-			} catch (Exception e) {
+				stream = new FileInputStream(s);
+			} catch (FileNotFoundException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		}
+
+		if (stream == null) {
+			return super.getContents();
+		}
+
+		try {
+			char[] content = IOUtils.toCharArray(stream);
+			this.jdtCompiler.loadedContent.put(s, content);
+			return content;
+		} catch (Exception e) {
+			Launcher.LOGGER.error(e.getMessage(), e);
+		}
+
 		return super.getContents();
 	}
 
