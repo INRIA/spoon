@@ -95,7 +95,7 @@ entries:
           product: all
           version: all
 
-    - title: Quering source code elements
+    - title: Querying source code elements
       audience: writers, designers
       platform: all
       product: all
@@ -111,6 +111,13 @@ entries:
 
         - title: Path
           url: /path.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Matchers
+          url: /matcher.html
           audience: writers, designers
           platform: all
           product: all
