@@ -25,10 +25,13 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 /**
  * The {@link CtType} sub-factory.
@@ -270,7 +273,11 @@ public class TypeFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(Class<?> cl) {
-		return (CtType<T>) get(cl.getName());
+		final CtType<T> aType = get(cl.getName());
+		if (aType == null) {
+			return new JavaReflectionTreeBuilder(createFactory()).scan((Class<T>) cl);
+		}
+		return aType;
 	}
 
 	/**

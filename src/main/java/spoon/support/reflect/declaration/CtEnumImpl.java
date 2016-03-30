@@ -103,4 +103,13 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		result.addAll(super.getFields());
 		return result;
 	}
+
+	@Override
+	public CtField<?> getField(String name) {
+		final CtField<?> field = super.getField(name);
+		if (field == null) {
+			return getEnumValue(name);
+		}
+		return field;
+	}
 }

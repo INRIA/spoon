@@ -280,4 +280,20 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * @param comment the comment to remove
 	 */
 	<E extends CtElement> E removeComment(CtComment comment);
+
+	/**
+	 * When an element isn't present in the factory (created in another factory),
+	 * this element is considered as "shadow". e.g., a shadow element can be a
+	 * CtType of java.lang.Class built when we call {@link CtTypeReference#getTypeDeclaration()}
+	 * on a reference of java.lang.Class.
+	 *
+	 * @return true if the element is a shadow element, otherwise false.
+	 */
+	boolean isShadow();
+
+	/**
+	 * Marks an element as shadow. To know what is a shadow element, see the javadoc of
+	 * {@link #isShadow()}.
+	 */
+	<E extends CtElement> E setShadow(boolean isShadow);
 }

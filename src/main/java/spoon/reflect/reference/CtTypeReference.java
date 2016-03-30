@@ -60,6 +60,14 @@ public interface CtTypeReference<T> extends CtReference, CtGenericElementReferen
 	CtType<T> getDeclaration();
 
 	/**
+	 * Returns the {@link CtType} that corresponds to the reference even if the
+	 * type isn't in the Spoon source path.
+	 *
+	 * @return the type declaration that corresponds to the reference.
+	 */
+	CtType<T> getTypeDeclaration();
+
+	/**
 	 * Gets the type that declares the referenced type.
 	 *
 	 * @return the declaring type if this references an inner class; null in

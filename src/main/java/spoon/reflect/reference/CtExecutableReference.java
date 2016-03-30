@@ -55,7 +55,16 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 	 */
 	Constructor<?> getActualConstructor();
 
+	@Override
 	CtExecutable<T> getDeclaration();
+
+	/**
+	 * Returns a subtype {@link CtExecutable} that corresponds to the reference
+	 * even if its declaring type isn't in the Spoon source path.
+	 *
+	 * @return the executable declaration that corresponds to the reference.
+	 */
+	CtExecutable<T> getExecutableDeclaration();
 
 	/**
 	 * Gets the reference to the type that declares this executable.

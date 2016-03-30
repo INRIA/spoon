@@ -16,9 +16,9 @@
  */
 package spoon.reflect.reference;
 
-import java.lang.reflect.Member;
-
 import spoon.reflect.declaration.CtField;
+
+import java.lang.reflect.Member;
 
 /**
  * This interface defines a reference to a
@@ -32,7 +32,16 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	 */
 	Member getActualField();
 
+	@Override
 	CtField<T> getDeclaration();
+
+	/**
+	 * Returns the {@link CtField} that corresponds to the reference
+	 * even if its declaring type isn't in the Spoon source path.
+	 *
+	 * @return the field declaration that corresponds to the reference.
+	 */
+	CtField<T> getFieldDeclaration();
 
 	/**
 	 * Gets the type in which the field is declared.

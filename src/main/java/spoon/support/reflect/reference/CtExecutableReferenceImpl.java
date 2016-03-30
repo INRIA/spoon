@@ -140,20 +140,22 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtExecutable<T> getDeclaration() {
-		CtType<?> typeDecl = getDeclaringType().getDeclaration();
+		return getCtExecutable(getDeclaringType().getDeclaration());
+	}
+
+	@Override
+	public CtExecutable<T> getExecutableDeclaration() {
+		return getCtExecutable(getDeclaringType().getTypeDeclaration());
+	}
+
+	private CtExecutable<T> getCtExecutable(CtType<?> typeDecl) {
 		if (typeDecl == null) {
 			return null;
 		}
-
-		CtExecutable<T> method = typeDecl
-				.getMethod(getSimpleName(), parameters.toArray(
-						new CtTypeReferenceImpl<?>[parameters.size()]));
-		if ((method == null) && (typeDecl instanceof CtClass)
-				&& (getSimpleName().equals("<init>"))) {
+		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
+		if ((method == null) && (typeDecl instanceof CtClass) && (getSimpleName().equals("<init>"))) {
 			try {
-				return (CtExecutable<T>) ((CtClass<?>) typeDecl)
-						.getConstructor(parameters.toArray(
-								new CtTypeReferenceImpl<?>[parameters.size()]));
+				return (CtExecutable<T>) ((CtClass<?>) typeDecl).getConstructor(parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
 			} catch (ClassCastException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}

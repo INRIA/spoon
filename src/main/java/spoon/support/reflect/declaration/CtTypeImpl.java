@@ -33,6 +33,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
@@ -531,23 +532,52 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	@SuppressWarnings("unchecked")
 	public <R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes) {
-		for (CtMethod<?> m : methods) {
-			if (m.getSimpleName().equals(name)) {
-				boolean cont = m.getParameters().size() == parameterTypes.length;
-				for (int i = 0; cont && (i < m.getParameters().size()) && (i < parameterTypes.length); i++) {
-					// String
-					// s1=m.getParameters().get(i).getType().getQualifiedName();
-					// String s2=parameterTypes[i].getQualifiedName();
-					if (!m.getParameters().get(i).getType().equals(parameterTypes[i])) {
+		if (name == null) {
+			return null;
+		}
+
+		for (CtMethod<?> candidate : getMethodsByName(name)) {
+			boolean cont = candidate.getParameters().size() == parameterTypes.length;
+			for (int i = 0; cont && (i < candidate.getParameters().size()) && (i < parameterTypes.length); i++) {
+				final CtTypeReference<?> ctParameterType = candidate.getParameters().get(i).getType();
+				final CtTypeReference<?> parameterType = parameterTypes[i];
+				if (parameterType instanceof CtArrayTypeReference) {
+					if (ctParameterType instanceof CtArrayTypeReference) {
+						if (!isSameParameter(((CtArrayTypeReference) ctParameterType).getComponentType(), ((CtArrayTypeReference) parameterType).getComponentType())) {
+							cont = false;
+						} else {
+							if (!(((CtArrayTypeReference) ctParameterType).getDimensionCount() == ((CtArrayTypeReference) parameterType).getDimensionCount())) {
+								cont = false;
+							}
+						}
+					} else {
 						cont = false;
 					}
+				} else if (!isSameParameter(ctParameterType, parameterType)) {
+					cont = false;
 				}
-				if (cont) {
-					return (CtMethod<R>) m;
-				}
+			}
+			if (cont) {
+				return (CtMethod<R>) candidate;
 			}
 		}
 		return null;
+	}
+
+	private boolean isSameParameter(CtTypeReference<?> ctParameterType, CtTypeReference<?> parameterType) {
+		if (parameterType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
+			// Check if Object or extended.
+			if (!ctParameterType.equals(parameterType)) {
+				return false;
+			}
+		} else if (parameterType instanceof CtTypeParameterReference) {
+			if (!ctParameterType.isSubtypeOf(factory.Type().createReference(parameterType.getActualClass()))) {
+				return false;
+			}
+		} else if (!parameterType.equals(ctParameterType)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

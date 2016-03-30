@@ -158,6 +158,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	public CtType<T> getTypeDeclaration() {
+		return getFactory().Type().get(getActualClass());
+	}
+
+	@Override
 	public CtTypeReference<?> getDeclaringType() {
 		return declaringType;
 	}
@@ -223,15 +228,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return true;
 		}
 		if (subTypeDecl != null) {
+			if (getFactory().Type().OBJECT.equals(type)) {
+				return true;
+			}
 			for (CtTypeReference<?> ref : subTypeDecl.getSuperInterfaces()) {
 				if (ref.isSubtypeOf(type)) {
 					return true;
 				}
 			}
 			if (subTypeDecl instanceof CtClass) {
-				if (getFactory().Type().OBJECT.equals(type)) {
-					return true;
-				}
 				if (((CtClass<?>) subTypeDecl).getSuperclass() != null) {
 					if (((CtClass<?>) subTypeDecl).getSuperclass().equals(type)) {
 						return true;

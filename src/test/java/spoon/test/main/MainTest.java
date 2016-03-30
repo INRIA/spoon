@@ -4,25 +4,35 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.parent.ParentTest;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class MainTest {
@@ -55,6 +65,14 @@ public class MainTest {
 		});
 
 		checkGenericContracts(launcher.getFactory().Package().getRootPackage());
+
+		// shadow
+		checkShadow(launcher.getFactory().Package().getRootPackage());
+	}
+
+	@Test
+	public void name() throws Exception {
+		assertNotNull(ModelUtils.createFactory().Type().VOID_PRIMITIVE.getTypeDeclaration());
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
@@ -66,9 +84,121 @@ public class MainTest {
 
 		// scanners
 		checkContractCtScanner(pack);
-		
 	}
 
+	private void checkShadow(CtPackage pack) {
+		new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					assertFalse(element.isShadow());
+				}
+				super.scan(element);
+			}
+
+			@Override
+			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
+				assertNotNull(reference);
+				if (CtTypeReference.NULL_TYPE_NAME.equals(reference.getSimpleName()) || "?".equals(reference.getSimpleName())) {
+					super.visitCtTypeReference(reference);
+					return;
+				}
+				final CtType<T> typeDeclaration = reference.getTypeDeclaration();
+				assertNotNull(typeDeclaration);
+				assertEquals(reference.getSimpleName(), typeDeclaration.getSimpleName());
+				assertEquals(reference.getQualifiedName(), typeDeclaration.getQualifiedName());
+				assertEquals(reference, typeDeclaration.getReference());
+				if (reference.getDeclaration() == null) {
+					assertTrue(typeDeclaration.isShadow());
+				}
+				super.visitCtTypeReference(reference);
+			}
+
+			@Override
+			public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
+				assertNotNull(reference);
+				if (isLanguageExecutable(reference) || isDeclaredInAnAnnotation(reference)) {
+					super.visitCtExecutableReference(reference);
+					return;
+				}
+				final CtExecutable<T> executableDeclaration = reference.getExecutableDeclaration();
+				assertNotNull(executableDeclaration);
+				assertEquals(reference.getSimpleName(), executableDeclaration.getSimpleName());
+
+				// when a generic type is used in a parameter, the shadow type doesn't have these information.
+				boolean hasGeneric = false;
+				for (int i = 0; i < reference.getParameters().size(); i++) {
+					if (reference.getParameters().get(i) instanceof CtTypeParameterReference) {
+						hasGeneric = true;
+						continue;
+					}
+					if (reference.getParameters().get(i) instanceof CtArrayTypeReference && ((CtArrayTypeReference) reference.getParameters().get(i)).getComponentType() instanceof CtTypeParameterReference) {
+						hasGeneric = true;
+						continue;
+					}
+					assertEquals(reference.getParameters().get(i), executableDeclaration.getParameters().get(i).getType());
+				}
+				if (!hasGeneric) {
+					assertEquals(reference, executableDeclaration.getReference());
+				}
+
+				if (reference.getDeclaration() == null) {
+					assertTrue(executableDeclaration.isShadow());
+				}
+
+				super.visitCtExecutableReference(reference);
+			}
+
+			private <T> boolean isLanguageExecutable(CtExecutableReference<T> reference) {
+				return "values".equals(reference.getSimpleName());
+			}
+
+			private <T> boolean isDeclaredInAnAnnotation(CtExecutableReference<T> reference) {
+				final CtType<?> declaration = reference.getDeclaringType().getTypeDeclaration();
+				return declaration != null && declaration instanceof CtAnnotationType;
+			}
+
+			@Override
+			public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
+				assertNotNull(reference);
+				if (isLanguageField(reference) || isDeclaredInSuperClass(reference)) {
+					super.visitCtFieldReference(reference);
+					return;
+				}
+				final CtField<T> fieldDeclaration = reference.getFieldDeclaration();
+				assertNotNull(fieldDeclaration);
+				assertEquals(reference.getSimpleName(), fieldDeclaration.getSimpleName());
+				assertEquals(reference.getType(), fieldDeclaration.getType());
+				assertEquals(reference, fieldDeclaration.getReference());
+
+				if (reference.getDeclaration() == null) {
+					assertTrue(fieldDeclaration.isShadow());
+				}
+				super.visitCtFieldReference(reference);
+			}
+
+			private <T> boolean isLanguageField(CtFieldReference<T> reference) {
+				return "class".equals(reference.getSimpleName()) || "length".equals(reference.getSimpleName());
+			}
+
+			private <T> boolean isDeclaredInSuperClass(CtFieldReference<T> reference) {
+				final CtType<?> typeDeclaration = reference.getDeclaringType().getTypeDeclaration();
+				return typeDeclaration != null && typeDeclaration.getField(reference.getSimpleName()) == null;
+			}
+		}.visitCtPackage(pack);
+	}
+
+	@Test
+	public void test() throws Exception {
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/main/testclasses");
+		spoon.addInputResource("./src/main/java/spoon/template/Parameter.java");
+		spoon.setSourceOutputDirectory("./target/trash");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.run();
+
+		checkShadow(spoon.getFactory().Package().getRootPackage());
+	}
 
 	private void checkContractCtScanner(CtPackage pack) {
 		class Counter {

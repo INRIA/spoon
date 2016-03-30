@@ -1,14 +1,7 @@
 package spoon.test.reference;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
@@ -22,7 +15,12 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
-import spoon.reflect.visitor.filter.TypeFilter;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by gerard on 21/11/2014.
@@ -83,6 +81,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(0, emptyConstructorClass1.getParameters().size());
 		assertEquals(0, emptyConstructorClass3.getParameters().size());
 		assertNull(refConstructors.get(0).getDeclaration()); // reference to Object constructor.
+		assertNotNull(refConstructors.get(0).getExecutableDeclaration());
 		assertEquals(emptyConstructorClass1, refConstructors.get(1).getDeclaration());
 		assertEquals(emptyConstructorClass3, refConstructors.get(2).getDeclaration());
 	}
@@ -211,7 +210,7 @@ public class ExecutableReferenceGenericTest {
 	@Test
 	public void testExecutableReferences() throws Exception {
 		// factory has loaded MyClass, MyClass2 and MyClass3
-		
+
 		CtClass<?> classMyClass = Query.getElements(factory, new NameFilter<CtClass>("MyClass")).get(0);
 		assertEquals("MyClass", classMyClass.getSimpleName());
 		List<CtExecutableReference<?>> refsExecutableClass1 = Query.getReferences(classMyClass,
@@ -230,7 +229,7 @@ public class ExecutableReferenceGenericTest {
 					}
 				});
 
-		assertEquals(9, refsExecutableClass1.size());
+		assertEquals(10, refsExecutableClass1.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass1) {
 			assertNotNull(ref);
 			if (!ref.toString().equals("java.lang.Object#Object()")) {
