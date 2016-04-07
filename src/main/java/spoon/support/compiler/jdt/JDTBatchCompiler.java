@@ -59,6 +59,10 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 		/* new NullOutputStream() */System.err), false, null, null);
 		this.jdtCompiler = jdtCompiler;
 		this.useFactory = useFactory;
+		if (this.jdtCompiler.shouldInvalidateCache()) {
+			this.jdtCompiler.loadedContent.clear();
+		}
+		this.jdtCompiler.probs.clear();
 	}
 
 	@Override

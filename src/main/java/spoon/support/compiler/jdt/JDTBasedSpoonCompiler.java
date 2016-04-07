@@ -86,6 +86,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected File binaryOutputDirectory;
 	protected List<SpoonResource> forceBuildList = new ArrayList<SpoonResource>();
 	protected String encoding;
+	protected boolean shouldInvalidateCache;
 
 	/**
 	 * Default constructor
@@ -391,6 +392,16 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	@Override
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
+	}
+
+	@Override
+	public boolean shouldInvalidateCache() {
+		return shouldInvalidateCache;
+	}
+
+	@Override
+	public void setShouldInvalidateCache(boolean shouldInvalidateCache) {
+		this.shouldInvalidateCache = shouldInvalidateCache;
 	}
 
 	@Override

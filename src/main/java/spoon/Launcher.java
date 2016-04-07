@@ -321,6 +321,13 @@ public class Launcher implements SpoonAPI {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
+			// Enable cache invalidation.
+			sw1 = new Switch("invalidate");
+			sw1.setLongFlag(sw1.getUsageName());
+			sw1.setHelp("Enable cache invalidation of the compiler. Default: false");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+
 			// Enable pre-compilation
 			sw1 = new Switch("precompile");
 			sw1.setLongFlag("precompile");
@@ -425,6 +432,7 @@ public class Launcher implements SpoonAPI {
 
 		// now we are ready to create a spoon compiler
 		modelBuilder = createCompiler();
+		modelBuilder.setShouldInvalidateCache(getArguments().getBoolean("invalidate"));
 
 		if (getArguments().getString("input") != null) {
 			for (String s : getArguments().getString("input").split("[" + File.pathSeparatorChar + "]")) {
@@ -526,6 +534,7 @@ public class Launcher implements SpoonAPI {
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
 		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
 		comp.setEncoding(jsapActualArgs.getString("encoding"));
+		comp.setShouldInvalidateCache(jsapActualArgs.getBoolean("invalidate"));
 
 		// backward compatibility
 		// we don't have to set the source classpath
