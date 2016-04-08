@@ -2742,7 +2742,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		field.setSimpleName(new String(fieldDeclaration.name));
 		field.setModifiers(getModifiers(fieldDeclaration.modifiers));
 
-		field.setDocComment(getJavaDoc(fieldDeclaration.javadoc, scope.referenceCompilationUnit()));
+		field.setDocComment(getJavaDoc(fieldDeclaration.javadoc, context.compilationunitdeclaration));
 
 		if (fieldDeclaration.annotations != null) {
 			int annotationsLength = fieldDeclaration.annotations.length;

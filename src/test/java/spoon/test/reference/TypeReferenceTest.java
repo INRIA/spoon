@@ -5,6 +5,7 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewClass;
@@ -444,6 +445,22 @@ public class TypeReferenceTest {
 		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
 		assertEquals(CtType.NAME_UNKNOWN, anonymousClass.getReference().getSimpleName());
 		assertEquals(7, aClass.getReferencedTypes().size());
+	}
+
+	@Test
+	public void testConstructorCallInNoClasspath() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Demo5.java");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		final CtClass<Object> demo5 = launcher.getFactory().Class().get("Demo5");
+		final CtMethod<Object> foo = demo5.getMethod("foo");
+		final List<CtConstructorCall> elements = foo.getElements(new TypeFilter<>(CtConstructorCall.class));
+
+		assertEquals("A.B<C>", elements.get(0).getType().toString());
+		assertEquals("D", elements.get(1).getType().toString());
 	}
 
 	@Test
