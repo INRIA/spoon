@@ -16,12 +16,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -30,9 +24,20 @@ import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonFile;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 // we use a fully qualified name to make it clear we are extending jdt
 class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
@@ -84,12 +89,61 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 			units = l.toArray(new CompilationUnit[0]);
 		}
 		if (useFactory) {
-			for (int i = 0; i < units.length; i++) {
-				CompilationUnit unit = units[i];
-				units[i] = new CompilationUnitWrapper(this.jdtCompiler, unit);
+			List<CompilationUnit> unitList = new ArrayList<CompilationUnit>();
+			for (CompilationUnit unit : units) {
+				addExistingJavaFile(unitList, unit);
 			}
+			for (CtType<?> ctType : jdtCompiler.getFactory().Type().getAll()) {
+				addVirtualJavaFile(unitList, ctType);
+			}
+			units = unitList.toArray(new CompilationUnit[unitList.size()]);
 		}
 		return units;
+	}
+
+	private void addExistingJavaFile(List<CompilationUnit> unitList, CompilationUnit unit) {
+		unitList.add(new CompilationUnitWrapper(this.jdtCompiler, unit));
+	}
+
+	private void addVirtualJavaFile(List<CompilationUnit> unitList, CtType<?> ctType) {
+		if (ctType.getPosition() != null) {
+			return;
+		}
+		CtPackage pack = ctType.getPackage();
+		File directory = jdtCompiler.getSourceOutputDirectory();
+
+		// create package directory
+		File packageDir;
+		if (CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(pack.getQualifiedName())) {
+			packageDir = new File(directory.getAbsolutePath());
+		} else {
+			packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
+		}
+		if (!packageDir.exists()) {
+			if (!packageDir.mkdirs()) {
+				throw new RuntimeException("Error creating output directory");
+			}
+		}
+
+		// print type
+		File file = new File(packageDir.getAbsolutePath() + File.separatorChar + ctType.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+		FileWriter writer = null;
+		try {
+			writer = new FileWriter(file);
+			writer.write(ctType.toString());
+		} catch (IOException e) {
+			throw new RuntimeException("Error during writing the virtual java file.");
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					throw new RuntimeException("Error during writing the virtual java file.");
+				}
+			}
+		}
+
+		addExistingJavaFile(unitList, new CompilationUnit(null, file.getAbsolutePath(), "UTF-8"));
 	}
 
 	public CompilationUnit[] getCompilationUnits(List<SpoonFile> files) {
