@@ -29,6 +29,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -442,6 +443,11 @@ public interface CoreFactory {
 	 * Creates a code snippet statement.
 	 */
 	CtCodeSnippetStatement createCodeSnippetStatement();
+
+	/**
+	 * Creates a comment.
+	 */
+	CtComment createComment();
 
 	/**
 	 * Gets the main factory of that core factory (cannot be <code>null</code>).

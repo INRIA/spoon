@@ -16,8 +16,6 @@
  */
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -31,6 +29,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -89,6 +88,8 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+
+import java.lang.annotation.Annotation;
 
 /** Provides an empty implementation of CtVIsitor.
  *  See {@link CtScanner} for a much more powerful implementation of CtVisitor.
@@ -445,6 +446,11 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
+
+	}
+
+	@Override
+	public void visitCtComment(CtComment comment) {
 
 	}
 }

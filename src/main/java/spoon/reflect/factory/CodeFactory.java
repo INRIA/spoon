@@ -24,6 +24,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -530,5 +531,26 @@ public class CodeFactory extends SubFactory {
 		CtCodeSnippetStatement e = factory.Core().createCodeSnippetStatement();
 		e.setValue(statement);
 		return e;
+	}
+
+	/**
+	 * Creates a comment
+	 *
+	 * @param content The content of the comment
+	 * @param type The comment type
+	 * @return a new CtComment
+	 */
+	public CtComment createComment(String content, CtComment.CommentType type) {
+		return factory.Core().createComment().setContent(content).setCommentType(type);
+	}
+
+	/**
+	 * Creates an inline comment
+	 *
+	 * @param content The content of the comment
+	 * @return a new CtComment
+	 */
+	public CtComment createInlineComment(String content) {
+		return createComment(content, CtComment.CommentType.INLINE);
 	}
 }

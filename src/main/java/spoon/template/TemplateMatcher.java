@@ -16,17 +16,6 @@
  */
 package spoon.template;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
@@ -52,6 +41,17 @@ import spoon.support.template.DefaultParameterMatcher;
 import spoon.support.template.ParameterMatcher;
 import spoon.support.template.Parameters;
 import spoon.support.util.RtHelper;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class defines an engine for matching a template to pieces of code.
@@ -363,6 +363,12 @@ public class TemplateMatcher {
 					continue;
 				}
 				if (f.getName().equals("factory")) {
+					continue;
+				}
+				if (f.getName().equals("comments")) {
+					continue;
+				}
+				if (f.getName().equals("metadata")) {
 					continue;
 				}
 				try {

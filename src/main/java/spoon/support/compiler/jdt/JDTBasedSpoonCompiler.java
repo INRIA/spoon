@@ -429,11 +429,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			}
 		}
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits(filesToBuild);
-
 		// here we build the model
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
-		for (CompilationUnitDeclaration unit : units) {
+		for (int i = 0; i < units.length; i++) {
+			CompilationUnitDeclaration unit = units[i];
 			unit.traverse(builder, unit.scope);
+			new JDTCommentBuilder(unit, factory).build();
 		}
 
 		return probs.size() == 0;
@@ -479,8 +480,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		// here we build the model in the template factory
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
-		for (CompilationUnitDeclaration unit : units) {
+		for (int i = 0; i < units.length; i++) {
+			CompilationUnitDeclaration unit = units[i];
 			unit.traverse(builder, unit.scope);
+			new JDTCommentBuilder(unit, factory).build();
 		}
 
 		return probs.size() == 0;

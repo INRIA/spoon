@@ -19,11 +19,16 @@ package spoon.support.compiler.jdt;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
+import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
+import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
 import spoon.Launcher;
 import spoon.compiler.SpoonFile;
 import spoon.reflect.declaration.CtPackage;
@@ -37,6 +42,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 // we use a fully qualified name to make it clear we are extending jdt
@@ -189,6 +195,26 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 				null);
 		CompilationUnitDeclaration[] units = treeBuilderCompiler
 				.buildUnits(getCompilationUnits(files));
+		for (int i = 0; i < units.length; i++) {
+			CompilationUnitDeclaration unit = units[i];
+			CommentRecorderParser parser =
+					new CommentRecorderParser(
+							new ProblemReporter(
+									DefaultErrorHandlingPolicies.proceedWithAllProblems(),
+									compilerOptions,
+									new DefaultProblemFactory(Locale.getDefault())),
+							false);
+			ICompilationUnit sourceUnit =
+					new CompilationUnit(
+							getCompilationUnits()[i].getContents(),
+							"", //$NON-NLS-1$
+							compilerOptions.defaultEncoding);
+			final CompilationResult compilationResult = new CompilationResult(sourceUnit, 0, 0, compilerOptions.maxProblemsPerUnit);
+			CompilationUnitDeclaration compilationUnitDeclaration = parser.dietParse(sourceUnit, compilationResult);
+			unit.comments = compilationUnitDeclaration.comments;
+		}
+
+
 		return units;
 	}
 

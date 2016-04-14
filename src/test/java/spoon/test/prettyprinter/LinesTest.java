@@ -1,15 +1,14 @@
 package spoon.test.prettyprinter;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+
+import static org.junit.Assert.assertEquals;
 
 public class LinesTest {
 

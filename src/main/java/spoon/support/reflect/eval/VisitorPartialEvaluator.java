@@ -32,6 +32,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -739,6 +740,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	@Override
 	public <T> void visitCtImplicitTypeReference(CtImplicitTypeReference<T> reference) {
+		throw new RuntimeException("Unknow Element");
+	}
+
+	@Override
+	public void visitCtComment(CtComment comment) {
 		throw new RuntimeException("Unknow Element");
 	}
 

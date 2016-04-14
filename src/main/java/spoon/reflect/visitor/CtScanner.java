@@ -30,6 +30,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -181,6 +182,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(annotationType.getAnnotations());
 		scan(annotationType.getNestedTypes());
 		scan(annotationType.getFields());
+		scan(annotationType.getComments());
 		exit(annotationType);
 	}
 
@@ -188,6 +190,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(anonymousExec);
 		scan(anonymousExec.getAnnotations());
 		scan(anonymousExec.getBody());
+		scan(anonymousExec.getComments());
 		exit(anonymousExec);
 	}
 
@@ -198,6 +201,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(arrayAccess.getTypeCasts());
 		scan(arrayAccess.getTarget());
 		scan(arrayAccess.getIndexExpression());
+		scan(arrayAccess.getComments());
 		exit(arrayAccess);
 	}
 
@@ -209,6 +213,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(arrayRead.getTypeCasts());
 		scan(arrayRead.getTarget());
 		scan(arrayRead.getIndexExpression());
+		scan(arrayRead.getComments());
 		exit(arrayRead);
 	}
 
@@ -220,6 +225,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(arrayWrite.getTypeCasts());
 		scan(arrayWrite.getTarget());
 		scan(arrayWrite.getIndexExpression());
+		scan(arrayWrite.getComments());
 		exit(arrayWrite);
 	}
 
@@ -243,6 +249,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(asserted.getAnnotations());
 		scan(asserted.getAssertExpression());
 		scan(asserted.getExpression());
+		scan(asserted.getComments());
 		exit(asserted);
 	}
 
@@ -254,6 +261,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(assignement.getTypeCasts());
 		scan(assignement.getAssigned());
 		scan(assignement.getAssignment());
+		scan(assignement.getComments());
 		exit(assignement);
 	}
 
@@ -264,6 +272,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(operator.getTypeCasts());
 		scan(operator.getLeftHandOperand());
 		scan(operator.getRightHandOperand());
+		scan(operator.getComments());
 		exit(operator);
 	}
 
@@ -271,12 +280,14 @@ public abstract class CtScanner implements CtVisitor {
 		enter(block);
 		scan(block.getAnnotations());
 		scan(block.getStatements());
+		scan(block.getComments());
 		exit(block);
 	}
 
 	public void visitCtBreak(CtBreak breakStatement) {
 		enter(breakStatement);
 		scan(breakStatement.getAnnotations());
+		scan(breakStatement.getComments());
 		exit(breakStatement);
 	}
 
@@ -285,6 +296,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(caseStatement.getAnnotations());
 		scan(caseStatement.getCaseExpression());
 		scan(caseStatement.getStatements());
+		scan(caseStatement.getComments());
 		exit(caseStatement);
 	}
 
@@ -293,6 +305,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(catchBlock.getAnnotations());
 		scan(catchBlock.getParameter());
 		scan(catchBlock.getBody());
+		scan(catchBlock.getComments());
 		exit(catchBlock);
 	}
 
@@ -307,6 +320,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctClass.getFields());
 		scan(ctClass.getConstructors());
 		scan(ctClass.getMethods());
+		scan(ctClass.getComments());
 		exit(ctClass);
 	}
 
@@ -316,6 +330,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(conditional.getCondition());
 		scan(conditional.getThenExpression());
 		scan(conditional.getElseExpression());
+		scan(conditional.getComments());
 		exit(conditional);
 	}
 
@@ -326,6 +341,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(c.getThrownTypes());
 		scan(c.getFormalTypeParameters());
 		scan(c.getBody());
+		scan(c.getComments());
 		exit(c);
 	}
 
@@ -333,6 +349,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(continueStatement);
 		scan(continueStatement.getAnnotations());
 		scan(continueStatement.getLabelledStatement());
+		scan(continueStatement.getComments());
 		exit(continueStatement);
 	}
 
@@ -341,6 +358,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(doLoop.getAnnotations());
 		scan(doLoop.getLoopingExpression());
 		scan(doLoop.getBody());
+		scan(doLoop.getComments());
 		exit(doLoop);
 	}
 
@@ -352,6 +370,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctEnum.getConstructors());
 		scan(ctEnum.getMethods());
 		scan(ctEnum.getNestedTypes());
+		scan(ctEnum.getComments());
 		exit(ctEnum);
 	}
 
@@ -362,6 +381,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getType());
 		scan(reference.getActualTypeArguments());
 		scan(reference.getAnnotations());
+		scan(reference.getComments());
 		exit(reference);
 	}
 
@@ -370,6 +390,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(f.getAnnotations());
 		scan(f.getType());
 		scan(f.getDefaultExpression());
+		scan(f.getComments());
 		exit(f);
 	}
 
@@ -379,6 +400,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(enumValue.getAnnotations());
 		scan(enumValue.getType());
 		scan(enumValue.getDefaultExpression());
+		scan(enumValue.getComments());
 		exit(enumValue);
 	}
 
@@ -388,6 +410,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(thisAccess.getType());
 		scan(thisAccess.getTypeCasts());
 		scan(thisAccess.getTarget());
+		scan(thisAccess.getComments());
 		exit(thisAccess);
 	}
 
@@ -399,6 +422,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(annotationFieldAccess.getTypeCasts());
 		scan(annotationFieldAccess.getTarget());
 		scan(annotationFieldAccess.getVariable());
+		scan(annotationFieldAccess.getComments());
 		exit(annotationFieldAccess);
 	}
 
@@ -417,6 +441,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(forLoop.getExpression());
 		scan(forLoop.getForUpdate());
 		scan(forLoop.getBody());
+		scan(forLoop.getComments());
 		exit(forLoop);
 	}
 
@@ -426,6 +451,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(foreach.getVariable());
 		scan(foreach.getExpression());
 		scan(foreach.getBody());
+		scan(foreach.getComments());
 		exit(foreach);
 	}
 
@@ -435,6 +461,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ifElement.getCondition());
 		scan((CtStatement) ifElement.getThenStatement());
 		scan((CtStatement) ifElement.getElseStatement());
+		scan(ifElement.getComments());
 		exit(ifElement);
 	}
 
@@ -446,6 +473,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(intrface.getNestedTypes());
 		scan(intrface.getFields());
 		scan(intrface.getMethods());
+		scan(intrface.getComments());
 		exit(intrface);
 	}
 
@@ -456,6 +484,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(invocation.getTarget());
 		scan(invocation.getExecutable());
 		scan(invocation.getArguments());
+		scan(invocation.getComments());
 		exit(invocation);
 	}
 
@@ -465,6 +494,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(literal.getType());
 		scan(literal.getValue());
 		scan(literal.getTypeCasts());
+		scan(literal.getComments());
 		exit(literal);
 	}
 
@@ -473,6 +503,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(localVariable.getAnnotations());
 		scan(localVariable.getType());
 		scan(localVariable.getDefaultExpression());
+		scan(localVariable.getComments());
 		exit(localVariable);
 	}
 
@@ -488,6 +519,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(catchVariable);
 		scan(catchVariable.getAnnotations());
 		scan(catchVariable.getType());
+		scan(catchVariable.getComments());
 		exit(catchVariable);
 	}
 
@@ -506,6 +538,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(m.getParameters());
 		scan(m.getThrownTypes());
 		scan(m.getBody());
+		scan(m.getComments());
 		exit(m);
 	}
 
@@ -516,6 +549,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(newArray.getTypeCasts());
 		scan(newArray.getElements());
 		scan(newArray.getDimensionExpressions());
+		scan(newArray.getComments());
 		exit(newArray);
 	}
 
@@ -527,6 +561,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctConstructorCall.getExecutable());
 		scan(ctConstructorCall.getTarget());
 		scan(ctConstructorCall.getArguments());
+		scan(ctConstructorCall.getComments());
 		exit(ctConstructorCall);
 	}
 
@@ -539,6 +574,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(newClass.getTarget());
 		scan(newClass.getArguments());
 		scan(newClass.getAnonymousClass());
+		scan(newClass.getComments());
 		exit(newClass);
 	}
 
@@ -551,6 +587,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(lambda.getParameters());
 		scan(lambda.getBody());
 		scan(lambda.getExpression());
+		scan(lambda.getComments());
 		exit(lambda);
 	}
 
@@ -573,6 +610,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(assignment.getTypeCasts());
 		scan(assignment.getAssigned());
 		scan(assignment.getAssignment());
+		scan(assignment.getComments());
 		exit(assignment);
 	}
 
@@ -581,6 +619,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctPackage.getAnnotations());
 		scan(ctPackage.getPackages());
 		scan(ctPackage.getTypes());
+		scan(ctPackage.getComments());
 		exit(ctPackage);
 	}
 
@@ -593,6 +632,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(parameter);
 		scan(parameter.getAnnotations());
 		scan(parameter.getType());
+		scan(parameter.getComments());
 		exit(parameter);
 	}
 
@@ -607,6 +647,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(returnStatement);
 		scan(returnStatement.getAnnotations());
 		scan(returnStatement.getReturnedExpression());
+		scan(returnStatement.getComments());
 		exit(returnStatement);
 	}
 
@@ -614,6 +655,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(statements);
 		scan(statements.getAnnotations());
 		scan(statements.getStatements());
+		scan(statements.getComments());
 		exit(statements);
 	}
 
@@ -622,6 +664,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(switchStatement.getAnnotations());
 		scan(switchStatement.getSelector());
 		scan(switchStatement.getCases());
+		scan(switchStatement.getComments());
 		exit(switchStatement);
 	}
 
@@ -630,6 +673,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(synchro.getAnnotations());
 		scan(synchro.getExpression());
 		scan(synchro.getBlock());
+		scan(synchro.getComments());
 		exit(synchro);
 	}
 
@@ -637,6 +681,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(throwStatement);
 		scan(throwStatement.getAnnotations());
 		scan(throwStatement.getThrownExpression());
+		scan(throwStatement.getComments());
 		exit(throwStatement);
 	}
 
@@ -646,6 +691,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(tryBlock.getBody());
 		scan(tryBlock.getCatchers());
 		scan(tryBlock.getFinalizer());
+		scan(tryBlock.getComments());
 		exit(tryBlock);
 	}
 
@@ -657,6 +703,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(tryWithResource.getBody());
 		scan(tryWithResource.getCatchers());
 		scan(tryWithResource.getFinalizer());
+		scan(tryWithResource.getComments());
 		exit(tryWithResource);
 	}
 
@@ -683,6 +730,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(reference.getDeclaringType());
 		scan(reference.getActualTypeArguments());
 		scan(reference.getAnnotations());
+		scan(reference.getComments());
 		exit(reference);
 	}
 
@@ -704,6 +752,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(typeAccess.getType());
 		scan(typeAccess.getTypeCasts());
 		scan(typeAccess.getAccessedType());
+		scan(typeAccess.getComments());
 		exit(typeAccess);
 	}
 
@@ -713,6 +762,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(operator.getType());
 		scan(operator.getTypeCasts());
 		scan(operator.getOperand());
+		scan(operator.getComments());
 		exit(operator);
 	}
 
@@ -723,6 +773,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(variableRead.getType());
 		scan(variableRead.getTypeCasts());
 		scan(variableRead.getVariable());
+		scan(variableRead.getComments());
 		exit(variableRead);
 	}
 
@@ -733,6 +784,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(variableWrite.getType());
 		scan(variableWrite.getTypeCasts());
 		scan(variableWrite.getVariable());
+		scan(variableWrite.getComments());
 		exit(variableWrite);
 	}
 
@@ -741,6 +793,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(whileLoop.getAnnotations());
 		scan(whileLoop.getLoopingExpression());
 		scan(whileLoop.getBody());
+		scan(whileLoop.getComments());
 		exit(whileLoop);
 	}
 
@@ -766,6 +819,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(fieldRead.getTypeCasts());
 		scan(fieldRead.getTarget());
 		scan(fieldRead.getVariable());
+		scan(fieldRead.getComments());
 		exit(fieldRead);
 	}
 
@@ -776,6 +830,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(fieldWrite.getTypeCasts());
 		scan(fieldWrite.getTarget());
 		scan(fieldWrite.getVariable());
+		scan(fieldWrite.getComments());
 		exit(fieldWrite);
 	}
 
@@ -786,6 +841,13 @@ public abstract class CtScanner implements CtVisitor {
 		scan(f.getType());
 		scan(f.getTypeCasts());
 		scan(f.getTarget());
+		scan(f.getComments());
 		exit(f);
+	}
+
+	@Override
+	public void visitCtComment(CtComment comment) {
+		enter(comment);
+		exit(comment);
 	}
 }
