@@ -452,9 +452,10 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 					@SuppressWarnings("unchecked") List<T> lst = (List<T>) tmp;
 					for (int i = 0; i < lst.size(); i++) {
 						if (lst.get(i) != null && compare(lst.get(i), toReplace)) {
-							lst.remove(i);
 							if (replacement != null) {
-								lst.add(i, getReplacement(replacement, parent));
+								lst.set(i, getReplacement(replacement, parent));
+							} else {
+								lst.remove(i);
 							}
 						}
 					}
@@ -464,6 +465,8 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 					for (Object obj : array) {
 						if (compare(obj, toReplace)) {
 							collect.remove(obj);
+							// TODO need replacement != null check same as in List
+							// branch above?
 							collect.add(getReplacement(replacement, parent));
 						}
 					}
