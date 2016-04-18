@@ -166,7 +166,7 @@ public class JDTCommentBuilder {
 	}
 
 	/**
-	 * Inserts the comment into in AST
+	 * Inserts the comment into the AST.
 	 * @param comment the comment to insert
 	 */
 	private void insertCommentInAST(final CtComment comment) {
