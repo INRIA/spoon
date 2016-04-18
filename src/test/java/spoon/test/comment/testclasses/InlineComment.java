@@ -75,6 +75,20 @@ public class InlineComment {
 			// comment in synchronized
 		}
 
+		Double dou =
+			(i == 1) // comment after condition CtConditional
+			?
+				// comment before then CtConditional
+				null    // comment after then CtConditional
+			:
+				// comment before else CtConditional
+				new Double(j / (double) (i - 1)); // comment after else CtConditional
+		int[] arr = new int[] {
+			// comment before array value
+			1, // comment after array value
+			2,
+			3
+		};
 		// comment return
 		return;
 	}

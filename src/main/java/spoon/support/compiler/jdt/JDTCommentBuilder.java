@@ -24,6 +24,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
@@ -53,7 +54,7 @@ import java.util.List;
  * The comment builder that will insert all element of a CompilationUnitDeclaration into the Spoon AST
  */
 @SuppressWarnings("unchecked")
-public class JDTCommentBuilder {
+class JDTCommentBuilder {
 
 	private static final Logger LOGGER = Logger.getLogger(JDTCommentBuilder.class);
 
@@ -69,7 +70,7 @@ public class JDTCommentBuilder {
 	 * @param declarationUnit the declaration unit
 	 * @param factory the Spoon AST
 	 */
-	public JDTCommentBuilder(CompilationUnitDeclaration declarationUnit,  Factory factory) {
+	JDTCommentBuilder(CompilationUnitDeclaration declarationUnit,  Factory factory) {
 		this.declarationUnit = declarationUnit;
 		if (declarationUnit.comments == null) {
 			return;
@@ -147,13 +148,12 @@ public class JDTCommentBuilder {
 			if (element instanceof CtComment) {
 				continue;
 			}
-			if (element.getPosition().getLine() == comment.getPosition().getLine()) {
-				element.addComment(comment);
-				return element;
-			}
+			final boolean isAfter = element.getPosition().getSourceEnd() < comment.getPosition().getSourceStart();
 			int distance = Math.abs(element.getPosition().getSourceStart() - comment.getPosition().getSourceEnd());
-			boolean isAfter = element.getPosition().getSourceEnd() < comment.getPosition().getSourceStart();
-			if (distance < smallDistance && !isAfter) {
+			if (isAfter) {
+				distance = Math.abs(element.getPosition().getSourceEnd() - comment.getPosition().getSourceStart());
+			}
+			if (distance < smallDistance && (!isAfter || element.getPosition().getEndLine() == comment.getPosition().getLine())) {
 				best = element;
 				smallDistance = distance;
 			}
@@ -213,6 +213,15 @@ public class JDTCommentBuilder {
 			@Override
 			public <T> void visitCtConstructor(CtConstructor<T> e) {
 				e.addComment(comment);
+			}
+
+			@Override
+			public <T> void visitCtConditional(CtConditional<T> e) {
+				List<CtElement> elements = new ArrayList<CtElement>();
+				elements.add(e.getElseExpression());
+				elements.add(e.getThenExpression());
+				elements.add(e.getCondition());
+				addCommentToNear(comment, elements);
 			}
 
 			@Override

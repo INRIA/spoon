@@ -819,15 +819,37 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <T> void visitCtConditional(CtConditional<T> conditional) {
 		enterCtExpression(conditional);
-		scan(conditional.getCondition());
+		CtExpression<Boolean> condition = conditional.getCondition();
+		if (!(condition instanceof CtStatement)) {
+			printComment(condition, CommentOffset.BEFORE);
+		}
+		scan(condition);
+		if (!(condition instanceof CtStatement)) {
+			printComment(condition, CommentOffset.AFTER);
+		}
 		write(" ? ");
-		scan(conditional.getThenExpression());
+		CtExpression<T> thenExpression = conditional.getThenExpression();
+		if (!(thenExpression instanceof CtStatement)) {
+			printComment(thenExpression, CommentOffset.BEFORE);
+		}
+		scan(thenExpression);
+		if (!(thenExpression instanceof CtStatement)) {
+			printComment(thenExpression, CommentOffset.AFTER);
+		}
 		write(" : ");
+
+		CtExpression<T> elseExpression = conditional.getElseExpression();
 		boolean isAssign = false;
-		if ((isAssign = conditional.getElseExpression() instanceof CtAssignment)) {
+		if ((isAssign = elseExpression instanceof CtAssignment)) {
 			write("(");
 		}
-		scan(conditional.getElseExpression());
+		if (!(elseExpression instanceof CtStatement)) {
+			printComment(elseExpression, CommentOffset.BEFORE);
+		}
+		scan(elseExpression);
+		if (!(elseExpression instanceof CtStatement)) {
+			printComment(elseExpression, CommentOffset.AFTER);
+		}
 		if (isAssign) {
 			write(")");
 		}
@@ -1614,7 +1636,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 				continue;
 			}
-			if (offset == CommentOffset.BEFORE && comment.getPosition().getLine() <= e.getPosition().getLine()) {
+			if (offset == CommentOffset.BEFORE && (comment.getPosition().getLine() < e.getPosition().getLine()
+					|| e.getPosition().getSourceEnd() >= comment.getPosition().getSourceEnd())) {
 				commentsToPrint.add(comment);
 			} else if (offset == CommentOffset.AFTER && comment.getPosition().getSourceStart() >= e.getPosition().getSourceEnd()) {
 				commentsToPrint.add(comment);
@@ -1700,7 +1723,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			for (int i = 0; ref instanceof CtArrayTypeReference; i++) {
 				write("[");
 				if (newArray.getDimensionExpressions().size() > i) {
-					scan(newArray.getDimensionExpressions().get(i));
+					CtExpression<Integer> e = newArray.getDimensionExpressions().get(i);
+					if (!(e instanceof CtStatement)) {
+						printComment(e, CommentOffset.BEFORE);
+					}
+					scan(e);
+					if (!(e instanceof CtStatement)) {
+						printComment(e, CommentOffset.AFTER);
+					}
 				}
 				write("]");
 				ref = ((CtArrayTypeReference) ref).getComponentType();
@@ -1709,8 +1739,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (newArray.getDimensionExpressions().size() == 0) {
 			write("{ ");
 			for (CtExpression e : newArray.getElements()) {
+				if (!(e instanceof CtStatement)) {
+					printComment(e, CommentOffset.BEFORE);
+				}
 				scan(e);
 				write(" , ");
+				if (!(e instanceof CtStatement)) {
+					printComment(e, CommentOffset.AFTER);
+				}
 			}
 			if (newArray.getElements().size() > 0) {
 				removeLastChar();

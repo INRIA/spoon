@@ -3,12 +3,14 @@ package spoon.test.comment;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
@@ -16,6 +18,7 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -27,6 +30,7 @@ import spoon.test.comment.testclasses.InlineComment;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class CommentTest {
@@ -69,7 +73,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(50, comments.size());
+		assertEquals(57, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -77,6 +81,7 @@ public class CommentTest {
 				// the header of the file is not printed with the toString
 				continue;
 			}
+			assertNotNull(comment.getParent());
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
@@ -197,7 +202,25 @@ public class CommentTest {
 				+ "    // comment in synchronized" + newLine
 				+ "}", ctSynchronized.toString());
 
-		CtReturn ctReturn = m1.getBody().getStatement(10);
+		CtLocalVariable ctLocalVariable1 = m1.getBody().getStatement(10);
+		CtConditional ctConditional = (CtConditional) ctLocalVariable1.getDefaultExpression();
+		assertEquals(createFakeComment(f, "comment after condition CtConditional"), ctConditional.getCondition().getComments().get(0));
+		assertEquals(createFakeComment(f, "comment before then CtConditional"), ctConditional.getThenExpression().getComments().get(0));
+		assertEquals(createFakeComment(f, "comment after then CtConditional"), ctConditional.getThenExpression().getComments().get(1));
+		assertEquals(createFakeComment(f, "comment before else CtConditional"), ctConditional.getElseExpression().getComments().get(0));
+		assertEquals(createFakeComment(f, "comment after else CtConditional"), ctLocalVariable1.getComments().get(0));
+		assertEquals("java.lang.Double dou = i == 1// comment after condition CtConditional" + newLine
+				+ " ? // comment before then CtConditional" + newLine
+				+ "null// comment after then CtConditional" + newLine
+				+ " : // comment before else CtConditional" + newLine
+				+ "new java.lang.Double((j / ((double)((i - 1)))))", ctLocalVariable1.toString());
+
+		CtNewArray ctNewArray = (CtNewArray) ((CtLocalVariable) m1.getBody().getStatement(11)).getDefaultExpression();
+		CtElement arrayValue = (CtElement) ctNewArray.getElements().get(0);
+		assertEquals(createFakeComment(f, "comment before array value"), arrayValue.getComments().get(0));
+		assertEquals(createFakeComment(f, "comment after array value"), arrayValue.getComments().get(1));
+
+		CtReturn ctReturn = m1.getBody().getStatement(12);
 		assertEquals(createFakeComment(f, "comment return"), ctReturn.getComments().get(0));
 		assertEquals("// comment return" + newLine
 				+ "return ", ctReturn.toString());
@@ -239,6 +262,7 @@ public class CommentTest {
 				// the header of the file is not printed with the toString
 				continue;
 			}
+			assertNotNull(comment.getParent());
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
