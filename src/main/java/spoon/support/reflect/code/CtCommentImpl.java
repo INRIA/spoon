@@ -55,7 +55,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	/**
 	 * The comments are not printed during the CtElement equality.
-	 * The method are thus override for CtComment
+	 * The method is this overridden for CtComment.
 	 */
 	@Override
 	public boolean equals(Object o) {
