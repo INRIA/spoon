@@ -16,14 +16,15 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.
@@ -33,7 +34,7 @@ import java.util.TreeSet;
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
-	private Set<CtPackage> packs = new TreeSet<CtPackage>();
+	protected Set<CtPackage> packs = new TreeSet<CtPackage>();
 
 	private Set<CtType<?>> types = new TreeSet<CtType<?>>();
 
@@ -48,9 +49,45 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addPackage(CtPackage pack) {
+		// they are the same
+		if (this.getQualifiedName().equals(pack.getQualifiedName())) {
+			addAllTypes(pack, this);
+			addAllPackages(pack, this);
+			return (T) this;
+		}
+
+		// it already exists
+		for (CtPackage p1 : packs) {
+			if (p1.getQualifiedName().equals(pack.getQualifiedName())) {
+				addAllTypes(pack, p1);
+				addAllPackages(pack, p1);
+				return (T) this;
+			}
+		}
+
+		this.packs.add(pack);
 		pack.setParent(this);
-		packs.add(pack);
+
 		return (T) this;
+	}
+
+	/** add all types of "from" in "to" */
+	private void addAllTypes(CtPackage from, CtPackage to) {
+		for (CtType t : from.getTypes()) {
+			for (CtType t2: to.getTypes()) {
+				if (t2.getQualifiedName().equals(t.getQualifiedName()) && !t2.equals(t)) {
+					throw new IllegalStateException("types with same qualified names and different code cannot be merged");
+				}
+			}
+			to.addType(t);
+		}
+	}
+
+	/** add all packages of "from" in "to" */
+	private void addAllPackages(CtPackage from, CtPackage to) {
+		for (CtPackage p : from.getPackages()) {
+			to.addPackage(p);
+		}
 	}
 
 	@Override
@@ -60,7 +97,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public CtPackage getDeclaringPackage() {
-		return getParent(CtPackage.class);
+		try {
+			return getParent(CtPackage.class);
+		} catch (ParentNotInitializedException e) {
+			return null;
+		}
 	}
 
 	@Override

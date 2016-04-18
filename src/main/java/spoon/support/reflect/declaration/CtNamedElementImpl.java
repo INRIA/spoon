@@ -25,7 +25,7 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 
 	private static final long serialVersionUID = 1L;
 
-	String simpleName;
+	String simpleName = "";
 
 	@Override
 	public CtReference getReference() {

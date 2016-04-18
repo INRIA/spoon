@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
+
+import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
@@ -20,6 +22,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -130,7 +133,13 @@ public class ParentContractTest<T extends CtVisitable> {
 				// we check that setParent has been called
 				verify(mockedArgument).setParent((CtElement) receiver);
 			} catch (AssertionError e) {
-				Assert.fail("call setParent contract failed for "+setter.toString()+" "+e.toString());
+				Assert.fail("call setParent contract failed for "+setter.toString()+" "+e.toString());				
+			} catch (InvocationTargetException e) {
+				if (e.getCause() instanceof RuntimeException) {
+					throw e.getCause();
+				} else {
+					throw new SpoonException(e.getCause()); 
+				}
 			}
 		}
 	}

@@ -35,8 +35,7 @@ import java.util.List;
  */
 public class TypeFactory extends SubFactory {
 
-	CtTypeReference<?> nullType;
-
+	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
 	public final CtTypeReference<String> STRING = createReference(String.class);
 	public final CtTypeReference<Boolean> BOOLEAN = createReference(Boolean.class);
@@ -63,10 +62,7 @@ public class TypeFactory extends SubFactory {
 	 * Returns a reference on the null type (type of null).
 	 */
 	public CtTypeReference<?> nullType() {
-		if (nullType == null) {
-			nullType = createReference(CtTypeReference.NULL_TYPE_NAME);
-		}
-		return nullType;
+		return NULL_TYPE;
 	}
 
 	/**
@@ -237,11 +233,7 @@ public class TypeFactory extends SubFactory {
 	 * Gets the list of all top-level created types.
 	 */
 	public List<CtType<?>> getAll() {
-		List<CtType<?>> types = new ArrayList<CtType<?>>();
-		for (CtPackage pack : factory.Package().getAll()) {
-			types.addAll(pack.getTypes());
-		}
-		return types;
+		return (List<CtType<?>>) factory.getModel().getAllTypes();
 	}
 
 	/**

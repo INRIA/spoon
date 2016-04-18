@@ -22,15 +22,18 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
+import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -765,6 +768,11 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public void setBinaryOutputDirectory(File outputDirectory) {
 		modelBuilder.setBinaryOutputDirectory(outputDirectory);
+	}
+
+	@Override
+	public CtModel getModel() {
+		return factory.getModel();
 	}
 
 }

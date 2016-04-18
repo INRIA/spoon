@@ -37,7 +37,7 @@ public interface CtPackage extends CtNamedElement {
 	String TOP_LEVEL_PACKAGE_NAME = "unnamed package";
 
 	/**
-	 * Gets the declaring package of the current one.
+	 * Gets the declaring package of the current one. Returns null if the package is not yet in another one.
 	 */
 	CtPackage getDeclaringPackage();
 
