@@ -2021,40 +2021,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> ref) {
-		if (ref.isPrimitive()) {
-			writeAnnotations(ref);
-			write(ref.getSimpleName());
-			return;
-		}
-
-		if (importsContext.isImported(ref) && ref.getPackage() != null) {
-			writeAnnotations(ref);
-			write(ref.getSimpleName());
-		} else {
-			if (ref.getDeclaringType() != null) {
-				if (!context.ignoreEnclosingClass && !ref.isLocalType() && !ref.getDeclaringType().isAnonymous()) {
-					scan(ref.getDeclaringType());
-					write(".");
-				}
-				writeAnnotations(ref);
-				if (ref.isLocalType()) {
-					write(ref.getSimpleName().replaceAll("^[0-9]*", ""));
-				} else {
-					write(ref.getSimpleName());
-				}
-			} else if (ref.getPackage() != null) {
-				if (!CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(ref.getPackage().getSimpleName())) {
-					scan(ref.getPackage()).write(CtPackage.PACKAGE_SEPARATOR);
-				}
-				writeAnnotations(ref);
-				write(ref.getSimpleName());
-			} else {
-				write(ref.getQualifiedName());
-			}
-		}
-		if (!context.ignoreGenerics) {
-			writeActualTypeArguments(ref);
-		}
+		visitCtTypeReference(ref, true);
 	}
 
 	@Override
@@ -2075,14 +2042,45 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtTypeReferenceWithoutGenerics(CtTypeReference<?> ref) {
-		if (ref.getDeclaringType() != null) {
-			if (!context.ignoreEnclosingClass && !ref.getDeclaringType().isAnonymous()) {
-				visitCtTypeReferenceWithoutGenerics(ref.getDeclaringType());
+		visitCtTypeReference(ref, false);
+	}
+
+	private void visitCtTypeReference(CtTypeReference<?> ref, boolean withGenerics) {
+		if (ref.isPrimitive()) {
+			writeAnnotations(ref);
+			write(ref.getSimpleName());
+			return;
+		}
+		boolean isInner = ref.getDeclaringType() != null;
+		if (isInner) {
+			if (!context.ignoreEnclosingClass && !ref.isLocalType() && !ref.getDeclaringType().isAnonymous()) {
+				boolean ign = context.ignoreGenerics;
+				if (!withGenerics) {
+					context.ignoreGenerics = true;
+				}
+				scan(ref.getDeclaringType());
+				if (!withGenerics) {
+					context.ignoreGenerics = ign;
+				}
 				write(".");
 			}
-			write(ref.getSimpleName());
+			writeAnnotations(ref);
+			if (ref.isLocalType()) {
+				write(ref.getSimpleName().replaceAll("^[0-9]*", ""));
+			} else {
+				write(ref.getSimpleName());
+			}
 		} else {
-			write(ref.getQualifiedName());
+			if (ref.getPackage() != null && !importsContext.isImported(ref)) {
+				if (!CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(ref.getPackage().getSimpleName())) {
+					scan(ref.getPackage()).write(CtPackage.PACKAGE_SEPARATOR);
+				}
+			}
+			writeAnnotations(ref);
+			write(ref.getSimpleName());
+		}
+		if (withGenerics && !context.ignoreGenerics) {
+			writeActualTypeArguments(ref);
 		}
 	}
 
