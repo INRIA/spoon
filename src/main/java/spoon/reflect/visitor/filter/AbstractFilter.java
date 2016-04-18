@@ -36,10 +36,18 @@ public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 		this.type = (Class<T>) type;
 	}
 
+	/**
+	 * Creates a filter with the no typing constraint.
+	 */
+	@SuppressWarnings("unchecked")
+	public AbstractFilter() {
+		this.type = (Class<T>) CtElement.class;
+	}
+
 	public Class<T> getType() {
 		return type;
 	}
-
+    
 	@Override
 	public boolean matches(T element) {
 		return type.isAssignableFrom(element.getClass());
