@@ -290,13 +290,13 @@ public class GenericsTest {
 		}).get(0);
 
 		final List<CtTypeParameterReference> barGenerics = bar.getFormalTypeParameters();
-		final CtClass<?> anonymousBar = newAnonymousBar.getAnonymousClass();
+		final CtTypeReference<?> anonymousBar = newAnonymousBar.getType();
 
 		assertEquals("Name of the first generic parameter in Bar interface must to be I.", "I", barGenerics.get(0).getSimpleName());
-		assertEquals("Name of the first generic parameter in Bar usage must to be K.", "K", anonymousBar.getFormalTypeParameters().get(0).getSimpleName());
+		assertEquals("Name of the first generic parameter in Bar usage must to be K.", "K", anonymousBar.getActualTypeArguments().get(0).getSimpleName());
 
 		assertEquals("Name of the second generic parameter in Bar interface must to be O.", "O", barGenerics.get(1).getSimpleName());
-		assertEquals("Name of the second generic parameter in Bar usage must to be V.", "V", anonymousBar.getFormalTypeParameters().get(1).getSimpleName());
+		assertEquals("Name of the second generic parameter in Bar usage must to be V.", "V", anonymousBar.getActualTypeArguments().get(1).getSimpleName());
 	}
 
 	@Test
