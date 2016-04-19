@@ -190,6 +190,9 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
 		boolean ret = false;
 		if ((o instanceof CtElement)) {
 			String current = getDeepRepresentation(this);
