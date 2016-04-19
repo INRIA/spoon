@@ -285,16 +285,6 @@ public interface SpoonModelBuilder {
 	String getEncoding();
 
 	/**
-	 * Check if we invalidate the cache of the compiler.
-	 */
-	boolean shouldInvalidateCache();
-
-	/**
-	 * Sets invalidation cache.
-	 */
-	void setShouldInvalidateCache(boolean shouldInvalidateCache);
-
-	/**
 	 * Returns the working factory
 	 */
 	Factory getFactory();

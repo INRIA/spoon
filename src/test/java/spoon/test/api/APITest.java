@@ -244,21 +244,20 @@ public class APITest {
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.run();
 
+		assertTrue(spoon.getModelBuilder().compile());
+
+		final CtClass<Bar> aClass = spoon.getFactory().Class().get(Bar.class);
+
 		final CtMethod aMethod = spoon.getFactory().Core().createMethod();
 		aMethod.setSimpleName("foo");
 		aMethod.setType(spoon.getFactory().Type().BOOLEAN_PRIMITIVE);
 		aMethod.setBody(spoon.getFactory().Core().createBlock());
-
-		assertTrue(spoon.getModelBuilder().compile());
-
-		final CtClass<Bar> aClass = spoon.getFactory().Class().get(Bar.class);
 		aClass.addMethod(aMethod);
-		spoon.getModelBuilder().setShouldInvalidateCache(true);
+
 		assertFalse(spoon.getModelBuilder().compile());
 
 		aClass.removeMethod(aMethod);
 
-		spoon.getModelBuilder().setShouldInvalidateCache(true);
 		assertTrue(spoon.getModelBuilder().compile());
 	}
 }
