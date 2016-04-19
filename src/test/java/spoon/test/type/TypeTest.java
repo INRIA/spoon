@@ -165,7 +165,7 @@ public class TypeTest {
 		final List<CtClass> localTypes = prepare.getElements(new TypeFilter<>(CtClass.class));
 		assertEquals(1, localTypes.size());
 
-		final CtTypeParameterReference generic = (CtTypeParameterReference) localTypes.get(0).getFormalTypeParameters().get(0);
+		final CtTypeParameterReference generic = localTypes.get(0).getFormalTypeParameters().get(0);
 		assertNotNull(generic);
 		assertEquals("T", generic.getSimpleName());
 		assertNotNull(generic.getBoundingType());
@@ -205,7 +205,7 @@ public class TypeTest {
 		final List<CtClass> localTypes = prepare.getElements(new TypeFilter<>(CtClass.class));
 		assertEquals(1, localTypes.size());
 
-		final CtTypeParameterReference generic = (CtTypeParameterReference) localTypes.get(0).getFormalTypeParameters().get(0);
+		final CtTypeParameterReference generic = localTypes.get(0).getFormalTypeParameters().get(0);
 		assertNotNull(generic);
 		assertEquals("T", generic.getSimpleName());
 		assertNotNull(generic.getBoundingType());
@@ -229,8 +229,7 @@ public class TypeTest {
 		final CtType<Mole> aMole = buildClass(Mole.class);
 
 		assertEquals(1, aMole.getFormalTypeParameters().size());
-		assertTrue(aMole.getFormalTypeParameters().get(0) instanceof CtTypeParameterReference);
-		final CtTypeParameterReference ref = (CtTypeParameterReference) aMole.getFormalTypeParameters().get(0);
+		final CtTypeParameterReference ref = aMole.getFormalTypeParameters().get(0);
 		assertNotNull(ref.getBoundingType());
 		assertTrue(ref.getBoundingType() instanceof CtIntersectionTypeReference);
 		assertEquals(2, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().size());

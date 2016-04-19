@@ -102,7 +102,7 @@ public class ConstructorTest {
 		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
 
 		assertEquals(1, aConstructor.getFormalTypeParameters().size());
-		CtTypeParameterReference genericT = (CtTypeParameterReference) aConstructor.getFormalTypeParameters().get(0);
+		CtTypeParameterReference genericT = aConstructor.getFormalTypeParameters().get(0);
 		assertEquals("T", genericT.getSimpleName());
 		assertEquals(1, genericT.getAnnotations().size());
 

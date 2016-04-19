@@ -2209,7 +2209,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * 		List of formal type parameters.
 	 * @return current instance of the {@link DefaultJavaPrettyPrinter}
 	 */
-	public DefaultJavaPrettyPrinter writeFormalTypeParameters(Collection<CtTypeReference<?>> params) {
+	public DefaultJavaPrettyPrinter writeFormalTypeParameters(Collection<CtTypeParameterReference> params) {
 		if (params == null) {
 			return this;
 		}

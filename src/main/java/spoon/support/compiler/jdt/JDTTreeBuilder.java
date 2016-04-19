@@ -1394,7 +1394,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					final ParameterizedTypeBinding resolvedType = (ParameterizedTypeBinding) superInterface.resolvedType;
 					if (resolvedType.arguments != null) {
 						for (TypeBinding b : resolvedType.arguments) {
-							type.addFormalTypeParameter(references.getTypeReference(b));
+							type.addFormalTypeParameter((CtTypeParameterReference) references.getTypeReference(b));
 						}
 					}
 				}

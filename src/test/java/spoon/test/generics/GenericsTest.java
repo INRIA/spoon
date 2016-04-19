@@ -68,8 +68,7 @@ public class GenericsTest {
 	public void testModelBuildingTree() throws Exception {
 		CtClass<?> type = build("spoon.test.generics", "Tree");
 		assertEquals("Tree", type.getSimpleName());
-		CtTypeParameterReference generic = (CtTypeParameterReference) type
-				.getFormalTypeParameters().get(0);
+		CtTypeParameterReference generic = type.getFormalTypeParameters().get(0);
 		assertEquals("V", generic.getSimpleName());
 		// Deprecated.
 		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBounds().toString());
@@ -132,8 +131,7 @@ public class GenericsTest {
 		List<CtNamedElement> methods = type
 				.getElements(new NameFilter<CtNamedElement>("methode"));
 		assertEquals(2, methods.size());
-		CtTypeParameterReference generic = (CtTypeParameterReference) ((CtMethod<?>) methods
-				.get(0)).getFormalTypeParameters().get(0);
+		CtTypeParameterReference generic = ((CtMethod<?>) methods.get(0)).getFormalTypeParameters().get(0);
 		assertEquals("E", generic.getSimpleName());
 		CtParameter<?> param = ((CtMethod<?>) methods.get(0)).getParameters()
 				.get(0);
@@ -291,7 +289,7 @@ public class GenericsTest {
 			}
 		}).get(0);
 
-		final List<CtTypeReference<?>> barGenerics = bar.getFormalTypeParameters();
+		final List<CtTypeParameterReference> barGenerics = bar.getFormalTypeParameters();
 		final CtClass<?> anonymousBar = newAnonymousBar.getAnonymousClass();
 
 		assertEquals("Name of the first generic parameter in Bar interface must to be I.", "I", barGenerics.get(0).getSimpleName());

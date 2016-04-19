@@ -16,9 +16,9 @@
  */
 package spoon.reflect.declaration;
 
-import java.util.List;
+import spoon.reflect.reference.CtTypeParameterReference;
 
-import spoon.reflect.reference.CtTypeReference;
+import java.util.List;
 
 /**
  * This abstract element defines a declaration that accepts formal type
@@ -28,12 +28,12 @@ public interface CtGenericElement extends CtElement {
 	/**
 	 * Returns the formal type parameters of this generic element.
 	 */
-	List<CtTypeReference<?>> getFormalTypeParameters();
+	List<CtTypeParameterReference> getFormalTypeParameters();
 
 	/**
 	 * Sets the type parameters of this generic element.
 	 */
-	<T extends CtGenericElement> T setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters);
+	<T extends CtGenericElement> T setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters);
 
 	/**
 	 * Add a type parameter to this generic element.
@@ -41,7 +41,7 @@ public interface CtGenericElement extends CtElement {
 	 * @param formalTypeParameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	<T extends CtGenericElement> T addFormalTypeParameter(CtTypeReference<?> formalTypeParameter);
+	<T extends CtGenericElement> T addFormalTypeParameter(CtTypeParameterReference formalTypeParameter);
 
 	/**
 	 * Removes a type parameters from this generic element.
@@ -49,6 +49,6 @@ public interface CtGenericElement extends CtElement {
 	 * @param formalTypeParameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter);
+	boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter);
 
 }
