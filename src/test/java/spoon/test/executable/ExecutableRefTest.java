@@ -11,9 +11,14 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.executable.testclasses.Pozole;
+import spoon.testing.utils.ModelUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -106,5 +111,15 @@ public class ExecutableRefTest {
 		Assert.assertTrue(ctStatement instanceof CtAbstractInvocation<?>);
 
 		return (CtAbstractInvocation<?>) ctStatement;
+	}
+
+	@Test
+	public void testOverridingMethod() throws Exception {
+		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
+		final CtExecutableReference<?> run = aPozole.getMethodsByName("run").get(0).getReference();
+
+		final List<CtInvocation<?>> elements = Query.getElements(run.getFactory(), new InvocationFilter(run));
+		assertEquals(1, elements.size());
+		assertEquals(run, elements.get(0).getExecutable());
 	}
 }

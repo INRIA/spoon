@@ -223,6 +223,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 
 	@Override
 	public boolean isOverriding(CtExecutableReference<?> executable) {
+		final boolean isSame = getSimpleName().equals(executable.getSimpleName()) && getParameters().equals(executable.getParameters()) && getActualTypeArguments().equals(executable.getActualTypeArguments());
+		if (!isSame) {
+			return false;
+		}
 		if (getDeclaringType().isAnonymous()) {
 			if (!getDeclaringType().getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
 				return false;
@@ -230,9 +234,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 		} else if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
 			return false;
 		}
-		return getSimpleName().equals(executable.getSimpleName())
-				&& getParameters().equals(executable.getParameters())
-				&& getActualTypeArguments().equals(executable.getActualTypeArguments());
+		return true;
 	}
 
 	@Override
