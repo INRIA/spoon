@@ -65,7 +65,8 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
-		if (bounds == null) {
+		if (bounds == null || bounds.isEmpty()) {
+			setBoundingType(null);
 			return (T) this;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {

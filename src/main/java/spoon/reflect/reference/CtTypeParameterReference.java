@@ -37,6 +37,8 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 
 	/**
 	 * Sets the bounds (aka generics) of the referenced parameter.
+	 *
+	 * If you give null or an empty list, it'll clear bounds of the reference.
 	 */
 	@Deprecated
 	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);

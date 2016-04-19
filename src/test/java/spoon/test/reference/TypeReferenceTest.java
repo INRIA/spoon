@@ -26,6 +26,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.testing.utils.ModelUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 /**
  * @author Lionel Seinturier
@@ -472,6 +474,27 @@ public class TypeReferenceTest {
 		assertEquals(Short.class, aShort.getActualClass());
 		assertEquals(short.class, shortPrimitive.getActualClass());
 
+	}
+
+	@Test
+	public void testClearBoundsForTypeParameterReference() throws Exception {
+		final Factory factory = createFactory();
+		final CtTypeParameterReference reference = factory.Type().createTypeParameterReference("T");
+		reference.addBound(factory.Type().createReference(String.class));
+
+		assertEquals(1, reference.getBounds().size());
+
+		reference.setBounds(null);
+
+		assertEquals(0, reference.getBounds().size());
+
+		reference.addBound(factory.Type().createReference(String.class));
+
+		assertEquals(1, reference.getBounds().size());
+
+		reference.setBounds(new ArrayList<>());
+
+		assertEquals(0, reference.getBounds().size());
 	}
 
 	class A {
