@@ -7,6 +7,7 @@ import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -232,5 +234,30 @@ public class APITest {
 		assertEquals(2, filesName.size());
 		assertEquals("AbstractTemplate.java", filesName.get(0));
 		assertEquals("Launcher.java", filesName.get(1));
+	}
+
+	@Test
+	public void testInvalidateCacheOfCompiler() throws Exception {
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+		spoon.setSourceOutputDirectory("./target/api");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.run();
+
+		assertTrue(spoon.getModelBuilder().compile());
+
+		final CtClass<Bar> aClass = spoon.getFactory().Class().get(Bar.class);
+
+		final CtMethod aMethod = spoon.getFactory().Core().createMethod();
+		aMethod.setSimpleName("foo");
+		aMethod.setType(spoon.getFactory().Type().BOOLEAN_PRIMITIVE);
+		aMethod.setBody(spoon.getFactory().Core().createBlock());
+		aClass.addMethod(aMethod);
+
+		assertFalse(spoon.getModelBuilder().compile());
+
+		aClass.removeMethod(aMethod);
+
+		assertTrue(spoon.getModelBuilder().compile());
 	}
 }

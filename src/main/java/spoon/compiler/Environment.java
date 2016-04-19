@@ -16,8 +16,6 @@
  */
 package spoon.compiler;
 
-import java.io.File;
-
 import org.apache.log4j.Level;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
@@ -26,6 +24,8 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+
+import java.io.File;
 
 /**
  * This interface represents the environment in which Spoon is launched -
