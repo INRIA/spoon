@@ -37,7 +37,8 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 
 	/**
 	 * Returns the {@link CtField} that corresponds to the reference
-	 * even if its declaring type isn't in the Spoon source path.
+	 * even if its declaring type isn't in the Spoon source path  (in this case,
+	 * the Spoon elements are built with runtime reflection)
 	 *
 	 * @return the field declaration that corresponds to the reference.
 	 */

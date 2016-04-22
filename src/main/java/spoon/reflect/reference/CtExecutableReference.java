@@ -60,7 +60,8 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 
 	/**
 	 * Returns a subtype {@link CtExecutable} that corresponds to the reference
-	 * even if its declaring type isn't in the Spoon source path.
+	 * even if its declaring type isn't in the Spoon source path  (in this case,
+	 * the Spoon elements are built with runtime reflection).
 	 *
 	 * @return the executable declaration that corresponds to the reference.
 	 */

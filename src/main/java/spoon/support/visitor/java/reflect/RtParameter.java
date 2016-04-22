@@ -20,6 +20,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+/**
+ * To be compatible with Java 6, RtParameter has been created from
+ * the Parameter class in Java 8.
+ */
 public class RtParameter {
 	private final String name;
 	private final Class<?> type;

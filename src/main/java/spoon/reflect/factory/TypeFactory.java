@@ -263,7 +263,9 @@ public class TypeFactory extends SubFactory {
 	}
 
 	/**
-	 * Gets a type from its runtime Java class.
+	 * Gets a type from its runtime Java class. If the class isn't in the spoon path,
+	 * the class will be build from the Java reflection and will be marked as
+	 * shadow (see {@link spoon.reflect.declaration.CtShadowable}).
 	 *
 	 * @param <T>
 	 * 		actual type of the class
