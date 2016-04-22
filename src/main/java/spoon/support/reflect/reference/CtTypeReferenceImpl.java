@@ -312,31 +312,37 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (isPrimitive()) {
 			return this;
 		}
-		if (getActualClass() == Integer.class) {
+		Class<T> actualClass;
+		try {
+			actualClass = getActualClass();
+		} catch (SpoonClassNotFoundException e) {
+			return this;
+		}
+		if (actualClass == Integer.class) {
 			return getFactory().Type().createReference(int.class);
 		}
-		if (getActualClass() == Float.class) {
+		if (actualClass == Float.class) {
 			return getFactory().Type().createReference(float.class);
 		}
-		if (getActualClass() == Long.class) {
+		if (actualClass == Long.class) {
 			return getFactory().Type().createReference(long.class);
 		}
-		if (getActualClass() == Character.class) {
+		if (actualClass == Character.class) {
 			return getFactory().Type().createReference(char.class);
 		}
-		if (getActualClass() == Double.class) {
+		if (actualClass == Double.class) {
 			return getFactory().Type().createReference(double.class);
 		}
-		if (getActualClass() == Boolean.class) {
+		if (actualClass == Boolean.class) {
 			return getFactory().Type().createReference(boolean.class);
 		}
-		if (getActualClass() == Short.class) {
+		if (actualClass == Short.class) {
 			return getFactory().Type().createReference(short.class);
 		}
-		if (getActualClass() == Byte.class) {
+		if (actualClass == Byte.class) {
 			return getFactory().Type().createReference(byte.class);
 		}
-		if (getActualClass() == Void.class) {
+		if (actualClass == Void.class) {
 			return getFactory().Type().createReference(void.class);
 		}
 		return this;
