@@ -6,4 +6,10 @@ public class Mole {
 		}
 		final Cook<String> aClass = new Cook<String>();
 	}
+
+	public void prepare() {
+		class Prepare<T> {
+		}
+		new <Integer>Prepare<String>();
+	}
 }

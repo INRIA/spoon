@@ -502,4 +502,18 @@ public class GenericsTest {
 		assertEquals(1, newCook.getType().getActualTypeArguments().size());
 		assertEquals("new Cook<java.lang.String>()", newCook.toString());
 	}
+
+	@Test
+	public void testGenericsInConstructorCall() throws Exception {
+		// contract: A constructor call have generics declared before the type and the
+		// TypeReference have generics declared after itself. e.g, new <String>Test<String>().
+		final CtType<Mole> aMole = buildClass(Mole.class);
+		final CtMethod<Object> prepare = aMole.getMethod("prepare");
+		final CtConstructorCall<?> newPrepare = prepare.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+
+		assertEquals(1, newPrepare.getActualTypeArguments().size());
+		assertEquals("java.lang.Integer", newPrepare.getActualTypeArguments().get(0).toString());
+		assertEquals(1, newPrepare.getType().getActualTypeArguments().size());
+		assertEquals("java.lang.String", newPrepare.getType().getActualTypeArguments().get(0).toString());
+	}
 }
