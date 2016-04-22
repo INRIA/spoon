@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * Contains the default implementation of most CtElement methods.
@@ -63,8 +64,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	private static final long serialVersionUID = 1L;
 	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
-
-	private List<CtComment> comments = new ArrayList<CtComment>();
 
 	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet
 	// because we need clear() for all set* methods
@@ -160,6 +159,8 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	protected CtElement parent;
 
 	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
+
+	private List<CtComment> comments = emptyList();
 
 	SourcePosition position;
 
@@ -519,22 +520,28 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public <E extends CtElement> E addComment(CtComment comment) {
+		if ((List<?>) comments == emptyList()) {
+			comments = new ArrayList<CtComment>(COMMENT_CONTAINER_DEFAULT_CAPACITY);
+		}
 		comments.add(comment);
 		comment.setParent(this);
 		return (E) this;
 	}
 
+	// TODO return boolean
 	@Override
 	public <E extends CtElement> E removeComment(CtComment comment) {
-		comments.remove(comment);
+		if ((List<?>) comments != emptyList()) {
+			comments.remove(comment);
+		}
 		return (E) this;
 	}
 
 	@Override
 	public <E extends CtElement> E setComments(List<CtComment> comments) {
-		this.comments = new ArrayList<CtComment>();
+		this.comments.clear();
 		for (CtComment comment : comments) {
-			this.addComment(comment);
+			addComment(comment);
 		}
 		return (E) this;
 	}
