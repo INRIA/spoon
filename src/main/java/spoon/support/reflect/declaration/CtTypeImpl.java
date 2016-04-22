@@ -34,7 +34,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
@@ -213,55 +213,53 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	@SuppressWarnings("unchecked")
 	public <N extends CtType<?>> N getNestedType(final String name) {
-		class NestedTypeScanner extends CtScanner {
-			CtType<?> type;
+		class NestedTypeScanner extends EarlyTerminatingScanner<CtType<?>> {
 
-			public void checkType(CtType<?> type) {
+			private boolean checkType(CtType<?> type) {
 				if (type.getSimpleName().equals(name) && CtTypeImpl.this.equals(type.getDeclaringType())) {
-					this.type = type;
+					setResult(type);
+					terminate();
+					return true;
 				}
+				return false;
 			}
 
 			@Override
 			public <U> void visitCtClass(spoon.reflect.declaration.CtClass<U> ctClass) {
-				scan(ctClass.getNestedTypes());
-				scan(ctClass.getConstructors());
-				scan(ctClass.getMethods());
-
-				checkType(ctClass);
+				if (!checkType(ctClass)) {
+					scan(ctClass.getNestedTypes());
+					scan(ctClass.getConstructors());
+					scan(ctClass.getMethods());
+				}
 			}
 
 			@Override
 			public <U> void visitCtInterface(spoon.reflect.declaration.CtInterface<U> intrface) {
-				scan(intrface.getNestedTypes());
-				scan(intrface.getMethods());
-
-				checkType(intrface);
+				if (!checkType(intrface)) {
+					scan(intrface.getNestedTypes());
+					scan(intrface.getMethods());
+				}
 			}
 
 			@Override
 			public <U extends java.lang.Enum<?>> void visitCtEnum(spoon.reflect.declaration.CtEnum<U> ctEnum) {
-				scan(ctEnum.getNestedTypes());
-				scan(ctEnum.getConstructors());
-				scan(ctEnum.getMethods());
-
-				checkType(ctEnum);
+				if (!checkType(ctEnum)) {
+					scan(ctEnum.getNestedTypes());
+					scan(ctEnum.getConstructors());
+					scan(ctEnum.getMethods());
+				}
 			}
 
 			@Override
 			public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
-				scan(annotationType.getNestedTypes());
-
-				checkType(annotationType);
-			}
-
-			CtType<?> getType() {
-				return type;
+				if (!checkType(annotationType)) {
+					scan(annotationType.getNestedTypes());
+				}
 			}
 		}
 		NestedTypeScanner scanner = new NestedTypeScanner();
 		scanner.scan(this);
-		return (N) scanner.getType();
+		return (N) scanner.getResult();
 	}
 
 	@Override
