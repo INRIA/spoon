@@ -16,56 +16,21 @@
  */
 package spoon.reflect.factory;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.reflect.declaration.CtPackageImpl;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtPackageReference;
+
 /**
  * The {@link CtPackage} sub-factory.
  */
 public class PackageFactory extends SubFactory implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	private CtPackage rootPackage;
-
-	private static class CtRootPackage extends CtPackageImpl {
-		{
-			setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
-			setParent(new CtElementImpl() {
-				@Override
-				public void accept(CtVisitor visitor) {
-
-				}
-
-				@Override
-				public CtElement getParent() throws ParentNotInitializedException {
-					return null;
-				}
-			});
-		}
-
-		@Override
-		public String getSimpleName() {
-			return super.getSimpleName();
-		}
-
-		@Override
-		public String getQualifiedName() {
-			return "";
-		}
-
-	}
 
 	/**
 	 * Creates a new package sub-factory.
@@ -75,8 +40,6 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 */
 	public PackageFactory(Factory factory) {
 		super(factory);
-		rootPackage = new CtRootPackage();
-		rootPackage.setFactory(factory);
 	}
 
 	/**
@@ -101,16 +64,11 @@ public class PackageFactory extends SubFactory implements Serializable {
 		return createReference(pack.getName());
 	}
 
-	CtPackageReference topLevel;
-
 	/**
 	 * Returns a reference on the top level package.
 	 */
 	public CtPackageReference topLevel() {
-		if (topLevel == null) {
-			topLevel = createReference(CtPackage.TOP_LEVEL_PACKAGE_NAME);
-		}
-		return topLevel;
+		return factory.getModel().getRootPackage().getReference();
 	}
 
 	/**
@@ -146,7 +104,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 */
 	public CtPackage getOrCreate(String qualifiedName) {
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage last = rootPackage;
+		CtPackage last = factory.getModel().getRootPackage();
 
 		while (token.hasMoreElements()) {
 			String name = token.nextToken();
@@ -175,7 +133,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 			throw new RuntimeException("Invalid package name " + qualifiedName);
 		}
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage current = rootPackage;
+		CtPackage current = factory.getModel().getRootPackage();
 		if (token.hasMoreElements()) {
 			current = current.getPackage(token.nextToken());
 			while (token.hasMoreElements() && current != null) {
@@ -191,14 +149,14 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * packages and their sub-packages.
 	 */
 	public Collection<CtPackage> getAll() {
-		return getSubPackageList(rootPackage);
+		return factory.getModel().getAllPackages();
 	}
 
 	/**
 	 * Return the unnamed top-level package.
 	 */
 	public CtPackage getRootPackage() {
-		return rootPackage;
+		return factory.getModel().getRootPackage();
 	}
 
 	private List<CtPackage> getSubPackageList(CtPackage pack) {

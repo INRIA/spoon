@@ -16,7 +16,14 @@
  */
 package spoon.reflect.factory;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
 import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
+import spoon.reflect.CtModelImpl;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -31,11 +38,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DefaultInternalFactory;
 import spoon.support.StandardEnvironment;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * Implements {@link Factory}
@@ -214,7 +216,7 @@ public class FactoryImpl implements Factory, Serializable {
 		return methodF;
 	}
 
-	private PackageFactory packageF;
+	private transient PackageFactory packageF;
 
 	/**
 	 * The {@link CtPackage} sub-factory.
@@ -227,7 +229,7 @@ public class FactoryImpl implements Factory, Serializable {
 		return packageF;
 	}
 
-	private CompilationUnitFactory compilationUnit;
+	private transient CompilationUnitFactory compilationUnit;
 
 	/**
 	 * The {@link CompilationUnit} sub-factory.
@@ -319,5 +321,12 @@ public class FactoryImpl implements Factory, Serializable {
 			}
 			return symbol;
 		}
+	}
+
+	private final CtModel model = new CtModelImpl(this);
+
+	@Override
+	public CtModel getModel() {
+		return model;
 	}
 }

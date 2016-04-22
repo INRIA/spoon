@@ -17,6 +17,7 @@
 package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
 
 /**
  * Provides the sub-factories required by Spoon.
@@ -26,6 +27,9 @@ import spoon.compiler.Environment;
  * Otherwise FactoryImpl is a default implementation.
  */
 public interface Factory {
+
+	/** returns the Spoon model that has been built with this factory or one of its subfactories */
+	CtModel getModel();
 
 	CoreFactory Core(); // used 238 times
 

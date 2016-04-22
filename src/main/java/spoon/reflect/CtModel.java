@@ -14,42 +14,35 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.filter;
+package spoon.reflect;
 
+import java.util.Collection;
+import java.util.List;
+
+import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 
-/**
- * Defines an abstract filter based on matching on the element types.
- *
- * Not necessary in simple cases thanks to the use of runtime reflection.
+/** represents a Java program, modeled by a set of compile-time (Ct) objects
+ * where each objects is a program element (for instance, a CtClass represents a class).
  */
-public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
+public interface CtModel {
 
-	private Class<T> type;
+	/** returns the root package */
+	CtPackage getRootPackage();
 
-	/**
-	 * Creates a filter with the type of the potentially matching elements.
-	 */
-	@SuppressWarnings("unchecked")
-	public AbstractFilter(Class<? super T> type) {
-		this.type = (Class<T>) type;
-	}
+	/** returns all top-level types of the model */
+	Collection<CtType<?>> getAllTypes();
 
-	/**
-	 * Creates a filter with the no typing constraint.
-	 */
-	@SuppressWarnings("unchecked")
-	public AbstractFilter() {
-		this.type = (Class<T>) CtElement.class;
-	}
+	/** returns all packages of the model */
+	Collection<CtPackage> getAllPackages();
 
-	public Class<T> getType() {
-		return type;
-	}
+	/** process this model with the given processor */
+	void processWith(Processor<?> processor);
 
-	@Override
-	public boolean matches(T element) {
-		return type.isAssignableFrom(element.getClass());
-	}
+	/** Returns all the model elements matching the filter. */
+	<E extends CtElement> List<E> getElements(Filter<E> filter);
+
 }

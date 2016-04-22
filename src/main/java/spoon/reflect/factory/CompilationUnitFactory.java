@@ -39,7 +39,7 @@ public class CompilationUnitFactory extends SubFactory {
 		super(factory);
 	}
 
-	Map<String, CompilationUnit> compilationUnits = new TreeMap<String, CompilationUnit>();
+	private transient Map<String, CompilationUnit> cachedCompilationUnits = new TreeMap<String, CompilationUnit>();
 
 	/**
 	 * Gets the compilation unit map.
@@ -47,7 +47,7 @@ public class CompilationUnitFactory extends SubFactory {
 	 * @return a map (path -&gt; {@link CompilationUnit})
 	 */
 	public Map<String, CompilationUnit> getMap() {
-		return compilationUnits;
+		return cachedCompilationUnits;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class CompilationUnitFactory extends SubFactory {
 	 * Creates or gets a compilation unit for a given file path.
 	 */
 	public CompilationUnit create(String filePath) {
-		CompilationUnit cu = compilationUnits.get(filePath);
+		CompilationUnit cu = cachedCompilationUnits.get(filePath);
 		if (cu == null) {
 			if ("".equals(filePath)) {
 				cu = factory.Core().createVirtualCompilationUnit();
@@ -70,7 +70,7 @@ public class CompilationUnitFactory extends SubFactory {
 			}
 			cu = factory.Core().createCompilationUnit();
 			cu.setFile(new File(filePath));
-			compilationUnits.put(filePath, cu);
+			cachedCompilationUnits.put(filePath, cu);
 		}
 		return cu;
 	}

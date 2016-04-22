@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.SubFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -177,18 +178,15 @@ import java.util.Stack;
  * This class implements a default core factory for Spoon's meta-model. This
  * implementation is done with regular Java classes (POJOs).
  */
-public class DefaultCoreFactory implements CoreFactory, Serializable {
+public class DefaultCoreFactory extends SubFactory implements CoreFactory, Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	// transient Stack<CtElement> cloningContext = new Stack<CtElement>();
-
-	Factory mainFactory;
 
 	/**
 	 * Default constructor.
 	 */
 	public DefaultCoreFactory() {
+		super(null);
 	}
 
 	public <T> T clone(T object) {
@@ -675,11 +673,11 @@ public class DefaultCoreFactory implements CoreFactory, Serializable {
 	}
 
 	public Factory getMainFactory() {
-		return mainFactory;
+		return factory;
 	}
 
 	public void setMainFactory(Factory mainFactory) {
-		this.mainFactory = mainFactory;
+		this.factory = mainFactory;
 	}
 
 	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startDeclaration, int startSource, int end, int[] lineSeparatorPositions) {

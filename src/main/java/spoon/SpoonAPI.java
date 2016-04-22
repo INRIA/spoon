@@ -16,15 +16,16 @@
  */
 package spoon;
 
+import java.io.File;
+
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.processing.Processor;
+import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
-
-import java.io.File;
 
 /**
  * Is the core entry point of Spoon. Implemented by Launcher.
@@ -144,4 +145,7 @@ public interface SpoonAPI {
 	 * Creates a new Spoon compiler (for building the model)
 	 */
 	SpoonCompiler createCompiler();
+
+	/** Returns the model built from the sources given via {@link #addInputResource(String)} */
+	CtModel getModel();
 }
