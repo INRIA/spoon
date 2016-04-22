@@ -149,6 +149,12 @@
         <role>Contributor</role>
       </roles>
     </developer>
+    <developer>
+      <name>Alcides Fonseca</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
   </developers>
 
   <scm>
