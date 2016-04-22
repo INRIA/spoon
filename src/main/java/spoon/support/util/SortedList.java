@@ -19,6 +19,7 @@ package spoon.support.util;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class SortedList<E> extends LinkedList<E> {
 
@@ -33,9 +34,11 @@ public class SortedList<E> extends LinkedList<E> {
 
 	@Override
 	public boolean add(E o) {
-		for (E e : this) {
+		for (ListIterator<E> iterator = this.listIterator(); iterator.hasNext();) {
+			E e = iterator.next();
 			if (comparator.compare(o, e) < 0) {
-				add(indexOf(e), o);
+				iterator.previous();
+				iterator.add(o);
 				return true;
 			}
 		}
