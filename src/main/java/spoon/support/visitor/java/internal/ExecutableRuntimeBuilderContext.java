@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -71,7 +72,7 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	}
 
 	@Override
-	public void addFormalType(CtTypeReference<?> parameterRef) {
+	public void addFormalType(CtTypeParameterReference parameterRef) {
 		if (ctExecutable instanceof CtGenericElement) {
 			((CtGenericElement) ctExecutable).addFormalTypeParameter(parameterRef);
 			return;

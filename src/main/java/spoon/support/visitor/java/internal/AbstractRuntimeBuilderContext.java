@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -91,7 +92,7 @@ abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 	}
 
 	@Override
-	public void addFormalType(CtTypeReference<?> parameterRef) {
+	public void addFormalType(CtTypeParameterReference parameterRef) {
 		throw new UnsupportedOperationException();
 	}
 
