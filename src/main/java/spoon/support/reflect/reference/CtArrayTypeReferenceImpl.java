@@ -26,6 +26,12 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 		implements CtArrayTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	public static final String ARRAY_SIMPLE_NAME = Array.class.getSimpleName();
+	/**
+	 * getCanonicalName() is an _expensive_ operation, result should be cached
+	 */
+	public static final String ARRAY_CANONICAL_NAME = Array.class.getCanonicalName();
+
 	CtTypeReference<?> componentType;
 
 	public CtArrayTypeReferenceImpl() {
@@ -62,12 +68,12 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 
 	@Override
 	public String getSimpleName() {
-		return Array.class.getSimpleName();
+		return ARRAY_SIMPLE_NAME;
 	}
 
 	@Override
 	public String getQualifiedName() {
-		return Array.class.getCanonicalName();
+		return ARRAY_CANONICAL_NAME;
 	}
 
 	@SuppressWarnings("unchecked")
