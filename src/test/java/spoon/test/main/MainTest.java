@@ -15,6 +15,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -90,8 +91,8 @@ public class MainTest {
 		new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
-				if (element != null) {
-					assertFalse(element.isShadow());
+				if (element != null && element.getClass().isAssignableFrom(CtShadowable.class)) {
+					assertFalse(((CtShadowable) element).isShadow());
 				}
 				super.scan(element);
 			}
@@ -142,8 +143,8 @@ public class MainTest {
 					assertEquals(reference, executableDeclaration.getReference());
 				}
 
-				if (reference.getDeclaration() == null) {
-					assertTrue(executableDeclaration.isShadow());
+				if (reference.getDeclaration() == null && executableDeclaration.getClass().isAssignableFrom(CtShadowable.class)) {
+					assertTrue(((CtShadowable) executableDeclaration).isShadow());
 				}
 
 				super.visitCtExecutableReference(reference);

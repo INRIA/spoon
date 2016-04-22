@@ -18,12 +18,12 @@ package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -31,7 +31,7 @@ import spoon.reflect.reference.CtTypeReference;
 import java.lang.annotation.Annotation;
 
 abstract class AbstractContext implements Context {
-	protected AbstractContext(CtElement element) {
+	protected AbstractContext(CtShadowable element) {
 		element.setShadow(true);
 	}
 

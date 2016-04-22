@@ -20,7 +20,6 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -65,7 +64,7 @@ import java.util.Stack;
  * models are available when {@link CtTypeReference#getTypeDeclaration()},
  * {@link CtExecutableReference#getExecutableDeclaration()} and
  * {@link CtFieldReference#getFieldDeclaration()} are called. To know when an
- * element comes from the reflection api, use {@link CtElement#isShadow()}.
+ * element comes from the reflection api, use {@link spoon.reflect.declaration.CtShadowable#isShadow()}.
  */
 public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	private Stack<Context> contexts = new Stack<Context>();

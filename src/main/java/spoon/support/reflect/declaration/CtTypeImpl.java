@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -712,5 +713,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 
 		return Collections.unmodifiableSet(l);
+	}
+
+	boolean isShadow;
+
+	@Override
+	public boolean isShadow() {
+		return isShadow;
+	}
+
+	@Override
+	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+		this.isShadow = isShadow;
+		return (E) this;
 	}
 }

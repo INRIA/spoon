@@ -19,6 +19,7 @@ package spoon.support.reflect.reference;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -495,5 +496,18 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		} else {
 			return t.isInterface();
 		}
+	}
+
+	boolean isShadow;
+
+	@Override
+	public boolean isShadow() {
+		return isShadow;
+	}
+
+	@Override
+	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+		this.isShadow = isShadow;
+		return (E) this;
 	}
 }

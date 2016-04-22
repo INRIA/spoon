@@ -23,7 +23,7 @@ import spoon.reflect.reference.CtParameterReference;
  *
  * @see CtExecutable
  */
-public interface CtParameter<T> extends CtVariable<T> {
+public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 
 	/**
 	 * Gets the executable that is the parent declaration of this parameter

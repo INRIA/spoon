@@ -16,15 +16,15 @@
  */
 package spoon.reflect.declaration;
 
-import java.util.Set;
-
 import spoon.reflect.reference.CtPackageReference;
+
+import java.util.Set;
 
 /**
  * This element defines a package declaration. The packages are represented by a
  * tree.
  */
-public interface CtPackage extends CtNamedElement {
+public interface CtPackage extends CtNamedElement, CtShadowable {
 
 	/**
 	 * The separator for a string representation of a package.

@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * The type parameter T refers to the actual class that this type represents.
  */
-public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtGenericElement {
+public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtGenericElement, CtShadowable {
 	/**
 	 * The string separator in a Java innertype qualified name.
 	 */

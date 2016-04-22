@@ -17,6 +17,8 @@
 package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -26,9 +28,14 @@ import java.lang.annotation.Annotation;
 public class VariableContext extends AbstractContext {
 	private CtVariable ctVariable;
 
-	public VariableContext(CtVariable<?> ctVariable) {
-		super(ctVariable);
-		this.ctVariable = ctVariable;
+	public VariableContext(CtField<?> ctField) {
+		super(ctField);
+		this.ctVariable = ctField;
+	}
+
+	public VariableContext(CtParameter<?> ctParameter) {
+		super(ctParameter);
+		this.ctVariable = ctParameter;
 	}
 
 	@Override

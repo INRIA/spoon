@@ -16,23 +16,22 @@
  */
 package spoon.reflect.declaration;
 
-/**
- * This element defines a method declaration.
- */
-public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtGenericElement, CtShadowable {
+import spoon.reflect.reference.CtTypeReference;
+
+public interface CtShadowable {
 	/**
-	 * Checks if the method is a default method. Default method can be in interfaces from
-	 * Java 8: http://docs.oracle.com/javase/tutorial/java/IandI/defaultmethods.html.
+	 * When an element isn't present in the factory (created in another factory),
+	 * this element is considered as "shadow". e.g., a shadow element can be a
+	 * CtType of java.lang.Class built when we call {@link CtTypeReference#getTypeDeclaration()}
+	 * on a reference of java.lang.Class.
+	 *
+	 * @return true if the element is a shadow element, otherwise false.
 	 */
-	boolean isDefaultMethod();
+	boolean isShadow();
 
 	/**
-	 * Sets the default value state of a method.
+	 * Marks an element as shadow. To know what is a shadow element, see the javadoc of
+	 * {@link #isShadow()}.
 	 */
-	<C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod);
-
-	/**
-	 * Replaces this element by another one.
-	 */
-	<R extends T> void replace(CtMethod<T> element);
+	<E extends CtShadowable> E setShadow(boolean isShadow);
 }

@@ -166,8 +166,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	Map<String, Object> metadata;
 
-	boolean isShadow;
-
 	public CtElementImpl() {
 		super();
 	}
@@ -544,17 +542,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		for (CtComment comment : comments) {
 			addComment(comment);
 		}
-		return (E) this;
-	}
-
-	@Override
-	public boolean isShadow() {
-		return isShadow;
-	}
-
-	@Override
-	public <E extends CtElement> E setShadow(boolean isShadow) {
-		this.isShadow = isShadow;
 		return (E) this;
 	}
 }

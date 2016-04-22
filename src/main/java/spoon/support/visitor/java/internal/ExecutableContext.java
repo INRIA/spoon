@@ -17,6 +17,7 @@
 package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtMethod;
@@ -29,9 +30,14 @@ import java.lang.annotation.Annotation;
 public class ExecutableContext extends AbstractContext {
 	private CtExecutable<?> ctExecutable;
 
-	public ExecutableContext(CtExecutable<?> ctExecutable) {
-		super(ctExecutable);
-		this.ctExecutable = ctExecutable;
+	public ExecutableContext(CtMethod<?> ctMethod) {
+		super(ctMethod);
+		this.ctExecutable = ctMethod;
+	}
+
+	public ExecutableContext(CtConstructor<?> ctConstructor) {
+		super(ctConstructor);
+		this.ctExecutable = ctConstructor;
 	}
 
 	@Override
