@@ -83,6 +83,9 @@ public final class ModelElementContainerDefaultCapacities {
 	public static final int ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY = 2;
 
 	// 1-2
+	public static final int COMMENT_CONTAINER_DEFAULT_CAPACITY = 2;
+
+	// 1-2
 	public static final int METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY = 2;
 
 	// 1-2
