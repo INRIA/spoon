@@ -1062,7 +1062,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtExpression(thisAccess);
 		if (thisAccess.getTarget() != null && thisAccess.getTarget() instanceof CtTypeAccess
 				&& !tryToInitializeFinalFieldInConstructor(thisAccess)
-				&& !thisAccess.isImplicit()) {
+				&& !thisAccess.isImplicit()
+				&& !thisAccess.getTarget().isImplicit()) {
 			final CtTypeReference accessedType = ((CtTypeAccess) thisAccess.getTarget()).getAccessedType();
 			if (accessedType.isLocalType()) {
 				write(accessedType.getSimpleName().replaceAll("^[0-9]*", "") + ".");
