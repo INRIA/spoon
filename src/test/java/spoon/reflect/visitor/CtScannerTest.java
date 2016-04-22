@@ -105,7 +105,9 @@ public class CtScannerTest {
 
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.setSourceOutputDirectory("./target/generated-sources/");
+		launcher.getEnvironment().setGenerateJavadoc(true);
+		launcher.getEnvironment().useTabulations(true);
+		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
