@@ -309,7 +309,12 @@ public class CodeFactory extends SubFactory {
 	 * @return a <code>type.this</code> expression
 	 */
 	public <T> CtThisAccess<T> createThisAccess(CtTypeReference<T> type) {
-		return factory.Core().<T>createThisAccess().setType(type);
+		CtThisAccess<T> thisAccess = factory.Core().<T>createThisAccess();
+		thisAccess.setType(type);
+		CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(type);
+		typeAccess.setImplicit(true);
+		thisAccess.setTarget(typeAccess);
+		return thisAccess;
 	}
 
 	/**
