@@ -85,7 +85,7 @@ public class MainTest {
 		new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
-				if (element != null && element.getClass().isAssignableFrom(CtShadowable.class)) {
+				if (element != null && CtShadowable.class.isAssignableFrom(element.getClass())) {
 					assertFalse(((CtShadowable) element).isShadow());
 				}
 				super.scan(element);
@@ -137,7 +137,7 @@ public class MainTest {
 					assertEquals(reference, executableDeclaration.getReference());
 				}
 
-				if (reference.getDeclaration() == null && executableDeclaration.getClass().isAssignableFrom(CtShadowable.class)) {
+				if (reference.getDeclaration() == null && CtShadowable.class.isAssignableFrom(executableDeclaration.getClass())) {
 					assertTrue(((CtShadowable) executableDeclaration).isShadow());
 				}
 
