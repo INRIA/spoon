@@ -212,8 +212,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
 import java.util.ArrayList;
@@ -2025,15 +2024,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 		for (CtElement element : reversedElements) {
 			// TODO check if the variable is visible from here
 
-			List<CtLocalVariable<T>> var = Query.getElements(element, new TypeFilter<CtLocalVariable<T>>(CtLocalVariable.class) {
-						@Override
-						public boolean matches(CtLocalVariable<T> element) {
-							return name.equals(element.getSimpleName()) && super.matches(element);
-						}
-					});
-
-			if (var.size() > 0) {
-				return var.get(0);
+			EarlyTerminatingScanner<CtLocalVariable<?>> scanner = new EarlyTerminatingScanner<CtLocalVariable<?>>() {
+				@Override
+				public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
+					if (name.equals(localVariable.getSimpleName())) {
+						setResult(localVariable);
+						terminate();
+						return;
+					}
+					super.visitCtLocalVariable(localVariable);
+				}
+			};
+			element.accept(scanner);
+			CtLocalVariable<T> var = (CtLocalVariable<T>) scanner.getResult();
+			if (var != null) {
+				return var;
 			}
 		}
 		// note: this happens when using the new try(vardelc) structure
@@ -2049,15 +2054,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 
 		for (CtElement element : reversedElements) {
-			List<CtCatchVariable<T>> var = Query.getElements(element, new TypeFilter<CtCatchVariable<T>>(CtCatchVariable.class) {
-						@Override
-						public boolean matches(CtCatchVariable<T> element) {
-							return name.equals(element.getSimpleName()) && super.matches(element);
-						}
-					});
+			EarlyTerminatingScanner<CtCatchVariable<?>> scanner = new EarlyTerminatingScanner<CtCatchVariable<?>>() {
+				@Override
+				public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+					if (name.equals(catchVariable.getSimpleName())) {
+						setResult(catchVariable);
+						terminate();
+						return;
+					}
+					super.visitCtCatchVariable(catchVariable);
+				}
+			};
+			element.accept(scanner);
 
-			if (var.size() > 0) {
-				return var.get(0);
+			CtCatchVariable<T> var = (CtCatchVariable<T>) scanner.getResult();
+			if (var != null) {
+				return null;
 			}
 		}
 		// note: this happens when using the new try(vardelc) structure
