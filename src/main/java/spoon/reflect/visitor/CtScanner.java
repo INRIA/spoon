@@ -152,9 +152,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(annotation);
 		scan(annotation.getAnnotationType());
 		scan(annotation.getAnnotations());
-		for (Object o : annotation.getElementValues().values()) {
-			scan(o);
-		}
+		scan(annotation.getElementValues().values());
 		exit(annotation);
 	}
 
