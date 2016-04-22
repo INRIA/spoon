@@ -113,6 +113,7 @@ Alphabetical order of last names
 * Didier Donsez
 * Favio DeMarco
 * Christophe Dufour
+* Alcides Fonseca
 * Sebastian Lamelas Marcote
 * Matias Martinez
 * Martin Monperrus
