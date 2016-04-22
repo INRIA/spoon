@@ -34,6 +34,7 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.reference.SpoonClassNotFoundException;
 import spoon.test.type.testclasses.Mole;
 import spoon.test.type.testclasses.Pozole;
 
@@ -44,6 +45,7 @@ import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -236,5 +238,19 @@ public class TypeTest {
 		assertEquals(Number.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().get(0).getActualClass());
 		assertEquals(Comparable.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().get(1).getActualClass());
 		assertEquals("public class Mole<NUMBER extends java.lang.Number & java.lang.Comparable<NUMBER>> {}", aMole.toString());
+	}
+
+	@Test
+	public void testUnboxingTypeReference() throws Exception {
+		// contract: When you call CtTypeReference#unbox on a class which doesn't exist
+		// in the spoon path, the method return the type reference itself.
+		final Factory factory = createFactory();
+		final CtTypeReference<Object> aReference = factory.Type().createReference("fr.inria.Spoon");
+		try {
+			final CtTypeReference<?> unbox = aReference.unbox();
+			assertEquals(aReference, unbox);
+		} catch (SpoonClassNotFoundException e) {
+			fail("Should never throw a SpoonClassNotFoundException.");
+		}
 	}
 }
