@@ -45,6 +45,7 @@ public class ClassFactory extends TypeFactory {
 	public <T> CtClass<T> create(CtClass<?> declaringClass, String simpleName) {
 		CtClass<T> c = factory.Core().createClass();
 		c.setSimpleName(simpleName);
+		declaringClass.addNestedType(c);
 		return c;
 	}
 
@@ -59,11 +60,7 @@ public class ClassFactory extends TypeFactory {
 	public <T> CtClass<T> create(CtPackage owner, String simpleName) {
 		CtClass<T> c = factory.Core().createClass();
 		c.setSimpleName(simpleName);
-		if (owner.getTypes().contains(c)) {
-			owner.removeType(c);
-		}
 		owner.addType(c);
-		c.setParent(owner);
 		return c;
 	}
 
