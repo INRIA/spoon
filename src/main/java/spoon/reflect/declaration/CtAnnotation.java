@@ -31,7 +31,7 @@ import java.util.Map;
  * @param <A>
  * 		type of represented annotation
  */
-public interface CtAnnotation<A extends Annotation> extends CtExpression<A> {
+public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtShadowable {
 
 	/**
 	 * Returns the actual annotation (a dynamic proxy for this element).

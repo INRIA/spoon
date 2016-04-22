@@ -22,7 +22,7 @@ import spoon.reflect.reference.CtFieldReference;
 /**
  * This element defines a field declaration.
  */
-public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T> {
+public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T>, CtShadowable {
 
 	/**
 	 * The separator for a string representation of a field.

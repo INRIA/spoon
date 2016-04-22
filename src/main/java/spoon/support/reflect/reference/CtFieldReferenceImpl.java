@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -132,8 +133,24 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 			return null;
 		}
 		CtType<?> type = declaringType.getDeclaration();
-		if ((declaringType != null) && (type != null)) {
+		if (type != null) {
 			return (CtField<T>) type.getField(getSimpleName());
+		}
+		return null;
+	}
+
+	@Override
+	public CtField<T> getFieldDeclaration() {
+		if (declaringType == null) {
+			return null;
+		}
+		CtType<?> type = declaringType.getTypeDeclaration();
+		if (type != null) {
+			final CtField<T> ctField = (CtField<T>) type.getField(getSimpleName());
+			if (ctField == null && type instanceof CtEnum) {
+				return ((CtEnum) type).getEnumValue(getSimpleName());
+			}
+			return ctField;
 		}
 		return null;
 	}

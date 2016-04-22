@@ -20,6 +20,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -154,4 +155,16 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		return (CtExecutable<?>) super.getParent();
 	}
 
+	boolean isShadow;
+
+	@Override
+	public boolean isShadow() {
+		return isShadow;
+	}
+
+	@Override
+	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+		this.isShadow = isShadow;
+		return (E) this;
+	}
 }

@@ -17,6 +17,10 @@ public class MyClass {
 		method2();
 	}
 
+	public <T extends String> void method1(T t) {
+		method2();
+	}
+
 	public void method2() {
 		method1("String");
 		method1(5);

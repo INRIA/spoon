@@ -38,7 +38,8 @@ public class RefactoringTest {
 		launcher.run();
 
 		final CtClass<?> classNotAccessible = launcher.getFactory().Class().get(AClass.class);
-		assertNull(classNotAccessible);
+		assertNull(launcher.getFactory().Class().get("spoon.test.refactoring.testclasses.AClass"));
+		assertNotNull(classNotAccessible);
 
 		final CtClass<?> aClassX = launcher.getFactory().Class().get("spoon.test.refactoring.testclasses.AClassX");
 		assertNotNull(aClassX);

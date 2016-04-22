@@ -512,7 +512,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		return metadata.keySet();
 	}
 
-
 	@Override
 	public List<CtComment> getComments() {
 		return Collections.unmodifiableList(comments);

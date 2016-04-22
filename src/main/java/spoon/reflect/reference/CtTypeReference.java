@@ -17,6 +17,7 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 
@@ -24,7 +25,7 @@ import spoon.reflect.declaration.CtTypeInformation;
  * This interface defines a reference to a
  * {@link spoon.reflect.declaration.CtType} or sub-type.
  */
-public interface CtTypeReference<T> extends CtReference, CtGenericElementReference, CtTypeInformation {
+public interface CtTypeReference<T> extends CtReference, CtGenericElementReference, CtTypeInformation, CtShadowable {
 
 	/**
 	 * The name of the null type ("&lt;nulltype&gt;").
@@ -58,6 +59,15 @@ public interface CtTypeReference<T> extends CtReference, CtGenericElementReferen
 	 * declaration is not the analyzed source files.
 	 */
 	CtType<T> getDeclaration();
+
+	/**
+	 * Returns the {@link CtType} that corresponds to the reference even if the
+	 * type isn't in the Spoon source path  (in this case, the Spoon elements are
+	 * built with runtime reflection)
+	 *
+	 * @return the type declaration that corresponds to the reference.
+	 */
+	CtType<T> getTypeDeclaration();
 
 	/**
 	 * Gets the type that declares the referenced type.

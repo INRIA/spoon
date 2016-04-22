@@ -21,6 +21,7 @@ import java.util.TreeSet;
 
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtPackageReference;
@@ -197,4 +198,16 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getQualifiedName();
 	}
 
+	boolean isShadow;
+
+	@Override
+	public boolean isShadow() {
+		return isShadow;
+	}
+
+	@Override
+	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+		this.isShadow = isShadow;
+		return (E) this;
+	}
 }

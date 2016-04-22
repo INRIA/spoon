@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
@@ -164,5 +165,18 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 			return ModifierKind.PRIVATE;
 		}
 		return null;
+	}
+
+	boolean isShadow;
+
+	@Override
+	public boolean isShadow() {
+		return isShadow;
+	}
+
+	@Override
+	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+		this.isShadow = isShadow;
+		return (E) this;
 	}
 }

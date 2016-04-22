@@ -14,25 +14,29 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.declaration;
+package spoon.support.visitor.java.internal;
 
-/**
- * This element defines a method declaration.
- */
-public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtGenericElement, CtShadowable {
-	/**
-	 * Checks if the method is a default method. Default method can be in interfaces from
-	 * Java 8: http://docs.oracle.com/javase/tutorial/java/IandI/defaultmethods.html.
-	 */
-	boolean isDefaultMethod();
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 
-	/**
-	 * Sets the default value state of a method.
-	 */
-	<C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod);
+import java.lang.annotation.Annotation;
 
-	/**
-	 * Replaces this element by another one.
-	 */
-	<R extends T> void replace(CtMethod<T> element);
+public class PackageRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
+	private CtPackage ctPackage;
+
+	public PackageRuntimeBuilderContext(CtPackage ctPackage) {
+		super(ctPackage);
+		this.ctPackage = ctPackage;
+	}
+
+	@Override
+	public void addType(CtType<?> aType) {
+		ctPackage.addType(aType);
+	}
+
+	@Override
+	public void addAnnotation(CtAnnotation<Annotation> ctAnnotation) {
+		ctPackage.addAnnotation(ctAnnotation);
+	}
 }

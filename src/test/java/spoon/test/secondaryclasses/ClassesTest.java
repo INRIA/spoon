@@ -79,8 +79,9 @@ public class ClassesTest {
 		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1",anonymousClass0.getQualifiedName());
 		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2",anonymousClass1.getQualifiedName());
 
-		// ActionListner is not in the Spoon path
+		// ActionListener is not in the Spoon path but we can build a shadow element.
 		assertNull(x.getType().getDeclaration());
+		assertNotNull(x.getType().getTypeDeclaration());
 
 		// but the actual class is known
 		assertEquals(ActionListener.class, x.getType().getActualClass());

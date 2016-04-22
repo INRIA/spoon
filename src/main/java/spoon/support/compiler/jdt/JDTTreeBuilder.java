@@ -3395,7 +3395,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				va = factory.Core().createFieldRead();
 			}
-			va.setVariable(references.getVariableReference(singleNameReference.fieldBinding()));
+			va.setVariable(references.getVariableReference(singleNameReference.fieldBinding().original()));
 			if (va.getVariable() instanceof CtFieldReference) {
 				final CtFieldReference<Object> ref = (CtFieldReference<Object>) va.getVariable();
 

@@ -11,6 +11,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
@@ -344,7 +345,10 @@ public class FilterTest {
 		assertNotNull(expectedInv);
 		final CtExecutableReference<?> expectedExecutable = expectedInv.getExecutable();
 		assertNotNull(expectedExecutable);
-		assertNull(expectedExecutable.getDeclaration());
 		assertEquals("size", expectedExecutable.getSimpleName());
+		assertNull(expectedExecutable.getDeclaration());
+		final CtExecutable<?> declaration = expectedExecutable.getExecutableDeclaration();
+		assertNotNull(declaration);
+		assertEquals("size", declaration.getSimpleName());
 	}
 }

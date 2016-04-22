@@ -21,6 +21,7 @@ import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
@@ -163,5 +164,18 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	public <C extends CtRHSReceiver<T>> C setAssignment(CtExpression<T> assignment) {
 		setDefaultExpression(assignment);
 		return (C) this;
+	}
+
+	boolean isShadow;
+
+	@Override
+	public boolean isShadow() {
+		return isShadow;
+	}
+
+	@Override
+	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+		this.isShadow = isShadow;
+		return (E) this;
 	}
 }
