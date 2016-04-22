@@ -36,13 +36,13 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.visitor.java.internal.AnnotationContext;
-import spoon.support.visitor.java.internal.Context;
-import spoon.support.visitor.java.internal.ExecutableContext;
-import spoon.support.visitor.java.internal.PackageContext;
-import spoon.support.visitor.java.internal.TypeContext;
-import spoon.support.visitor.java.internal.TypeReferenceContext;
-import spoon.support.visitor.java.internal.VariableContext;
+import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.RuntimeBuilderContext;
+import spoon.support.visitor.java.internal.ExecutableRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.PackageRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.TypeRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.TypeReferenceRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.VariableRuntimeBuilderContext;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
@@ -67,18 +67,18 @@ import java.util.Stack;
  * element comes from the reflection api, use {@link spoon.reflect.declaration.CtShadowable#isShadow()}.
  */
 public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
-	private Stack<Context> contexts = new Stack<Context>();
+	private Stack<RuntimeBuilderContext> contexts = new Stack<RuntimeBuilderContext>();
 	private Factory factory;
 
 	public JavaReflectionTreeBuilder(Factory factory) {
 		this.factory = factory;
 	}
 
-	private void enter(Context context) {
+	private void enter(RuntimeBuilderContext context) {
 		contexts.push(context);
 	}
 
-	private Context exit() {
+	private RuntimeBuilderContext exit() {
 		return contexts.pop();
 	}
 
@@ -95,7 +95,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				ctPackage = factory.Package().getOrCreate(clazz.getPackage().getName());
 			}
 			if (contexts.isEmpty()) {
-				enter(new PackageContext(ctPackage));
+				enter(new PackageRuntimeBuilderContext(ctPackage));
 			}
 			if (clazz.isAnnotation()) {
 				visitAnnotationClass((Class<Annotation>) clazz);
@@ -119,7 +119,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitPackage(Package aPackage) {
 		final CtPackage ctPackage = factory.Package().getOrCreate(aPackage.getName());
 
-		enter(new PackageContext(ctPackage));
+		enter(new PackageRuntimeBuilderContext(ctPackage));
 		super.visitPackage(aPackage);
 		exit();
 
@@ -132,7 +132,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctClass.setSimpleName(clazz.getSimpleName());
 		setModifier(ctClass, clazz.getModifiers());
 
-		enter(new TypeContext(ctClass) {
+		enter(new TypeRuntimeBuilderContext(ctClass) {
 			@Override
 			public void addConstructor(CtConstructor<?> ctConstructor) {
 				ctClass.addConstructor(ctConstructor);
@@ -155,7 +155,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctInterface.setSimpleName(clazz.getSimpleName());
 		setModifier(ctInterface, clazz.getModifiers());
 
-		enter(new TypeContext(ctInterface) {
+		enter(new TypeRuntimeBuilderContext(ctInterface) {
 			@Override
 			public void addMethod(CtMethod ctMethod) {
 				super.addMethod(ctMethod);
@@ -174,7 +174,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctEnum.setSimpleName(clazz.getSimpleName());
 		setModifier(ctEnum, clazz.getModifiers());
 
-		enter(new TypeContext(ctEnum) {
+		enter(new TypeRuntimeBuilderContext(ctEnum) {
 			@Override
 			public void addConstructor(CtConstructor<?> ctConstructor) {
 				ctEnum.addConstructor(ctConstructor);
@@ -197,7 +197,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctAnnotationType.setSimpleName(clazz.getSimpleName());
 		setModifier(ctAnnotationType, clazz.getModifiers());
 
-		enter(new TypeContext(ctAnnotationType) {
+		enter(new TypeRuntimeBuilderContext(ctAnnotationType) {
 			@Override
 			public void addMethod(CtMethod ctMethod) {
 				final CtField<Object> field = factory.Core().createField();
@@ -217,7 +217,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitAnnotation(Annotation annotation) {
 		final CtAnnotation<Annotation> ctAnnotation = factory.Core().createAnnotation();
 
-		enter(new AnnotationContext(ctAnnotation));
+		enter(new AnnotationRuntimeBuilderContext(ctAnnotation));
 		super.visitAnnotation(annotation);
 		exit();
 
@@ -230,7 +230,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctConstructor.setBody(factory.Core().createBlock());
 		setModifier(ctConstructor, constructor.getModifiers());
 
-		enter(new ExecutableContext(ctConstructor));
+		enter(new ExecutableRuntimeBuilderContext(ctConstructor));
 		super.visitConstructor(constructor);
 		exit();
 
@@ -244,7 +244,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctMethod.setBody(factory.Core().createBlock());
 		setModifier(ctMethod, method.getModifiers());
 
-		enter(new ExecutableContext(ctMethod));
+		enter(new ExecutableRuntimeBuilderContext(ctMethod));
 		super.visitMethod(method);
 		exit();
 
@@ -257,7 +257,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctField.setSimpleName(field.getName());
 		setModifier(ctField, field.getModifiers());
 
-		enter(new VariableContext(ctField));
+		enter(new VariableRuntimeBuilderContext(ctField));
 		super.visitField(field);
 		exit();
 
@@ -269,7 +269,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtEnumValue<Object> ctEnumValue = factory.Core().createEnumValue();
 		ctEnumValue.setSimpleName(field.getName());
 
-		enter(new VariableContext(ctEnumValue));
+		enter(new VariableRuntimeBuilderContext(ctEnumValue));
 		super.visitEnumValue(field);
 		exit();
 
@@ -282,7 +282,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctParameter.setSimpleName(parameter.getName());
 		ctParameter.setVarArgs(parameter.isVarArgs());
 
-		enter(new VariableContext(ctParameter));
+		enter(new VariableRuntimeBuilderContext(ctParameter));
 		super.visitParameter(parameter);
 		exit();
 
@@ -295,7 +295,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctTypeReference.setSimpleName(parameter.getName());
 		ctTypeReference.setUpper(parameter.getBounds() != null && (parameter.getBounds().length > 0));
 
-		enter(new TypeReferenceContext(ctTypeReference));
+		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
 		super.visitTypeParameter(parameter);
 		exit();
 
@@ -307,7 +307,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
 		ctTypeReference.setSimpleName(getTypeName(type));
 
-		enter(new TypeReferenceContext(ctTypeReference));
+		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
 		super.visitType(type);
 		exit();
 
@@ -318,7 +318,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitType(ParameterizedType type) {
 		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
 
-		enter(new TypeReferenceContext(ctTypeReference) {
+		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference) {
 			@Override
 			public void addClassReference(CtTypeReference<?> typeReference) {
 				ctTypeReference.setSimpleName(typeReference.getSimpleName());
@@ -344,7 +344,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctTypeReference.setSimpleName("?");
 		ctTypeReference.setUpper(type.getUpperBounds() != null && !type.getUpperBounds()[0].equals(Object.class));
 
-		enter(new TypeReferenceContext(ctTypeReference));
+		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
 		super.visitType(type);
 		exit();
 
@@ -379,7 +379,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitArrayReference(final Class<T> typeArray) {
 		final CtArrayTypeReference<?> arrayTypeReference = factory.Core().createArrayTypeReference();
 
-		enter(new TypeReferenceContext(arrayTypeReference) {
+		enter(new TypeReferenceRuntimeBuilderContext(arrayTypeReference) {
 			@Override
 			public void addClassReference(CtTypeReference<?> typeReference) {
 				if (typeArray.getSimpleName().equals(typeReference.getSimpleName())) {
@@ -405,7 +405,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 		typeReference.setSimpleName(clazz.getSimpleName());
 
-		enter(new TypeReferenceContext(typeReference));
+		enter(new TypeReferenceRuntimeBuilderContext(typeReference));
 		super.visitClassReference(clazz);
 		exit();
 
@@ -417,7 +417,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 		typeReference.setSimpleName(anInterface.getSimpleName());
 
-		enter(new TypeReferenceContext(typeReference));
+		enter(new TypeReferenceRuntimeBuilderContext(typeReference));
 		super.visitInterfaceReference(anInterface);
 		exit();
 

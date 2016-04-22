@@ -17,54 +17,25 @@
 package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
 
-public class TypeContext extends AbstractContext {
-	protected CtType type;
+public class AnnotationRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
+	private CtAnnotation<Annotation> ctAnnotation;
 
-	public TypeContext(CtType type) {
-		super(type);
-		this.type = type;
-	}
-
-	@Override
-	public void addPackage(CtPackage ctPackage) {
-		ctPackage.addType(type);
-	}
-
-	@Override
-	public void addType(CtType<?> aType) {
-		type.addNestedType(aType);
+	public AnnotationRuntimeBuilderContext(CtAnnotation<Annotation> ctAnnotation) {
+		super(ctAnnotation);
+		this.ctAnnotation = ctAnnotation;
 	}
 
 	@Override
 	public void addAnnotation(CtAnnotation<Annotation> ctAnnotation) {
-		type.addAnnotation(ctAnnotation);
+		this.ctAnnotation.addAnnotation(ctAnnotation);
 	}
 
 	@Override
-	public void addMethod(CtMethod<?> ctMethod) {
-		type.addMethod(ctMethod);
-	}
-
-	@Override
-	public void addField(CtField<?> ctField) {
-		type.addField(ctField);
-	}
-
-	@Override
-	public void addInterfaceReference(CtTypeReference<?> typeReference) {
-		type.addSuperInterface(typeReference);
-	}
-
-	@Override
-	public void addFormalType(CtTypeReference<?> parameterRef) {
-		this.type.addFormalTypeParameter(parameterRef);
+	public void addClassReference(CtTypeReference<?> typeReference) {
+		ctAnnotation.setAnnotationType((CtTypeReference<? extends Annotation>) typeReference);
 	}
 }

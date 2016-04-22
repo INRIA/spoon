@@ -17,39 +17,42 @@
 package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
 
-public class VariableContext extends AbstractContext {
-	private CtVariable ctVariable;
+public interface RuntimeBuilderContext {
+	void addPackage(CtPackage ctPackage);
 
-	public VariableContext(CtField<?> ctField) {
-		super(ctField);
-		this.ctVariable = ctField;
-	}
+	void addType(CtType<?> aType);
 
-	public VariableContext(CtParameter<?> ctParameter) {
-		super(ctParameter);
-		this.ctVariable = ctParameter;
-	}
+	void addAnnotation(CtAnnotation<Annotation> ctAnnotation);
 
-	@Override
-	public void addAnnotation(CtAnnotation<Annotation> ctAnnotation) {
-		ctVariable.addAnnotation(ctAnnotation);
-	}
+	void addConstructor(CtConstructor<?> ctConstructor);
 
-	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		ctVariable.setType(typeReference);
-	}
+	void addMethod(CtMethod<?> ctMethod);
 
-	@Override
-	public void addArrayReference(CtArrayTypeReference<?> arrayTypeReference) {
-		ctVariable.setType(arrayTypeReference);
-	}
+	void addField(CtField<?> ctField);
+
+	void addEnumValue(CtEnumValue<?> ctEnumValue);
+
+	void addParameter(CtParameter ctParameter);
+
+	void addInterfaceReference(CtTypeReference<?> typeReference);
+
+	void addClassReference(CtTypeReference<?> typeReference);
+
+	void addArrayReference(CtArrayTypeReference<?> arrayTypeReference);
+
+	void addFormalType(CtTypeReference<?> parameterRef);
+
+	void addTypeName(CtTypeReference<?> ctTypeReference);
 }

@@ -27,15 +27,15 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
 
-public class ExecutableContext extends AbstractContext {
+public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	private CtExecutable<?> ctExecutable;
 
-	public ExecutableContext(CtMethod<?> ctMethod) {
+	public ExecutableRuntimeBuilderContext(CtMethod<?> ctMethod) {
 		super(ctMethod);
 		this.ctExecutable = ctMethod;
 	}
 
-	public ExecutableContext(CtConstructor<?> ctConstructor) {
+	public ExecutableRuntimeBuilderContext(CtConstructor<?> ctConstructor) {
 		super(ctConstructor);
 		this.ctExecutable = ctConstructor;
 	}

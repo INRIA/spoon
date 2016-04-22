@@ -17,86 +17,54 @@
 package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
 
-abstract class AbstractContext implements Context {
-	protected AbstractContext(CtShadowable element) {
-		element.setShadow(true);
+public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
+	protected CtType type;
+
+	public TypeRuntimeBuilderContext(CtType type) {
+		super(type);
+		this.type = type;
 	}
 
 	@Override
 	public void addPackage(CtPackage ctPackage) {
-		throw new UnsupportedOperationException();
+		ctPackage.addType(type);
 	}
 
 	@Override
 	public void addType(CtType<?> aType) {
-		throw new UnsupportedOperationException();
+		type.addNestedType(aType);
 	}
 
 	@Override
 	public void addAnnotation(CtAnnotation<Annotation> ctAnnotation) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addConstructor(CtConstructor<?> ctConstructor) {
-		throw new UnsupportedOperationException();
+		type.addAnnotation(ctAnnotation);
 	}
 
 	@Override
 	public void addMethod(CtMethod<?> ctMethod) {
-		throw new UnsupportedOperationException();
+		type.addMethod(ctMethod);
 	}
 
 	@Override
 	public void addField(CtField<?> ctField) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addEnumValue(CtEnumValue<?> ctEnumValue) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addParameter(CtParameter ctParameter) {
-		throw new UnsupportedOperationException();
+		type.addField(ctField);
 	}
 
 	@Override
 	public void addInterfaceReference(CtTypeReference<?> typeReference) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addArrayReference(CtArrayTypeReference<?> arrayTypeReference) {
-		throw new UnsupportedOperationException();
+		type.addSuperInterface(typeReference);
 	}
 
 	@Override
 	public void addFormalType(CtTypeReference<?> parameterRef) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addTypeName(CtTypeReference<?> ctTypeReference) {
-		throw new UnsupportedOperationException();
+		this.type.addFormalTypeParameter(parameterRef);
 	}
 }

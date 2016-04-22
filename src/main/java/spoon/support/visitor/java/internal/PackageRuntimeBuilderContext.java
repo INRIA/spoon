@@ -18,40 +18,25 @@ package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.declaration.CtType;
 
 import java.lang.annotation.Annotation;
 
-public class TypeReferenceContext extends AbstractContext {
-	private CtTypeReference<?> typeReference;
+public class PackageRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
+	private CtPackage ctPackage;
 
-	public TypeReferenceContext(CtTypeReference<?> typeReference) {
-		super(typeReference);
-		this.typeReference = typeReference;
+	public PackageRuntimeBuilderContext(CtPackage ctPackage) {
+		super(ctPackage);
+		this.ctPackage = ctPackage;
 	}
 
 	@Override
-	public void addPackage(CtPackage ctPackage) {
-		typeReference.setPackage(ctPackage.getReference());
-	}
-
-	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		this.typeReference.setDeclaringType(typeReference);
-	}
-
-	@Override
-	public void addTypeName(CtTypeReference<?> ctTypeReference) {
-		if (typeReference instanceof CtTypeParameterReference) {
-			((CtTypeParameterReference) typeReference).addBound(ctTypeReference);
-			return;
-		}
-		typeReference.addActualTypeArgument(ctTypeReference);
+	public void addType(CtType<?> aType) {
+		ctPackage.addType(aType);
 	}
 
 	@Override
 	public void addAnnotation(CtAnnotation<Annotation> ctAnnotation) {
-		typeReference.addAnnotation(ctAnnotation);
+		ctPackage.addAnnotation(ctAnnotation);
 	}
 }
