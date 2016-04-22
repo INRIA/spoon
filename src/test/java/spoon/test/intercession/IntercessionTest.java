@@ -202,7 +202,7 @@ public class IntercessionTest {
 				fail("Your setter " + methodLog + " don't have a generic type for its return type.");
 			}
 			boolean isMatch = false;
-			for (CtTypeReference<?> ctTypeReference : setter.getFormalTypeParameters()) {
+			for (CtTypeParameterReference ctTypeReference : setter.getFormalTypeParameters()) {
 				if (setter.getType().getSimpleName().equals(ctTypeReference.getSimpleName())) {
 					isMatch = true;
 
@@ -210,10 +210,6 @@ public class IntercessionTest {
 						// Override annotation means that the current method come from a super
 						// interface. So the return type can't be the declaring interface.
 						continue;
-					}
-
-					if (!(ctTypeReference instanceof CtTypeParameterReference)) {
-						fail("Malformed element.");
 					}
 
 					if (!setter.getDeclaringType()

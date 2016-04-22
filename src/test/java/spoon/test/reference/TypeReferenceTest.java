@@ -200,8 +200,8 @@ public class TypeReferenceTest {
 		launcher.run();
 
 		Factory factory = launcher.getFactory();
-		final CtTypeReference<?> firstRef = factory.Type().get(A.Tacos.class).getFormalTypeParameters().get(0);
-		final CtTypeReference<?> secondRef = factory.Type().get(B.Tacos.class).getFormalTypeParameters().get(0);
+		final CtTypeParameterReference firstRef = factory.Type().get(A.Tacos.class).getFormalTypeParameters().get(0);
+		final CtTypeParameterReference secondRef = factory.Type().get(B.Tacos.class).getFormalTypeParameters().get(0);
 
 		assertNotEquals(firstRef.toString(), secondRef.toString());
 		assertNotEquals(firstRef, secondRef);
@@ -263,7 +263,7 @@ public class TypeReferenceTest {
 		final CtClass<EnumValue> aClass = launcher.getFactory().Class().get(EnumValue.class);
 		final CtMethod<?> asEnum = aClass.getMethodsByName("asEnum").get(0);
 
-		final CtTypeParameterReference genericType = (CtTypeParameterReference) asEnum.getFormalTypeParameters().get(0);
+		final CtTypeParameterReference genericType = asEnum.getFormalTypeParameters().get(0);
 		assertNotNull(genericType);
 		assertNotNull(genericType.getBoundingType());
 

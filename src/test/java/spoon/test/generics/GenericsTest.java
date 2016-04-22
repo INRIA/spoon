@@ -68,8 +68,7 @@ public class GenericsTest {
 	public void testModelBuildingTree() throws Exception {
 		CtClass<?> type = build("spoon.test.generics", "Tree");
 		assertEquals("Tree", type.getSimpleName());
-		CtTypeParameterReference generic = (CtTypeParameterReference) type
-				.getFormalTypeParameters().get(0);
+		CtTypeParameterReference generic = type.getFormalTypeParameters().get(0);
 		assertEquals("V", generic.getSimpleName());
 		// Deprecated.
 		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBounds().toString());
@@ -132,8 +131,7 @@ public class GenericsTest {
 		List<CtNamedElement> methods = type
 				.getElements(new NameFilter<CtNamedElement>("methode"));
 		assertEquals(2, methods.size());
-		CtTypeParameterReference generic = (CtTypeParameterReference) ((CtMethod<?>) methods
-				.get(0)).getFormalTypeParameters().get(0);
+		CtTypeParameterReference generic = ((CtMethod<?>) methods.get(0)).getFormalTypeParameters().get(0);
 		assertEquals("E", generic.getSimpleName());
 		CtParameter<?> param = ((CtMethod<?>) methods.get(0)).getParameters()
 				.get(0);
@@ -291,14 +289,14 @@ public class GenericsTest {
 			}
 		}).get(0);
 
-		final List<CtTypeReference<?>> barGenerics = bar.getFormalTypeParameters();
-		final CtClass<?> anonymousBar = newAnonymousBar.getAnonymousClass();
+		final List<CtTypeParameterReference> barGenerics = bar.getFormalTypeParameters();
+		final CtTypeReference<?> anonymousBar = newAnonymousBar.getType();
 
 		assertEquals("Name of the first generic parameter in Bar interface must to be I.", "I", barGenerics.get(0).getSimpleName());
-		assertEquals("Name of the first generic parameter in Bar usage must to be K.", "K", anonymousBar.getFormalTypeParameters().get(0).getSimpleName());
+		assertEquals("Name of the first generic parameter in Bar usage must to be K.", "K", anonymousBar.getActualTypeArguments().get(0).getSimpleName());
 
 		assertEquals("Name of the second generic parameter in Bar interface must to be O.", "O", barGenerics.get(1).getSimpleName());
-		assertEquals("Name of the second generic parameter in Bar usage must to be V.", "V", anonymousBar.getFormalTypeParameters().get(1).getSimpleName());
+		assertEquals("Name of the second generic parameter in Bar usage must to be V.", "V", anonymousBar.getActualTypeArguments().get(1).getSimpleName());
 	}
 
 	@Test
@@ -503,5 +501,19 @@ public class GenericsTest {
 
 		assertEquals(1, newCook.getType().getActualTypeArguments().size());
 		assertEquals("new Cook<java.lang.String>()", newCook.toString());
+	}
+
+	@Test
+	public void testGenericsInConstructorCall() throws Exception {
+		// contract: A constructor call have generics declared before the type and the
+		// TypeReference have generics declared after itself. e.g, new <String>Test<String>().
+		final CtType<Mole> aMole = buildClass(Mole.class);
+		final CtMethod<Object> prepare = aMole.getMethod("prepare");
+		final CtConstructorCall<?> newPrepare = prepare.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+
+		assertEquals(1, newPrepare.getActualTypeArguments().size());
+		assertEquals("java.lang.Integer", newPrepare.getActualTypeArguments().get(0).toString());
+		assertEquals(1, newPrepare.getType().getActualTypeArguments().size());
+		assertEquals("java.lang.String", newPrepare.getType().getActualTypeArguments().get(0).toString());
 	}
 }

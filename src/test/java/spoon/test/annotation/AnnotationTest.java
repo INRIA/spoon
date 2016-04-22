@@ -45,6 +45,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -532,7 +533,7 @@ public class AnnotationTest {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtClass<?> genericClass = ctClass.getElements(new NameFilter<CtClass<?>>("DummyGenericClass")).get(0);
-		final List<CtTypeReference<?>> formalTypeParameters = genericClass.getFormalTypeParameters();
+		final List<CtTypeParameterReference> formalTypeParameters = genericClass.getFormalTypeParameters();
 		assertEquals("Generic class has 2 generics parameters.", 2, formalTypeParameters.size());
 		assertEquals("First generic type must have type annotation", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", formalTypeParameters.get(0).toString());
 		assertEquals("Second generic type must have type annotation", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "K", formalTypeParameters.get(1).toString());
@@ -547,7 +548,7 @@ public class AnnotationTest {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtMethod<?> method = ctClass.getMethodsByName("m4").get(0);
-		final List<CtTypeReference<?>> formalTypeParameters = method.getFormalTypeParameters();
+		final List<CtTypeParameterReference> formalTypeParameters = method.getFormalTypeParameters();
 		assertEquals("Method has 1 generic parameter", 1, formalTypeParameters.size());
 		assertEquals("Method with an type annotation must be well printed",
 					 "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator()

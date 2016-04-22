@@ -117,7 +117,7 @@ public class SignaturePrinter extends  CtInheritanceScanner {
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		if (!m.getFormalTypeParameters().isEmpty()) {
 			write("<");
-			for (CtTypeReference ref: m.getFormalTypeParameters()) {
+			for (CtTypeParameterReference ref: m.getFormalTypeParameters()) {
 				scan(ref);
 				write(",");
 			}

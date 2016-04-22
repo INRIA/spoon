@@ -1761,6 +1761,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtStatement(ctConstructorCall);
 		enterCtExpression(ctConstructorCall);
 
+		printConstructorCall(ctConstructorCall);
+
+		exitCtExpression(ctConstructorCall);
+	}
+
+	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
+		enterCtStatement(newClass);
+		enterCtExpression(newClass);
+
+		printConstructorCall(newClass);
+
+		scan(newClass.getAnonymousClass());
+		exitCtExpression(newClass);
+	}
+
+	private <T> void printConstructorCall(CtConstructorCall<T> ctConstructorCall) {
 		if (ctConstructorCall.getTarget() != null) {
 			scan(ctConstructorCall.getTarget()).write(".");
 			context.ignoreEnclosingClass = true;
@@ -1780,19 +1796,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.ignoreEnclosingClass = false;
 
 		write("(");
-		boolean remove = false;
-		for (CtCodeElement e : ctConstructorCall.getArguments()) {
-			scan(e);
-			write(" , ");
-			remove = true;
+		for (CtCodeElement exp : ctConstructorCall.getArguments()) {
+			scan(exp);
+			write(", ");
 		}
-		if (remove) {
+		if (ctConstructorCall.getArguments().size() > 0) {
 			removeLastChar();
 		}
-
 		write(")");
-
-		exitCtExpression(ctConstructorCall);
 	}
 
 	/**
@@ -1823,43 +1834,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		// Checks if the declaring type has generic types.
 		return hasDeclaringTypeWithGenerics(reference.getDeclaringType());
-	}
-
-	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
-		enterCtStatement(newClass);
-		enterCtExpression(newClass);
-
-		if (newClass.getTarget() != null) {
-			scan(newClass.getTarget()).write(".");
-		}
-
-		write("new ");
-		if (newClass.getAnonymousClass().getSuperclass() != null) {
-			if (hasDeclaringTypeWithGenerics(newClass.getAnonymousClass().getSuperclass())) {
-				context.ignoreEnclosingClass = true;
-			}
-			scan(newClass.getAnonymousClass().getSuperclass());
-		} else if (newClass.getAnonymousClass().getSuperInterfaces().size() > 0) {
-			for (CtTypeReference<?> ref : newClass.getAnonymousClass().getSuperInterfaces()) {
-				if (hasDeclaringTypeWithGenerics(ref)) {
-					context.ignoreEnclosingClass = true;
-				}
-				scan(ref);
-			}
-		}
-		context.ignoreEnclosingClass = false;
-
-		write("(");
-		for (CtExpression<?> exp : newClass.getArguments()) {
-			scan(exp);
-			write(", ");
-		}
-		if (newClass.getArguments().size() > 0) {
-			removeLastChar();
-		}
-		write(")");
-		scan(newClass.getAnonymousClass());
-		exitCtExpression(newClass);
 	}
 
 	@Override
@@ -2243,7 +2217,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * 		List of formal type parameters.
 	 * @return current instance of the {@link DefaultJavaPrettyPrinter}
 	 */
-	public DefaultJavaPrettyPrinter writeFormalTypeParameters(Collection<CtTypeReference<?>> params) {
+	public DefaultJavaPrettyPrinter writeFormalTypeParameters(Collection<CtTypeParameterReference> params) {
 		if (params == null) {
 			return this;
 		}

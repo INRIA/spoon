@@ -33,6 +33,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
@@ -60,7 +61,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> formalTypeParameters = emptyList();
+	List<CtTypeParameterReference> formalTypeParameters = emptyList();
 
 	Set<CtTypeReference<?>> interfaces = emptySet();
 
@@ -484,9 +485,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtGenericElement> C addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
-		if (formalTypeParameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			formalTypeParameters = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+	public <C extends CtGenericElement> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
+		if (formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
+			formalTypeParameters = new ArrayList<CtTypeParameterReference>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		formalTypeParameter.setParent(this);
 		formalTypeParameters.add(formalTypeParameter);
@@ -494,12 +495,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+	public boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
 		return formalTypeParameters.contains(formalTypeParameter) && formalTypeParameters.remove(formalTypeParameter);
 	}
 
 	@Override
-	public List<CtTypeReference<?>> getFormalTypeParameters() {
+	public List<CtTypeParameterReference> getFormalTypeParameters() {
 		return formalTypeParameters;
 	}
 
@@ -599,12 +600,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtGenericElement> C setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
-		if (this.formalTypeParameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.formalTypeParameters = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+	public <C extends CtGenericElement> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
+		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
+			this.formalTypeParameters = new ArrayList<CtTypeParameterReference>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.formalTypeParameters.clear();
-		for (CtTypeReference<?> formalTypeParameter : formalTypeParameters) {
+		for (CtTypeParameterReference formalTypeParameter : formalTypeParameters) {
 			addFormalTypeParameter(formalTypeParameter);
 		}
 		return (C) this;

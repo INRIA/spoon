@@ -1383,21 +1383,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (typeDeclaration.superclass != null) {
 				((CtClass) type).setSuperclass(buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 			}
-
-			// If the current class is an anonymous class with a super interface and generic types, we add generic
-			// types
-			// in the current class.
-			if (typeDeclaration.binding.isAnonymousType() && typeDeclaration.superInterfaces != null) {
-				final TypeReference superInterface = typeDeclaration.superInterfaces[0];
-				if (superInterface.resolvedType instanceof ParameterizedTypeBinding) {
-					final ParameterizedTypeBinding resolvedType = (ParameterizedTypeBinding) superInterface.resolvedType;
-					if (resolvedType.arguments != null) {
-						for (TypeBinding b : resolvedType.arguments) {
-							type.addFormalTypeParameter(references.getTypeReference(b));
-						}
-					}
-				}
-			}
 		}
 		if (type instanceof CtClass) {
 			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {

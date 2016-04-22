@@ -16,19 +16,20 @@
  */
 package spoon.support.reflect.declaration;
 
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationType}.
@@ -84,17 +85,17 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	}
 
 	@Override
-	public <C extends CtGenericElement> C setFormalTypeParameters(List<CtTypeReference<?>> formalTypeParameters) {
+	public <C extends CtGenericElement> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
 		throw new UnsupportedOperationException("You can't have generics in an annotation.");
 	}
 
 	@Override
-	public <C extends CtGenericElement> C addFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+	public <C extends CtGenericElement> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
 		throw new UnsupportedOperationException("You can't have generics in an annotation.");
 	}
 
 	@Override
-	public boolean removeFormalTypeParameter(CtTypeReference<?> formalTypeParameter) {
+	public boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
 		throw new UnsupportedOperationException("You can't have generics in an annotation.");
 	}
 }
