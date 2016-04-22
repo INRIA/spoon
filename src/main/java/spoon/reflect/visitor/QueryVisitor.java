@@ -20,15 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.filter.AbstractFilter;
 
 /**
  * A simple visitor that takes a filter and returns all the elements that match
  * it.
  */
 public class QueryVisitor<T extends CtElement> extends CtScanner {
-	Filter<T> filter;
-
-	List<T> result = new ArrayList<T>();
+	private final Filter<T> filter;
+	private final Class<T> filteredType;
+	private final List<T> result = new ArrayList<T>();
 
 	/**
 	 * Constructs a query visitor with a given filter.
@@ -36,6 +37,7 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 	public QueryVisitor(Filter<T> filter) {
 		super();
 		this.filter = filter;
+		filteredType = filter instanceof AbstractFilter ? ((AbstractFilter) filter).getType() : null;
 	}
 
 	/**
@@ -52,11 +54,15 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 			return;
 		}
 		try {
-			if (filter.matches((T) element)) {
-				result.add((T) element);
+			if ((filteredType == null || filteredType.isAssignableFrom(element.getClass()))) {
+				if (filter.matches((T) element)) {
+					result.add((T) element);
+				}
 			}
 		} catch (ClassCastException e) {
 			// expected, some elements are not of type T
+			// Still need to protect from CCE, if users extend Filter (instead of AbstractFilter) directly,
+			// but with concrete type parameter
 		}
 		super.scan(element);
 	}

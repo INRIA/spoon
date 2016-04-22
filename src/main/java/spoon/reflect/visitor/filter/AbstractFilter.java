@@ -36,9 +36,12 @@ public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 		this.type = (Class<T>) type;
 	}
 
+	public Class<T> getType() {
+		return type;
+	}
+
 	@Override
 	public boolean matches(T element) {
 		return type.isAssignableFrom(element.getClass());
 	}
-
 }
