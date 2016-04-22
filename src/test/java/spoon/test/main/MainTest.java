@@ -25,7 +25,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.parent.ParentTest;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -69,11 +68,6 @@ public class MainTest {
 
 		// shadow
 		checkShadow(launcher.getFactory().Package().getRootPackage());
-	}
-
-	@Test
-	public void name() throws Exception {
-		assertNotNull(ModelUtils.createFactory().Type().VOID_PRIMITIVE.getTypeDeclaration());
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
