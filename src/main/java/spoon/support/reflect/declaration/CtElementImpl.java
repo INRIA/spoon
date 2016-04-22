@@ -467,7 +467,9 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 					for (Object obj : array) {
 						if (compare(obj, toReplace)) {
 							collect.remove(obj);
-							collect.add(getReplacement(replacement, parent));
+							if (replacement != null) {
+								collect.add(getReplacement(replacement, parent));
+							}
 						}
 					}
 				} else if (compare(tmp, toReplace)) {
