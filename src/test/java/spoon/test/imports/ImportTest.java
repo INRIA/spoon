@@ -21,12 +21,17 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
+import spoon.test.imports.testclasses.NotImportExecutableType;
 import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.internal.ChildClass;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -222,6 +227,24 @@ public class ImportTest {
 
 		assertEquals(1, imports.size());
 		assertEquals("spoon.test.imports.testclasses.internal2.Chimichanga", imports.toArray()[0].toString());
+	}
+
+	@Test
+	public void testNotImportExecutableType() throws Exception {
+		final Factory factory = getFactory(
+				"./src/test/java/spoon/test/imports/testclasses/internal3/Foo.java",
+				"./src/test/java/spoon/test/imports/testclasses/internal3/Bar.java",
+				"./src/test/java/spoon/test/imports/testclasses/NotImportExecutableType.java");
+
+		ImportScanner importContext = new ImportScannerImpl();
+		Collection<CtTypeReference<?>> imports =
+				importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
+
+		assertEquals(2, imports.size());
+		Set<String> expectedImports = new HashSet<>(
+				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File"));
+		Set<String> actualImports = imports.stream().map(CtTypeReference::toString).collect(Collectors.toSet());
+		assertEquals(expectedImports, actualImports);
 	}
 
 	@Test

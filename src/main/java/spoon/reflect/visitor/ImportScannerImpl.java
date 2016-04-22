@@ -72,7 +72,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
 		scan(reference.getDeclaringType());
-		// scan(reference.getType());
 		exit(reference);
 	}
 
@@ -80,11 +79,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
 		enter(reference);
-		if (reference.getDeclaringType() != null
-				&& reference.getDeclaringType().getDeclaringType() == null) {
-			addImport(reference.getDeclaringType());
+		if (reference.isConstructor()) {
+			scan(reference.getDeclaringType());
 		}
-		scan(reference.getType());
 		scan(reference.getActualTypeArguments());
 		exit(reference);
 	}
@@ -95,6 +92,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		scan(invocation.getAnnotations());
 		scan(invocation.getTypeCasts());
 		scan(invocation.getTarget());
+		scan(invocation.getExecutable());
 		scan(invocation.getArguments());
 		exit(invocation);
 	}
@@ -110,6 +108,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 		super.visitCtTypeReference(reference);
 
+	}
+
+	@Override
+	public void scan(CtElement element) {
+		if (element != null && !element.isImplicit()) {
+			element.accept(this);
+		}
 	}
 
 	@Override
