@@ -25,6 +25,8 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.util.ArrayList;
@@ -76,6 +78,10 @@ public class TypeFactory extends SubFactory {
 	 */
 	public TypeFactory(Factory factory) {
 		super(factory);
+	}
+
+	public TypeFactory() {
+		this(new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment()));
 	}
 
 	/**

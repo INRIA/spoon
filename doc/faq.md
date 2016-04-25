@@ -81,3 +81,12 @@ final String[] builder = new JDTBuilderImpl() //
 		.sources(new SourceOptions().sources(".")) //
 		.build();
 ```
+
+## How to use Spoon as an alternative reflection API?
+
+Use `TypeFactory` as follows.
+
+```java
+CtType s = new TypeFactory().get(String.class);
+System.out.println(s.getSimpleName());
+```

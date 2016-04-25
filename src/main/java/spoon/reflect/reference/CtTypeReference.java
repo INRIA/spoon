@@ -43,6 +43,10 @@ public interface CtTypeReference<T> extends CtReference, CtGenericElementReferen
 	/**
 	 * Gets the Java runtime class of the referenced type.
 	 *
+	 * This is a low-level feature, it should never been used.
+	 * Use {@link #getTypeDeclaration()} instead,
+	 * in order to only stay in the Spoon world and manipulate CtType instead of java.lang.Class
+	 *
 	 * @return the Java class or null if the class is not found (not in
 	 * classpath)
 	 * @throws spoon.support.reflect.reference.SpoonClassNotFoundException
@@ -53,7 +57,8 @@ public interface CtTypeReference<T> extends CtReference, CtGenericElementReferen
 	/**
 	 * Returns the {@link CtElement}, a {@link CtType}, that corresponds to the
 	 * reference or <code>null</code> if the type declaration is not in the
-	 * analyzed source files.
+	 * analyzed source files,
+	 * {@link #getTypeDeclaration()} is a newer and better alternative that never returns null.
 	 *
 	 * @return the referenced element or <code>null</code> if the type
 	 * declaration is not the analyzed source files.
