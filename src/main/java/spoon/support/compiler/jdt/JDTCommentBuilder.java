@@ -440,17 +440,17 @@ class JDTCommentBuilder {
 		String[] lines = comment.split("\n");
 		// limit case
 		if (lines.length == 1) {
-			return lines[0].replaceAll("^/\\*+", "").replaceAll("\\*+/$", "").trim();
+			return lines[0].replaceAll("^/\\*+ ?", "").replaceAll("\\*+/$", "").trim();
 		}
 
 		for (String s : lines) {
 			String cleanUpLine = s.trim();
 			if (cleanUpLine.startsWith("/**")) {
-				cleanUpLine = cleanUpLine.replaceAll("/\\*+", "");
+				cleanUpLine = cleanUpLine.replaceAll("/\\*+ ?", "");
 			} else if (cleanUpLine.endsWith("*/")) {
-				cleanUpLine = cleanUpLine.replaceAll("\\*+/$", "").replaceAll("^[ \t]*\\*+", "");
+				cleanUpLine = cleanUpLine.replaceAll("\\*+/$", "").replaceAll("^[ \t]*\\*+ ?", "");
 			} else {
-				cleanUpLine = cleanUpLine.replaceAll("^[ \t]*\\*+", "");
+				cleanUpLine = cleanUpLine.replaceAll("^[ \t]*\\*+ ?", "");
 			}
 			ret.append(cleanUpLine);
 			ret.append("\n");
