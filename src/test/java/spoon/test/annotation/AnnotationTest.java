@@ -1,23 +1,7 @@
 package spoon.test.annotation;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
-
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.processing.AbstractAnnotationProcessor;
 import spoon.processing.ProcessingManager;
@@ -70,6 +54,21 @@ import spoon.test.annotation.testclasses.InnerAnnot;
 import spoon.test.annotation.testclasses.Main;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
+
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class AnnotationTest {
 	private Factory factory;
@@ -418,7 +417,7 @@ public class AnnotationTest {
 		assertEquals("Cast with a type annotation must have it in its model", 1, typeAnnotations.size());
 		assertEquals("Type annotation in the cast must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
-		assertEquals("Cast with an type annotation must be well printed", "((java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String)(s))", returnedExpression.toString());
+		assertEquals("Cast with an type annotation must be well printed", "((java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String) (s))", returnedExpression.toString());
 	}
 
 	@Test

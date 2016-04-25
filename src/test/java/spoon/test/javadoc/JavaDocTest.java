@@ -21,7 +21,7 @@ public class JavaDocTest {
 		launcher.run();
 		Factory factory = launcher.getFactory();
 		CtClass<?> aClass = factory.Class().get(Bar.class);
-		
+
 		Assert.assertEquals("public class Bar {" + System.lineSeparator()
 				+ "    /**" + System.lineSeparator()
 				+ "     * Creates an annotation type." + System.lineSeparator()
@@ -31,7 +31,7 @@ public class JavaDocTest {
 				+ "     *  @param simpleName" + System.lineSeparator()
 				+ "     *  \t\tthe name of annotation" + System.lineSeparator()
 				+ "     */" + System.lineSeparator()
-				+ "    public <T>CtAnnotationType<?> create(CtPackage owner, String simpleName) {" + System.lineSeparator()
+				+ "    public <T> CtAnnotationType<?> create(CtPackage owner, String simpleName) {" + System.lineSeparator()
 				+ "        return null;" + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
 				+ "}", aClass.toString());
