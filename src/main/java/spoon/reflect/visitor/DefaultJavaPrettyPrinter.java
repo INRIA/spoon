@@ -258,7 +258,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			for (CtTypeReference<?> r : e.getTypeCasts()) {
 				write("(");
 				DefaultJavaPrettyPrinter.this.scan(r);
-				write(")");
+				write(") ");
 				write("(");
 				context.parenthesedExpression.push(e);
 			}
@@ -867,13 +867,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write(c.getDeclaringType().getSimpleName());
 		}
 		write("(");
-		if (c.getParameters().size() > 0) {
-			for (CtParameter<?> p : c.getParameters()) {
-				visitCtParameter(p);
-				write(" ,");
-			}
-			removeLastChar();
-		}
+		writeExecutableParameters(c);
 		write(") ");
 		if ((c.getThrownTypes() != null) && (c.getThrownTypes().size() > 0)) {
 			write("throws ");
@@ -1228,9 +1222,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			context.noTypeDecl = false;
 		}
-		write(" ; ");
+		write("; ");
 		scan(forLoop.getExpression());
-		write(" ; ");
+		write("; ");
 		for (CtStatement s : forLoop.getForUpdate()) {
 			scan(s);
 			write(" , ");
@@ -1659,6 +1653,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("default ");
 		}
 		writeFormalTypeParameters(m.getFormalTypeParameters());
+		if (m.getFormalTypeParameters().size() > 0) {
+			write(" ");
+		}
 		final boolean old = context.ignoreGenerics;
 		context.ignoreGenerics = false;
 		scan(m.getType());

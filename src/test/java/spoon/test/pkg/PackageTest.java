@@ -43,7 +43,7 @@ public class PackageTest {
 		Assert.assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
 		Assert.assertEquals(1, ctPackage.getPosition().getLine());
 		Assert.assertEquals(1, ctPackage.getAnnotations().size());
-		Assert.assertEquals("This is test\n JavaDoc.", ctPackage.getDocComment());
+		Assert.assertEquals("This is test\nJavaDoc.", ctPackage.getDocComment());
 
 		CtAnnotation<?> annotation = ctPackage.getAnnotations().get(0);
 		Assert.assertEquals(Deprecated.class, annotation.getAnnotationType().getActualClass());
