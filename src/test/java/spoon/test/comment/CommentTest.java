@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class CommentTest {
 
 	private String newLine = System.getProperty("line.separator");
-	
+
 	private Factory getSpoonFactory()  {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
@@ -144,7 +144,7 @@ public class CommentTest {
 		CtFor ctFor = m1.getBody().getStatement(1);
 		assertEquals(createFakeComment(f, "comment for"), ctFor.getComments().get(0));
 		assertEquals("// comment for" + newLine
-				+ "for (int i = 0 ; i < 10 ; i++) {" + newLine
+				+ "for (int i = 0; i < 10; i++) {" + newLine
 				+ "    // comment for block" + newLine
 				+ "}", ctFor.toString());
 
@@ -213,7 +213,7 @@ public class CommentTest {
 				+ " ? // comment before then CtConditional" + newLine
 				+ "null// comment after then CtConditional" + newLine
 				+ " : // comment before else CtConditional" + newLine
-				+ "new java.lang.Double((j / ((double)((i - 1)))))", ctLocalVariable1.toString());
+				+ "new java.lang.Double((j / ((double) ((i - 1)))))", ctLocalVariable1.toString());
 
 		CtNewArray ctNewArray = (CtNewArray) ((CtLocalVariable) m1.getBody().getStatement(11)).getDefaultExpression();
 		CtElement arrayValue = (CtElement) ctNewArray.getElements().get(0);
@@ -324,7 +324,7 @@ public class CommentTest {
 		CtFor ctFor = m1.getBody().getStatement(1);
 		assertEquals(createFakeBlockComment(f, "comment for"), ctFor.getComments().get(0));
 		assertEquals("/* comment for */" + newLine
-				+ "for (int i = 0 ; i < 10 ; i++) {" + newLine
+				+ "for (int i = 0; i < 10; i++) {" + newLine
 				+ "    /* comment for block */" + newLine
 				+ "}", ctFor.toString());
 

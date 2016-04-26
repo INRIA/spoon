@@ -1,7 +1,6 @@
 package spoon.test.casts;
 
 import org.junit.Test;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableRead;
@@ -27,12 +26,12 @@ public class CastTest {
 				.Code()
 				.createCodeSnippetStatement(
 						"" + "class X {" + "public void foo() {"
-								+ " String x=(String)new Object();" + "}"
+								+ " String x=(String) new Object();" + "}"
 								+ "};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
 		assertEquals(
-				"java.lang.String x = ((java.lang.String)(new java.lang.Object()))",
+				"java.lang.String x = ((java.lang.String) (new java.lang.Object()))",
 				foo.getBody().getStatements().get(0).toString());
 	}
 
@@ -44,11 +43,11 @@ public class CastTest {
 						""
 								+ "class X {"
 								+ "public void foo() {"
-								+ " Class<String> x=(Class<String>)new Object();"
+								+ " Class<String> x=(Class<String>) new Object();"
 								+ "}" + "};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		assertEquals(
-				"java.lang.Class<java.lang.String> x = ((java.lang.Class<java.lang.String>)(new java.lang.Object()))",
+				"java.lang.Class<java.lang.String> x = ((java.lang.Class<java.lang.String>) (new java.lang.Object()))",
 				foo.getBody().getStatements().get(0).toString());
 	}
 
@@ -61,14 +60,14 @@ public class CastTest {
 								+ "class X<A> {"
 								+ "void addConsumedAnnotationType(Class<? extends A> annotationType) {}\n"
 								+ "public void foo() {" + " Class<?> x = null;"
-								+ " addConsumedAnnotationType((Class<A>)x);"
+								+ " addConsumedAnnotationType((Class<A>) x);"
 								+ "}" + "};").compile();
 		CtMethod<?> foo = clazz.getElements(new NameFilter<CtMethod<?>>("foo"))
 				.get(0);
 		CtVariableRead<?> a = (CtVariableRead<?>) clazz.getElements(
 				new TypeFilter<>(CtVariableRead.class)).get(0);
 		assertEquals(1, a.getTypeCasts().size());
-		assertEquals("addConsumedAnnotationType(((java.lang.Class<A>)(x)))",
+		assertEquals("addConsumedAnnotationType(((java.lang.Class<A>) (x)))",
 				foo.getBody().getStatements().get(1).toString());
 	}
 
@@ -98,6 +97,6 @@ public class CastTest {
 		final CtLocalVariable local = aCastings.getMethod("bar").getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 
 		assertEquals(1, ((CtTypeReference) local.getDefaultExpression().getTypeCasts().get(0)).getAnnotations().size());
-		assertEquals("((java.lang.@spoon.test.casts.Castings.TypeAnnotation(integer = 1)" + System.lineSeparator() + "String)(\"\"))", local.getDefaultExpression().toString());
+		assertEquals("((java.lang.@spoon.test.casts.Castings.TypeAnnotation(integer = 1)" + System.lineSeparator() + "String) (\"\"))", local.getDefaultExpression().toString());
 	}
 }

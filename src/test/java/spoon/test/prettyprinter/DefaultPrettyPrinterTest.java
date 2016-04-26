@@ -211,7 +211,7 @@ public class DefaultPrettyPrinterTest {
 			"E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField,spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" +nl+
 			"    final int NUM;" +nl+
 			"    final Enum<?> e;" +nl+
-			"    private ENUM(int num ,Enum<?> e) {" +nl+
+			"    private ENUM(int num, Enum<?> e) {" +nl+
 			"        NUM = num;" +nl+
 			"        this.e = e;" +nl+
 			"    }}"

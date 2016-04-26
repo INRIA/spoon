@@ -113,7 +113,7 @@ public class TargetedExpressionTest {
 
 		final List<CtFieldRead> elements = aConstructor.getElements(new TypeFilter<>(CtFieldRead.class));
 		assertEquals(1, elements.size());
-		assertEquals("((spoon.test.targeted.testclasses.Pozole<T>)(v1))", elements.get(0).getTarget().toString());
+		assertEquals("((spoon.test.targeted.testclasses.Pozole<T>) (v1))", elements.get(0).getTarget().toString());
 	}
 
 	@Test

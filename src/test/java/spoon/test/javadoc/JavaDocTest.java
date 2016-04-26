@@ -21,17 +21,17 @@ public class JavaDocTest {
 		launcher.run();
 		Factory factory = launcher.getFactory();
 		CtClass<?> aClass = factory.Class().get(Bar.class);
-		
+
 		Assert.assertEquals("public class Bar {" + System.lineSeparator()
 				+ "    /**" + System.lineSeparator()
 				+ "     * Creates an annotation type." + System.lineSeparator()
 				+ "     * " + System.lineSeparator()
-				+ "     *  @param owner" + System.lineSeparator()
-				+ "     *  \t\tthe package of the annotation type" + System.lineSeparator()
-				+ "     *  @param simpleName" + System.lineSeparator()
-				+ "     *  \t\tthe name of annotation" + System.lineSeparator()
+				+ "     * @param owner" + System.lineSeparator()
+				+ "     * \t\tthe package of the annotation type" + System.lineSeparator()
+				+ "     * @param simpleName" + System.lineSeparator()
+				+ "     * \t\tthe name of annotation" + System.lineSeparator()
 				+ "     */" + System.lineSeparator()
-				+ "    public <T>CtAnnotationType<?> create(CtPackage owner, String simpleName) {" + System.lineSeparator()
+				+ "    public <T> CtAnnotationType<?> create(CtPackage owner, String simpleName) {" + System.lineSeparator()
 				+ "        return null;" + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
 				+ "}", aClass.toString());
