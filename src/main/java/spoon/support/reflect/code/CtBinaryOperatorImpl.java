@@ -47,14 +47,18 @@ public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBi
 
 	@Override
 	public <C extends CtBinaryOperator<T>> C setLeftHandOperand(CtExpression<?> expression) {
-		expression.setParent(this);
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		leftHandOperand = expression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtBinaryOperator<T>> C setRightHandOperand(CtExpression<?> expression) {
-		expression.setParent(this);
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		rightHandOperand = expression;
 		return (C) this;
 	}

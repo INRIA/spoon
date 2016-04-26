@@ -16,11 +16,8 @@
  */
 package spoon.generating;
 
-import spoon.generating.replace.ReplaceBlockTemplate;
 import spoon.generating.replace.ReplaceScanner;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -42,17 +39,7 @@ public class GeneratingTypeProcessor extends AbstractProcessor<CtType<?>> {
 
 	@Override
 	public void process(CtType<?> element) {
-		final CtClass<Object> target = createReplacementVisitor();
-
-		final CtConstructorCall call = getFactory().Code().createConstructorCall(//
-				target.getReference(), //
-				getFactory().Code().createVariableRead(target.getField("original").getReference(), true), //
-				getFactory().Code().createVariableRead(target.getField("replace").getReference(), true) //
-		);
-
-		final CtBlock apply = new ReplaceBlockTemplate(call).apply(target);
-		target.getMethodsByName("replace").get(0).setBody(apply);
-		new ReplaceScanner(target).scan(getFactory().Class().get(CtScanner.class));
+		new ReplaceScanner(createReplacementVisitor()).scan(getFactory().Class().get(CtScanner.class));
 	}
 
 	private CtClass<Object> createReplacementVisitor() {

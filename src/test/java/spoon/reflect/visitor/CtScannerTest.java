@@ -17,16 +17,13 @@
 
 package spoon.reflect.visitor;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.generating.GeneratingTypeProcessor;
-import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.processors.CheckScannerProcessor;
 
-import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,36 +50,7 @@ public class CtScannerTest {
 	}
 
 	@Test
-	public void testName2() throws Exception {
-		StringBuilder classpath = new StringBuilder();
-		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
-			if (!classpathEntry.contains("test-classes")) {
-				classpath.append(classpathEntry);
-				classpath.append(File.pathSeparator);
-			}
-		}
-		String systemClassPath = classpath.substring(0, classpath.length() - 1);
-
-		Launcher launcher = new Launcher();
-
-		launcher.addInputResource("src/main/java");
-		launcher.setSourceOutputDirectory("target/spooned");
-		launcher.getFactory().getEnvironment().setSourceClasspath(systemClassPath.split(File.pathSeparator));
-		launcher.addProcessor(new MyProcessor());
-		launcher.run();
-
-	}
-
-	class MyProcessor extends AbstractProcessor<CtElement> {
-		@Override
-		public void process(CtElement element) {
-			//ReplacementVisitor.replace(element, getFactory().Core().clone(element));
-		}
-	}
-
-	@Test
-	@Ignore
-	public void testName() throws Exception {
+	public void testGenerateReplacementVisitor() throws Exception {
 		class RegexFilter implements Filter<CtType<?>> {
 			private final Pattern regex;
 

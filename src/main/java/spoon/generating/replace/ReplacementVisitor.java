@@ -52,8 +52,10 @@ class ReplacementVisitor extends CtScanner {
 		}
 		if (shouldBeDeleted != null) {
 			map.remove(key);
-			map.put(key, (V) replace);
-			replace.setParent(shouldBeDeleted.getParent());
+			if (replace != null) {
+				map.put(key, (V) replace);
+				replace.setParent(shouldBeDeleted.getParent());
+			}
 		}
 	}
 
@@ -67,8 +69,10 @@ class ReplacementVisitor extends CtScanner {
 		}
 		if (shouldBeDeleted != null) {
 			set.remove(shouldBeDeleted);
-			set.add((T) replace);
-			replace.setParent(shouldBeDeleted.getParent());
+			if (replace != null) {
+				set.add((T) replace);
+				replace.setParent(shouldBeDeleted.getParent());
+			}
 		}
 	}
 
@@ -84,15 +88,19 @@ class ReplacementVisitor extends CtScanner {
 		}
 		if (shouldBeDeleted != null) {
 			list.remove(index);
-			list.add(index, (T) replace);
-			replace.setParent(list.get(index).getParent());
+			if (replace != null) {
+				list.add(index, (T) replace);
+				replace.setParent(shouldBeDeleted.getParent());
+			}
 		}
 	}
 
 	private void replaceElementIfExist(CtElement candidate, ReplaceListener listener) {
 		if (candidate == original) {
 			listener.set(replace);
-			replace.setParent(candidate.getParent());
+			if (replace != null) {
+				replace.setParent(candidate.getParent());
+			}
 		}
 	}
 }

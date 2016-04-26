@@ -70,14 +70,18 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 
 	@Override
 	public <C extends CtAssignment<T, A>> C setAssigned(CtExpression<T> assigned) {
-		assigned.setParent(this);
+		if (assigned != null) {
+			assigned.setParent(this);
+		}
 		this.assigned = assigned;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtRHSReceiver<A>> C setAssignment(CtExpression<A> assignment) {
-		assignment.setParent(this);
+		if (assignment != null) {
+			assignment.setParent(this);
+		}
 		this.assignment = assignment;
 		return (C) this;
 	}

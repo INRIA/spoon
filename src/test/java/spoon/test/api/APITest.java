@@ -6,18 +6,36 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.compiler.Environment;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.template.Local;
+import spoon.template.TemplateMatcher;
+import spoon.template.TemplateParameter;
 import spoon.test.api.testclasses.Bar;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -259,5 +277,88 @@ public class APITest {
 		aClass.removeMethod(aMethod);
 
 		assertTrue(spoon.getModelBuilder().compile());
+	}
+
+	@Test
+	public void testSetterInNodes() throws Exception {
+		// contract: Check that all setters of an object have a condition to check
+		// that the new value is != null to avoid NPE when we set the parent.
+		class SetterMethodWithoutCollectionsFilter extends TypeFilter<CtMethod<?>> {
+			private final List<CtTypeReference<?>> collections = new ArrayList<>(4);
+
+			public SetterMethodWithoutCollectionsFilter(Factory factory) {
+				super(CtMethod.class);
+				for (Class<?> aCollectionClass : Arrays.asList(Collection.class, List.class, Map.class, Set.class)) {
+					collections.add(factory.Type().createReference(aCollectionClass));
+				}
+			}
+
+			@Override
+			public boolean matches(CtMethod<?> element) {
+				return isSetterMethod(element) && !isSubTypeOfCollection(element) && super.matches(element);
+			}
+
+			private boolean isSubTypeOfCollection(CtMethod<?> element) {
+				final CtTypeReference<?> type = element.getParameters().get(0).getType();
+				for (CtTypeReference<?> aCollectionRef : collections) {
+					if (type.isSubtypeOf(aCollectionRef) || type.equals(aCollectionRef)) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			private boolean isSetterMethod(CtMethod<?> element) {
+				final List<CtParameter<?>> parameters = element.getParameters();
+				if (parameters.size() != 1) {
+					return false;
+				}
+				final CtTypeReference<?> typeParameter = parameters.get(0).getType();
+				final CtTypeReference<CtElement> ctElementRef = element.getFactory().Type().createReference(CtElement.class);
+				if (!typeParameter.isSubtypeOf(ctElementRef) || !typeParameter.equals(ctElementRef)) {
+					return false;
+				}
+				return element.getSimpleName().startsWith("set") && element.getDeclaringType().getSimpleName().startsWith("Ct") && element.getBody() != null;
+			}
+		}
+		class CheckNotNullToSetParentMatcher extends CtElementImpl {
+			public TemplateParameter<CtVariableAccess<?>> _parameter_access_;
+
+			public void matcher() {
+				if (_parameter_access_.S() != null) {
+					_parameter_access_.S().setParent(this);
+				}
+			}
+
+			@Override
+			@Local
+			public void accept(CtVisitor visitor) {
+			}
+		}
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setSourceOutputDirectory("./target/trash/");
+		// Implementations
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
+		launcher.addInputResource("./src/test/java/" + this.getClass().getCanonicalName().replace(".", "/") + ".java");
+		// Needed for #isSubTypeOf method.
+		launcher.addInputResource("./src/main/java/spoon/reflect/");
+		launcher.buildModel();
+
+		// Template matcher.
+		CtClass<CheckNotNullToSetParentMatcher> matcherCtClass = launcher.getFactory().Class().get(CheckNotNullToSetParentMatcher.class);
+		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getStatement(0);
+
+		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
+		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
+			// First statement should be a condition to protect the setter of the parent.
+			assertTrue("Check the method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(), statement instanceof CtIf);
+			CtIf ifCondition = (CtIf) statement;
+			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+			assertEquals(1, matcher.find(ifCondition).size());
+		}
 	}
 }

@@ -33,7 +33,9 @@ public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>>
 
 	@Override
 	public <C extends CtArrayAccess<T, V>> C setIndexExpression(CtExpression<Integer> expression) {
-		expression.setParent(this);
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		this.expression = expression;
 		return (C) this;
 	}

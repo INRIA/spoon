@@ -39,7 +39,9 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 
 	@Override
 	public <A extends CtAssert<T>> A setAssertExpression(CtExpression<Boolean> asserted) {
-		asserted.setParent(this);
+		if (asserted != null) {
+			asserted.setParent(this);
+		}
 		this.asserted = asserted;
 		return (A) this;
 	}

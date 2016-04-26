@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
-import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -34,7 +33,6 @@ import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.support.util.RtHelper;
 import spoon.support.visitor.EqualVisitor;
 import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.SignaturePrinter;
@@ -43,7 +41,6 @@ import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -436,58 +433,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	@Override
 	public void replace(CtElement element) {
 		ReplacementVisitor.replace(this, element);
-		/*try {
-			replaceIn(this, element, getParent());
-		} catch (CtUncomparableException e1) {
-			// do nothing
-		} catch (Exception e1) {
-			Launcher.LOGGER.error(e1.getMessage(), e1);
-		}*/
-	}
-
-	private <T extends FactoryAccessor> void replaceIn(Object toReplace, T replacement, Object parent) throws IllegalArgumentException, IllegalAccessException {
-
-		for (Field f : RtHelper.getAllFields(parent.getClass())) {
-			f.setAccessible(true);
-			Object tmp = f.get(parent);
-
-			if (tmp != null) {
-				if (tmp instanceof List) {
-					@SuppressWarnings("unchecked") List<T> lst = (List<T>) tmp;
-					for (int i = 0; i < lst.size(); i++) {
-						if (lst.get(i) != null && compare(lst.get(i), toReplace)) {
-							lst.remove(i);
-							if (replacement != null) {
-								lst.add(i, getReplacement(replacement, parent));
-							}
-						}
-					}
-				} else if (tmp instanceof Collection) {
-					@SuppressWarnings("unchecked") Collection<T> collect = (Collection<T>) tmp;
-					Object[] array = collect.toArray();
-					for (Object obj : array) {
-						if (compare(obj, toReplace)) {
-							collect.remove(obj);
-							collect.add(getReplacement(replacement, parent));
-						}
-					}
-				} else if (compare(tmp, toReplace)) {
-					f.set(parent, getReplacement(replacement, parent));
-				}
-			}
-		}
-	}
-
-	private <T extends FactoryAccessor> T getReplacement(T replacement, Object parent) {
-		// T ret = replacement.getFactory().Core().clone(replacement);
-		if (replacement instanceof CtElement && parent instanceof CtElement) {
-			((CtElement) replacement).setParent((CtElement) parent);
-		}
-		return replacement;
-	}
-
-	private boolean compare(Object o1, Object o2) {
-		return o1 == o2;
 	}
 
 	@Override
