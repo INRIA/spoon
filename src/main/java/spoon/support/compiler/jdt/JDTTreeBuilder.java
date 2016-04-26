@@ -411,6 +411,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	private String hasTypeInImports(String typeName) {
 		if (typeName == null) {
 			return null;
+		} else if (context.compilationunitdeclaration.imports == null) {
+			return null;
 		}
 		for (ImportReference anImport : context.compilationunitdeclaration.imports) {
 			final String importType = CharOperation.charToString(anImport.getImportName()[anImport.getImportName().length - 1]);
