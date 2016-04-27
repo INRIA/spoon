@@ -94,6 +94,6 @@ public class CtScannerTest {
 		launcher.run();
 
 		assertThat(build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class))
-				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class).toString());
+				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class));
 	}
 }

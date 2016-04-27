@@ -17,10 +17,12 @@
 package spoon.generating.replace;
 
 import spoon.SpoonException;
-import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +30,7 @@ import java.util.Set;
 /**
  * Used to replace an element by another one.
  *
- * This class is generated automatically by the processor {@link ReplacementVisitorGenerator}.
+ * This class is generated automatically by the processor {@link spoon.generating.ReplacementVisitorGenerator}.
  */
 class ReplacementVisitor extends CtScanner {
 	public static void replace(CtElement original, CtElement replace) {
@@ -46,7 +48,8 @@ class ReplacementVisitor extends CtScanner {
 		this.replace = replace;
 	}
 
-	private <K, V extends CtElement> void replaceInMapIfExist(Map<K, V> map) {
+	private <K, V extends CtElement> void replaceInMapIfExist(Map<K, V> mapProtected, ReplaceMapListener listener) {
+		Map<K, V> map = new HashMap<K, V>(mapProtected);
 		V shouldBeDeleted = null;
 		K key = null;
 		for (Map.Entry<K, V> entry : map.entrySet()) {
@@ -62,10 +65,12 @@ class ReplacementVisitor extends CtScanner {
 				map.put(key, (V) replace);
 				replace.setParent(shouldBeDeleted.getParent());
 			}
+			listener.set(map);
 		}
 	}
 
-	private <T extends CtElement> void replaceInSetIfExist(Set<T> set) {
+	private <T extends CtElement> void replaceInSetIfExist(Set<T> setProtected, ReplaceSetListener listener) {
+		Set<T> set = new HashSet<T>(setProtected);
 		T shouldBeDeleted = null;
 		for (T element : set) {
 			if (element == original) {
@@ -79,10 +84,12 @@ class ReplacementVisitor extends CtScanner {
 				set.add((T) replace);
 				replace.setParent(shouldBeDeleted.getParent());
 			}
+			listener.set(set);
 		}
 	}
 
-	private <T extends CtElement> void replaceInListIfExist(List<T> list) {
+	private <T extends CtElement> void replaceInListIfExist(List<T> listProtected, ReplaceListListener listener) {
+		List<T> list = new ArrayList<T>(listProtected);
 		T shouldBeDeleted = null;
 		int index = 0;
 		for (int i = 0; i < list.size(); i++) {
@@ -98,6 +105,7 @@ class ReplacementVisitor extends CtScanner {
 				list.add(index, (T) replace);
 				replace.setParent(shouldBeDeleted.getParent());
 			}
+			listener.set(list);
 		}
 	}
 

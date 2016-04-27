@@ -124,6 +124,13 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	<T extends CtAnnotation<A>> T setElementValues(Map<String, Object> values);
 
 	/**
+	 * Set's this annotation's element names and their values. This is in the
+	 * form of a map that associates element names with their corresponding
+	 * values.
+	 */
+	<T extends CtAnnotation<A>> T setValues(Map<String, CtExpression> values);
+
+	/**
 	 * Returns the element which is annotated by this annotation.
 	 *
 	 * @return annotated {@link spoon.reflect.declaration.CtElement}

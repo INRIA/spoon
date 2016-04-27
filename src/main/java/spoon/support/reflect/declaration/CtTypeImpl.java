@@ -117,6 +117,15 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
+		this.fields.clear();
+		for (CtField<?> field : fields) {
+			addField(field);
+		}
+		return (C) this;
+	}
+
+	@Override
 	public <F> boolean removeField(CtField<F> field) {
 		return this.fields.remove(field);
 	}
@@ -160,6 +169,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		} else {
 			return this.nestedTypes.remove(nestedType);
 		}
+	}
+
+	@Override
+	public <C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes) {
+		if (this.nestedTypes == CtElementImpl.<CtType<?>>emptySet()) {
+			this.nestedTypes = new TreeSet<CtType<?>>();
+		}
+		this.nestedTypes.clear();
+		for (CtType<?> nestedType : nestedTypes) {
+			addNestedType(nestedType);
+		}
+		return (C) this;
 	}
 
 	@Override

@@ -38,6 +38,7 @@ import spoon.reflect.visitor.ReferenceFilter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,33 +88,38 @@ public class ReplaceScanner extends CtScanner {
 
 	private <T> CtInvocation<?> createInvocation(Factory factory, CtMethod<T> candidate, CtInvocation current, CtInvocation getter, Class getterTypeClass) {
 		CtInvocation<?> invocation;
+		Type type;
 		if (getterTypeClass.equals(Collection.class) || getterTypeClass.equals(List.class)) {
 			invocation = factory.Code().createInvocation(null, this.list, current.getArguments());
+			type = Type.LIST;
 		} else if (getterTypeClass.equals(Map.class)) {
 			invocation = factory.Code().createInvocation(null, this.map, current.getArguments());
+			type = Type.MAP;
 		} else if (getterTypeClass.equals(Set.class)) {
 			invocation = factory.Code().createInvocation(null, this.set, current.getArguments());
+			type = Type.SET;
 		} else {
 			invocation = factory.Code().createInvocation(null, this.element, current.getArguments());
-			// Listener
-			final String name = getter.getExecutable().getSimpleName().substring(3);
-			final String listenerName = getter.getExecutable().getDeclaringType().getSimpleName() + name + "ReplaceListener";
-
-			CtClass listener;
-			if (listeners.containsKey(listenerName)) {
-				listener = listeners.get(listenerName);
-			} else {
-				final CtTypeReference getterType = getGetterType(factory, getter);
-				listener = createListenerClass(factory, listenerName, getterType);
-				final CtMethod setter = getSetter(name, getter.getTarget().getType().getDeclaration());
-				final CtField field = updateField(listener, setter.getDeclaringType().getReference());
-				updateConstructor(listener, setter.getDeclaringType().getReference());
-				updateSetter(factory, (CtMethod<?>) listener.getMethodsByName("set").get(0), getterType, field, setter);
-				listeners.put(listenerName, listener);
-			}
-
-			invocation.addArgument(getConstructorCall(listener, factory.Code().createVariableRead(candidate.getParameters().get(0).getReference(), false)));
+			type = Type.ELEMENT;
 		}
+		// Listener
+		final String name = getter.getExecutable().getSimpleName().substring(3);
+		final String listenerName = getter.getExecutable().getDeclaringType().getSimpleName() + name + "ReplaceListener";
+
+		CtClass listener;
+		if (listeners.containsKey(listenerName)) {
+			listener = listeners.get(listenerName);
+		} else {
+			final CtTypeReference getterType = getGetterType(factory, getter);
+			listener = createListenerClass(factory, listenerName, getterType, type);
+			final CtMethod setter = getSetter(name, getter.getTarget().getType().getDeclaration());
+			final CtField field = updateField(listener, setter.getDeclaringType().getReference());
+			updateConstructor(listener, setter.getDeclaringType().getReference());
+			updateSetter(factory, (CtMethod<?>) listener.getMethodsByName("set").get(0), getterType, field, setter);
+			listeners.put(listenerName, listener);
+		}
+
+		invocation.addArgument(getConstructorCall(listener, factory.Code().createVariableRead(candidate.getParameters().get(0).getReference(), false)));
 		return invocation;
 	}
 
@@ -145,7 +151,7 @@ public class ReplaceScanner extends CtScanner {
 		throw new SpoonException("Can't get the type of the CtTypeParameterReference " + ctTypeParameterRef);
 	}
 
-	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType) {
+	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType, Type type) {
 		CtClass listener;
 		listener = factory.Core().clone(factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener"));
 		listener.setSimpleName(listenerName);
@@ -164,9 +170,11 @@ public class ReplaceScanner extends CtScanner {
 		for (CtTypeReference reference : references) {
 			reference.setPackage(listener.getPackage().getReference());
 		}
-		final CtTypeReference theInterface = listener.getSuperInterfaces().toArray(new CtTypeReference[listener.getSuperInterfaces().size()])[0];
-		theInterface.getActualTypeArguments().clear();
+		final CtTypeReference<Object> theInterface = factory.Class().createReference(GENERATING_REPLACE_PACKAGE + "." + type.name);
 		theInterface.addActualTypeArgument(getterType);
+		final Set<CtTypeReference<?>> interfaces = new HashSet<CtTypeReference<?>>();
+		interfaces.add(theInterface);
+		listener.setSuperInterfaces(interfaces);
 		return listener;
 	}
 
@@ -209,5 +217,15 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtConstructorCall<?> getConstructorCall(CtClass listener, CtExpression argument) {
 		return listener.getFactory().Code().createConstructorCall(listener.getReference(), argument);
+	}
+
+	enum Type {
+		ELEMENT("ReplaceListener"), LIST("ReplaceListListener"), SET("ReplaceSetListener"), MAP("ReplaceMapListener");
+
+		String name;
+
+		Type(String name) {
+			this.name = name;
+		}
 	}
 }

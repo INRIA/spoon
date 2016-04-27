@@ -43,6 +43,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -224,7 +225,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
-		return annotations;
+		return Collections.unmodifiableList(annotations);
 	}
 
 	public String getDocComment() {
@@ -459,7 +460,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public List<CtComment> getComments() {
-		return comments;
+		return Collections.unmodifiableList(comments);
 	}
 
 	@Override
