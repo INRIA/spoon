@@ -19,7 +19,7 @@ package spoon.reflect.visitor;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.generating.GeneratingTypeProcessor;
+import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.processors.CheckScannerProcessor;
@@ -89,7 +89,7 @@ public class CtScannerTest {
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
 		launcher.addInputResource("./src/main/java/spoon/generating/replace/");
-		launcher.addProcessor(new GeneratingTypeProcessor());
+		launcher.addProcessor(new ReplacementVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
 

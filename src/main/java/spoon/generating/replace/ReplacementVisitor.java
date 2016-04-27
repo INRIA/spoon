@@ -17,6 +17,7 @@
 package spoon.generating.replace;
 
 import spoon.SpoonException;
+import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
 
@@ -27,7 +28,7 @@ import java.util.Set;
 /**
  * Used to replace an element by another one.
  *
- * This class is generated automatically by the processor {@link spoon.generating.GeneratingTypeProcessor}.
+ * This class is generated automatically by the processor {@link ReplacementVisitorGenerator}.
  */
 class ReplacementVisitor extends CtScanner {
 	public static void replace(CtElement original, CtElement replace) {

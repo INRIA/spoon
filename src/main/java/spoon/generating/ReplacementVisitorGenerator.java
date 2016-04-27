@@ -31,7 +31,7 @@ import java.util.List;
 import static spoon.generating.replace.ReplaceScanner.GENERATING_REPLACE_VISITOR;
 import static spoon.generating.replace.ReplaceScanner.TARGET_REPLACE_PACKAGE;
 
-public class GeneratingTypeProcessor extends AbstractProcessor<CtType<?>> {
+public class ReplacementVisitorGenerator extends AbstractProcessor<CtType<?>> {
 	@Override
 	public boolean isToBeProcessed(CtType<?> candidate) {
 		return CtScanner.class.getName().equals(candidate.getQualifiedName()) && super.isToBeProcessed(candidate);

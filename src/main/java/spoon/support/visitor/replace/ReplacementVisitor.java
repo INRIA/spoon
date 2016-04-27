@@ -18,11 +18,12 @@
 
 package spoon.support.visitor.replace;
 
+import spoon.generating.ReplacementVisitorGenerator;
 
 /**
  * Used to replace an element by another one.
  *
- * This class is generated automatically by the processor {@link spoon.generating.GeneratingTypeProcessor}.
+ * This class is generated automatically by the processor {@link ReplacementVisitorGenerator}.
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	class CtAbstractInvocationExecutableReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
