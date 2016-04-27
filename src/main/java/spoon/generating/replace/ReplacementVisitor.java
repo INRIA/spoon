@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Used to replace an element by another one.
+ *
+ * This class is generated automatically by the processor {@link spoon.generating.GeneratingTypeProcessor}.
+ */
 class ReplacementVisitor extends CtScanner {
 	public static void replace(CtElement original, CtElement replace) {
 		try {
