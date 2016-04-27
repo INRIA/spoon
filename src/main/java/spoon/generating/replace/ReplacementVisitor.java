@@ -92,6 +92,7 @@ class ReplacementVisitor extends CtScanner {
 	private void replaceElementIfExist(CtElement candidate, ReplaceListener listener) {
 		if (candidate == original) {
 			listener.set(replace);
+			replace.setParent(candidate.getParent());
 		}
 	}
 }

@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
-import spoon.Launcher;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
@@ -40,6 +39,7 @@ import spoon.support.visitor.EqualVisitor;
 import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
+import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -435,13 +435,14 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public void replace(CtElement element) {
-		try {
+		ReplacementVisitor.replace(this, element);
+		/*try {
 			replaceIn(this, element, getParent());
 		} catch (CtUncomparableException e1) {
 			// do nothing
 		} catch (Exception e1) {
 			Launcher.LOGGER.error(e1.getMessage(), e1);
-		}
+		}*/
 	}
 
 	private <T extends FactoryAccessor> void replaceIn(Object toReplace, T replacement, Object parent) throws IllegalArgumentException, IllegalAccessException {

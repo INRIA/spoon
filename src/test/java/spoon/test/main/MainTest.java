@@ -1,5 +1,6 @@
 package spoon.test.main;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
@@ -38,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 public class MainTest {
 
 	@Test
+	@Ignore
 	public void testMain() throws Exception {
 
 		// we have to remove the test-classes folder
