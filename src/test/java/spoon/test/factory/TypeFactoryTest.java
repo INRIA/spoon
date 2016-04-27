@@ -1,12 +1,15 @@
 package spoon.test.factory;
 
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.reflect.reference.CtTypeReference;
-
 import static org.junit.Assert.assertEquals;
 
-public class TypeRefFactoryTest {
+import org.junit.Test;
+
+import spoon.Launcher;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.reference.CtTypeReference;
+
+public class TypeFactoryTest {
 
     @Test
     public void testCreateTypeRef() {
@@ -22,4 +25,14 @@ public class TypeRefFactoryTest {
         ctTypeReference = launcher.getFactory().Code().createCtTypeReference(null);
         assertEquals(null, ctTypeReference);
     }
+    
+    @Test
+	public void reflectionAPI() throws Exception {
+		// Spoon can be used as reflection API
+		CtType s = new TypeFactory().get(String.class);
+		assertEquals("String", s.getSimpleName());
+		assertEquals("java.lang.String", s.getQualifiedName());
+		assertEquals(3, s.getSuperInterfaces().size());
+		assertEquals(2,s.getMethodsByName("toLowerCase").size());
+	}
 }
