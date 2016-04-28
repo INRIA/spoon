@@ -1,17 +1,8 @@
 package spoon.test.parent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-
-import java.util.Stack;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -21,9 +12,9 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -41,6 +32,14 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.replace.testclasses.Tacos;
+
+import java.util.Stack;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class ParentTest {
 
@@ -267,6 +266,16 @@ public class ParentTest {
 		// not present element
 		CtWhile ctWhile = ctStatement1.getParent(new TypeFilter<CtWhile>(CtWhile.class));
 		assertEquals(null, ctWhile);
+
+		CtStatement statementParent = statement
+				.getParent(new AbstractFilter<CtStatement>(CtStatement.class) {
+					@Override
+					public boolean matches(CtStatement element) {
+						return true;
+					}
+				});
+		// getParent must not return the current element
+		assertNotEquals(statement, statementParent);
 	}
 
 }
