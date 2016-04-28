@@ -129,6 +129,11 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<F, C extends CtType<T>> C addField(int index, CtField<F> field);
 
 	/**
+	 * Sets all fields in the type.
+	 */
+	<C extends CtType<T>> C setFields(List<CtField<?>> fields);
+
+	/**
 	 * remove a Field
 	 *
 	 * @param field
@@ -151,6 +156,11 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	<N> boolean removeNestedType(CtType<N> nestedType);
+
+	/**
+	 * Sets all nested types.
+	 */
+	<C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes);
 
 	/**
 	 * Compiles and replace all the code snippets that are found in this type.

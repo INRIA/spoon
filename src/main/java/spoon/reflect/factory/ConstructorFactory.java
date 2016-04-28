@@ -16,12 +16,8 @@
  */
 package spoon.reflect.factory;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
@@ -29,6 +25,12 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The {@link CtConstructor} sub-factory.
@@ -152,6 +154,26 @@ public class ConstructorFactory extends ExecutableFactory {
 		CtTypeReference<T> type = factory.Type().createReference(constructor.getDeclaringClass());
 		return createReference(type, type, CtExecutableReference.CONSTRUCTOR_NAME,
 				factory.Type().createReferences(Arrays.asList(constructor.getParameterTypes())));
+	}
+
+	/**
+	 * Creates a constructor reference.
+	 * @param type Declaring type of the constructor.
+	 * @param parameters Constructor parameters.
+	 * @param <T> Infered type of the constructor.
+	 * @return CtExecutablereference if a constructor.
+	 */
+	public <T> CtExecutableReference<T> createReference(CtTypeReference<T> type, CtExpression<?>...parameters) {
+		final CtExecutableReference<T> executableReference = factory.Core().createExecutableReference();
+		executableReference.setType(type);
+		executableReference.setDeclaringType(type);
+		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
+		List<CtTypeReference<?>> typeReferences = new ArrayList<CtTypeReference<?>>();
+		for (CtExpression<?> parameter : parameters) {
+			typeReferences.add(parameter.getType());
+		}
+		executableReference.setParameters(typeReferences);
+		return executableReference;
 	}
 
 }

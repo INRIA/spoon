@@ -312,6 +312,9 @@ public class SubstitutionVisitor extends CtScanner {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T> void visitCtInvocation(CtInvocation<T> invocation) {
+			if (invocation.getExecutable().getDeclaringType() == null) {
+				System.err.println(invocation.getExecutable());
+			}
 			if (invocation.getExecutable().isOverriding(S)) {
 				CtFieldAccess<?> fa = null;
 				if ((invocation.getTarget() instanceof CtFieldAccess)) {
@@ -423,6 +426,11 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 			scanCtReference(reference);
+			if (reference.getDeclaringType() == null) {
+				System.err.println("Blabla");
+				System.err.println(reference);
+				System.err.println(reference.getParent());
+			}
 			visitCtTypeReference(reference.getDeclaringType());
 			scanCtGenericElementReference(reference);
 		}

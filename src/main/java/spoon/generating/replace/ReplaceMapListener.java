@@ -14,29 +14,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.code;
+package spoon.generating.replace;
 
-import spoon.reflect.code.CtArrayAccess;
-import spoon.reflect.code.CtExpression;
+import java.util.Map;
 
-public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>>
-		extends CtTargetedExpressionImpl<T, V>
-		implements CtArrayAccess<T, V> {
-	private static final long serialVersionUID = 1L;
-
-	private CtExpression<Integer> expression;
-
-	@Override
-	public CtExpression<Integer> getIndexExpression() {
-		return expression;
-	}
-
-	@Override
-	public <C extends CtArrayAccess<T, V>> C setIndexExpression(CtExpression<Integer> expression) {
-		if (expression != null) {
-			expression.setParent(this);
-		}
-		this.expression = expression;
-		return (C) this;
-	}
+public interface ReplaceMapListener<T extends Map> {
+	void set(T replace);
 }

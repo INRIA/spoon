@@ -33,12 +33,14 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtVariable;
@@ -168,6 +170,25 @@ public class CodeFactory extends SubFactory {
 		constructorCall.setArguments(Arrays.asList(parameters));
 		constructorCall.setExecutable(executableReference);
 		return constructorCall;
+	}
+
+	/**
+	 * Creates a new class with an anonymous class.
+	 *
+	 * @param type the decelerating type of the constructor.
+	 * @param anonymousClass Anonymous class in the new class.
+	 * @param parameters the arguments of the constructor call.
+	 * @param <T> the actual type of the decelerating type of the constructor if available/
+	 * @return the new class.
+	 */
+	public <T> CtNewClass<T> createNewClass(CtTypeReference<T> type, CtClass<?> anonymousClass, CtExpression<?>...parameters) {
+		CtNewClass<T> ctNewClass = factory.Core().createNewClass();
+		CtExecutableReference<T> executableReference = factory.Constructor().createReference(type, parameters);
+		ctNewClass.setArguments(Arrays.asList(parameters));
+		ctNewClass.setExecutable(executableReference);
+		ctNewClass.setAnonymousClass(anonymousClass);
+		anonymousClass.setSimpleName("0");
+		return ctNewClass;
 	}
 
 	/**

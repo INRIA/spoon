@@ -364,6 +364,15 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	}
 
 	@Override
+	public <T extends CtAnnotation<A>> T setValues(Map<String, CtExpression> values) {
+		this.elementValues.clear();
+		for (Entry<String, CtExpression> e : values.entrySet()) {
+			addValue(e.getKey(), e.getValue());
+		}
+		return (T) this;
+	}
+
+	@Override
 	public CtElement getAnnotatedElement() {
 		return this.getParent();
 	}

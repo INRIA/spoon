@@ -78,7 +78,9 @@ public final class ModelUtils {
 	}
 
 	public static Factory build(File... filesToBuild) {
-		SpoonCompiler comp = new Launcher().createCompiler();
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		SpoonCompiler comp = launcher.createCompiler();
 		for (File fileToBuild : filesToBuild) {
 			try {
 				comp.addInputSource(SpoonResourceHelper.createResource(fileToBuild));

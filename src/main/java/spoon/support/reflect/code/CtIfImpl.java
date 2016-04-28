@@ -56,7 +56,9 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 
 	@Override
 	public <T extends CtIf> T setCondition(CtExpression<Boolean> condition) {
-		condition.setParent(this);
+		if (condition != null) {
+			condition.setParent(this);
+		}
 		this.condition = condition;
 		return (T) this;
 	}
