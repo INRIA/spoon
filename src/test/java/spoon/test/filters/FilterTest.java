@@ -12,6 +12,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
@@ -35,6 +36,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.filters.testclasses.AbstractTostada;
 import spoon.test.filters.testclasses.Antojito;
+import spoon.test.filters.testclasses.FieldAccessFilterTacos;
 import spoon.test.filters.testclasses.ITostada;
 import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
@@ -47,6 +49,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class FilterTest {
@@ -89,6 +92,18 @@ public class FilterTest {
 		CtFieldReference<?> ref = (CtFieldReference<?>)(elements.get(0)).getReference();
 		List<CtFieldAccess<?>> expressions = foo.getElements(new FieldAccessFilter(ref));
 		assertEquals(2, expressions.size());
+
+		final Factory build = build(FieldAccessFilterTacos.class);
+		final CtType<FieldAccessFilterTacos> fieldAccessFilterTacos = build.Type().get(FieldAccessFilterTacos.class);
+
+		try {
+			List<CtField> fields = fieldAccessFilterTacos.getElements(new TypeFilter<CtField>(CtField.class));
+			for (CtField ctField : fields) {
+				fieldAccessFilterTacos.getElements(new FieldAccessFilter(ctField.getReference()));
+			}
+		} catch (NullPointerException e) {
+			fail("FieldAccessFilter must not throw a NPE.");
+		}
 	}
 
 

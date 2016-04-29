@@ -33,12 +33,15 @@ public class VariableAccessFilter<T extends CtVariableAccess<?>> implements Filt
 	 * 		the accessed variable
 	 */
 	public VariableAccessFilter(CtVariableReference<?> variable) {
+		if (variable == null) {
+			throw new IllegalArgumentException("The parameter variable cannot be null.");
+		}
 		this.variable = variable;
 	}
 
 	@Override
 	public boolean matches(T variableAccess) {
-		return variableAccess.getVariable().equals(variable);
+		return variable.equals(variableAccess.getVariable());
 	}
 
 }
