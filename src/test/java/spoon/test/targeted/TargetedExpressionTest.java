@@ -432,16 +432,16 @@ public class TargetedExpressionTest {
 		assertEquals(3, elements.size());
 
 		final CtTypeReference<Object> firstExpected = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$1$InnerSubscriber");
-		CtThisAccess<Object> exepectedThisAccess = type.getFactory().Code().createThisAccess(firstExpected);
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(firstExpected).target(exepectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index"), elements.get(0));
+		CtThisAccess<Object> expectedThisAccess = type.getFactory().Code().createThisAccess(firstExpected);
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(firstExpected).target(expectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index"), elements.get(0));
 
 		final CtTypeReference<Object> secondExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$3InnerSubscriber");
-		exepectedThisAccess = type.getFactory().Code().createThisAccess(secondExpectedInner);
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(secondExpectedInner).target(exepectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index").isLocal(), elements.get(1));
+		expectedThisAccess = type.getFactory().Code().createThisAccess(secondExpectedInner);
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(secondExpectedInner).target(expectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index").isLocal(), elements.get(1));
 
 		final CtTypeReference<Object> thirdExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$4InnerSubscriber");
-		exepectedThisAccess = type.getFactory().Code().createThisAccess(thirdExpectedInner);
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(thirdExpectedInner).target(exepectedThisAccess).type(CtFieldWrite.class).result("this.index").isLocal(), elements.get(2));
+		expectedThisAccess = type.getFactory().Code().createThisAccess(thirdExpectedInner);
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(thirdExpectedInner).target(expectedThisAccess).type(CtFieldWrite.class).result("this.index").isLocal(), elements.get(2));
 	}
 
 	private void assertEqualsFieldAccess(ExpectedTargetedExpression expected, CtFieldAccess<?> fieldAccess) {
