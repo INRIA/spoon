@@ -27,7 +27,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
-import spoon.testing.Assert;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
@@ -37,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.testing.Assert.*;
+import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -234,6 +233,7 @@ public class FieldAccessTest {
 		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
 
 		final CtFieldRead<Object> fieldRead = aMole.getFactory().Core().createFieldRead();
+		fieldRead.setTarget(aMole.getFactory().Code().createThisAccess(aMole.getReference()));
 		final CtFieldReference fieldReference = aMole.getField("i").getReference();
 		fieldRead.setVariable(fieldReference);
 

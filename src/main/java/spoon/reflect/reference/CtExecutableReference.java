@@ -17,6 +17,7 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtExecutable;
+import spoon.support.visitor.equals.IgnoredByEquals;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -75,6 +76,7 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 	/**
 	 * Gets the return type of the executable (may be null in noclasspath mode).
 	 */
+	@IgnoredByEquals
 	CtTypeReference<T> getType();
 
 	/**

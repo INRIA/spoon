@@ -296,7 +296,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitClassReference(Class<T> clazz) {
-		if (clazz.getPackage() != null) {
+		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
 			visitPackage(clazz.getPackage());
 		}
 		if (clazz.getEnclosingClass() != null) {

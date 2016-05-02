@@ -39,6 +39,7 @@ import spoon.support.visitor.EqualVisitor;
 import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
+import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.Serializable;
@@ -141,12 +142,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		if (this == o) {
 			return true;
 		}
-		boolean ret = false;
-		if ((o instanceof CtElement)) {
-			String current = getDeepRepresentation(this);
-			String other = getDeepRepresentation((CtElement) o);
-			ret = current.equals(other);
-		}
+		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
 		if (ret && this.hashCode() != o.hashCode()) {
 			throw new IllegalStateException("violation of equal/hashcode contract between \n" + getDeepRepresentation(this) + "\nand\n" + getDeepRepresentation((CtElement) o) + "\n");

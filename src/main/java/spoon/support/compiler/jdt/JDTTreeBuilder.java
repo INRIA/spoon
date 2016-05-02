@@ -627,9 +627,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 				return null;
 			}
 
-			final CtExecutableReference<T> ref = factory.Core().createExecutableReference();
+			final CtExecutableReference ref = factory.Core().createExecutableReference();
 			ref.setSimpleName(new String(exec.selector));
-			ref.setType((CtTypeReference<T>) getTypeReference(exec.returnType));
+			ref.setType(getTypeReference(exec.returnType));
 
 			if (exec instanceof ProblemMethodBinding) {
 				if (exec.declaringClass != null && Arrays.asList(exec.declaringClass.methods()).contains(exec)) {

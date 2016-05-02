@@ -19,6 +19,7 @@ package spoon.reflect.visitor;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -95,5 +96,48 @@ public class CtScannerTest {
 
 		assertThat(build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class))
 				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class));
+	}
+
+	@Test
+	public void testGenerateCtBiScanner() throws Exception {
+		class RegexFilter implements Filter<CtType<?>> {
+			private final Pattern regex;
+
+			private RegexFilter(String regex) {
+				if (regex == null) {
+					throw new IllegalArgumentException();
+				}
+				this.regex = Pattern.compile(regex);
+			}
+
+			public boolean matches(CtType<?> element) {
+				Matcher m = regex.matcher(element.getQualifiedName());
+				return m.matches();
+			}
+
+			public Class<CtElement> getType() {
+				return CtElement.class;
+			}
+		}
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setGenerateJavadoc(true);
+		launcher.getEnvironment().useTabulations(true);
+		launcher.setSourceOutputDirectory("./target/generated/");
+		// interfaces.
+		launcher.addInputResource("./src/main/java/spoon/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
+		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
+		// Utils.
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
+		launcher.addInputResource("./src/main/java/spoon/generating/scanner/");
+		launcher.addProcessor(new CtBiScannerGenerator());
+		launcher.setOutputFilter(new RegexFilter("spoon.reflect.visitor.CtBiScanner"));
+		launcher.run();
+
+		assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtBiScanner.java")).Class().get(CtBiScanner.class))
+				.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtBiScanner.java")).Class().get(CtBiScanner.class));
 	}
 }

@@ -1235,7 +1235,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		write("; ");
 		scan(forLoop.getExpression());
-		write("; ");
+		write(";");
+		if (!forLoop.getForUpdate().isEmpty()) {
+			write(" ");
+		}
 		for (CtStatement s : forLoop.getForUpdate()) {
 			scan(s);
 			write(" , ");
