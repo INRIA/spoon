@@ -108,11 +108,11 @@ public class PathTest {
 		// get the then statement
 		equals(new CtPathStringBuilder().fromString(".**/CtIf#else"),
 				((CtIf) factory.Package().get("spoon.test.path").getType("Foo").getMethod("foo").getBody()
-						.getStatement(2)).getThenStatement()
+						.getStatement(2)).getElseStatement()
 		);
 		equals(new CtPathStringBuilder().fromString(".**#else"),
 				((CtIf) factory.Package().get("spoon.test.path").getType("Foo").getMethod("foo").getBody()
-						.getStatement(2)).getThenStatement()
+						.getStatement(2)).getElseStatement()
 		);
 	}
 
