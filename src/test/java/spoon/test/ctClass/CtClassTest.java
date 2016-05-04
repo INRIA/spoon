@@ -11,6 +11,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -98,7 +99,7 @@ public class CtClassTest {
 
 		assertEquals("1Cook", cook.getSimpleName());
 		assertEquals("spoon.test.ctClass.testclasses.Pozole$1Cook", cook.getQualifiedName());
-		final Set<? extends CtConstructor<?>> constructors = cook.getConstructors();
+		final List<? extends CtConstructor<?>> constructors = cook.getConstructors();
 		final String expectedConstructor = "public Cook() {" + System.lineSeparator() + "}";
 		assertEquals(expectedConstructor, constructors.toArray(new CtConstructor[constructors.size()])[0].toString());
 		assertEquals("final java.lang.Class<Cook> cookClass = Cook.class", cook.getMethod("m").getBody().getStatement(0).toString());

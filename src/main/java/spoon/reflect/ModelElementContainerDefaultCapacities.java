@@ -37,6 +37,9 @@ public final class ModelElementContainerDefaultCapacities {
      * than ArrayList's default of 10.
      */
 
+	// JDK 7 average is 1.467
+	public static final int CONSTRUCTORS_DEFAULT_CAPACITY = 2;
+
 	// JDK 7 average is 1.063 (methods), 1.207 (constructors)
 	public static final int PARAMETERS_CONTAINER_DEFAULT_CAPACITY = 2;
 

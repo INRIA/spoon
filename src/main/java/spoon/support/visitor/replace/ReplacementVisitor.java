@@ -233,7 +233,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 	}
 
-	class CtClassConstructorsReplaceListener implements spoon.generating.replace.ReplaceSetListener<java.util.Set> {
+	class CtClassConstructorsReplaceListener implements spoon.generating.replace.ReplaceListListener<java.util.List> {
 		private spoon.reflect.declaration.CtClass element;
 
 		CtClassConstructorsReplaceListener(spoon.reflect.declaration.CtClass element) {
@@ -241,7 +241,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 
 		@java.lang.Override
-		public void set(java.util.Set replace) {
+		public void set(java.util.List replace) {
 			this.element.setConstructors(replace);
 		}
 	}
@@ -1295,7 +1295,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(ctClass.getAnonymousExecutables(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassAnonymousExecutablesReplaceListener(ctClass));
 		replaceInSetIfExist(ctClass.getNestedTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeNestedTypesReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getFields(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassFieldsReplaceListener(ctClass));
-		replaceInSetIfExist(ctClass.getConstructors(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassConstructorsReplaceListener(ctClass));
+		replaceInListIfExist(ctClass.getConstructors(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassConstructorsReplaceListener(ctClass));
 		replaceInSetIfExist(ctClass.getMethods(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeMethodsReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(ctClass));
 	}
@@ -1334,7 +1334,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(ctEnum.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(ctEnum));
 		replaceInSetIfExist(ctEnum.getSuperInterfaces(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperInterfacesReplaceListener(ctEnum));
 		replaceInListIfExist(ctEnum.getFields(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassFieldsReplaceListener(ctEnum));
-		replaceInSetIfExist(ctEnum.getConstructors(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassConstructorsReplaceListener(ctEnum));
+		replaceInListIfExist(ctEnum.getConstructors(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassConstructorsReplaceListener(ctEnum));
 		replaceInSetIfExist(ctEnum.getMethods(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeMethodsReplaceListener(ctEnum));
 		replaceInSetIfExist(ctEnum.getNestedTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeNestedTypesReplaceListener(ctEnum));
 		replaceInListIfExist(ctEnum.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(ctEnum));

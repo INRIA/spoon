@@ -260,7 +260,7 @@ public class AnnotationTest {
 		assertEquals(CtAnnotatedElementType.PARAMETER, annotations.get(0).getAnnotatedElementType());
 
 		// load constructor of the clazz and check annotated element type of the constructor annotation
-		Set<? extends CtConstructor<?>> constructors = clazz.getConstructors();
+		List<? extends CtConstructor<?>> constructors = clazz.getConstructors();
 		assertEquals(1, constructors.size());
 
 		CtConstructor<?> constructor = constructors.iterator().next();

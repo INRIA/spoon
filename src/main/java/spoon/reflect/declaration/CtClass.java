@@ -17,7 +17,6 @@
 package spoon.reflect.declaration;
 
 import java.util.List;
-import java.util.Set;
 
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
@@ -48,7 +47,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * Returns the constructors of this class. This includes the default
 	 * constructor if this class has no constructors explicitly declared.
 	 */
-	Set<CtConstructor<T>> getConstructors();
+	List<CtConstructor<T>> getConstructors();
 
 	/**
 	 * Sets the anonymous blocks of this class.
@@ -74,7 +73,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Sets the constructors for this class.
 	 */
-	<C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors);
+	<C extends CtClass<T>> C setConstructors(List<CtConstructor<T>> constructors);
 
 	/**
 	 * Adds a constructor to this class.
