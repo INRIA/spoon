@@ -22,7 +22,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
@@ -37,7 +36,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 
 	@Override
 	public List<CtTypeReference<?>> getBounds() {
-		return Collections.unmodifiableList(bounds);
+		return unmodifiableList(bounds);
 	}
 
 	@Override

@@ -30,7 +30,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
@@ -148,7 +147,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public List<CtTypeReference<?>> getActualTypeArguments() {
-		return Collections.unmodifiableList(actualTypeArguments);
+		return unmodifiableList(actualTypeArguments);
 	}
 
 	@Override

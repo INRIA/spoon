@@ -222,7 +222,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 					if (!Modifier.isFinal(f.getModifiers()) && !Modifier.isStatic(f.getModifiers())) {
 						if (fieldValue instanceof Collection) {
 							Collection<Object> c;
-							if (fieldValue == CtElementImpl.emptyCollection() || fieldValue == CtElementImpl.emptySet()) {
+							if (fieldValue == CtElementImpl.emptyList() || fieldValue == CtElementImpl.emptySet()) {
 								c = (Collection<Object>) fieldValue;
 							} else {
 								c = (Collection<Object>) fieldValue.getClass().getMethod("clone").invoke(fieldValue);

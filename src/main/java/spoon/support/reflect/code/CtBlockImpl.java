@@ -29,6 +29,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.EmptyIterator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -201,6 +202,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public Iterator<CtStatement> iterator() {
+		if (getStatements().isEmpty()) {
+			return EmptyIterator.instance();
+		}
 		// we have to both create a defensive object and an unmodifiable list
 		// with only Collections.unmodifiableList you can modify the defensive object
 		// with only new ArrayList it breaks the encapsulation

@@ -37,7 +37,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -181,11 +180,15 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 
 	@Override
 	public List<CtTypeReference<?>> getParameters() {
-		return Collections.unmodifiableList(parameters);
+		return unmodifiableList(parameters);
 	}
 
 	@Override
 	public <C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters) {
+		if (parameters.isEmpty()) {
+			this.parameters = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		if (this.parameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.parameters = new ArrayList<CtTypeReference<?>>();
 		}

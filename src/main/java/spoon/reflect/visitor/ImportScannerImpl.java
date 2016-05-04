@@ -37,6 +37,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -194,7 +195,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 		CtPackageReference pack = ((CtTypeReference<?>) imports
 				.get(simpleType.getSimpleName())).getPackage();
-		Collection<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>();
+		List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>();
 		for (CtTypeReference<?> ref : imports.values()) {
 			// ignore non-top-level type
 			if (ref.getPackage() != null) {
@@ -208,7 +209,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				}
 			}
 		}
-		return Collections.unmodifiableCollection(refs);
+		return Collections.unmodifiableList(refs);
 	}
 
 	/**

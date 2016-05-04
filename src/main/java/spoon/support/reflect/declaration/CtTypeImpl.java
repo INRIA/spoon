@@ -415,11 +415,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
+		if (getFields().isEmpty()) {
+			return Collections.emptyList();
+		}
 		List<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>(getFields().size());
 		for (CtField<?> f : getFields()) {
 			l.add(f.getReference());
 		}
-		return Collections.unmodifiableCollection(l);
+		return Collections.unmodifiableList(l);
 	}
 
 	/**
@@ -685,11 +688,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
+		if (getMethods().isEmpty()) {
+			return Collections.emptyList();
+		}
 		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(getMethods().size());
 		for (CtExecutable<?> m : getMethods()) {
 			l.add(m.getReference());
 		}
-		return Collections.unmodifiableCollection(l);
+		return Collections.unmodifiableList(l);
 	}
 
 	@Override

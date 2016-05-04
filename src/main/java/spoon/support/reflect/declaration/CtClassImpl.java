@@ -239,7 +239,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		for (CtExecutable<?> c : getConstructors()) {
 			l.add(c.getReference());
 		}
-		return Collections.unmodifiableCollection(l);
+		return Collections.unmodifiableList(l);
 	}
 
 	@Override

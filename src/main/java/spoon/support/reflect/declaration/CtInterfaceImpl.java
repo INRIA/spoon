@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.reference.CtExecutableReference;
@@ -51,12 +52,15 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 
 	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
-		List<CtExecutableReference<?>> l =
-				new ArrayList<CtExecutableReference<?>>(super.getDeclaredExecutables());
-		for (CtTypeReference<?> sup : getSuperInterfaces()) {
+		Set<CtTypeReference<?>> superInterfaces = getSuperInterfaces();
+		if (superInterfaces.isEmpty()) {
+			return super.getDeclaredExecutables();
+		}
+		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(super.getDeclaredExecutables());
+		for (CtTypeReference<?> sup : superInterfaces) {
 			l.addAll(sup.getAllExecutables());
 		}
-		return Collections.unmodifiableCollection(l);
+		return Collections.unmodifiableList(l);
 	}
 
 }
