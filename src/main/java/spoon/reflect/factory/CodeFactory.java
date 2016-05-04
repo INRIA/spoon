@@ -139,7 +139,7 @@ public class CodeFactory extends SubFactory {
 		fieldReference.setDeclaringType(type);
 
 		CtFieldRead<Class<T>> fieldRead = factory.Core().createFieldRead();
-		fieldRead.setType(classType);
+		fieldRead.setType(factory.Core().clone(classType));
 		fieldRead.setVariable(fieldReference);
 		fieldRead.setTarget(typeAccess);
 		return fieldRead;
@@ -159,7 +159,7 @@ public class CodeFactory extends SubFactory {
 		CtExecutableReference<T> executableReference = factory.Core()
 				.createExecutableReference();
 		executableReference.setType(type);
-		executableReference.setDeclaringType(type);
+		executableReference.setDeclaringType(factory.Core().clone(type));
 		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 		List<CtTypeReference<?>> typeReferences = new ArrayList<CtTypeReference<?>>();
 		for (int i = 0; i < parameters.length; i++) {
@@ -285,7 +285,7 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtLocalVariableReference<T> createLocalVariableReference(CtLocalVariable<T> localVariable) {
 		CtLocalVariableReference<T> ref = factory.Core().createLocalVariableReference();
-		ref.setType(localVariable.getType());
+		ref.setType(factory.Core().clone(localVariable.getType()));
 		ref.setSimpleName(localVariable.getSimpleName());
 		ref.setDeclaration(localVariable);
 		return ref;
@@ -368,7 +368,7 @@ public class CodeFactory extends SubFactory {
 		} else {
 			va = factory.Core().createVariableRead();
 		}
-		return va.setVariable(variable).setType(variable.getType());
+		return va.setVariable(variable).setType(factory.Core().clone(variable.getType()));
 	}
 
 	/**

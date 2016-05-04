@@ -391,10 +391,11 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReference(List<CtTypeReference<?>> bounds) {
 		final CtIntersectionTypeReference<T> intersectionRef = factory.Core().createIntersectionTypeReference();
-		intersectionRef.setSimpleName(bounds.get(0).getSimpleName());
-		intersectionRef.setDeclaringType(bounds.get(0).getDeclaringType());
-		intersectionRef.setPackage(bounds.get(0).getPackage());
-		intersectionRef.setActualTypeArguments(bounds.get(0).getActualTypeArguments());
+		CtTypeReference<?> firstBound = factory.Core().clone(bounds.get(0));
+		intersectionRef.setSimpleName(firstBound.getSimpleName());
+		intersectionRef.setDeclaringType(firstBound.getDeclaringType());
+		intersectionRef.setPackage(firstBound.getPackage());
+		intersectionRef.setActualTypeArguments(firstBound.getActualTypeArguments());
 		intersectionRef.setBounds(bounds);
 		return intersectionRef;
 	}

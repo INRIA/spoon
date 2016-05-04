@@ -2095,7 +2095,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			executableReference.setSimpleName(new String(referenceExpression.selector));
 			executableReference.setDeclaringType(references.getTypeReference(referenceExpression.lhs.resolvedType));
 		}
-		executableReference.setType((CtTypeReference<T>) executableReference.getDeclaringType());
+		executableReference.setType(factory.Core().clone((CtTypeReference<T>) executableReference.getDeclaringType()));
 		executableRef.setExecutable(executableReference);
 		return executableRef;
 	}
@@ -3272,7 +3272,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				va = factory.Core().createVariableRead();
 			}
 			va.setVariable(references.getVariableReference((VariableBinding) qualifiedNameReference.binding));
-			va.setType(va.getVariable().getType());
+			va.setType(factory.Core().clone(va.getVariable().getType()));
 			if (qualifiedNameReference.otherBindings != null) {
 				int i = 0; //positions index;
 				int sourceStart = (int) (positions[0] >>> 32);

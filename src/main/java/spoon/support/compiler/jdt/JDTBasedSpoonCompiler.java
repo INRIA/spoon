@@ -49,6 +49,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.AstParentConsistencyChecker;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.support.QueueProcessingManager;
@@ -130,7 +131,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		t = System.currentTimeMillis();
 		templateSuccess = buildTemplates(builder);
 		factory.getEnvironment().debugMessage("built in " + (System.currentTimeMillis() - t) + " ms");
+		checkModel();
 		return srcSuccess && templateSuccess;
+	}
+
+	private void checkModel() {
+		factory.getModel().getRootPackage().accept(new AstParentConsistencyChecker());
 	}
 
 	@Override
