@@ -6,10 +6,13 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.test.generics.ComparableComparatorBug;
 
+import java.net.URLClassLoader;
 import java.time.format.TextStyle;
 
 import static org.junit.Assert.assertEquals;
@@ -75,5 +78,17 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("E extends java.lang.Comparable<? super E>", ctTypeParameterReference.toString());
 		assertEquals(1, ctTypeParameterReference.getBoundingType().getActualTypeArguments().size());
 		assertTrue(ctTypeParameterReference.getBoundingType().getActualTypeArguments().get(0) instanceof CtTypeParameterReference);
+	}
+
+	@Test
+	public void testScannerArrayReference() throws Exception {
+		final CtType<URLClassLoader> aType = new JavaReflectionTreeBuilder(createFactory()).scan(URLClassLoader.class);
+		assertNotNull(aType);
+		final CtMethod<Object> aMethod = aType.getMethod("getURLs");
+		assertTrue(aMethod.getType() instanceof CtArrayTypeReference);
+		final CtArrayTypeReference<Object> arrayRef = (CtArrayTypeReference<Object>) aMethod.getType();
+		assertNull(arrayRef.getPackage());
+		assertNull(arrayRef.getDeclaringType());
+		assertNotNull(arrayRef.getComponentType());
 	}
 }

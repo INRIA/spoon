@@ -283,12 +283,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitArrayReference(Class<T> typeArray) {
-		if (typeArray.getPackage() != null) {
-			visitPackage(typeArray.getPackage());
-		}
-		if (typeArray.getEnclosingClass() != null) {
-			visitClassReference(typeArray.getEnclosingClass());
-		}
 		if (typeArray.isArray() && typeArray.getComponentType() != null) {
 			visitArrayReference(typeArray.getComponentType());
 		} else {
