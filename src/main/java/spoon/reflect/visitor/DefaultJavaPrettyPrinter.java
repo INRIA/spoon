@@ -873,7 +873,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("throws ");
 			for (CtTypeReference<?> ref : c.getThrownTypes()) {
 				scan(ref);
-				write(" , ");
+				write(", ");
 			}
 			removeLastChar();
 			write(" ");
@@ -2226,7 +2226,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(", ");
 			}
 			removeLastChar();
-			write(">");
+			write('>');
+			// Space between type params and return type
+			write(' ');
 		}
 		return this;
 	}
