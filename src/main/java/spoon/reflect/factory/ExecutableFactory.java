@@ -97,12 +97,12 @@ public class ExecutableFactory extends SubFactory {
 		CtTypeReference<?> refs[] = new CtTypeReference[e.getParameters().size()];
 		int i = 0;
 		for (CtParameter<?> param : e.getParameters()) {
-			refs[i++] = param.getType();
+			refs[i++] = factory.Core().clone(param.getType());
 		}
 		if (e instanceof CtMethod) {
-			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), ((CtMethod<T>) e).getType(), e.getSimpleName(), refs);
+			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), factory.Core().clone(((CtMethod<T>) e).getType()), e.getSimpleName(), refs);
 		}
-		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), ((CtConstructor<T>) e).getType(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
+		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), factory.Core().clone(((CtConstructor<T>) e).getType()), CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
 
 	/**

@@ -152,7 +152,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	 */
 	public <T> CtExecutableReference<T> createReference(Constructor<T> constructor) {
 		CtTypeReference<T> type = factory.Type().createReference(constructor.getDeclaringClass());
-		return createReference(type, type, CtExecutableReference.CONSTRUCTOR_NAME,
+		return createReference(type, factory.Core().clone(type), CtExecutableReference.CONSTRUCTOR_NAME,
 				factory.Type().createReferences(Arrays.asList(constructor.getParameterTypes())));
 	}
 
@@ -166,11 +166,11 @@ public class ConstructorFactory extends ExecutableFactory {
 	public <T> CtExecutableReference<T> createReference(CtTypeReference<T> type, CtExpression<?>...parameters) {
 		final CtExecutableReference<T> executableReference = factory.Core().createExecutableReference();
 		executableReference.setType(type);
-		executableReference.setDeclaringType(type);
+		executableReference.setDeclaringType(factory.Core().clone(type));
 		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 		List<CtTypeReference<?>> typeReferences = new ArrayList<CtTypeReference<?>>();
 		for (CtExpression<?> parameter : parameters) {
-			typeReferences.add(parameter.getType());
+			typeReferences.add(factory.Core().clone(parameter.getType()));
 		}
 		executableReference.setParameters(typeReferences);
 		return executableReference;

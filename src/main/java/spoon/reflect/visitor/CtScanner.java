@@ -565,6 +565,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctConstructorCall.getTypeCasts());
 		scan(ctConstructorCall.getExecutable());
 		scan(ctConstructorCall.getTarget());
+		scan(ctConstructorCall.getActualTypeArguments());
 		scan(ctConstructorCall.getArguments());
 		scan(ctConstructorCall.getComments());
 		exit(ctConstructorCall);
@@ -573,10 +574,10 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtNewClass(final CtNewClass<T> newClass) {
 		enter(newClass);
 		scan(newClass.getAnnotations());
-		scan(newClass.getType());
 		scan(newClass.getTypeCasts());
 		scan(newClass.getExecutable());
 		scan(newClass.getTarget());
+		scan(newClass.getActualTypeArguments());
 		scan(newClass.getArguments());
 		scan(newClass.getAnonymousClass());
 		scan(newClass.getComments());
