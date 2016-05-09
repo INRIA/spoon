@@ -29,7 +29,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -79,7 +78,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public List<CtParameter<?>> getParameters() {
-		return Collections.unmodifiableList(parameters);
+		return unmodifiableList(parameters);
 	}
 
 	@Override

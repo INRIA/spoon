@@ -33,6 +33,8 @@ import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.support.util.EmptyClearableList;
+import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.EqualVisitor;
 import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.SignaturePrinter;
@@ -62,79 +64,27 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 
-	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet
-	// because we need clear() for all set* methods
-	// and UnmodifiableList and unmodifiableCollection are not overridable (not visible grrrr)
-	private static class UnModifiableCollection extends ArrayList<Object> implements Set<Object> {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Object set(int index, Object element) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void add(int index, Object element) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Object remove(int index) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean addAll(int index, Collection<? extends Object> c) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public <T> T[] toArray(T[] a) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean add(java.lang.Object e) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean containsAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean addAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean retainAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public boolean removeAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
-		}
-	}
-
-	private static final Set<Object> EMPTY_SET = new UnModifiableCollection();
-	private static final Set<Object> EMPTY_LIST = new UnModifiableCollection();
-
-	@SuppressWarnings("unchecked")
 	public static <T> List<T> emptyList() {
-		return (List<T>) EMPTY_LIST;
+		return EmptyClearableList.instance();
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> Set<T> emptySet() {
-		return (Set<T>) EMPTY_SET;
+		return EmptyClearableSet.instance();
 	}
 
-	@SuppressWarnings("unchecked")
+	public static <T> List<T> unmodifiableList(List<T> list) {
+		return list.isEmpty() ? Collections.<T>emptyList() : Collections.unmodifiableList(list);
+	}
+
+	/**
+	 * Returns an empty collection.
+	 * @param <T> type of elements
+	 * @return an empty collection
+	 * @deprecated use {@link #emptyList()} or {@link #emptySet()} instead
+	 */
+	@Deprecated
 	public static <T> Collection<T> emptyCollection() {
-		return (Collection<T>) EMPTY_LIST;
+		return emptyList();
 	}
 
 	public String getSignature() {
@@ -225,7 +175,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
-		return Collections.unmodifiableList(annotations);
+		return unmodifiableList(annotations);
 	}
 
 	public String getDocComment() {
@@ -460,7 +410,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public List<CtComment> getComments() {
-		return Collections.unmodifiableList(comments);
+		return unmodifiableList(comments);
 	}
 
 	@Override
