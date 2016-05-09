@@ -12,8 +12,10 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.test.generics.ComparableComparatorBug;
 
+import java.io.ObjectInputStream;
 import java.net.URLClassLoader;
 import java.time.format.TextStyle;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -90,5 +92,17 @@ public class JavaReflectionTreeBuilderTest {
 		assertNull(arrayRef.getPackage());
 		assertNull(arrayRef.getDeclaringType());
 		assertNotNull(arrayRef.getComponentType());
+	}
+
+	@Test
+	public void testDeclaredMethods() throws Exception {
+		final CtType<StringBuilder> type = new JavaReflectionTreeBuilder(createFactory()).scan(StringBuilder.class);
+		assertNotNull(type);
+		// All methods overridden from AbstractStringBuilder and with a type changed have been removed.
+		assertEquals(0, type.getMethods().stream().filter(ctMethod -> "java.lang.AbstractStringBuilder".equals(ctMethod.getType().getQualifiedName())).collect(Collectors.toList()).size());
+		// reverse is declared in AbstractStringBuilder and overridden in StringBuilder but the type is the same.
+		assertNotNull(type.getMethod("reverse"));
+		// readObject is declared in StringBuilder.
+		assertNotNull(type.getMethod("readObject", type.getFactory().Type().createReference(ObjectInputStream.class)));
 	}
 }

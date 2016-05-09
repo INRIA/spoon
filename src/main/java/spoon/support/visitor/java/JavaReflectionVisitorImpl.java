@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
@@ -27,6 +28,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
@@ -47,13 +51,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : getDeclaredConstructors(clazz)) {
 			visitConstructor(constructor);
 		}
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (RtMethod method : getDeclaredMethods(clazz)) {
 			visitMethod(method);
 		}
-		for (Field field : clazz.getDeclaredFields()) {
+		for (Field field : getDeclaredFields(clazz)) {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -76,10 +80,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (RtMethod method : getDeclaredMethods(clazz)) {
 			visitMethod(method);
 		}
-		for (Field field : clazz.getDeclaredFields()) {
+		for (Field field : getDeclaredFields(clazz)) {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -102,16 +106,16 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : getDeclaredConstructors(clazz)) {
 			visitConstructor(constructor);
 		}
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (RtMethod method : getDeclaredMethods(clazz)) {
 			if (("valueOf".equals(method.getName()) && method.getParameterTypes().length == 1 && String.class.equals(method.getParameterTypes()[0])) || "values".equals(method.getName())) {
 				continue;
 			}
 			visitMethod(method);
 		}
-		for (Field field : clazz.getDeclaredFields()) {
+		for (Field field : getDeclaredFields(clazz)) {
 			if ("$VALUES".equals(field.getName())) {
 				continue;
 			}
@@ -135,10 +139,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (RtMethod method : getDeclaredMethods(clazz)) {
 			visitMethod(method);
 		}
-		for (Field field : clazz.getDeclaredFields()) {
+		for (Field field : getDeclaredFields(clazz)) {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -167,7 +171,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	}
 
 	@Override
-	public void visitMethod(Method method) {
+	public void visitMethod(RtMethod method) {
 		for (Annotation annotation : method.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
@@ -308,5 +312,35 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (type.getEnclosingClass() != null) {
 			visitClassReference(type.getEnclosingClass());
 		}
+	}
+
+	private <T> List<Field> getDeclaredFields(Class<T> clazz) {
+		final List<Field> fields = new ArrayList<Field>();
+		for (Field field : clazz.getDeclaredFields()) {
+			if (clazz.equals(field.getDeclaringClass())) {
+				fields.add(field);
+			}
+		}
+		return fields;
+	}
+
+	private <T> List<Constructor> getDeclaredConstructors(Class<T> clazz) {
+		final List<Constructor> constructors = new ArrayList<Constructor>();
+		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+			if (clazz.equals(constructor.getDeclaringClass())) {
+				constructors.add(constructor);
+			}
+		}
+		return constructors;
+	}
+
+	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {
+		final List<RtMethod> methods = new ArrayList<RtMethod>();
+		methods.addAll(Arrays.asList(RtMethod.methodsOf(clazz)));
+		final Class<?> superclass = clazz.getSuperclass();
+		if (superclass != null) {
+			methods.removeAll(Arrays.asList(RtMethod.sameMethodsWithDifferentTypeOf(superclass, methods)));
+		}
+		return methods;
 	}
 }

@@ -16,13 +16,13 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -43,7 +43,7 @@ interface JavaReflectionVisitor {
 
 	<T> void visitConstructor(Constructor<T> constructor);
 
-	void visitMethod(Method method);
+	void visitMethod(RtMethod method);
 
 	void visitField(Field field);
 
