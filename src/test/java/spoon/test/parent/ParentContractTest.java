@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitable;
 
@@ -114,12 +115,12 @@ public class ParentContractTest<T extends CtVisitable> {
 			if (o instanceof CtParameter && "setDefaultExpression".equals(setter.getName())) continue;
 			if (o instanceof CtCatchVariable && "setDefaultExpression".equals(setter.getName())) continue;
 			if (o instanceof CtConstructor && "setType".equals(setter.getName())) continue;
-			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
-			if (o instanceof CtConstructorCall || CtConstructorCall.class.isAssignableFrom(o.getClass())) {
-				if ("setType".equals(setter.getName())) continue;
+			if (CtActualTypeContainer.class.isAssignableFrom(o.getClass())) {
 				if ("setActualTypeArguments".equals(setter.getName())) continue;
 				if ("addActualTypeArgument".equals(setter.getName())) continue;
 			}
+			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
+			if ((o instanceof CtConstructorCall || CtConstructorCall.class.isAssignableFrom(o.getClass())) && "setType".equals(setter.getName())) continue;
 			if (o instanceof CtAnonymousExecutable && ("addParameter".equals(setter.getName()) || "setParameters".equals(setter.getName()))) continue;
 			if (o instanceof CtAnonymousExecutable && ("addThrownType".equals(setter.getName()) || "setThrownTypes".equals(setter.getName()))) continue;
 			if (o instanceof CtAnonymousExecutable && "setType".equals(setter.getName())) continue;

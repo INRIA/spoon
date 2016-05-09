@@ -1374,7 +1374,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					write(".");
 				}
 			}
-			writeActualTypeArguments(invocation.getExecutable());
+			writeActualTypeArguments(invocation);
 			// TODO: this does not work because the invocation does not have the
 			// right line number
 			if (env.isPreserveLineNumbers()) {
