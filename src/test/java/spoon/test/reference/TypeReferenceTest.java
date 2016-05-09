@@ -2,6 +2,7 @@ package spoon.test.reference;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
@@ -495,6 +496,13 @@ public class TypeReferenceTest {
 		reference.setBounds(new ArrayList<>());
 
 		assertEquals(0, reference.getBounds().size());
+	}
+
+	@Test(expected = SpoonException.class)
+	public void testReferenceName() throws Exception {
+		final Factory factory = createFactory();
+		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+		typeReference.setSimpleName("?");
 	}
 
 	class A {
