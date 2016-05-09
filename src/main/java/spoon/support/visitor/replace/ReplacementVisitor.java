@@ -51,6 +51,19 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 	}
 
+	class CtActualTypeContainerActualTypeArgumentsReplaceListener implements spoon.generating.replace.ReplaceListListener<java.util.List> {
+		private spoon.reflect.reference.CtActualTypeContainer element;
+
+		CtActualTypeContainerActualTypeArgumentsReplaceListener(spoon.reflect.reference.CtActualTypeContainer element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setActualTypeArguments(replace);
+		}
+	}
+
 	class CtAnnotationAnnotationTypeReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private spoon.reflect.declaration.CtAnnotation element;
 
@@ -545,29 +558,16 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 	}
 
-	class CtGenericElementFormalTypeParametersReplaceListener implements spoon.generating.replace.ReplaceListListener<java.util.List> {
-		private spoon.reflect.declaration.CtGenericElement element;
+	class CtFormalTypeDeclarerFormalTypeParametersReplaceListener implements spoon.generating.replace.ReplaceListListener<java.util.List> {
+		private spoon.reflect.declaration.CtFormalTypeDeclarer element;
 
-		CtGenericElementFormalTypeParametersReplaceListener(spoon.reflect.declaration.CtGenericElement element) {
+		CtFormalTypeDeclarerFormalTypeParametersReplaceListener(spoon.reflect.declaration.CtFormalTypeDeclarer element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(java.util.List replace) {
 			this.element.setFormalTypeParameters(replace);
-		}
-	}
-
-	class CtGenericElementReferenceActualTypeArgumentsReplaceListener implements spoon.generating.replace.ReplaceListListener<java.util.List> {
-		private spoon.reflect.reference.CtGenericElementReference element;
-
-		CtGenericElementReferenceActualTypeArgumentsReplaceListener(spoon.reflect.reference.CtGenericElementReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setActualTypeArguments(replace);
 		}
 	}
 
@@ -1229,7 +1229,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceElementIfExist(reference.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferenceDeclaringTypeReplaceListener(reference));
 		replaceElementIfExist(reference.getPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferencePackageReplaceListener(reference));
 		replaceElementIfExist(reference.getComponentType(), new spoon.support.visitor.replace.ReplacementVisitor.CtArrayTypeReferenceComponentTypeReplaceListener(reference));
-		replaceInListIfExist(reference.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtGenericElementReferenceActualTypeArgumentsReplaceListener(reference));
+		replaceInListIfExist(reference.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtActualTypeContainerActualTypeArgumentsReplaceListener(reference));
 		replaceInListIfExist(reference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(reference));
 	}
 
@@ -1291,7 +1291,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(ctClass.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(ctClass));
 		replaceElementIfExist(ctClass.getSuperclass(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperclassReplaceListener(ctClass));
 		replaceInSetIfExist(ctClass.getSuperInterfaces(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperInterfacesReplaceListener(ctClass));
-		replaceInListIfExist(ctClass.getFormalTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtGenericElementFormalTypeParametersReplaceListener(ctClass));
+		replaceInListIfExist(ctClass.getFormalTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalTypeParametersReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getAnonymousExecutables(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassAnonymousExecutablesReplaceListener(ctClass));
 		replaceInSetIfExist(ctClass.getNestedTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeNestedTypesReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getFields(), new spoon.support.visitor.replace.ReplacementVisitor.CtClassFieldsReplaceListener(ctClass));
@@ -1312,7 +1312,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(c.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(c));
 		replaceInListIfExist(c.getParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableParametersReplaceListener(c));
 		replaceInSetIfExist(c.getThrownTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableThrownTypesReplaceListener(c));
-		replaceInListIfExist(c.getFormalTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtGenericElementFormalTypeParametersReplaceListener(c));
+		replaceInListIfExist(c.getFormalTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalTypeParametersReplaceListener(c));
 		replaceElementIfExist(c.getBody(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableBodyReplaceListener(c));
 		replaceInListIfExist(c.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(c));
 	}
@@ -1344,7 +1344,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceElementIfExist(reference.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableReferenceDeclaringTypeReplaceListener(reference));
 		replaceElementIfExist(reference.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableReferenceTypeReplaceListener(reference));
 		replaceInListIfExist(reference.getParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableReferenceParametersReplaceListener(reference));
-		replaceInListIfExist(reference.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtGenericElementReferenceActualTypeArgumentsReplaceListener(reference));
+		replaceInListIfExist(reference.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtActualTypeContainerActualTypeArgumentsReplaceListener(reference));
 		replaceInListIfExist(reference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(reference));
 		replaceInListIfExist(reference.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(reference));
 	}
@@ -1415,7 +1415,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtInterface(final spoon.reflect.declaration.CtInterface<T> intrface) {
 		replaceInListIfExist(intrface.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(intrface));
 		replaceInSetIfExist(intrface.getSuperInterfaces(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperInterfacesReplaceListener(intrface));
-		replaceInListIfExist(intrface.getFormalTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtGenericElementFormalTypeParametersReplaceListener(intrface));
+		replaceInListIfExist(intrface.getFormalTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalTypeParametersReplaceListener(intrface));
 		replaceInSetIfExist(intrface.getNestedTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeNestedTypesReplaceListener(intrface));
 		replaceInListIfExist(intrface.getFields(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeFieldsReplaceListener(intrface));
 		replaceInSetIfExist(intrface.getMethods(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeMethodsReplaceListener(intrface));
@@ -1463,7 +1463,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	public <T> void visitCtMethod(final spoon.reflect.declaration.CtMethod<T> m) {
 		replaceInListIfExist(m.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(m));
-		replaceInListIfExist(m.getFormalTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtGenericElementFormalTypeParametersReplaceListener(m));
+		replaceInListIfExist(m.getFormalTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalTypeParametersReplaceListener(m));
 		replaceElementIfExist(m.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(m));
 		replaceInListIfExist(m.getParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableParametersReplaceListener(m));
 		replaceInSetIfExist(m.getThrownTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtExecutableThrownTypesReplaceListener(m));
@@ -1602,7 +1602,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public void visitCtTypeParameterReference(final spoon.reflect.reference.CtTypeParameterReference ref) {
 		replaceElementIfExist(ref.getPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferencePackageReplaceListener(ref));
 		replaceElementIfExist(ref.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferenceDeclaringTypeReplaceListener(ref));
-		replaceInListIfExist(ref.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtGenericElementReferenceActualTypeArgumentsReplaceListener(ref));
+		replaceInListIfExist(ref.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtActualTypeContainerActualTypeArgumentsReplaceListener(ref));
 		replaceInListIfExist(ref.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(ref));
 		replaceElementIfExist(ref.getBoundingType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeParameterReferenceBoundingTypeReplaceListener(ref));
 	}
@@ -1615,7 +1615,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtTypeReference(final spoon.reflect.reference.CtTypeReference<T> reference) {
 		replaceElementIfExist(reference.getPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferencePackageReplaceListener(reference));
 		replaceElementIfExist(reference.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferenceDeclaringTypeReplaceListener(reference));
-		replaceInListIfExist(reference.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtGenericElementReferenceActualTypeArgumentsReplaceListener(reference));
+		replaceInListIfExist(reference.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtActualTypeContainerActualTypeArgumentsReplaceListener(reference));
 		replaceInListIfExist(reference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(reference));
 		replaceInListIfExist(reference.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(reference));
 	}

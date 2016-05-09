@@ -96,11 +96,11 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -2235,13 +2235,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * Writes actual type arguments in a {@link CtGenericElementReference} element.
+	 * Writes actual type arguments in a {@link CtActualTypeContainer} element.
 	 *
 	 * @param ctGenericElementReference
 	 * 		Reference with actual type arguments.
 	 * @return current instance of the {@link DefaultJavaPrettyPrinter}
 	 */
-	public DefaultJavaPrettyPrinter writeActualTypeArguments(CtGenericElementReference ctGenericElementReference) {
+	public DefaultJavaPrettyPrinter writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
 		Collection<CtTypeReference<?>> params = ctGenericElementReference.getActualTypeArguments();
 		if (params != null && params.size() > 0) {
 			write("<");

@@ -61,7 +61,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtGenericElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
@@ -107,7 +107,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
-	public void scanCtGenericElement(CtGenericElement e) {
+	public void scanCtFormalTypeDeclarer(CtFormalTypeDeclarer e) {
 		if (this.jdtTreeBuilder.context.isTypeParameter && child instanceof CtTypeParameterReference) {
 			e.addFormalTypeParameter((CtTypeParameterReference) child);
 		}

@@ -22,7 +22,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtGenericElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -510,7 +510,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtGenericElement> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
+	public <C extends CtFormalTypeDeclarer> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
 		if (formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
 			formalTypeParameters = new ArrayList<CtTypeParameterReference>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -654,7 +654,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtGenericElement> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
+	public <C extends CtFormalTypeDeclarer> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
 		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
 			this.formalTypeParameters = new ArrayList<CtTypeParameterReference>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}

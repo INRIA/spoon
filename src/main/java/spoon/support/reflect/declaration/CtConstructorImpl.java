@@ -17,7 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtGenericElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtShadowable;
@@ -82,7 +82,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public <T extends CtGenericElement> T addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
+	public <T extends CtFormalTypeDeclarer> T addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
 		if (formalTypeParameter == null) {
 			return (T) this;
 		}
@@ -95,7 +95,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public <T extends CtGenericElement> T setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
+	public <T extends CtFormalTypeDeclarer> T setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
 		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
 			this.formalTypeParameters = new ArrayList<CtTypeParameterReference>(CONSTRUCTOR_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
