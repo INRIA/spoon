@@ -11,6 +11,7 @@ version of 03/09/2015
 * Model
     * support for analyzing bound vs unbound type references (`List<T>` vs `List<String>`) 
     * build model of binary code using a decompiler 
+    * Improves usage of generics on the model (See https://github.com/INRIA/spoon/issues/583#issue-148728790)
 * Transformations:
     * Keep original when printing after transformation
         * inline comments
