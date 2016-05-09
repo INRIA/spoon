@@ -122,7 +122,16 @@ public interface CtTypeInformation {
 
 	/**
 	 * Gets the executables declared by this type and by all its supertypes if
-	 * applicable.
+	 * applicable. This method returns:
+	 *
+	 * <ul>
+	 *     <li>static, instance and default executables</li>
+	 *     <li>Overridden methods</li>
+	 *     <li>constructors</li>
+	 * </ul>
+	 *
+	 * If a method is overridden twice in the hierarchy, it counts for two different elements.
+	 * If a method is declared in an interface in the hierarchy and implemented in the current type or in a super type, it counts for two (or n different elements).
 	 */
 	Collection<CtExecutableReference<?>> getAllExecutables();
 
