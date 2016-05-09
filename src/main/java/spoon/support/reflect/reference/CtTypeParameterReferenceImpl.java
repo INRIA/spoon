@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeSet;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -51,7 +52,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@Override
 	public List<CtTypeReference<?>> getBounds() {
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			return getBoundingType().asCtIntersectionTypeReference().getBounds();
+			return Arrays.asList(getBoundingType().asCtIntersectionTypeReference().getBounds().toArray(new CtTypeReference<?>[0]));
 		} else if (getBoundingType() != null) {
 			return Collections.<CtTypeReference<?>>singletonList(getBoundingType());
 		}
@@ -70,7 +71,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			return (T) this;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			getBoundingType().asCtIntersectionTypeReference().setBounds(bounds);
+			getBoundingType().asCtIntersectionTypeReference().setBounds(new TreeSet<CtTypeReference<?>>(bounds));
 		} else if (bounds.size() > 1) {
 			setBoundingType(getFactory().Type().createIntersectionTypeReference(bounds));
 		} else {
