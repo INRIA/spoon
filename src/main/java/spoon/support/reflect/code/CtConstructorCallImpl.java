@@ -32,14 +32,12 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
 		implements CtConstructorCall<T> {
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 	List<CtExpression<?>> arguments = emptyList();
 	CtExecutableReference<T> executable;
 	String label;
@@ -147,38 +145,28 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public List<CtTypeReference<?>> getActualTypeArguments() {
-		return unmodifiableList(actualTypeArguments);
+		return getExecutable() == null ? CtElementImpl.<CtTypeReference<?>>emptyList() : getExecutable().getActualTypeArguments();
 	}
 
 	@Override
 	public <T extends CtGenericElementReference> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
-		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.actualTypeArguments = new ArrayList<CtTypeReference<?>>(
-					CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		this.actualTypeArguments.clear();
-		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
-			addActualTypeArgument(actualTypeArgument);
+		if (getExecutable() != null) {
+			getExecutable().setActualTypeArguments(actualTypeArguments);
 		}
 		return (T) this;
 	}
 
 	@Override
-	public <T extends CtGenericElementReference> T addActualTypeArgument(
-			CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
-					CONSTRUCTOR_CALL_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+	public <T extends CtGenericElementReference> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (getExecutable() != null) {
+			getExecutable().addActualTypeArgument(actualTypeArgument);
 		}
-		actualTypeArgument.setParent(this);
-		actualTypeArguments.add(actualTypeArgument);
 		return (T) this;
 	}
 
 	@Override
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
-				&& actualTypeArguments.remove(actualTypeArgument);
+		return getExecutable() != null && getExecutable().removeActualTypeArgument(actualTypeArgument);
 	}
 
 	@Override

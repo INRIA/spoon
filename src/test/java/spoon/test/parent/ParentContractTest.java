@@ -5,12 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -117,8 +115,11 @@ public class ParentContractTest<T extends CtVisitable> {
 			if (o instanceof CtCatchVariable && "setDefaultExpression".equals(setter.getName())) continue;
 			if (o instanceof CtConstructor && "setType".equals(setter.getName())) continue;
 			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
-			if (o instanceof CtConstructorCall && "setType".equals(setter.getName())) continue;
-			if (o instanceof CtNewClass && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtConstructorCall || CtConstructorCall.class.isAssignableFrom(o.getClass())) {
+				if ("setType".equals(setter.getName())) continue;
+				if ("setActualTypeArguments".equals(setter.getName())) continue;
+				if ("addActualTypeArgument".equals(setter.getName())) continue;
+			}
 			if (o instanceof CtAnonymousExecutable && ("addParameter".equals(setter.getName()) || "setParameters".equals(setter.getName()))) continue;
 			if (o instanceof CtAnonymousExecutable && ("addThrownType".equals(setter.getName()) || "setThrownTypes".equals(setter.getName()))) continue;
 			if (o instanceof CtAnonymousExecutable && "setType".equals(setter.getName())) continue;
@@ -133,12 +134,12 @@ public class ParentContractTest<T extends CtVisitable> {
 				// we check that setParent has been called
 				verify(mockedArgument).setParent((CtElement) receiver);
 			} catch (AssertionError e) {
-				Assert.fail("call setParent contract failed for "+setter.toString()+" "+e.toString());				
+				Assert.fail("call setParent contract failed for "+setter.toString()+" "+e.toString());
 			} catch (InvocationTargetException e) {
 				if (e.getCause() instanceof RuntimeException) {
 					throw e.getCause();
 				} else {
-					throw new SpoonException(e.getCause()); 
+					throw new SpoonException(e.getCause());
 				}
 			}
 		}
