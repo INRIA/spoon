@@ -23,8 +23,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -149,7 +149,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
-	public <T extends CtGenericElementReference> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
+	public <T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
 		if (getExecutable() != null) {
 			getExecutable().setActualTypeArguments(actualTypeArguments);
 		}
@@ -157,7 +157,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
-	public <T extends CtGenericElementReference> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+	public <T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (getExecutable() != null) {
 			getExecutable().addActualTypeArgument(actualTypeArgument);
 		}

@@ -14,15 +14,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.code;
+package spoon.reflect.reference;
 
-import spoon.reflect.reference.CtGenericElementReference;
+import java.util.List;
 
 /**
- * This code element represents a constructor call.
- *
- * @param <T>
- * 		created type
+ * This interface defines the capability related to binding generics (aka type parameters).
  */
-public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpression<?>>, CtAbstractInvocation<T>, CtStatement, CtGenericElementReference {
+public interface CtActualTypeContainer {
+	/**
+	 * Gets the type arguments.
+	 */
+	List<CtTypeReference<?>> getActualTypeArguments();
+
+	/**
+	 * Sets the type arguments.
+	 */
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+
+	/**
+	 * Adds a type argument.
+	 */
+	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+
+	/**
+	 * Removes a type argument.
+	 */
+	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 }

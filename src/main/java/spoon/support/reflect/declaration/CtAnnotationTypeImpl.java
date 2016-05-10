@@ -17,7 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtGenericElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
@@ -85,12 +85,12 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	}
 
 	@Override
-	public <C extends CtGenericElement> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
+	public <C extends CtFormalTypeDeclarer> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
 		throw new UnsupportedOperationException("You can't have generics in an annotation.");
 	}
 
 	@Override
-	public <C extends CtGenericElement> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
+	public <C extends CtFormalTypeDeclarer> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
 		throw new UnsupportedOperationException("You can't have generics in an annotation.");
 	}
 

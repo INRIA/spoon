@@ -19,7 +19,7 @@ package spoon.support.visitor.java.internal;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtGenericElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -73,8 +73,8 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 
 	@Override
 	public void addFormalType(CtTypeParameterReference parameterRef) {
-		if (ctExecutable instanceof CtGenericElement) {
-			((CtGenericElement) ctExecutable).addFormalTypeParameter(parameterRef);
+		if (ctExecutable instanceof CtFormalTypeDeclarer) {
+			((CtFormalTypeDeclarer) ctExecutable).addFormalTypeParameter(parameterRef);
 			return;
 		}
 		super.addFormalType(parameterRef);

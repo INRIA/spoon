@@ -16,30 +16,12 @@
  */
 package spoon.reflect.reference;
 
-import java.util.List;
-
 /**
  * This interface defines a reference to
  * {@link spoon.reflect.declaration.CtGenericElement}.
+ *
+ * @see CtActualTypeContainer
  */
-public interface CtGenericElementReference {
-	/**
-	 * Gets the type arguments.
-	 */
-	List<CtTypeReference<?>> getActualTypeArguments();
-
-	/**
-	 * Sets the type arguments.
-	 */
-	<T extends CtGenericElementReference> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
-
-	/**
-	 * Adds a type argument.
-	 */
-	<T extends CtGenericElementReference> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
-
-	/**
-	 * Removes a type argument.
-	 */
-	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+@Deprecated
+public interface CtGenericElementReference extends CtActualTypeContainer {
 }

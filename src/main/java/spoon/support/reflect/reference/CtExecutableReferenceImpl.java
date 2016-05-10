@@ -24,8 +24,8 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NameFilter;
@@ -243,7 +243,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 	}
 
 	@Override
-	public <C extends CtGenericElementReference> C setActualTypeArguments(
+	public <C extends CtActualTypeContainer> C setActualTypeArguments(
 			List<CtTypeReference<?>> actualTypeArguments) {
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<CtTypeReference<?>>();
@@ -409,7 +409,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 	}
 
 	@Override
-	public <C extends CtGenericElementReference> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
 					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);

@@ -23,6 +23,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -33,8 +34,7 @@ import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
-public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
-		implements CtInvocation<T> {
+public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
 
 	String label;
@@ -156,5 +156,31 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 			getExecutable().setType(type);
 		}
 		return (C) this;
+	}
+
+	@Override
+	public List<CtTypeReference<?>> getActualTypeArguments() {
+		return getExecutable() == null ? CtElementImpl.<CtTypeReference<?>>emptyList() : getExecutable().getActualTypeArguments();
+	}
+
+	@Override
+	public <T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
+		if (getExecutable() != null) {
+			getExecutable().setActualTypeArguments(actualTypeArguments);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (getExecutable() != null) {
+			getExecutable().addActualTypeArgument(actualTypeArgument);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		return getExecutable() != null && getExecutable().removeActualTypeArgument(actualTypeArgument);
 	}
 }

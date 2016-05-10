@@ -91,11 +91,11 @@ import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -494,7 +494,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		setResult(foreach.getFactory().Core().clone(foreach));
 	}
 
-	public void visitCtGenericElementReference(CtGenericElementReference reference) {
+	public void visitCtGenericElementReference(CtActualTypeContainer reference) {
 		throw new RuntimeException("Unknown Element");
 	}
 

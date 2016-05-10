@@ -82,6 +82,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -98,6 +99,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -209,8 +211,18 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	/**
-	 * Scans an abstract generic element.
+	 * Scans a formal type declarer.
 	 */
+	public void scanCtFormalTypeDeclarer(CtFormalTypeDeclarer e) {
+
+	}
+
+	/**
+	 * Scans an abstract generic element.
+	 *
+	 * @see #scanCtFormalTypeDeclarer(CtFormalTypeDeclarer)
+	 */
+	@Deprecated
 	public void scanCtGenericElement(CtGenericElement e) {
 
 	}
@@ -220,10 +232,18 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	/**
-	 * Scans an abstract generic element reference.
+	 * Scans an actual type container..
 	 */
-	public void scanCtGenericElementReference(
-			CtGenericElementReference reference) {
+	public void scanCtActualTypeContainer(CtActualTypeContainer reference) {
+	}
+
+	/**
+	 * Scans an abstract generic element reference.
+	 *
+	 * @see #scanCtActualTypeContainer(CtActualTypeContainer)
+	 */
+	@Deprecated
+	public void scanCtGenericElementReference(CtGenericElementReference reference) {
 	}
 
 	/**
@@ -356,7 +376,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtNamedElement(e);
 		scanCtTypeInformation(e);
 		scanCtTypeMember(e);
-		scanCtGenericElement(e);
+		scanCtFormalTypeDeclarer(e);
 		scanCtModifiable(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
@@ -456,7 +476,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtType(e);
 		scanCtStatement(e);
 		scanCtTypeInformation(e);
-		scanCtGenericElement(e);
+		scanCtFormalTypeDeclarer(e);
 		scanCtCodeElement(e);
 		scanCtNamedElement(e);
 		scanCtTypeMember(e);
@@ -476,7 +496,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtConstructor(CtConstructor<T> e) {
 		scanCtExecutable(e);
 		scanCtNamedElement(e);
-		scanCtGenericElement(e);
+		scanCtFormalTypeDeclarer(e);
 		scanCtTypedElement(e);
 		scanCtTypeMember(e);
 		scanCtModifiable(e);
@@ -507,7 +527,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> e) {
 		scanCtReference(e);
 		scanCtElement(e);
-		scanCtGenericElementReference(e);
+		scanCtActualTypeContainer(e);
 		scanCtVisitable(e);
 	}
 
@@ -568,7 +588,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtInterface(CtInterface<T> e) {
 		scanCtType(e);
 		scanCtTypeInformation(e);
-		scanCtGenericElement(e);
+		scanCtFormalTypeDeclarer(e);
 		scanCtNamedElement(e);
 		scanCtTypeMember(e);
 		scanCtElement(e);
@@ -579,6 +599,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtInvocation(CtInvocation<T> e) {
 		scanCtAbstractInvocation(e);
 		scanCtStatement(e);
+		scanCtActualTypeContainer(e);
 		scanCtTargetedExpression(e);
 		scanCtElement(e);
 		scanCtCodeElement(e);
@@ -636,7 +657,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtExecutable(e);
 		scanCtTypedElement(e);
 		scanCtNamedElement(e);
-		scanCtGenericElement(e);
+		scanCtFormalTypeDeclarer(e);
 		scanCtTypeMember(e);
 		scanCtElement(e);
 		scanCtModifiable(e);
@@ -656,7 +677,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTargetedExpression(e);
 		scanCtAbstractInvocation(e);
 		scanCtStatement(e);
-		scanCtGenericElementReference(e);
+		scanCtActualTypeContainer(e);
 		scanCtExpression(e);
 		scanCtElement(e);
 		scanCtCodeElement(e);
@@ -782,7 +803,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtTypeReference(CtTypeReference<T> e) {
 		scanCtReference(e);
 		scanCtTypeInformation(e);
-		scanCtGenericElementReference(e);
+		scanCtActualTypeContainer(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
