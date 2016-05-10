@@ -4,14 +4,19 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.reference.testclasses.Bar;
 import spoon.test.reference.testclasses.Burritos;
+import spoon.test.reference.testclasses.Kuu;
+import spoon.test.reference.testclasses.SuperFoo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -95,5 +100,29 @@ public class ExecutableReferenceTest {
 		} catch (NullPointerException e) {
 			fail("We shoudn't have a NullPointerException when we call getAllExecutables.");
 		}
+	}
+
+	@Test
+	public void testSpecifyGetAllExecutablesMethod() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtInterface<spoon.test.reference.testclasses.Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);
+		final List<CtExecutableReference<?>> fooExecutables = foo.getAllExecutables().stream().collect(Collectors.toList());
+		assertEquals(2, fooExecutables.size());
+		assertEquals(foo.getMethod("m").getReference(), fooExecutables.get(0));
+		assertEquals(launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference(), fooExecutables.get(1));
+
+		final CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
+		final List<CtExecutableReference<?>> barExecutables = bar.getAllExecutables().stream().collect(Collectors.toList());
+		assertEquals(1, barExecutables.size());
+		assertEquals(bar.getConstructors().stream().collect(Collectors.toList()).get(0).getReference(), barExecutables.get(0));
+
+		final CtInterface<Kuu> kuu = launcher.getFactory().Interface().get(Kuu.class);
+		final List<CtExecutableReference<?>> kuuExecutables = kuu.getAllExecutables().stream().collect(Collectors.toList());
+		assertEquals(1, kuuExecutables.size());
+		assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0));
 	}
 }
