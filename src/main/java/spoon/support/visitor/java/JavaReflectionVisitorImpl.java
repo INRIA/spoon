@@ -51,7 +51,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		for (Constructor<?> constructor : getDeclaredConstructors(clazz)) {
+		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
 			visitConstructor(constructor);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
@@ -106,7 +106,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		for (Constructor<?> constructor : getDeclaredConstructors(clazz)) {
+		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
 			visitConstructor(constructor);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
@@ -312,16 +312,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (type.getEnclosingClass() != null) {
 			visitClassReference(type.getEnclosingClass());
 		}
-	}
-
-	private <T> List<Constructor> getDeclaredConstructors(Class<T> clazz) {
-		final List<Constructor> constructors = new ArrayList<Constructor>();
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-			if (clazz.equals(constructor.getDeclaringClass())) {
-				constructors.add(constructor);
-			}
-		}
-		return constructors;
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {

@@ -10,6 +10,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.generics.ComparableComparatorBug;
 
 import java.io.ObjectInputStream;
@@ -113,5 +114,13 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(aType);
 		// CookieManager have only 2 fields. Java reflection doesn't give us field of its superclass.
 		assertEquals(2, aType.getFields().size());
+	}
+
+	@Test
+	public void testDeclaredConstructor() throws Exception {
+		final CtType<JDTSnippetCompiler> aType = new JavaReflectionTreeBuilder(createFactory()).scan(JDTSnippetCompiler.class);
+		assertNotNull(aType);
+		// JDTSnippetCompiler have only 1 constructor with 2 arguments but its super class have 1 constructor with 1 argument.
+		assertEquals(1, ((CtClass<JDTSnippetCompiler>) aType).getConstructors().size());
 	}
 }
