@@ -13,6 +13,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.test.generics.ComparableComparatorBug;
 
 import java.io.ObjectInputStream;
+import java.net.CookieManager;
 import java.net.URLClassLoader;
 import java.time.format.TextStyle;
 import java.util.stream.Collectors;
@@ -104,5 +105,13 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(type.getMethod("reverse"));
 		// readObject is declared in StringBuilder.
 		assertNotNull(type.getMethod("readObject", type.getFactory().Type().createReference(ObjectInputStream.class)));
+	}
+
+	@Test
+	public void testDeclaredField() throws Exception {
+		final CtType<CookieManager> aType = new JavaReflectionTreeBuilder(createFactory()).scan(CookieManager.class);
+		assertNotNull(aType);
+		// CookieManager have only 2 fields. Java reflection doesn't give us field of its superclass.
+		assertEquals(2, aType.getFields().size());
 	}
 }

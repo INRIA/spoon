@@ -57,7 +57,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (RtMethod method : getDeclaredMethods(clazz)) {
 			visitMethod(method);
 		}
-		for (Field field : getDeclaredFields(clazz)) {
+		for (Field field : clazz.getDeclaredFields()) {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -83,7 +83,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (RtMethod method : getDeclaredMethods(clazz)) {
 			visitMethod(method);
 		}
-		for (Field field : getDeclaredFields(clazz)) {
+		for (Field field : clazz.getDeclaredFields()) {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -115,7 +115,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			}
 			visitMethod(method);
 		}
-		for (Field field : getDeclaredFields(clazz)) {
+		for (Field field : clazz.getDeclaredFields()) {
 			if ("$VALUES".equals(field.getName())) {
 				continue;
 			}
@@ -142,7 +142,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (RtMethod method : getDeclaredMethods(clazz)) {
 			visitMethod(method);
 		}
-		for (Field field : getDeclaredFields(clazz)) {
+		for (Field field : clazz.getDeclaredFields()) {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -312,16 +312,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (type.getEnclosingClass() != null) {
 			visitClassReference(type.getEnclosingClass());
 		}
-	}
-
-	private <T> List<Field> getDeclaredFields(Class<T> clazz) {
-		final List<Field> fields = new ArrayList<Field>();
-		for (Field field : clazz.getDeclaredFields()) {
-			if (clazz.equals(field.getDeclaringClass())) {
-				fields.add(field);
-			}
-		}
-		return fields;
 	}
 
 	private <T> List<Constructor> getDeclaredConstructors(Class<T> clazz) {
