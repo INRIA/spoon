@@ -610,7 +610,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 	}
 
-	class CtIntersectionTypeReferenceBoundsReplaceListener implements spoon.generating.replace.ReplaceListListener<java.util.List> {
+	class CtIntersectionTypeReferenceBoundsReplaceListener implements spoon.generating.replace.ReplaceSetListener<java.util.Set> {
 		private spoon.reflect.reference.CtIntersectionTypeReference element;
 
 		CtIntersectionTypeReferenceBoundsReplaceListener(spoon.reflect.reference.CtIntersectionTypeReference element) {
@@ -618,7 +618,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 
 		@java.lang.Override
-		public void set(java.util.List replace) {
+		public void set(java.util.Set replace) {
 			this.element.setBounds(replace);
 		}
 	}
@@ -1609,7 +1609,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	@java.lang.Override
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
-		replaceInListIfExist(reference.getBounds(), new spoon.support.visitor.replace.ReplacementVisitor.CtIntersectionTypeReferenceBoundsReplaceListener(reference));
+		replaceInSetIfExist(reference.getBounds(), new spoon.support.visitor.replace.ReplacementVisitor.CtIntersectionTypeReferenceBoundsReplaceListener(reference));
 	}
 
 	public <T> void visitCtTypeReference(final spoon.reflect.reference.CtTypeReference<T> reference) {

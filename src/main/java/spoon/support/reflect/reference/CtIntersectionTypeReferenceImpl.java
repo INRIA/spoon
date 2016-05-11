@@ -21,13 +21,14 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY;
+import static java.util.Collections.unmodifiableSet;
 
 public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtIntersectionTypeReference<T> {
-	List<CtTypeReference<?>> bounds = CtElementImpl.emptyList();
+	Set<CtTypeReference<?>> bounds = CtElementImpl.emptySet();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -35,19 +36,17 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	}
 
 	@Override
-	public List<CtTypeReference<?>> getBounds() {
-		return unmodifiableList(bounds);
+	public Set<CtTypeReference<?>> getBounds() {
+		return unmodifiableSet(bounds);
 	}
 
 	@Override
-	public <C extends CtIntersectionTypeReference> C setBounds(List<CtTypeReference<?>> bounds) {
-		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+	public <C extends CtIntersectionTypeReference> C setBounds(Set<CtTypeReference<?>> bounds) {
+		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
+			this.bounds = new TreeSet<CtTypeReference<?>>(new SourcePositionComparator());
 		}
 		this.bounds.clear();
-		final List<CtTypeReference<?>> newBounds = new ArrayList<CtTypeReference<?>>();
-		newBounds.addAll(bounds);
-		for (CtTypeReference<?> bound : newBounds) {
+		for (CtTypeReference<?> bound : bounds) {
 			addBound(bound);
 		}
 		return (C) this;
@@ -55,8 +54,8 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 
 	@Override
 	public <C extends CtIntersectionTypeReference> C addBound(CtTypeReference<?> bound) {
-		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			bounds = new ArrayList<CtTypeReference<?>>(TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY);
+		if (bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
+			bounds = new TreeSet<CtTypeReference<?>>(new SourcePositionComparator());
 		}
 		bound.setParent(this);
 		bounds.add(bound);
@@ -66,5 +65,17 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
 		return bounds != CtElementImpl.<CtTypeReference<?>>emptyList() && bounds.remove(bound);
+	}
+
+	private class SourcePositionComparator implements Comparator<CtTypeReference<?>> {
+		@Override
+		public int compare(CtTypeReference<?> o1, CtTypeReference<?> o2) {
+			if (o1.getPosition() == null || o2.getPosition() == null) {
+				return -1;
+			}
+			int pos1 = o1.getPosition().getSourceStart();
+			int pos2 = o2.getPosition().getSourceStart();
+			return (pos1 < pos2) ? -1 : ((pos1 == pos2) ? 0 : 1);
+		}
 	}
 }

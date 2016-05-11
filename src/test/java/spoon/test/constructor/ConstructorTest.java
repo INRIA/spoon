@@ -16,7 +16,9 @@ import spoon.test.constructor.testclasses.AClass;
 import spoon.test.constructor.testclasses.Tacos;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -108,9 +110,10 @@ public class ConstructorTest {
 
 		assertNotNull(genericT.getBoundingType());
 		assertTrue(genericT.getBoundingType() instanceof CtIntersectionTypeReference);
-		CtIntersectionTypeReference<?> bounds = genericT.getBoundingType().asCtIntersectionTypeReference();
+		CtIntersectionTypeReference<?> boundingType = genericT.getBoundingType().asCtIntersectionTypeReference();
 
-		CtTypeReference<?> genericTacos = bounds.getBounds().get(0);
+		final List<CtTypeReference<?>> bounds = boundingType.getBounds().stream().collect(Collectors.toList());
+		CtTypeReference<?> genericTacos = bounds.get(0);
 		assertEquals("Tacos", genericTacos.getSimpleName());
 		assertEquals(1, genericTacos.getAnnotations().size());
 
@@ -121,7 +124,7 @@ public class ConstructorTest {
 		assertEquals("C", wildcard.getBoundingType().getSimpleName());
 		assertEquals(1, wildcard.getBoundingType().getAnnotations().size());
 
-		assertEquals("Serializable", bounds.getBounds().get(1).getSimpleName());
-		assertEquals(1, bounds.getBounds().get(1).getAnnotations().size());
+		assertEquals("Serializable", bounds.get(1).getSimpleName());
+		assertEquals(1, bounds.get(1).getAnnotations().size());
 	}
 }

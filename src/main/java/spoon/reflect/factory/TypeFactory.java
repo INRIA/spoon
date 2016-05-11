@@ -32,6 +32,8 @@ import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -388,10 +390,31 @@ public class TypeFactory extends SubFactory {
 	 * 		List of bounds saved in the intersection type. The first bound will be the intersection type.
 	 * @param <T>
 	 * 		Type of the first bound.
+	 * @see #createIntersectionTypeReferenceWithBounds(Set)
 	 */
+	@Deprecated
 	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReference(List<CtTypeReference<?>> bounds) {
 		final CtIntersectionTypeReference<T> intersectionRef = factory.Core().createIntersectionTypeReference();
 		CtTypeReference<?> firstBound = factory.Core().clone(bounds.get(0));
+		intersectionRef.setSimpleName(firstBound.getSimpleName());
+		intersectionRef.setDeclaringType(firstBound.getDeclaringType());
+		intersectionRef.setPackage(firstBound.getPackage());
+		intersectionRef.setActualTypeArguments(firstBound.getActualTypeArguments());
+		intersectionRef.setBounds(new TreeSet<CtTypeReference<?>>(bounds));
+		return intersectionRef;
+	}
+
+	/**
+	 * Creates an intersection type reference.
+	 *
+	 * @param bounds
+	 * 		List of bounds saved in the intersection type. The first bound will be the intersection type.
+	 * @param <T>
+	 * 		Type of the first bound.
+	 */
+	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReferenceWithBounds(Set<CtTypeReference<?>> bounds) {
+		final CtIntersectionTypeReference<T> intersectionRef = factory.Core().createIntersectionTypeReference();
+		CtTypeReference<?> firstBound = factory.Core().clone(bounds.toArray(new CtTypeReference<?>[0])[0]);
 		intersectionRef.setSimpleName(firstBound.getSimpleName());
 		intersectionRef.setDeclaringType(firstBound.getDeclaringType());
 		intersectionRef.setPackage(firstBound.getPackage());

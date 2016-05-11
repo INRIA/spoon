@@ -40,6 +40,7 @@ import spoon.test.type.testclasses.Pozole;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
@@ -174,8 +175,8 @@ public class TypeTest {
 		assertTrue(generic.getBoundingType() instanceof CtIntersectionTypeReference);
 		assertEquals("java.lang.Runnable & java.io.Serializable", generic.getBoundingType().toString());
 		final CtIntersectionTypeReference<?> superType = generic.getBoundingType().asCtIntersectionTypeReference();
-		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), superType.getBounds().get(0));
-		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), superType.getBounds().get(1));
+		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), superType.getBounds().stream().collect(Collectors.toList()).get(0));
+		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), superType.getBounds().stream().collect(Collectors.toList()).get(1));
 
 		// Intersection type in casts.
 		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
@@ -185,8 +186,8 @@ public class TypeTest {
 		assertTrue(lambdas.get(0).getTypeCasts().get(0) instanceof CtIntersectionTypeReference);
 		final CtIntersectionTypeReference<?> intersectionType = lambdas.get(0).getTypeCasts().get(0).asCtIntersectionTypeReference();
 		assertEquals("java.lang.Runnable & java.io.Serializable", intersectionType.toString());
-		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), intersectionType.getBounds().get(0));
-		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), intersectionType.getBounds().get(1));
+		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), intersectionType.getBounds().stream().collect(Collectors.toList()).get(0));
+		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), intersectionType.getBounds().stream().collect(Collectors.toList()).get(1));
 
 		canBeBuilt(target, 8, true);
 	}
@@ -235,8 +236,8 @@ public class TypeTest {
 		assertNotNull(ref.getBoundingType());
 		assertTrue(ref.getBoundingType() instanceof CtIntersectionTypeReference);
 		assertEquals(2, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().size());
-		assertEquals(Number.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().get(0).getActualClass());
-		assertEquals(Comparable.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().get(1).getActualClass());
+		assertEquals(Number.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(0).getActualClass());
+		assertEquals(Comparable.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(1).getActualClass());
 		assertEquals("public class Mole<NUMBER extends java.lang.Number & java.lang.Comparable<NUMBER>> {}", aMole.toString());
 	}
 
