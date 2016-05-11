@@ -126,7 +126,9 @@ public class SignaturePrinter extends  CtInheritanceScanner {
 			}
 			write("> ");
 		}
-		write(m.getType().getQualifiedName());
+		if (m.getType() != null) {
+			write(m.getType().getQualifiedName());
+		}
 		write(" ");
 		write(m.getSimpleName());
 		write("(");

@@ -16,7 +16,10 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.code.CtComment;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -30,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationType}.
@@ -42,6 +46,62 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	@Override
 	public void accept(CtVisitor v) {
 		v.visitCtAnnotationType(this);
+	}
+
+	private <R> CtMethod<R> createGhostMethod(CtField<R> field) {
+		final CtMethod<R> method = factory.Core().createMethod();
+		method.setImplicit(true);
+		method.setSimpleName(field.getSimpleName());
+		method.setModifiers(field.getModifiers());
+		method.setType(factory.Core().clone(field.getType()));
+		for (CtAnnotation<? extends Annotation> ctAnnotation : field.getAnnotations()) {
+			method.addAnnotation(factory.Core().clone(ctAnnotation));
+		}
+		for (CtComment ctComment : field.getComments()) {
+			method.addComment(factory.Core().clone(ctComment));
+		}
+		method.setDocComment(field.getDocComment());
+		method.setPosition(field.getPosition());
+		method.setShadow(field.isShadow());
+		return method;
+	}
+
+	private <R> void addGhostMethod(CtField<R> field) {
+		super.addMethod(createGhostMethod(field));
+	}
+
+	@Override
+	public <F, C extends CtType<T>> C addField(CtField<F> field) {
+		addGhostMethod(field);
+		return super.addField(field);
+	}
+
+	@Override
+	public <F, C extends CtType<T>> C addField(int index, CtField<F> field) {
+		addGhostMethod(field);
+		return super.addField(index, field);
+	}
+
+	@Override
+	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
+		addGhostMethod(field);
+		return super.addFieldAtTop(field);
+	}
+
+	@Override
+	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
+		Set<CtMethod<?>> methods = new TreeSet<CtMethod<?>>();
+		for (CtField<?> field : fields) {
+			methods.add(createGhostMethod(field));
+		}
+		super.setMethods(methods);
+		return super.setFields(fields);
+	}
+
+	@Override
+	public <F> boolean removeField(CtField<F> field) {
+		super.removeMethod(createGhostMethod(field));
+		return super.removeField(field);
 	}
 
 	@Override
