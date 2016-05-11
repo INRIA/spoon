@@ -37,19 +37,19 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
-import spoon.support.visitor.java.internal.RuntimeBuilderContext;
 import spoon.support.visitor.java.internal.ExecutableRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.PackageRuntimeBuilderContext;
-import spoon.support.visitor.java.internal.TypeRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.RuntimeBuilderContext;
 import spoon.support.visitor.java.internal.TypeReferenceRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.TypeRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.VariableRuntimeBuilderContext;
+import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -238,7 +238,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	public void visitMethod(Method method) {
+	public void visitMethod(RtMethod method) {
 		final CtMethod<Object> ctMethod = factory.Core().createMethod();
 		ctMethod.setSimpleName(method.getName());
 		ctMethod.setBody(factory.Core().createBlock());

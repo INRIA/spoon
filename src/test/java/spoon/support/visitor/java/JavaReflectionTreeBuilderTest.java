@@ -10,10 +10,14 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.generics.ComparableComparatorBug;
 
+import java.io.ObjectInputStream;
+import java.net.CookieManager;
 import java.net.URLClassLoader;
 import java.time.format.TextStyle;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -90,5 +94,33 @@ public class JavaReflectionTreeBuilderTest {
 		assertNull(arrayRef.getPackage());
 		assertNull(arrayRef.getDeclaringType());
 		assertNotNull(arrayRef.getComponentType());
+	}
+
+	@Test
+	public void testDeclaredMethods() throws Exception {
+		final CtType<StringBuilder> type = new JavaReflectionTreeBuilder(createFactory()).scan(StringBuilder.class);
+		assertNotNull(type);
+		// All methods overridden from AbstractStringBuilder and with a type changed have been removed.
+		assertEquals(0, type.getMethods().stream().filter(ctMethod -> "java.lang.AbstractStringBuilder".equals(ctMethod.getType().getQualifiedName())).collect(Collectors.toList()).size());
+		// reverse is declared in AbstractStringBuilder and overridden in StringBuilder but the type is the same.
+		assertNotNull(type.getMethod("reverse"));
+		// readObject is declared in StringBuilder.
+		assertNotNull(type.getMethod("readObject", type.getFactory().Type().createReference(ObjectInputStream.class)));
+	}
+
+	@Test
+	public void testDeclaredField() throws Exception {
+		final CtType<CookieManager> aType = new JavaReflectionTreeBuilder(createFactory()).scan(CookieManager.class);
+		assertNotNull(aType);
+		// CookieManager have only 2 fields. Java reflection doesn't give us field of its superclass.
+		assertEquals(2, aType.getFields().size());
+	}
+
+	@Test
+	public void testDeclaredConstructor() throws Exception {
+		final CtType<JDTSnippetCompiler> aType = new JavaReflectionTreeBuilder(createFactory()).scan(JDTSnippetCompiler.class);
+		assertNotNull(aType);
+		// JDTSnippetCompiler have only 1 constructor with 2 arguments but its super class have 1 constructor with 1 argument.
+		assertEquals(1, ((CtClass<JDTSnippetCompiler>) aType).getConstructors().size());
 	}
 }

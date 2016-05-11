@@ -18,7 +18,6 @@ package spoon.support.visitor.java.reflect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 /**
  * To be compatible with Java 6, RtParameter has been created from
@@ -27,11 +26,11 @@ import java.lang.reflect.Method;
 public class RtParameter {
 	private final String name;
 	private final Class<?> type;
-	private final Method method;
+	private final RtMethod method;
 	private final Constructor constructor;
 	private final int index;
 
-	public RtParameter(String name, Class<?> type, Method method, Constructor constructor, int index) {
+	public RtParameter(String name, Class<?> type, RtMethod method, Constructor constructor, int index) {
 		this.name = name;
 		this.type = type;
 		this.method = method;
@@ -130,7 +129,7 @@ public class RtParameter {
 	 * 		Parent executable of parameters.
 	 * @return Parameters of the executable.
 	 */
-	public static RtParameter[] parametersOf(Method method) {
+	public static RtParameter[] parametersOf(RtMethod method) {
 		RtParameter[] parameters = new RtParameter[method.getParameterTypes().length];
 		for (int index = 0; index < method.getParameterTypes().length; index++) {
 			parameters[index] = new RtParameter(null, method.getParameterTypes()[index], method, null, index);
