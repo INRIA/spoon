@@ -112,7 +112,7 @@ public class MainTest {
 			@Override
 			public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 				assertNotNull(reference);
-				if (isLanguageExecutable(reference) || isDeclaredInAnAnnotation(reference)) {
+				if (isLanguageExecutable(reference)) {
 					super.visitCtExecutableReference(reference);
 					return;
 				}
