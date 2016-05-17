@@ -13,19 +13,28 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtImplicitArrayTypeReference;
 import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
+import spoon.test.lambda.testclasses.Kuu;
 import spoon.test.lambda.testclasses.Panini;
 import spoon.test.lambda.testclasses.Tacos;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.getBuildDirectory;
 import static spoon.testing.utils.ModelUtils.getSpoonedDirectory;
@@ -255,6 +264,22 @@ public class LambdaTest {
 		assertTrue(secondParam.getType() instanceof CtImplicitTypeReference);
 		assertEquals("", secondParam.getType().toString());
 		assertEquals("int", secondParam.getType().getSimpleName());
+	}
+
+	@Test
+	public void testBuildExecutableReferenceFromLambda() throws Exception {
+		final CtType<Kuu> aType = ModelUtils.buildClass(Kuu.class);
+		final CtLambda<?> aLambda = aType.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(0);
+
+		List<? extends CtParameterReference<?>> collect = null;
+		try {
+			collect = aLambda.getParameters().stream().map(CtParameter::getReference).collect(Collectors.toList());
+		} catch (ClassCastException e) {
+			fail();
+		}
+
+		assertNotNull(collect);
+		assertEquals(1, collect.size());
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {
