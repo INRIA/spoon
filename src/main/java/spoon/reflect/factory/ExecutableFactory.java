@@ -17,6 +17,7 @@
 package spoon.reflect.factory;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -101,6 +102,9 @@ public class ExecutableFactory extends SubFactory {
 		}
 		if (e instanceof CtMethod) {
 			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), factory.Core().clone(((CtMethod<T>) e).getType()), e.getSimpleName(), refs);
+		} else if (e instanceof CtLambda) {
+			// A lambda isn't a structural element and doesn't have a declaring type like a method or a constructor.
+			return createReference(null, e.getType(), e.getSimpleName(), refs);
 		}
 		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), factory.Core().clone(((CtConstructor<T>) e).getType()), CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
