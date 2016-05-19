@@ -28,7 +28,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -566,7 +565,7 @@ public class AnnotationTest {
 		final CtTypeReference<?> firstTypeReference = firstConstructorCall.getType()
 																		  .getActualTypeArguments()
 																		  .get(0);
-		assertTrue(firstTypeReference instanceof CtImplicitTypeReference);
+		assertTrue(firstTypeReference.isImplicit());
 		assertEquals("T", firstTypeReference.getSimpleName());
 
 		final String expectedSecondStatement =
@@ -581,7 +580,7 @@ public class AnnotationTest {
 		final CtTypeReference<?> secondTypeReference = secondConstructorCall.getType()
 																			.getActualTypeArguments()
 																			.get(0);
-		assertTrue(secondTypeReference instanceof CtImplicitTypeReference);
+		assertTrue(secondTypeReference.isImplicit());
 		assertEquals("Object", secondTypeReference.getSimpleName());
 
 		final String expectedThirdStatement = "java.util.List<spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation> list3 = new java.util.ArrayList<spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation>()";

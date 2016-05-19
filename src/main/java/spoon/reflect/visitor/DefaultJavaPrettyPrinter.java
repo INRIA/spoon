@@ -631,6 +631,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
+		if (reference.isImplicit()) {
+			return;
+		}
 		scan(reference.getComponentType());
 		if (!context.skipArray) {
 			write("[]");
@@ -2006,6 +2009,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
+		if (ref.isImplicit()) {
+			return;
+		}
 		writeAnnotations(ref);
 		if (importsContext.isImported(ref)) {
 			write(ref.getSimpleName());
@@ -2057,6 +2063,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void visitCtTypeReference(CtTypeReference<?> ref, boolean withGenerics) {
+		if (ref.isImplicit()) {
+			return;
+		}
 		if (ref.isPrimitive()) {
 			writeAnnotations(ref);
 			write(ref.getSimpleName());
@@ -2247,7 +2256,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			write("<");
 			boolean isImplicitTypeReference = true;
 			for (CtTypeReference<?> param : params) {
-				if (!(param instanceof CtImplicitTypeReference)) {
+				if (!(param.isImplicit())) {
 					isImplicitTypeReference = false;
 					scan(param);
 					write(", ");

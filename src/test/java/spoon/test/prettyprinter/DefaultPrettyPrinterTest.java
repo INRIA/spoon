@@ -10,7 +10,6 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -96,7 +95,7 @@ public class DefaultPrettyPrinterTest {
 		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
 																  .getActualTypeArguments()
 																  .get(0);
-		assertTrue(ctTypeReference instanceof CtImplicitTypeReference);
+		assertTrue(ctTypeReference.isImplicit());
 		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
 
@@ -123,7 +122,7 @@ public class DefaultPrettyPrinterTest {
 		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
 																  .getActualTypeArguments()
 																  .get(0);
-		assertTrue(ctTypeReference instanceof CtImplicitTypeReference);
+		assertTrue(ctTypeReference.isImplicit());
 		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
 
@@ -148,7 +147,7 @@ public class DefaultPrettyPrinterTest {
 		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
 				.getActualTypeArguments()
 				.get(0);
-		assertTrue(ctTypeReference instanceof CtImplicitTypeReference);
+		assertTrue(ctTypeReference.isImplicit());
 		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
 

@@ -11,8 +11,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.internal.CtImplicitArrayTypeReference;
-import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -218,7 +217,7 @@ public class LambdaTest {
 		assertEquals(1, lambda1.getParameters().size());
 		final CtParameter<?> ctParameterFirstLambda = lambda1.getParameters().get(0);
 		assertEquals("s", ctParameterFirstLambda.getSimpleName());
-		assertTrue(ctParameterFirstLambda.getType() instanceof CtImplicitTypeReference);
+		assertTrue(ctParameterFirstLambda.getType().isImplicit());
 		assertEquals("", ctParameterFirstLambda.getType().toString());
 		assertEquals("SingleSubscriber", ctParameterFirstLambda.getType().getSimpleName());
 
@@ -226,7 +225,7 @@ public class LambdaTest {
 		assertEquals(2, lambda2.getParameters().size());
 		final CtParameter<?> ctParameterSecondLambda = lambda2.getParameters().get(0);
 		assertEquals("v", ctParameterSecondLambda.getSimpleName());
-		assertTrue(ctParameterSecondLambda.getType() instanceof CtImplicitTypeReference);
+		assertTrue(ctParameterSecondLambda.getType().isImplicit());
 		assertEquals("", ctParameterSecondLambda.getType().toString());
 		assertEquals("?", ctParameterSecondLambda.getType().getSimpleName());
 	}
@@ -238,12 +237,12 @@ public class LambdaTest {
 		assertEquals(1, lambda.getParameters().size());
 		final CtParameter<?> ctParameter = lambda.getParameters().get(0);
 		assertEquals("a", ctParameter.getSimpleName());
-		assertTrue(ctParameter.getType() instanceof CtImplicitArrayTypeReference);
+		assertTrue(ctParameter.getType().isImplicit());
 		assertEquals("", ctParameter.getType().toString());
 		assertEquals("Array", ctParameter.getType().getSimpleName());
 
-		final CtImplicitArrayTypeReference typeParameter = (CtImplicitArrayTypeReference) ctParameter.getType();
-		assertTrue(typeParameter.getComponentType() instanceof CtImplicitTypeReference);
+		final CtArrayTypeReference typeParameter = (CtArrayTypeReference) ctParameter.getType();
+		assertTrue(typeParameter.getComponentType().isImplicit());
 		assertEquals("", typeParameter.getComponentType().toString());
 		assertEquals("Object", typeParameter.getComponentType().getSimpleName());
 	}
@@ -255,13 +254,13 @@ public class LambdaTest {
 		assertEquals(2, lambda.getParameters().size());
 		final CtParameter<?> firstParam = lambda.getParameters().get(0);
 		assertEquals("rs", firstParam.getSimpleName());
-		assertTrue(firstParam.getType() instanceof CtImplicitTypeReference);
+		assertTrue(firstParam.getType().isImplicit());
 		assertEquals("", firstParam.getType().toString());
 		assertEquals("ResultSet", firstParam.getType().getSimpleName());
 
 		final CtParameter<?> secondParam = lambda.getParameters().get(1);
 		assertEquals("i", secondParam.getSimpleName());
-		assertTrue(secondParam.getType() instanceof CtImplicitTypeReference);
+		assertTrue(secondParam.getType().isImplicit());
 		assertEquals("", secondParam.getType().toString());
 		assertEquals("int", secondParam.getType().getSimpleName());
 	}
