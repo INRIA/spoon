@@ -823,7 +823,19 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!(condition instanceof CtStatement)) {
 			printComment(condition, CommentOffset.BEFORE);
 		}
+		boolean parent = false;
+		try {
+			parent = (conditional.getParent() instanceof CtAssignment);
+		} catch (ParentNotInitializedException ex) {
+			// nothing if we have no parent
+		}
+		if (parent) {
+			write("(");
+		}
 		scan(condition);
+		if (parent) {
+			write(")");
+		}
 		if (!(condition instanceof CtStatement)) {
 			printComment(condition, CommentOffset.AFTER);
 		}
