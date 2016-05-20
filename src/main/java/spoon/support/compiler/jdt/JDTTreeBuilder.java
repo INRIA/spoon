@@ -850,11 +850,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					// and hide the real class in actualType().
 					ref = getTypeReference(binding.actualType());
 				} else {
-					if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-						ref = factory.Internal().createImplicitTypeReference();
-					} else {
-						ref = factory.Core().createTypeReference();
-					}
+					ref = factory.Core().createTypeReference();
+					ref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 					if (binding.isAnonymousType()) {
 						ref.setSimpleName("");
 					} else {
@@ -893,11 +890,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			} else if (binding instanceof BinaryTypeBinding) {
-				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					ref = factory.Internal().createImplicitTypeReference();
-				} else {
-					ref = factory.Core().createTypeReference();
-				}
+				ref = factory.Core().createTypeReference();
+				ref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 				if (binding.enclosingType() != null) {
 					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				} else {
@@ -906,11 +900,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setSimpleName(new String(binding.sourceName()));
 			} else if (binding instanceof TypeVariableBinding) {
 				boolean oldBounds = bounds;
-				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					ref = factory.Internal().createImplicitTypeReference();
-				} else {
-					ref = factory.Core().createTypeParameterReference();
-				}
+				ref = factory.Core().createTypeParameterReference();
+				ref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 				if (binding instanceof CaptureBinding) {
 					ref.setSimpleName("?");
 					bounds = true;
@@ -947,7 +938,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else if (binding instanceof BaseTypeBinding) {
 				String name = new String(binding.sourceName());
 				if (!JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					ref = factory.Internal().createImplicitTypeReference();
+					ref = factory.Core().createTypeReference();
+					ref.setImplicit(true);
 					ref.setSimpleName(name);
 				} else {
 					ref = basestypes.get(name);
@@ -960,11 +952,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			} else if (binding instanceof WildcardBinding) {
-				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					ref = factory.Internal().createImplicitTypeReference();
-				} else {
-					ref = factory.Core().createTypeParameterReference();
-				}
+				ref = factory.Core().createTypeParameterReference();
+				ref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 				ref.setSimpleName("?");
 				if (((WildcardBinding) binding).boundKind == Wildcard.SUPER && ref instanceof CtTypeParameterReference) {
 					((CtTypeParameterReference) ref).setUpper(false);
@@ -979,11 +968,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			} else if (binding instanceof LocalTypeBinding) {
-				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					ref = factory.Internal().createImplicitTypeReference();
-				} else {
-					ref = factory.Core().createTypeReference();
-				}
+				ref = factory.Core().createTypeReference();
+				ref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName(computeAnonymousName((SourceTypeBinding) binding));
 					ref.setDeclaringType(getTypeReference((binding.enclosingType())));
@@ -997,11 +983,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 					}
 				}
 			} else if (binding instanceof SourceTypeBinding) {
-				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					ref = factory.Internal().createImplicitTypeReference();
-				} else {
-					ref = factory.Core().createTypeReference();
-				}
+				ref = factory.Core().createTypeReference();
+				ref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName(computeAnonymousName((SourceTypeBinding) binding));
 					ref.setDeclaringType(getTypeReference((binding.enclosingType())));
@@ -1022,11 +1005,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 			} else if (binding instanceof ArrayBinding) {
 				CtArrayTypeReference<Object> arrayref;
-				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					arrayref = factory.Internal().createImplicitArrayTypeReference();
-				} else {
-					arrayref = factory.Core().createArrayTypeReference();
-				}
+				arrayref = factory.Core().createArrayTypeReference();
+				arrayref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 				ref = arrayref;
 				for (int i = 1; i < binding.dimensions(); i++) {
 					CtArrayTypeReference<Object> tmp = factory.Core().createArrayTypeReference();
@@ -1036,11 +1016,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 				arrayref.setComponentType(getTypeReference(binding.leafComponentType()));
 			} else if (binding instanceof ProblemReferenceBinding || binding instanceof PolyTypeBinding) {
 				// Spoon is able to analyze also without the classpath
-				if (isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped) {
-					ref = factory.Internal().createImplicitTypeReference();
-				} else {
-					ref = factory.Core().createTypeReference();
-				}
+				ref = factory.Core().createTypeReference();
+				ref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 				ref.setSimpleName(new String(binding.readableName()));
 				final CtReference declaring = references.getDeclaringReferenceFromImports(binding.sourceName());
 				if (declaring instanceof CtPackageReference) {

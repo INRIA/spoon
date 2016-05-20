@@ -26,7 +26,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -173,7 +172,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public boolean isImported(CtTypeReference<?> ref) {
-		if (!(ref instanceof CtImplicitTypeReference) && imports.containsKey(ref.getSimpleName())) {
+		if (!(ref.isImplicit()) && imports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = imports.get(ref.getSimpleName());
 			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
 				return true;

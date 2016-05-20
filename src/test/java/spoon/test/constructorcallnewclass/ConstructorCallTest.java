@@ -7,8 +7,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.internal.CtImplicitArrayTypeReference;
-import spoon.reflect.internal.CtImplicitTypeReference;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -81,11 +80,11 @@ public class ConstructorCallTest {
 
 		assertEquals(1, ctConstructorCall.getType().getActualTypeArguments().size());
 		final CtTypeReference<?> implicitArray = ctConstructorCall.getType().getActualTypeArguments().get(0);
-		assertTrue(implicitArray instanceof CtImplicitArrayTypeReference);
-		final CtImplicitArrayTypeReference implicitArrayTyped = (CtImplicitArrayTypeReference) implicitArray;
+		assertTrue(implicitArray.isImplicit());
+		final CtArrayTypeReference implicitArrayTyped = (CtArrayTypeReference) implicitArray;
 		assertEquals("", implicitArrayTyped.toString());
 		assertEquals("Array", implicitArrayTyped.getSimpleName());
-		assertTrue(implicitArrayTyped.getComponentType() instanceof CtImplicitTypeReference);
+		assertTrue(implicitArrayTyped.getComponentType().isImplicit());
 		assertEquals("", implicitArrayTyped.getComponentType().toString());
 		assertEquals("AtomicLong", implicitArrayTyped.getComponentType().getSimpleName());
 	}

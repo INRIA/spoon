@@ -1233,10 +1233,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(reference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(reference));
 	}
 
-	@java.lang.Override
-	public <T> void visitCtImplicitArrayTypeReference(final spoon.reflect.internal.CtImplicitArrayTypeReference<T> reference) {
-	}
-
 	public <T> void visitCtAssert(final spoon.reflect.code.CtAssert<T> asserted) {
 		replaceInListIfExist(asserted.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(asserted));
 		replaceElementIfExist(asserted.getAssertExpression(), new spoon.support.visitor.replace.ReplacementVisitor.CtAssertAssertExpressionReplaceListener(asserted));
@@ -1622,10 +1618,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	@java.lang.Override
 	public void visitCtCircularTypeReference(final spoon.reflect.internal.CtCircularTypeReference reference) {
-	}
-
-	@java.lang.Override
-	public <T> void visitCtImplicitTypeReference(final spoon.reflect.internal.CtImplicitTypeReference<T> reference) {
 	}
 
 	@java.lang.Override

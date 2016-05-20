@@ -74,8 +74,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.internal.CtCircularTypeReference;
-import spoon.reflect.internal.CtImplicitArrayTypeReference;
-import spoon.reflect.internal.CtImplicitTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -166,11 +164,6 @@ public class EqualVisitor extends CtScanner {
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
 		scan(reference.getComponentType());
 		write("[]");
-	}
-
-	@Override
-	public <T> void visitCtImplicitArrayTypeReference(CtImplicitArrayTypeReference<T> reference) {
-		visitCtArrayTypeReference(reference);
 	}
 
 	@Override
@@ -607,11 +600,6 @@ public class EqualVisitor extends CtScanner {
 
 	@Override
 	public void visitCtCircularTypeReference(CtCircularTypeReference reference) {
-		visitCtTypeReference(reference);
-	}
-
-	@Override
-	public <T> void visitCtImplicitTypeReference(CtImplicitTypeReference<T> reference) {
 		visitCtTypeReference(reference);
 	}
 
