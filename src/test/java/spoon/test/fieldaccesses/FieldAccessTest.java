@@ -21,13 +21,14 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.fieldaccesses.testclasses.Kuu;
 import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
-import spoon.testing.Assert;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
@@ -37,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.testing.Assert.*;
+import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -334,5 +335,19 @@ public class FieldAccessTest {
 		assertEquals(1, fieldAccesses.size());
 		assertNotNull(fieldAccesses.get(0).getType());
 		assertEquals(fieldAccesses.get(0).getVariable().getType(), fieldAccesses.get(0).getType());
+	}
+
+	@Test
+	public void testFieldAccessWithoutAnyImport() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Kuu.java");
+		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Mole.java");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtType<Kuu> aType = launcher.getFactory().Type().get(Kuu.class);
+		final DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(aType.getFactory().getEnvironment());
+		assertEquals(0, printer.computeImports(aType).size());
+		assertEquals("spoon.test.fieldaccesses.testclasses.Mole.Delicious delicious", aType.getMethodsByName("m").get(0).getParameters().get(0).toString());
 	}
 }
