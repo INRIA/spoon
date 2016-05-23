@@ -34,10 +34,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CONSTRUCTORS_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
@@ -49,7 +48,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	List<CtAnonymousExecutable> anonymousExecutables = emptyList();
 
-	Set<CtConstructor<T>> constructors = emptySet();
+	List<CtConstructor<T>> constructors = emptyList();
 
 	CtTypeReference<?> superClass;
 
@@ -80,7 +79,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
-	public Set<CtConstructor<T>> getConstructors() {
+	public List<CtConstructor<T>> getConstructors() {
 		return constructors;
 	}
 
@@ -120,9 +119,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
-	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
-		if (this.constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
-			this.constructors = new TreeSet<CtConstructor<T>>();
+	public <C extends CtClass<T>> C setConstructors(List<CtConstructor<T>> constructors) {
+		if (this.constructors == CtElementImpl.<CtConstructor<T>>emptyList()) {
+			this.constructors = new ArrayList<CtConstructor<T>>(constructors.size());
 		}
 		this.constructors.clear();
 		for (CtConstructor<T> constructor : constructors) {
@@ -133,12 +132,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
-		if (constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
-			constructors = new TreeSet<CtConstructor<T>>();
+		if (constructors == CtElementImpl.<CtConstructor<T>>emptyList()) {
+			constructors = new ArrayList<CtConstructor<T>>(CONSTRUCTORS_DEFAULT_CAPACITY);
 		}
-		// this needs to be done because of the set that needs the constructor's
-		// signature : we should use lists!!!
-		// TODO: CHANGE SETS TO LIST TO AVOID HAVING TO DO THIS
 		constructor.setParent(this);
 		constructors.add(constructor);
 		return (C) this;
@@ -149,7 +145,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		if (!constructors.isEmpty()) {
 			if (constructors.size() == 1) {
 				if (constructors.contains(constructor)) {
-					constructors = CtElementImpl.<CtConstructor<T>>emptySet();
+					constructors = CtElementImpl.<CtConstructor<T>>emptyList();
 				}
 			} else {
 				constructors.remove(constructor);
