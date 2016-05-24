@@ -1116,7 +1116,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtComment(CtComment comment) {
-		if (!env.isGenerateJavadoc() && context.elementStack.size() > 1) {
+		if (!env.isGenerateJavadoc() && !env.isCommentsEnabled() && context.elementStack.size() > 1) {
 			return;
 		}
 		switch (comment.getCommentType()) {
@@ -1595,7 +1595,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void printComment(CtComment comment) {
-		if (!env.isGenerateJavadoc() || comment == null) {
+		if (!env.isGenerateJavadoc() || !env.isCommentsEnabled() || comment == null) {
 			return;
 		}
 		scan(comment);
@@ -1603,7 +1603,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void printComment(List<CtComment> comments) {
-		if (!env.isGenerateJavadoc() || comments == null) {
+		if (!env.isGenerateJavadoc() || !env.isCommentsEnabled() || comments == null) {
 			return;
 		}
 		for (CtComment comment : comments) {
@@ -1624,7 +1624,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private List<CtComment> getComments(CtElement e, CommentOffset offset) {
 		List<CtComment> commentsToPrint = new ArrayList<CtComment>();
-		if (!env.isGenerateJavadoc() || e == null) {
+		if (!env.isGenerateJavadoc() || !env.isCommentsEnabled() || e == null) {
 			return commentsToPrint;
 		}
 		for (CtComment comment : e.getComments()) {

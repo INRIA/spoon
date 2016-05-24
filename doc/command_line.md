@@ -2,7 +2,7 @@
 title: Command Line
 tags: [usage]
 keywords: command, line, usage, java, jar
-last_updated: October 1, 2015
+last_updated: May 25, 2016
 ---
 
 To run Spoon in command line, you first have to download the corresponding jar file.
@@ -35,10 +35,6 @@ Options :
 
   [-h|--help]
 
-  [-v|--verbose]
-        Argument deprecated, see the argument level. Output messages about what
-        the compiler is doing.
-
   [--tabs]
         Use tabulations instead of spaces in the generated code (use spaces by
         default).
@@ -50,10 +46,6 @@ Options :
         Level of the ouput messages about what spoon is doing. Default value is
         ALL level. (default: OFF)
 
-  [--vvv]
-        Argument deprecated, see the argument level. Generate all debugging
-        info.
-
   [--with-imports]
         Enable imports in generated files.
 
@@ -63,9 +55,6 @@ Options :
   [--encoding <encoding>]
         Forces the compiler to use a specific encoding (UTF-8, UTF-16, ...).
         (default: UTF-8)
-
-  [(-s|--spoonlet) <spoonlet>]
-        List of spoonlet files to load.
 
   [(-i|--input) <input>]
         List of path to sources files.
@@ -130,5 +119,14 @@ Options :
         Disable the copy of resources from source to destination folder.
 
   [-j|--generate-javadoc]
-        Enable the generation of the javadoc.
+        Enable the generation of the javadoc. Deprecated, use enable-comments
+        argument.
+
+  [-c|--enable-comments]
+        Adds all code comments in the Spoon AST (Javadoc, line-based comments),
+        rewrites them when pretty-printing.
+
+  [(-f|--generate-files) <generate-files>]
+        Only generate the given fully qualified java classes (separated by ':'
+        if multiple are given).
 ```

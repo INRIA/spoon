@@ -288,13 +288,27 @@ public interface Environment {
 
 	/**
 	 * Returns the value of the option generate-javadoc.
+	 *
+	 * @see #isCommentsEnabled()
 	 */
+	@Deprecated
 	boolean isGenerateJavadoc();
 
 	/**
 	 * Sets the option generate-javadoc to generate javadoc of the project on the source generated.
 	 */
+	@Deprecated
 	void setGenerateJavadoc(boolean generateJavadoc);
+
+	/**
+	 * Returns the value of the option enable-comments.
+	 */
+	boolean isCommentsEnabled();
+
+	/**
+	 * Sets the option enable-comments to parse comments of the target project.
+	 */
+	void setCommentEnabled(boolean commentEnabled);
 
 	/**
 	 * Gets the factory of the environment.

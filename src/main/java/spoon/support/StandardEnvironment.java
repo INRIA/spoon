@@ -91,6 +91,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean generateJavadoc = false;
 
+	private boolean enableComments = false;
+
 	private Logger logger = Logger.getLogger(StandardEnvironment.class);
 
 	private Level level = Level.OFF;
@@ -492,5 +494,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setGenerateJavadoc(boolean generateJavadoc) {
 		this.generateJavadoc = generateJavadoc;
+	}
+
+	@Override
+	public boolean isCommentsEnabled() {
+		return enableComments;
+	}
+
+	@Override
+	public void setCommentEnabled(boolean commentEnabled) {
+		this.enableComments = commentEnabled;
 	}
 }

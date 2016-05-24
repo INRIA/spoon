@@ -41,9 +41,10 @@ public class CommentTest {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/comment/testclasses/",
-				"-o", "./target/spooned/"
+				"-o", "./target/spooned/",
+				"-j",
+				"-c"
 		});
-		launcher.getEnvironment().setGenerateJavadoc(true);
 		return launcher.getFactory();
 	}
 
