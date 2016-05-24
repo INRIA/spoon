@@ -198,6 +198,7 @@ public abstract class CtBiScanner implements spoon.reflect.visitor.CtVisitor {
 		biScan(reference.getDeclaringType(), other.getDeclaringType());
 		biScan(reference.getPackage(), other.getPackage());
 		biScan(reference.getComponentType(), other.getComponentType());
+		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
 		biScan(reference.getAnnotations(), other.getAnnotations());
 		exit(reference);
 	}
@@ -348,7 +349,9 @@ public abstract class CtBiScanner implements spoon.reflect.visitor.CtVisitor {
 		spoon.reflect.reference.CtExecutableReference other = ((spoon.reflect.reference.CtExecutableReference) (stack.peek()));
 		enter(reference);
 		biScan(reference.getDeclaringType(), other.getDeclaringType());
+		biScan(reference.getType(), other.getType());
 		biScan(reference.getParameters(), other.getParameters());
+		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
 		biScan(reference.getAnnotations(), other.getAnnotations());
 		biScan(reference.getComments(), other.getComments());
 		exit(reference);
@@ -709,6 +712,7 @@ public abstract class CtBiScanner implements spoon.reflect.visitor.CtVisitor {
 		enter(ref);
 		biScan(ref.getPackage(), other.getPackage());
 		biScan(ref.getDeclaringType(), other.getDeclaringType());
+		biScan(ref.getActualTypeArguments(), other.getActualTypeArguments());
 		biScan(ref.getAnnotations(), other.getAnnotations());
 		biScan(ref.getBoundingType(), other.getBoundingType());
 		exit(ref);
@@ -727,6 +731,7 @@ public abstract class CtBiScanner implements spoon.reflect.visitor.CtVisitor {
 		enter(reference);
 		biScan(reference.getPackage(), other.getPackage());
 		biScan(reference.getDeclaringType(), other.getDeclaringType());
+		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
 		biScan(reference.getAnnotations(), other.getAnnotations());
 		biScan(reference.getComments(), other.getComments());
 		exit(reference);

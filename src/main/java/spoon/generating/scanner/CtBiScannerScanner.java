@@ -20,13 +20,11 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.support.visitor.equals.IgnoredByEquals;
 
 public class CtBiScannerScanner extends CtScanner {
 	public static final String TARGET_BISCANNER_PACKAGE = "spoon.reflect.visitor";
@@ -57,15 +55,8 @@ public class CtBiScannerScanner extends CtScanner {
 		peek.setType(type);
 		clone.getBody().insertBegin(peek);
 
-		final CtAnnotation<?> ignoredAnnotation = factory.Core().createAnnotation();
-		ignoredAnnotation.setAnnotationType(factory.Type().createReference(IgnoredByEquals.class));
-
 		for (int i = 2; i < clone.getBody().getStatements().size() - 1; i++) {
 			final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(0);
-			if (targetInvocation.getExecutable().getExecutableDeclaration().getAnnotations().contains(ignoredAnnotation)) {
-				clone.getBody().getStatement(i--).delete();
-				continue;
-			}
 			CtInvocation replace = (CtInvocation) factory.Core().clone(clone.getBody().getStatement(i));
 
 			// Changes to biScan method.

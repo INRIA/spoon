@@ -25,6 +25,7 @@ import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.Root;
+import spoon.support.visitor.equals.IgnoredByEquals;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -266,6 +267,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * The list of comments
 	 * @return the list of comment
 	 */
+	@IgnoredByEquals
 	List<CtComment> getComments();
 
 	/**
