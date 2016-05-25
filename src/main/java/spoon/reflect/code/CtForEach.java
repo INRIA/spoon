@@ -40,4 +40,7 @@ public interface CtForEach extends CtLoop {
 	 * Sets the variable that references the currently iterated element.
 	 */
 	<T extends CtForEach> T setVariable(CtLocalVariable<?> variable);
+
+	@Override
+	CtForEach clone();
 }

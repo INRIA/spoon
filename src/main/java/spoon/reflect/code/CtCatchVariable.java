@@ -34,4 +34,7 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
 	CtCatchVariableReference<T> getReference();
+
+	@Override
+	CtCatchVariable<T> clone();
 }

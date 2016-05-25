@@ -36,4 +36,6 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 */
 	<N extends CtNewClass> N setAnonymousClass(CtClass<?> anonymousClass);
 
+	@Override
+	CtNewClass<T> clone();
 }

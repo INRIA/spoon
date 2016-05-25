@@ -32,4 +32,6 @@ public interface CtCodeElement extends CtElement {
 	 */
 	<R extends CtCodeElement> R partiallyEvaluate();
 
+	@Override
+	CtCodeElement clone();
 }

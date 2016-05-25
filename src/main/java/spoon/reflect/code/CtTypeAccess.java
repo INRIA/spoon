@@ -59,4 +59,7 @@ public interface CtTypeAccess<A> extends CtExpression<Void> {
 	 */
 	@Override
 	CtTypeReference<Void> getType();
+
+	@Override
+	CtTypeAccess<A> clone();
 }

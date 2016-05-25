@@ -25,4 +25,6 @@ import spoon.reflect.reference.CtGenericElementReference;
  * 		created type
  */
 public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpression<?>>, CtAbstractInvocation<T>, CtStatement, CtGenericElementReference {
+	@Override
+	CtConstructorCall<T> clone();
 }

@@ -23,8 +23,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SnippetCompilationHelper;
 
-public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
-		CtCodeSnippetStatement {
+public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCodeSnippetStatement {
 
 	private static final long serialVersionUID = 1L;
 
@@ -48,4 +47,8 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements
 		return (S) SnippetCompilationHelper.compileStatement(this);
 	}
 
+	@Override
+	public CtCodeSnippetStatement clone() {
+		return (CtCodeSnippetStatement) super.clone();
+	}
 }

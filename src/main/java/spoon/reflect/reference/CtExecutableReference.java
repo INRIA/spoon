@@ -141,4 +141,7 @@ public interface CtExecutableReference<T> extends CtReference, CtGenericElementR
 	 * Replaces an executable reference by another one.
 	 */
 	void replace(CtExecutableReference<?> reference);
+
+	@Override
+	CtExecutableReference<T> clone();
 }

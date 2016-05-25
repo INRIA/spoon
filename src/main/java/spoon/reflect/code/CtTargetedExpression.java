@@ -26,9 +26,7 @@ package spoon.reflect.code;
  * @param <E>
  * 		Type of the target
  */
-public interface CtTargetedExpression<T, E extends CtExpression<?>>
-		extends CtExpression<T> {
-
+public interface CtTargetedExpression<T, E extends CtExpression<?>> extends CtExpression<T> {
 	/**
 	 * Gets the target expression. The target is a `CtTypeAccess` for static methods and a sub type of `CtExpression` for everything else.
 	 */
@@ -38,4 +36,7 @@ public interface CtTargetedExpression<T, E extends CtExpression<?>>
 	 * Sets the target expression.
 	 */
 	<C extends CtTargetedExpression<T, E>> C setTarget(E target);
+
+	@Override
+	CtTargetedExpression<T, E> clone();
 }

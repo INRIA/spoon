@@ -51,4 +51,7 @@ public interface CtVariableReference<T> extends CtReference {
 	 * Replace a variable reference by another one.
 	 */
 	void replace(CtVariableReference<?> reference);
+
+	@Override
+	CtVariableReference<T> clone();
 }

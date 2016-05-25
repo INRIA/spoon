@@ -58,9 +58,8 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 			c = factory.Class().get(this.getClass());
 		}
 		// we substitute the first statement of method statement
-		CtStatement result = factory.Core().clone(c.getMethod("statement").getBody().getStatements().get(0));
-		new SubstitutionVisitor(factory, targetType, this)
-				.scan(result);
+		CtStatement result = c.getMethod("statement").getBody().getStatements().get(0).clone();
+		new SubstitutionVisitor(factory, targetType, this).scan(result);
 		return result;
 	}
 

@@ -34,4 +34,6 @@ public interface CtLiteral<T> extends CtExpression<T> {
 	 */
 	<C extends CtLiteral<T>> C setValue(T value);
 
+	@Override
+	CtLiteral<T> clone();
 }

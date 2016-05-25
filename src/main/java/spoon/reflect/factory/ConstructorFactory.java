@@ -58,7 +58,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtConstructor<T> create(CtClass<T> target, CtConstructor<?> source) {
-		CtConstructor<T> newConstructor = factory.Core().clone((CtConstructor<T>) source);
+		CtConstructor<T> newConstructor = (CtConstructor<T>) source.clone();
 		target.addConstructor(newConstructor);
 		return newConstructor;
 	}
@@ -75,7 +75,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtConstructor<T> create(CtClass<T> target, CtMethod<?> source) {
-		CtMethod<T> method = factory.Core().clone((CtMethod<T>) source);
+		CtMethod<T> method = (CtMethod<T>) source.clone();
 		CtConstructor<T> newConstructor = factory.Core().createConstructor();
 		newConstructor.setAnnotations(method.getAnnotations());
 		newConstructor.setBody(method.getBody());
@@ -152,7 +152,7 @@ public class ConstructorFactory extends ExecutableFactory {
 	 */
 	public <T> CtExecutableReference<T> createReference(Constructor<T> constructor) {
 		CtTypeReference<T> type = factory.Type().createReference(constructor.getDeclaringClass());
-		return createReference(type, factory.Core().clone(type), CtExecutableReference.CONSTRUCTOR_NAME,
+		return createReference(type, type.clone(), CtExecutableReference.CONSTRUCTOR_NAME,
 				factory.Type().createReferences(Arrays.asList(constructor.getParameterTypes())));
 	}
 
@@ -166,11 +166,11 @@ public class ConstructorFactory extends ExecutableFactory {
 	public <T> CtExecutableReference<T> createReference(CtTypeReference<T> type, CtExpression<?>...parameters) {
 		final CtExecutableReference<T> executableReference = factory.Core().createExecutableReference();
 		executableReference.setType(type);
-		executableReference.setDeclaringType(factory.Core().clone(type));
+		executableReference.setDeclaringType(type == null ? null : type.clone());
 		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 		List<CtTypeReference<?>> typeReferences = new ArrayList<CtTypeReference<?>>();
 		for (CtExpression<?> parameter : parameters) {
-			typeReferences.add(factory.Core().clone(parameter.getType()));
+			typeReferences.add(parameter.getType() == null ? null : parameter.getType().clone());
 		}
 		executableReference.setParameters(typeReferences);
 		return executableReference;

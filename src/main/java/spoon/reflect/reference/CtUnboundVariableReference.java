@@ -21,5 +21,6 @@ package spoon.reflect.reference;
  * {@link spoon.reflect.declaration.CtVariable}.
  */
 public interface CtUnboundVariableReference<T> extends CtVariableReference<T> {
-
+	@Override
+	CtUnboundVariableReference<T> clone();
 }

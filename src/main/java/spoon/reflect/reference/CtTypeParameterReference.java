@@ -76,4 +76,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
+
+	@Override
+	CtTypeParameterReference clone();
 }

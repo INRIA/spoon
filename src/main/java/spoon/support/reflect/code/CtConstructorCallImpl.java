@@ -34,8 +34,7 @@ import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
-public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>>
-		implements CtConstructorCall<T> {
+public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtConstructorCall<T> {
 	private static final long serialVersionUID = 1L;
 
 	List<CtExpression<?>> arguments = emptyList();
@@ -180,5 +179,10 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 			getExecutable().setType(type);
 		}
 		return (C) this;
+	}
+
+	@Override
+	public CtConstructorCall<T> clone() {
+		return (CtConstructorCall<T>) super.clone();
 	}
 }

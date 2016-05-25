@@ -85,4 +85,7 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	 * Replaces this element by another one.
 	 */
 	<T extends R> void replace(CtBlock<T> element);
+
+	@Override
+	CtBlock<R> clone();
 }

@@ -34,8 +34,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities
-		.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
@@ -168,5 +167,10 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 			return ModifierKind.PRIVATE;
 		}
 		return null;
+	}
+
+	@Override
+	public CtCatchVariable<T> clone() {
+		return (CtCatchVariable<T>) super.clone();
 	}
 }

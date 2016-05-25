@@ -198,4 +198,9 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		this.isShadow = isShadow;
 		return (E) this;
 	}
+
+	@Override
+	public CtMethod<T> clone() {
+		return (CtMethod<T>) super.clone();
+	}
 }

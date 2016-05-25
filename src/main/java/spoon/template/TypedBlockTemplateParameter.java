@@ -55,7 +55,7 @@ public abstract class TypedBlockTemplateParameter<R> implements TemplateParamete
 		if (this instanceof Template) {
 			return Substitution.substitute(targetType, (Template<?>) this, m.getBody());
 		}
-		return targetType.getFactory().Core().clone(m.getBody());
+		return m.getBody().clone();
 	}
 
 	public R S() {

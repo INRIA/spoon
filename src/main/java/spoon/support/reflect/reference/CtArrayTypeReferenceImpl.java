@@ -22,8 +22,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.reflect.Array;
 
-public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
-		implements CtArrayTypeReference<T> {
+public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	public static final String ARRAY_SIMPLE_NAME = Array.class.getSimpleName();
@@ -94,4 +93,8 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T>
 		return 1;
 	}
 
+	@Override
+	public CtArrayTypeReference<T> clone() {
+		return (CtArrayTypeReference<T>) super.clone();
+	}
 }

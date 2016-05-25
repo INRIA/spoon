@@ -59,4 +59,9 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 		this.value = value;
 		return (A) this;
 	}
+
+	@Override
+	public CtAssert<T> clone() {
+		return (CtAssert<T>) super.clone();
+	}
 }

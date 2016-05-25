@@ -53,12 +53,12 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 		method.setImplicit(true);
 		method.setSimpleName(field.getSimpleName());
 		method.setModifiers(field.getModifiers());
-		method.setType(factory.Core().clone(field.getType()));
+		method.setType(field.getType() == null ? null : field.getType().clone());
 		for (CtAnnotation<? extends Annotation> ctAnnotation : field.getAnnotations()) {
-			method.addAnnotation(factory.Core().clone(ctAnnotation));
+			method.addAnnotation(ctAnnotation.clone());
 		}
 		for (CtComment ctComment : field.getComments()) {
-			method.addComment(factory.Core().clone(ctComment));
+			method.addComment(ctComment.clone());
 		}
 		method.setDocComment(field.getDocComment());
 		method.setPosition(field.getPosition());
@@ -157,5 +157,10 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	@Override
 	public boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
 		throw new UnsupportedOperationException("You can't have generics in an annotation.");
+	}
+
+	@Override
+	public CtAnnotationType<T> clone() {
+		return (CtAnnotationType<T>) super.clone();
 	}
 }

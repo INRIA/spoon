@@ -16,14 +16,14 @@
  */
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY;
 
@@ -80,4 +80,8 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		return cases != CtElementImpl.<CtCase<? super S>>emptyList() && cases.remove(c);
 	}
 
+	@Override
+	public CtSwitch<S> clone() {
+		return (CtSwitch<S>) super.clone();
+	}
 }

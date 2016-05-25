@@ -41,4 +41,9 @@ public class CtWhileImpl extends CtLoopImpl implements CtWhile {
 		this.expression = expression;
 		return (T) this;
 	}
+
+	@Override
+	public CtWhile clone() {
+		return (CtWhile) super.clone();
+	}
 }

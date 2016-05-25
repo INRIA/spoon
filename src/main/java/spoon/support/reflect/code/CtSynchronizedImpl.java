@@ -56,4 +56,9 @@ public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronize
 		this.expression = expression;
 		return (T) this;
 	}
+
+	@Override
+	public CtSynchronized clone() {
+		return (CtSynchronized) super.clone();
+	}
 }

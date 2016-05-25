@@ -20,4 +20,6 @@ package spoon.reflect.declaration;
  * This element defines an interface declaration.
  */
 public interface CtInterface<T> extends CtType<T> {
+	@Override
+	CtInterface<T> clone();
 }

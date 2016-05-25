@@ -26,8 +26,7 @@ import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 
-public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
-		CtExpression<T> {
+public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements CtExpression<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtTypeReference<T> type;
@@ -84,5 +83,10 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements
 	@Override
 	public T S() {
 		return null;
+	}
+
+	@Override
+	public CtExpression<T> clone() {
+		return (CtExpression<T>) super.clone();
 	}
 }

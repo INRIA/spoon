@@ -16,11 +16,11 @@
  */
 package spoon.reflect.code;
 
-import java.util.List;
-
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.template.TemplateParameter;
+
+import java.util.List;
 
 /**
  * This abstract code element defines a typed expression.
@@ -50,4 +50,6 @@ public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>, Templ
 	 */
 	<E extends T> void replace(CtExpression<E> element);
 
+	@Override
+	CtExpression<T> clone();
 }

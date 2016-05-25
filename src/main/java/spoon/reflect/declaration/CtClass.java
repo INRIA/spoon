@@ -16,11 +16,11 @@
  */
 package spoon.reflect.declaration;
 
-import java.util.List;
-import java.util.Set;
-
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * This element represents a class declaration.
@@ -95,4 +95,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * Return {@code true} if the referenced type is a anonymous type
 	 */
 	boolean isAnonymous();
+
+	@Override
+	CtClass<T> clone();
 }

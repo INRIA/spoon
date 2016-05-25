@@ -107,7 +107,7 @@ public class SubstitutionVisitor extends CtScanner {
 						if (value instanceof List) {
 							List<?> l = (List<?>) value;
 							for (Object p : l) {
-								CtParameter<?> p2 = e.getFactory().Core().clone((CtParameter<?>) p);
+								CtParameter<?> p2 = ((CtParameter<?>) p).clone();
 								p2.setParent(parameter.getParent());
 								parameter.getParent().getParameters().add(i++, p2);
 							}
@@ -205,7 +205,7 @@ public class SubstitutionVisitor extends CtScanner {
 						if (value instanceof List) {
 							List<?> l = (List<?>) value;
 							for (Object f : l) {
-								CtField<?> f2 = ctClass.getFactory().Core().clone((CtField<?>) f);
+								CtField<?> f2 = ((CtField<?>) f).clone();
 								f2.setParent(ctClass);
 								ctClass.getFields().add(i++, f2);
 							}
@@ -226,7 +226,7 @@ public class SubstitutionVisitor extends CtScanner {
 					CtBlock<?> l = foreach.getFactory().Core().createBlock();
 					CtStatement body = foreach.getBody();
 					for (Object element : value) {
-						CtStatement b = foreach.getFactory().Core().clone(body);
+						CtStatement b = body.clone();
 						for (CtVariableAccess<?> va : Query.getElements(b,
 								new VariableAccessFilter<CtVariableAccess<?>>(foreach.getVariable().getReference()))) {
 							va.replace((CtExpression) element);
@@ -299,7 +299,7 @@ public class SubstitutionVisitor extends CtScanner {
 						toReplace.replace(factory.Code().createLiteral(value));
 					}
 				} else {
-					factory.Core().clone(toReplace);
+					toReplace.clone();
 				}
 				// do not visit if replaced
 				throw new SkipException(fieldAccess);
@@ -330,7 +330,7 @@ public class SubstitutionVisitor extends CtScanner {
 							.getValue(template, fa.getVariable().getSimpleName(), Parameters.getIndex(fa));
 					CtCodeElement r = null;
 					if (tparamValue != null) {
-						r = (CtCodeElement) factory.Core().clone(tparamValue);
+						r = ((CtCodeElement) tparamValue).clone();
 						// substitute in the replacement (for fixing type
 						// references
 						// and
@@ -461,7 +461,7 @@ public class SubstitutionVisitor extends CtScanner {
 				if (o instanceof Class) {
 					t = factory.Type().createReference(((Class<?>) o));
 				} else if (o instanceof CtTypeReference) {
-					t = factory.Core().clone((CtTypeReference<?>) o);
+					t = ((CtTypeReference<?>) o).clone();
 					reference.setActualTypeArguments(t.getActualTypeArguments());
 				} else {
 					throw new RuntimeException(

@@ -29,4 +29,7 @@ public interface CtCatchVariableReference<T> extends CtVariableReference<T> {
 	 * variable reference.
 	 */
 	<C extends CtCatchVariableReference<T>> C setDeclaration(CtCatchVariable<T> declaration);
+
+	@Override
+	CtCatchVariableReference<T> clone();
 }

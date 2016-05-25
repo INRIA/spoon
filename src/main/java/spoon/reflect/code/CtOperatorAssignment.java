@@ -29,4 +29,7 @@ public interface CtOperatorAssignment<T, A extends T> extends CtAssignment<T, A>
 	 * Gets the operator kind.
 	 */
 	BinaryOperatorKind getKind();
+
+	@Override
+	CtOperatorAssignment<T, A> clone();
 }

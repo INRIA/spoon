@@ -20,8 +20,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T>
-		implements CtLocalVariableReference<T> {
+public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtLocalVariableReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	private CtLocalVariable<T> declaration;
@@ -46,4 +45,8 @@ public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		return (C) this;
 	}
 
+	@Override
+	public CtLocalVariableReference<T> clone() {
+		return (CtLocalVariableReference<T>) super.clone();
+	}
 }

@@ -78,4 +78,7 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	 * Forces a reference to a static element.
 	 */
 	<C extends CtFieldReference<T>> C setStatic(boolean b);
+
+	@Override
+	CtFieldReference<T> clone();
 }

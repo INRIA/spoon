@@ -55,4 +55,7 @@ public interface CtComment extends CtStatement {
 	CommentType getCommentType();
 
 	<E extends CtComment> E setCommentType(CommentType commentType);
+
+	@Override
+	CtComment clone();
 }

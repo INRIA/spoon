@@ -242,4 +242,6 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 */
 	<S> boolean removeSuperInterface(CtTypeReference<S> interfac);
 
+	@Override
+	CtType<T> clone();
 }

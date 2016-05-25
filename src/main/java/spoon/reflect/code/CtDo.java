@@ -29,4 +29,7 @@ public interface CtDo extends CtLoop {
 	 * Sets the looping test as a boolean expression.
 	 */
 	<T extends CtDo> T setLoopingExpression(CtExpression<Boolean> expression);
+
+	@Override
+	CtDo clone();
 }

@@ -16,8 +16,6 @@
  */
 package spoon.template;
 
-import java.util.List;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
@@ -36,6 +34,8 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
+
+import java.util.List;
 
 /**
  * This class defines the substitution API for templates (see {@link Template}).
@@ -433,7 +433,7 @@ public abstract class Substitution {
 		if (targetType == null) {
 			throw new RuntimeException("target is null in substitution");
 		}
-		E result = targetType.getFactory().Core().clone(code);
+		E result = (E) code.clone();
 		new SubstitutionVisitor(targetType.getFactory(), targetType, template).scan(result);
 		return result;
 	}
@@ -479,7 +479,7 @@ public abstract class Substitution {
 	 * substituted
 	 */
 	public static <T extends CtType<?>> T substitute(Template<?> template, T templateType) {
-		T result = templateType.getFactory().Core().clone(templateType);
+		T result = (T) templateType.clone();
 		result.setPositions(null);
 		// result.setParent(templateType.getParent());
 		new SubstitutionVisitor(templateType.getFactory(), result, template).scan(result);

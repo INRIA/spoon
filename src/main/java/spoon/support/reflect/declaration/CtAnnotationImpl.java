@@ -82,7 +82,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		if (value instanceof CtExpression) {
 			return addValueExpression(elementName, (CtExpression<?>) value);
 		}
-		return addValueExpression(elementName, convertValueToExpression(value));
+		return this.addValueExpression(elementName, convertValueToExpression(value));
 	}
 
 	private CtExpression convertValueToExpression(Object value) {
@@ -461,5 +461,10 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
 		this.isShadow = isShadow;
 		return (E) this;
+	}
+
+	@Override
+	public CtAnnotation<A> clone() {
+		return (CtAnnotation<A>) super.clone();
 	}
 }

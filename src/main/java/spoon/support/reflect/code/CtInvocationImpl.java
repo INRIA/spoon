@@ -183,4 +183,9 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		return getExecutable() != null && getExecutable().removeActualTypeArgument(actualTypeArgument);
 	}
+
+	@Override
+	public CtInvocation<T> clone() {
+		return (CtInvocation<T>) super.clone();
+	}
 }

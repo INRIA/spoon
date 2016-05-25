@@ -24,7 +24,7 @@ public class AwesomeProcessor extends AbstractProcessor<CtClass<Bar>> {
 				getFactory().Code()
 							.createCodeSnippetStatement("System.out.println(\"Prepare mojito\")"));
 		prepareMojito.setBody(block);
-		final CtMethod makeMojito = getFactory().Core().clone(prepareMojito);
+		final CtMethod makeMojito = prepareMojito.clone();
 		makeMojito.setSimpleName("makeMojito");
 		final CtBlock<Object> blockMake = getFactory().Core().createBlock();
 		blockMake.addStatement(

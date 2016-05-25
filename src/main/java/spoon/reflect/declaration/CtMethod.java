@@ -35,4 +35,7 @@ public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtGenericEle
 	 * Replaces this element by another one.
 	 */
 	<R extends T> void replace(CtMethod<T> element);
+
+	@Override
+	CtMethod<T> clone();
 }

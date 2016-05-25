@@ -36,4 +36,7 @@ public interface CtNamedElement extends CtElement {
 	 * Returns the corresponding reference.
 	 */
 	CtReference getReference();
+
+	@Override
+	CtNamedElement clone();
 }

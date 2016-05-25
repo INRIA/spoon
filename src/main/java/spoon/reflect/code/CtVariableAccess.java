@@ -36,4 +36,7 @@ public interface CtVariableAccess<T> extends CtExpression<T> {
 	 * Sets the reference to the accessed variable.
 	 */
 	<C extends CtVariableAccess<T>> C setVariable(CtVariableReference<T> variable);
+
+	@Override
+	CtVariableAccess<T> clone();
 }

@@ -23,4 +23,6 @@ package spoon.reflect.code;
  * 		Type of this
  */
 public interface CtThisAccess<T> extends CtTargetedExpression<T, CtExpression<?>> {
+	@Override
+	CtThisAccess<T> clone();
 }

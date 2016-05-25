@@ -28,4 +28,8 @@ public class CtThisAccessImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		visitor.visitCtThisAccess(this);
 	}
 
+	@Override
+	public CtThisAccess<T> clone() {
+		return (CtThisAccess<T>) super.clone();
+	}
 }

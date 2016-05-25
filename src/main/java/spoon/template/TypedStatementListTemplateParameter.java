@@ -51,7 +51,7 @@ public abstract class TypedStatementListTemplateParameter<R> implements Template
 		if (this instanceof Template) {
 			b = Substitution.substitute(targetType, (Template<?>) this, c.getMethod("statements").getBody());
 		} else {
-			b = targetType.getFactory().Core().clone(c.getMethod("statements").getBody());
+			b = c.getMethod("statements").getBody().clone();
 		}
 		l.setStatements(b.getStatements());
 		return l;

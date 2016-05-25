@@ -45,4 +45,7 @@ public interface CtReference extends CtElement {
 	 * @return referenced element or null if element does not exist
 	 */
 	CtElement getDeclaration();
+
+	@Override
+	CtReference clone();
 }

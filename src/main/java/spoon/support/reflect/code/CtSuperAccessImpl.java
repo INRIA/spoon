@@ -45,4 +45,9 @@ public class CtSuperAccessImpl<T> extends CtVariableReadImpl<T> implements CtSup
 		this.target = target;
 		return null;
 	}
+
+	@Override
+	public CtSuperAccess<T> clone() {
+		return (CtSuperAccess<T>) super.clone();
+	}
 }

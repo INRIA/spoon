@@ -73,4 +73,6 @@ public interface CtFor extends CtLoop {
 	 */
 	boolean removeForUpdate(CtStatement statement);
 
+	@Override
+	CtFor clone();
 }

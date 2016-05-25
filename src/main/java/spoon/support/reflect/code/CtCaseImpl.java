@@ -16,16 +16,16 @@
  */
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -88,5 +88,10 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	@Override
 	public Iterator<CtStatement> iterator() {
 		return getStatements().iterator();
+	}
+
+	@Override
+	public CtCase<E> clone() {
+		return (CtCase<E>) super.clone();
 	}
 }

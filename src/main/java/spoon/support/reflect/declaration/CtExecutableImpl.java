@@ -132,4 +132,9 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	public CtExecutableReference<R> getReference() {
 		return getFactory().Executable().createReference(this);
 	}
+
+	@Override
+	public CtExecutable<R> clone() {
+		return (CtExecutable<R>) super.clone();
+	}
 }

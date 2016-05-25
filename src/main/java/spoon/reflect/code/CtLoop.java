@@ -32,4 +32,7 @@ public interface CtLoop extends CtStatement, TemplateParameter<Void> {
 	 * Sets the body of this loop.
 	 */
 	<T extends CtLoop> T setBody(CtStatement body);
+
+	@Override
+	CtLoop clone();
 }

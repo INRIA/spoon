@@ -26,8 +26,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Set;
 import java.util.TreeSet;
 
-public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
-		implements CtVariableReference<T> {
+public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl implements CtVariableReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtTypeReference<T> type;
@@ -78,5 +77,10 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl
 	@Override
 	public void replace(CtVariableReference<?> reference) {
 		super.replace(reference);
+	}
+
+	@Override
+	public CtVariableReference<T> clone() {
+		return (CtVariableReference<T>) super.clone();
 	}
 }

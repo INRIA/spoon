@@ -16,9 +16,6 @@
  */
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCodeElement;
@@ -26,6 +23,9 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_CASES_CONTAINER_DEFAULT_CAPACITY;
 
@@ -97,12 +97,17 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	}
 
 	@Override
+	public CtTry clone() {
+		return (CtTry) super.clone();
+	}
+
+	@Override
 	public Void S() {
 		return null;
 	}
 
 	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+		return clone();
 	}
 
 }

@@ -78,4 +78,9 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 			return (pos1 < pos2) ? -1 : ((pos1 == pos2) ? 0 : 1);
 		}
 	}
+
+	@Override
+	public CtIntersectionTypeReference<T> clone() {
+		return (CtIntersectionTypeReference<T>) super.clone();
+	}
 }

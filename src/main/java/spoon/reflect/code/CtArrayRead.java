@@ -28,4 +28,6 @@ package spoon.reflect.code;
  * 		type of the array
  */
 public interface CtArrayRead<T> extends CtArrayAccess<T, CtExpression<?>> {
+	@Override
+	CtArrayRead<T> clone();
 }

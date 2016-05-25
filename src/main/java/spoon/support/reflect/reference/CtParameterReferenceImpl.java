@@ -24,8 +24,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 import java.util.List;
 
-public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
-		implements CtParameterReference<T> {
+public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtExecutableReference<?> executable;
@@ -68,5 +67,10 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		}
 		this.executable = executable;
 		return (C) this;
+	}
+
+	@Override
+	public CtParameterReference<T> clone() {
+		return (CtParameterReference<T>) super.clone();
 	}
 }

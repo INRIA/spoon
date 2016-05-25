@@ -83,11 +83,16 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 	}
 
 	@Override
+	public CtIf clone() {
+		return (CtIf) super.clone();
+	}
+
+	@Override
 	public Void S() {
 		return null;
 	}
 
 	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+		return clone();
 	}
 }

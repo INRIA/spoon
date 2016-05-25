@@ -20,11 +20,15 @@ import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtArrayReadImpl<T> extends CtArrayAccessImpl<T, CtExpression<?>>
-		implements CtArrayRead<T> {
+public class CtArrayReadImpl<T> extends CtArrayAccessImpl<T, CtExpression<?>> implements CtArrayRead<T> {
 	private static final long serialVersionUID = 1L;
 
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtArrayRead(this);
+	}
+
+	@Override
+	public CtArrayRead<T> clone() {
+		return (CtArrayRead<T>) super.clone();
 	}
 }

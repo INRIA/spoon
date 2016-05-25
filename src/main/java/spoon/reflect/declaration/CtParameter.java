@@ -44,4 +44,7 @@ public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 	<C extends CtParameter<T>> C setVarArgs(boolean varArgs);
 
 	CtParameterReference<T> getReference();
+
+	@Override
+	CtParameter<T> clone();
 }

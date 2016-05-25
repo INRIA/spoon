@@ -37,4 +37,9 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 		this.variable = variable;
 		return (C) this;
 	}
+
+	@Override
+	public CtVariableAccess<T> clone() {
+		return (CtVariableAccess<T>) super.clone();
+	}
 }

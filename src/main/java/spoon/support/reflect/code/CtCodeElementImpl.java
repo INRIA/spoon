@@ -20,8 +20,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 
-public abstract class CtCodeElementImpl extends CtElementImpl
-		implements CtCodeElement {
+public abstract class CtCodeElementImpl extends CtElementImpl implements CtCodeElement {
 	private static final long serialVersionUID = 1L;
 
 	public CtCodeElementImpl() {
@@ -35,4 +34,8 @@ public abstract class CtCodeElementImpl extends CtElementImpl
 		return eval.evaluate(getParent(), (R) this);
 	}
 
+	@Override
+	public CtCodeElement clone() {
+		return (CtCodeElement) super.clone();
+	}
 }

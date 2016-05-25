@@ -109,7 +109,9 @@ public interface CoreFactory {
 	 * @param element
 	 * 		the element
 	 * @return a clone of <code>element</code>
+	 * @see spoon.reflect.declaration.CtElement#clone()
 	 */
+	@Deprecated
 	<T> T clone(T element);
 
 	/**

@@ -22,8 +22,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.reflect.AnnotatedElement;
 
-public class CtPackageReferenceImpl extends CtReferenceImpl
-		implements CtPackageReference {
+public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackageReference {
 	private static final long serialVersionUID = 1L;
 
 	public CtPackageReferenceImpl() {
@@ -55,4 +54,8 @@ public class CtPackageReferenceImpl extends CtReferenceImpl
 		return getActualPackage();
 	}
 
+	@Override
+	public CtPackageReference clone() {
+		return (CtPackageReference) super.clone();
+	}
 }

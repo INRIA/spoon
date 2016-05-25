@@ -22,4 +22,6 @@ import java.lang.annotation.Annotation;
  * This element defines an annotation type.
  */
 public interface CtAnnotationType<T extends Annotation> extends CtType<T> {
+	@Override
+	CtAnnotationType<T> clone();
 }

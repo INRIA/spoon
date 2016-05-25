@@ -31,4 +31,7 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtGener
 	 * constructor's type).
 	 */
 	CtType<T> getDeclaringType();
+
+	@Override
+	CtConstructor<T> clone();
 }

@@ -167,4 +167,9 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		this.isShadow = isShadow;
 		return (E) this;
 	}
+
+	@Override
+	public CtParameter<T> clone() {
+		return (CtParameter<T>) super.clone();
+	}
 }

@@ -39,4 +39,9 @@ public class CtBreakImpl extends CtStatementImpl implements CtBreak {
 		this.targetLabel = targetLabel;
 		return (T) this;
 	}
+
+	@Override
+	public CtBreak clone() {
+		return (CtBreak) super.clone();
+	}
 }

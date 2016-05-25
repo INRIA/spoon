@@ -26,4 +26,9 @@ public class CtFieldWriteImpl<T> extends CtFieldAccessImpl<T> implements CtField
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtFieldWrite(this);
 	}
+
+	@Override
+	public CtFieldWrite<T> clone() {
+		return (CtFieldWrite<T>) super.clone();
+	}
 }

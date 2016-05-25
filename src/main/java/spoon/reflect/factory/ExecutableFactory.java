@@ -98,15 +98,15 @@ public class ExecutableFactory extends SubFactory {
 		CtTypeReference<?> refs[] = new CtTypeReference[e.getParameters().size()];
 		int i = 0;
 		for (CtParameter<?> param : e.getParameters()) {
-			refs[i++] = factory.Core().clone(param.getType());
+			refs[i++] = param.getType().clone();
 		}
 		if (e instanceof CtMethod) {
-			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), factory.Core().clone(((CtMethod<T>) e).getType()), e.getSimpleName(), refs);
+			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), ((CtMethod<T>) e).getType().clone(), e.getSimpleName(), refs);
 		} else if (e instanceof CtLambda) {
 			// A lambda isn't a structural element and doesn't have a declaring type like a method or a constructor.
 			return createReference(null, e.getType(), e.getSimpleName(), refs);
 		}
-		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), factory.Core().clone(((CtConstructor<T>) e).getType()), CtExecutableReference.CONSTRUCTOR_NAME, refs);
+		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), ((CtConstructor<T>) e).getType().clone(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
 
 	/**

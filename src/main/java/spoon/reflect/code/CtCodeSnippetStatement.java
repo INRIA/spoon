@@ -25,7 +25,7 @@ import spoon.support.compiler.SnippetCompilationError;
  * since no controls can be performed on them.
  */
 
-public interface CtCodeSnippetStatement extends CtCodeSnippet, CtStatement {
+public interface CtCodeSnippetStatement extends CtStatement, CtCodeSnippet {
 
 	/**
 	 * Compiles this statement code snippet to produce the corresponding AST
@@ -37,4 +37,6 @@ public interface CtCodeSnippetStatement extends CtCodeSnippet, CtStatement {
 	 */
 	<S extends CtStatement> S compile() throws SnippetCompilationError;
 
+	@Override
+	CtCodeSnippetStatement clone();
 }

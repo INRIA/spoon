@@ -161,4 +161,9 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
 		throw new UnsupportedOperationException("An anonymous executable isn't typed");
 	}
+
+	@Override
+	public CtAnonymousExecutable clone() {
+		return (CtAnonymousExecutable) super.clone();
+	}
 }

@@ -24,7 +24,7 @@ import spoon.support.compiler.SnippetCompilationError;
  * be inserted in the program's model as is. Code snippets should be avoided
  * since no controls can be performed on them.
  */
-public interface CtCodeSnippetExpression<T> extends CtCodeSnippet, CtExpression<T> {
+public interface CtCodeSnippetExpression<T> extends CtExpression<T>, CtCodeSnippet {
 
 	/**
 	 * Compiles this expression snippet to produce the corresponding AST expression.
@@ -34,4 +34,6 @@ public interface CtCodeSnippetExpression<T> extends CtCodeSnippet, CtExpression<
 	 */
 	<E extends CtExpression<T>> E compile() throws SnippetCompilationError;
 
+	@Override
+	CtCodeSnippetExpression<T> clone();
 }
