@@ -29,7 +29,7 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtBiScanner {
 		return !(new spoon.support.visitor.equals.EqualsVisitor().biScan(element, other));
 	}
 
-	private final spoon.support.visitor.equals.EqualsCheckerInheritance checker = new spoon.support.visitor.equals.EqualsCheckerInheritance();
+	private final spoon.support.visitor.equals.EqualsChecker checker = new spoon.support.visitor.equals.EqualsChecker();
 
 	@java.lang.Override
 	protected void enter(spoon.reflect.declaration.CtElement e) {
@@ -358,7 +358,6 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtBiScanner {
 		enter(literal);
 		biScan(literal.getAnnotations(), other.getAnnotations());
 		biScan(literal.getType(), other.getType());
-		biScan(literal.getValue(), other.getValue());
 		biScan(literal.getTypeCasts(), other.getTypeCasts());
 		exit(literal);
 	}

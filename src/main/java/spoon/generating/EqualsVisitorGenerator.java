@@ -16,29 +16,62 @@
  */
 package spoon.generating;
 
-import spoon.generating.equals.EqualsVisitorScanner;
 import spoon.processing.AbstractManualProcessor;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtBiScanner;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.ReferenceFilter;
+import spoon.support.visitor.equals.IgnoredByEquals;
 
 import java.util.List;
 
-import static spoon.generating.equals.EqualsVisitorScanner.GENERATING_EQUALS;
-import static spoon.generating.equals.EqualsVisitorScanner.TARGET_EQUALS_PACKAGE;
-
 public class EqualsVisitorGenerator extends AbstractManualProcessor {
+	private static final String TARGET_EQUALS_PACKAGE = "spoon.support.visitor.equals";
+	private static final String GENERATING_EQUALS_PACKAGE = "spoon.generating.equals";
+	private static final String GENERATING_EQUALS = GENERATING_EQUALS_PACKAGE + ".EqualsVisitorTemplate";
+
 	@Override
 	public void process() {
-		new EqualsVisitorScanner(createEqualsVisitor()).scan(getFactory().Class().get(CtBiScanner.class));
+		final CtClass<Object> target = createEqualsVisitor();
+		new CtScanner() {
+			@Override
+			public <T> void visitCtMethod(CtMethod<T> element) {
+				if (!element.getSimpleName().startsWith("visitCt")) {
+					return;
+				}
+
+				Factory factory = element.getFactory();
+				CtMethod<T> clone = factory.Core().clone(element);
+
+				final CtAnnotation<?> ignoredAnnotation = factory.Core().createAnnotation();
+				ignoredAnnotation.setAnnotationType(factory.Type().createReference(IgnoredByEquals.class));
+
+				for (int i = 2; i < clone.getBody().getStatements().size() - 1; i++) {
+					final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(0);
+					if (targetInvocation.getExecutable().getExecutableDeclaration().getAnnotations().contains(ignoredAnnotation)) {
+						clone.getBody().getStatement(i--).delete();
+						continue;
+					}
+					CtInvocation replace = (CtInvocation) factory.Core().clone(clone.getBody().getStatement(i));
+					clone.getBody().getStatement(i).replace(replace);
+				}
+
+				target.addMethod(clone);
+			}
+		}.scan(getFactory().Class().get(CtBiScanner.class));
 	}
 
 	private CtClass<Object> createEqualsVisitor() {
 		final CtPackage aPackage = getFactory().Package().getOrCreate(TARGET_EQUALS_PACKAGE);
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_EQUALS);
+		target.setSimpleName("EqualsVisitor");
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
 		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
@@ -53,6 +86,7 @@ public class EqualsVisitorGenerator extends AbstractManualProcessor {
 			}
 		});
 		for (CtTypeReference reference : references) {
+			reference.setSimpleName("EqualsVisitor");
 			reference.setPackage(aPackage.getReference());
 		}
 		return target;

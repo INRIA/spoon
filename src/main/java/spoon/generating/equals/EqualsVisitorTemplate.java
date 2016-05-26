@@ -18,19 +18,19 @@ package spoon.generating.equals;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtBiScanner;
-import spoon.support.visitor.equals.EqualsCheckerInheritance;
+import spoon.support.visitor.equals.EqualsChecker;
 
 /**
  * Used to check equality between an element and another one.
  *
  * This class is generated automatically by the processor {@link spoon.generating.EqualsVisitorGenerator}.
  */
-class EqualsVisitor extends CtBiScanner {
+class EqualsVisitorTemplate extends CtBiScanner {
 	public static boolean equals(CtElement element, CtElement other) {
-		return !new EqualsVisitor().biScan(element, other);
+		return !new EqualsVisitorTemplate().biScan(element, other);
 	}
 
-	private final EqualsCheckerInheritance checker = new EqualsCheckerInheritance();
+	private final EqualsChecker checker = new EqualsChecker();
 
 	@Override
 	protected void enter(CtElement e) {

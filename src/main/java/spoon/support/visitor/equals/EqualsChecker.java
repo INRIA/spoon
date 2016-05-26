@@ -19,6 +19,7 @@ package spoon.support.visitor.equals;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtContinue;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtUnaryOperator;
@@ -32,7 +33,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
-public class EqualsCheckerInheritance extends CtInheritanceScanner {
+public class EqualsChecker extends CtInheritanceScanner {
 	private CtElement other;
 	private boolean isNotEqual;
 
@@ -83,10 +84,27 @@ public class EqualsCheckerInheritance extends CtInheritanceScanner {
 	@Override
 	public void scanCtModifiable(CtModifiable m) {
 		final CtModifiable peek = (CtModifiable) this.other;
-/*
-		biScan(m.getVisibility(), other.getVisibility());
-		biScan(m.getModifiers(), other.getModifiers());
-*/
+		if (m.getVisibility() == null) {
+			if (peek.getVisibility() != null) {
+				isNotEqual = true;
+				return;
+			}
+		} else if (peek.getVisibility() == null) {
+			isNotEqual = true;
+			return;
+		} else  if (!m.getVisibility().equals(peek.getVisibility())) {
+			isNotEqual = true;
+			return;
+		}
+		if (m.getModifiers().size() != peek.getModifiers().size()) {
+			isNotEqual = true;
+			return;
+		}
+		if (!m.getModifiers().containsAll(peek.getModifiers())) {
+			isNotEqual = true;
+			return;
+		}
+		super.scanCtModifiable(m);
 	}
 
 	@Override
@@ -177,5 +195,23 @@ public class EqualsCheckerInheritance extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtParameter(e);
+	}
+
+	@Override
+	public <T> void visitCtLiteral(CtLiteral<T> e) {
+		final CtLiteral peek = (CtLiteral) this.other;
+		if (e.getValue() == null) {
+			if (peek.getValue() != null) {
+				isNotEqual = true;
+				return;
+			}
+		} else if (peek.getValue() == null) {
+			isNotEqual = true;
+			return;
+		} else if (!e.getValue().equals(peek.getValue())) {
+			isNotEqual = true;
+			return;
+		}
+		super.visitCtLiteral(e);
 	}
 }

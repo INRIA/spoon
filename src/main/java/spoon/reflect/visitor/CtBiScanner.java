@@ -18,12 +18,13 @@
 
 package spoon.reflect.visitor;
 
-
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.
  *
  * Ensures that all children nodes are visited once, a visit means three method
  * calls, one call to "enter", one call to "exit" and one call to biScan.
+ *
+ * This class is generated automatically by the processor {@link spoon.generating.CtBiScannerGenerator}.z
  *
  * Is used by EqualsVisitor.
  */
@@ -53,7 +54,16 @@ public abstract class CtBiScanner implements spoon.reflect.visitor.CtVisitor {
 		if ((elements.size()) != (others.size())) {
 			return fail();
 		}
-		for (java.util.Iterator<? extends spoon.reflect.declaration.CtElement> firstIt = elements.iterator(), secondIt = others.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
+		java.util.Collection<? extends spoon.reflect.declaration.CtElement> elementsColl = elements;
+		java.util.Collection<? extends spoon.reflect.declaration.CtElement> othersColl = others;
+		if (elements instanceof java.util.Set) {
+			if (!(others instanceof java.util.Set)) {
+				return fail();
+			}
+			elementsColl = new java.util.TreeSet<spoon.reflect.declaration.CtElement>(elements);
+			othersColl = new java.util.TreeSet<spoon.reflect.declaration.CtElement>(others);
+		}
+		for (java.util.Iterator<? extends spoon.reflect.declaration.CtElement> firstIt = elementsColl.iterator(), secondIt = othersColl.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
 			biScan(firstIt.next(), secondIt.next());
 		}
 		return isNotEqual;
@@ -81,42 +91,6 @@ public abstract class CtBiScanner implements spoon.reflect.visitor.CtVisitor {
 			return fail();
 		} finally {
 			stack.pop();
-		}
-		return isNotEqual;
-	}
-
-	public boolean biScan(java.lang.Object element, java.lang.Object other) {
-		if (isNotEqual) {
-			return isNotEqual;
-		}
-		if (element == null) {
-			if (other != null) {
-				return fail();
-			}
-			return isNotEqual;
-		} else if (other == null) {
-			return fail();
-		}
-		if (element == other) {
-			return isNotEqual;
-		}
-		if ((element instanceof java.util.Map<?, ?>) || (other instanceof java.util.Map<?, ?>)) {
-			throw new spoon.SpoonException("Internal error. Can't bi scan Map.");
-		}
-		if (element instanceof spoon.reflect.declaration.CtElement) {
-			if (!(other instanceof spoon.reflect.declaration.CtElement)) {
-				return fail();
-			}
-			return biScan(((spoon.reflect.declaration.CtElement) (element)), ((spoon.reflect.declaration.CtElement) (other)));
-		}
-		if (element instanceof java.util.Collection<?>) {
-			if (!(other instanceof java.util.Collection)) {
-				return fail();
-			}
-			return biScan(((java.util.Collection) (element)), ((java.util.Collection) (other)));
-		}
-		if (!(element.equals(other))) {
-			return fail();
 		}
 		return isNotEqual;
 	}
@@ -474,7 +448,6 @@ public abstract class CtBiScanner implements spoon.reflect.visitor.CtVisitor {
 		enter(literal);
 		biScan(literal.getAnnotations(), other.getAnnotations());
 		biScan(literal.getType(), other.getType());
-		biScan(literal.getValue(), other.getValue());
 		biScan(literal.getTypeCasts(), other.getTypeCasts());
 		biScan(literal.getComments(), other.getComments());
 		exit(literal);
