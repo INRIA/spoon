@@ -173,17 +173,17 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
-		setResult(arrayAccess.getFactory().Core().clone(arrayAccess));
+		setResult(arrayAccess.clone());
 	}
 
 	@Override
 	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
-		setResult(arrayRead.getFactory().Core().clone(arrayRead));
+		setResult(arrayRead.clone());
 	}
 
 	@Override
 	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
-		setResult(arrayWrite.getFactory().Core().clone(arrayWrite));
+		setResult(arrayWrite.clone());
 	}
 
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
@@ -357,7 +357,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtBreak(CtBreak breakStatement) {
-		setResult(breakStatement.getFactory().Core().clone(breakStatement));
+		setResult(breakStatement.clone());
 	}
 
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
@@ -365,7 +365,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtCatch(CtCatch catchBlock) {
-		setResult(catchBlock.getFactory().Core().clone(catchBlock));
+		setResult(catchBlock.clone());
 	}
 
 	public <T> void visitCtClass(CtClass<T> ctClass) {
@@ -377,11 +377,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtContinue(CtContinue continueStatement) {
-		setResult(continueStatement.getFactory().Core().clone(continueStatement));
+		setResult(continueStatement.clone());
 	}
 
 	public void visitCtDo(CtDo doLoop) {
-		CtDo w = doLoop.getFactory().Core().clone(doLoop);
+		CtDo w = doLoop.clone();
 		w.setLoopingExpression(evaluate(w, doLoop.getLoopingExpression()));
 		w.setBody(evaluate(w, doLoop.getBody()));
 		setResult(w);
@@ -440,12 +440,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			setResult(evaluate(f, f.getDefaultExpression()));
 			return;
 		}
-		setResult(fieldAccess.getFactory().Core().clone(fieldAccess));
+		setResult(fieldAccess.clone());
 	}
 
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
-		setResult(thisAccess.getFactory().Core().clone(thisAccess));
+		setResult(thisAccess.clone());
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess) {
@@ -480,11 +480,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			}
 		}
 
-		setResult(forLoop.getFactory().Core().clone(forLoop));
+		setResult(forLoop.clone());
 	}
 
 	public void visitCtForEach(CtForEach foreach) {
-		setResult(foreach.getFactory().Core().clone(foreach));
+		setResult(foreach.clone());
 	}
 
 	public void visitCtGenericElementReference(CtActualTypeContainer reference) {
@@ -580,7 +580,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
-		setResult(literal.getFactory().Core().clone(literal));
+		setResult(literal.clone());
 	}
 
 	public <T> void visitCtLocalVariable(final CtLocalVariable<T> localVariable) {
@@ -598,7 +598,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		// }
 		// });
 		// if (res.size() != 0)
-		CtLocalVariable<T> r = localVariable.getFactory().Core().clone(localVariable);
+		CtLocalVariable<T> r = localVariable.clone();
 		r.setDefaultExpression(evaluate(r, localVariable.getDefaultExpression()));
 		setResult(r);
 	}
@@ -609,7 +609,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	@Override
 	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
-		CtCatchVariable<T> r = catchVariable.getFactory().Core().clone(catchVariable);
+		CtCatchVariable<T> r = catchVariable.clone();
 		r.setDefaultExpression(evaluate(r, catchVariable.getDefaultExpression()));
 		setResult(r);
 	}
@@ -624,31 +624,31 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
-		setResult(newArray.getFactory().Core().clone(newArray));
+		setResult(newArray.clone());
 	}
 
 	@Override
 	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-		setResult(ctConstructorCall.getFactory().Core().clone(ctConstructorCall));
+		setResult(ctConstructorCall.clone());
 	}
 
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
-		setResult(newClass.getFactory().Core().clone(newClass));
+		setResult(newClass.clone());
 	}
 
 	@Override
 	public <T> void visitCtLambda(CtLambda<T> lambda) {
-		setResult(lambda.getFactory().Core().clone(lambda));
+		setResult(lambda.clone());
 	}
 
 	@Override
 	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
 			CtExecutableReferenceExpression<T, E> expression) {
-		setResult(expression.getFactory().Core().clone(expression));
+		setResult(expression.clone());
 	}
 
 	public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
-		setResult(assignment.getFactory().Core().clone(assignment));
+		setResult(assignment.clone());
 	}
 
 	public void visitCtPackage(CtPackage ctPackage) {
@@ -683,11 +683,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
-		setResult(switchStatement.getFactory().Core().clone(switchStatement));
+		setResult(switchStatement.clone());
 	}
 
 	public void visitCtSynchronized(CtSynchronized synchro) {
-		CtSynchronized s = synchro.getFactory().Core().clone(synchro);
+		CtSynchronized s = synchro.clone();
 		s.setBlock(evaluate(s, synchro.getBlock()));
 		setResult(s);
 	}
@@ -705,7 +705,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtTry(CtTry tryBlock) {
-		setResult(tryBlock.getFactory().Core().clone(tryBlock));
+		setResult(tryBlock.clone());
 	}
 
 	@Override
@@ -756,7 +756,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			setResult(res);
 			return;
 		}
-		setResult(operator.getFactory().Core().clone(operator));
+		setResult(operator.clone());
 	}
 
 	@Override
@@ -774,12 +774,12 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 		if (v != null && v.hasModifier(ModifierKind.FINAL) && v.getDefaultExpression() != null) {
 			setResult(evaluate(v, v.getDefaultExpression()));
 		} else {
-			setResult(variableAccess.getFactory().Core().clone(variableAccess));
+			setResult(variableAccess.clone());
 		}
 	}
 
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> variableAssignment) {
-		CtAssignment<T, A> a = variableAssignment.getFactory().Core().clone(variableAssignment);
+		CtAssignment<T, A> a = variableAssignment.clone();
 		a.setAssignment(evaluate(a, a.getAssignment()));
 		setResult(a);
 	}
@@ -789,7 +789,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtWhile(CtWhile whileLoop) {
-		CtWhile w = whileLoop.getFactory().Core().clone(whileLoop);
+		CtWhile w = whileLoop.clone();
 		w.setLoopingExpression(evaluate(w, whileLoop.getLoopingExpression()));
 		// If lopping Expression always false
 		if ((whileLoop.getLoopingExpression() instanceof CtLiteral) && !((CtLiteral<Boolean>) whileLoop
@@ -825,6 +825,6 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 
 	@Override
 	public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
-		setResult(f.getFactory().Core().clone(f));
+		setResult(f.clone());
 	}
 }

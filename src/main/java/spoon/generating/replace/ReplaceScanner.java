@@ -71,7 +71,7 @@ public class ReplaceScanner extends CtScanner {
 		}
 
 		Factory factory = element.getFactory();
-		CtMethod<T> clone = factory.Core().clone(element);
+		CtMethod<T> clone = element.clone();
 		clone.getBody().getStatements().clear();
 		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
 			CtInvocation inv = element.getBody().getStatement(i);
@@ -129,7 +129,7 @@ public class ReplaceScanner extends CtScanner {
 		if (type instanceof CtTypeParameterReference) {
 			getterType = getTypeFromTypeParameterReference((CtTypeParameterReference) getter.getExecutable().getDeclaration().getType());
 		} else {
-			getterType = factory.Core().clone(type);
+			getterType = type.clone();
 		}
 		getterType.getActualTypeArguments().clear();
 		return getterType;
@@ -153,7 +153,7 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType, Type type) {
 		CtClass listener;
-		listener = factory.Core().clone(factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener"));
+		listener = factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener").clone();
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
 		final List<CtTypeReference> references = listener.getReferences(new ReferenceFilter<CtTypeReference>() {

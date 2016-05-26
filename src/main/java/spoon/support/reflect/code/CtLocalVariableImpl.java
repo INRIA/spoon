@@ -158,4 +158,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		setDefaultExpression(assignment);
 		return (C) this;
 	}
+
+	@Override
+	public CtLocalVariable<T> clone() {
+		return (CtLocalVariable<T>) super.clone();
+	}
 }

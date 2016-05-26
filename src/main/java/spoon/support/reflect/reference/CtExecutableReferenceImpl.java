@@ -43,8 +43,7 @@ import java.util.TreeSet;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
-public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
-		implements CtExecutableReference<T> {
+public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	boolean stat = false;
@@ -424,5 +423,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl
 			CtTypeReference<?> actualTypeArgument) {
 		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
 				&& actualTypeArguments.remove(actualTypeArgument);
+	}
+
+	@Override
+	public CtExecutableReference<T> clone() {
+		return (CtExecutableReference<T>) super.clone();
 	}
 }

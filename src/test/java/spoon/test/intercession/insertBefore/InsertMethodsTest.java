@@ -167,7 +167,7 @@ public class InsertMethodsTest {
 		assertEquals(snippet, ctCase1.getStatements().get(0));
 		assertEquals(ctCase1, snippet.getParent());
 
-		CtCodeSnippetStatement snippet2 = factory.Core().clone(snippet);
+		CtCodeSnippetStatement snippet2 = snippet.clone();
 		ctCase2.getStatements().get(1).insertBefore(snippet2);
 		assertEquals(snippet2, ctCase2.getStatements().get(1));
 		assertEquals(ctCase2, snippet2.getParent());
@@ -203,7 +203,7 @@ public class InsertMethodsTest {
 		assertEquals(snippet, ctCase1.getStatements().get(1));
 		assertEquals(ctCase1, snippet.getParent());
 
-		CtCodeSnippetStatement snippet2 = factory.Core().clone(snippet);
+		CtCodeSnippetStatement snippet2 = snippet.clone();
 		ctCase2.getStatements().get(1).insertAfter(snippet2);
 		assertEquals(snippet2, ctCase2.getStatements().get(2));
 		assertEquals(ctCase2, snippet2.getParent());

@@ -84,4 +84,9 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 		result = 31 * result + (type != null ? type.hashCode() : 0);
 		return result;
 	}
+
+	@Override
+	public CtComment clone() {
+		return (CtComment) super.clone();
+	}
 }

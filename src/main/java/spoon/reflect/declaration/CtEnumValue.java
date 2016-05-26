@@ -31,4 +31,6 @@ package spoon.reflect.declaration;
  * 		the type of the enum, hence equal to the type of getParent().
  */
 public interface CtEnumValue<T> extends CtField<T> {
+	@Override
+	CtEnumValue clone();
 }

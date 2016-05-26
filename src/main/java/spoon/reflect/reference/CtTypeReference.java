@@ -121,4 +121,7 @@ public interface CtTypeReference<T> extends CtReference, CtGenericElementReferen
 	 * Casts the type reference in {@link CtIntersectionTypeReference}.
 	 */
 	CtIntersectionTypeReference<T> asCtIntersectionTypeReference();
+
+	@Override
+	CtTypeReference<T> clone();
 }

@@ -57,4 +57,8 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 		return (T) this;
 	}
 
+	@Override
+	public CtCatch clone() {
+		return (CtCatch) super.clone();
+	}
 }

@@ -53,4 +53,7 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	 * if the lambda already has a value in the body attribute.
 	 */
 	<C extends CtLambda<T>> C setExpression(CtExpression<T> expression);
+
+	@Override
+	CtLambda<T> clone();
 }

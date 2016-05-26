@@ -395,7 +395,7 @@ public class TypeFactory extends SubFactory {
 	@Deprecated
 	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReference(List<CtTypeReference<?>> bounds) {
 		final CtIntersectionTypeReference<T> intersectionRef = factory.Core().createIntersectionTypeReference();
-		CtTypeReference<?> firstBound = factory.Core().clone(bounds.get(0));
+		CtTypeReference<?> firstBound = bounds.get(0).clone();
 		intersectionRef.setSimpleName(firstBound.getSimpleName());
 		intersectionRef.setDeclaringType(firstBound.getDeclaringType());
 		intersectionRef.setPackage(firstBound.getPackage());
@@ -414,7 +414,7 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReferenceWithBounds(Set<CtTypeReference<?>> bounds) {
 		final CtIntersectionTypeReference<T> intersectionRef = factory.Core().createIntersectionTypeReference();
-		CtTypeReference<?> firstBound = factory.Core().clone(bounds.toArray(new CtTypeReference<?>[0])[0]);
+		CtTypeReference<?> firstBound = bounds.toArray(new CtTypeReference<?>[0])[0].clone();
 		intersectionRef.setSimpleName(firstBound.getSimpleName());
 		intersectionRef.setDeclaringType(firstBound.getDeclaringType());
 		intersectionRef.setPackage(firstBound.getPackage());

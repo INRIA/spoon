@@ -112,4 +112,9 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		}
 		return field;
 	}
+
+	@Override
+	public CtEnum<T> clone() {
+		return (CtEnum<T>) super.clone();
+	}
 }

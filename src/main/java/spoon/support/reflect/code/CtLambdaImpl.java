@@ -164,4 +164,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		this.expression = expression;
 		return (C) this;
 	}
+
+	@Override
+	public CtLambda<T> clone() {
+		return (CtLambda<T>) super.clone();
+	}
 }

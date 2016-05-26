@@ -29,4 +29,6 @@ import spoon.reflect.reference.CtTypeReference;
  * when we build the generic or when we scan an AST given.
  */
 public interface CtCircularTypeReference extends CtTypeParameterReference {
+	@Override
+	CtCircularTypeReference clone();
 }

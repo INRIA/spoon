@@ -1,14 +1,6 @@
 package spoon.test.factory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.processing.AbstractProcessor;
@@ -30,6 +22,13 @@ import spoon.support.StandardEnvironment;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.factory.testclasses.Foo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+
 public class FactoryTest {
 
 	@Test
@@ -38,7 +37,7 @@ public class FactoryTest {
 		CtMethod<?> m = type.getMethodsByName("method3").get(0);
 		int i = m.getBody().getStatements().size();
 
-		m = m.getFactory().Core().clone(m);
+		m = m.clone();
 
 		assertEquals(i, m.getBody().getStatements().size());
 		// cloned elements must not have an initialized parent
@@ -95,21 +94,21 @@ public class FactoryTest {
 		assertEquals(1, ((CtNewArray) foo.getAnnotations().get(0).getElementValues().get("classes")).getElements().size());
 		assertEquals("spoon.test.factory.testclasses.Foo.class", ((CtNewArray) foo.getAnnotations().get(0).getElementValues().get("classes")).getElements().get(0).toString());
 	}
-	
+
 	@Test
 	public void testCtModel() throws Exception {
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/test/java/spoon/test/factory/testclasses");
 		spoon.buildModel();
-		
+
 		CtModel model = spoon.getModel();
-		
+
 		// contains Foo and Foo.@Bar
 		assertEquals(1, model.getAllTypes().size());
-		
+
 		// [, spoon, spoon.test, spoon.test.factory, spoon.test.factory.testclasses]
 		assertEquals(5, model.getAllPackages().size());
-		
+
 		// add to itself is fine
 		model.getRootPackage().addPackage(model.getRootPackage());
 		assertEquals(1, model.getAllTypes().size());
@@ -123,8 +122,8 @@ public class FactoryTest {
 		assertEquals(1, model.getAllTypes().size());
 		assertEquals(5, model.getAllPackages().size());
 
-		
-		CtPackage p = spoon.getFactory().Core().clone(model.getRootPackage().getElements(new NameFilter<CtPackage>("spoon")).get(0));
+
+		CtPackage p = model.getRootPackage().getElements(new NameFilter<CtPackage>("spoon")).get(0).clone();
 		// if we change the implem, merge is impossible
 		CtField f = spoon.getFactory().Core().createField();
 		f.setSimpleName("foo");
@@ -146,21 +145,21 @@ public class FactoryTest {
 		// Build model
 		spoon.buildModel();
 		assertEquals(1, spoon.getModel().getAllTypes().size());
-		
+
 		// Do something with that model..
 		CtModel model = spoon.getModel();
 		model.processWith(new AbstractProcessor<CtMethod>() {
 			@Override
 			public void process(CtMethod element) {
 				element.setDefaultMethod(false);
-			}			
+			}
 		});
 
-		// Feed some new inputResources 
+		// Feed some new inputResources
 		SpoonAPI spoon2 = new Launcher();
 		spoon2.addInputResource("src/test/java/spoon/test/factory/testclasses2");
-		
-		// Build models of newly added classes/packages 
+
+		// Build models of newly added classes/packages
 		spoon2.buildModel();
 		assertEquals(1, spoon2.getModel().getAllTypes().size());
 
@@ -168,7 +167,7 @@ public class FactoryTest {
 		model.getRootPackage().addPackage(spoon2.getModel().getRootPackage());
 
 		// checking the results
-		assertEquals(6, model.getAllPackages().size());		
+		assertEquals(6, model.getAllPackages().size());
 		assertEquals(2, model.getAllTypes().size());
 		assertEquals(1, model.getRootPackage().getElements(new AbstractFilter<CtPackage>() {
 			@Override

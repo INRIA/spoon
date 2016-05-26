@@ -50,4 +50,7 @@ public interface CtConditional<T> extends CtExpression<T> {
 	 * Sets the condition expression.
 	 */
 	<C extends CtConditional<T>> C setCondition(CtExpression<Boolean> condition);
+
+	@Override
+	CtConditional<T> clone();
 }

@@ -19,9 +19,7 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 
-public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>>
-		extends CtTargetedExpressionImpl<T, V>
-		implements CtArrayAccess<T, V> {
+public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>> extends CtTargetedExpressionImpl<T, V> implements CtArrayAccess<T, V> {
 	private static final long serialVersionUID = 1L;
 
 	private CtExpression<Integer> expression;
@@ -38,5 +36,10 @@ public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>>
 		}
 		this.expression = expression;
 		return (C) this;
+	}
+
+	@Override
+	public CtArrayAccess<T, V> clone() {
+		return (CtArrayAccess<T, V>) super.clone();
 	}
 }

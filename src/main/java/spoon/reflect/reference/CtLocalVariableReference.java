@@ -30,4 +30,7 @@ public interface CtLocalVariableReference<T> extends CtVariableReference<T> {
 	 * variable reference.
 	 */
 	<C extends CtLocalVariableReference<T>> C setDeclaration(CtLocalVariable<T> declaration);
+
+	@Override
+	CtLocalVariableReference<T> clone();
 }

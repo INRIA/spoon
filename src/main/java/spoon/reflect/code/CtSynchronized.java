@@ -41,4 +41,7 @@ public interface CtSynchronized extends CtStatement {
 	 * Sets the synchronized block.
 	 */
 	<T extends CtSynchronized> T setBlock(CtBlock<?> block);
+
+	@Override
+	CtSynchronized clone();
 }

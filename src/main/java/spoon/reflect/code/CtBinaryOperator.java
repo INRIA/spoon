@@ -53,4 +53,7 @@ public interface CtBinaryOperator<T> extends CtExpression<T> {
 	 * Gets the kind of this binary operator.
 	 */
 	BinaryOperatorKind getKind();
+
+	@Override
+	CtBinaryOperator<T> clone();
 }

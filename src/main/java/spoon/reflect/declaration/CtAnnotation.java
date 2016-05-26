@@ -168,4 +168,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * Adds a new key-annotation pair for this annotation.
 	 */
 	<T extends CtAnnotation<A>> T addValue(String elementName, CtAnnotation<?> value);
+
+	@Override
+	CtAnnotation<A> clone();
 }

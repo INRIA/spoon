@@ -69,4 +69,9 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	public void accept(CtVisitor visitor) {
 		throw new UnsupportedOperationException("Must be implemented in subclasses.");
 	}
+
+	@Override
+	public CtReference clone() {
+		return (CtReference) super.clone();
+	}
 }

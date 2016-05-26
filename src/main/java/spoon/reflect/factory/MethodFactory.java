@@ -16,13 +16,6 @@
  */
 package spoon.reflect.factory;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -32,6 +25,13 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.template.Substitution;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The {@link CtMethod} sub-factory.
@@ -89,7 +89,7 @@ public class MethodFactory extends ExecutableFactory {
 	 * @return the newly created method
 	 */
 	public <T> CtMethod<T> create(CtType<?> target, CtMethod<T> source, boolean redirectReferences) {
-		CtMethod<T> newMethod = factory.Core().clone(source);
+		CtMethod<T> newMethod = source.clone();
 		if (redirectReferences && (source.getDeclaringType() != null)) {
 			Substitution.redirectTypeReferences(newMethod, source.getDeclaringType().getReference(), target.getReference());
 		}

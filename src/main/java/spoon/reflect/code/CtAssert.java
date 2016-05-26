@@ -39,4 +39,7 @@ public interface CtAssert<T> extends CtStatement {
 	 * Sets the expression of the assertion.
 	 */
 	<A extends CtAssert<T>> A setExpression(CtExpression<T> expression);
+
+	@Override
+	CtAssert<T> clone();
 }

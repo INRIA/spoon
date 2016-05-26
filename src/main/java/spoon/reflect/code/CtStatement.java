@@ -63,4 +63,7 @@ public interface CtStatement extends CtCodeElement {
 	 * Replaces this element by another one.
 	 */
 	void replace(CtStatement element);
+
+	@Override
+	CtStatement clone();
 }

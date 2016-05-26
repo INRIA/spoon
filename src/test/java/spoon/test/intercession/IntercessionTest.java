@@ -1,17 +1,7 @@
 package spoon.test.intercession;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.createFactory;
-
-import java.io.File;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -24,11 +14,18 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
+
+import java.io.File;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class IntercessionTest {
 	Factory factory = createFactory();
@@ -60,7 +57,7 @@ public class IntercessionTest {
 								+ " String foo=\"toto\";" + "}" + "};")
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
-		CtMethod<?> fooClone = factory.Core().clone(foo);
+		CtMethod<?> fooClone = foo.clone();
 		Assert.assertEquals(foo, fooClone);
 		CtBlock<?> body = foo.getBody();
 		assertEquals(2, body.getStatements().size());
@@ -83,7 +80,7 @@ public class IntercessionTest {
 						"" + "class X { public X() {} };")
 				.compile();
 		CtConstructor<?> foo = (CtConstructor<?>) clazz.getConstructors().toArray()[0];
-		CtConstructor<?> fooClone = factory.Core().clone(foo);
+		CtConstructor<?> fooClone = foo.clone();
 		Assert.assertEquals(foo, fooClone);
 
 		CtBlock<?> body = foo.getBody();

@@ -57,4 +57,8 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 		return (T) this;
 	}
 
+	@Override
+	public CtContinue clone() {
+		return (CtContinue) super.clone();
+	}
 }

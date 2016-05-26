@@ -20,8 +20,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T>
-		implements CtLiteral<T> {
+public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T> implements CtLiteral<T> {
 	private static final long serialVersionUID = 1L;
 
 	T value;
@@ -45,4 +44,8 @@ public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T>
 		return (C) this;
 	}
 
+	@Override
+	public CtLiteral<T> clone() {
+		return (CtLiteral<T>) super.clone();
+	}
 }

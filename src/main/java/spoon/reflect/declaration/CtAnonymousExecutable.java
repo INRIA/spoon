@@ -22,4 +22,6 @@ package spoon.reflect.declaration;
  * @see spoon.reflect.declaration.CtClass
  */
 public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember {
+	@Override
+	CtAnonymousExecutable clone();
 }

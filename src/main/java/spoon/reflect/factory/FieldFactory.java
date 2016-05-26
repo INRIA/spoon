@@ -96,7 +96,7 @@ public class FieldFactory extends SubFactory {
 	 * @return the newly created field
 	 */
 	public <T> CtField<T> create(CtType<?> target, CtField<T> source) {
-		CtField<T> newField = factory.Core().clone(source);
+		CtField<T> newField = source.clone();
 		if (target != null) {
 			target.addField(newField);
 		}

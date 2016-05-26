@@ -25,4 +25,9 @@ public class CtVariableWriteImpl<T> extends CtVariableAccessImpl<T> implements C
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtVariableWrite(this);
 	}
+
+	@Override
+	public CtVariableWrite<T> clone() {
+		return (CtVariableWrite<T>) super.clone();
+	}
 }

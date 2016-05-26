@@ -17,11 +17,9 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -127,7 +125,8 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		return null;
 	}
 
-	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+	@Override
+	public CtAssignment<T, A> clone() {
+		return (CtAssignment<T, A>) super.clone();
 	}
 }

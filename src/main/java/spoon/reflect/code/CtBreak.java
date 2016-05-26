@@ -31,4 +31,7 @@ public interface CtBreak extends CtCFlowBreak {
 	 * defined).
 	 */
 	<T extends CtBreak> T setTargetLabel(String targetLabel);
+
+	@Override
+	CtBreak clone();
 }

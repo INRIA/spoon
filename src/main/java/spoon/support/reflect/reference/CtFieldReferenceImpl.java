@@ -32,8 +32,7 @@ import java.lang.reflect.Member;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
-		implements CtFieldReference<T> {
+public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	CtTypeReference<?> declaringType;
@@ -212,4 +211,8 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T>
 		return new TreeSet<ModifierKind>();
 	}
 
+	@Override
+	public CtFieldReference<T> clone() {
+		return (CtFieldReference<T>) super.clone();
+	}
 }

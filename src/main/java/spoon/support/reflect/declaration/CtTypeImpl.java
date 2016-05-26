@@ -754,4 +754,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		this.isShadow = isShadow;
 		return (E) this;
 	}
+
+	@Override
+	public CtType<T> clone() {
+		return (CtType<T>) super.clone();
+	}
 }

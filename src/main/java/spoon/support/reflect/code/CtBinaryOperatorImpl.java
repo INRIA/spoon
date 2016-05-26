@@ -73,4 +73,9 @@ public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBi
 	public BinaryOperatorKind getKind() {
 		return kind;
 	}
+
+	@Override
+	public CtBinaryOperator<T> clone() {
+		return (CtBinaryOperator<T>) super.clone();
+	}
 }

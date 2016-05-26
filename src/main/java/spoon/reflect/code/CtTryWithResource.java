@@ -44,4 +44,7 @@ public interface CtTryWithResource extends CtTry {
 	 * Removes a resource.
 	 */
 	boolean removeResource(CtLocalVariable<?> resource);
+
+	@Override
+	CtTryWithResource clone();
 }

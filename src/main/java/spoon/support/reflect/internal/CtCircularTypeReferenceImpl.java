@@ -25,4 +25,9 @@ public class CtCircularTypeReferenceImpl extends CtTypeParameterReferenceImpl im
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCircularTypeReference(this);
 	}
+
+	@Override
+	public CtCircularTypeReference clone() {
+		return (CtCircularTypeReference) super.clone();
+	}
 }

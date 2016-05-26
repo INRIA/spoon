@@ -66,4 +66,6 @@ public interface CtNewArray<T> extends CtExpression<T> {
 	 */
 	boolean removeElement(CtExpression<?> expression);
 
+	@Override
+	CtNewArray<T> clone();
 }

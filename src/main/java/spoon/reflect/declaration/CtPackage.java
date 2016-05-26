@@ -124,4 +124,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * 		new Set of types
 	 */
 	<T extends CtPackage> T setTypes(Set<CtType<?>> types);
+
+	@Override
+	CtPackage clone();
 }

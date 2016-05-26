@@ -37,4 +37,7 @@ public interface CtPackageReference extends CtReference {
 	 * Replace a package reference by another one.
 	 */
 	void replace(CtPackageReference packageReference);
+
+	@Override
+	CtPackageReference clone();
 }

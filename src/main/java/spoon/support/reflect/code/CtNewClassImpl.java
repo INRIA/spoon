@@ -41,4 +41,9 @@ public class CtNewClassImpl<T> extends CtConstructorCallImpl<T> implements CtNew
 		this.anonymousClass = anonymousClass;
 		return (N) this;
 	}
+
+	@Override
+	public CtNewClass<T> clone() {
+		return (CtNewClass<T>) super.clone();
+	}
 }

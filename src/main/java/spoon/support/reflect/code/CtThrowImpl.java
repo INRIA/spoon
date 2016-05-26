@@ -47,12 +47,17 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 	}
 
 	@Override
+	public CtThrow clone() {
+		return (CtThrow) super.clone();
+	}
+
+	@Override
 	public Void S() {
 		return null;
 	}
 
 	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+		return clone();
 	}
 
 }

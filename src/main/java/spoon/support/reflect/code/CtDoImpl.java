@@ -41,4 +41,9 @@ public class CtDoImpl extends CtLoopImpl implements CtDo {
 		this.expression = expression;
 		return (T) this;
 	}
+
+	@Override
+	public CtDo clone() {
+		return (CtDo) super.clone();
+	}
 }

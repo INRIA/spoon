@@ -39,4 +39,7 @@ public interface CtExecutableReferenceExpression<T, E extends CtExpression<?>> e
 	 * Sets the executable will be referenced by the expression.
 	 */
 	<C extends CtExecutableReferenceExpression<T, E>> C setExecutable(CtExecutableReference<T> executable);
+
+	@Override
+	CtExecutableReferenceExpression<T, E> clone();
 }

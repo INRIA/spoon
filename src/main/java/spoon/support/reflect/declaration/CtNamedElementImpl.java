@@ -46,4 +46,9 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		this.simpleName = simpleName;
 		return (T) this;
 	}
+
+	@Override
+	public CtNamedElement clone() {
+		return (CtNamedElement) super.clone();
+	}
 }

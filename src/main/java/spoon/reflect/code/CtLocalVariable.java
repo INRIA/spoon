@@ -34,4 +34,7 @@ public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSRec
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
 	CtLocalVariableReference<T> getReference();
+
+	@Override
+	CtLocalVariable<T> clone();
 }

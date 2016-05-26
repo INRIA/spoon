@@ -19,8 +19,7 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtTargetedExpression;
 
-public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>>
-		extends CtExpressionImpl<E> implements CtTargetedExpression<E, T> {
+public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>> extends CtExpressionImpl<E> implements CtTargetedExpression<E, T> {
 	private static final long serialVersionUID = 1L;
 
 	T target;
@@ -37,5 +36,10 @@ public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>>
 		}
 		this.target = target;
 		return (C) this;
+	}
+
+	@Override
+	public CtTargetedExpression<E, T> clone() {
+		return (CtTargetedExpression<E, T>) super.clone();
 	}
 }

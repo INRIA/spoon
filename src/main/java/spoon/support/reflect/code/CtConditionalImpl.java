@@ -69,4 +69,9 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 		this.thenExpression = thenExpression;
 		return (C) this;
 	}
+
+	@Override
+	public CtConditional<T> clone() {
+		return (CtConditional<T>) super.clone();
+	}
 }

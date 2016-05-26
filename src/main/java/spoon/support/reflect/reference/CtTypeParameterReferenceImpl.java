@@ -183,4 +183,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		this.simplename = simplename;
 		return (T) this;
 	}
+
+	@Override
+	public CtTypeParameterReference clone() {
+		return (CtTypeParameterReference) super.clone();
+	}
 }

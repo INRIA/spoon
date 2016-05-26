@@ -950,7 +950,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 						ref.setSimpleName(name);
 						basestypes.put(name, ref);
 					} else {
-						ref = factory.Core().clone(ref);
+						ref = ref == null ? ref : ref.clone();
 					}
 				}
 			} else if (binding instanceof WildcardBinding) {
@@ -2074,7 +2074,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			executableReference.setSimpleName(new String(referenceExpression.selector));
 			executableReference.setDeclaringType(references.getTypeReference(referenceExpression.lhs.resolvedType));
 		}
-		executableReference.setType(factory.Core().clone((CtTypeReference<T>) executableReference.getDeclaringType()));
+		final CtTypeReference<T> declaringType = (CtTypeReference<T>) executableReference.getDeclaringType();
+		executableReference.setType(declaringType == null ? null : declaringType.clone());
 		executableRef.setExecutable(executableReference);
 		return executableRef;
 	}
@@ -3251,7 +3252,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				va = factory.Core().createVariableRead();
 			}
 			va.setVariable(references.getVariableReference((VariableBinding) qualifiedNameReference.binding));
-			va.setType(factory.Core().clone(va.getVariable().getType()));
+			va.setType(va.getVariable().getType() == null ? null : va.getVariable().getType().clone());
 			if (qualifiedNameReference.otherBindings != null) {
 				int i = 0; //positions index;
 				int sourceStart = (int) (positions[0] >>> 32);

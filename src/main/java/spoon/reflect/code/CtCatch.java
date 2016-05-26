@@ -42,4 +42,7 @@ public interface CtCatch extends CtCodeElement {
 	 * Sets the catch's body.
 	 */
 	<T extends CtCatch> T setBody(CtBlock<?> body);
+
+	@Override
+	CtCatch clone();
 }

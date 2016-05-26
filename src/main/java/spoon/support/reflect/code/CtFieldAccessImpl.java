@@ -58,4 +58,9 @@ public abstract class CtFieldAccessImpl<T> extends CtVariableReadImpl<T> impleme
 	public CtTypeReference<T> getType() {
 		return getVariable() == null ? null : getVariable().getType();
 	}
+
+	@Override
+	public CtFieldAccess<T> clone() {
+		return (CtFieldAccess<T>) super.clone();
+	}
 }

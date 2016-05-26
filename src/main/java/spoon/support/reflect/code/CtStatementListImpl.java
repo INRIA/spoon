@@ -16,10 +16,6 @@
  */
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.SourcePosition;
@@ -27,6 +23,10 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -84,7 +84,12 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 		return statements.iterator();
 	}
 
+	@Override
+	public CtStatementList clone() {
+		return (CtStatementList) super.clone();
+	}
+
 	public CtStatementList getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+		return clone();
 	}
 }

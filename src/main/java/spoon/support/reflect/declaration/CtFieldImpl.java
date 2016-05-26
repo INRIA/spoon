@@ -178,4 +178,9 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		this.isShadow = isShadow;
 		return (E) this;
 	}
+
+	@Override
+	public CtField<T> clone() {
+		return (CtField<T>) super.clone();
+	}
 }

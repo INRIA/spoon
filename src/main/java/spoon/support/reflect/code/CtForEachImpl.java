@@ -56,4 +56,9 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 		this.variable = variable;
 		return (T) this;
 	}
+
+	@Override
+	public CtForEach clone() {
+		return (CtForEach) super.clone();
+	}
 }

@@ -35,7 +35,7 @@ import java.util.Set;
  * element).
  */
 @Root
-public interface CtElement extends FactoryAccessor, CtVisitable {
+public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 
 	/**
 	 * Searches for an annotation (proxy) of the given class that annotates the
@@ -280,4 +280,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable {
 	 * @param comment the comment to remove
 	 */
 	<E extends CtElement> E removeComment(CtComment comment);
+
+	/**
+	 * Clone the element which calls this method in a new object.
+	 */
+	CtElement clone();
 }

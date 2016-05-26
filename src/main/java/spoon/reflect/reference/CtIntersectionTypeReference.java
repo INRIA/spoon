@@ -44,4 +44,7 @@ public interface CtIntersectionTypeReference<T> extends CtTypeReference<T> {
 	 * Removes a bound.
 	 */
 	boolean removeBound(CtTypeReference<?> bound);
+
+	@Override
+	CtIntersectionTypeReference<T> clone();
 }

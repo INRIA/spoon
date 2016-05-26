@@ -40,4 +40,7 @@ public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T
 	 * Replaces this element by another one.
 	 */
 	<R extends T> void replace(CtField<R> element);
+
+	@Override
+	CtField<T> clone();
 }

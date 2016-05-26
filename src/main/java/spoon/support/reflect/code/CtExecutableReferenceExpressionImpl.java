@@ -21,8 +21,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>>
-		extends CtTargetedExpressionImpl<T, E> implements CtExecutableReferenceExpression<T, E> {
+public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>> extends CtTargetedExpressionImpl<T, E> implements CtExecutableReferenceExpression<T, E> {
 	CtExecutableReference<T> executable;
 
 	@Override
@@ -42,5 +41,10 @@ public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>>
 		}
 		this.executable = executable;
 		return (C) this;
+	}
+
+	@Override
+	public CtExecutableReferenceExpression<T, E> clone() {
+		return (CtExecutableReferenceExpression<T, E>) super.clone();
 	}
 }

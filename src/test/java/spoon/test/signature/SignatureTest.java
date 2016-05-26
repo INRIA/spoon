@@ -63,7 +63,7 @@ public class SignatureTest {
 
 		// since the signature is null, CtElement.equals throws an exception and
 		// should not
-		CtLiteral<?> lit2 = (CtLiteral<?>) factory.Core().clone(lit);
+		CtLiteral<?> lit2 = ((CtLiteral<?>) lit).clone();
 		HashSet<CtExpression<?>> s = new HashSet<CtExpression<?>>();
 		s.add(lit);
 		s.add(lit2);
@@ -170,7 +170,7 @@ public class SignatureTest {
 		assertEquals(signaturestc1,  signaturestc2);
 		assertFalse(stc1.equals(stc2));
 	}
-	
+
 	@Test
 	public void testMethodInvocationSignatureWithVariableAccess() throws Exception{
 
@@ -305,7 +305,7 @@ public class SignatureTest {
 			assertNotEquals("#addField(null, null)", reference.getSignature());
 		}
 	}
-	
+
 	@Test
 	public void testBugSignature() throws Exception {
 		// contract: two methods with same name and return type yet different argument types
@@ -327,6 +327,6 @@ public class SignatureTest {
 				"void addInputSource(spoon.compiler.SpoonResource)",
 				method2.getSignature());
 		assertNotEquals(method, method2);
-	
+
 	}
 }

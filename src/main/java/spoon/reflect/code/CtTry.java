@@ -16,9 +16,9 @@
  */
 package spoon.reflect.code;
 
-import java.util.List;
-
 import spoon.template.TemplateParameter;
+
+import java.util.List;
 
 /**
  * This code element defines a <code>try</code> statement.
@@ -66,4 +66,7 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	 * <code>finally</code> part).
 	 */
 	<T extends CtTry> T setFinalizer(CtBlock<?> finalizer);
+
+	@Override
+	CtTry clone();
 }

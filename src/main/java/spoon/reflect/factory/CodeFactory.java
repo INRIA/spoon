@@ -104,8 +104,7 @@ public class CodeFactory extends SubFactory {
 	 * @return a accessed type expression.
 	 */
 	public <T> CtTypeAccess<T> createTypeAccess(CtTypeReference<T> accessedType) {
-		CtTypeReference<T> accessedTypeClone = factory.Core().clone(accessedType);
-		return createTypeAccessWithoutCloningReference(accessedTypeClone);
+		return createTypeAccessWithoutCloningReference(accessedType == null ? null : accessedType.clone());
 	}
 
 	/**
@@ -139,7 +138,7 @@ public class CodeFactory extends SubFactory {
 		fieldReference.setDeclaringType(type);
 
 		CtFieldRead<Class<T>> fieldRead = factory.Core().createFieldRead();
-		fieldRead.setType(factory.Core().clone(classType));
+		fieldRead.setType(classType.clone());
 		fieldRead.setVariable(fieldReference);
 		fieldRead.setTarget(typeAccess);
 		return fieldRead;
@@ -159,7 +158,7 @@ public class CodeFactory extends SubFactory {
 		CtExecutableReference<T> executableReference = factory.Core()
 				.createExecutableReference();
 		executableReference.setType(type);
-		executableReference.setDeclaringType(factory.Core().clone(type));
+		executableReference.setDeclaringType(type == null ? type : type.clone());
 		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 		List<CtTypeReference<?>> typeReferences = new ArrayList<CtTypeReference<?>>();
 		for (int i = 0; i < parameters.length; i++) {
@@ -285,7 +284,7 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtLocalVariableReference<T> createLocalVariableReference(CtLocalVariable<T> localVariable) {
 		CtLocalVariableReference<T> ref = factory.Core().createLocalVariableReference();
-		ref.setType(factory.Core().clone(localVariable.getType()));
+		ref.setType(localVariable.getType() == null ? null : localVariable.getType().clone());
 		ref.setSimpleName(localVariable.getSimpleName());
 		ref.setDeclaration(localVariable);
 		return ref;
@@ -329,7 +328,7 @@ public class CodeFactory extends SubFactory {
 	public <R> CtStatementList createStatementList(CtBlock<R> block) {
 		CtStatementList l = factory.Core().createStatementList();
 		for (CtStatement s : block.getStatements()) {
-			l.addStatement(factory.Core().clone(s));
+			l.addStatement(s.clone());
 		}
 		return l;
 	}
@@ -368,7 +367,7 @@ public class CodeFactory extends SubFactory {
 		} else {
 			va = factory.Core().createVariableRead();
 		}
-		return va.setVariable(variable).setType(factory.Core().clone(variable.getType()));
+		return va.setVariable(variable).setType(variable.getType() == null ? null : variable.getType().clone());
 	}
 
 	/**

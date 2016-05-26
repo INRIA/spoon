@@ -29,4 +29,7 @@ public interface CtWhile extends CtLoop {
 	 * Sets the looping boolean test expression.
 	 */
 	<T extends CtWhile> T setLoopingExpression(CtExpression<Boolean> expression);
+
+	@Override
+	CtWhile clone();
 }

@@ -44,4 +44,7 @@ public interface CtUnaryOperator<T> extends CtExpression<T>, CtStatement {
 	 * Gets the kind of this operator.
 	 */
 	UnaryOperatorKind getKind();
+
+	@Override
+	CtUnaryOperator<T> clone();
 }

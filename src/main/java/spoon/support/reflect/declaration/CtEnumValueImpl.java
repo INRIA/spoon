@@ -24,4 +24,9 @@ public class CtEnumValueImpl<T> extends CtFieldImpl<T> implements CtEnumValue<T>
 	public void accept(CtVisitor v) {
 		v.visitCtEnumValue(this);
 	}
+
+	@Override
+	public CtEnumValue clone() {
+		return (CtEnumValue) super.clone();
+	}
 }

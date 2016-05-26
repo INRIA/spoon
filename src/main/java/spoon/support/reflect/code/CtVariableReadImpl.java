@@ -25,4 +25,9 @@ public class CtVariableReadImpl<T> extends CtVariableAccessImpl<T> implements Ct
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtVariableRead(this);
 	}
+
+	@Override
+	public CtVariableRead<T> clone() {
+		return (CtVariableRead<T>) super.clone();
+	}
 }

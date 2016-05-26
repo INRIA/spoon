@@ -26,8 +26,7 @@ import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.RESOURCES_CONTAINER_DEFAULT_CAPACITY;
 
-public class CtTryWithResourceImpl extends CtTryImpl
-		implements CtTryWithResource {
+public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResource {
 	private static final long serialVersionUID = 1L;
 
 	List<CtLocalVariable<?>> resources = emptyList();
@@ -64,5 +63,10 @@ public class CtTryWithResourceImpl extends CtTryImpl
 	@Override
 	public boolean removeResource(CtLocalVariable<?> resource) {
 		return resources != CtElementImpl.<CtLocalVariable<?>>emptyList() && resources.remove(resource);
+	}
+
+	@Override
+	public CtTryWithResource clone() {
+		return (CtTryWithResource) super.clone();
 	}
 }

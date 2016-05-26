@@ -62,4 +62,7 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 */
 	@Deprecated
 	List<CtField<?>> getValues();
+
+	@Override
+	CtEnum<T> clone();
 }

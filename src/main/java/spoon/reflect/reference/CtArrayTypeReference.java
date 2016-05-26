@@ -52,4 +52,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * []s). Use toString() to get the full array type including []s.
 	 */
 	String getSimpleName();
+
+	@Override
+	CtArrayTypeReference<T> clone();
 }

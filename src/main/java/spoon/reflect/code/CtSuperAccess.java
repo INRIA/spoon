@@ -23,4 +23,6 @@ package spoon.reflect.code;
  * 		Type of super
  */
 public interface CtSuperAccess<T> extends CtVariableRead<T>, CtTargetedExpression<T, CtExpression<?>> {
+	@Override
+	CtSuperAccess<T> clone();
 }

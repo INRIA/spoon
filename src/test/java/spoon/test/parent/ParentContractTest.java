@@ -129,7 +129,7 @@ public class ParentContractTest<T extends CtVisitable> {
 			CtElement mockedArgument = (CtElement) mock(setter.getParameters()[0].getType(),  Mockito.withSettings().extraInterfaces(Comparable.class));
 			try {
 				// we create a fresh object
-				CtElement receiver = (CtElement)factory.Core().clone(o);
+				CtElement receiver = ((CtElement) o).clone();
 				// we invoke the setter
 				setter.invoke(receiver, new Object[]{mockedArgument});
 				// we check that setParent has been called

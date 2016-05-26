@@ -16,16 +16,15 @@
  */
 package spoon.support.reflect.code;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities
-		.NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY;
+import java.util.ArrayList;
+import java.util.List;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray<T> {
 	private static final long serialVersionUID = 1L;
@@ -98,5 +97,10 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 	@Override
 	public boolean removeElement(CtExpression<?> expression) {
 		return expressions != CtElementImpl.<CtExpression<?>>emptyList() && expressions.remove(expression);
+	}
+
+	@Override
+	public CtNewArray<T> clone() {
+		return (CtNewArray<T>) super.clone();
 	}
 }

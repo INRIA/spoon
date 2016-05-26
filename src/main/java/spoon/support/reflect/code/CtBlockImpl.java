@@ -17,13 +17,11 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
@@ -221,7 +219,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		return null;
 	}
 
-	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return getFactory().Core().clone(this);
+	@Override
+	public CtBlock<R> clone() {
+		return (CtBlock<R>) super.clone();
 	}
 }

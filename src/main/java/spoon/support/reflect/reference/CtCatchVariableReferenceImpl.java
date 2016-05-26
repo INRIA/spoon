@@ -20,8 +20,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T>
-		implements CtCatchVariableReference<T> {
+public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtCatchVariableReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	private CtCatchVariable<T> declaration;
@@ -44,5 +43,10 @@ public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T>
 	public <C extends CtCatchVariableReference<T>> C setDeclaration(CtCatchVariable<T> declaration) {
 		this.declaration = declaration;
 		return (C) this;
+	}
+
+	@Override
+	public CtCatchVariableReference<T> clone() {
+		return (CtCatchVariableReference<T>) super.clone();
 	}
 }

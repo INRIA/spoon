@@ -20,8 +20,7 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtOperatorAssignmentImpl<T, A extends T> extends CtAssignmentImpl<T, A>
-		implements CtOperatorAssignment<T, A> {
+public class CtOperatorAssignmentImpl<T, A extends T> extends CtAssignmentImpl<T, A> implements CtOperatorAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
 
 	BinaryOperatorKind kind;
@@ -40,5 +39,10 @@ public class CtOperatorAssignmentImpl<T, A extends T> extends CtAssignmentImpl<T
 	public <C extends CtOperatorAssignment<T, A>> C setKind(BinaryOperatorKind kind) {
 		this.kind = kind;
 		return (C) this;
+	}
+
+	@Override
+	public CtOperatorAssignment<T, A> clone() {
+		return (CtOperatorAssignment<T, A>) super.clone();
 	}
 }

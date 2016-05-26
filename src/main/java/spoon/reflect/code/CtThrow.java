@@ -32,4 +32,7 @@ public interface CtThrow extends CtCFlowBreak, TemplateParameter<Void> {
 	 * Sets the thrown expression (must be a throwable).
 	 */
 	<T extends CtThrow> T setThrownExpression(CtExpression<? extends Throwable> thrownExpression);
+
+	@Override
+	CtThrow clone();
 }

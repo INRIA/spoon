@@ -33,4 +33,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 */
 	@Override
 	CtTypeReference<T> getType();
+
+	@Override
+	CtInvocation<T> clone();
 }

@@ -204,7 +204,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 				return object;
 			}
 			// RP: this should be done first or removed?
-			if (object instanceof Cloneable) {
+			if (object instanceof Cloneable && !(object instanceof CtElement)) {
 				return (T) object.getClass().getMethod("clone").invoke(object);
 			}
 			// RP: never called?

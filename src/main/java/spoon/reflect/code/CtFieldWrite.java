@@ -33,4 +33,6 @@ package spoon.reflect.code;
  * 		type of the field
  */
 public interface CtFieldWrite<T> extends CtFieldAccess<T> {
+	@Override
+	CtFieldWrite<T> clone();
 }

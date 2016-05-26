@@ -179,4 +179,9 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		this.isShadow = isShadow;
 		return (E) this;
 	}
+
+	@Override
+	public CtConstructor<T> clone() {
+		return (CtConstructor<T>) super.clone();
+	}
 }

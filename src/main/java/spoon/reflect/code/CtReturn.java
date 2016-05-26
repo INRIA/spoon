@@ -32,4 +32,7 @@ public interface CtReturn<R> extends CtCFlowBreak, TemplateParameter<Void> {
 	 * Sets the returned expression.
 	 */
 	<T extends CtReturn<R>> T setReturnedExpression(CtExpression<R> returnedExpression);
+
+	@Override
+	CtReturn<R> clone();
 }

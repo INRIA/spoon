@@ -43,4 +43,7 @@ public interface CtContinue extends CtCFlowBreak {
 	 * defined).
 	 */
 	<T extends CtContinue> T setTargetLabel(String targetLabel);
+
+	@Override
+	CtContinue clone();
 }

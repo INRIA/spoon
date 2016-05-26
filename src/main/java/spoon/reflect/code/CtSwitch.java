@@ -63,4 +63,7 @@ public interface CtSwitch<S> extends CtStatement {
 	 * Removes a case;
 	 */
 	boolean removeCase(CtCase<? super S> c);
+
+	@Override
+	CtSwitch<S> clone();
 }

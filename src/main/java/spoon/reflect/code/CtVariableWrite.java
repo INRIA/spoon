@@ -33,4 +33,6 @@ package spoon.reflect.code;
  * 		type of the variable
  */
 public interface CtVariableWrite<T> extends CtVariableAccess<T> {
+	@Override
+	CtVariableWrite<T> clone();
 }

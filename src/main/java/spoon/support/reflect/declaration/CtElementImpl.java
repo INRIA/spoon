@@ -440,4 +440,9 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		}
 		return (E) this;
 	}
+
+	@Override
+	public CtElement clone() {
+		return getFactory().Core().clone(this);
+	}
 }

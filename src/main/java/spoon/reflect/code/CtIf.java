@@ -54,4 +54,7 @@ public interface CtIf extends CtStatement, TemplateParameter<Void> {
 	 * Sets the statement executed when the condition is true.
 	 */
 	<T extends CtIf> T setThenStatement(CtStatement thenStatement);
+
+	@Override
+	CtIf clone();
 }

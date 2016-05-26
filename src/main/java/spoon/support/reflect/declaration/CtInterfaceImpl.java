@@ -16,16 +16,16 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitor;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtVisitor;
 
 public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> {
 	private static final long serialVersionUID = 1L;
@@ -63,4 +63,8 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 		return Collections.unmodifiableList(l);
 	}
 
+	@Override
+	public CtInterface<T> clone() {
+		return (CtInterface<T>) super.clone();
+	}
 }

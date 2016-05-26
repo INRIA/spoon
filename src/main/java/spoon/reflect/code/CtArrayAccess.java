@@ -37,4 +37,7 @@ public interface CtArrayAccess<T, E extends CtExpression<?>> extends CtTargetedE
 	 * Returns the expression that defines the index.
 	 */
 	CtExpression<Integer> getIndexExpression();
+
+	@Override
+	CtArrayAccess<T, E> clone();
 }

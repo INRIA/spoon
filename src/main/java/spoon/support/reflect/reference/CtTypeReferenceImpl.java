@@ -516,4 +516,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		this.isShadow = isShadow;
 		return (E) this;
 	}
+
+	@Override
+	public CtTypeReference<T> clone() {
+		return (CtTypeReference<T>) super.clone();
+	}
 }

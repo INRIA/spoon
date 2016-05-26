@@ -424,9 +424,9 @@ public class ParentExiter extends CtInheritanceScanner {
 			final QualifiedAllocationExpression node = (QualifiedAllocationExpression) jdtTreeBuilder.context.stack.peek().node;
 			final ReferenceBinding[] referenceBindings = node.resolvedType == null ? null : node.resolvedType.superInterfaces();
 			if (referenceBindings != null && referenceBindings.length > 0) {
-				((CtClass<?>) child).addSuperInterface(child.getFactory().Core().clone(newClass.getType()));
+				((CtClass<?>) child).addSuperInterface(newClass.getType().clone());
 			} else if (newClass.getType() != null) {
-				((CtClass<?>) child).setSuperclass(child.getFactory().Core().clone(newClass.getType()));
+				((CtClass<?>) child).setSuperclass(newClass.getType().clone());
 			}
 			return;
 		}
