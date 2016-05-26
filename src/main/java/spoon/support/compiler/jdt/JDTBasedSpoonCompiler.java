@@ -440,7 +440,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		for (int i = 0; i < units.length; i++) {
 			CompilationUnitDeclaration unit = units[i];
 			unit.traverse(builder, unit.scope);
-			new JDTCommentBuilder(unit, factory).build();
+			if (getFactory().getEnvironment().isGenerateJavadoc() || getFactory().getEnvironment().isCommentsEnabled()) {
+				new JDTCommentBuilder(unit, factory).build();
+			}
 		}
 
 		return probs.size() == 0;
@@ -489,7 +491,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		for (int i = 0; i < units.length; i++) {
 			CompilationUnitDeclaration unit = units[i];
 			unit.traverse(builder, unit.scope);
-			new JDTCommentBuilder(unit, factory).build();
+			if (getFactory().getEnvironment().isGenerateJavadoc() || getFactory().getEnvironment().isCommentsEnabled()) {
+				new JDTCommentBuilder(unit, factory).build();
+			}
 		}
 
 		return probs.size() == 0;

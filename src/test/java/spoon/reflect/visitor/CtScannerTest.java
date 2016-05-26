@@ -79,6 +79,7 @@ public class CtScannerTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setGenerateJavadoc(true);
+		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.

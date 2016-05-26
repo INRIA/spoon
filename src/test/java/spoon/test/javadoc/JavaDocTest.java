@@ -1,12 +1,17 @@
 package spoon.test.javadoc;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.CtScanner;
 import spoon.test.javadoc.testclasses.Bar;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class JavaDocTest {
 	@Test
@@ -15,6 +20,7 @@ public class JavaDocTest {
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setGenerateJavadoc(true);
+		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().setCopyResources(false);
 		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/");
 		launcher.setSourceOutputDirectory("./target/spooned/");
@@ -22,7 +28,7 @@ public class JavaDocTest {
 		Factory factory = launcher.getFactory();
 		CtClass<?> aClass = factory.Class().get(Bar.class);
 
-		Assert.assertEquals("public class Bar {" + System.lineSeparator()
+		assertEquals("public class Bar {" + System.lineSeparator()
 				+ "    /**" + System.lineSeparator()
 				+ "     * Creates an annotation type." + System.lineSeparator()
 				+ "     * " + System.lineSeparator()
@@ -35,5 +41,32 @@ public class JavaDocTest {
 				+ "        return null;" + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
 				+ "}", aClass.toString());
+	}
+
+	@Test
+	public void testJavadocNotPresentInAST() throws Exception {
+		SpoonAPI launcher = new Launcher();
+		launcher.getEnvironment().setGenerateJavadoc(false);
+		launcher.getEnvironment().setCommentEnabled(false);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/");
+		launcher.setSourceOutputDirectory("./target/trash/");
+		launcher.run();
+
+		new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					assertEquals(0, element.getComments().size());
+				}
+				super.scan(element);
+			}
+
+			@Override
+			public void visitCtComment(CtComment comment) {
+				fail("Shouldn't have comment in the model.");
+				super.visitCtComment(comment);
+			}
+		}.scan(launcher.getModel().getRootPackage());
 	}
 }
