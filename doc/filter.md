@@ -2,7 +2,7 @@
 title: Filter
 tags: [quering]
 keywords: quering, query, filter, ast, elements
-last_updated: October 5, 2015
+last_updated: May 27, 2016
 ---
 
 Spoon aims at giving developers a way to query code elements in 
@@ -33,6 +33,7 @@ Filter class | Description
 `CompositeFilter` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/filter/CompositeFilter.html)) | defines a composite filter, which can compose several filters together by using `FilteringOperator` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/filter/FilteringOperator.html)).
 `OverridingMethodFilter` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/filter/OverridingMethodFilter.html)) | get all overriding methods from the method given.
 `OverriddenMethodFilter` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/filter/OverriddenMethodFilter.html)) | get all overridden methods from the method given.
+`LineFilter` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/filter/LineFilter.html)) | get all elements that can be considered as line of code (e.g. directly contained in a block, or a then statement).
 
 See below a code example about the usage of these filters. Three filters of 
 them are used. The first returns all AST nodes of type `CtAssignment` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtAssignment.html)).
