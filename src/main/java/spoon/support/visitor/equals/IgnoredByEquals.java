@@ -14,34 +14,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.support.visitor.equals;
 
-import spoon.support.visitor.equals.IgnoredByEquals;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.util.List;
-
-/**
- * This interface defines the capability related to binding generics (aka type parameters).
- */
-public interface CtActualTypeContainer {
-	/**
-	 * Gets the type arguments.
-	 */
-	@IgnoredByEquals
-	List<CtTypeReference<?>> getActualTypeArguments();
-
-	/**
-	 * Sets the type arguments.
-	 */
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
-
-	/**
-	 * Adds a type argument.
-	 */
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
-
-	/**
-	 * Removes a type argument.
-	 */
-	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface IgnoredByEquals {
 }

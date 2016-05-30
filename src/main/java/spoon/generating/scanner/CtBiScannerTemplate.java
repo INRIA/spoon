@@ -14,34 +14,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.generating.scanner;
 
-import spoon.support.visitor.equals.IgnoredByEquals;
-
-import java.util.List;
+import spoon.reflect.visitor.CtAbstractBiScanner;
 
 /**
- * This interface defines the capability related to binding generics (aka type parameters).
+ * This visitor implements a deep-search scan on the model for 2 elements.
+ *
+ * Ensures that all children nodes are visited once, a visit means three method
+ * calls, one call to "enter", one call to "exit" and one call to biScan.
+ *
+ * This class is generated automatically by the processor {@link spoon.generating.CtBiScannerGenerator}.
+ *
+ * Is used by EqualsVisitor.
  */
-public interface CtActualTypeContainer {
-	/**
-	 * Gets the type arguments.
-	 */
-	@IgnoredByEquals
-	List<CtTypeReference<?>> getActualTypeArguments();
-
-	/**
-	 * Sets the type arguments.
-	 */
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
-
-	/**
-	 * Adds a type argument.
-	 */
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
-
-	/**
-	 * Removes a type argument.
-	 */
-	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+abstract class CtBiScannerTemplate extends CtAbstractBiScanner {
 }

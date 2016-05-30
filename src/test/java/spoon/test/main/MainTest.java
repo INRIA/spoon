@@ -120,7 +120,7 @@ public class MainTest {
 				assertNotNull(executableDeclaration);
 				assertEquals(reference.getSimpleName(), executableDeclaration.getSimpleName());
 
-				// when a generic type is used in a parameter, the shadow type doesn't have these information.
+				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
 				boolean hasGeneric = false;
 				for (int i = 0; i < reference.getParameters().size(); i++) {
 					if (reference.getParameters().get(i) instanceof CtTypeParameterReference) {

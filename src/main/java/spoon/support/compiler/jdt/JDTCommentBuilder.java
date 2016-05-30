@@ -390,6 +390,9 @@ class JDTCommentBuilder {
 				if (element == null) {
 					return;
 				}
+				if (element.isImplicit()) {
+					return;
+				}
 				CtElement body;
 				try {
 					Method getBody = element.getClass().getMethod("getBody");

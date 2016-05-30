@@ -14,34 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.generating.scanner;
 
-import spoon.support.visitor.equals.IgnoredByEquals;
+import spoon.reflect.declaration.CtElement;
 
-import java.util.List;
+import java.util.Stack;
 
-/**
- * This interface defines the capability related to binding generics (aka type parameters).
- */
-public interface CtActualTypeContainer {
-	/**
-	 * Gets the type arguments.
-	 */
-	@IgnoredByEquals
-	List<CtTypeReference<?>> getActualTypeArguments();
-
-	/**
-	 * Sets the type arguments.
-	 */
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
-
-	/**
-	 * Adds a type argument.
-	 */
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
-
-	/**
-	 * Removes a type argument.
-	 */
-	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+class PeekElementTemplate {
+	Stack<CtElement> stack;
+	public void statement() {
+		CtElement other = stack.peek();
+	}
 }

@@ -14,34 +14,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.generating.equals;
 
-import spoon.support.visitor.equals.IgnoredByEquals;
-
-import java.util.List;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.CtBiScannerDefault;
+import spoon.support.visitor.equals.EqualsChecker;
 
 /**
- * This interface defines the capability related to binding generics (aka type parameters).
+ * Used to check equality between an element and another one.
+ *
+ * This class is generated automatically by the processor {@link spoon.generating.EqualsVisitorGenerator}.
  */
-public interface CtActualTypeContainer {
-	/**
-	 * Gets the type arguments.
-	 */
-	@IgnoredByEquals
-	List<CtTypeReference<?>> getActualTypeArguments();
+class EqualsVisitorTemplate extends CtBiScannerDefault {
+	public static boolean equals(CtElement element, CtElement other) {
+		return !new EqualsVisitorTemplate().biScan(element, other);
+	}
 
-	/**
-	 * Sets the type arguments.
-	 */
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+	private final EqualsChecker checker = new EqualsChecker();
 
-	/**
-	 * Adds a type argument.
-	 */
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
-
-	/**
-	 * Removes a type argument.
-	 */
-	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+	@Override
+	protected void enter(CtElement e) {
+		super.enter(e);
+		checker.setOther(stack.peek());
+		checker.scan(e);
+		if (checker.isNotEqual()) {
+			fail();
+		}
+	}
 }

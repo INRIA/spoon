@@ -235,6 +235,7 @@ public class FieldAccessTest {
 		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
 
 		final CtFieldRead<Object> fieldRead = aMole.getFactory().Core().createFieldRead();
+		fieldRead.setTarget(aMole.getFactory().Code().createThisAccess(aMole.getReference()));
 		final CtFieldReference fieldReference = aMole.getField("i").getReference();
 		fieldRead.setVariable(fieldReference);
 
