@@ -25,7 +25,8 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtBiScanner;
+import spoon.reflect.visitor.CtAbstractBiScanner;
+import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.support.visitor.equals.IgnoredByEquals;
@@ -65,7 +66,7 @@ public class EqualsVisitorGenerator extends AbstractManualProcessor {
 
 				target.addMethod(clone);
 			}
-		}.scan(getFactory().Class().get(CtBiScanner.class));
+		}.scan(getFactory().Class().get(CtBiScannerDefault.class));
 	}
 
 	private CtClass<Object> createEqualsVisitor() {
@@ -73,6 +74,7 @@ public class EqualsVisitorGenerator extends AbstractManualProcessor {
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_EQUALS);
 		target.setSimpleName("EqualsVisitor");
 		target.addModifier(ModifierKind.PUBLIC);
+		target.setSuperclass(getFactory().Type().createReference(CtAbstractBiScanner.class));
 		aPackage.addType(target);
 		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
 			@Override

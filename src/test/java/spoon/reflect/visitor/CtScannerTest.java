@@ -96,11 +96,11 @@ public class CtScannerTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
 		launcher.addInputResource("./src/main/java/spoon/generating/scanner/");
 		launcher.addProcessor(new CtBiScannerGenerator());
-		launcher.setOutputFilter(new RegexFilter("spoon.reflect.visitor.CtBiScanner"));
+		launcher.setOutputFilter(new RegexFilter("spoon.reflect.visitor.CtBiScannerDefault"));
 		launcher.run();
 
-		assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtBiScanner.java")).Class().get(CtBiScanner.class))
-				.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtBiScanner.java")).Class().get(CtBiScanner.class));
+		assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class))
+				.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class));
 	}
 
 	@Test
@@ -116,7 +116,8 @@ public class CtScannerTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
 		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
 		// Utils.
-		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtBiScanner.java");
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtAbstractBiScanner.java");
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java");
 		launcher.addInputResource("./src/main/java/spoon/generating/equals/");
 		launcher.addProcessor(new EqualsVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.equals.EqualsVisitor"));

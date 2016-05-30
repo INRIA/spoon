@@ -101,7 +101,7 @@ public class CtBiScannerGenerator extends AbstractProcessor<CtType<?>> {
 	private CtClass<Object> createBiScanner() {
 		final CtPackage aPackage = getFactory().Package().getOrCreate(TARGET_BISCANNER_PACKAGE);
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_BISCANNER);
-		target.setSimpleName("CtBiScanner");
+		target.setSimpleName("CtBiScannerDefault");
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
 		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
@@ -116,7 +116,7 @@ public class CtBiScannerGenerator extends AbstractProcessor<CtType<?>> {
 			}
 		});
 		for (CtTypeReference reference : references) {
-			reference.setSimpleName("CtBiScanner");
+			reference.setSimpleName("CtBiScannerDefault");
 			reference.setPackage(aPackage.getReference());
 		}
 		return target;

@@ -17,7 +17,7 @@
 package spoon.generating.equals;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.CtBiScanner;
+import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.support.visitor.equals.EqualsChecker;
 
 /**
@@ -25,7 +25,7 @@ import spoon.support.visitor.equals.EqualsChecker;
  *
  * This class is generated automatically by the processor {@link spoon.generating.EqualsVisitorGenerator}.
  */
-class EqualsVisitorTemplate extends CtBiScanner {
+class EqualsVisitorTemplate extends CtBiScannerDefault {
 	public static boolean equals(CtElement element, CtElement other) {
 		return !new EqualsVisitorTemplate().biScan(element, other);
 	}

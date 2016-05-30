@@ -16,13 +16,7 @@
  */
 package spoon.generating.scanner;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.CtVisitor;
-
-import java.util.Collection;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
+import spoon.reflect.visitor.CtAbstractBiScanner;
 
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.
@@ -34,76 +28,5 @@ import java.util.TreeSet;
  *
  * Is used by EqualsVisitor.
  */
-abstract class CtBiScannerTemplate implements CtVisitor {
-	protected Stack<CtElement> stack = new Stack<CtElement>();
-
-	protected void enter(CtElement e) {
-	}
-
-	protected void exit(CtElement e) {
-	}
-
-	protected boolean isNotEqual = false;
-
-	public boolean biScan(Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
-		if (isNotEqual) {
-			return isNotEqual;
-		}
-		if (elements == null) {
-			if (others != null) {
-				return fail();
-			}
-			return isNotEqual;
-		} else if (others == null) {
-			return fail();
-		}
-		if ((elements.size()) != (others.size())) {
-			return fail();
-		}
-		Collection<? extends CtElement> elementsColl = elements;
-		Collection<? extends CtElement> othersColl = others;
-		if (elements instanceof Set) {
-			if (!(others instanceof Set)) {
-				return fail();
-			}
-			elementsColl = new TreeSet<CtElement>(elements);
-			othersColl = new TreeSet<CtElement>(others);
-		}
-		for (java.util.Iterator<? extends spoon.reflect.declaration.CtElement> firstIt = elementsColl.iterator(), secondIt = othersColl.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
-			biScan(firstIt.next(), secondIt.next());
-		}
-		return isNotEqual;
-	}
-
-	public boolean biScan(CtElement element, CtElement other) {
-		if (isNotEqual) {
-			return isNotEqual;
-		}
-		if (element == null) {
-			if (other != null) {
-				return fail();
-			}
-			return isNotEqual;
-		} else if (other == null) {
-			return fail();
-		}
-		if (element == other) {
-			return isNotEqual;
-		}
-
-		stack.push(other);
-		try {
-			element.accept(this);
-		} catch (java.lang.ClassCastException e) {
-			return fail();
-		} finally {
-			stack.pop();
-		}
-		return isNotEqual;
-	}
-
-	public boolean fail() {
-		isNotEqual = true;
-		return true;
-	}
+abstract class CtBiScannerTemplate extends CtAbstractBiScanner {
 }

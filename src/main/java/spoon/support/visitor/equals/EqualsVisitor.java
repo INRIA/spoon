@@ -24,7 +24,7 @@ package spoon.support.visitor.equals;
  *
  * This class is generated automatically by the processor {@link spoon.generating.EqualsVisitorGenerator}.
  */
-public class EqualsVisitor extends spoon.reflect.visitor.CtBiScanner {
+public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 	public static boolean equals(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
 		return !(new spoon.support.visitor.equals.EqualsVisitor().biScan(element, other));
 	}

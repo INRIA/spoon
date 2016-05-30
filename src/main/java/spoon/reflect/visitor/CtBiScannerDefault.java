@@ -18,88 +18,18 @@
 
 package spoon.reflect.visitor;
 
+
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.
  *
  * Ensures that all children nodes are visited once, a visit means three method
  * calls, one call to "enter", one call to "exit" and one call to biScan.
  *
- * This class is generated automatically by the processor {@link spoon.generating.CtBiScannerGenerator}.z
+ * This class is generated automatically by the processor {@link spoon.generating.CtBiScannerGenerator}.
  *
  * Is used by EqualsVisitor.
  */
-public abstract class CtBiScanner implements spoon.reflect.visitor.CtVisitor {
-	protected java.util.Stack<spoon.reflect.declaration.CtElement> stack = new java.util.Stack<spoon.reflect.declaration.CtElement>();
-
-	protected void enter(spoon.reflect.declaration.CtElement e) {
-	}
-
-	protected void exit(spoon.reflect.declaration.CtElement e) {
-	}
-
-	protected boolean isNotEqual = false;
-
-	public boolean biScan(java.util.Collection<? extends spoon.reflect.declaration.CtElement> elements, java.util.Collection<? extends spoon.reflect.declaration.CtElement> others) {
-		if (isNotEqual) {
-			return isNotEqual;
-		}
-		if (elements == null) {
-			if (others != null) {
-				return fail();
-			}
-			return isNotEqual;
-		} else if (others == null) {
-			return fail();
-		}
-		if ((elements.size()) != (others.size())) {
-			return fail();
-		}
-		java.util.Collection<? extends spoon.reflect.declaration.CtElement> elementsColl = elements;
-		java.util.Collection<? extends spoon.reflect.declaration.CtElement> othersColl = others;
-		if (elements instanceof java.util.Set) {
-			if (!(others instanceof java.util.Set)) {
-				return fail();
-			}
-			elementsColl = new java.util.TreeSet<spoon.reflect.declaration.CtElement>(elements);
-			othersColl = new java.util.TreeSet<spoon.reflect.declaration.CtElement>(others);
-		}
-		for (java.util.Iterator<? extends spoon.reflect.declaration.CtElement> firstIt = elementsColl.iterator(), secondIt = othersColl.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
-			biScan(firstIt.next(), secondIt.next());
-		}
-		return isNotEqual;
-	}
-
-	public boolean biScan(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
-		if (isNotEqual) {
-			return isNotEqual;
-		}
-		if (element == null) {
-			if (other != null) {
-				return fail();
-			}
-			return isNotEqual;
-		} else if (other == null) {
-			return fail();
-		}
-		if (element == other) {
-			return isNotEqual;
-		}
-		stack.push(other);
-		try {
-			element.accept(spoon.reflect.visitor.CtBiScanner.this);
-		} catch (java.lang.ClassCastException e) {
-			return fail();
-		} finally {
-			stack.pop();
-		}
-		return isNotEqual;
-	}
-
-	public boolean fail() {
-		isNotEqual = true;
-		return true;
-	}
-
+public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanner {
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
 		spoon.reflect.declaration.CtAnnotation other = ((spoon.reflect.declaration.CtAnnotation) (stack.peek()));
 		enter(annotation);
