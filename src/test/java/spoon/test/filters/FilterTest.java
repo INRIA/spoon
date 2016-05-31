@@ -3,12 +3,15 @@ package spoon.test.filters;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -27,6 +30,7 @@ import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FieldAccessFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
 import spoon.reflect.visitor.filter.InvocationFilter;
+import spoon.reflect.visitor.filter.LineFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodFilter;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
@@ -41,6 +45,7 @@ import spoon.test.filters.testclasses.ITostada;
 import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
 import spoon.test.filters.testclasses.Tostada;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,9 +63,7 @@ public class FilterTest {
 
 	@Before
 	public void setup() throws Exception {
-		Launcher spoon = new Launcher();
-		factory = spoon.createFactory();
-		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/java/spoon/test/filters/Foo.java")).build();
+		factory = ModelUtils.build(Foo.class);
 	}
 
 	@Test
@@ -77,6 +80,46 @@ public class FilterTest {
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtCFlowBreak> expressions = foo.getElements(new ReturnOrThrowFilter());
 		assertEquals(2, expressions.size());
+	}
+
+	@Test
+	public void testLineFilter() throws Exception {
+		CtType<FooLine> foo = ModelUtils.buildClass(FooLine.class);
+		CtMethod method = foo.getMethod("simple");
+		List<CtStatement> expressions = method.getElements(new LineFilter());
+		assertEquals(3, expressions.size());
+		assertNull(expressions.get(0).getParent(new LineFilter()));
+
+		method = foo.getMethod("loopBlock");
+		expressions = method.getElements(new LineFilter());
+		assertEquals(2, expressions.size());
+		assertNull(expressions.get(0).getParent(new LineFilter()));
+		assertTrue(expressions.get(1).getParent(new LineFilter()) instanceof CtLoop);
+
+		method = foo.getMethod("loopNoBlock");
+		expressions = method.getElements(new LineFilter());
+		assertEquals(2, expressions.size());
+		assertNull(expressions.get(0).getParent(new LineFilter()));
+		assertTrue(expressions.get(1).getParent(new LineFilter()) instanceof CtLoop);
+
+		method = foo.getMethod("ifBlock");
+		expressions = method.getElements(new LineFilter());
+		assertEquals(2, expressions.size());
+		assertNull(expressions.get(0).getParent(new LineFilter()));
+		assertTrue(expressions.get(1).getParent(new LineFilter()) instanceof CtIf);
+
+		method = foo.getMethod("ifNoBlock");
+		expressions = method.getElements(new LineFilter());
+		assertEquals(2, expressions.size());
+		assertNull(expressions.get(0).getParent(new LineFilter()));
+		assertTrue(expressions.get(1).getParent(new LineFilter()) instanceof CtIf);
+
+		method = foo.getMethod("switchBlock");
+		expressions = method.getElements(new LineFilter());
+		assertEquals(3, expressions.size());
+		assertNull(expressions.get(0).getParent(new LineFilter()));
+		assertTrue(expressions.get(1).getParent(new LineFilter()) instanceof CtSwitch);
+		assertTrue(expressions.get(2).getParent(new LineFilter()) instanceof CtSwitch);
 	}
 
 
