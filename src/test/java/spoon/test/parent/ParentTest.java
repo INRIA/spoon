@@ -36,9 +36,11 @@ import spoon.test.replace.testclasses.Tacos;
 import java.util.Stack;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class ParentTest {
@@ -124,12 +126,12 @@ public class ParentTest {
 		assertNotNull(pack2);
 		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, panini.getPackage().getSimpleName());
 		CtPackage pack1 = factory.Package().getRootPackage();
-		
+
 		// the factory are not the same
 		assertNotEquals(factory, launcher.getFactory());
 		// so the root packages are not deeply equals
 		assertNotEquals(pack1, pack2);
-		
+
 		final CtTypeReference<?> burritos = panini.getReferences(new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference<?> reference) {
@@ -278,4 +280,20 @@ public class ParentTest {
 		assertNotEquals(statement, statementParent);
 	}
 
+	@Test
+	public void testHasParent() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/reference-package/Panini.java");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		try {
+			final CtType<Object> aPanini = launcher.getFactory().Type().get("Panini");
+			assertNotNull(aPanini);
+			assertFalse(aPanini.hasParent(aPanini.getFactory().Core().createAnnotation()));
+		} catch (NullPointerException e) {
+			fail();
+		}
+	}
 }

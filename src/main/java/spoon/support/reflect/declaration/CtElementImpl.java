@@ -22,6 +22,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
@@ -358,7 +359,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public boolean hasParent(CtElement candidate) throws ParentNotInitializedException {
-		return getParent() == candidate || getParent().hasParent(candidate);
+		return !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(getFactory().getModel().getRootPackage().getSimpleName()) && (getParent() == candidate || getParent().hasParent(candidate));
 	}
 
 	@Override
