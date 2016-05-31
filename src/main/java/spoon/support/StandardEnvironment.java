@@ -99,6 +99,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean shouldCompile;
 
+	private boolean skipSelfChecks;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -150,6 +152,16 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setShouldCompile(boolean shouldCompile) {
 		this.shouldCompile = shouldCompile;
+	}
+
+	@Override
+	public boolean checksAreSkipped() {
+		return skipSelfChecks;
+	}
+
+	@Override
+	public void setSelfChecks(boolean skip) {
+		skipSelfChecks = skip;
 	}
 
 	private Level toLevel(String level) {
