@@ -93,7 +93,7 @@ public final class ModelUtils {
 	}
 
 	public static <T> CtType<T> buildClass(Class<T> classToBuild) throws Exception {
-		return build(classToBuild).Class().get(classToBuild);
+		return build(classToBuild).Type().get(classToBuild);
 	}
 
 	public static void canBeBuilt(File outputDirectoryFile, int complianceLevel) {

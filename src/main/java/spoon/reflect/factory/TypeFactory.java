@@ -187,7 +187,7 @@ public class TypeFactory extends SubFactory {
 		int inertTypeIndex = qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		if (inertTypeIndex > 0) {
 			String s = qualifiedName.substring(0, inertTypeIndex);
-			CtType<T> t = get(s);
+			CtType<T> t = factory.Type().get(s);
 			if (t == null) {
 				return null;
 			}
