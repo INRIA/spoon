@@ -23,6 +23,7 @@ import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 
 import java.io.File;
@@ -334,4 +335,18 @@ public interface Environment {
 	 * Sets the compile argument.
 	 */
 	void setShouldCompile(boolean shouldCompile);
+
+	/**
+	 * Checks if {@link spoon.reflect.visitor.AstParentConsistencyChecker},
+	 * hashcode violation declared in CtElement#equals(CtElement) and
+	 * method violation declared in {@link spoon.reflect.declaration.CtType#addMethod(CtMethod)}
+	 * are active or not.
+	 */
+	boolean checksAreSkipped();
+
+	/**
+	 * Enable or not checks on the AST. See {@link #checksAreSkipped()} to know all checks enabled.
+	 * true means that no self checks are made.
+	 */
+	void setSelfChecks(boolean skip);
 }

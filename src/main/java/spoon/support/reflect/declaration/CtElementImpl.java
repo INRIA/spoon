@@ -145,7 +145,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		}
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
-		if (ret && this.hashCode() != o.hashCode()) {
+		if (ret && !factory.getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
 			throw new IllegalStateException("violation of equal/hashcode contract between \n" + getDeepRepresentation(this) + "\nand\n" + getDeepRepresentation((CtElement) o) + "\n");
 		}
 		return ret;

@@ -129,4 +129,8 @@ Options :
   [(-f|--generate-files) <generate-files>]
         Only generate the given fully qualified java classes (separated by ':'
         if multiple are given).
+
+  [-a|--disable-model-self-checks]
+        Disables checks made on the AST (hashcode violation, method's signature
+        violation and parent violation). Default: false.
 ```

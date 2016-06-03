@@ -396,6 +396,14 @@ public class Launcher implements SpoonAPI {
 			opt2.setRequired(false);
 			jsap.registerParameter(opt2);
 
+			// Disable checks.
+			sw1 = new Switch("disable-model-self-checks");
+			sw1.setShortFlag('a');
+			sw1.setLongFlag("disable-model-self-checks");
+			sw1.setHelp("Disables checks made on the AST (hashcode violation, method's signature violation and parent violation). Default: false.");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+
 			return jsap;
 		} catch (JSAPException e) {
 			throw new SpoonException(e.getMessage(), e);
@@ -430,6 +438,7 @@ public class Launcher implements SpoonAPI {
 		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
 
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
+		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
 
 		if (getArguments().getString("generate-files") != null) {
 			setOutputFilter(getArguments().getString("generate-files").split(":"));
