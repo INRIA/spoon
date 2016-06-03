@@ -58,18 +58,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		exit(anonymousExec);
 	}
 
-	public <T, E extends spoon.reflect.code.CtExpression<?>> void visitCtArrayAccess(final spoon.reflect.code.CtArrayAccess<T, E> arrayAccess) {
-		spoon.reflect.code.CtArrayAccess other = ((spoon.reflect.code.CtArrayAccess) (stack.peek()));
-		enter(arrayAccess);
-		biScan(arrayAccess.getAnnotations(), other.getAnnotations());
-		biScan(arrayAccess.getType(), other.getType());
-		biScan(arrayAccess.getTypeCasts(), other.getTypeCasts());
-		biScan(arrayAccess.getTarget(), other.getTarget());
-		biScan(arrayAccess.getIndexExpression(), other.getIndexExpression());
-		biScan(arrayAccess.getComments(), other.getComments());
-		exit(arrayAccess);
-	}
-
 	@java.lang.Override
 	public <T> void visitCtArrayRead(final spoon.reflect.code.CtArrayRead<T> arrayRead) {
 		spoon.reflect.code.CtArrayRead other = ((spoon.reflect.code.CtArrayRead) (stack.peek()));

@@ -17,6 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -53,6 +54,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		if (pack == null) {
 			return (T) this;
 		}
+		if (packs == CtElementImpl.<CtPackage>emptySet()) {
+			this.packs = new TreeSet<>();
+		}
 		// they are the same
 		if (this.getQualifiedName().equals(pack.getQualifiedName())) {
 			addAllTypes(pack, this);
@@ -69,8 +73,8 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			}
 		}
 
-		this.packs.add(pack);
 		pack.setParent(this);
+		this.packs.add(pack);
 
 		return (T) this;
 	}
@@ -184,6 +188,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		if (type == null) {
 			return (T) this;
 		}
+		if (types == CtElementImpl.<CtType<?>>emptySet()) {
+			this.types = new TreeSet<>();
+		}
 		type.setParent(this);
 		types.add(type);
 		return (T) this;
@@ -233,5 +240,12 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	@Override
 	public boolean isUnnamedPackage() {
 		return TOP_LEVEL_PACKAGE_NAME.equals(getSimpleName());
+	}
+
+	@Override public int compareTo(CtElement o) {
+		if (!(o instanceof CtPackage)) {
+			return super.compareTo(o);
+		}
+		return getQualifiedName().compareTo(((CtPackage) o).getQualifiedName());
 	}
 }

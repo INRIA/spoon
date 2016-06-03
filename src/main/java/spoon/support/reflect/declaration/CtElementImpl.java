@@ -39,6 +39,7 @@ import spoon.support.visitor.EqualVisitor;
 import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
+import spoon.support.visitor.equals.CloneHelper;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.support.visitor.replace.ReplacementVisitor;
 
@@ -454,6 +455,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public CtElement clone() {
-		return getFactory().Core().clone(this);
+		return CloneHelper.clone(this);
 	}
 }

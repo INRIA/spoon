@@ -19,6 +19,7 @@ package spoon.reflect.visitor;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.EqualsVisitorGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
@@ -86,6 +87,7 @@ public class CtScannerTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setGenerateJavadoc(true);
+		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
@@ -108,7 +110,7 @@ public class CtScannerTest {
 	public void testGenerateEqualsVisitor() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setGenerateJavadoc(true);
+		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
@@ -126,6 +128,36 @@ public class CtScannerTest {
 
 		assertThat(build(new File("./src/main/java/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class))
 				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class));
+	}
+
+	@Test
+	public void testGenerateCloneVisitor() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setGenerateJavadoc(true);
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().useTabulations(true);
+		launcher.setSourceOutputDirectory("./target/generated/");
+		// interfaces.
+		launcher.addInputResource("./src/main/java/spoon/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
+		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
+		// Implementations.
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/internal");
+		// Utils.
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtInheritanceScanner.java");
+		launcher.addInputResource("./src/main/java/spoon/generating/clone/");
+		launcher.addProcessor(new CloneVisitorGenerator());
+		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.clone.*"));
+		launcher.run();
+
+		assertThat(build(new File("./src/main/java/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone"))
+				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone"));
 	}
 
 	private class RegexFilter implements Filter<CtType<?>> {

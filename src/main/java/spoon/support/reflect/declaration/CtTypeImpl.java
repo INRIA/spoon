@@ -20,6 +20,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -68,7 +69,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	Set<CtMethod<?>> methods = emptySet();
 
-	private List<CtField<?>> fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
+	List<CtField<?>> fields = emptyList();
 
 	Set<CtType<?>> nestedTypes = emptySet();
 
@@ -82,6 +83,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
 		if (field == null) {
 			return (C) this;
+		}
+		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
+			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		if (!this.fields.contains(field)) {
 			field.setParent(this);
@@ -102,6 +106,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (field == null) {
 			return (C) this;
 		}
+		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
+			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
+		}
 		if (!this.fields.contains(field)) {
 			field.setParent(this);
 			this.fields.add(field);
@@ -113,6 +120,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <F, C extends CtType<T>> C addField(int index, CtField<F> field) {
+		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
+			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
+		}
 		if (!this.fields.contains(field)) {
 			field.setParent(this);
 			this.fields.add(index, field);
@@ -797,5 +807,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public CtType<T> clone() {
 		return (CtType<T>) super.clone();
+	}
+
+	@Override public int compareTo(CtElement o) {
+		if (!(o instanceof CtType)) {
+			return super.compareTo(o);
+		}
+		return getQualifiedName().compareTo(((CtType) o).getQualifiedName());
 	}
 }

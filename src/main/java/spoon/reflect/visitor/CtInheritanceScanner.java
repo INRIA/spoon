@@ -866,9 +866,11 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVisitable(e);
 	}
 
-	public <T> void visitCtUnboundVariableReference(
-			CtUnboundVariableReference<T> reference) {
-
+	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
+		scanCtVariableReference(reference);
+		scanCtReference(reference);
+		scanCtElement(reference);
+		scanCtVisitable(reference);
 	}
 
 	public void scanCtCodeSnippet(CtCodeSnippet snippet) {
