@@ -292,6 +292,7 @@ public class ParentTest {
 			final CtType<Object> aPanini = launcher.getFactory().Type().get("Panini");
 			assertNotNull(aPanini);
 			assertFalse(aPanini.hasParent(aPanini.getFactory().Core().createAnnotation()));
+			assertTrue(aPanini.getMethod("m").hasParent(aPanini));
 		} catch (NullPointerException e) {
 			fail();
 		}
