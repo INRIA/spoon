@@ -4,13 +4,11 @@ import org.junit.Test;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.test.position.testclasses.FooClazz;
-import spoon.test.position.testclasses.FooField;
-import spoon.test.position.testclasses.FooMethod;
-import spoon.test.position.testclasses.FooStatement;
+import spoon.test.position.testclasses.*;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
@@ -215,6 +213,92 @@ public class PositionTest {
 		assertEquals(22, positionReturn.getEndLine());
 
 		assertEquals("return;", contentAtPosition(classContent, positionReturn));
+	}
+
+	@Test
+	public void testPositionFields() throws Exception {
+		final Factory build = build(FooVariables.class);
+		final CtType<FooVariables> foo = build.Type().get(FooVariables.class);
+		String classContent = getClassContent(foo);
+
+
+		CtField<?> field = foo.getField("field");
+		SourcePosition position = field.getPosition();
+		assertEquals("private int field = 0;",
+				classContent.substring(
+						position.getSourceStart(),
+						position.getSourceEnd() + 1));
+
+		assertEquals("field",
+				classContent.substring(
+						position.getSourceStart("name"),
+						position.getSourceEnd("name") + 1));
+
+		assertEquals("int",
+				classContent.substring(
+						position.getSourceStart("type"),
+						position.getSourceEnd("type") + 1));
+
+		assertEquals("private",
+				classContent.substring(
+						position.getSourceStart("modifiers"),
+						position.getSourceEnd("modifiers") + 1));
+	}
+
+	@Test
+	public void testPositionFields2() throws Exception {
+		final Factory build = build(FooVariables.class);
+		final CtType<FooVariables> foo = build.Type().get(FooVariables.class);
+		String classContent = getClassContent(foo);
+		CtField<?> field = foo.getField("masuperlongueVariable");
+		SourcePosition position = field.getPosition();
+
+
+		assertEquals("private static final java.util.List<java.lang.String> masuperlongueVariable = new ArrayList<String>();",
+				classContent.substring(
+						position.getSourceStart(),
+						position.getSourceEnd() + 1));
+
+		assertEquals("masuperlongueVariable",
+				classContent.substring(
+						position.getSourceStart("name"),
+						position.getSourceEnd("name") + 1));
+
+		assertEquals("java.util.List",
+				classContent.substring(
+						position.getSourceStart("type"),
+						position.getSourceEnd("type") + 1));
+
+		assertEquals("private static final",
+				classContent.substring(
+						position.getSourceStart("modifiers"),
+						position.getSourceEnd("modifiers") + 1));
+	}
+
+	@Test
+	public void testPositionParameters() throws Exception {
+		final Factory build = build(FooVariables.class);
+		final CtType<FooVariables> foo = build.Type().get(FooVariables.class);
+		String classContent = getClassContent(foo);
+
+		CtMethod<?> method = foo.getMethod("m", build.Type().createReference(int.class));
+		SourcePosition position = method.getParameters().get(0).getPosition();
+		assertEquals("int parm1",
+				classContent.substring(
+						position.getSourceStart(),
+						position.getSourceEnd() + 1));
+
+		assertEquals("parm1",
+				classContent.substring(
+						position.getSourceStart("name"),
+						position.getSourceEnd("name") + 1));
+
+		assertEquals("int",
+				classContent.substring(
+						position.getSourceStart("type"),
+						position.getSourceEnd("type") + 1));
+
+
 	}
 
 

@@ -213,6 +213,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
+import spoon.support.reflect.cu.SourcePositionImpl;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
 import java.util.ArrayList;
@@ -336,6 +337,23 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 				CompilationUnit cu = factory.CompilationUnit().create(new String(compilationunitdeclaration.getFileName()));
 				e.setPosition(cf.createSourcePosition(cu, sourceStartDeclaration, sourceStartSource, sourceEnd, compilationunitdeclaration.compilationResult.lineSeparatorPositions));
+
+
+				if (node instanceof AbstractVariableDeclaration) {
+					AbstractVariableDeclaration varnode = (AbstractVariableDeclaration) node;
+					SourcePositionImpl position = (SourcePositionImpl) e.getPosition();
+					position.addFragment("name", node.sourceStart, node.sourceEnd);
+
+					if (varnode.type != null) {
+						position.addFragment("type", varnode.type.sourceStart, varnode.type.sourceEnd);
+						if (varnode.modifiersSourceStart > 0) {
+							position.addFragment("modifiers", varnode.modifiersSourceStart, varnode.type.sourceStart);
+						} else if (varnode.declarationSourceStart < varnode.type.sourceStart - 2) {
+							position.addFragment("modifiers", varnode.declarationSourceStart, varnode.type.sourceStart - 2);
+						}
+					}
+				}
+
 			}
 			ASTPair pair = stack.peek();
 			CtElement current = pair.element;
