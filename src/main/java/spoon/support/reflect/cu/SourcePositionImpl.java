@@ -32,13 +32,17 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static class Position {
+	private static class Position implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
 		final int start;
 		final int end;
 
-		public Position(int start, int end) {
-			if (start > end)
+		Position(int start, int end) {
+			if (start > end) {
 				throw new IllegalArgumentException("end should be greater than start");
+			}
 			this.start = start;
 			this.end = end;
 		}
