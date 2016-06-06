@@ -21,6 +21,8 @@ import spoon.reflect.cu.SourcePosition;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents the position of a Java program element in a source
@@ -28,151 +30,193 @@ import java.io.Serializable;
  */
 public class SourcePositionImpl implements SourcePosition, Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Search the line number corresponding to a specific position
-	 */
-	private int searchLineNumber(int[] startLineIndexes, int position) {
-		if (startLineIndexes == null) {
-			return 1;
-		}
-		int length = startLineIndexes.length;
-		if (length == 0) {
-			return 1;
-		}
-		int g = 0, d = length - 1;
-		int m = 0, start;
-		while (g <= d) {
-			m = (g + d) / 2;
-			if (position < (start = startLineIndexes[m])) {
-				d = m - 1;
-			} else if (position > start) {
-				g = m + 1;
-			} else {
-				return m + 1;
-			}
-		}
-		if (position < startLineIndexes[m]) {
-			return m + 1;
-		}
-		return m + 2;
-	}
+    private static class Position {
+        final int start;
+        final int end;
 
-	/**
-	 * Search the column number
-	 */
-	private int searchColumnNumber(int[] startLineIndexes, int position) {
-		if (startLineIndexes == null) {
-			return 1;
-		}
-		int length = startLineIndexes.length;
-		if (length == 0) {
-			return 1;
-		}
-		int i = 0;
-		for (i = 0; i < startLineIndexes.length - 1; i++) {
-			if (startLineIndexes[i] < position && (startLineIndexes[i + 1] > position)) {
-				return position - startLineIndexes[i];
-			}
-		}
-		int tabCount = 0;
-		int tabSize = 0;
-		if (getCompilationUnit() != null) {
-			tabSize = getCompilationUnit().getFactory().getEnvironment().getTabulationSize();
-			String source = getCompilationUnit().getOriginalSourceCode();
-			for (int j = startLineIndexes[i]; j < position; j++) {
-				if (source.charAt(j) == '\t') {
-					tabCount++;
-				}
-			}
-		}
-		return (position - startLineIndexes[i]) - tabCount + (tabCount * tabSize);
-	}
+        public Position(int start, int end) {
+            if (start>end)
+                throw new IllegalArgumentException("end should be greater than start");
+            this.start = start;
+            this.end = end;
+        }
 
-	int[] lineSeparatorPositions;
+        public int getStart() {
+            return start;
+        }
 
-	private int sourceStart, sourceEnd, line;
+        public int getEnd() {
+            return end;
+        }
+    }
 
-	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStartDeclaration, int sourceStartSource, int sourceEnd, int[] lineSeparatorPositions) {
-		super();
-		this.compilationUnit = compilationUnit;
-		this.sourceStart = sourceStartDeclaration;
-		this.sourceEnd = sourceEnd;
-		this.lineSeparatorPositions = lineSeparatorPositions;
-		this.line = searchLineNumber(lineSeparatorPositions, sourceStartSource);
-	}
+    /**
+     * Search the line number corresponding to a specific position
+     */
+    private int searchLineNumber(int[] startLineIndexes, int position) {
+        if (startLineIndexes == null) {
+            return 1;
+        }
+        int length = startLineIndexes.length;
+        if (length == 0) {
+            return 1;
+        }
+        int g = 0, d = length - 1;
+        int m = 0, start;
+        while (g <= d) {
+            m = (g + d) / 2;
+            if (position < (start = startLineIndexes[m])) {
+                d = m - 1;
+            } else if (position > start) {
+                g = m + 1;
+            } else {
+                return m + 1;
+            }
+        }
+        if (position < startLineIndexes[m]) {
+            return m + 1;
+        }
+        return m + 2;
+    }
 
-	public int getColumn() {
-		return searchColumnNumber(lineSeparatorPositions, sourceStart);
-	}
+    /**
+     * Search the column number
+     */
+    private int searchColumnNumber(int[] startLineIndexes, int position) {
+        if (startLineIndexes == null) {
+            return 1;
+        }
+        int length = startLineIndexes.length;
+        if (length == 0) {
+            return 1;
+        }
+        int i = 0;
+        for (i = 0; i < startLineIndexes.length - 1; i++) {
+            if (startLineIndexes[i] < position && (startLineIndexes[i + 1] > position)) {
+                return position - startLineIndexes[i];
+            }
+        }
+        int tabCount = 0;
+        int tabSize = 0;
+        if (getCompilationUnit() != null) {
+            tabSize = getCompilationUnit().getFactory().getEnvironment().getTabulationSize();
+            String source = getCompilationUnit().getOriginalSourceCode();
+            for (int j = startLineIndexes[i]; j < position; j++) {
+                if (source.charAt(j) == '\t') {
+                    tabCount++;
+                }
+            }
+        }
+        return (position - startLineIndexes[i]) - tabCount + (tabCount * tabSize);
+    }
 
-	public int getEndColumn() {
-		return searchColumnNumber(lineSeparatorPositions, sourceEnd);
-	}
+    int[] lineSeparatorPositions;
 
-	public File getFile() {
-		if (compilationUnit == null) {
-			return null;
-		}
-		return compilationUnit.getFile();
-	}
+    private Position source;
+    private int line;
 
-	public int getLine() {
-		return line;
-	}
+    private Map<String, Position> fragments = new HashMap<String, Position>();
 
-	public int getEndLine() {
-		return searchLineNumber(lineSeparatorPositions, sourceEnd);
-	}
+    public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStartDeclaration, int sourceStartSource, int sourceEnd, int[] lineSeparatorPositions) {
+        super();
+        this.compilationUnit = compilationUnit;
+        this.source = new Position(sourceStartDeclaration, sourceEnd);
+        this.lineSeparatorPositions = lineSeparatorPositions;
+        this.line = searchLineNumber(lineSeparatorPositions, sourceStartSource);
+    }
 
-	public int getSourceEnd() {
-		return sourceEnd;
-	}
+    public void addFragment(String name, int start, int end) {
+        fragments.put(name, new Position(start, end));
+    }
 
-	public int getSourceStart() {
-		return sourceStart;
-	}
+    public int getColumn() {
+        return searchColumnNumber(lineSeparatorPositions, source.getStart());
+    }
 
-	/**
-	 * Returns a string representation of this position in the form
-	 * "sourcefile:line", or "sourcefile" if no line number is available.
-	 */
-	public String toString() {
-		if (getFile() == null) {
-			return "(unknown file)";
-		}
-		int ln = getLine();
-		return (ln >= 1) ? "(" + getFile().getAbsolutePath().replace('\\', '/').replace("C:/", "/") + ":" + ln + ")" : getFile().getAbsolutePath().replace('\\', '/').replace("C:/", "/");
-	}
+    public int getEndColumn() {
+        return searchColumnNumber(lineSeparatorPositions, source.getEnd());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof SourcePosition)) {
-			return false;
-		}
-		SourcePosition s = (SourcePosition) obj;
-		return (getFile() == null ? s.getFile() == null : getFile().equals(s.getFile())) && getLine() == s.getLine() && getColumn() == s.getColumn();
-	}
+    public File getFile() {
+        if (compilationUnit == null) {
+            return null;
+        }
+        return compilationUnit.getFile();
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + getLine();
-		result = prime * result + getColumn();
-		result = prime * result + getFile().hashCode();
-		return result;
-	}
+    public int getLine() {
+        return line;
+    }
 
-	transient CompilationUnit compilationUnit;
+    public int getEndLine() {
+        return searchLineNumber(lineSeparatorPositions, source.getEnd());
+    }
 
-	public CompilationUnit getCompilationUnit() {
-		return compilationUnit;
-	}
+    public int getSourceEnd() {
+        return source.getEnd();
+    }
 
-	public void setCompilationUnit(CompilationUnit compilationUnit) {
-		this.compilationUnit = compilationUnit;
-	}
+    @Override
+    public int getSourceEnd(String part) {
+        if (fragments.containsKey(part)) {
+            return fragments.get(part).getEnd();
+        }
+        return getSourceEnd();
+    }
+
+    public int getSourceStart() {
+        return source.getStart();
+    }
+
+    @Override
+    public int getSourceStart(String part) {
+        if (fragments.containsKey(part)) {
+            return fragments.get(part).getStart();
+        }
+        return getSourceStart();
+    }
+
+    /**
+     * Returns a string representation of this position in the form
+     * "sourcefile:line", or "sourcefile" if no line number is available.
+     */
+    public String toString() {
+        if (getFile() == null) {
+            return "(unknown file)";
+        }
+        int ln = getLine();
+        return (ln >= 1) ? "(" + getFile().getAbsolutePath().replace('\\', '/').replace("C:/", "/") + ":" + ln + ")" : getFile().getAbsolutePath().replace('\\', '/').replace("C:/", "/");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof SourcePosition)) {
+            return false;
+        }
+        SourcePosition s = (SourcePosition) obj;
+        return (getFile() == null ? s.getFile() == null : getFile().equals(s.getFile())) && getLine() == s.getLine() && getColumn() == s.getColumn();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + getLine();
+        result = prime * result + getColumn();
+        result = prime * result + getFile().hashCode();
+        return result;
+    }
+
+    transient CompilationUnit compilationUnit;
+
+    public CompilationUnit getCompilationUnit() {
+        return compilationUnit;
+    }
+
+    public void setCompilationUnit(CompilationUnit compilationUnit) {
+        this.compilationUnit = compilationUnit;
+    }
 
 }

@@ -76,8 +76,22 @@ public interface SourcePosition {
 	int getSourceEnd();
 
 	/**
+	 * Gets the index at which the position of a part of element ends in the source file.
+	 *
+	 * a part could be simpleName, modifiers, ...
+	 */
+	int getSourceEnd(String part);
+
+	/**
 	 * Gets the index at which the position starts in the source file.
 	 */
 	int getSourceStart();
+
+	/**
+	 * Gets the index at which the position of a part of element starts in the source file.
+	 *
+	 * a part could be simpleName, modifiers, ...
+	 */
+	int getSourceStart(String part);
 
 }
