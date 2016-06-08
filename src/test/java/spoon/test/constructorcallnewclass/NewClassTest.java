@@ -6,7 +6,6 @@ import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -23,7 +22,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.*;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class NewClassTest {
 	private List<CtNewClass<?>> newClasses;
@@ -154,7 +154,9 @@ public class NewClassTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("IndexWriter");
-		final CtNewClass ctNewClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0);
+		final List<CtNewClass> ctNewClasses = aClass.getElements(new TypeFilter<>(CtNewClass.class));
+		final CtNewClass ctNewClass = ctNewClasses.get(0);
+		final CtNewClass secondNewClass = ctNewClasses.get(1);
 
 		final CtClass anonymousClass = ctNewClass.getAnonymousClass();
 		assertNotNull(anonymousClass);
@@ -163,7 +165,8 @@ public class NewClassTest {
 		assertEquals("Lock$With", anonymousClass.getSuperclass().getQualifiedName());
 		assertEquals("Lock", anonymousClass.getSuperclass().getDeclaringType().getSimpleName());
 		assertEquals("Lock.With", anonymousClass.getSuperclass().toString());
-		assertEquals(CtType.NAME_UNKNOWN, anonymousClass.getSimpleName()); // In noclasspath, we don't have this information.
+		assertEquals("1", anonymousClass.getSimpleName());
+		assertEquals("2", secondNewClass.getAnonymousClass().getSimpleName());
 		assertEquals(1, anonymousClass.getMethods().size());
 
 		canBeBuilt("./target/new-class", 8, true);

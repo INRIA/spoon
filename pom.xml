@@ -200,7 +200,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.12.0.v20150913-1717</version>
+      <version>3.12.0.v20160516-2131</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
