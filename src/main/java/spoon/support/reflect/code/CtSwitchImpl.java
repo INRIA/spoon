@@ -60,13 +60,18 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 
 	@Override
 	public <T extends CtSwitch<S>> T setSelector(CtExpression<S> selector) {
-		selector.setParent(this);
+		if (selector != null) {
+			selector.setParent(this);
+		}
 		this.expression = selector;
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtSwitch<S>> T addCase(CtCase<? super S> c) {
+		if (c == null) {
+			return (T) this;
+		}
 		if (cases == CtElementImpl.<CtCase<? super S>>emptyList()) {
 			cases = new ArrayList<CtCase<? super S>>(SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}

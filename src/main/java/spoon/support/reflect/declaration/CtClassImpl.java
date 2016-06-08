@@ -86,6 +86,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e) {
+		if (e == null) {
+			return (C) this;
+		}
 		if (anonymousExecutables == CtElementImpl.<CtAnonymousExecutable>emptyList()) {
 			anonymousExecutables = new ArrayList<CtAnonymousExecutable>(
 					ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
@@ -133,6 +136,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
+		if (constructor == null) {
+			return (C) this;
+		}
 		if (constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
 			constructors = new TreeSet<CtConstructor<T>>();
 		}

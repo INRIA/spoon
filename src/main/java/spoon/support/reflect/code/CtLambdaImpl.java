@@ -96,6 +96,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C addParameter(CtParameter<?> parameter) {
+		if (parameter == null) {
+			return (C) this;
+		}
 		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			parameters = new ArrayList<CtParameter<?>>(
 					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -130,6 +133,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C addThrownType(CtTypeReference<? extends Throwable> throwType) {
+		if (throwType == null) {
+			return (C) this;
+		}
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
 		}

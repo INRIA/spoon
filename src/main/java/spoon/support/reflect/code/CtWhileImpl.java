@@ -37,7 +37,9 @@ public class CtWhileImpl extends CtLoopImpl implements CtWhile {
 
 	@Override
 	public <T extends CtWhile> T setLoopingExpression(CtExpression<Boolean> expression) {
-		expression.setParent(this);
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		this.expression = expression;
 		return (T) this;
 	}

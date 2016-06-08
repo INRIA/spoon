@@ -19,10 +19,8 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtVariableReference;
 
 public abstract class CtFieldAccessImpl<T> extends CtVariableReadImpl<T> implements CtFieldAccess<T> {
 	private static final long serialVersionUID = 1L;
@@ -47,11 +45,6 @@ public abstract class CtFieldAccessImpl<T> extends CtVariableReadImpl<T> impleme
 	@Override
 	public CtFieldReference<T> getVariable() {
 		return (CtFieldReference<T>) super.getVariable();
-	}
-
-	@Override
-	public <C extends CtVariableAccess<T>> C setVariable(CtVariableReference<T> variable) {
-		return super.setVariable(variable);
 	}
 
 	@Override

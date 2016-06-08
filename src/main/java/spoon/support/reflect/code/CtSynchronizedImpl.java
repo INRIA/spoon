@@ -45,14 +45,18 @@ public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronize
 
 	@Override
 	public <T extends CtSynchronized> T setBlock(CtBlock<?> block) {
-		block.setParent(this);
+		if (block != null) {
+			block.setParent(this);
+		}
 		this.block = block;
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtSynchronized> T setExpression(CtExpression<?> expression) {
-		expression.setParent(this);
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		this.expression = expression;
 		return (T) this;
 	}

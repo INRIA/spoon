@@ -63,6 +63,9 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public <T extends CtFor> T addForInit(CtStatement statement) {
+		if (statement == null) {
+			return (T) this;
+		}
 		if (forInit == CtElementImpl.<CtStatement>emptyList()) {
 			forInit = new ArrayList<CtStatement>(FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -92,6 +95,9 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public <T extends CtFor> T addForUpdate(CtStatement statement) {
+		if (statement == null) {
+			return (T) this;
+		}
 		if (forUpdate == CtElementImpl.<CtStatement>emptyList()) {
 			forUpdate = new ArrayList<CtStatement>(
 					FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);

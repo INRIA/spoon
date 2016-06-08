@@ -45,14 +45,18 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 
 	@Override
 	public <T extends CtCatch> T setBody(CtBlock<?> body) {
-		body.setParent(this);
+		if (body != null) {
+			body.setParent(this);
+		}
 		this.body = body;
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtCatch> T setParameter(CtCatchVariable<? extends Throwable> parameter) {
-		parameter.setParent(this);
+		if (parameter != null) {
+			parameter.setParent(this);
+		}
 		this.parameter = parameter;
 		return (T) this;
 	}

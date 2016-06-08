@@ -129,8 +129,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints,
-												CtStatement statement) {
+	public <T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statement);
 		}
@@ -178,6 +177,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		if (statement == null) {
+			return (T) this;
+		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
 		this.statements.add(statement);

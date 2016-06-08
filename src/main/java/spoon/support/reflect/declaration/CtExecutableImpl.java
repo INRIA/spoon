@@ -82,6 +82,9 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtExecutable<R>> T addParameter(CtParameter<?> parameter) {
+		if (parameter == null) {
+			return (T) this;
+		}
 		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			parameters = new ArrayList<CtParameter<?>>(
 					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -115,6 +118,9 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtExecutable<R>> T addThrownType(CtTypeReference<? extends Throwable> throwType) {
+		if (throwType == null) {
+			return (T) this;
+		}
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
 		}

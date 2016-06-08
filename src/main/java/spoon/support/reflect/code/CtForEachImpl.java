@@ -45,14 +45,18 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 
 	@Override
 	public <T extends CtForEach> T setExpression(CtExpression<?> expression) {
-		expression.setParent(this);
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		this.expression = expression;
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtForEach> T setVariable(CtLocalVariable<?> variable) {
-		variable.setParent(this);
+		if (variable != null) {
+			variable.setParent(this);
+		}
 		this.variable = variable;
 		return (T) this;
 	}
