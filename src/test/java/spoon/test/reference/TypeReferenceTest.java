@@ -432,7 +432,7 @@ public class TypeReferenceTest {
 		final CtMethod run = anonymousClass.getMethod("run");
 		assertNotNull(run);
 		assertEquals(1, run.getAnnotations().size());
-		assertEquals("@Override" + System.lineSeparator(), run.getAnnotations().get(0).toString());
+		assertEquals("@java.lang.Override" + System.lineSeparator(), run.getAnnotations().get(0).toString());
 	}
 
 	@Test
@@ -446,7 +446,7 @@ public class TypeReferenceTest {
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("A");
 		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
-		assertEquals(CtType.NAME_UNKNOWN, anonymousClass.getReference().getSimpleName());
+		assertEquals("1", anonymousClass.getReference().getSimpleName());
 		assertEquals(7, aClass.getReferencedTypes().size());
 	}
 
