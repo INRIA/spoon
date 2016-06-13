@@ -21,7 +21,8 @@ import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * This scanner checks that a program model is consistent with regards to the
@@ -36,7 +37,7 @@ public class ModelConsistencyChecker extends CtScanner {
 
 	Environment environment;
 
-	Stack<CtElement> stack = new Stack<CtElement>();
+	Deque<CtElement> stack = new ArrayDeque<CtElement>();
 
 	/**
 	 * Creates a new model consistency checker.

@@ -21,17 +21,18 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.CtScanner;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class SpoonTreeBuilder extends CtScanner {
-	Stack<DefaultMutableTreeNode> nodes;
+	Deque<DefaultMutableTreeNode> nodes;
 
 	DefaultMutableTreeNode root;
 
 	public SpoonTreeBuilder() {
 		super();
 		root = new DefaultMutableTreeNode("Spoon Tree Root");
-		nodes = new Stack<DefaultMutableTreeNode>();
+		nodes = new ArrayDeque<DefaultMutableTreeNode>();
 		nodes.push(root);
 	}
 

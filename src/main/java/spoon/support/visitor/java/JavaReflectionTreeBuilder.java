@@ -55,7 +55,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
@@ -67,7 +68,7 @@ import java.util.Stack;
  * element comes from the reflection api, use {@link spoon.reflect.declaration.CtShadowable#isShadow()}.
  */
 public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
-	private Stack<RuntimeBuilderContext> contexts = new Stack<RuntimeBuilderContext>();
+	private Deque<RuntimeBuilderContext> contexts = new ArrayDeque<RuntimeBuilderContext>();
 	private Factory factory;
 
 	public JavaReflectionTreeBuilder(Factory factory) {
