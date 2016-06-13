@@ -30,7 +30,7 @@ import java.util.List;
 public class ReferenceQueryVisitor<T extends CtReference> extends CtScanner {
 	ReferenceFilter<T> filter;
 
-	List<T> result = new ArrayList<T>();
+	List<T> result = new ArrayList<>();
 
 	/**
 	 * Constructs a reference query visitor with a given reference filter.

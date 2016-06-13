@@ -100,12 +100,9 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 				x = sxe.getException();
 			}
 			Launcher.LOGGER.error(x.getMessage(), x);
-		} catch (ParserConfigurationException pce) {
+		} catch (ParserConfigurationException | IOException pce) {
 			// Parser with specified options can't be built
 			Launcher.LOGGER.error(pce.getMessage(), pce);
-		} catch (IOException ioe) {
-			// I/O error
-			Launcher.LOGGER.error(ioe.getMessage(), ioe);
 		}
 	}
 
@@ -196,7 +193,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 					}
 				}
 
-				List<CtExecutable<?>> executables = new ArrayList<CtExecutable<?>>();
+				List<CtExecutable<?>> executables = new ArrayList<>();
 				executables.addAll(((CtType<?>) t).getMethods());
 				if (t instanceof CtClass) {
 					executables.addAll(((CtClass<?>) t).getConstructors());

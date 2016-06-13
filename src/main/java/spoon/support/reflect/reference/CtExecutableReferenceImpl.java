@@ -189,7 +189,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			return (C) this;
 		}
 		if (this.parameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.parameters = new ArrayList<CtTypeReference<?>>();
+			this.parameters = new ArrayList<>();
 		}
 		this.parameters.clear();
 		for (CtTypeReference<?> parameter : parameters) {
@@ -245,7 +245,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	public <C extends CtActualTypeContainer> C setActualTypeArguments(
 			List<CtTypeReference<?>> actualTypeArguments) {
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.actualTypeArguments = new ArrayList<CtTypeReference<?>>();
+			this.actualTypeArguments = new ArrayList<>();
 		}
 		this.actualTypeArguments.clear();
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
@@ -374,7 +374,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (c != null) {
 			return RtHelper.getModifiers(c.getModifiers());
 		}
-		return new TreeSet<ModifierKind>();
+		return new TreeSet<>();
 	}
 
 	@Override
@@ -410,8 +410,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	@Override
 	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
-					METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+			actualTypeArguments = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		actualTypeArgument.setParent(this);
 		actualTypeArguments.add(actualTypeArgument);

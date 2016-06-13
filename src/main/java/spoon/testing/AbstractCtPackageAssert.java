@@ -58,9 +58,9 @@ public abstract class AbstractCtPackageAssert<T extends AbstractCtPackageAssert<
 			}
 		}
 
-		final List<CtType<?>> actualTypes = new ArrayList<CtType<?>>(actual.getTypes());
+		final List<CtType<?>> actualTypes = new ArrayList<>(actual.getTypes());
 		Collections.sort(actualTypes, new TypeComparator());
-		final List<CtType<?>> expectedTypes = new ArrayList<CtType<?>>(expected.getTypes());
+		final List<CtType<?>> expectedTypes = new ArrayList<>(expected.getTypes());
 		Collections.sort(expectedTypes, new TypeComparator());
 		for (int i = 0; i < actual.getTypes().size(); i++) {
 			final CtType<?> actualType = actualTypes.get(i);
@@ -77,9 +77,9 @@ public abstract class AbstractCtPackageAssert<T extends AbstractCtPackageAssert<
 			}
 		}
 
-		final List<CtPackage> actualPackages = new ArrayList<CtPackage>(actual.getPackages());
+		final List<CtPackage> actualPackages = new ArrayList<>(actual.getPackages());
 		Collections.sort(actualPackages, new PackageComparator());
-		final List<CtPackage> expectedPackages = new ArrayList<CtPackage>(expected.getPackages());
+		final List<CtPackage> expectedPackages = new ArrayList<>(expected.getPackages());
 		Collections.sort(expectedPackages, new PackageComparator());
 
 		for (int i = 0; i < actualPackages.size(); i++) {

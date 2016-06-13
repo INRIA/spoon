@@ -38,7 +38,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 
 	Factory factory;
 
-	Set<Class<? extends CtElement>> processedElementTypes = new HashSet<Class<? extends CtElement>>();
+	Set<Class<? extends CtElement>> processedElementTypes = new HashSet<>();
 
 	/**
 	 * Empty constructor only for all processors (invoked by Spoon).

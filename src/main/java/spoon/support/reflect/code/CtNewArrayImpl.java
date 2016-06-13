@@ -60,8 +60,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 	@Override
 	public <C extends CtNewArray<T>> C addDimensionExpression(CtExpression<Integer> dimension) {
 		if (dimensionExpressions == CtElementImpl.<CtExpression<Integer>>emptyList()) {
-			dimensionExpressions = new ArrayList<CtExpression<Integer>>(
-					NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY);
+			dimensionExpressions = new ArrayList<>(NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		dimension.setParent(this);
 		dimensionExpressions.add(dimension);
@@ -87,7 +86,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 	@Override
 	public <C extends CtNewArray<T>> C addElement(CtExpression<?> expression) {
 		if (expressions == CtElementImpl.<CtExpression<?>>emptyList()) {
-			this.expressions = new ArrayList<CtExpression<?>>();
+			this.expressions = new ArrayList<>();
 		}
 		expression.setParent(this);
 		expressions.add(expression);

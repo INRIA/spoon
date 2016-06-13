@@ -25,9 +25,9 @@ import java.util.List;
  * A utility class for performance statistics of Spoon.
  */
 public class Timer {
-	private static List<Timer> timestamps = new ArrayList<Timer>();
+	private static List<Timer> timestamps = new ArrayList<>();
 
-	private static Deque<Timer> current = new ArrayDeque<Timer>();
+	private static Deque<Timer> current = new ArrayDeque<>();
 
 	/**
 	 * Starts a timer.

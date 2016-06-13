@@ -101,7 +101,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 			return (T) this;
 		}
 		if (formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
-			formalTypeParameters = new ArrayList<CtTypeParameterReference>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+			formalTypeParameters = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		formalTypeParameter.setParent(this);
 		formalTypeParameters.add(formalTypeParameter);
@@ -111,7 +111,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@Override
 	public <T extends CtFormalTypeDeclarer> T setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
 		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
-			this.formalTypeParameters = new ArrayList<CtTypeParameterReference>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+			this.formalTypeParameters = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.formalTypeParameters.clear();
 		for (CtTypeParameterReference formalTypeParameter : formalTypeParameters) {

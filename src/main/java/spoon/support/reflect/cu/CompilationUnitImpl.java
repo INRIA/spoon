@@ -35,8 +35,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	Factory factory;
 
-	List<CtType<?>> declaredTypes = new ArrayList<CtType<?>>(
-			COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
+	List<CtType<?>> declaredTypes = new ArrayList<>(COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
 
 	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;
@@ -138,7 +137,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	boolean autoImport = true;
 
-	Set<Import> manualImports = new HashSet<Import>();
+	Set<Import> manualImports = new HashSet<>();
 
 	public boolean isAutoImport() {
 		return autoImport;

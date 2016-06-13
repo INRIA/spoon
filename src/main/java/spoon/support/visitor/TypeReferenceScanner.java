@@ -44,7 +44,7 @@ public class TypeReferenceScanner extends CtScanner {
 	 * Constructor.
 	 */
 	public TypeReferenceScanner() {
-		references = new HashSet<CtTypeReference<?>>();
+		references = new HashSet<>();
 	}
 
 	/**

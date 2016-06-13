@@ -71,7 +71,7 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 		if (v != null) {
 			return v.getModifiers();
 		}
-		return new TreeSet<ModifierKind>();
+		return new TreeSet<>();
 	}
 
 	@Override

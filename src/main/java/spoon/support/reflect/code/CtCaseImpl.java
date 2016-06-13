@@ -70,7 +70,7 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
 		if (statements == CtElementImpl.<CtStatement>emptyList()) {
-			statements = new ArrayList<CtStatement>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+			statements = new ArrayList<>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		statements.add(statement);

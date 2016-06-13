@@ -16,15 +16,6 @@
  */
 package spoon.support;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
@@ -34,6 +25,15 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 //import spoon.reflect.cu.CompilationUnit;
 
@@ -45,7 +45,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements
 
 	File directory;
 
-	List<File> printedFiles = new ArrayList<File>();
+	List<File> printedFiles = new ArrayList<>();
 
 	boolean writePackageAnnotationFile = true;
 
@@ -104,7 +104,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements
 		}
 	}
 
-	Map<String, Map<Integer, Integer>> lineNumberMappings = new HashMap<String, Map<Integer, Integer>>();
+	Map<String, Map<Integer, Integer>> lineNumberMappings = new HashMap<>();
 
 	/**
 	 * Creates the Java file associated to the given element. Splits top-level
@@ -130,7 +130,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements
 				throw new IllegalStateException();
 			}
 		}
-		List<CtType<?>> toBePrinted = new ArrayList<CtType<?>>();
+		List<CtType<?>> toBePrinted = new ArrayList<>();
 		toBePrinted.add(element);
 
 		printer.calculate(cu, toBePrinted);
@@ -185,8 +185,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements
 				lineNumberMappings.put(t.getQualifiedName(), printer.getLineNumberMapping());
 			}
 			stream.close();
-		} catch (FileNotFoundException e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 		} finally {

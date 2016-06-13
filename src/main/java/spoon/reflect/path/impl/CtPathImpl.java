@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class CtPathImpl implements CtPath {
 
-	private LinkedList<CtPathElement> elements = new LinkedList<CtPathElement>();
+	private LinkedList<CtPathElement> elements = new LinkedList<>();
 
 	public List<CtPathElement> getElements() {
 		return elements;
@@ -37,7 +37,7 @@ public class CtPathImpl implements CtPath {
 
 	@Override
 	public <T extends CtElement> Collection<T> evaluateOn(Collection<? extends CtElement> startNode) {
-		Collection<CtElement> filtered = new ArrayList<CtElement>(startNode);
+		Collection<CtElement> filtered = new ArrayList<>(startNode);
 		for (CtPathElement element : elements) {
 			filtered = element.getElements(filtered);
 		}

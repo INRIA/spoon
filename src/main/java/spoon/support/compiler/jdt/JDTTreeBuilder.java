@@ -258,17 +258,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	public class BuilderContext {
-		Deque<String> annotationValueName = new ArrayDeque<String>();
+		Deque<String> annotationValueName = new ArrayDeque<>();
 
-		Deque<CtElement> arguments = new ArrayDeque<CtElement>();
+		Deque<CtElement> arguments = new ArrayDeque<>();
 
-		List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>(CASTS_CONTAINER_DEFAULT_CAPACITY);
+		List<CtTypeReference<?>> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 
 		CompilationUnitDeclaration compilationunitdeclaration;
 
-		List<CtType<?>> createdTypes = new ArrayList<CtType<?>>();
+		List<CtType<?>> createdTypes = new ArrayList<>();
 
-		Deque<CtTry> finallyzer = new ArrayDeque<CtTry>();
+		Deque<CtTry> finallyzer = new ArrayDeque<>();
 
 		boolean forinit = false;
 
@@ -276,7 +276,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean assigned = false;
 
-		Deque<String> label = new ArrayDeque<String>();
+		Deque<String> label = new ArrayDeque<>();
 
 		boolean selector = false;
 
@@ -291,9 +291,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		/**
 		 * Stack of all parents elements
 		 */
-		Deque<ASTPair> stack = new ArrayDeque<ASTPair>();
+		Deque<ASTPair> stack = new ArrayDeque<>();
 
-		Deque<CtTargetedExpression<?, ?>> target = new ArrayDeque<CtTargetedExpression<?, ?>>();
+		Deque<CtTargetedExpression<?, ?>> target = new ArrayDeque<>();
 
 		public void addCreatedType(CtType<?> type) {
 			createdTypes.add(type);
@@ -553,9 +553,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	public class ReferenceBuilder {
 
-		Map<String, CtTypeReference<?>> basestypes = new TreeMap<String, CtTypeReference<?>>();
+		Map<String, CtTypeReference<?>> basestypes = new TreeMap<>();
 
-		Set<String> typevars = new TreeSet<String>();
+		Set<String> typevars = new TreeSet<>();
 
 		boolean bounds = false;
 
@@ -659,14 +659,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			// original() method returns a result not null when the current method is generic.
 			if (exec.original() != null) {
-				final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>(exec.original().parameters.length);
+				final List<CtTypeReference<?>> parameters = new ArrayList<>(exec.original().parameters.length);
 				for (TypeBinding b : exec.original().parameters) {
 					parameters.add(getTypeReference(b));
 				}
 				ref.setParameters(parameters);
 			} else if (exec.parameters != null) {
 				// This is a method without a generic argument.
-				final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>();
+				final List<CtTypeReference<?>> parameters = new ArrayList<>();
 				for (TypeBinding b : exec.parameters) {
 					parameters.add(getTypeReference(b));
 				}
@@ -686,7 +686,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return ref;
 		}
 
-		final Map<TypeBinding, CtTypeReference> bindingCache = new HashMap<TypeBinding, CtTypeReference>();
+		final Map<TypeBinding, CtTypeReference> bindingCache = new HashMap<>();
 
 		public <T> CtTypeReference<T> getTypeReference(TypeBinding binding, TypeReference ref) {
 			CtTypeReference<T> ctRef = getTypeReference(binding);
@@ -926,7 +926,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (bounds && b.superInterfaces != null && b.superInterfaces != Binding.NO_SUPERINTERFACES) {
 					bounds = false;
 					bindingCache.put(binding, ref);
-					List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>(b.superInterfaces.length);
+					List<CtTypeReference<?>> bounds = new ArrayList<>(b.superInterfaces.length);
 					if (((CtTypeParameterReference) ref).getBoundingType() != null) {
 						bounds.add(((CtTypeParameterReference) ref).getBoundingType());
 					}
@@ -1031,7 +1031,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setSimpleName(new String(binding.sourceName()));
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else if (binding instanceof IntersectionTypeBinding18) {
-				List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>(binding.getIntersectingTypes().length);
+				List<CtTypeReference<?>> bounds = new ArrayList<>(binding.getIntersectingTypes().length);
 				for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
 					bounds.add(getTypeReference(superInterface));
 				}
@@ -1137,7 +1137,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 
 		public List<CtTypeReference<?>> getBoundedTypesReferences(TypeBinding[] genericTypeArguments) {
-			List<CtTypeReference<?>> res = new ArrayList<CtTypeReference<?>>(genericTypeArguments.length);
+			List<CtTypeReference<?>> res = new ArrayList<>(genericTypeArguments.length);
 			for (TypeBinding tb : genericTypeArguments) {
 				res.add(getBoundedTypeReference(tb));
 			}
@@ -1981,7 +1981,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	protected <T> CtLocalVariable<T> getLocalVariableDeclaration(final String name) {
-		List<CtElement> reversedElements = new ArrayList<CtElement>(context.stack.size());
+		List<CtElement> reversedElements = new ArrayList<>(context.stack.size());
 		for (ASTPair element : context.stack) {
 			reversedElements.add(0, element.element);
 		}
@@ -2013,7 +2013,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	protected <T> CtCatchVariable<T> getCatchVariableDeclaration(final String name) {
-		List<CtElement> reversedElements = new ArrayList<CtElement>(context.stack.size());
+		List<CtElement> reversedElements = new ArrayList<>(context.stack.size());
 		for (ASTPair element : context.stack) {
 			reversedElements.add(0, element.element);
 		}
@@ -2133,7 +2133,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			ref.setType(references.getTypeReference(null, allocationExpression.type));
 			ref.setDeclaringType(references.getTypeReference(null, allocationExpression.type));
 
-			final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>(allocationExpression.argumentTypes.length);
+			final List<CtTypeReference<?>> parameters = new ArrayList<>(allocationExpression.argumentTypes.length);
 			for (TypeBinding b : allocationExpression.argumentTypes) {
 				parameters.add(references.getTypeReference(b));
 			}
@@ -2560,7 +2560,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (typeParameter.bounds != null) {
 			int length = typeParameter.bounds.length;
 
-			final List<CtTypeReference<?>> bounds = new ArrayList<CtTypeReference<?>>();
+			final List<CtTypeReference<?>> bounds = new ArrayList<>();
 			bounds.add(typeParameterRef.getBoundingType());
 			for (int i = 0; i < length; ++i) {
 				bounds.add(buildTypeReference(typeParameter.bounds[i], (BlockScope) null));
@@ -2952,7 +2952,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					ref.setDeclaringType(references.getTypeReference(messageSend.receiver.resolvedType));
 				}
 				if (messageSend.arguments != null) {
-					final List<CtTypeReference<?>> parameters = new ArrayList<CtTypeReference<?>>();
+					final List<CtTypeReference<?>> parameters = new ArrayList<>();
 					for (Expression argument : messageSend.arguments) {
 						parameters.add(references.getTypeReference(argument.resolvedType));
 					}
@@ -3324,7 +3324,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				va = factory.Core().createVariableRead();
 			}
-			CtVariableReference<Object> varRef = new CtUnboundVariableReferenceImpl<Object>();
+			CtVariableReference<Object> varRef = new CtUnboundVariableReferenceImpl<>();
 			varRef.setSimpleName(qualifiedNameReference.toString());
 			va.setVariable(varRef);
 			context.enter(va, qualifiedNameReference);
@@ -3547,7 +3547,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		op.setKind(BinaryOperatorKind.PLUS);
 		context.enter(op, literal);
 
-		List<Expression> exp = new ArrayList<Expression>(literal.counter);
+		List<Expression> exp = new ArrayList<>(literal.counter);
 		for (int i = 0; i < literal.counter; i++) {
 			exp.add(literal.literals[i]);
 		}
@@ -3634,7 +3634,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					// case 2: Java 7 multiple catch blocks
 					UnionTypeReference utr = (UnionTypeReference) jdtCatch.type;
 
-					final List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>(utr.typeReferences.length);
+					final List<CtTypeReference<?>> refs = new ArrayList<>(utr.typeReferences.length);
 					for (TypeReference type : utr.typeReferences) {
 						CtTypeReference<Throwable> r = references.getTypeReference(type.resolvedType);
 						refs.add(r);

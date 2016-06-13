@@ -39,7 +39,7 @@ public class CompilationUnitFactory extends SubFactory {
 		super(factory);
 	}
 
-	private transient Map<String, CompilationUnit> cachedCompilationUnits = new TreeMap<String, CompilationUnit>();
+	private transient Map<String, CompilationUnit> cachedCompilationUnits = new TreeMap<>();
 
 	/**
 	 * Gets the compilation unit map.

@@ -49,7 +49,7 @@ public class ReplaceScanner extends CtScanner {
 	public static final String GENERATING_REPLACE_VISITOR = GENERATING_REPLACE_PACKAGE + ".ReplacementVisitor";
 
 	private final List<String> excludes = Collections.singletonList("spoon.reflect.code.CtLiteral#getValue()");
-	private final Map<String, CtClass> listeners = new HashMap<String, CtClass>();
+	private final Map<String, CtClass> listeners = new HashMap<>();
 	private final CtClass<Object> target;
 	private final CtExecutableReference<?> element;
 	private final CtExecutableReference<?> list;
@@ -172,7 +172,7 @@ public class ReplaceScanner extends CtScanner {
 		}
 		final CtTypeReference<Object> theInterface = factory.Class().createReference(GENERATING_REPLACE_PACKAGE + "." + type.name);
 		theInterface.addActualTypeArgument(getterType);
-		final Set<CtTypeReference<?>> interfaces = new HashSet<CtTypeReference<?>>();
+		final Set<CtTypeReference<?>> interfaces = new HashSet<>();
 		interfaces.add(theInterface);
 		listener.setSuperInterfaces(interfaces);
 		return listener;

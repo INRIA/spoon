@@ -35,9 +35,9 @@ import java.util.TreeSet;
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
-	protected Set<CtPackage> packs = new TreeSet<CtPackage>();
+	protected Set<CtPackage> packs = new TreeSet<>();
 
-	private Set<CtType<?>> types = new TreeSet<CtType<?>>();
+	private Set<CtType<?>> types = new TreeSet<>();
 
 	public CtPackageImpl() {
 		super();

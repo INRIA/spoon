@@ -64,7 +64,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 		public void characters(char[] ch, int start, int length) throws SAXException {
 			if (isValue) {
 				if ((value == null) || !(value instanceof Collection)) {
-					value = new ArrayList<Object>();
+					value = new ArrayList<>();
 				}
 				((Collection<Object>) value).add(new String(ch, start, length));
 			}
@@ -104,7 +104,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 
 	String processorName;
 
-	private Map<String, Object> props = new TreeMap<String, Object>();
+	private Map<String, Object> props = new TreeMap<>();
 
 	public XmlProcessorProperties(Factory factory, String processorName) {
 		this.processorName = processorName;
@@ -317,7 +317,7 @@ public class XmlProcessorProperties implements ProcessorProperties {
 			}
 			return (T) ret;
 		} else if (type.isEnum()) {
-			Collection<Enum<?>> ret = new ArrayList<Enum<?>>();
+			Collection<Enum<?>> ret = new ArrayList<>();
 			for (Object o : val) {
 				ret.add((Enum<?>) convert(type, o));
 			}

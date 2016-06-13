@@ -95,8 +95,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	@Override
 	public <T extends CtMultiTypedElement> T addMultiType(CtTypeReference<?> ref) {
 		if (types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			types = new ArrayList<CtTypeReference<?>>(
-					CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
+			types = new ArrayList<>(CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		ref.setParent(this);
 		types.add(ref);

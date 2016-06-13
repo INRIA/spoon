@@ -126,7 +126,7 @@ public class ExecutableFactory extends SubFactory {
 		methodRef.setDeclaringType(declaringType);
 		methodRef.setSimpleName(methodName);
 		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>(asList(parameterTypes));
+		List<CtTypeReference<?>> l = new ArrayList<>(asList(parameterTypes));
 		methodRef.setParameters(l);
 		return methodRef;
 	}
@@ -151,7 +151,7 @@ public class ExecutableFactory extends SubFactory {
 		methodRef.setDeclaringType(declaringType);
 		methodRef.setSimpleName(methodName);
 		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>(asList(parameterTypes));
+		List<CtTypeReference<?>> l = new ArrayList<>(asList(parameterTypes));
 		methodRef.setParameters(l);
 		return methodRef;
 	}
@@ -176,7 +176,7 @@ public class ExecutableFactory extends SubFactory {
 		methodRef.setDeclaringType(declaringType);
 		methodRef.setSimpleName(methodName);
 		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>(parameterTypes);
+		List<CtTypeReference<?>> l = new ArrayList<>(parameterTypes);
 		methodRef.setParameters(l);
 		return methodRef;
 	}
@@ -198,7 +198,7 @@ public class ExecutableFactory extends SubFactory {
 		methodRef.setDeclaringType(declaringType);
 		methodRef.setSimpleName(methodName);
 		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<CtTypeReference<?>>(parameterTypes);
+		List<CtTypeReference<?>> l = new ArrayList<>(parameterTypes);
 		methodRef.setParameters(l);
 		return methodRef;
 	}
@@ -217,7 +217,7 @@ public class ExecutableFactory extends SubFactory {
 		CtTypeReference<T> typeRef = factory.Type().createReference(type);
 		executableRef.setType(typeRef);
 		String parameters = signature.substring(signature.indexOf("(") + 1, signature.indexOf(")"));
-		List<CtTypeReference<?>> params = new ArrayList<CtTypeReference<?>>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		List<CtTypeReference<?>> params = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		StringTokenizer t = new StringTokenizer(parameters, ",");
 		while (t.hasMoreTokens()) {
 			String paramType = t.nextToken();

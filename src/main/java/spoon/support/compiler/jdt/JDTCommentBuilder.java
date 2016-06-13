@@ -217,7 +217,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtConditional(CtConditional<T> e) {
-				List<CtElement> elements = new ArrayList<CtElement>();
+				List<CtElement> elements = new ArrayList<>();
 				elements.add(e.getElseExpression());
 				elements.add(e.getThenExpression());
 				elements.add(e.getCondition());
@@ -226,7 +226,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtBinaryOperator(CtBinaryOperator<T> e) {
-				List<CtElement> elements = new ArrayList<CtElement>();
+				List<CtElement> elements = new ArrayList<>();
 				elements.add(e.getLeftHandOperand());
 				elements.add(e.getRightHandOperand());
 				addCommentToNear(comment, elements);
@@ -238,7 +238,7 @@ class JDTCommentBuilder {
 					e.addComment(comment);
 					return;
 				}
-				List<CtElement> elements = new ArrayList<CtElement>();
+				List<CtElement> elements = new ArrayList<>();
 				elements.addAll(e.getFields());
 				elements.addAll(e.getMethods());
 				elements.addAll(e.getConstructors());
@@ -253,7 +253,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtInterface(CtInterface<T> e) {
-				List<CtElement> elements = new ArrayList<CtElement>();
+				List<CtElement> elements = new ArrayList<>();
 				elements.addAll(e.getFields());
 				elements.addAll(e.getMethods());
 				addCommentToNear(comment, elements);

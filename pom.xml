@@ -165,7 +165,7 @@
   </scm>
 
   <properties>
-    <java.src.version>1.6</java.src.version>
+    <java.src.version>1.7</java.src.version>
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -520,13 +520,13 @@
             <configuration>
               <signature>
                 <groupId>org.codehaus.mojo.signature</groupId>
-                <artifactId>java16</artifactId>
+                <artifactId>java17</artifactId>
                 <version>1.0</version>
               </signature>
             </configuration>
             <executions>
               <execution>
-                <id>ensure-java-1.6-class-library</id>
+                <id>ensure-java-1.7-class-library</id>
                 <phase>test</phase>
                 <goals>
                   <goal>check</goal>

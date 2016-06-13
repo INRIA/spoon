@@ -309,7 +309,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
-					Queue<DefaultMutableTreeNode> q = new LinkedList<DefaultMutableTreeNode>();
+					Queue<DefaultMutableTreeNode> q = new LinkedList<>();
 					q.add(node);
 					while (!q.isEmpty()) {
 						final DefaultMutableTreeNode n = q.poll();

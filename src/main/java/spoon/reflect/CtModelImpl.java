@@ -83,7 +83,7 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public Collection<CtType<?>> getAllTypes() {
-		List<CtType<?>> types = new ArrayList<CtType<?>>();
+		List<CtType<?>> types = new ArrayList<>();
 		for (CtPackage pack : getAllPackages()) {
 			types.addAll(pack.getTypes());
 		}
@@ -93,7 +93,7 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public Collection<CtPackage> getAllPackages() {
-		return Collections.unmodifiableCollection(rootPackage.getElements(new TypeFilter<CtPackage>(CtPackage.class)));
+		return Collections.unmodifiableCollection(rootPackage.getElements(new TypeFilter<>(CtPackage.class)));
 	}
 
 

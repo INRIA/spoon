@@ -29,7 +29,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 public class QueryVisitor<T extends CtElement> extends CtScanner {
 	private final Filter<T> filter;
 	private final Class<T> filteredType;
-	private final List<T> result = new ArrayList<T>();
+	private final List<T> result = new ArrayList<>();
 
 	/**
 	 * Constructs a query visitor with a given filter.

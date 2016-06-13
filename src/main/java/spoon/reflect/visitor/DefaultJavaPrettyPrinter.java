@@ -142,14 +142,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-	Map<Integer, Integer> lineNumberMapping = new HashMap<Integer, Integer>();
+	Map<Integer, Integer> lineNumberMapping = new HashMap<>();
 
 	public class PrintingContext {
 		boolean noTypeDecl = false;
 
-		Deque<CtTypeReference<?>> currentThis = new ArrayDeque<CtTypeReference<?>>();
+		Deque<CtTypeReference<?>> currentThis = new ArrayDeque<>();
 
-		Deque<CtElement> elementStack = new ArrayDeque<CtElement>();
+		Deque<CtElement> elementStack = new ArrayDeque<>();
 
 		CtType<?> currentTopLevel;
 
@@ -166,7 +166,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		int nbTabs = 0;
 
-		Deque<CtExpression<?>> parenthesedExpression = new ArrayDeque<CtExpression<?>>();
+		Deque<CtExpression<?>> parenthesedExpression = new ArrayDeque<>();
 
 		boolean isInvocation = false;
 
@@ -581,7 +581,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtType(annotationType);
 		write("@interface " + annotationType.getSimpleName() + " {").incTab();
 
-		SortedList<CtElement> lst = new SortedList<CtElement>(new CtLineElementComparator());
+		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
 
 		lst.addAll(annotationType.getNestedTypes());
 		lst.addAll(annotationType.getFields());
@@ -763,7 +763,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		SortedList<CtElement> lst = new SortedList<CtElement>(new CtLineElementComparator());
+		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
 		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
 			if (ctClass.isLocalType()) {
@@ -938,7 +938,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 
-		SortedList<CtElement> lst = new SortedList<CtElement>(new CtLineElementComparator());
+		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
 
 		lst.addAll(ctEnum.getAnonymousExecutables());
 		lst.addAll(ctEnum.getNestedTypes());
@@ -1332,7 +1332,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			removeLastChar();
 		}
 		write(" {").incTab();
-		SortedList<CtElement> lst = new SortedList<CtElement>(new CtLineElementComparator());
+		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
 		lst.addAll(intrface.getNestedTypes());
 		lst.addAll(intrface.getFields());
 		lst.addAll(intrface.getMethods());
@@ -1617,7 +1617,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private List<CtComment> getComments(CtElement e, CommentOffset offset) {
-		List<CtComment> commentsToPrint = new ArrayList<CtComment>();
+		List<CtComment> commentsToPrint = new ArrayList<>();
 		if (!env.isGenerateJavadoc() || !env.isCommentsEnabled() || e == null) {
 			return commentsToPrint;
 		}

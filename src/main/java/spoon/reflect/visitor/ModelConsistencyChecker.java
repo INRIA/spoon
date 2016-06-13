@@ -37,7 +37,7 @@ public class ModelConsistencyChecker extends CtScanner {
 
 	Environment environment;
 
-	Deque<CtElement> stack = new ArrayDeque<CtElement>();
+	Deque<CtElement> stack = new ArrayDeque<>();
 
 	/**
 	 * Creates a new model consistency checker.

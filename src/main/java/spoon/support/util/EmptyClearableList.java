@@ -28,7 +28,7 @@ import java.util.RandomAccess;
 public final class EmptyClearableList<E> extends AbstractList<E> implements RandomAccess, Serializable {
 	private static final long serialVersionUID = 0L;
 
-	private static final EmptyClearableList<Object> EMPTY_LIST = new EmptyClearableList<Object>();
+	private static final EmptyClearableList<Object> EMPTY_LIST = new EmptyClearableList<>();
 
 	public static <T> List<T> instance() {
 		return (List<T>) EMPTY_LIST;
@@ -106,7 +106,7 @@ public final class EmptyClearableList<E> extends AbstractList<E> implements Rand
 	}
 
 	private static final class EmptyListIterator<E> extends EmptyIterator<E> implements ListIterator<E> {
-		static final EmptyListIterator<Object> EMPTY_LIST_ITERATOR = new EmptyListIterator<Object>();
+		static final EmptyListIterator<Object> EMPTY_LIST_ITERATOR = new EmptyListIterator<>();
 
 		@Override
 		public boolean hasPrevious() {

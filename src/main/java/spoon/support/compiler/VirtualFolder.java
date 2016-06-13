@@ -27,8 +27,8 @@ import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 
 public class VirtualFolder implements SpoonFolder {
-	private final Set<SpoonFile> files = new HashSet<SpoonFile>();
-	private final Set<SpoonFolder> folders = new HashSet<SpoonFolder>();
+	private final Set<SpoonFile> files = new HashSet<>();
+	private final Set<SpoonFolder> folders = new HashSet<>();
 
 	@Override
 	public void addFile(SpoonFile o) {
@@ -42,7 +42,7 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFile> getAllFiles() {
-		List<SpoonFile> result = new ArrayList<SpoonFile>();
+		List<SpoonFile> result = new ArrayList<>();
 		for (SpoonFolder f : folders) {
 			result.addAll(f.getAllFiles());
 		}
@@ -58,7 +58,7 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFile> getAllJavaFiles() {
-		List<SpoonFile> result = new ArrayList<SpoonFile>();
+		List<SpoonFile> result = new ArrayList<>();
 
 		for (SpoonFile f : getAllFiles()) {
 			if (f.isJava()) {
@@ -71,7 +71,7 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFile> getFiles() {
-		return Collections.unmodifiableList(new ArrayList<SpoonFile>(files));
+		return Collections.unmodifiableList(new ArrayList<>(files));
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFolder> getSubFolders() {
-		return Collections.unmodifiableList(new ArrayList<SpoonFolder>(folders));
+		return Collections.unmodifiableList(new ArrayList<>(folders));
 	}
 
 	@Override

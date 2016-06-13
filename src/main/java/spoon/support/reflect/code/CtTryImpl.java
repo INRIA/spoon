@@ -60,7 +60,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	@Override
 	public <T extends CtTry> T addCatcher(CtCatch catcher) {
 		if (catchers == CtElementImpl.<CtCatch>emptyList()) {
-			catchers = new ArrayList<CtCatch>(CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
+			catchers = new ArrayList<>(CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		catcher.setParent(this);
 		catchers.add(catcher);

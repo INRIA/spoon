@@ -60,7 +60,7 @@ public class ProcessingVisitor extends CtScanner {
 	@Override
 	public void scan(Collection<? extends CtElement> elements) {
 		if ((elements != null)) {
-			for (CtElement e : new ArrayList<CtElement>(elements)) {
+			for (CtElement e : new ArrayList<>(elements)) {
 				scan(e);
 			}
 		}

@@ -1108,7 +1108,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	private <K, V extends spoon.reflect.declaration.CtElement> void replaceInMapIfExist(java.util.Map<K, V> mapProtected, spoon.generating.replace.ReplaceMapListener listener) {
-		java.util.Map<K, V> map = new java.util.HashMap<K, V>(mapProtected);
+		java.util.Map<K, V> map = new java.util.HashMap<>(mapProtected);
 		V shouldBeDeleted = null;
 		K key = null;
 		for (java.util.Map.Entry<K, V> entry : map.entrySet()) {
@@ -1129,7 +1129,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	private <T extends spoon.reflect.declaration.CtElement> void replaceInSetIfExist(java.util.Set<T> setProtected, spoon.generating.replace.ReplaceSetListener listener) {
-		java.util.Set<T> set = new java.util.HashSet<T>(setProtected);
+		java.util.Set<T> set = new java.util.HashSet<>(setProtected);
 		T shouldBeDeleted = null;
 		for (T element : set) {
 			if (element == (original)) {
@@ -1148,7 +1148,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	private <T extends spoon.reflect.declaration.CtElement> void replaceInListIfExist(java.util.List<T> listProtected, spoon.generating.replace.ReplaceListListener listener) {
-		java.util.List<T> list = new java.util.ArrayList<T>(listProtected);
+		java.util.List<T> list = new java.util.ArrayList<>(listProtected);
 		T shouldBeDeleted = null;
 		int index = 0;
 		for (int i = 0; i < (list.size()); i++) {

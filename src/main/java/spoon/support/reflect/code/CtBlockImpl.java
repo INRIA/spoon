@@ -78,9 +78,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			}
 		}
 		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
-			this.statements = new ArrayList<CtStatement>(
-					statements.getStatements().size()
-							+ BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+			this.statements = new ArrayList<>(statements.getStatements().size() + BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
@@ -186,8 +184,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	private void ensureModifiableStatementsList() {
 		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
-			this.statements = new ArrayList<CtStatement>(
-					BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+			this.statements = new ArrayList<>(BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 	}
 
@@ -206,7 +203,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		// we have to both create a defensive object and an unmodifiable list
 		// with only Collections.unmodifiableList you can modify the defensive object
 		// with only new ArrayList it breaks the encapsulation
-		return Collections.unmodifiableList(new ArrayList<CtStatement>(getStatements())).iterator();
+		return Collections.unmodifiableList(new ArrayList<>(getStatements())).iterator();
 	}
 
 	@Override

@@ -168,7 +168,7 @@ public class ConstructorFactory extends ExecutableFactory {
 		executableReference.setType(type);
 		executableReference.setDeclaringType(type == null ? null : type.clone());
 		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
-		List<CtTypeReference<?>> typeReferences = new ArrayList<CtTypeReference<?>>();
+		List<CtTypeReference<?>> typeReferences = new ArrayList<>();
 		for (CtExpression<?> parameter : parameters) {
 			typeReferences.add(parameter.getType() == null ? null : parameter.getType().clone());
 		}

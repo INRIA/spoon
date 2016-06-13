@@ -208,7 +208,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (m != null) {
 			return RtHelper.getModifiers(m.getModifiers());
 		}
-		return new TreeSet<ModifierKind>();
+		return new TreeSet<>();
 	}
 
 	@Override

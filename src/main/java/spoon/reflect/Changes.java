@@ -44,7 +44,7 @@ public class Changes {
 	 */
 	public List<CtElement> getAdded() {
 		if (added == null) {
-			added = new ArrayList<CtElement>();
+			added = new ArrayList<>();
 		}
 		return added;
 	}
@@ -54,7 +54,7 @@ public class Changes {
 	 */
 	public List<CtElement> getRemoved() {
 		if (removed == null) {
-			removed = new ArrayList<CtElement>();
+			removed = new ArrayList<>();
 		}
 		return removed;
 	}
@@ -64,7 +64,7 @@ public class Changes {
 	 */
 	public List<CtElement> getModified() {
 		if (modified == null) {
-			modified = new ArrayList<CtElement>();
+			modified = new ArrayList<>();
 		}
 		return modified;
 	}

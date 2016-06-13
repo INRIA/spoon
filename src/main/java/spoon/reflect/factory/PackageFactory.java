@@ -160,7 +160,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 	}
 
 	private List<CtPackage> getSubPackageList(CtPackage pack) {
-		List<CtPackage> packs = new ArrayList<CtPackage>();
+		List<CtPackage> packs = new ArrayList<>();
 		packs.add(pack);
 		for (CtPackage p : pack.getPackages()) {
 			packs.addAll(getSubPackageList(p));

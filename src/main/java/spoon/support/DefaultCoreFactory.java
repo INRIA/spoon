@@ -264,13 +264,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <A extends Annotation> CtAnnotation<A> createAnnotation() {
-		CtAnnotation<A> e = new CtAnnotationImpl<A>();
+		CtAnnotation<A> e = new CtAnnotationImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T extends Annotation> CtAnnotationType<T> createAnnotationType() {
-		CtAnnotationType<T> e = new CtAnnotationTypeImpl<T>();
+		CtAnnotationType<T> e = new CtAnnotationTypeImpl<>();
 		e.setFactory(getMainFactory());
 		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
@@ -284,44 +284,44 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	@Override
 	public <T> CtArrayRead<T> createArrayRead() {
-		CtArrayRead<T> e = new CtArrayReadImpl<T>();
+		CtArrayRead<T> e = new CtArrayReadImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtArrayWrite<T> createArrayWrite() {
-		CtArrayWrite<T> e = new CtArrayWriteImpl<T>();
+		CtArrayWrite<T> e = new CtArrayWriteImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtArrayTypeReference<T> createArrayTypeReference() {
-		CtArrayTypeReference<T> e = new CtArrayTypeReferenceImpl<T>();
+		CtArrayTypeReference<T> e = new CtArrayTypeReferenceImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtAssert<T> createAssert() {
-		CtAssert<T> e = new CtAssertImpl<T>();
+		CtAssert<T> e = new CtAssertImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T, A extends T> CtAssignment<T, A> createAssignment() {
-		CtAssignment<T, A> e = new CtAssignmentImpl<T, A>();
+		CtAssignment<T, A> e = new CtAssignmentImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtBinaryOperator<T> createBinaryOperator() {
-		CtBinaryOperator<T> e = new CtBinaryOperatorImpl<T>();
+		CtBinaryOperator<T> e = new CtBinaryOperatorImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <R> CtBlock<R> createBlock() {
-		CtBlock<R> e = new CtBlockImpl<R>();
+		CtBlock<R> e = new CtBlockImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -333,7 +333,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <S> CtCase<S> createCase() {
-		CtCase<S> e = new CtCaseImpl<S>();
+		CtCase<S> e = new CtCaseImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -345,20 +345,20 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <T> CtClass<T> createClass() {
-		CtClass<T> e = new CtClassImpl<T>();
+		CtClass<T> e = new CtClassImpl<>();
 		e.setFactory(getMainFactory());
 		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
 	}
 
 	public <T> CtConditional<T> createConditional() {
-		CtConditional<T> e = new CtConditionalImpl<T>();
+		CtConditional<T> e = new CtConditionalImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtConstructor<T> createConstructor() {
-		CtConstructor<T> e = new CtConstructorImpl<T>();
+		CtConstructor<T> e = new CtConstructorImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -376,53 +376,53 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <T extends Enum<?>> CtEnum<T> createEnum() {
-		CtEnum<T> e = new CtEnumImpl<T>();
+		CtEnum<T> e = new CtEnumImpl<>();
 		e.setFactory(getMainFactory());
 		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
 	}
 
 	public <T> CtExecutableReference<T> createExecutableReference() {
-		CtExecutableReference<T> e = new CtExecutableReferenceImpl<T>();
+		CtExecutableReference<T> e = new CtExecutableReferenceImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtField<T> createField() {
-		CtField<T> e = new CtFieldImpl<T>();
+		CtField<T> e = new CtFieldImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtEnumValue<T> createEnumValue() {
-		CtEnumValue<T> e = new CtEnumValueImpl<T>();
+		CtEnumValue<T> e = new CtEnumValueImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtFieldRead<T> createFieldRead() {
-		CtFieldRead<T> e = new CtFieldReadImpl<T>();
+		CtFieldRead<T> e = new CtFieldReadImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtFieldWrite<T> createFieldWrite() {
-		CtFieldWrite<T> e = new CtFieldWriteImpl<T>();
+		CtFieldWrite<T> e = new CtFieldWriteImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtAnnotationFieldAccess<T> createAnnotationFieldAccess() {
-		CtAnnotationFieldAccess<T> e = new CtAnnotationFieldAccessImpl<T>();
+		CtAnnotationFieldAccess<T> e = new CtAnnotationFieldAccessImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtFieldReference<T> createFieldReference() {
-		CtFieldReference<T> e = new CtFieldReferenceImpl<T>();
+		CtFieldReference<T> e = new CtFieldReferenceImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -446,91 +446,91 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <T> CtInterface<T> createInterface() {
-		CtInterface<T> e = new CtInterfaceImpl<T>();
+		CtInterface<T> e = new CtInterfaceImpl<>();
 		e.setFactory(getMainFactory());
 		e.setParent(getMainFactory().Package().getRootPackage());
 		return e;
 	}
 
 	public <T> CtInvocation<T> createInvocation() {
-		CtInvocation<T> e = new CtInvocationImpl<T>();
+		CtInvocation<T> e = new CtInvocationImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtLiteral<T> createLiteral() {
-		CtLiteral<T> e = new CtLiteralImpl<T>();
+		CtLiteral<T> e = new CtLiteralImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtLocalVariable<T> createLocalVariable() {
-		CtLocalVariable<T> e = new CtLocalVariableImpl<T>();
+		CtLocalVariable<T> e = new CtLocalVariableImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtLocalVariableReference<T> createLocalVariableReference() {
-		CtLocalVariableReference<T> e = new CtLocalVariableReferenceImpl<T>();
+		CtLocalVariableReference<T> e = new CtLocalVariableReferenceImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtCatchVariable<T> createCatchVariable() {
-		CtCatchVariable<T> e = new CtCatchVariableImpl<T>();
+		CtCatchVariable<T> e = new CtCatchVariableImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtCatchVariableReference<T> createCatchVariableReference() {
-		CtCatchVariableReference<T> e = new CtCatchVariableReferenceImpl<T>();
+		CtCatchVariableReference<T> e = new CtCatchVariableReferenceImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtMethod<T> createMethod() {
-		CtMethod<T> e = new CtMethodImpl<T>();
+		CtMethod<T> e = new CtMethodImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtNewArray<T> createNewArray() {
-		CtNewArray<T> e = new CtNewArrayImpl<T>();
+		CtNewArray<T> e = new CtNewArrayImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtConstructorCall<T> createConstructorCall() {
-		CtConstructorCall<T> e = new CtConstructorCallImpl<T>();
+		CtConstructorCall<T> e = new CtConstructorCallImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtNewClass<T> createNewClass() {
-		CtNewClass<T> e = new CtNewClassImpl<T>();
+		CtNewClass<T> e = new CtNewClassImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtLambda<T> createLambda() {
-		CtLambda<T> e = new CtLambdaImpl<T>();
+		CtLambda<T> e = new CtLambdaImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression() {
-		CtExecutableReferenceExpression<T, E> e = new CtExecutableReferenceExpressionImpl<T, E>();
+		CtExecutableReferenceExpression<T, E> e = new CtExecutableReferenceExpressionImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T, A extends T> CtOperatorAssignment<T, A> createOperatorAssignment() {
-		CtOperatorAssignment<T, A> e = new CtOperatorAssignmentImpl<T, A>();
+		CtOperatorAssignment<T, A> e = new CtOperatorAssignmentImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -549,19 +549,19 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <T> CtParameter<T> createParameter() {
-		CtParameter<T> e = new CtParameterImpl<T>();
+		CtParameter<T> e = new CtParameterImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtParameterReference<T> createParameterReference() {
-		CtParameterReference<T> e = new CtParameterReferenceImpl<T>();
+		CtParameterReference<T> e = new CtParameterReferenceImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <R> CtReturn<R> createReturn() {
-		CtReturn<R> e = new CtReturnImpl<R>();
+		CtReturn<R> e = new CtReturnImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -573,7 +573,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <S> CtSwitch<S> createSwitch() {
-		CtSwitch<S> e = new CtSwitchImpl<S>();
+		CtSwitch<S> e = new CtSwitchImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -611,44 +611,44 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	@Override
 	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReference() {
-		CtIntersectionTypeReference<T> e = new CtIntersectionTypeReferenceImpl<T>();
+		CtIntersectionTypeReference<T> e = new CtIntersectionTypeReferenceImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtTypeReference<T> createTypeReference() {
-		CtTypeReference<T> e = new CtTypeReferenceImpl<T>();
+		CtTypeReference<T> e = new CtTypeReferenceImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	@Override
 	public <T> CtTypeAccess<T> createTypeAccess() {
-		CtTypeAccess<T> e = new CtTypeAccessImpl<T>();
+		CtTypeAccess<T> e = new CtTypeAccessImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtUnaryOperator<T> createUnaryOperator() {
-		CtUnaryOperator<T> e = new CtUnaryOperatorImpl<T>();
+		CtUnaryOperator<T> e = new CtUnaryOperatorImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtVariableRead<T> createVariableRead() {
-		CtVariableRead<T> e = new CtVariableReadImpl<T>();
+		CtVariableRead<T> e = new CtVariableReadImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtVariableWrite<T> createVariableWrite() {
-		CtVariableWrite<T> e = new CtVariableWriteImpl<T>();
+		CtVariableWrite<T> e = new CtVariableWriteImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtCodeSnippetExpression<T> createCodeSnippetExpression() {
-		CtCodeSnippetExpression<T> e = new CtCodeSnippetExpressionImpl<T>();
+		CtCodeSnippetExpression<T> e = new CtCodeSnippetExpressionImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -698,13 +698,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <T> CtThisAccess<T> createThisAccess() {
-		CtThisAccess<T> e = new CtThisAccessImpl<T>();
+		CtThisAccess<T> e = new CtThisAccessImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
 
 	public <T> CtSuperAccess<T> createSuperAccess() {
-		CtSuperAccess<T> e = new CtSuperAccessImpl<T>();
+		CtSuperAccess<T> e = new CtSuperAccessImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

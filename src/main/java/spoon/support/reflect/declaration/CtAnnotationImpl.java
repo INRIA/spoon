@@ -67,7 +67,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	CtTypeReference<A> annotationType;
 
-	private Map<String, CtExpression> elementValues = new TreeMap<String, CtExpression>();
+	private Map<String, CtExpression> elementValues = new TreeMap<>();
 
 	public CtAnnotationImpl() {
 		super();
@@ -322,7 +322,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	}
 
 	public Map<String, Object> getElementValues() {
-		TreeMap<String, Object> res = new TreeMap<String, Object>();
+		TreeMap<String, Object> res = new TreeMap<>();
 		for (Entry<String, CtExpression> elementValue : elementValues.entrySet()) {
 			res.put(elementValue.getKey(), elementValue.getValue());
 		}

@@ -212,7 +212,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if ((List<?>) this.annotations == (List<?>) emptyList()) {
-			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
+			this.annotations = new ArrayList<>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		annotation.setParent(this);
 		this.annotations.add(annotation);
@@ -264,7 +264,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@SuppressWarnings("unchecked")
 	public <E extends CtElement> List<E> getAnnotatedChildren(Class<? extends Annotation> annotationType) {
-		return (List<E>) Query.getElements(this, new AnnotationFilter<CtElement>(CtElement.class, annotationType));
+		return (List<E>) Query.getElements(this, new AnnotationFilter<>(CtElement.class, annotationType));
 	}
 
 	boolean implicit = false;
@@ -385,7 +385,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	@Override
 	public <E extends CtElement> E putMetadata(String key, Object val) {
 		if (metadata == null) {
-			metadata = new HashMap<String, Object>();
+			metadata = new HashMap<>();
 		}
 		metadata.put(key, val);
 		return (E) this;
@@ -412,7 +412,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	@Override
 	public <E extends CtElement> E addComment(CtComment comment) {
 		if ((List<?>) comments == emptyList()) {
-			comments = new ArrayList<CtComment>(COMMENT_CONTAINER_DEFAULT_CAPACITY);
+			comments = new ArrayList<>(COMMENT_CONTAINER_DEFAULT_CAPACITY);
 		}
 		comments.add(comment);
 		comment.setParent(this);

@@ -56,7 +56,7 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 		if (superInterfaces.isEmpty()) {
 			return super.getDeclaredExecutables();
 		}
-		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(super.getDeclaredExecutables());
+		List<CtExecutableReference<?>> l = new ArrayList<>(super.getDeclaredExecutables());
 		for (CtTypeReference<?> sup : superInterfaces) {
 			l.addAll(sup.getAllExecutables());
 		}

@@ -315,7 +315,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {
-		final List<RtMethod> methods = new ArrayList<RtMethod>();
+		final List<RtMethod> methods = new ArrayList<>();
 		methods.addAll(Arrays.asList(RtMethod.methodsOf(clazz)));
 		final Class<?> superclass = clazz.getSuperclass();
 		if (superclass != null) {
