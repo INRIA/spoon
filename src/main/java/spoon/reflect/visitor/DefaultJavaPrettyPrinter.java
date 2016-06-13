@@ -507,13 +507,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void adjustPosition(CtElement e) {
-		// System.out.println(" -- " + e.getSignature() + " - " +
-		// e.getPosition()
-		// + " - " + line);
-		// System.out.print("===================");
-		// printCharArray(sbf.toString().toCharArray());
-		// System.out.println("===================");
-		if (e.getPosition() != null && e.getPosition().getCompilationUnit() != null && e.getPosition().getCompilationUnit() == sourceCompilationUnit) {
+		if (e.getPosition() != null && !e.isImplicit() && e.getPosition().getCompilationUnit() != null && e.getPosition().getCompilationUnit() == sourceCompilationUnit) {
 			while (line < e.getPosition().getLine()) {
 				insertLine();
 			}
@@ -528,10 +522,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 		}
-		// System.out.print("===================");
-		// printCharArray(sbf.toString().toCharArray());
-		// System.out.println("===================");
-
 	}
 
 	/**
