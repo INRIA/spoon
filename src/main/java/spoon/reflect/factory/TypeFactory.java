@@ -69,7 +69,154 @@ public class TypeFactory extends SubFactory {
 	 * Returns a reference on the null type (type of null).
 	 */
 	public CtTypeReference<?> nullType() {
-		return NULL_TYPE;
+		return NULL_TYPE.clone();
+	}
+
+	/**
+	 * Returns a reference on the void type.
+	 */
+	public CtTypeReference<Void> voidType() {
+		return VOID.clone();
+	}
+
+	/**
+	 * Returns a reference on the void primitive type.
+	 */
+	public CtTypeReference<Void> voidPrimitiveType() {
+		return VOID_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the string type.
+	 */
+	public CtTypeReference<String> stringType() {
+		return STRING.clone();
+	}
+
+	/**
+	 * Returns a reference on the boolean type.
+	 */
+	public CtTypeReference<Boolean> booleanType() {
+		return BOOLEAN.clone();
+	}
+
+	/**
+	 * Returns a reference on the boolean primitive type.
+	 */
+	public CtTypeReference<Boolean> booleanPrimitiveType() {
+		return BOOLEAN_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the byte type.
+	 */
+	public CtTypeReference<Byte> byteType() {
+		return BYTE.clone();
+	}
+
+	/**
+	 * Returns a reference on the byte primitive type.
+	 */
+	public CtTypeReference<Byte> bytePrimitiveType() {
+		return BYTE_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the character type.
+	 */
+	public CtTypeReference<Character> characterType() {
+		return CHARACTER.clone();
+	}
+
+	/**
+	 * Returns a reference on the character primitive type.
+	 */
+	public CtTypeReference<Character> characterPrimitiveType() {
+		return CHARACTER_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the integer type.
+	 */
+	public CtTypeReference<Integer> integerType() {
+		return INTEGER.clone();
+	}
+
+	/**
+	 * Returns a reference on the integer primitive type.
+	 */
+	public CtTypeReference<Integer> integerPrimitiveType() {
+		return INTEGER_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the long type.
+	 */
+	public CtTypeReference<Long> longType() {
+		return LONG.clone();
+	}
+
+	/**
+	 * Returns a reference on the long primitive type.
+	 */
+	public CtTypeReference<Long> longPrimitiveType() {
+		return LONG_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the float type.
+	 */
+	public CtTypeReference<Float> floatType() {
+		return FLOAT.clone();
+	}
+
+	/**
+	 * Returns a reference on the float primitive type.
+	 */
+	public CtTypeReference<Float> floatPrimitiveType() {
+		return FLOAT_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the double type.
+	 */
+	public CtTypeReference<Double> doubleType() {
+		return DOUBLE.clone();
+	}
+
+	/**
+	 * Returns a reference on the double primitive type.
+	 */
+	public CtTypeReference<Double> doublePrimitiveType() {
+		return DOUBLE_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the short type.
+	 */
+	public CtTypeReference<?> shortType() {
+		return SHORT.clone();
+	}
+
+	/**
+	 * Returns a reference on the short primitive type.
+	 */
+	public CtTypeReference<?> shortPrimitiveType() {
+		return SHORT_PRIMITIVE.clone();
+	}
+
+	/**
+	 * Returns a reference on the date type.
+	 */
+	public CtTypeReference<?> dateType() {
+		return DATE.clone();
+	}
+
+	/**
+	 * Returns a reference on the object type.
+	 */
+	public CtTypeReference<?> objectType() {
+		return OBJECT.clone();
 	}
 
 	/**
