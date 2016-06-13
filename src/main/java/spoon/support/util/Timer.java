@@ -16,9 +16,10 @@
  */
 package spoon.support.util;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * A utility class for performance statistics of Spoon.
@@ -26,7 +27,7 @@ import java.util.Stack;
 public class Timer {
 	private static List<Timer> timestamps = new ArrayList<Timer>();
 
-	private static Stack<Timer> current = new Stack<Timer>();
+	private static Deque<Timer> current = new ArrayDeque<Timer>();
 
 	/**
 	 * Starts a timer.

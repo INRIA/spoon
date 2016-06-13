@@ -112,14 +112,15 @@ import spoon.support.util.SortedList;
 import spoon.support.visitor.SignaturePrinter;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Stack;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -146,9 +147,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public class PrintingContext {
 		boolean noTypeDecl = false;
 
-		Stack<CtTypeReference<?>> currentThis = new Stack<CtTypeReference<?>>();
+		Deque<CtTypeReference<?>> currentThis = new ArrayDeque<CtTypeReference<?>>();
 
-		Stack<CtElement> elementStack = new Stack<CtElement>();
+		Deque<CtElement> elementStack = new ArrayDeque<CtElement>();
 
 		CtType<?> currentTopLevel;
 
@@ -165,7 +166,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		int nbTabs = 0;
 
-		Stack<CtExpression<?>> parenthesedExpression = new Stack<CtExpression<?>>();
+		Deque<CtExpression<?>> parenthesedExpression = new ArrayDeque<CtExpression<?>>();
 
 		boolean isInvocation = false;
 
@@ -1187,7 +1188,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (context.currentTopLevel != null) {
 				CtTypeReference<?> ref2;
 				if (context.currentThis != null && context.currentThis.size() > 0) {
-					ref2 = context.currentThis.lastElement();
+					ref2 = context.currentThis.peekFirst();
 				} else {
 					ref2 = context.currentTopLevel.getReference();
 				}

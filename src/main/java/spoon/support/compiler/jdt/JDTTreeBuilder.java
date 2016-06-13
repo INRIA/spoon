@@ -215,15 +215,16 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -257,9 +258,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	public class BuilderContext {
-		Stack<String> annotationValueName = new Stack<String>();
+		Deque<String> annotationValueName = new ArrayDeque<String>();
 
-		Stack<CtElement> arguments = new Stack<CtElement>();
+		Deque<CtElement> arguments = new ArrayDeque<CtElement>();
 
 		List<CtTypeReference<?>> casts = new ArrayList<CtTypeReference<?>>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 
@@ -267,7 +268,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		List<CtType<?>> createdTypes = new ArrayList<CtType<?>>();
 
-		Stack<CtTry> finallyzer = new Stack<CtTry>();
+		Deque<CtTry> finallyzer = new ArrayDeque<CtTry>();
 
 		boolean forinit = false;
 
@@ -275,7 +276,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		boolean assigned = false;
 
-		Stack<String> label = new Stack<String>();
+		Deque<String> label = new ArrayDeque<String>();
 
 		boolean selector = false;
 
@@ -290,9 +291,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		/**
 		 * Stack of all parents elements
 		 */
-		Stack<ASTPair> stack = new Stack<ASTPair>();
+		Deque<ASTPair> stack = new ArrayDeque<ASTPair>();
 
-		Stack<CtTargetedExpression<?, ?>> target = new Stack<CtTargetedExpression<?, ?>>();
+		Deque<CtTargetedExpression<?, ?>> target = new ArrayDeque<CtTargetedExpression<?, ?>>();
 
 		public void addCreatedType(CtType<?> type) {
 			createdTypes.add(type);

@@ -33,6 +33,8 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.replace.testclasses.Tacos;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 import static org.junit.Assert.assertEquals;
@@ -207,7 +209,7 @@ public class ParentTest {
 
 		// the scanner and the parent are in correspondence
 		new CtScanner() {
-			Stack<CtElement> elementStack = new Stack<CtElement>();
+			Deque<CtElement> elementStack = new ArrayDeque<CtElement>();
 			@Override
 			public void scan(CtElement e) {
 				if (e==null) { return; }

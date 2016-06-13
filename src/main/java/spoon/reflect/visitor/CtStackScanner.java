@@ -23,7 +23,10 @@ import java.util.Stack;
 /**
  * This class defines a scanner that maintains a scanning stack for contextual
  * awareness.
+ *
+ * Deprecated, see {@link CtDequeScanner}.
  */
+@Deprecated
 public class CtStackScanner extends CtScanner {
 
 	/**

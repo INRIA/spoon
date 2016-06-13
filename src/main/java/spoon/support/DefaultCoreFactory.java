@@ -169,10 +169,11 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Stack;
 
 /**
  * This class implements a default core factory for Spoon's meta-model. This
@@ -190,11 +191,11 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <T> T clone(T object) {
-		return clone(object, new Stack<CtElement>());
+		return clone(object, new ArrayDeque<CtElement>());
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T clone(T object, Stack<CtElement> cloningContext) {
+	private <T> T clone(T object, Deque<CtElement> cloningContext) {
 		if (object == null) {
 			return null;
 		}

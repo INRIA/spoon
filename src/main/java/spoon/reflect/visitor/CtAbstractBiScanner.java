@@ -18,15 +18,16 @@ package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
-import java.util.Stack;
 
 /**
  * This abstract bi scanner class declares all scan methods useful for CtBiScannerDefault
  */
 public abstract class CtAbstractBiScanner implements CtVisitor {
-	protected Stack<CtElement> stack = new Stack<CtElement>();
+	protected Deque<CtElement> stack = new ArrayDeque<CtElement>();
 
 	protected void enter(CtElement e) {
 	}
