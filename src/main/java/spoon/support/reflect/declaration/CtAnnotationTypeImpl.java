@@ -49,6 +49,9 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	}
 
 	private <R> CtMethod<R> createGhostMethod(CtField<R> field) {
+		if (field == null) {
+			return null;
+		}
 		final CtMethod<R> method = factory.Core().createMethod();
 		method.setImplicit(true);
 		method.setSimpleName(field.getSimpleName());

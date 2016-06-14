@@ -409,6 +409,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArgument == null) {
+			return (C) this;
+		}
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}

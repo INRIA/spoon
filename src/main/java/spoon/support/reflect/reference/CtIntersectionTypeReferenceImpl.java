@@ -54,6 +54,9 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 
 	@Override
 	public <C extends CtIntersectionTypeReference> C addBound(CtTypeReference<?> bound) {
+		if (bound == null) {
+			return (C) this;
+		}
 		if (bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			bounds = new TreeSet<>(new SourcePositionComparator());
 		}

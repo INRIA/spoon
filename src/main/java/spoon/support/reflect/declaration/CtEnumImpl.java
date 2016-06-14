@@ -55,6 +55,9 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public <C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue) {
+		if (enumValue == null) {
+			return (C) this;
+		}
 		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
 			enumValues = new ArrayList<>();
 		}

@@ -37,7 +37,9 @@ public class CtNewClassImpl<T> extends CtConstructorCallImpl<T> implements CtNew
 
 	@Override
 	public <N extends CtNewClass> N setAnonymousClass(CtClass<?> anonymousClass) {
-		anonymousClass.setParent(this);
+		if (anonymousClass != null) {
+			anonymousClass.setParent(this);
+		}
 		this.anonymousClass = anonymousClass;
 		return (N) this;
 	}

@@ -55,6 +55,9 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	public <C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument) {
+		if (argument == null) {
+			return (C) this;
+		}
 		if (arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
 			arguments = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}

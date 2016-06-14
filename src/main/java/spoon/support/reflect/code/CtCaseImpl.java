@@ -53,7 +53,9 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtCase<E>> T setCaseExpression(CtExpression<E> caseExpression) {
-		caseExpression.setParent(this);
+		if (caseExpression != null) {
+			caseExpression.setParent(this);
+		}
 		this.caseExpression = caseExpression;
 		return (T) this;
 	}
@@ -69,6 +71,9 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		if (statement == null) {
+			return (T) this;
+		}
 		if (statements == CtElementImpl.<CtStatement>emptyList()) {
 			statements = new ArrayList<>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}

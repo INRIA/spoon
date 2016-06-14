@@ -80,6 +80,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
+		if (field == null) {
+			return (C) this;
+		}
 		if (!this.fields.contains(field)) {
 			field.setParent(this);
 			CompilationUnit compilationUnit = null;
@@ -96,6 +99,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <F, C extends CtType<T>> C addField(CtField<F> field) {
+		if (field == null) {
+			return (C) this;
+		}
 		if (!this.fields.contains(field)) {
 			field.setParent(this);
 			this.fields.add(field);
@@ -147,6 +153,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <N, C extends CtType<T>> C addNestedType(CtType<N> nestedType) {
+		if (nestedType == null) {
+			return (C) this;
+		}
 		if (nestedTypes == CtElementImpl.<CtType<?>>emptySet()) {
 			nestedTypes = new TreeSet<>();
 		}
@@ -440,6 +449,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
+		if (method == null) {
+			return (C) this;
+		}
 		if (methods == CtElementImpl.<CtMethod<?>>emptySet()) {
 			methods = new TreeSet<>();
 		}
@@ -484,6 +496,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <S, C extends CtType<T>> C addSuperInterface(CtTypeReference<S> interfac) {
+		if (interfac == null) {
+			return (C) this;
+		}
 		if (interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			interfaces = new TreeSet<>();
 		}
@@ -511,6 +526,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtFormalTypeDeclarer> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
+		if (formalTypeParameter == null) {
+			return (C) this;
+		}
 		if (formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
 			formalTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}

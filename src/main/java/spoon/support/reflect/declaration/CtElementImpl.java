@@ -211,6 +211,9 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
+		if (annotation == null) {
+			return (E) this;
+		}
 		if ((List<?>) this.annotations == (List<?>) emptyList()) {
 			this.annotations = new ArrayList<>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -411,6 +414,9 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public <E extends CtElement> E addComment(CtComment comment) {
+		if (comment == null) {
+			return (E) this;
+		}
 		if ((List<?>) comments == emptyList()) {
 			comments = new ArrayList<>(COMMENT_CONTAINER_DEFAULT_CAPACITY);
 		}

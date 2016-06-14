@@ -51,21 +51,27 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 
 	@Override
 	public <C extends CtConditional<T>> C setElseExpression(CtExpression<T> elseExpression) {
-		elseExpression.setParent(this);
+		if (elseExpression != null) {
+			elseExpression.setParent(this);
+		}
 		this.elseExpression = elseExpression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtConditional<T>> C setCondition(CtExpression<Boolean> condition) {
-		condition.setParent(this);
+		if (condition != null) {
+			condition.setParent(this);
+		}
 		this.condition = condition;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtConditional<T>> C setThenExpression(CtExpression<T> thenExpression) {
-		thenExpression.setParent(this);
+		if (thenExpression != null) {
+			thenExpression.setParent(this);
+		}
 		this.thenExpression = thenExpression;
 		return (C) this;
 	}

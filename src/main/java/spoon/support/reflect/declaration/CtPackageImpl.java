@@ -50,6 +50,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addPackage(CtPackage pack) {
+		if (pack == null) {
+			return (T) this;
+		}
 		// they are the same
 		if (this.getQualifiedName().equals(pack.getQualifiedName())) {
 			addAllTypes(pack, this);
@@ -170,6 +173,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addType(CtType<?> type) {
+		if (type == null) {
+			return (T) this;
+		}
 		type.setParent(this);
 		types.add(type);
 		return (T) this;

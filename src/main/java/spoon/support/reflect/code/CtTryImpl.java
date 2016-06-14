@@ -59,6 +59,9 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	@Override
 	public <T extends CtTry> T addCatcher(CtCatch catcher) {
+		if (catcher == null) {
+			return (T) this;
+		}
 		if (catchers == CtElementImpl.<CtCatch>emptyList()) {
 			catchers = new ArrayList<>(CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -79,7 +82,9 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	@Override
 	public <T extends CtTry> T setFinalizer(CtBlock<?> finalizer) {
-		finalizer.setParent(this);
+		if (finalizer != null) {
+			finalizer.setParent(this);
+		}
 		this.finalizer = finalizer;
 		return (T) this;
 	}
@@ -91,7 +96,9 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	@Override
 	public <T extends CtTry> T setBody(CtBlock<?> body) {
-		body.setParent(this);
+		if (body != null) {
+			body.setParent(this);
+		}
 		this.body = body;
 		return (T) this;
 	}

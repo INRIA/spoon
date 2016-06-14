@@ -88,7 +88,9 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 
 	@Override
 	public <C extends CtUnaryOperator> C setOperand(CtExpression<T> expression) {
-		expression.setParent(this);
+		if (expression != null) {
+			expression.setParent(this);
+		}
 		this.operand = expression;
 		return (C) this;
 	}
