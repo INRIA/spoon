@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class JDTBuilderImpl implements JDTBuilder {
-	private final List<String> args = new ArrayList<String>();
+	private final List<String> args = new ArrayList<>();
 	private boolean hasSources = false;
 
 	@Override

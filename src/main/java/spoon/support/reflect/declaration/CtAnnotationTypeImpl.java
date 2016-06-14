@@ -90,7 +90,7 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 
 	@Override
 	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
-		Set<CtMethod<?>> methods = new TreeSet<CtMethod<?>>();
+		Set<CtMethod<?>> methods = new TreeSet<>();
 		for (CtField<?> field : fields) {
 			methods.add(createGhostMethod(field));
 		}

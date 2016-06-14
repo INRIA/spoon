@@ -73,9 +73,9 @@ import java.util.Set;
 
 public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected INameEnvironment environment = null;
-	protected final List<CategorizedProblem> probs = new ArrayList<CategorizedProblem>();
+	protected final List<CategorizedProblem> probs = new ArrayList<>();
 	protected final TreeBuilderRequestor requestor = new TreeBuilderRequestor(this);
-	protected Map<String, char[]> loadedContent = new HashMap<String, char[]>();
+	protected Map<String, char[]> loadedContent = new HashMap<>();
 	protected Factory factory;
 	protected int javaCompliance = 7;
 	protected boolean build = false;
@@ -85,7 +85,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected boolean buildOnlyOutdatedFiles = false;
 	protected File outputDirectory = new File(Launcher.OUTPUTDIR);
 	protected File binaryOutputDirectory;
-	protected List<SpoonResource> forceBuildList = new ArrayList<SpoonResource>();
+	protected List<SpoonResource> forceBuildList = new ArrayList<>();
 	protected String encoding;
 
 	/**
@@ -155,7 +155,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			if (outputDirectory.exists()) {
 				@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
 				int offset = outputDirectory.getAbsolutePath().length() + 1;
-				Collection<String> relativeOutputPaths = new ArrayList<String>();
+				Collection<String> relativeOutputPaths = new ArrayList<>();
 				for (File f : outputFiles) {
 					relativeOutputPaths.add(f.getAbsolutePath().substring(offset));
 				}
@@ -296,7 +296,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public Set<File> getInputSources() {
-		Set<File> files = new HashSet<File>();
+		Set<File> files = new HashSet<>();
 		for (SpoonFolder file : getSource().getSubFolders()) {
 			files.add(new File(file.getPath()));
 		}
@@ -334,7 +334,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public Set<File> getTemplateSources() {
-		Set<File> files = new HashSet<File>();
+		Set<File> files = new HashSet<>();
 		for (SpoonFolder file : getTemplates().getSubFolders()) {
 			files.add(new File(file.getPath()));
 		}
@@ -539,7 +539,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		factory.getEnvironment().debugMessage("Generating source files to: " + outputDirectory);
 
-		List<File> printedFiles = new ArrayList<File>();
+		List<File> printedFiles = new ArrayList<>();
 		for (spoon.reflect.cu.CompilationUnit cu : factory.CompilationUnit().getMap().values()) {
 
 			factory.getEnvironment().debugMessage("Generating source for compilation unit: " + cu.getFile());
@@ -599,11 +599,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	protected void keepOutdatedFiles(List<SpoonFile> files, Collection<File> outputFiles) {
 		int offset = outputDirectory.getAbsolutePath().length() + 1;
-		Collection<String> relativeOutputPaths = new ArrayList<String>();
+		Collection<String> relativeOutputPaths = new ArrayList<>();
 		for (File f : outputFiles) {
 			relativeOutputPaths.add(f.getAbsolutePath().substring(offset));
 		}
-		for (SpoonFile sf : new ArrayList<SpoonFile>(files)) {
+		for (SpoonFile sf : new ArrayList<>(files)) {
 			if (forceBuildList.contains(sf)) {
 				continue;
 			}

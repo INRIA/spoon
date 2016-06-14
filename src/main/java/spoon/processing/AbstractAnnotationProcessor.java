@@ -34,9 +34,9 @@ import java.util.TreeSet;
  */
 public abstract class AbstractAnnotationProcessor<A extends Annotation, E extends CtElement> extends AbstractProcessor<E> implements AnnotationProcessor<A, E> {
 
-	Map<String, Class<? extends A>> consumedAnnotationTypes = new TreeMap<String, Class<? extends A>>();
+	Map<String, Class<? extends A>> consumedAnnotationTypes = new TreeMap<>();
 
-	Map<String, Class<? extends A>> processedAnnotationTypes = new TreeMap<String, Class<? extends A>>();
+	Map<String, Class<? extends A>> processedAnnotationTypes = new TreeMap<>();
 
 	/**
 	 * Empty constructor only for all processors (invoked by Spoon).
@@ -112,11 +112,11 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	}
 
 	public final Set<Class<? extends A>> getConsumedAnnotationTypes() {
-		return new TreeSet<Class<? extends A>>(consumedAnnotationTypes.values());
+		return new TreeSet<>(consumedAnnotationTypes.values());
 	}
 
 	public final Set<Class<? extends A>> getProcessedAnnotationTypes() {
-		return new TreeSet<Class<? extends A>>(processedAnnotationTypes.values());
+		return new TreeSet<>(processedAnnotationTypes.values());
 	}
 
 	public boolean inferConsumedAnnotationType() {
@@ -142,7 +142,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 
 	@SuppressWarnings("unchecked")
 	public final void process(E element) {
-		for (CtAnnotation<? extends Annotation> annotation : new ArrayList<CtAnnotation<?>>(element.getAnnotations())) {
+		for (CtAnnotation<? extends Annotation> annotation : new ArrayList<>(element.getAnnotations())) {
 			if (shoudBeProcessed(annotation)) {
 				try {
 					process((A) annotation.getActualAnnotation(), element);

@@ -54,7 +54,7 @@ public class ZipFolder implements SpoonFolder {
 	}
 
 	public List<SpoonFile> getAllJavaFiles() {
-		List<SpoonFile> files = new ArrayList<SpoonFile>();
+		List<SpoonFile> files = new ArrayList<>();
 
 		for (SpoonFile f : getFiles()) {
 			if (f.isJava()) {
@@ -71,7 +71,7 @@ public class ZipFolder implements SpoonFolder {
 	public List<SpoonFile> getFiles() {
 		// Indexing content
 		if (files == null) {
-			files = new ArrayList<SpoonFile>();
+			files = new ArrayList<>();
 			ZipInputStream zipInput = null;
 			try {
 				zipInput = new ZipInputStream(new BufferedInputStream(
@@ -117,7 +117,7 @@ public class ZipFolder implements SpoonFolder {
 	}
 
 	public List<SpoonFolder> getSubFolders() {
-		return new ArrayList<SpoonFolder>(0);
+		return new ArrayList<>(0);
 	}
 
 	public boolean isFile() {

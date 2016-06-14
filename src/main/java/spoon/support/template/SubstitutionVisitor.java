@@ -98,7 +98,7 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <R> void scanCtExecutable(CtExecutable<R> e) {
 			// replace method parameters
-			for (CtParameter<?> parameter : new ArrayList<CtParameter<?>>(e.getParameters())) {
+			for (CtParameter<?> parameter : new ArrayList<>(e.getParameters())) {
 				String name = parameter.getSimpleName();
 				for (String pname : parameterNames) {
 					if (name.equals(pname)) {
@@ -181,7 +181,7 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <T> void visitCtClass(CtClass<T> ctClass) {
 			ctClass.removeSuperInterface(factory.Type().createReference(Template.class));
-			for (CtMethod<?> m : new TreeSet<CtMethod<?>>(ctClass.getMethods())) {
+			for (CtMethod<?> m : new TreeSet<>(ctClass.getMethods())) {
 				if (m.getAnnotation(Local.class) != null) {
 					ctClass.removeMethod(m);
 				}
@@ -191,7 +191,7 @@ public class SubstitutionVisitor extends CtScanner {
 					ctClass.getConstructors().remove(c);
 				}
 			}
-			for (CtField<?> field : new TreeSet<CtField<?>>(ctClass.getFields())) {
+			for (CtField<?> field : new TreeSet<>(ctClass.getFields())) {
 				if ((field.getAnnotation(Local.class) != null) || Parameters.isParameterSource(field.getReference())) {
 					ctClass.removeField(field);
 					continue;
@@ -227,8 +227,7 @@ public class SubstitutionVisitor extends CtScanner {
 					CtStatement body = foreach.getBody();
 					for (Object element : value) {
 						CtStatement b = body.clone();
-						for (CtVariableAccess<?> va : Query.getElements(b,
-								new VariableAccessFilter<CtVariableAccess<?>>(foreach.getVariable().getReference()))) {
+						for (CtVariableAccess<?> va : Query.getElements(b, new VariableAccessFilter<>(foreach.getVariable().getReference()))) {
 							va.replace((CtExpression) element);
 						}
 						l.addStatement(b);
@@ -606,7 +605,7 @@ public class SubstitutionVisitor extends CtScanner {
 	 */
 	@Override
 	public void scan(Collection<? extends CtElement> elements) {
-		super.scan(new ArrayList<CtElement>(elements));
+		super.scan(new ArrayList<>(elements));
 	}
 
 	@Override

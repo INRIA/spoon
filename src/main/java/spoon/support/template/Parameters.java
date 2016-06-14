@@ -98,7 +98,7 @@ public abstract class Parameters {
 		return tparamValue;
 	}
 
-	static Map<Template<?>, Map<String, Object>> finals = new HashMap<Template<?>, Map<String, Object>>();
+	static Map<Template<?>, Map<String, Object>> finals = new HashMap<>();
 
 	public static CtField<?> getParameterField(CtClass<? extends Template<?>> templateClass, String parameterName) {
 		for (CtField<?> f : templateClass.getFields()) {
@@ -138,7 +138,7 @@ public abstract class Parameters {
 			if (Modifier.isFinal(rtField.getModifiers())) {
 				Map<String, Object> m = finals.get(template);
 				if (m == null) {
-					finals.put(template, m = new HashMap<String, Object>());
+					finals.put(template, m = new HashMap<>());
 				}
 				m.put(parameterName, value);
 				return;
@@ -178,7 +178,7 @@ public abstract class Parameters {
 	 * (including the ones defined by the super types).
 	 */
 	public static Collection<String> getNames(CtClass<? extends Template<?>> templateType) {
-		Collection<String> params = new ArrayList<String>();
+		Collection<String> params = new ArrayList<>();
 		try {
 			for (CtFieldReference<?> f : templateType.getReference().getAllFields()) {
 				if (isParameterSource(f)) {
@@ -255,7 +255,7 @@ public abstract class Parameters {
 			throw new IllegalArgumentException();
 		}
 
-		List<Field> result = new ArrayList<Field>();
+		List<Field> result = new ArrayList<>();
 		for (Field f : RtHelper.getAllFields(clazz)) {
 			if (isParameterSource(f)) {
 				result.add(f);
@@ -274,7 +274,7 @@ public abstract class Parameters {
 			throw new IllegalArgumentException("Template not in template classpath");
 		}
 
-		List<CtField<?>> result = new ArrayList<CtField<?>>();
+		List<CtField<?>> result = new ArrayList<>();
 
 		for (Field f : getAllTemplateParameterFields(clazz)) {
 			result.add(c.getField(f.getName()));

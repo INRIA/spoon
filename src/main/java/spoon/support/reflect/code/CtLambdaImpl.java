@@ -84,8 +84,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	@Override
 	public <C extends CtExecutable<T>> C setParameters(List<CtParameter<?>> params) {
 		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
-			this.parameters = new ArrayList<CtParameter<?>>(
-					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+			this.parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.parameters.clear();
 		for (CtParameter<?> p : params) {
@@ -97,8 +96,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	@Override
 	public <C extends CtExecutable<T>> C addParameter(CtParameter<?> parameter) {
 		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
-			parameters = new ArrayList<CtParameter<?>>(
-					PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+			parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		parameter.setParent(this);
 		parameters.add(parameter);
@@ -119,7 +117,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	@Override
 	public <C extends CtExecutable<T>> C setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
-			this.thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
+			this.thrownTypes = new TreeSet<>();
 		}
 		this.thrownTypes.clear();
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
@@ -131,7 +129,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	@Override
 	public <C extends CtExecutable<T>> C addThrownType(CtTypeReference<? extends Throwable> throwType) {
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
-			thrownTypes = new TreeSet<CtTypeReference<? extends Throwable>>();
+			thrownTypes = new TreeSet<>();
 		}
 		throwType.setParent(this);
 		thrownTypes.add(throwType);

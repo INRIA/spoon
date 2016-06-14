@@ -257,21 +257,21 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				break;
 			case BITAND:
 				if (leftObject instanceof Boolean) {
-					res.setValue(((Boolean) leftObject).booleanValue() & ((Boolean) rightObject).booleanValue());
+					res.setValue((Boolean) leftObject & (Boolean) rightObject);
 				} else {
 					res.setValue(((Number) leftObject).intValue() & ((Number) rightObject).intValue());
 				}
 				break;
 			case BITOR:
 				if (leftObject instanceof Boolean) {
-					res.setValue(((Boolean) leftObject).booleanValue() | ((Boolean) rightObject).booleanValue());
+					res.setValue((Boolean) leftObject | (Boolean) rightObject);
 				} else {
 					res.setValue(((Number) leftObject).intValue() | ((Number) rightObject).intValue());
 				}
 				break;
 			case BITXOR:
 				if (leftObject instanceof Boolean) {
-					res.setValue(((Boolean) leftObject).booleanValue() ^ ((Boolean) rightObject).booleanValue());
+					res.setValue((Boolean) leftObject ^ (Boolean) rightObject);
 				} else {
 					res.setValue(((Number) leftObject).intValue() ^ ((Number) rightObject).intValue());
 				}
@@ -320,7 +320,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 				}
 				return;
 			case BITOR:
-				if ((o instanceof Boolean) && ((Boolean) o).booleanValue()) {
+				if ((o instanceof Boolean) && (Boolean) o) {
 					res.setValue(true);
 					setResult(res);
 				}

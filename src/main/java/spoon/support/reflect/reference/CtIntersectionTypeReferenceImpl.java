@@ -43,7 +43,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	@Override
 	public <C extends CtIntersectionTypeReference> C setBounds(Set<CtTypeReference<?>> bounds) {
 		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			this.bounds = new TreeSet<CtTypeReference<?>>(new SourcePositionComparator());
+			this.bounds = new TreeSet<>(new SourcePositionComparator());
 		}
 		this.bounds.clear();
 		for (CtTypeReference<?> bound : bounds) {
@@ -55,7 +55,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	@Override
 	public <C extends CtIntersectionTypeReference> C addBound(CtTypeReference<?> bound) {
 		if (bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			bounds = new TreeSet<CtTypeReference<?>>(new SourcePositionComparator());
+			bounds = new TreeSet<>(new SourcePositionComparator());
 		}
 		bound.setParent(this);
 		bounds.add(bound);

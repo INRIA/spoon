@@ -44,7 +44,7 @@ import java.util.TreeMap;
  * A scanner that calculates the imports for a given model.
  */
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
-	private Map<String, CtTypeReference<?>> imports = new TreeMap<String, CtTypeReference<?>>();
+	private Map<String, CtTypeReference<?>> imports = new TreeMap<>();
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
@@ -194,7 +194,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 		CtPackageReference pack = ((CtTypeReference<?>) imports
 				.get(simpleType.getSimpleName())).getPackage();
-		List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>();
+		List<CtTypeReference<?>> refs = new ArrayList<>();
 		for (CtTypeReference<?> ref : imports.values()) {
 			// ignore non-top-level type
 			if (ref.getPackage() != null) {

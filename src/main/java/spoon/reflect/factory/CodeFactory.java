@@ -160,7 +160,7 @@ public class CodeFactory extends SubFactory {
 		executableReference.setType(type);
 		executableReference.setDeclaringType(type == null ? type : type.clone());
 		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
-		List<CtTypeReference<?>> typeReferences = new ArrayList<CtTypeReference<?>>();
+		List<CtTypeReference<?>> typeReferences = new ArrayList<>();
 		for (int i = 0; i < parameters.length; i++) {
 			CtExpression<?> parameter = parameters[i];
 			typeReferences.add(parameter.getType());
@@ -204,7 +204,7 @@ public class CodeFactory extends SubFactory {
 	 * @return the new invocation
 	 */
 	public <T> CtInvocation<T> createInvocation(CtExpression<?> target, CtExecutableReference<T> executable, CtExpression<?>... arguments) {
-		List<CtExpression<?>> ext = new ArrayList<CtExpression<?>>(arguments.length);
+		List<CtExpression<?>> ext = new ArrayList<>(arguments.length);
 		Collections.addAll(ext, arguments);
 		return createInvocation(target, executable, ext);
 	}
@@ -377,7 +377,7 @@ public class CodeFactory extends SubFactory {
 	 * 		the variables to be accessed
 	 */
 	public List<CtExpression<?>> createVariableReads(List<? extends CtVariable<?>> variables) {
-		List<CtExpression<?>> result = new ArrayList<CtExpression<?>>(variables.size());
+		List<CtExpression<?>> result = new ArrayList<>(variables.size());
 		for (CtVariable<?> v : variables) {
 			result.add(createVariableRead(v.getReference(), v.getModifiers().contains(ModifierKind.STATIC)));
 		}
@@ -526,7 +526,7 @@ public class CodeFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <R extends CtReference, E extends CtNamedElement> List<R> getReferences(List<E> elements) {
-		List<R> refs = new ArrayList<R>(elements.size());
+		List<R> refs = new ArrayList<>(elements.size());
 		for (E e : elements) {
 			refs.add((R) e.getReference());
 		}

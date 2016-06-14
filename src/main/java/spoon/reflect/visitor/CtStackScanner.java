@@ -38,7 +38,7 @@ public class CtStackScanner extends CtScanner {
 	/**
 	 * The stack of elements.
 	 */
-	protected Stack<CtElement> elementStack = new Stack<CtElement>();
+	protected Stack<CtElement> elementStack = new Stack<>();
 
 	/**
 	 * Pops the element.

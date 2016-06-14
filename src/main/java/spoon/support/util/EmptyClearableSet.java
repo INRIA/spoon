@@ -25,7 +25,7 @@ import java.util.Set;
 public final class EmptyClearableSet<E> extends AbstractSet<E> implements Serializable {
 	private static final long serialVersionUID = 0L;
 
-	private static final EmptyClearableSet<Object> EMPTY_SET = new EmptyClearableSet<Object>();
+	private static final EmptyClearableSet<Object> EMPTY_SET = new EmptyClearableSet<>();
 
 	public static <T> Set<T> instance() {
 		return (Set<T>) EMPTY_SET;

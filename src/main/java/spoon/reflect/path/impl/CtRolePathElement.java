@@ -41,7 +41,7 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 	public static final String STRING = "#";
 
 	private class RoleVisitor extends CtInheritanceScanner {
-		private Collection<CtElement> matchs = new LinkedList<CtElement>();
+		private Collection<CtElement> matchs = new LinkedList<>();
 
 		private RoleVisitor() {
 		}

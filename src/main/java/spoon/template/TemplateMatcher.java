@@ -67,7 +67,7 @@ public class TemplateMatcher {
 	}
 
 	private List<String> getTemplateNameParameters(CtClass<? extends Template<?>> templateType) {
-		final List<String> ts = new ArrayList<String>();
+		final List<String> ts = new ArrayList<>();
 		final Collection<String> c = Parameters.getNames(templateType);
 		ts.addAll(c);
 		return ts;
@@ -75,7 +75,7 @@ public class TemplateMatcher {
 
 	private List<CtTypeReference<?>> getTemplateTypeParameters(final CtClass<? extends Template<?>> templateType) {
 
-		final List<CtTypeReference<?>> ts = new ArrayList<CtTypeReference<?>>();
+		final List<CtTypeReference<?>> ts = new ArrayList<>();
 		final Collection<String> c = Parameters.getNames(templateType);
 		new CtScanner() {
 			@Override
@@ -97,7 +97,7 @@ public class TemplateMatcher {
 	}
 
 	private List<CtFieldReference<?>> getVarargs(CtClass<? extends Template<?>> root, List<CtInvocation<?>> variables) {
-		List<CtFieldReference<?>> fields = new ArrayList<CtFieldReference<?>>();
+		List<CtFieldReference<?>> fields = new ArrayList<>();
 		for (CtFieldReference<?> field : root.getReference().getAllFields()) {
 			if (field.getType().getActualClass() == CtStatementList.class) {
 				boolean alreadyAdded = false;
@@ -115,9 +115,9 @@ public class TemplateMatcher {
 	/** the template itself */
 	private CtElement templateRoot;
 
-	private List<CtElement> finds = new ArrayList<CtElement>();
+	private List<CtElement> finds = new ArrayList<>();
 
-	private Map<Object, Object> matches = new HashMap<Object, Object>();
+	private Map<Object, Object> matches = new HashMap<>();
 
 	private List<String> names;
 
@@ -453,14 +453,14 @@ public class TemplateMatcher {
 
 	@SuppressWarnings("unchecked")
 	private boolean matchCollections(Collection<?> target, Collection<?> template) {
-		List<Object> teList = new ArrayList<Object>(template);
-		List<Object> taList = new ArrayList<Object>(target);
+		List<Object> teList = new ArrayList<>(template);
+		List<Object> taList = new ArrayList<>(target);
 
 		// inMulti keeps the multiElement templateVariable we are at
 		CtElement inMulti = nextListStatement(teList, null);
 
 		// multi keeps the values to assign to inMulti
-		List<Object> multi = new ArrayList<Object>();
+		List<Object> multi = new ArrayList<>();
 
 		if (null == inMulti) {
 			// If we are not looking at template with multiElements
@@ -502,7 +502,7 @@ public class TemplateMatcher {
 				addMatch(inMulti, tpl);
 				// update inMulti
 				inMulti = nextListStatement(teList, inMulti);
-				multi = new ArrayList<Object>();
+				multi = new ArrayList<>();
 			} else {
 				if (!helperMatch(taList.get(ta), teList.get(te))) {
 					return false;
@@ -518,7 +518,7 @@ public class TemplateMatcher {
 					addMatch(inMulti, tpl);
 					// update inMulti
 					inMulti = nextListStatement(teList, inMulti);
-					multi = new ArrayList<Object>();
+					multi = new ArrayList<>();
 				}
 			}
 		}

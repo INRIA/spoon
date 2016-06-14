@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class CtPathBuilder {
 
-	private List<CtPathElement> elements = new LinkedList<CtPathElement>();
+	private List<CtPathElement> elements = new LinkedList<>();
 
 	/**
 	 * Add a name matcher to this path.

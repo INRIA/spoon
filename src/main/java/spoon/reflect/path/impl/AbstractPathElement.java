@@ -30,7 +30,7 @@ import java.util.TreeMap;
  */
 public abstract class AbstractPathElement<P extends CtElement, T extends CtElement> implements CtPathElement<P, T> {
 
-	private Map<String, String> arguments = new TreeMap<String, String>();
+	private Map<String, String> arguments = new TreeMap<>();
 
 	public Map<String, String> getArguments() {
 		return arguments;
@@ -43,7 +43,7 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 	}
 
 	Collection<CtElement> getChilds(CtElement element) {
-		final Collection<CtElement> elements = new ArrayList<CtElement>();
+		final Collection<CtElement> elements = new ArrayList<>();
 		if (element != null) {
 			element.accept(new CtScanner() {
 				@Override

@@ -71,7 +71,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			return (T) this;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			getBoundingType().asCtIntersectionTypeReference().setBounds(new TreeSet<CtTypeReference<?>>(bounds));
+			getBoundingType().asCtIntersectionTypeReference().setBounds(new TreeSet<>(bounds));
 		} else if (bounds.size() > 1) {
 			setBoundingType(getFactory().Type().createIntersectionTypeReference(bounds));
 		} else {
@@ -116,8 +116,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@Override
 	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			actualTypeArguments = new ArrayList<CtTypeReference<?>>(
-					TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+			actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		actualTypeArgument.setParent(this);
 		actualTypeArguments.add(actualTypeArgument);

@@ -49,7 +49,7 @@ class ReplacementVisitor extends CtScanner {
 	}
 
 	private <K, V extends CtElement> void replaceInMapIfExist(Map<K, V> mapProtected, ReplaceMapListener listener) {
-		Map<K, V> map = new HashMap<K, V>(mapProtected);
+		Map<K, V> map = new HashMap<>(mapProtected);
 		V shouldBeDeleted = null;
 		K key = null;
 		for (Map.Entry<K, V> entry : map.entrySet()) {
@@ -70,7 +70,7 @@ class ReplacementVisitor extends CtScanner {
 	}
 
 	private <T extends CtElement> void replaceInSetIfExist(Set<T> setProtected, ReplaceSetListener listener) {
-		Set<T> set = new HashSet<T>(setProtected);
+		Set<T> set = new HashSet<>(setProtected);
 		T shouldBeDeleted = null;
 		for (T element : set) {
 			if (element == original) {
@@ -89,7 +89,7 @@ class ReplacementVisitor extends CtScanner {
 	}
 
 	private <T extends CtElement> void replaceInListIfExist(List<T> listProtected, ReplaceListListener listener) {
-		List<T> list = new ArrayList<T>(listProtected);
+		List<T> list = new ArrayList<>(listProtected);
 		T shouldBeDeleted = null;
 		int index = 0;
 		for (int i = 0; i < list.size(); i++) {

@@ -151,7 +151,7 @@ public class MethodFactory extends ExecutableFactory {
 	 * Gets all the main methods stored in this factory.
 	 */
 	public Collection<CtMethod<Void>> getMainMethods() {
-		Collection<CtMethod<Void>> methods = new ArrayList<CtMethod<Void>>();
+		Collection<CtMethod<Void>> methods = new ArrayList<>();
 		for (CtType<?> t : factory.Type().getAll()) {
 			if (t instanceof CtClass) {
 				CtMethod<Void> m = ((CtClass<?>) t).getMethod(factory.Type().createReference(void.class), "main", factory.Type().createArrayReference(factory.Type().createReference(String.class)));

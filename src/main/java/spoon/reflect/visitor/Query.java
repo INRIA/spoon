@@ -49,7 +49,7 @@ public abstract class Query extends CtScanner {
 	 */
 	public static <E extends CtElement> List<E> getElements(Factory factory,
 															Filter<E> filter) {
-		List<E> e = new ArrayList<E>();
+		List<E> e = new ArrayList<>();
 		e.addAll(getElements(factory.Package().getRootPackage(), filter));
 		return e;
 	}
@@ -66,7 +66,7 @@ public abstract class Query extends CtScanner {
 	 */
 	public static <E extends CtElement> List<E> getElements(
 			CtElement rootElement, Filter<E> filter) {
-		QueryVisitor<E> visitor = new QueryVisitor<E>(filter);
+		QueryVisitor<E> visitor = new QueryVisitor<>(filter);
 		visitor.scan(rootElement);
 		return visitor.getResult();
 	}
@@ -83,7 +83,7 @@ public abstract class Query extends CtScanner {
 	 */
 	public static <T extends CtReference> List<T> getReferences(
 			CtElement rootElement, ReferenceFilter<T> filter) {
-		ReferenceQueryVisitor<T> visitor = new ReferenceQueryVisitor<T>(filter);
+		ReferenceQueryVisitor<T> visitor = new ReferenceQueryVisitor<>(filter);
 		visitor.scan(rootElement);
 		return visitor.getResult();
 	}
@@ -102,7 +102,7 @@ public abstract class Query extends CtScanner {
 	 */
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, ReferenceFilter<R> filter) {
-		List<R> r = new ArrayList<R>();
+		List<R> r = new ArrayList<>();
 		r.addAll(getReferences(factory.Package().getRootPackage(), filter));
 		return r;
 	}

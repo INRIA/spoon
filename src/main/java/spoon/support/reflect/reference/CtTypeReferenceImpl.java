@@ -270,7 +270,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.actualTypeArguments = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+			this.actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.actualTypeArguments.clear();
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
@@ -350,7 +350,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		Collection<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
+		Collection<CtFieldReference<?>> l = new ArrayList<>();
 		CtType<?> t = getDeclaration();
 		if (t == null) {
 			for (Field f : getActualClass().getDeclaredFields()) {
@@ -393,7 +393,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
-		Collection<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
+		Collection<CtExecutableReference<?>> l = new ArrayList<>();
 		CtType<T> t = getDeclaration();
 		if (t == null) {
 			Class<?> c = getActualClass();
@@ -448,14 +448,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			Class<?> c = getActualClass();
 			Class<?>[] sis = c.getInterfaces();
 			if ((sis != null) && (sis.length > 0)) {
-				Set<CtTypeReference<?>> set = new TreeSet<CtTypeReference<?>>();
+				Set<CtTypeReference<?>> set = new TreeSet<>();
 				for (Class<?> si : sis) {
 					set.add(getFactory().Type().createReference(si));
 				}
 				return set;
 			}
 		}
-		return new TreeSet<CtTypeReference<?>>();
+		return new TreeSet<>();
 	}
 
 	@Override
@@ -482,7 +482,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			actualTypeArguments = new ArrayList<CtTypeReference<?>>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+			actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		actualTypeArgument.setParent(this);
 		actualTypeArguments.add(actualTypeArgument);

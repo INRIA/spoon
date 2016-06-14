@@ -64,7 +64,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 	@Override
 	public <T extends CtFor> T addForInit(CtStatement statement) {
 		if (forInit == CtElementImpl.<CtStatement>emptyList()) {
-			forInit = new ArrayList<CtStatement>(FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+			forInit = new ArrayList<>(FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		forInit.add(statement);
@@ -93,8 +93,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 	@Override
 	public <T extends CtFor> T addForUpdate(CtStatement statement) {
 		if (forUpdate == CtElementImpl.<CtStatement>emptyList()) {
-			forUpdate = new ArrayList<CtStatement>(
-					FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+			forUpdate = new ArrayList<>(FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
 		forUpdate.add(statement);

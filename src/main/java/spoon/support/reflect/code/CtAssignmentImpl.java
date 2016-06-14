@@ -96,7 +96,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 	@Override
 	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			this.typeCasts = new ArrayList<CtTypeReference<?>>(CASTS_CONTAINER_DEFAULT_CAPACITY);
+			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.typeCasts.clear();
 		for (CtTypeReference<?> cast : casts) {
@@ -108,7 +108,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 	@Override
 	public <C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type) {
 		if (typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			typeCasts = new ArrayList<CtTypeReference<?>>(CASTS_CONTAINER_DEFAULT_CAPACITY);
+			typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		type.setParent(this);
 		typeCasts.add(type);

@@ -21,7 +21,7 @@ import java.util.List;
 
 public abstract class Options<T extends Options<T>> {
 	final String COMMA_DELIMITER = ",";
-	final List<String> args = new ArrayList<String>();
+	final List<String> args = new ArrayList<>();
 	final T myself;
 
 	public Options(Class<?> type) {

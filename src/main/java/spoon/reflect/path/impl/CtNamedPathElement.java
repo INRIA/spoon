@@ -49,7 +49,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 
 	@Override
 	public Collection<CtElement> getElements(Collection<CtElement> roots) {
-		Collection<CtElement> results = new ArrayList<CtElement>();
+		Collection<CtElement> results = new ArrayList<>();
 		for (CtElement element : roots) {
 			results.addAll(scanElements(getChilds(element)));
 		}
@@ -67,7 +67,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 	}
 
 	private class NameScanner extends CtInheritanceScanner {
-		private Collection<CtElement> results = new LinkedList<CtElement>();
+		private Collection<CtElement> results = new LinkedList<>();
 
 		NameScanner() {
 		}

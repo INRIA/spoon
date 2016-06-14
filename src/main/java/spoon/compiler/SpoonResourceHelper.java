@@ -16,16 +16,16 @@
  */
 package spoon.compiler;
 
+import spoon.Launcher;
+import spoon.support.compiler.FileSystemFile;
+import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.ZipFolder;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import spoon.Launcher;
-import spoon.support.compiler.FileSystemFile;
-import spoon.support.compiler.FileSystemFolder;
-import spoon.support.compiler.ZipFolder;
 
 /**
  * This class defines a helper for manipulating resources.
@@ -55,7 +55,7 @@ public abstract class SpoonResourceHelper {
 	 */
 	public static List<SpoonResource> resources(String... paths)
 			throws FileNotFoundException {
-		List<SpoonResource> files = new ArrayList<SpoonResource>();
+		List<SpoonResource> files = new ArrayList<>();
 		for (String path : paths) {
 			files.add(createResource(new File(path)));
 		}

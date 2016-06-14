@@ -16,19 +16,18 @@
  */
 package spoon.support.gui;
 
-import java.awt.BorderLayout;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
+import spoon.Launcher;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-
-import spoon.Launcher;
+import java.awt.BorderLayout;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpoonObjectFieldsTable extends JFrame {
 	public class SpoonObjectTableModel extends AbstractTableModel {
@@ -43,7 +42,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 			super();
 
 			this.o = o;
-			field = new ArrayList<Field>();
+			field = new ArrayList<>();
 
 			scanFields(o.getClass());
 		}
@@ -74,18 +73,14 @@ public class SpoonObjectFieldsTable extends JFrame {
 					if (val != null) {
 						return val.getClass().getCanonicalName();
 					}
-				} catch (IllegalArgumentException e) {
-					Launcher.LOGGER.error(e.getMessage(), e);
-				} catch (IllegalAccessException e) {
+				} catch (IllegalArgumentException | IllegalAccessException e) {
 					Launcher.LOGGER.error(e.getMessage(), e);
 				}
 				break;
 			case (3):
 				try {
 					return m.get(o);
-				} catch (IllegalArgumentException e) {
-					Launcher.LOGGER.error(e.getMessage(), e);
-				} catch (IllegalAccessException e) {
+				} catch (IllegalArgumentException | IllegalAccessException e) {
 					Launcher.LOGGER.error(e.getMessage(), e);
 				}
 			}

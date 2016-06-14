@@ -87,8 +87,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e) {
 		if (anonymousExecutables == CtElementImpl.<CtAnonymousExecutable>emptyList()) {
-			anonymousExecutables = new ArrayList<CtAnonymousExecutable>(
-					ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
+			anonymousExecutables = new ArrayList<>(ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		e.setParent(this);
 		anonymousExecutables.add(e);
@@ -109,8 +108,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
 		if (this.anonymousExecutables == CtElementImpl.<CtAnonymousExecutable>emptyList()) {
-			this.anonymousExecutables = new ArrayList<CtAnonymousExecutable>(
-					ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
+			this.anonymousExecutables = new ArrayList<>(ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		this.anonymousExecutables.clear();
 		for (CtAnonymousExecutable exec : anonymousExecutables) {
@@ -122,7 +120,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
 		if (this.constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
-			this.constructors = new TreeSet<CtConstructor<T>>();
+			this.constructors = new TreeSet<>();
 		}
 		this.constructors.clear();
 		for (CtConstructor<T> constructor : constructors) {
@@ -134,7 +132,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
 		if (constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
-			constructors = new TreeSet<CtConstructor<T>>();
+			constructors = new TreeSet<>();
 		}
 		// this needs to be done because of the set that needs the constructor's
 		// signature : we should use lists!!!
@@ -233,8 +231,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
 		Collection<CtExecutableReference<?>> declaredExecutables = super.getDeclaredExecutables();
-		List<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>(
-				declaredExecutables.size() + getConstructors().size());
+		List<CtExecutableReference<?>> l = new ArrayList<>(declaredExecutables.size() + getConstructors().size());
 		l.addAll(declaredExecutables);
 		for (CtExecutable<?> c : getConstructors()) {
 			l.add(c.getReference());

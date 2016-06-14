@@ -133,7 +133,7 @@ public class RtMethod {
 	}
 
 	public static <T> RtMethod[] sameMethodsWithDifferentTypeOf(Class<T> superClass, List<RtMethod> comparedMethods) {
-		final List<RtMethod> methods = new ArrayList<RtMethod>();
+		final List<RtMethod> methods = new ArrayList<>();
 		for (Method method : superClass.getDeclaredMethods()) {
 			final RtMethod rtMethod = create(method);
 			for (RtMethod potential : comparedMethods) {

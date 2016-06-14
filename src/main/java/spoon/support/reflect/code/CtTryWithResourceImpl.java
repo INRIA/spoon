@@ -53,7 +53,7 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 	@Override
 	public <T extends CtTryWithResource> T addResource(CtLocalVariable<?> resource) {
 		if (resources == CtElementImpl.<CtLocalVariable<?>>emptyList()) {
-			resources = new ArrayList<CtLocalVariable<?>>(RESOURCES_CONTAINER_DEFAULT_CAPACITY);
+			resources = new ArrayList<>(RESOURCES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		resource.setParent(this);
 		resources.add(resource);

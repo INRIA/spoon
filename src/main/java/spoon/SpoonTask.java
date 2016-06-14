@@ -85,17 +85,17 @@ public class SpoonTask extends Java {
 
 	File destination;
 
-	List<ProcessorType> processorTypes = new ArrayList<ProcessorType>();
+	List<ProcessorType> processorTypes = new ArrayList<>();
 
 	File properties;
 
-	Vector<FileSet> sourcefilesets = new Vector<FileSet>();
+	Vector<FileSet> sourcefilesets = new Vector<>();
 
 	boolean stats = false;
 
 	File template;
 
-	Vector<FileSet> templatefilesets = new Vector<FileSet>();
+	Vector<FileSet> templatefilesets = new Vector<>();
 
 	boolean verbose = false;
 

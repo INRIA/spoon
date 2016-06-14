@@ -49,7 +49,7 @@ public abstract class RtHelper {
 	 * superclasses').
 	 */
 	public static Field[] getAllFields(Class<?> c) {
-		List<Field> fields = new ArrayList<Field>();
+		List<Field> fields = new ArrayList<>();
 		while (c != null && c != Object.class) {
 			for (Field f : c.getDeclaredFields()) {
 				fields.add(f);
@@ -66,7 +66,7 @@ public abstract class RtHelper {
 	 * superclasses').
 	 */
 	public static Collection<CtFieldReference<?>> getAllFields(Class<?> c, Factory factory) {
-		Collection<CtFieldReference<?>> l = new ArrayList<CtFieldReference<?>>();
+		Collection<CtFieldReference<?>> l = new ArrayList<>();
 		for (Field f : getAllFields(c)) {
 			l.add(factory.Field().createReference(f));
 		}
@@ -78,7 +78,7 @@ public abstract class RtHelper {
 	 * the superclasses' or interfaces').
 	 */
 	public static Method[] getAllMethods(Class<?> c) {
-		List<Method> methods = new ArrayList<Method>();
+		List<Method> methods = new ArrayList<>();
 		if (c.isInterface()) {
 			getAllIMethods(c, methods);
 		} else {
@@ -111,12 +111,12 @@ public abstract class RtHelper {
 	public static <T> T invoke(CtInvocation<T> i)
 			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		Object target = i.getTarget() == null ? null : ((CtLiteral<?>) i.getTarget()).getValue();
-		List<Object> args = new ArrayList<Object>();
+		List<Object> args = new ArrayList<>();
 		for (CtExpression<?> e : i.getArguments()) {
 			args.add(((CtLiteral<?>) e).getValue());
 		}
 		Class<?> c = i.getExecutable().getDeclaringType().getActualClass();
-		ArrayList<Class<?>> argTypes = new ArrayList<Class<?>>();
+		ArrayList<Class<?>> argTypes = new ArrayList<>();
 		for (CtTypeReference<?> type : i.getExecutable().getActualTypeArguments()) {
 			argTypes.add(type.getActualClass());
 		}
@@ -129,7 +129,7 @@ public abstract class RtHelper {
 	 * (java.lang.reflect).
 	 */
 	public static Set<ModifierKind> getModifiers(int mod) {
-		Set<ModifierKind> set = new TreeSet<ModifierKind>();
+		Set<ModifierKind> set = new TreeSet<>();
 		if (Modifier.isAbstract(mod)) {
 			set.add(ModifierKind.ABSTRACT);
 		}
@@ -170,7 +170,7 @@ public abstract class RtHelper {
 	 * return all executables of this class
 	 */
 	public static Collection<CtExecutableReference<?>> getAllExecutables(Class<?> clazz, Factory factory) {
-		Collection<CtExecutableReference<?>> l = new ArrayList<CtExecutableReference<?>>();
+		Collection<CtExecutableReference<?>> l = new ArrayList<>();
 		for (Method m : clazz.getDeclaredMethods()) {
 			l.add(factory.Method().createReference(m));
 		}

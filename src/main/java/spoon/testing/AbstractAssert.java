@@ -31,7 +31,7 @@ import java.util.LinkedList;
  * 		the type of the actual value.
  */
 public abstract class AbstractAssert<T extends AbstractAssert<T, A>, A> {
-	protected final LinkedList<Processor<?>> processors = new LinkedList<Processor<?>>();
+	protected final LinkedList<Processor<?>> processors = new LinkedList<>();
 	protected final A actual;
 	protected final T myself;
 
@@ -62,9 +62,7 @@ public abstract class AbstractAssert<T extends AbstractAssert<T, A>, A> {
 	public T withProcessor(Class<? extends Processor<?>> processor) {
 		try {
 			withProcessor(processor.newInstance());
-		} catch (InstantiationException e) {
-			throw new RuntimeException("Can't instante class processor.", e);
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException("Can't instante class processor.", e);
 		}
 		return myself;

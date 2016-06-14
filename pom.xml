@@ -165,7 +165,7 @@
   </scm>
 
   <properties>
-    <java.src.version>1.6</java.src.version>
+    <java.src.version>1.7</java.src.version>
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -274,6 +274,35 @@
           <testSource>${java.test.version}</testSource>
           <testTarget>${java.test.version}</testTarget>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce-bytecode-version</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <rules>
+            <enforceBytecodeVersion>
+              <maxJdkVersion>${java.src.version}</maxJdkVersion>
+            </enforceBytecodeVersion>
+          </rules>
+          <fail>true</fail>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.0-beta-4</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <plugin>
@@ -520,13 +549,13 @@
             <configuration>
               <signature>
                 <groupId>org.codehaus.mojo.signature</groupId>
-                <artifactId>java16</artifactId>
+                <artifactId>java17</artifactId>
                 <version>1.0</version>
               </signature>
             </configuration>
             <executions>
               <execution>
-                <id>ensure-java-1.6-class-library</id>
+                <id>ensure-java-1.7-class-library</id>
                 <phase>test</phase>
                 <goals>
                   <goal>check</goal>

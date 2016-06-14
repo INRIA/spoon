@@ -41,7 +41,7 @@ public class FileSystemFolder implements SpoonFolder {
 	}
 
 	public List<SpoonFile> getAllFiles() {
-		List<SpoonFile> all = new ArrayList<SpoonFile>(getFiles());
+		List<SpoonFile> all = new ArrayList<>(getFiles());
 		for (SpoonFolder f : getSubFolders()) {
 			all.addAll(f.getAllFiles());
 		}
@@ -50,7 +50,7 @@ public class FileSystemFolder implements SpoonFolder {
 
 	public List<SpoonFile> getFiles() {
 		List<SpoonFile> files;
-		files = new ArrayList<SpoonFile>();
+		files = new ArrayList<>();
 		for (File f : file.listFiles()) {
 			if (SpoonResourceHelper.isFile(f)) {
 				files.add(new FileSystemFile(f));
@@ -74,7 +74,7 @@ public class FileSystemFolder implements SpoonFolder {
 
 	public List<SpoonFolder> getSubFolders() {
 		List<SpoonFolder> subFolders;
-		subFolders = new ArrayList<SpoonFolder>();
+		subFolders = new ArrayList<>();
 		for (File f : file.listFiles()) {
 			if (!(SpoonResourceHelper.isArchive(f) || f.isFile())) {
 				try {
@@ -97,7 +97,7 @@ public class FileSystemFolder implements SpoonFolder {
 	}
 
 	public List<SpoonFile> getAllJavaFiles() {
-		List<SpoonFile> files = new ArrayList<SpoonFile>();
+		List<SpoonFile> files = new ArrayList<>();
 		for (SpoonFile f : getFiles()) {
 			if (f.isJava()) {
 				files.add(f);

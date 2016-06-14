@@ -56,7 +56,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	@Override
 	public <C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue) {
 		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
-			enumValues = new ArrayList<CtEnumValue<?>>();
+			enumValues = new ArrayList<>();
 		}
 		if (!enumValues.contains(enumValue)) {
 			enumValue.setParent(this);
@@ -89,7 +89,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public List<CtField<?>> getValues() {
-		List<CtField<?>> result = new ArrayList<CtField<?>>();
+		List<CtField<?>> result = new ArrayList<>();
 		for (CtField<?> field : getEnumValues()) {
 			result.add(field);
 		}
@@ -98,7 +98,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public List<CtField<?>> getFields() {
-		List<CtField<?>> result = new ArrayList<CtField<?>>();
+		List<CtField<?>> result = new ArrayList<>();
 		result.addAll(getEnumValues());
 		result.addAll(super.getFields());
 		return result;

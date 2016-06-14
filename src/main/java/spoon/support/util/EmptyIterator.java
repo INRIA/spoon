@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class EmptyIterator<E> implements Iterator<E> {
-	private static final EmptyIterator<Object> EMPTY_ITERATOR = new EmptyIterator<Object>();
+	private static final EmptyIterator<Object> EMPTY_ITERATOR = new EmptyIterator<>();
 
 	public static <T> Iterator<T> instance() {
 		return (Iterator<T>) EMPTY_ITERATOR;

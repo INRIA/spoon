@@ -176,7 +176,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		return manager;
 	}
 
-	Map<String, ProcessorProperties> processorProperties = new TreeMap<String, ProcessorProperties>();
+	Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
 
 	@Override
 	public ProcessorProperties getProcessorProperties(String processorName) throws FileNotFoundException, IOException, SAXException {

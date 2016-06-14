@@ -92,7 +92,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 
 	public List<Processor<?>> getProcessors() {
 		if (processors == null) {
-			processors = new LinkedList<Processor<?>>();
+			processors = new LinkedList<>();
 		}
 		return processors;
 	}

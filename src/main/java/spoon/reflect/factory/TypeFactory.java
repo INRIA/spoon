@@ -401,7 +401,7 @@ public class TypeFactory extends SubFactory {
 		if (!includeNestedTypes) {
 			return getAll();
 		}
-		List<CtType<?>> types = new ArrayList<CtType<?>>();
+		List<CtType<?>> types = new ArrayList<>();
 		for (CtPackage pack : factory.Package().getAll()) {
 			for (CtType<?> type : pack.getTypes()) {
 				addNestedType(types, type);
@@ -448,7 +448,7 @@ public class TypeFactory extends SubFactory {
 	 * Creates a collection of type references from a collection of classes.
 	 */
 	public List<CtTypeReference<?>> createReferences(List<Class<?>> classes) {
-		List<CtTypeReference<?>> refs = new ArrayList<CtTypeReference<?>>(classes.size());
+		List<CtTypeReference<?>> refs = new ArrayList<>(classes.size());
 		for (Class<?> c : classes) {
 			refs.add(createReference(c));
 		}
@@ -547,7 +547,7 @@ public class TypeFactory extends SubFactory {
 		intersectionRef.setDeclaringType(firstBound.getDeclaringType());
 		intersectionRef.setPackage(firstBound.getPackage());
 		intersectionRef.setActualTypeArguments(firstBound.getActualTypeArguments());
-		intersectionRef.setBounds(new TreeSet<CtTypeReference<?>>(bounds));
+		intersectionRef.setBounds(new TreeSet<>(bounds));
 		return intersectionRef;
 	}
 

@@ -68,7 +68,7 @@ import java.util.Deque;
  * element comes from the reflection api, use {@link spoon.reflect.declaration.CtShadowable#isShadow()}.
  */
 public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
-	private Deque<RuntimeBuilderContext> contexts = new ArrayDeque<RuntimeBuilderContext>();
+	private Deque<RuntimeBuilderContext> contexts = new ArrayDeque<>();
 	private Factory factory;
 
 	public JavaReflectionTreeBuilder(Factory factory) {

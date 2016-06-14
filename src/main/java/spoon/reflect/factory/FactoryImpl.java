@@ -16,11 +16,6 @@
  */
 package spoon.reflect.factory;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.CtModelImpl;
@@ -38,6 +33,12 @@ import spoon.reflect.declaration.CtType;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DefaultInternalFactory;
 import spoon.support.StandardEnvironment;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Implements {@link Factory}
@@ -286,9 +287,8 @@ public class FactoryImpl implements Factory, Serializable {
 	// See http://shipilev.net/talks/joker-Oct2014-string-catechism.pdf
 
 	private static class Dedup {
-		Map<String, String> cache = new HashMap<String, String>();
-		// TODO replace with ThreadLocalRandom when Spoon drops Java 6 compat
-		Random random = new Random();
+		Map<String, String> cache = new HashMap<>();
+		Random random = ThreadLocalRandom.current();
 	}
 
 	/**

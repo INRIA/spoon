@@ -91,7 +91,7 @@ public class QueueProcessingManager implements ProcessingManager {
 
 	public Queue<Processor<?>> getProcessors() {
 		if (processors == null) {
-			processors = new LinkedList<Processor<?>>();
+			processors = new LinkedList<>();
 		}
 		return processors;
 	}
@@ -112,7 +112,7 @@ public class QueueProcessingManager implements ProcessingManager {
 				p.initProperties(AbstractProcessor.loadProperties(p));
 				p.init();
 				p.process();
-				for (CtElement e : new ArrayList<CtElement>(elements)) {
+				for (CtElement e : new ArrayList<>(elements)) {
 					process(e, p);
 				}
 			} catch (ProcessInterruption ignore) {

@@ -43,7 +43,7 @@ public class CtTypedNameElement<P extends CtElement, T extends CtElement> extend
 
 	@Override
 	public Collection<T> getElements(Collection<P> roots) {
-		Collection<T> elements = new ArrayList<T>();
+		Collection<T> elements = new ArrayList<>();
 		for (CtElement root : roots) {
 			for (CtElement child : getChilds(root)) {
 				if (match(child)) {

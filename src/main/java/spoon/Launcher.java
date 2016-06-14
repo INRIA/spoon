@@ -85,8 +85,8 @@ public class Launcher implements SpoonAPI {
 	private static JSAP jsapSpec;
 	protected JSAPResult jsapActualArgs;
 
-	private List<String> processorTypes = new ArrayList<String>();
-	private List<Processor<? extends CtElement>> processors = new ArrayList<Processor<? extends CtElement>>();
+	private List<String> processorTypes = new ArrayList<>();
+	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
 
 	/**
 	 * A default program entry point (instantiates a launcher with the given
