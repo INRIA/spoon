@@ -167,9 +167,9 @@
 
   <repositories>
     <repository>
-      <id>repo.eclipse.org-release</id>
+      <id>gforge.inria.fr-release</id>
       <name>Maven Repository for JDT Compiler release</name>
-      <url>https://repo.eclipse.org/content/repositories/eclipse-staging/</url>
+      <url>http://spoon.gforge.inria.fr/repositories/releases</url>
     </repository>
   </repositories>
 
