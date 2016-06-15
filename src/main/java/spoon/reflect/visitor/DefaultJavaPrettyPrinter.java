@@ -797,8 +797,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		lst.addAll(ctClass.getMethods());
 		lst.addAll(getComments(ctClass, CommentOffset.INSIDE));
 
-		if ((ctClass.getSimpleName() == null || ctClass.getSimpleName().isEmpty()) && ctClass.getParent() != null && ctClass.getParent() instanceof CtNewClass) {
-			context.currentThis.push(((CtNewClass<?>) ctClass.getParent()).getType());
+		CtElement parent;
+		try {
+			parent = ctClass.getParent();
+		} catch (ParentNotInitializedException e) {
+			parent = null;
+		}
+		if ((ctClass.getSimpleName() == null || ctClass.getSimpleName().isEmpty()) && parent != null && parent instanceof CtNewClass) {
+			context.currentThis.push(((CtNewClass<?>) parent).getType());
 		} else {
 			context.currentThis.push(ctClass.getReference());
 		}
@@ -1052,9 +1058,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Check if the target expression is a static final field initialized in a static anonymous block.
 	 */
 	private <T> boolean isInitializeStaticFinalField(CtExpression<T> targetExp) {
-		final CtElement parent = targetExp.getParent();
-		if (parent instanceof CtFieldWrite && targetExp.equals(((CtFieldWrite) parent).getTarget())
-				&& targetExp.getParent(CtAnonymousExecutable.class) != null
+		final CtElement parent;
+		final CtAnonymousExecutable anonymousParent;
+		try {
+			parent = targetExp.getParent();
+			anonymousParent = targetExp.getParent(CtAnonymousExecutable.class);
+		} catch (ParentNotInitializedException e) {
+			return false;
+		}
+		if (parent instanceof CtFieldWrite
+				&& targetExp.equals(((CtFieldWrite) parent).getTarget())
+				&& anonymousParent != null
 				&& ((CtFieldWrite) parent).getVariable() != null
 				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.STATIC)) {
 			return true;
@@ -1087,19 +1101,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Check if the this access expression is a target of a private final field in a constructor.
 	 */
 	private <T> boolean tryToInitializeFinalFieldInConstructor(CtThisAccess<T> thisAccess) {
-		final CtElement parent = thisAccess.getParent();
-		if (!(parent instanceof CtFieldWrite) || !thisAccess.equals(((CtFieldWrite) parent).getTarget()) || thisAccess.getParent(CtConstructor.class) == null) {
+		try {
+			final CtElement parent = thisAccess.getParent();
+			if (!(parent instanceof CtFieldWrite) || !thisAccess.equals(((CtFieldWrite) parent).getTarget()) || thisAccess.getParent(CtConstructor.class) == null) {
+				return false;
+			}
+			final CtFieldReference variable = ((CtFieldWrite) parent).getVariable();
+			if (variable == null) {
+				return false;
+			}
+			final CtField declaration = variable.getDeclaration();
+			if (declaration == null) {
+				return true;
+			}
+			return variable.getDeclaration().getModifiers().contains(ModifierKind.FINAL);
+		} catch (ParentNotInitializedException e) {
 			return false;
 		}
-		final CtFieldReference variable = ((CtFieldWrite) parent).getVariable();
-		if (variable == null) {
-			return false;
-		}
-		final CtField declaration = variable.getDeclaration();
-		if (declaration == null) {
-			return true;
-		}
-		return variable.getDeclaration().getModifiers().contains(ModifierKind.FINAL);
 	}
 
 	@Override
@@ -1361,7 +1379,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (invocation.getExecutable().isConstructor()) {
 			// It's a constructor (super or this)
 			writeActualTypeArguments(invocation.getExecutable());
-			CtType<?> parentType = invocation.getParent(CtType.class);
+			CtType<?> parentType;
+			try {
+				parentType = invocation.getParent(CtType.class);
+			} catch (ParentNotInitializedException e) {
+				parentType = null;
+			}
 			if (parentType != null && parentType.getQualifiedName() != null && parentType.getQualifiedName().equals(invocation.getExecutable().getDeclaringType().getQualifiedName())) {
 				write("this");
 			} else {
@@ -1722,7 +1745,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
 
-		if ((newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null)) {
+		boolean isNotInAnnotation;
+		try {
+			isNotInAnnotation = (newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null);
+		} catch (ParentNotInitializedException e) {
+			isNotInAnnotation = true;
+		}
+
+		if (isNotInAnnotation) {
 			CtTypeReference<?> ref = newArray.getType();
 
 			if (ref != null) {
