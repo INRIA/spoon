@@ -198,6 +198,10 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
+		if (annotations == null || annotations.isEmpty()) {
+			this.annotations = CtElementImpl.emptyList();
+			return (E) this;
+		}
 		this.annotations.clear();
 		for (CtAnnotation<? extends Annotation> annot : annotations) {
 			addAnnotation(annot);
@@ -436,6 +440,10 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	@Override
 	public <E extends CtElement> E setComments(List<CtComment> comments) {
+		if (comments == null || comments.isEmpty()) {
+			this.comments = CtElementImpl.emptyList();
+			return (E) this;
+		}
 		this.comments.clear();
 		for (CtComment comment : comments) {
 			addComment(comment);

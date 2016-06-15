@@ -17,14 +17,16 @@ public abstract class IntercessionScanner extends CtScanner {
 	protected final Factory factory;
 	protected final List<CtTypeReference<?>> COLLECTIONS;
 	protected final CtTypeReference<CtElement> CTELEMENT_REFERENCE;
+	protected final CtTypeReference<Collection> COLLECTION_REFERENCE;
+	protected final CtTypeReference<List> LIST_REFERENCE;
+	protected final CtTypeReference<Set> SET_REFERENCE;
 
 	public IntercessionScanner(Factory factory) {
 		this.factory = factory;
-		COLLECTIONS = Arrays.asList( //
-				factory.Type().createReference(Collection.class), //
-				factory.Type().createReference(List.class), //
-				factory.Type().createReference(Set.class) //
-		);
+		COLLECTION_REFERENCE = factory.Type().createReference(Collection.class);
+		LIST_REFERENCE = factory.Type().createReference(List.class);
+		SET_REFERENCE = factory.Type().createReference(Set.class);
+		COLLECTIONS = Arrays.asList(COLLECTION_REFERENCE, LIST_REFERENCE, SET_REFERENCE);
 		CTELEMENT_REFERENCE = factory.Type().createReference(CtElement.class);
 	}
 
@@ -64,5 +66,22 @@ public abstract class IntercessionScanner extends CtScanner {
 
 	protected boolean avoidInterfaces(CtMethod<?> candidate) {
 		return candidate.getBody() != null;
+	}
+
+	protected boolean avoidSpecificMethods(CtMethod<?> candidate) {
+		return !(candidate.getSimpleName().equals("setType") && candidate.getDeclaringType().getSimpleName().equals("CtConstructorCallImpl")) //
+				&& !(candidate.getSimpleName().equals("addActualTypeArgument") && candidate.getDeclaringType().getSimpleName().equals("CtConstructorCallImpl")) //
+				&& !(candidate.getSimpleName().equals("setActualTypeArguments") && candidate.getDeclaringType().getSimpleName().equals("CtConstructorCallImpl")) //
+				&& !(candidate.getSimpleName().equals("setType") && candidate.getDeclaringType().getSimpleName().equals("CtInvocationImpl"))  //
+				&& !(candidate.getSimpleName().equals("addActualTypeArgument") && candidate.getDeclaringType().getSimpleName().equals("CtInvocationImpl"))  //
+				&& !(candidate.getSimpleName().equals("setActualTypeArguments") && candidate.getDeclaringType().getSimpleName().equals("CtInvocationImpl"))  //
+				&& !(candidate.getSimpleName().equals("setAssignment") && candidate.getDeclaringType().getSimpleName().equals("CtLocalVariableImpl")) //
+				&& !(candidate.getSimpleName().equals("setType") && candidate.getDeclaringType().getSimpleName().equals("CtTypeAccessImpl")) //
+				&& !(candidate.getSimpleName().equals("setAssignment") && candidate.getDeclaringType().getSimpleName().equals("CtFieldImpl")) //
+				&& !(candidate.getSimpleName().equals("addField") && candidate.getDeclaringType().getSimpleName().equals("CtAnnotationTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("addFieldAtTop") && candidate.getDeclaringType().getSimpleName().equals("CtAnnotationTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("setFields") && candidate.getDeclaringType().getSimpleName().equals("CtAnnotationTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("setBounds") && candidate.getDeclaringType().getSimpleName().equals("CtTypeParameterReferenceImpl")) //
+				&& !candidate.getSimpleName().equals("setDeclaration");
 	}
 }

@@ -53,6 +53,10 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 
 	@Override
 	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
+		if (casts == null || casts.isEmpty()) {
+			this.typeCasts = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}

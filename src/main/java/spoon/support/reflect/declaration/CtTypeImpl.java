@@ -124,6 +124,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
+		if (fields == null || fields.isEmpty()) {
+			this.fields = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		this.fields.clear();
 		for (CtField<?> field : fields) {
 			addField(field);
@@ -182,6 +186,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes) {
+		if (nestedTypes == null || nestedTypes.isEmpty()) {
+			this.nestedTypes = CtElementImpl.emptySet();
+			return (C) this;
+		}
 		if (this.nestedTypes == CtElementImpl.<CtType<?>>emptySet()) {
 			this.nestedTypes = new TreeSet<>();
 		}
@@ -673,6 +681,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtFormalTypeDeclarer> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
+		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
+			this.formalTypeParameters = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
 			this.formalTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -685,6 +697,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
+		if (methods == null || methods.isEmpty()) {
+			this.methods = CtElementImpl.emptySet();
+			return (C) this;
+		}
 		this.methods.clear();
 		for (CtMethod<?> meth : methods) {
 			addMethod(meth);
@@ -694,6 +710,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
+		if (interfaces == null || interfaces.isEmpty()) {
+			this.interfaces = CtElementImpl.emptySet();
+			return (C) this;
+		}
 		if (this.interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			this.interfaces = new TreeSet<>();
 		}

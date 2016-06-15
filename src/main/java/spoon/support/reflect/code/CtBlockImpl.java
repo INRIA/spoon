@@ -166,6 +166,10 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public <T extends CtStatementList> T setStatements(List<CtStatement> statements) {
+		if (statements == null || statements.isEmpty()) {
+			this.statements = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		this.statements.clear();
 		for (CtStatement s : statements) {
 			addStatement(s);

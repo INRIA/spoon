@@ -51,6 +51,10 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 
 	@Override
 	public <T extends CtSwitch<S>> T setCases(List<CtCase<? super S>> cases) {
+		if (cases == null || cases.isEmpty()) {
+			this.cases = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		this.cases.clear();
 		for (CtCase<? super S> aCase : cases) {
 			addCase(aCase);

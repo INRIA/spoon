@@ -50,6 +50,10 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 
 	@Override
 	public <T extends CtTry> T setCatchers(List<CtCatch> catchers) {
+		if (catchers == null || catchers.isEmpty()) {
+			this.catchers = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		this.catchers.clear();
 		for (CtCatch c : catchers) {
 			addCatcher(c);
