@@ -752,32 +752,39 @@ public class JDTTreeBuilder extends ASTVisitor {
 		 */
 		public <T> CtTypeReference<T> getTypeReference(TypeReference ref) {
 			CtTypeReference<T> res = null;
-			CtReference current = null;
+			CtTypeReference inner = null;
 			final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
-			for (int index = namesParameterized.length - 1; index >= 0; index--) {
+			int index = namesParameterized.length - 1;
+			for (; index >= 0; index--) {
 				// Start at the end to get the class name first.
-				CtReference main = getTypeReference(namesParameterized[index]);
+				CtTypeReference main = getTypeReference(namesParameterized[index]);
 				if (main == null) {
-					main = factory.Package().createReference(namesParameterized[index]);
+					break;
 				}
-				if (main instanceof CtTypeReference && index == namesParameterized.length - 1) {
+				if (res == null) {
 					res = (CtTypeReference<T>) main;
+				} else {
+					inner.setDeclaringType((CtTypeReference<?>) main);
 				}
-				if (main instanceof CtPackageReference) {
-					if (current instanceof CtTypeReference) {
-						((CtTypeReference<T>) current).setPackage((CtPackageReference) main);
-					} else if (current instanceof CtPackage) {
-						((CtPackage) current).addPackage((CtPackage) main);
-					}
-				} else if (current instanceof CtTypeReference) {
-					((CtTypeReference) current).setDeclaringType((CtTypeReference<?>) main);
-				}
-				current = main;
+				inner = main;
 			}
 			if (res == null) {
 				return factory.Type().<T>createReference(CharOperation.toString(ref.getParameterizedTypeName()));
 			}
+			CtPackageReference packageReference = index >= 0
+					? factory.Package().getOrCreate(concatSubArray(namesParameterized, index)).getReference()
+					: factory.Package().topLevel();
+			inner.setPackage(packageReference);
 			return res;
+		}
+
+		private String concatSubArray(String[] a, int endIndex) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < endIndex; i++) {
+				sb.append(a[i]).append('.');
+			}
+			sb.append(a[endIndex]);
+			return sb.toString();
 		}
 
 		/**
