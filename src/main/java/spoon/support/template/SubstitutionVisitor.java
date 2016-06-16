@@ -64,6 +64,7 @@ import spoon.template.TemplateParameter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 class SkipException extends SpoonException {
@@ -186,9 +187,10 @@ public class SubstitutionVisitor extends CtScanner {
 					ctClass.removeMethod(m);
 				}
 			}
-			for (CtConstructor<?> c : new TreeSet<CtConstructor<?>>(ctClass.getConstructors())) {
+			for (Iterator<CtConstructor<T>> it = ctClass.getConstructors().iterator(); it.hasNext();) {
+				CtConstructor<?> c = it.next();
 				if (c.getAnnotation(Local.class) != null) {
-					ctClass.getConstructors().remove(c);
+					it.remove();
 				}
 			}
 			for (CtField<?> field : new TreeSet<>(ctClass.getFields())) {
