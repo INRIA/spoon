@@ -3075,8 +3075,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(NullLiteral nullLiteral, BlockScope scope) {
 		CtLiteral<Object> lit = factory.Core().createLiteral();
-		CtTypeReference<Object> ref = factory.Core().createTypeReference();
-		ref.setSimpleName(CtTypeReference.NULL_TYPE_NAME);
+		CtTypeReference ref = factory.Type().nullType();
 		lit.setType(ref);
 		context.enter(lit, nullLiteral);
 		return true;
