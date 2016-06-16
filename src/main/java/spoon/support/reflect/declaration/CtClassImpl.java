@@ -110,6 +110,10 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
+		if (anonymousExecutables == null || anonymousExecutables.isEmpty()) {
+			this.anonymousExecutables = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		if (this.anonymousExecutables == CtElementImpl.<CtAnonymousExecutable>emptyList()) {
 			this.anonymousExecutables = new ArrayList<>(ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -122,6 +126,10 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
+		if (constructors == null || constructors.isEmpty()) {
+			this.constructors = CtElementImpl.emptySet();
+			return (C) this;
+		}
 		if (this.constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
 			this.constructors = new TreeSet<>();
 		}

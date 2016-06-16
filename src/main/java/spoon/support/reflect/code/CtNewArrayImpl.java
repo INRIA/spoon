@@ -50,6 +50,10 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 
 	@Override
 	public <C extends CtNewArray<T>> C setDimensionExpressions(List<CtExpression<Integer>> dimensionExpressions) {
+		if (dimensionExpressions == null || dimensionExpressions.isEmpty()) {
+			this.dimensionExpressions = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		this.dimensionExpressions.clear();
 		for (CtExpression<Integer> expr : dimensionExpressions) {
 			addDimensionExpression(expr);
@@ -79,6 +83,10 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 
 	@Override
 	public <C extends CtNewArray<T>> C setElements(List<CtExpression<?>> expressions) {
+		if (expressions == null || expressions.isEmpty()) {
+			this.expressions = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		this.expressions.clear();
 		for (CtExpression<?> expr : expressions) {
 			addElement(expr);

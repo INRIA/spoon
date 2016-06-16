@@ -110,6 +110,10 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <T extends CtFormalTypeDeclarer> T setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
+		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
+			this.formalTypeParameters = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
 			this.formalTypeParameters = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}

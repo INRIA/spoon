@@ -150,6 +150,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
+		if (packs == null || packs.isEmpty()) {
+			this.packs = CtElementImpl.emptySet();
+			return (T) this;
+		}
 		this.packs.clear();
 		for (CtPackage p : packs) {
 			addPackage(p);
@@ -159,6 +163,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T setTypes(Set<CtType<?>> types) {
+		if (types == null || types.isEmpty()) {
+			this.types = CtElementImpl.emptySet();
+			return (T) this;
+		}
 		this.types.clear();
 		for (CtType<?> t : types) {
 			addType(t);

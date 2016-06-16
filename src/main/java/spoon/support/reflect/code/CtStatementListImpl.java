@@ -47,6 +47,10 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 
 	@Override
 	public <T extends CtStatementList> T setStatements(List<CtStatement> stmts) {
+		if (stmts == null || stmts.isEmpty()) {
+			this.statements = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		this.statements.clear();
 		for (CtStatement stmt : stmts) {
 			addStatement(stmt);

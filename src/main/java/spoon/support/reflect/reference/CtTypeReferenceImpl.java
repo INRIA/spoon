@@ -269,6 +269,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
+		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
+			this.actualTypeArguments = CtElementImpl.emptyList();
+			return (C) this;
+		}
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}

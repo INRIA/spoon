@@ -45,19 +45,6 @@ public class ParentTest {
 		// Asserts.
 		new IntercessionScanner(launcher.getFactory()) {
 
-			private boolean avoidSpecificMethods(CtMethod<?> candidate) {
-				return !(candidate.getSimpleName().equals("setType") && candidate.getDeclaringType().getSimpleName().equals("CtConstructorCallImpl")) //
-						&& !(candidate.getSimpleName().equals("addActualTypeArgument") && candidate.getDeclaringType().getSimpleName().equals("CtConstructorCallImpl")) //
-						&& !(candidate.getSimpleName().equals("setType") && candidate.getDeclaringType().getSimpleName().equals("CtInvocationImpl"))  //
-						&& !(candidate.getSimpleName().equals("addActualTypeArgument") && candidate.getDeclaringType().getSimpleName().equals("CtInvocationImpl"))  //
-						&& !(candidate.getSimpleName().equals("setAssignment") && candidate.getDeclaringType().getSimpleName().equals("CtLocalVariableImpl")) //
-						&& !(candidate.getSimpleName().equals("setType") && candidate.getDeclaringType().getSimpleName().equals("CtTypeAccessImpl")) //
-						&& !(candidate.getSimpleName().equals("setAssignment") && candidate.getDeclaringType().getSimpleName().equals("CtFieldImpl")) //
-						&& !(candidate.getSimpleName().equals("addField") && candidate.getDeclaringType().getSimpleName().equals("CtAnnotationTypeImpl")) //
-						&& !(candidate.getSimpleName().equals("addFieldAtTop") && candidate.getDeclaringType().getSimpleName().equals("CtAnnotationTypeImpl")) //
-						&& !candidate.getSimpleName().equals("setDeclaration");
-			}
-
 			@Override
 			protected boolean isToBeProcessed(CtMethod<?> candidate) {
 				return (candidate.getSimpleName().startsWith("set") //

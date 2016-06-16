@@ -76,6 +76,10 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public <T extends CtFor> T setForInit(List<CtStatement> statements) {
+		if (statements == null || statements.isEmpty()) {
+			this.forInit = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		this.forInit.clear();
 		for (CtStatement stmt : statements) {
 			addForInit(stmt);
@@ -108,6 +112,10 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public <T extends CtFor> T setForUpdate(List<CtStatement> statements) {
+		if (statements == null || statements.isEmpty()) {
+			this.forUpdate = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		this.forUpdate.clear();
 		for (CtStatement stmt : statements) {
 			addForUpdate(stmt);

@@ -3,22 +3,33 @@ package spoon.test.intercession;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.ast.IntercessionScanner;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -220,5 +231,112 @@ public class IntercessionTest {
 			}
 			assertTrue("The type of " + methodLog + " don't match with generic types.", isMatch);
 		}
+	}
+
+	@Test
+	public void testResetCollectionInSetters() throws Exception {
+		final Launcher launcher = new Launcher();
+		final Factory factory = launcher.getFactory();
+		launcher.getEnvironment().setNoClasspath(true);
+		// interfaces.
+		launcher.addInputResource("./src/main/java/spoon/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
+		// implementations.
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
+		launcher.buildModel();
+
+		new IntercessionScanner(factory) {
+
+			@Override
+			protected boolean isToBeProcessed(CtMethod<?> candidate) {
+				return candidate.getSimpleName().startsWith("set") //
+						&& candidate.hasModifier(ModifierKind.PUBLIC) //
+						&& takeSetterCollection(candidate) //
+						&& avoidInterfaces(candidate) //
+						&& avoidSpecificMethods(candidate) //
+						&& avoidThrowUnsupportedOperationException(candidate);
+			}
+
+			private boolean takeSetterCollection(CtMethod<?> candidate) {
+				final CtTypeReference<?> type = candidate.getParameters().get(0).getType();
+				final List<CtTypeReference<?>> actualTypeArguments = type.getActualTypeArguments();
+				return COLLECTIONS.contains(type) && actualTypeArguments.size() == 1 && actualTypeArguments.get(0).isSubtypeOf(CTELEMENT_REFERENCE);
+			}
+
+			@Override
+			protected void process(CtMethod<?> element) {
+				final CtStatement statement = element.getBody().getStatement(0);
+				if (!(statement instanceof CtIf)) {
+					fail(log(element, "First statement should be an if to check the parameter of the setter"));
+				}
+				final CtIf anIf = (CtIf) statement;
+				if (!createCheckNull(element.getParameters().get(0)).equals(anIf.getCondition())) {
+					fail(log(element, "Condition should test if the parameter is null.\nThe condition was " + anIf.getCondition()));
+				}
+
+				if (!(anIf.getThenStatement() instanceof CtBlock)) {
+					fail(log(element, "Should have a block in the if condition to have the initialization and the return."));
+				}
+
+				if (element.getParameters().get(0).getType().equals(SET_REFERENCE)) {
+					if (!hasCallEmptyInv(anIf.getThenStatement(), SET_REFERENCE)) {
+						fail(log(element, "Should initilize the list with CtElementImpl#emptySet()."));
+					}
+				} else {
+					if (!hasCallEmptyInv(anIf.getThenStatement(), LIST_REFERENCE)) {
+						fail(log(element, "Should initilize the list with CtElementImpl#emptyList()."));
+					}
+				}
+			}
+
+			private boolean hasCallEmptyInv(CtBlock thenStatement, CtTypeReference<? extends Collection> collectionReference) {
+				if (!(thenStatement.getStatement(0) instanceof CtAssignment)) {
+					return false;
+				}
+				final CtExpression assignment = ((CtAssignment) thenStatement.getStatement(0)).getAssignment();
+				if (!(assignment instanceof CtInvocation)) {
+					return false;
+				}
+				final CtInvocation inv = (CtInvocation) assignment;
+				if (collectionReference.equals(SET_REFERENCE)) {
+					if (!inv.getExecutable().getSimpleName().equals("emptySet")) {
+						return false;
+					}
+				} else if (collectionReference.equals(LIST_REFERENCE)) {
+					if (!inv.getExecutable().getSimpleName().equals("emptyList")) {
+						return false;
+					}
+				}
+				return true;
+			}
+
+			/**
+			 * Creates <code>list == null && list.isEmpty()</code>.
+			 *
+			 * @param ctParameter <code>list</code>
+			 */
+			private CtBinaryOperator<Boolean> createCheckNull(CtParameter<?> ctParameter) {
+				final CtVariableAccess<?> variableRead = factory.Code().createVariableRead(ctParameter.getReference(), true);
+
+				final CtLiteral nullLiteral = factory.Code().createLiteral(null);
+				nullLiteral.setType(factory.Type().nullType());
+
+				final CtBinaryOperator<Boolean> checkNull = factory.Code().createBinaryOperator(variableRead, nullLiteral, BinaryOperatorKind.EQ);
+				checkNull.setType(factory.Type().BOOLEAN_PRIMITIVE);
+
+				final CtMethod<Boolean> isEmptyMethod = ctParameter.getType().getTypeDeclaration().getMethod(factory.Type().booleanPrimitiveType(), "isEmpty");
+				final CtInvocation<Boolean> isEmpty = factory.Code().createInvocation(variableRead, isEmptyMethod.getReference());
+
+				final CtBinaryOperator<Boolean> condition = factory.Code().createBinaryOperator(checkNull, isEmpty, BinaryOperatorKind.OR);
+				return condition.setType(factory.Type().booleanPrimitiveType());
+			}
+
+			private String log(CtMethod<?> element, String message) {
+				return message + "\nin " + element.getSignature() + "\ndeclared in " + element.getDeclaringType().getQualifiedName();
+			}
+		}.scan(factory.getModel().getRootPackage());
 	}
 }

@@ -62,6 +62,10 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtStatementList> T setStatements(List<CtStatement> statements) {
+		if (statements == null || statements.isEmpty()) {
+			this.statements = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		this.statements.clear();
 		for (CtStatement stmt : statements) {
 			addStatement(stmt);

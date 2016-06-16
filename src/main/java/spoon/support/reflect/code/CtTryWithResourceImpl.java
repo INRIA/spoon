@@ -43,6 +43,10 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 
 	@Override
 	public <T extends CtTryWithResource> T setResources(List<CtLocalVariable<?>> resources) {
+		if (resources == null || resources.isEmpty()) {
+			this.resources = CtElementImpl.emptyList();
+			return (T) this;
+		}
 		this.resources.clear();
 		for (CtLocalVariable<?> l : resources) {
 			addResource(l);
