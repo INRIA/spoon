@@ -451,11 +451,12 @@ public class TypeReferenceTest {
 		Set<CtTypeReference<?>> referencedTypes = aClass.getReferencedTypes();
 		List<String> referencedTypeNames = referencedTypes.stream().map(Object::toString)
 				.collect(Collectors.toList());
-		assertEquals(6, referencedTypeNames.size());
+		assertEquals(7, referencedTypeNames.size());
 		assertTrue(referencedTypeNames.contains("A"));
 		assertTrue(referencedTypeNames.contains("example.B"));
 		assertTrue(referencedTypeNames.contains("java.lang.Runnable"));
 		assertTrue(referencedTypeNames.contains("java.lang.Override"));
+		assertTrue(referencedTypeNames.contains("java.lang.Object"));
 		assertTrue(referencedTypeNames.contains("A.1"));
 		assertTrue(referencedTypeNames.contains("void"));
 	}
