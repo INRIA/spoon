@@ -204,13 +204,13 @@ public class ImportTest {
 		assertCorrectInvocation(new Expected().name("staticD").target("pack2.C.D").declaringType("D").typeIsNull(false), elements.get(11));
 
 		// Invocation for a static method with the declaring class specified and an import *.
-		assertCorrectInvocation(new Expected().name("staticE").target("pack3.E").declaringType("E").typeIsNull(true), elements.get(12));
+		assertCorrectInvocation(new Expected().name("staticE").target("pack3.E.E").declaringType("E").typeIsNull(true), elements.get(12));
 
 		// Invocation for a static method without the declaring class specified and an import *.
 		assertCorrectInvocationWithLimit(new Expected().name("staticE").typeIsNull(true), elements.get(13));
 
 		// Invocation for a static method with the declaring class specified, a return type and an import *.
-		assertCorrectInvocation(new Expected().name("staticE").target("pack3.E").declaringType("E").typeIsNull(false), elements.get(14));
+		assertCorrectInvocation(new Expected().name("staticE").target("pack3.E.E").declaringType("E").typeIsNull(false), elements.get(14));
 
 		// Invocation for a static method without the declaring class specified, a return type and an import *.
 		assertCorrectInvocationWithLimit(new Expected().name("staticE").typeIsNull(false), elements.get(15));

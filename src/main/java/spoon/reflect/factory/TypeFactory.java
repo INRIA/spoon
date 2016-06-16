@@ -30,7 +30,9 @@ import spoon.support.StandardEnvironment;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -41,6 +43,12 @@ import static spoon.testing.utils.ModelUtils.createFactory;
  * The {@link CtType} sub-factory.
  */
 public class TypeFactory extends SubFactory {
+
+	private static final Set<String> NULL_PACKAGE_CLASSES = new HashSet<String>(
+			Arrays.asList("void", "boolean", "byte", "short", "char", "int", "float", "long",
+					"double",
+					// TODO (leventov) it is questionable to me that nulltype should also be here
+					CtTypeReference.NULL_TYPE_NAME));
 
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
@@ -319,6 +327,8 @@ public class TypeFactory extends SubFactory {
 			ref.setDeclaringType(createReference(getDeclaringTypeName(qualifiedName)));
 		} else if (hasPackage(qualifiedName) > 0) {
 			ref.setPackage(factory.Package().createReference(getPackageName(qualifiedName)));
+		} else if (!NULL_PACKAGE_CLASSES.contains(qualifiedName)) {
+			ref.setPackage(factory.Package().topLevel());
 		}
 		ref.setSimpleName(getSimpleName(qualifiedName));
 		return ref;
@@ -377,7 +387,7 @@ public class TypeFactory extends SubFactory {
 		if (packageIndex > 0) {
 			pack = factory.Package().get(qualifiedName.substring(0, packageIndex));
 		} else {
-			pack = factory.Package().get(CtPackage.TOP_LEVEL_PACKAGE_NAME);
+			pack = factory.Package().getRootPackage();
 		}
 
 		if (pack == null) {
@@ -462,7 +472,7 @@ public class TypeFactory extends SubFactory {
 		if (hasPackage(qualifiedName) >= 0) {
 			return qualifiedName.substring(0, hasPackage(qualifiedName));
 		}
-		return CtPackage.TOP_LEVEL_PACKAGE_NAME;
+		return "";
 	}
 
 	/**

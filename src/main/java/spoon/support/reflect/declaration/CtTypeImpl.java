@@ -655,15 +655,16 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public String getQualifiedName() {
 		if (isTopLevel()) {
-			if ((getPackage() != null) && !getPackage().getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+			if (getPackage() != null && !getPackage().isUnnamedPackage()) {
 				return getPackage().getQualifiedName() + "." + getSimpleName();
+			} else {
+				return getSimpleName();
 			}
+		} else if (getDeclaringType() != null) {
+			return getDeclaringType().getQualifiedName() + INNERTTYPE_SEPARATOR + getSimpleName();
+		} else {
 			return getSimpleName();
 		}
-		if (getDeclaringType() != null) {
-			return getDeclaringType().getQualifiedName() + INNERTTYPE_SEPARATOR + getSimpleName();
-		}
-		return getSimpleName();
 	}
 
 	@Override

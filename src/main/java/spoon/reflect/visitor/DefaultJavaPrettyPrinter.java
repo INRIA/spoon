@@ -299,7 +299,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			a.accept(this);
 		}
 
-		if (!context.currentTopLevel.getPackage().getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+		if (!context.currentTopLevel.getPackage().isUnnamedPackage()) {
 			write("package " + context.currentTopLevel.getPackage().getQualifiedName() + ";");
 		}
 		String ret = sbf.toString();
@@ -1886,7 +1886,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtPackage(CtPackage ctPackage) {
-		if (!ctPackage.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+		if (!ctPackage.isUnnamedPackage()) {
 			write("package " + ctPackage.getQualifiedName() + ";");
 		} else {
 			write("// default package (CtPackage.TOP_LEVEL_PACKAGE_NAME in Spoon= unnamed package)\n");
@@ -2086,7 +2086,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			if (ref.getPackage() != null && !importsContext.isImported(ref)) {
-				if (!CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(ref.getPackage().getSimpleName())) {
+				if (!ref.getPackage().isUnnamedPackage()) {
 					scan(ref.getPackage()).write(CtPackage.PACKAGE_SEPARATOR);
 				}
 			}

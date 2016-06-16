@@ -125,11 +125,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public String getQualifiedName() {
-		if (getDeclaringPackage() == null || TOP_LEVEL_PACKAGE_NAME.equals(
-				((CtPackageImpl) getDeclaringPackage()).simpleName)) {
+		if (getDeclaringPackage() == null || getDeclaringPackage().isUnnamedPackage()) {
 			return getSimpleName();
+		} else {
+			return getDeclaringPackage().getQualifiedName() + "." + getSimpleName();
 		}
-		return getDeclaringPackage().getQualifiedName() + "." + getSimpleName();
 	}
 
 	@Override
@@ -220,5 +220,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	@Override
 	public CtPackage clone() {
 		return (CtPackage) super.clone();
+	}
+
+	@Override
+	public boolean isUnnamedPackage() {
+		return TOP_LEVEL_PACKAGE_NAME.equals(getSimpleName());
 	}
 }

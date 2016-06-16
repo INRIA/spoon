@@ -141,7 +141,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements
 
 		// create package directory
 		File packageDir;
-		if (pack.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+		if (pack.isUnnamedPackage()) {
 			packageDir = new File(directory.getAbsolutePath());
 		} else {
 			// Create current package dir

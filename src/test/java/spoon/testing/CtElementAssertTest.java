@@ -22,7 +22,8 @@ public class CtElementAssertTest {
 		expected.setSimpleName("i");
 		expected.setType(factory.Type().INTEGER_PRIMITIVE);
 		expected.addModifier(ModifierKind.PUBLIC);
-		assertThat(type.getField("i")).isEqualTo(expected);
+		CtField<?> f = type.getField("i");
+		assertThat(f).isEqualTo(expected);
 	}
 
 	@Test

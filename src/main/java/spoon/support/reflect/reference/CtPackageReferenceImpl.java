@@ -58,4 +58,9 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 	public CtPackageReference clone() {
 		return (CtPackageReference) super.clone();
 	}
+
+	@Override
+	public boolean isUnnamedPackage() {
+		return getSimpleName().isEmpty();
+	}
 }

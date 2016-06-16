@@ -124,15 +124,15 @@ public class ParentTest {
 
 		final CtType<Object> panini = launcher.getFactory().Type().get("Panini");
 
-		CtPackage pack2 = (CtPackage) panini.getPackage().getParent();
-		assertNotNull(pack2);
+		CtElement topLevelParent = panini.getPackage().getParent();
+		assertNotNull(topLevelParent);
 		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, panini.getPackage().getSimpleName());
 		CtPackage pack1 = factory.Package().getRootPackage();
 
 		// the factory are not the same
 		assertNotEquals(factory, launcher.getFactory());
 		// so the root packages are not deeply equals
-		assertNotEquals(pack1, pack2);
+		assertNotEquals(pack1, topLevelParent);
 
 		final CtTypeReference<?> burritos = panini.getReferences(new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override

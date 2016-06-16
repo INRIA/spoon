@@ -192,12 +192,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (imports.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		CtPackageReference pack = ((CtTypeReference<?>) imports
-				.get(simpleType.getSimpleName())).getPackage();
+		CtPackageReference pack = simpleType.getPackage().getReference();
 		List<CtTypeReference<?>> refs = new ArrayList<>();
 		for (CtTypeReference<?> ref : imports.values()) {
 			// ignore non-top-level type
-			if (ref.getPackage() != null) {
+			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
 				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
 					// ignore type in same package
@@ -217,6 +216,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private boolean addImport(CtTypeReference<?> ref) {
 		if (imports.containsKey(ref.getSimpleName())) {
 			return isImported(ref);
+		}
+		// don't import unnamed package elements
+		if (ref.getPackage() == null || ref.getPackage().isUnnamedPackage()) {
+			return false;
 		}
 		imports.put(ref.getSimpleName(), ref);
 		return true;

@@ -103,6 +103,9 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * 		the full name of the package
 	 */
 	public CtPackage getOrCreate(String qualifiedName) {
+		if (qualifiedName.isEmpty()) {
+			return factory.getModel().getRootPackage();
+		}
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
 		CtPackage last = factory.getModel().getRootPackage();
 
