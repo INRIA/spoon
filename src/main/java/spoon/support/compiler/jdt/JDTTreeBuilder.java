@@ -1981,12 +1981,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	protected <T> CtLocalVariable<T> getLocalVariableDeclaration(final String name) {
-		List<CtElement> reversedElements = new ArrayList<>(context.stack.size());
-		for (ASTPair element : context.stack) {
-			reversedElements.add(0, element.element);
-		}
-
-		for (CtElement element : reversedElements) {
+		for (ASTPair astPair : context.stack) {
 			// TODO check if the variable is visible from here
 
 			EarlyTerminatingScanner<CtLocalVariable<?>> scanner = new EarlyTerminatingScanner<CtLocalVariable<?>>() {
@@ -2000,7 +1995,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					super.visitCtLocalVariable(localVariable);
 				}
 			};
-			element.accept(scanner);
+			astPair.element.accept(scanner);
 			CtLocalVariable<T> var = (CtLocalVariable<T>) scanner.getResult();
 			if (var != null) {
 				return var;
@@ -2013,12 +2008,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	protected <T> CtCatchVariable<T> getCatchVariableDeclaration(final String name) {
-		List<CtElement> reversedElements = new ArrayList<>(context.stack.size());
-		for (ASTPair element : context.stack) {
-			reversedElements.add(0, element.element);
-		}
-
-		for (CtElement element : reversedElements) {
+		for (ASTPair astPair : context.stack) {
 			EarlyTerminatingScanner<CtCatchVariable<?>> scanner = new EarlyTerminatingScanner<CtCatchVariable<?>>() {
 				@Override
 				public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
@@ -2030,7 +2020,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					super.visitCtCatchVariable(catchVariable);
 				}
 			};
-			element.accept(scanner);
+			astPair.element.accept(scanner);
 
 			CtCatchVariable<T> var = (CtCatchVariable<T>) scanner.getResult();
 			if (var != null) {

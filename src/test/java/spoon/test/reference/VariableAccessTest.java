@@ -1,9 +1,17 @@
 package spoon.test.reference;
 
 import org.junit.Test;
+import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.reference.testclasses.Pozole;
+import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,5 +36,15 @@ public class VariableAccessTest {
 		assertNotNull("Declaring type of the method can't be null", ref.getDeclaringExecutable().getDeclaringType());
 		assertNotNull("Declaration of declaring type of the method can't be null", ref.getDeclaringExecutable().getDeclaringType().getDeclaration());
 		assertNotNull("Declaration of root class can't be null", ref.getDeclaringExecutable().getDeclaringType().getDeclaringType().getDeclaration());
+	}
+
+	@Test
+	public void name() throws Exception {
+		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
+		final CtMethod<Object> m2 = aPozole.getMethod("m2");
+		final CtArrayWrite<?> ctArrayWrite = m2.getElements(new TypeFilter<CtArrayWrite<?>>(CtArrayWrite.class)).get(0);
+		final CtLocalVariable expected = m2.getElements(new TypeFilter<CtLocalVariable>(CtLocalVariable.class)).get(0);
+
+		assertEquals(expected, ((CtVariableAccess) ctArrayWrite.getTarget()).getVariable().getDeclaration());
 	}
 }
