@@ -89,9 +89,9 @@ public class AnnotationFactory extends TypeFactory {
 	 * 		the value of the annotation element
 	 * @return the created/updated annotation
 	 */
-	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, CtTypeReference<A> annotationType,
+	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, Class<A> annotationType,
 			String annotationElementName, Object value) {
-		return annotate(element, annotationType.getActualClass(), annotationElementName, value);
+		return annotate(element, factory.Type().createReference(annotationType), annotationElementName, value);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class AnnotationFactory extends TypeFactory {
 	 * 		the value of the annotation element
 	 * @return the created/updated annotation
 	 */
-	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, Class<A> annotationType, String annotationElementName, Object value) {
+	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, CtTypeReference<A> annotationType, String annotationElementName, Object value) {
 		final CtAnnotation<A> annotation = annotate(element, annotationType);
 		boolean isArray;
 		// try with CT reflection
@@ -120,7 +120,8 @@ public class AnnotationFactory extends TypeFactory {
 			try {
 				m = annotation.getAnnotationType().getActualClass().getMethod(annotationElementName, new Class[0]);
 			} catch (Exception ex) {
-				throw new RuntimeException("undefined element '" + annotationElementName + "' for annotation '" + annotationType.getName() + "'");
+				annotation.addValue(annotationElementName, value);
+				return annotation;
 			}
 			isArray = m.getReturnType().isArray();
 		}
@@ -129,7 +130,7 @@ public class AnnotationFactory extends TypeFactory {
 		} else if (isArray) {
 			annotation.addValue(annotationElementName, value);
 		} else {
-			throw new RuntimeException("cannot assing an array to a non-array annotation element");
+			throw new RuntimeException("cannot assign an array to a non-array annotation element");
 		}
 		return annotation;
 	}
@@ -143,8 +144,8 @@ public class AnnotationFactory extends TypeFactory {
 	 * 		the annotation type
 	 * @return the concerned annotation
 	 */
-	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, CtTypeReference<A> annotationType) {
-		return annotate(element, annotationType.getActualClass());
+	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, Class<A> annotationType) {
+		return annotate(element, factory.Type().createReference(annotationType));
 	}
 
 	/**
@@ -156,11 +157,11 @@ public class AnnotationFactory extends TypeFactory {
 	 * 		the annotation type
 	 * @return the concerned annotation
 	 */
-	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, Class<A> annotationType) {
-		CtAnnotation<A> annotation = element.getAnnotation(factory.Type().createReference(annotationType));
+	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, CtTypeReference<A> annotationType) {
+		CtAnnotation<A> annotation = element.getAnnotation(annotationType);
 		if (annotation == null) {
 			annotation = factory.Core().createAnnotation();
-			annotation.setAnnotationType(factory.Type().createReference(annotationType));
+			annotation.setAnnotationType(factory.Core().clone(annotationType));
 			element.addAnnotation(annotation);
 		}
 		return annotation;
