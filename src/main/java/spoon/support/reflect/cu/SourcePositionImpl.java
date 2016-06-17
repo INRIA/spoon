@@ -21,6 +21,8 @@ import spoon.reflect.cu.SourcePosition;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents the position of a Java program element in a source
@@ -29,6 +31,30 @@ import java.io.Serializable;
 public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static class Position implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		final int start;
+		final int end;
+
+		Position(int start, int end) {
+			if (start > end) {
+				throw new IllegalArgumentException("end should be greater than start");
+			}
+			this.start = start;
+			this.end = end;
+		}
+
+		public int getStart() {
+			return start;
+		}
+
+		public int getEnd() {
+			return end;
+		}
+	}
 
 	/**
 	 * Search the line number corresponding to a specific position
@@ -92,23 +118,29 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	int[] lineSeparatorPositions;
 
-	private int sourceStart, sourceEnd, line;
+	private Position source;
+	private int line;
+
+	private Map<String, Position> fragments = new HashMap<String, Position>();
 
 	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStartDeclaration, int sourceStartSource, int sourceEnd, int[] lineSeparatorPositions) {
 		super();
 		this.compilationUnit = compilationUnit;
-		this.sourceStart = sourceStartDeclaration;
-		this.sourceEnd = sourceEnd;
+		this.source = new Position(sourceStartDeclaration, sourceEnd);
 		this.lineSeparatorPositions = lineSeparatorPositions;
 		this.line = searchLineNumber(lineSeparatorPositions, sourceStartSource);
 	}
 
+	public void addFragment(String name, int start, int end) {
+		fragments.put(name, new Position(start, end));
+	}
+
 	public int getColumn() {
-		return searchColumnNumber(lineSeparatorPositions, sourceStart);
+		return searchColumnNumber(lineSeparatorPositions, source.getStart());
 	}
 
 	public int getEndColumn() {
-		return searchColumnNumber(lineSeparatorPositions, sourceEnd);
+		return searchColumnNumber(lineSeparatorPositions, source.getEnd());
 	}
 
 	public File getFile() {
@@ -123,15 +155,31 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	}
 
 	public int getEndLine() {
-		return searchLineNumber(lineSeparatorPositions, sourceEnd);
+		return searchLineNumber(lineSeparatorPositions, source.getEnd());
 	}
 
 	public int getSourceEnd() {
-		return sourceEnd;
+		return source.getEnd();
+	}
+
+	@Override
+	public int getSourceEnd(String part) {
+		if (fragments.containsKey(part)) {
+			return fragments.get(part).getEnd();
+		}
+		return getSourceEnd();
 	}
 
 	public int getSourceStart() {
-		return sourceStart;
+		return source.getStart();
+	}
+
+	@Override
+	public int getSourceStart(String part) {
+		if (fragments.containsKey(part)) {
+			return fragments.get(part).getStart();
+		}
+		return getSourceStart();
 	}
 
 	/**
