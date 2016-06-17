@@ -122,7 +122,7 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 
 		// create package directory
 		File packageDir;
-		if (CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(pack.getQualifiedName())) {
+		if (pack.isUnnamedPackage()) {
 			packageDir = new File(directory.getAbsolutePath());
 		} else {
 			packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));

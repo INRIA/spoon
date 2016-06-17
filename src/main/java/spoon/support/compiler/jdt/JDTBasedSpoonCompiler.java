@@ -550,7 +550,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 			// create package directory
 			File packageDir;
-			if (pack.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+			if (pack.isUnnamedPackage()) {
 				packageDir = new File(outputDirectory.getAbsolutePath());
 			} else {
 				// Create current package directory

@@ -38,6 +38,12 @@ public interface CtPackageReference extends CtReference {
 	 */
 	void replace(CtPackageReference packageReference);
 
+	/**
+	 * Returns {@code true} if this is a reference to an <i>unnamed</i>
+	 * Java package. See JLS §7.4.2. Unnamed Packages.
+	 */
+	boolean isUnnamedPackage();
+
 	@Override
 	CtPackageReference clone();
 }

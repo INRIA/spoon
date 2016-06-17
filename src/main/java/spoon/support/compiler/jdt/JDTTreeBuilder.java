@@ -679,7 +679,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		public CtPackageReference getPackageReference(PackageBinding reference) {
 			String name = new String(reference.shortReadableName());
 			if (name.length() == 0) {
-				return null;
+				return factory.Package().topLevel();
 			}
 			CtPackageReference ref = factory.Core().createPackageReference();
 			ref.setSimpleName(name);
@@ -743,7 +743,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 
 		/**
-		 * JDT doesn't returns a correct AST with the resolved type of the reference.
+		 * JDT doesn't return a correct AST with the resolved type of the reference.
 		 * This method try to build a correct Spoon AST from the name of the JDT
 		 * reference, thanks to the parsing of the string, the name parameterized from
 		 * the JDT reference and java convention.
@@ -752,32 +752,39 @@ public class JDTTreeBuilder extends ASTVisitor {
 		 */
 		public <T> CtTypeReference<T> getTypeReference(TypeReference ref) {
 			CtTypeReference<T> res = null;
-			CtReference current = null;
+			CtTypeReference inner = null;
 			final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
-			for (int index = namesParameterized.length - 1; index >= 0; index--) {
+			int index = namesParameterized.length - 1;
+			for (; index >= 0; index--) {
 				// Start at the end to get the class name first.
-				CtReference main = getTypeReference(namesParameterized[index]);
+				CtTypeReference main = getTypeReference(namesParameterized[index]);
 				if (main == null) {
-					main = factory.Package().createReference(namesParameterized[index]);
+					break;
 				}
-				if (main instanceof CtTypeReference && index == namesParameterized.length - 1) {
+				if (res == null) {
 					res = (CtTypeReference<T>) main;
+				} else {
+					inner.setDeclaringType((CtTypeReference<?>) main);
 				}
-				if (main instanceof CtPackageReference) {
-					if (current instanceof CtTypeReference) {
-						((CtTypeReference<T>) current).setPackage((CtPackageReference) main);
-					} else if (current instanceof CtPackage) {
-						((CtPackage) current).addPackage((CtPackage) main);
-					}
-				} else if (current instanceof CtTypeReference) {
-					((CtTypeReference) current).setDeclaringType((CtTypeReference<?>) main);
-				}
-				current = main;
+				inner = main;
 			}
 			if (res == null) {
 				return factory.Type().<T>createReference(CharOperation.toString(ref.getParameterizedTypeName()));
 			}
+			CtPackageReference packageReference = index >= 0
+					? factory.Package().getOrCreate(concatSubArray(namesParameterized, index)).getReference()
+					: factory.Package().topLevel();
+			inner.setPackage(packageReference);
 			return res;
+		}
+
+		private String concatSubArray(String[] a, int endIndex) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < endIndex; i++) {
+				sb.append(a[i]).append('.');
+			}
+			sb.append(a[endIndex]);
+			return sb.toString();
 		}
 
 		/**
@@ -1023,9 +1030,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setImplicit(isImplicit || !JDTTreeBuilder.this.context.isLambdaParameterImplicitlyTyped);
 				ref.setSimpleName(new String(binding.readableName()));
 				final CtReference declaring = references.getDeclaringReferenceFromImports(binding.sourceName());
-				if (declaring instanceof CtPackageReference) {
-					ref.setPackage((CtPackageReference) declaring);
-				}
+				setPackageOrDeclaringType(ref, declaring);
 			} else if (binding instanceof SpoonReferenceBinding) {
 				ref = factory.Core().createTypeReference();
 				ref.setSimpleName(new String(binding.sourceName()));
@@ -1142,6 +1147,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 				res.add(getBoundedTypeReference(tb));
 			}
 			return res;
+		}
+	}
+
+	/**
+	 * Sets {@code declaring} as inner of {@code ref}, as either the package or the declaring type
+	 */
+	private void setPackageOrDeclaringType(CtTypeReference<?> ref, CtReference declaring) {
+		if (declaring instanceof CtPackageReference) {
+			ref.setPackage((CtPackageReference) declaring);
+		} else if (declaring instanceof CtTypeReference) {
+			ref.setDeclaringType((CtTypeReference) declaring);
+		} else if (declaring == null) {
+			ref.setPackage(factory.Package().topLevel());
+		} else {
+			throw new AssertionError(
+					"unexpected declaring type: " + declaring.getClass() + " of " + declaring);
 		}
 	}
 
@@ -2916,15 +2937,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 						CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 						typeReference.setSimpleName(messageSend.receiver.toString());
 						final CtReference declaring = references.getDeclaringReferenceFromImports(((SingleNameReference) messageSend.receiver).token);
-						if (declaring instanceof CtPackageReference) {
-							typeReference.setPackage((CtPackageReference) declaring);
-						} else if (declaring instanceof CtTypeReference) {
-							typeReference = (CtTypeReference<Object>) declaring;
-						}
+						setPackageOrDeclaringType(typeReference, declaring);
 						ref.setDeclaringType(typeReference);
 					} else if (messageSend.receiver instanceof QualifiedNameReference) {
 						QualifiedNameReference qualifiedNameReference = (QualifiedNameReference) messageSend.receiver;
 
+						// TODO try to determine package/class boundary by upper case
 						char[][] packageName = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
 						char[][] className = CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length);
 						if (packageName.length > 0) {
@@ -3047,8 +3065,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(NullLiteral nullLiteral, BlockScope scope) {
 		CtLiteral<Object> lit = factory.Core().createLiteral();
-		CtTypeReference<Object> ref = factory.Core().createTypeReference();
-		ref.setSimpleName(CtTypeReference.NULL_TYPE_NAME);
+		CtTypeReference ref = factory.Type().nullType();
 		lit.setType(ref);
 		context.enter(lit, nullLiteral);
 		return true;
@@ -3398,11 +3415,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 				typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
 				final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
-				if (declaring instanceof CtPackageReference) {
-					typeReference.setPackage((CtPackageReference) declaring);
-				} else if (declaring instanceof CtTypeReference) {
-					typeReference = (CtTypeReference<Object>) declaring;
-				}
+				setPackageOrDeclaringType(typeReference, declaring);
 				final CtTypeAccess<Object> ta = factory.Code().createTypeAccess(typeReference);
 				context.enter(ta, singleNameReference);
 				return true;
@@ -3728,7 +3741,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (typeDeclaration.binding.fPackage.shortReadableName() != null && typeDeclaration.binding.fPackage.shortReadableName().length > 0) {
 				pack = factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.shortReadableName()));
 			} else {
-				pack = factory.Package().getOrCreate(CtPackage.TOP_LEVEL_PACKAGE_NAME);
+				pack = factory.Package().getRootPackage();
 			}
 			context.enter(pack, typeDeclaration);
 			context.compilationunitdeclaration = scope.referenceContext;

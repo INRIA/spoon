@@ -121,6 +121,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -299,7 +300,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			a.accept(this);
 		}
 
-		if (!context.currentTopLevel.getPackage().getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+		if (!context.currentTopLevel.getPackage().isUnnamedPackage()) {
 			write("package " + context.currentTopLevel.getPackage().getQualifiedName() + ";");
 		}
 		String ret = sbf.toString();
@@ -1916,7 +1917,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	public void visitCtPackage(CtPackage ctPackage) {
-		if (!ctPackage.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+		if (!ctPackage.isUnnamedPackage()) {
 			write("package " + ctPackage.getQualifiedName() + ";");
 		} else {
 			write("// default package (CtPackage.TOP_LEVEL_PACKAGE_NAME in Spoon= unnamed package)\n");
@@ -2042,10 +2043,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return;
 		}
 		writeAnnotations(ref);
-		if (importsContext.isImported(ref)) {
-			write(ref.getSimpleName());
-		} else {
+		if (printQualified(ref)) {
 			write(ref.getQualifiedName());
+		} else {
+			write(ref.getSimpleName());
 		}
 		if ((!context.isInvocation || "?".equals(ref.getSimpleName())) && ref.getBoundingType() != null) {
 			if (ref.isUpper()) {
@@ -2054,6 +2055,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(" super ");
 			}
 			scan(ref.getBoundingType());
+		}
+	}
+
+	private boolean printQualified(CtTypeReference<?> ref) {
+		if (importsContext.isImported(ref)) {
+			// If my.pkg.Something is imported, but we are in the context of a class which is
+			// also called "Something", we should still use qualified version my.pkg.Something
+			for (CtTypeReference<?> enclosingClassRef : context.currentThis) {
+				if (enclosingClassRef.getSimpleName().equals(ref.getSimpleName())
+						&& !Objects.equals(enclosingClassRef.getPackage(), ref.getPackage())) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -2115,8 +2132,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(ref.getSimpleName());
 			}
 		} else {
-			if (ref.getPackage() != null && !importsContext.isImported(ref)) {
-				if (!CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(ref.getPackage().getSimpleName())) {
+			if (ref.getPackage() != null && printQualified(ref)) {
+				if (!ref.getPackage().isUnnamedPackage()) {
 					scan(ref.getPackage()).write(CtPackage.PACKAGE_SEPARATOR);
 				}
 			}

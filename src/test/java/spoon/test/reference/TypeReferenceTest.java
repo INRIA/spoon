@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -447,7 +448,16 @@ public class TypeReferenceTest {
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("A");
 		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
 		assertEquals("1", anonymousClass.getReference().getSimpleName());
-		assertEquals(7, aClass.getReferencedTypes().size());
+		Set<CtTypeReference<?>> referencedTypes = aClass.getReferencedTypes();
+		List<String> referencedTypeNames = referencedTypes.stream().map(Object::toString)
+				.collect(Collectors.toList());
+		assertEquals(6, referencedTypeNames.size());
+		assertTrue(referencedTypeNames.contains("A"));
+		assertTrue(referencedTypeNames.contains("example.B"));
+		assertTrue(referencedTypeNames.contains("java.lang.Runnable"));
+		assertTrue(referencedTypeNames.contains("java.lang.Override"));
+		assertTrue(referencedTypeNames.contains("A.1"));
+		assertTrue(referencedTypeNames.contains("void"));
 	}
 
 	@Test

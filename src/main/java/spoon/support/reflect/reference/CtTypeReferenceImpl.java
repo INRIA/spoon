@@ -177,7 +177,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public String getQualifiedName() {
 		if (getDeclaringType() != null) {
 			return getDeclaringType().getQualifiedName() + CtType.INNERTTYPE_SEPARATOR + getSimpleName();
-		} else if (getPackage() != null && !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(getPackage().getSimpleName())) {
+		} else if (getPackage() != null && !getPackage().isUnnamedPackage()) {
 			return getPackage().getSimpleName() + CtPackage.PACKAGE_SEPARATOR + getSimpleName();
 		} else {
 			return getSimpleName();

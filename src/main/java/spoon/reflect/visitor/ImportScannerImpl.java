@@ -34,8 +34,10 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -44,7 +46,14 @@ import java.util.TreeMap;
  * A scanner that calculates the imports for a given model.
  */
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
+
+	private static final Collection<String> namesPresentInJavaLang8 =
+			Collections.singletonList("FunctionalInterface");
+	private static final Collection<String> namesPresentInJavaLang9 = Arrays.asList(
+			"ProcessHandle", "StackWalker", "StackFramePermission");
+
 	private Map<String, CtTypeReference<?>> imports = new TreeMap<>();
+	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
@@ -192,12 +201,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (imports.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		CtPackageReference pack = ((CtTypeReference<?>) imports
-				.get(simpleType.getSimpleName())).getPackage();
+		CtPackageReference pack = simpleType.getPackage().getReference();
 		List<CtTypeReference<?>> refs = new ArrayList<>();
 		for (CtTypeReference<?> ref : imports.values()) {
 			// ignore non-top-level type
-			if (ref.getPackage() != null) {
+			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
 				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
 					// ignore type in same package
@@ -218,7 +226,44 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (imports.containsKey(ref.getSimpleName())) {
 			return isImported(ref);
 		}
+		// don't import unnamed package elements
+		if (ref.getPackage() == null || ref.getPackage().isUnnamedPackage()) {
+			return false;
+		}
+		if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+			if (classNamePresentInJavaLang(ref)) {
+				// Don't import class with names clashing with some classes present in java.lang,
+				// because it leads to undecidability and compilation errors. I. e. always leave
+				// com.mycompany.String fully-qualified.
+				return false;
+			}
+		}
 		imports.put(ref.getSimpleName(), ref);
 		return true;
+	}
+
+	private boolean classNamePresentInJavaLang(CtTypeReference<?> ref) {
+		Boolean presentInJavaLang = namesPresentInJavaLang.get(ref.getSimpleName());
+		if (presentInJavaLang == null) {
+			// The following procedure of determining if the handle is present in Java Lang or
+			// not produces "false positives" if the analyzed source complianceLevel is > 6.
+			// For example, it reports that FunctionalInterface is present in java.lang even
+			// for compliance levels 6, 7. But this is not considered a bad thing, in opposite,
+			// it makes generated code a little more compatible with future versions of Java.
+			if (namesPresentInJavaLang8.contains(ref.getSimpleName())
+					|| namesPresentInJavaLang9.contains(ref.getSimpleName())) {
+				presentInJavaLang = true;
+			} else {
+				// Assuming Spoon's own runtime environment is Java 7+
+				try {
+					Class.forName("java.lang." + ref.getSimpleName());
+					presentInJavaLang = true;
+				} catch (ClassNotFoundException e) {
+					presentInJavaLang = false;
+				}
+			}
+			namesPresentInJavaLang.put(ref.getSimpleName(), presentInJavaLang);
+		}
+		return presentInJavaLang;
 	}
 }
