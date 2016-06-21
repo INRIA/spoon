@@ -181,7 +181,7 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public void setFieldOfClassWithSameNameAsTheCompilationUnitClass() {" +nl+
-			"    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" +nl+
+			"    TypeIdentifierCollision.globalField = localField;" +nl+
 			"}"
 		;
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();

@@ -130,13 +130,13 @@ public class TargetedExpressionTest {
 
 		final List<CtFieldAccess<?>> elements = fieldMethod.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
 		assertEquals(10, elements.size());
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.i"), elements.get(0));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.i"), elements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("i"), elements.get(1));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedBarType).target(elements.get(3)).result("spoon.test.targeted.testclasses.Foo.this.bar.i"), elements.get(2));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.bar"), elements.get(3));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedBarType).target(elements.get(3)).result("this.bar.i"), elements.get(2));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.bar"), elements.get(3));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedBarType).target(elements.get(5)).result("bar.i"), elements.get(4));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("bar"), elements.get(5));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.o"), elements.get(6));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedThisAccess).result("this.o"), elements.get(6));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedThisAccess).result("o"), elements.get(7));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFuuType).target(elements.get(9)).result("fuu.p"), elements.get(8));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("fuu"), elements.get(9));
@@ -156,10 +156,10 @@ public class TargetedExpressionTest {
 
 		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
 		assertEquals(10, elements.size());
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.k"), elements.get(0));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedThisAccess).result("this.k"), elements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(1));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(2));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.k"), elements.get(3));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedThisAccess).result("this.k"), elements.get(3));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(4));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(5));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(6));
@@ -192,7 +192,7 @@ public class TargetedExpressionTest {
 		final CtMethod<?> innerInvMethod = innerClass.getMethodsByName("innerField").get(0);
 		final List<CtFieldAccess<?>> elements = innerInvMethod.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(6, elements.size());
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("spoon.test.targeted.testclasses.Foo.InnerClass.this.i"), elements.get(0));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("this.i"), elements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("i"), elements.get(1));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.i"), elements.get(2));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(3));
@@ -201,7 +201,7 @@ public class TargetedExpressionTest {
 
 		final List<CtFieldAccess<?>> newElements = nestedTypeScanner.getMethodsByName("checkField").get(0).getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(2, newElements.size());
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedNested).target(expectedNestedAccess).result("NestedTypeScanner.this.type").isLocal(), newElements.get(0));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedNested).target(expectedNestedAccess).result("this.type").isLocal(), newElements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedNested).target(expectedNestedAccess).result("type").isLocal(), newElements.get(1));
 	}
 
@@ -249,7 +249,7 @@ public class TargetedExpressionTest {
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(CtConstructorCallImpl.class).result("new Foo().i"), elements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(elements.get(2)).result("foo.i"), elements.get(1));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(expectedThisAccess).result("foo"), elements.get(2));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(expectedThisAccess).result("Foo.this.i"), elements.get(3));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(expectedThisAccess).result("this.i"), elements.get(3));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(expectedThisAccess).result("foo"), elements.get(4));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(expectedTypeAccess.toString()).result("Foo.staticField"), elements.get(5));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().result("staticField"), elements.get(6));
@@ -280,7 +280,7 @@ public class TargetedExpressionTest {
 
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(CtConstructorCallImpl.class).result("new spoon.test.targeted.testclasses.Foo(0, 0).method()"), elements.get(0));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(CtFieldReadImpl.class).result("foo.method()"), elements.get(1));
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.method()"), elements.get(2));
+		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.method()"), elements.get(2));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("method()"), elements.get(3));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedBarType).target(CtFieldReadImpl.class).result("bar.methodBar()"), elements.get(4));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedFuuType).target(CtFieldReadImpl.class).result("fuu.method()"), elements.get(5));
@@ -310,7 +310,7 @@ public class TargetedExpressionTest {
 		assertEquals(8, elements.size());
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(CtConstructorCallImpl.class).result("new spoon.test.targeted.testclasses.Foo(0, 0).staticMethod()"), elements.get(0));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(CtFieldReadImpl.class).result("foo.staticMethod()"), elements.get(1));
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.staticMethod()"), elements.get(2));
+		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.staticMethod()"), elements.get(2));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(3));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.staticMethod()"), elements.get(4));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.staticMethodBar()"), elements.get(5));
@@ -349,11 +349,11 @@ public class TargetedExpressionTest {
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedSuperThisAccess).result("superMethod()"), elements.get(4));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedThisAccess).result("spoon.test.targeted.testclasses.Foo.this.superMethod()"), elements.get(5));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("method()"), elements.get(6));
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("spoon.test.targeted.testclasses.Foo.InnerClass.this.method()"), elements.get(7));
+		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("this.method()"), elements.get(7));
 
 		final List<CtInvocation> newElements = nestedTypeScanner.getMethodsByName("checkType").get(0).getElements(new TypeFilter<>(CtInvocation.class));
 		assertEquals(1, newElements.size());
-		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedNested).target(expectedNestedAccess).result("NestedTypeScanner.this.checkType(type)"), newElements.get(0));
+		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedNested).target(expectedNestedAccess).result("this.checkType(type)"), newElements.get(0));
 	}
 
 	@Test
@@ -400,7 +400,7 @@ public class TargetedExpressionTest {
 		assertEquals(8, elements.size());
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(CtConstructorCallImpl.class).result("new Foo(0, 0).staticMethod()"), elements.get(0));
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(CtFieldReadImpl.class).result("foo.staticMethod()"), elements.get(1));
-		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedThisAccess).result("Foo.this.staticMethod()"), elements.get(2));
+		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedThisAccess).result("this.staticMethod()"), elements.get(2));
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedTypeAccess).result("Foo.staticMethod()"), elements.get(3));
 		assertEqualsInvocation(new ExpectedTargetedExpression().result("staticMethod()"), elements.get(4));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticMethodBar()"), elements.get(5));
@@ -433,11 +433,11 @@ public class TargetedExpressionTest {
 
 		final CtTypeReference<Object> firstExpected = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$1$InnerSubscriber");
 		CtThisAccess<Object> expectedThisAccess = type.getFactory().Code().createThisAccess(firstExpected);
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(firstExpected).target(expectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index"), elements.get(0));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(firstExpected).target(expectedThisAccess).type(CtFieldWrite.class).result("this.index"), elements.get(0));
 
 		final CtTypeReference<Object> secondExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$3InnerSubscriber");
 		expectedThisAccess = type.getFactory().Code().createThisAccess(secondExpectedInner);
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(secondExpectedInner).target(expectedThisAccess).type(CtFieldWrite.class).result("InnerSubscriber.this.index").isLocal(), elements.get(1));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(secondExpectedInner).target(expectedThisAccess).type(CtFieldWrite.class).result("this.index").isLocal(), elements.get(1));
 
 		final CtTypeReference<Object> thirdExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$4InnerSubscriber");
 		expectedThisAccess = type.getFactory().Code().createThisAccess(thirdExpectedInner);
