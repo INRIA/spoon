@@ -1050,7 +1050,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		private CtCircularTypeReference getCtCircularTypeReference(TypeBinding b) {
 			final CtCircularTypeReference circularRef = factory.Internal().createCircularTypeReference();
-			final CtTypeReference originalRef = bindingCache.get(b);
+			final CtTypeReference originalRef = bindingCache.get(b).clone();
 			circularRef.setPackage(originalRef.getPackage());
 			circularRef.setSimpleName(originalRef.getSimpleName());
 			circularRef.setDeclaringType(originalRef.getDeclaringType());

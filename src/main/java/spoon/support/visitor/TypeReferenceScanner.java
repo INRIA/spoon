@@ -98,7 +98,6 @@ public class TypeReferenceScanner extends CtScanner {
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
 		scan(reference.getDeclaringType());
-		// scan(reference.getType());
 		exit(reference);
 	}
 
@@ -115,6 +114,7 @@ public class TypeReferenceScanner extends CtScanner {
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
 		enter(reference);
+		scan(reference.getDeclaringType());
 		scan(reference.getActualTypeArguments());
 		exit(reference);
 	}
