@@ -60,10 +60,11 @@ class ReplacementVisitor extends CtScanner {
 			}
 		}
 		if (shouldBeDeleted != null) {
-			map.remove(key);
 			if (replace != null) {
 				map.put(key, (V) replace);
 				replace.setParent(shouldBeDeleted.getParent());
+			} else {
+				map.remove(key);
 			}
 			listener.set(map);
 		}
@@ -100,10 +101,11 @@ class ReplacementVisitor extends CtScanner {
 			}
 		}
 		if (shouldBeDeleted != null) {
-			list.remove(index);
 			if (replace != null) {
-				list.add(index, (T) replace);
+				list.set(index, (T) replace);
 				replace.setParent(shouldBeDeleted.getParent());
+			} else {
+				list.remove(index);
 			}
 			listener.set(list);
 		}
