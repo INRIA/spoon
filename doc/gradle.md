@@ -16,7 +16,7 @@ Think to specify repository of eclipse for JDT dependency:
 ```groovy
 repositories {
   maven {
-    url 'https://repo.eclipse.org/content/repositories/eclipse-staging/'
+    url 'http://spoon.gforge.inria.fr/repositories/releases/'
   }
 }
 ```
