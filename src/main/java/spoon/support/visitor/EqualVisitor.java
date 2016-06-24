@@ -139,11 +139,6 @@ public class EqualVisitor extends CtScanner {
 	}
 
 	@Override
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
-		printCtArrayAccess(arrayAccess);
-	}
-
-	@Override
 	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
 		printCtArrayAccess(arrayRead);
 	}

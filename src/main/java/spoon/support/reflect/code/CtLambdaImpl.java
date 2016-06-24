@@ -66,7 +66,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <B extends T, C extends CtExecutable<T>> C setBody(CtBlock<B> body) {
-		if (expression != null) {
+		if (expression != null && body != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
 		if (body != null) {
@@ -167,7 +167,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtLambda<T>> C setExpression(CtExpression<T> expression) {
-		if (body != null) {
+		if (body != null && expression != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
 		if (expression != null) {

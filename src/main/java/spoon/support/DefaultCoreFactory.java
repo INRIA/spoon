@@ -16,7 +16,6 @@
  */
 package spoon.support;
 
-import spoon.Launcher;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -89,9 +88,9 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.reflect.code.CtAnnotationFieldAccessImpl;
 import spoon.support.reflect.code.CtArrayReadImpl;
 import spoon.support.reflect.code.CtArrayWriteImpl;
@@ -145,7 +144,6 @@ import spoon.support.reflect.declaration.CtAnnotationTypeImpl;
 import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
 import spoon.support.reflect.declaration.CtClassImpl;
 import spoon.support.reflect.declaration.CtConstructorImpl;
-import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtEnumImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
@@ -163,17 +161,11 @@ import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
-import spoon.support.util.RtHelper;
+import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
+import spoon.support.visitor.equals.CloneHelper;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * This class implements a default core factory for Spoon's meta-model. This
@@ -190,77 +182,8 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		super(null);
 	}
 
-	public <T> T clone(T object) {
-		return clone(object, new ArrayDeque<CtElement>());
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T clone(T object, Deque<CtElement> cloningContext) {
-		if (object == null) {
-			return null;
-		}
-		T result = null;
-		try {
-			if (!(object instanceof CtElement)) {
-				return object;
-			}
-			// RP: this should be done first or removed?
-			if (object instanceof Cloneable && !(object instanceof CtElement)) {
-				return (T) object.getClass().getMethod("clone").invoke(object);
-			}
-			// RP: never called?
-			if (object.getClass().isEnum()) {
-				return object;
-			}
-			result = (T) object.getClass().newInstance();
-			if (result instanceof CtElement) {
-				cloningContext.push((CtElement) result);
-			}
-			for (Field f : RtHelper.getAllFields(object.getClass())) {
-				f.setAccessible(true);
-				if (!f.getName().equals("parent")) {
-					Object fieldValue = f.get(object);
-					if (!Modifier.isFinal(f.getModifiers()) && !Modifier.isStatic(f.getModifiers())) {
-						if (fieldValue instanceof Collection) {
-							Collection<Object> c;
-							if (fieldValue == CtElementImpl.emptyList() || fieldValue == CtElementImpl.emptySet()) {
-								c = (Collection<Object>) fieldValue;
-							} else {
-								c = (Collection<Object>) fieldValue.getClass().getMethod("clone").invoke(fieldValue);
-								c.clear();
-								for (Object o : (Collection<Object>) fieldValue) {
-									c.add(clone(o, cloningContext));
-								}
-							}
-							f.set(result, c);
-
-						} else if (fieldValue instanceof Map) {
-							Map<Object, Object> m = (Map<Object, Object>) fieldValue.getClass().getMethod("clone").invoke(fieldValue);
-							f.set(result, m);
-							for (Entry<?, ?> e : ((Map<?, ?>) fieldValue).entrySet()) {
-								m.put(e.getKey(), clone(e.getValue(), cloningContext));
-							}
-						} else if ((object instanceof CtReference) && (fieldValue instanceof CtElement) && !(fieldValue instanceof CtReference)) {
-							f.set(result, fieldValue);
-						} else {
-							f.set(result, clone(f.get(object), cloningContext));
-						}
-					}
-				}
-			}
-			if (result instanceof CtElement) {
-				cloningContext.pop();
-				if (cloningContext.isEmpty()) {
-					((CtElement) result).setParent(null);
-				} else {
-					((CtElement) result).setParent(cloningContext.peek());
-				}
-			}
-		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
-		}
-		return result;
-
+	public <T extends CtElement> T clone(T object) {
+		return CloneHelper.clone(object);
 	}
 
 	public <A extends Annotation> CtAnnotation<A> createAnnotation() {
@@ -417,6 +340,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	public <T> CtAnnotationFieldAccess<T> createAnnotationFieldAccess() {
 		CtAnnotationFieldAccess<T> e = new CtAnnotationFieldAccessImpl<>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtUnboundVariableReference<T> createUnboundVariableReference() {
+		CtUnboundVariableReference e = new CtUnboundVariableReferenceImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

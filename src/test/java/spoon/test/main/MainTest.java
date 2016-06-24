@@ -1,5 +1,6 @@
 package spoon.test.main;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
@@ -22,6 +23,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.parent.ParentTest;
@@ -79,6 +81,47 @@ public class MainTest {
 
 		// scanners
 		checkContractCtScanner(pack);
+
+		// clone
+		checkEqualityBetweenOriginalAndClone(pack);
+	}
+
+	private void checkEqualityBetweenOriginalAndClone(CtPackage pack) {
+		class ExpectedCounterScanner extends CtScanner {
+			private int expectedCounter = 0;
+
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					expectedCounter++;
+				}
+				super.scan(element);
+			}
+		}
+		class ActualCounterScanner extends CtBiScannerDefault {
+			private int counter = 0;
+
+			@Override
+			public boolean biScan(CtElement element, CtElement other) {
+				if (element == null) {
+					if (other != null) {
+						Assert.fail("element can't be null if other isn't null.");
+					}
+				} else if (other == null) {
+					Assert.fail("other can't be null if element isn't null.");
+				} else {
+					counter++;
+					assertEquals(element, other);
+					assertFalse(element == other);
+				}
+				return super.biScan(element, other);
+			}
+		}
+		final ExpectedCounterScanner expected = new ExpectedCounterScanner();
+		expected.scan(pack);
+		final ActualCounterScanner actual = new ActualCounterScanner();
+		actual.biScan(pack, pack.clone());
+		assertEquals(expected.expectedCounter, actual.counter);
 	}
 
 	private void checkShadow(CtPackage pack) {

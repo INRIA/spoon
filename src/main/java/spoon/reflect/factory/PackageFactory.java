@@ -16,15 +16,15 @@
  */
 package spoon.reflect.factory;
 
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtPackageReference;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtPackageReference;
 
 /**
  * The {@link CtPackage} sub-factory.
@@ -115,8 +115,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 			if (next == null) {
 				next = factory.Core().createPackage();
 				next.setSimpleName(name);
-				next.setParent(last);
-				last.getPackages().add(next);
+				last.addPackage(next);
 			}
 			last = next;
 		}

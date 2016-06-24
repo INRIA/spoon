@@ -69,6 +69,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -86,6 +87,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtUnboundVariableReference;
 
 import java.lang.annotation.Annotation;
 
@@ -111,8 +113,7 @@ public interface CoreFactory {
 	 * @return a clone of <code>element</code>
 	 * @see spoon.reflect.declaration.CtElement#clone()
 	 */
-	@Deprecated
-	<T> T clone(T element);
+	<T extends CtElement> T clone(T element);
 
 	/**
 	 * Creates an annotation.
@@ -477,4 +478,9 @@ public interface CoreFactory {
 	 * @return
 	 */
 	<T> CtAnnotationFieldAccess<T> createAnnotationFieldAccess();
+
+	/**
+	 * Creates an unbound variable used in noclasspath.
+	 */
+	<T> CtUnboundVariableReference<T> createUnboundVariableReference();
 }

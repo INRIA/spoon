@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationType}.
@@ -93,11 +92,10 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 
 	@Override
 	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
-		Set<CtMethod<?>> methods = new TreeSet<>();
+		methods.clear();
 		for (CtField<?> field : fields) {
-			methods.add(createGhostMethod(field));
+			super.addMethod(createGhostMethod(field));
 		}
-		super.setMethods(methods);
 		return super.setFields(fields);
 	}
 

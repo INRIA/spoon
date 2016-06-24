@@ -17,7 +17,6 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
@@ -194,17 +193,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(anonymousExec.getBody());
 		scan(anonymousExec.getComments());
 		exit(anonymousExec);
-	}
-
-	public <T, E extends CtExpression<?>> void visitCtArrayAccess(final CtArrayAccess<T, E> arrayAccess) {
-		enter(arrayAccess);
-		scan(arrayAccess.getAnnotations());
-		scan(arrayAccess.getType());
-		scan(arrayAccess.getTypeCasts());
-		scan(arrayAccess.getTarget());
-		scan(arrayAccess.getIndexExpression());
-		scan(arrayAccess.getComments());
-		exit(arrayAccess);
 	}
 
 	@Override
