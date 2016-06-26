@@ -38,7 +38,7 @@ public class MethodTest {
 		final CtMethod<?> m2 = adobada.getMethod("m2");
 		
 		CtMethod<?> clone = m2.clone();
-		m2.setVisibility(ModifierKind.PRIVATE);
+		clone.setVisibility(ModifierKind.PRIVATE);
 		
 		assertEquals(ModifierKind.PUBLIC, m2.getModifiers().iterator().next());
 	}
