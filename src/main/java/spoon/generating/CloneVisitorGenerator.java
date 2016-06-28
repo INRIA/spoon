@@ -60,6 +60,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private static final String TARGET_CLONE_PACKAGE = "spoon.support.visitor.clone";
@@ -376,14 +377,24 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			}
 
 			/**
-			 * Creates <code>((CtElement) other).setX(element.getX())</code>.
+			 * Creates <code>((CtElement) other).setX(element.getX())</code>
+			 * or <code>((CtElement) other).setX(new Collection(element.getX()))</code>
+			 * if the field is a collection.
 			 *
 			 * @param type <code>CtElement</code>
 			 * @param setter <code>setX</code>.
 			 * @param getter <code>getX</code>.
 			 */
 			private CtInvocation<?> createSetterInvocation(CtTypeReference<?> type, CtMethod<?> setter, CtInvocation<?> getter) {
-				return factory.Code().createInvocation(otherRead.clone().addTypeCast(type), setter.getReference(), getter);
+				CtExpression getterArgument;
+				if (getter.getType().equals(SET_REFERENCE)) {
+					getterArgument = factory.Code().createConstructorCall(factory.Type().createReference(TreeSet.class), getter);
+				} else if (getter.getType().equals(COLLECTION_REFERENCE) || getter.getType().equals(LIST_REFERENCE)) {
+					getterArgument = factory.Code().createConstructorCall(factory.Type().createReference(ArrayList.class), getter);
+				} else {
+					getterArgument = getter;
+				}
+				return factory.Code().createInvocation(otherRead.clone().addTypeCast(type), setter.getReference(), getterArgument);
 			}
 
 			/**
