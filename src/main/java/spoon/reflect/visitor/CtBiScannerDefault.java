@@ -524,6 +524,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(reference);
 		biScan(reference.getType(), other.getType());
 		biScan(reference.getAnnotations(), other.getAnnotations());
+		biScan(reference.getDeclaringExecutable(), other.getDeclaringExecutable());
 		exit(reference);
 	}
 
