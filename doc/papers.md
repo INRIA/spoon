@@ -4,7 +4,11 @@ keywords: papers
 last_updated: September 9, 2015
 ---
 
-### Articles that use Spoon
+# Presentations
+
+2016-07-07 [Code Transformation with Spoon](http://fr.slideshare.net/GrardPaligot/code-transformation-with-spoon), PADR Talk (France, Lille).
+
+# Articles that use Spoon
 
 [SWIN: Towards Type-Safe Java Program Adaptation between APIs](http://sei.pku.edu.cn/~xiongyf04/papers/PEPM15.pdf) (Li, Jun, et al.) Proceedings of the 2015 Workshop on Partial Evaluation and Program Manipulation. 2015.
 
