@@ -18,6 +18,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -31,6 +32,10 @@ import spoon.test.parent.ParentTest;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -70,6 +75,8 @@ public class MainTest {
 
 		// shadow
 		checkShadow(launcher.getFactory().Package().getRootPackage());
+
+		checkParentConsistency(launcher.getFactory().Package().getRootPackage());
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
@@ -236,6 +243,8 @@ public class MainTest {
 		spoon.run();
 
 		checkShadow(spoon.getFactory().Package().getRootPackage());
+
+		checkParentConsistency(spoon.getFactory().Package().getRootPackage());
 	}
 
 	private void checkContractCtScanner(CtPackage pack) {
@@ -284,6 +293,43 @@ public class MainTest {
 			}
 		}
 
+	}
+
+	private void checkParentConsistency(CtPackage pack) {
+		Set<CtElement> inconsistentParents = new HashSet<>();
+		new CtScanner() {
+			private Deque<CtElement> previous = new ArrayDeque();
+			@Override
+			protected void enter(CtElement e) {
+				if (e != null) {
+					if (!previous.isEmpty()) {
+						try {
+							if (e.getParent() != previous.getLast()) {
+								inconsistentParents.add(e);
+							}
+						} catch (ParentNotInitializedException ignore) {
+							inconsistentParents.add(e);
+						}
+					}
+					previous.add(e);
+				}
+				super.enter(e);
+			}
+
+			@Override
+			protected void exit(CtElement e) {
+				if (e == null) {
+					return;
+				}
+				if (e.equals(previous.getLast())) {
+					previous.removeLast();
+				} else {
+					throw new RuntimeException("Inconsistent stack");
+				}
+				super.exit(e);
+			}
+		}.visitCtPackage(pack);
+		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
 
 	@Test
