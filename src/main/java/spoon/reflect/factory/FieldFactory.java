@@ -107,7 +107,10 @@ public class FieldFactory extends SubFactory {
 	 * Creates a field reference from an existing field.
 	 */
 	public <T> CtFieldReference<T> createReference(CtField<T> field) {
-		return createReference(factory.Type().createReference(field.getDeclaringType()), field.getType(), field.getSimpleName());
+		final CtFieldReference<T> reference = createReference(factory.Type().createReference(field.getDeclaringType()), field.getType().clone(), field.getSimpleName());
+		reference.setFinal(field.hasModifier(ModifierKind.FINAL));
+		reference.setStatic(field.hasModifier(ModifierKind.STATIC));
+		return reference;
 	}
 
 	/**
