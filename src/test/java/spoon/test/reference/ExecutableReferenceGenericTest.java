@@ -5,6 +5,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
@@ -16,6 +17,7 @@ import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -70,7 +72,7 @@ public class ExecutableReferenceGenericTest {
 	public void testReferencesBetweenConstructorsInOtherClass() throws Exception {
 		final List<CtConstructor<?>> constructors = getConstructorsByClass("MyClass2");
 		final CtConstructor<?> ctConstructor = constructors.get(0);
-		final List<CtExecutableReference<?>> refConstructors = getCtConstructorsByCtConstructor(ctConstructor);
+		final List<CtExecutableReference<?>> refConstructors = getCtConstructorsReferencedInCtConstructor(ctConstructor);
 
 		final CtClass<?> clazz1 = getCtClassByName("MyClass");
 		final CtConstructor<?> emptyConstructorClass1 = getConstructorsByClass(clazz1.getSimpleName()).get(0);
@@ -229,7 +231,7 @@ public class ExecutableReferenceGenericTest {
 					}
 				});
 
-		assertEquals(10, refsExecutableClass1.size());
+		assertEquals(11, refsExecutableClass1.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass1) {
 			assertNotNull(ref);
 			if (!ref.toString().equals("java.lang.Object#Object()")) {
@@ -255,8 +257,27 @@ public class ExecutableReferenceGenericTest {
 		});
 	}
 
-	private List<CtExecutableReference<?>> getCtConstructorsByCtConstructor(CtConstructor<?> emptyConstructor) {
-		return emptyConstructor.getReferences(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+	private List<CtExecutableReference<?>> getCtConstructorsByCtConstructor(CtConstructor<?> aConstructor) {
+		if (aConstructor.getBody().getStatements().size() == 0) {
+			return new ArrayList<>();
+		}
+		if (!(aConstructor.getBody().getStatement(0) instanceof CtInvocation)) {
+			return new ArrayList<>();
+		}
+		final CtInvocation inv = aConstructor.getBody().getStatement(0);
+		if (!inv.getExecutable().getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
+			return new ArrayList<>();
+		}
+		return inv.getExecutable().getReferences(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+			@Override
+			public boolean matches(CtExecutableReference<?> reference) {
+				return reference.isConstructor();
+			}
+		});
+	}
+
+	private List<CtExecutableReference<?>> getCtConstructorsReferencedInCtConstructor(CtConstructor<?> aConstructor) {
+		return aConstructor.getReferences(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return reference.isConstructor();

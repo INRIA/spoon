@@ -31,6 +31,15 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 
 	private final spoon.support.visitor.equals.EqualsChecker checker = new spoon.support.visitor.equals.EqualsChecker();
 
+	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
+		spoon.reflect.declaration.CtAnnotation other = ((spoon.reflect.declaration.CtAnnotation) (stack.peek()));
+		enter(annotation);
+		biScan(annotation.getAnnotationType(), other.getAnnotationType());
+		biScan(annotation.getAnnotations(), other.getAnnotations());
+		biScan(annotation.getValues().values(), other.getValues().values());
+		exit(annotation);
+	}
+
 	@java.lang.Override
 	protected void enter(spoon.reflect.declaration.CtElement e) {
 		super.enter(e);
@@ -39,15 +48,6 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		if (checker.isNotEqual()) {
 			fail();
 		}
-	}
-
-	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
-		spoon.reflect.declaration.CtAnnotation other = ((spoon.reflect.declaration.CtAnnotation) (stack.peek()));
-		enter(annotation);
-		biScan(annotation.getAnnotationType(), other.getAnnotationType());
-		biScan(annotation.getAnnotations(), other.getAnnotations());
-		biScan(annotation.getValues().values(), other.getValues().values());
-		exit(annotation);
 	}
 
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotationType(final spoon.reflect.declaration.CtAnnotationType<A> annotationType) {
@@ -494,6 +494,7 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		enter(reference);
 		biScan(reference.getType(), other.getType());
 		biScan(reference.getAnnotations(), other.getAnnotations());
+		biScan(reference.getDeclaringExecutable(), other.getDeclaringExecutable());
 		exit(reference);
 	}
 

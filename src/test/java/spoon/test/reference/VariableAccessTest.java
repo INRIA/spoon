@@ -1,6 +1,7 @@
 package spoon.test.reference;
 
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableAccess;
@@ -8,6 +9,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
@@ -15,6 +17,7 @@ import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class VariableAccessTest {
@@ -46,5 +49,25 @@ public class VariableAccessTest {
 		final CtLocalVariable expected = m2.getElements(new TypeFilter<CtLocalVariable>(CtLocalVariable.class)).get(0);
 
 		assertEquals(expected, ((CtVariableAccess) ctArrayWrite.getTarget()).getVariable().getDeclaration());
+	}
+
+	@Test
+	public void testDeclarationOfVariableReference() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Foo2.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		launcher.getModel().getElements(new TypeFilter<CtVariableReference>(CtVariableReference.class) {
+			@Override
+			public boolean matches(CtVariableReference element) {
+				try {
+					element.clone().getDeclaration();
+				} catch (NullPointerException e) {
+					fail("Fail with " + element.getSimpleName() + " declared in " + element.getParent().getSignature());
+				}
+				return super.matches(element);
+			}
+		});
 	}
 }

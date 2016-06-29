@@ -714,6 +714,19 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 	}
 
+	class CtParameterReferenceDeclaringExecutableReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
+		private spoon.reflect.reference.CtParameterReference element;
+
+		CtParameterReferenceDeclaringExecutableReplaceListener(spoon.reflect.reference.CtParameterReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtExecutableReference replace) {
+			this.element.setDeclaringExecutable(replace);
+		}
+	}
+
 	class CtRHSReceiverAssignmentReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private spoon.reflect.code.CtRHSReceiver element;
 
@@ -1161,7 +1174,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 		if (shouldBeDeleted != null) {
 			if ((replace) != null) {
-				list.set(index, (T) replace);
+				list.set(index, ((T) (replace)));
 				replace.setParent(shouldBeDeleted.getParent());
 			} else {
 				list.remove(index);
@@ -1536,6 +1549,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtParameterReference(final spoon.reflect.reference.CtParameterReference<T> reference) {
 		replaceElementIfExist(reference.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtVariableReferenceTypeReplaceListener(reference));
 		replaceInListIfExist(reference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(reference));
+		replaceElementIfExist(reference.getDeclaringExecutable(), new spoon.support.visitor.replace.ReplacementVisitor.CtParameterReferenceDeclaringExecutableReplaceListener(reference));
 	}
 
 	public <R> void visitCtReturn(final spoon.reflect.code.CtReturn<R> returnStatement) {
