@@ -41,7 +41,7 @@ public class InterfaceFactory extends TypeFactory {
 	public <T> CtInterface<T> create(CtPackage owner, String simpleName) {
 		CtInterface<T> i = factory.Core().createInterface();
 		i.setSimpleName(simpleName);
-		owner.getTypes().add(i);
+		owner.addType(i);
 		return i;
 	}
 

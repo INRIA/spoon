@@ -254,4 +254,11 @@ public class TypeTest {
 			fail("Should never throw a SpoonClassNotFoundException.");
 		}
 	}
+
+	@Test
+	public void testDeclarationCreatedByFactory() throws Exception {
+		final Factory factory = createFactory();
+		assertNotNull(factory.Interface().create("fr.inria.ITest").getReference().getDeclaration());
+		assertNotNull(factory.Enum().create("fr.inria.ETest").getReference().getDeclaration());
+	}
 }
