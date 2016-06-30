@@ -6,7 +6,9 @@ import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
@@ -14,6 +16,9 @@ import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
 import spoon.testing.utils.ModelUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -67,6 +72,38 @@ public class VariableAccessTest {
 					fail("Fail with " + element.getSimpleName() + " declared in " + element.getParent().getSignature());
 				}
 				return super.matches(element);
+			}
+		});
+	}
+
+	@Test
+	public void testDeclaringTypeOfALambdaReferencedByParameterReference() {
+		final spoon.Launcher launcher = new spoon.Launcher();
+		launcher.addInputResource("src/test/resources/noclasspath/Foo3.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(8);
+		launcher.buildModel();
+
+		launcher.getModel().getElements(new TypeFilter<CtExecutable<?>>(CtExecutable.class) {
+			@Override
+			public boolean matches(CtExecutable<?> exec) {
+				final List<CtParameterReference<?>> guiParams = exec.getParameters().stream().map(CtParameter::getReference).collect(Collectors.toList());
+
+				if (guiParams.size() != 1) {
+					return false;
+				}
+
+				final CtParameterReference<?> param = guiParams.get(0);
+
+				exec.getBody().getElements(new TypeFilter<CtParameterReference<?>>(CtParameterReference.class) {
+					@Override
+					public boolean matches(CtParameterReference<?> p) {
+						assertEquals(p, param);
+						return super.matches(p);
+					}
+				});
+
+				return super.matches(exec);
 			}
 		});
 	}
