@@ -19,7 +19,7 @@ package spoon.reflect.declaration;
 /**
  * This element defines a constructor declaration.
  */
-public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtGenericElement, CtShadowable {
+public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtFormalTypeDeclarer, CtShadowable {
 
 	/**
 	 * Always returns "&lt;init&gt;".

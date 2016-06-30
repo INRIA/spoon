@@ -69,9 +69,6 @@ public class GenericsTest {
 		assertEquals("Tree", type.getSimpleName());
 		CtTypeParameterReference generic = type.getFormalTypeParameters().get(0);
 		assertEquals("V", generic.getSimpleName());
-		// Deprecated.
-		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBounds().toString());
-		// New.
 		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBoundingType().asCtIntersectionTypeReference().getBounds().toString());
 
 		CtMethod<?> node5 = type.getElements(

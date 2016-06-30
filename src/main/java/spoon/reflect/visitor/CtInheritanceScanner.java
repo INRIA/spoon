@@ -83,7 +83,6 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
@@ -102,7 +101,6 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtGenericElementReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -215,16 +213,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	}
 
-	/**
-	 * Scans an abstract generic element.
-	 *
-	 * @see #scanCtFormalTypeDeclarer(CtFormalTypeDeclarer)
-	 */
-	@Deprecated
-	public void scanCtGenericElement(CtGenericElement e) {
-
-	}
-
 	public void scanCtVisitable(CtVisitable e) {
 
 	}
@@ -233,15 +221,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an actual type container..
 	 */
 	public void scanCtActualTypeContainer(CtActualTypeContainer reference) {
-	}
-
-	/**
-	 * Scans an abstract generic element reference.
-	 *
-	 * @see #scanCtActualTypeContainer(CtActualTypeContainer)
-	 */
-	@Deprecated
-	public void scanCtGenericElementReference(CtGenericElementReference reference) {
 	}
 
 	/**

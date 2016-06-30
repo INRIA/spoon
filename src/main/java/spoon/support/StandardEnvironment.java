@@ -89,8 +89,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean copyResources = true;
 
-	private boolean generateJavadoc = false;
-
 	private boolean enableComments = false;
 
 	private Logger logger = Logger.getLogger(StandardEnvironment.class);
@@ -393,7 +391,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	/**
-	 * Creates a URL class path from {@link getSourceClasspath()}
+	 * Creates a URL class path from {@link Environment#getSourceClasspath()}
 	 */
 	public URL[] urlClasspath() {
 		String[] classpath = getSourceClasspath();
@@ -496,16 +494,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setCopyResources(boolean copyResources) {
 		this.copyResources = copyResources;
-	}
-
-	@Override
-	public boolean isGenerateJavadoc() {
-		return generateJavadoc;
-	}
-
-	@Override
-	public void setGenerateJavadoc(boolean generateJavadoc) {
-		this.generateJavadoc = generateJavadoc;
 	}
 
 	@Override

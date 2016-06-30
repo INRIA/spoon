@@ -46,7 +46,6 @@ import spoon.support.visitor.replace.ReplacementVisitor;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -76,17 +75,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 
 	public static <T> List<T> unmodifiableList(List<T> list) {
 		return list.isEmpty() ? Collections.<T>emptyList() : Collections.unmodifiableList(list);
-	}
-
-	/**
-	 * Returns an empty collection.
-	 * @param <T> type of elements
-	 * @return an empty collection
-	 * @deprecated use {@link #emptyList()} or {@link #emptySet()} instead
-	 */
-	@Deprecated
-	public static <T> Collection<T> emptyCollection() {
-		return emptyList();
 	}
 
 	public String getSignature() {

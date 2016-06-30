@@ -25,7 +25,6 @@ public class CtGenerationTest {
 	public void testGenerateReplacementVisitor() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setGenerateJavadoc(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
@@ -49,7 +48,6 @@ public class CtGenerationTest {
 	public void testGenerateCtBiScanner() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setGenerateJavadoc(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
@@ -97,7 +95,6 @@ public class CtGenerationTest {
 	public void testGenerateCloneVisitor() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setGenerateJavadoc(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
 		launcher.setSourceOutputDirectory("./target/generated/");

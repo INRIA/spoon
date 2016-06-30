@@ -39,7 +39,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * <p>
 	 * NOTE: before using an annotation proxy, you have to make sure that all
 	 * the types referenced by the annotation have been compiled and are in the
-	 * classpath so that accessed values can be converted into the actual types ({@link #getElementValue(String)}).
+	 * classpath so that accessed values can be converted into the actual types.
 	 */
 	A getActualAnnotation();
 
@@ -51,21 +51,6 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	CtTypeReference<A> getAnnotationType();
 
 	/**
-	 * Gets a value for a given key (with conversion if needed).
-	 *
-	 * <p>
-	 * NOTE: in case of a type, the value is converted to the actual type. To
-	 * access the type as a reference, use {@link #getElementValues()}, which
-	 * returns a map containing the raw (unconverted) values.
-	 *
-	 * @param key
-	 * 		name of searched value
-	 * @return the value or null if not found
-	 */
-	@Deprecated
-	<T> T getElementValue(String key);
-
-	/**
 	 * Gets a value for a given key without any conversion.
 	 *
 	 * @param key
@@ -73,29 +58,6 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * @return the value expression or null if not found.
 	 */
 	<T extends CtExpression> T getValue(String key);
-
-	/**
-	 * Returns this annotation's elements and their values. This is returned in
-	 * the form of a map that associates element names with their corresponding
-	 * values.
-	 *
-	 * <p>
-	 * Note that <code>getElementValue("key")</code> is not completely similar
-	 * to <code>getElementValues().get("key")</code> since the former converts
-	 * type references into the actual types.
-	 * </p>
-	 *
-	 * <p>
-	 *     Content changed: A class access (e.g., String.class) is saved as a
-	 *     CtFieldAccess and no more a CtFieldReference.
-	 * </p>
-	 *
-	 * @return this annotation's element names and their values, or an empty map
-	 * if there are none
-	 * @see #getValues()
-	 */
-	@Deprecated
-	Map<String, Object> getElementValues();
 
 	/**
 	 * Returns this annotation's elements and their values. This is returned in

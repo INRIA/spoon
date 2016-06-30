@@ -16,7 +16,7 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.reference.CtGenericElementReference;
+import spoon.reflect.reference.CtActualTypeContainer;
 
 /**
  * This code element represents a constructor call.
@@ -24,7 +24,7 @@ import spoon.reflect.reference.CtGenericElementReference;
  * @param <T>
  * 		created type
  */
-public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpression<?>>, CtAbstractInvocation<T>, CtStatement, CtGenericElementReference {
+public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpression<?>>, CtAbstractInvocation<T>, CtStatement, CtActualTypeContainer {
 	@Override
 	CtConstructorCall<T> clone();
 }

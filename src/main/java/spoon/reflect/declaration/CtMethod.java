@@ -19,7 +19,7 @@ package spoon.reflect.declaration;
 /**
  * This element defines a method declaration.
  */
-public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtGenericElement, CtShadowable {
+public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtFormalTypeDeclarer, CtShadowable {
 	/**
 	 * Checks if the method is a default method. Default method can be in interfaces from
 	 * Java 8: http://docs.oracle.com/javase/tutorial/java/IandI/defaultmethods.html.

@@ -29,7 +29,7 @@ import java.util.List;
  * {@link spoon.reflect.declaration.CtMethod} or a
  * {@link spoon.reflect.declaration.CtConstructor}.
  */
-public interface CtExecutableReference<T> extends CtReference, CtGenericElementReference {
+public interface CtExecutableReference<T> extends CtReference, CtActualTypeContainer {
 
 	String CONSTRUCTOR_NAME = "<init>";
 

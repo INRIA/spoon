@@ -24,12 +24,6 @@ import java.util.List;
 public interface CtTypeParameterReference extends CtTypeReference<Object> {
 
 	/**
-	 * Gets the bounds (aka generics) of the referenced parameter.
-	 */
-	@Deprecated
-	List<CtTypeReference<?>> getBounds();
-
-	/**
 	 * Returns {@code true} if the bounds are in <code>extends</code> clause.
 	 * {@code false} means a <code>super</code> clause.
 	 */
@@ -40,7 +34,6 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *
 	 * If you give null or an empty list, it'll clear bounds of the reference.
 	 */
-	@Deprecated
 	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
@@ -51,13 +44,11 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Adds a bound.
 	 */
-	@Deprecated
 	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
 	 */
-	@Deprecated
 	boolean removeBound(CtTypeReference<?> bound);
 
 	/**

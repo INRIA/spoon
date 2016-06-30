@@ -19,7 +19,6 @@ public class JavaDocTest {
 		SpoonAPI launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setGenerateJavadoc(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().setCopyResources(false);
 		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/");
@@ -46,7 +45,6 @@ public class JavaDocTest {
 	@Test
 	public void testJavadocNotPresentInAST() throws Exception {
 		SpoonAPI launcher = new Launcher();
-		launcher.getEnvironment().setGenerateJavadoc(false);
 		launcher.getEnvironment().setCommentEnabled(false);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/");

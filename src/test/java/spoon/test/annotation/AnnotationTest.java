@@ -125,8 +125,8 @@ public class AnnotationTest {
 		CtAnnotation<Retention> a2 = type.getAnnotation(type.getFactory().Type().createReference(Retention.class));
 		assertNotNull(a2);
 
-		assertTrue(a1.getElementValues().containsKey("value"));
-		assertTrue(a2.getElementValues().containsKey("value"));
+		assertTrue(a1.getValues().containsKey("value"));
+		assertTrue(a2.getValues().containsKey("value"));
 	}
 
 	@Test
@@ -281,7 +281,7 @@ public class AnnotationTest {
 		assertTrue(annotations.get(0).getAnnotatedElement().equals(method));
 		assertEquals(CtAnnotatedElementType.METHOD, annotations.get(0).getAnnotatedElementType());
 
-		Object element = annotation.getElementValues().get("ia");
+		Object element = annotation.getValues().get("ia");
 		assertNotNull(element);
 		assertTrue(element instanceof CtAnnotation);
 		assertTrue(((CtAnnotation<?>) element).getAnnotatedElement().equals(annotation));
@@ -352,7 +352,7 @@ public class AnnotationTest {
 		final CtAnnotation<? extends Annotation> firstAnnotation = testMethodAnnotations.get(0);
 		assertEquals(OuterAnnotation.class, getActualClassFromAnnotation(firstAnnotation));
 
-		final CtNewArray<?> arrayAnnotations = (CtNewArray<?>) firstAnnotation.getElementValues().get("value");
+		final CtNewArray<?> arrayAnnotations = (CtNewArray<?>) firstAnnotation.getValues().get("value");
 		assertEquals(2, arrayAnnotations.getElements().size());
 
 		final CtAnnotation<?> firstAnnotationInArray = getMiddleAnnotation(arrayAnnotations, 0);
@@ -639,8 +639,8 @@ public class AnnotationTest {
 		assertEquals("Class must to have multi annotation of the same type", 2, annotations.size());
 		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
 		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
-		assertEquals("Argument of the first annotation is \"First\"", "First", annotations.get(0).getElementValue("value"));
-		assertEquals("Argument of the second annotation is \"Second\"", "Second", annotations.get(1).getElementValue("value"));
+		assertEquals("Argument of the first annotation is \"First\"", "First", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
+		assertEquals("Argument of the second annotation is \"Second\"", "Second", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
 
 	@Test
@@ -652,8 +652,8 @@ public class AnnotationTest {
 		assertEquals("Field must to have multi annotation of the same type", 2, annotations.size());
 		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
 		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
-		assertEquals("Argument of the first annotation is \"Field 1\"", "Field 1", annotations.get(0).getElementValue("value"));
-		assertEquals("Argument of the second annotation is \"Field 2\"", "Field 2", annotations.get(1).getElementValue("value"));
+		assertEquals("Argument of the first annotation is \"Field 1\"", "Field 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
+		assertEquals("Argument of the second annotation is \"Field 2\"", "Field 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
 
 	@Test
@@ -665,8 +665,8 @@ public class AnnotationTest {
 		assertEquals("Method must to have multi annotation of the same type", 2, annotations.size());
 		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
 		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
-		assertEquals("Argument of the first annotation is \"Method 1\"", "Method 1", annotations.get(0).getElementValue("value"));
-		assertEquals("Argument of the second annotation is \"Method 2\"", "Method 2", annotations.get(1).getElementValue("value"));
+		assertEquals("Argument of the first annotation is \"Method 1\"", "Method 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
+		assertEquals("Argument of the second annotation is \"Method 2\"", "Method 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
 
 	@Test
@@ -678,8 +678,8 @@ public class AnnotationTest {
 		assertEquals("Constructor must to have multi annotation of the same type", 2, annotations.size());
 		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
 		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
-		assertEquals("Argument of the first annotation is \"Constructor 1\"", "Constructor 1", annotations.get(0).getElementValue("value"));
-		assertEquals("Argument of the second annotation is \"Constructor 2\"", "Constructor 2", annotations.get(1).getElementValue("value"));
+		assertEquals("Argument of the first annotation is \"Constructor 1\"", "Constructor 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
+		assertEquals("Argument of the second annotation is \"Constructor 2\"", "Constructor 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
 
 	@Test
@@ -692,8 +692,8 @@ public class AnnotationTest {
 		assertEquals("Parameter must to have multi annotation of the same type", 2, annotations.size());
 		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
 		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
-		assertEquals("Argument of the first annotation is \"Param 1\"", "Param 1", annotations.get(0).getElementValue("value"));
-		assertEquals("Argument of the second annotation is \"Param 2\"", "Param 2", annotations.get(1).getElementValue("value"));
+		assertEquals("Argument of the first annotation is \"Param 1\"", "Param 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
+		assertEquals("Argument of the second annotation is \"Param 2\"", "Param 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
 
 	@Test
@@ -711,8 +711,8 @@ public class AnnotationTest {
 		assertEquals("Local variable must to have multi annotation of the same type", 2, annotations.size());
 		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
 		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
-		assertEquals("Argument of the first annotation is \"Local 1\"", "Local 1", annotations.get(0).getElementValue("value"));
-		assertEquals("Argument of the second annotation is \"Local 2\"", "Local 2", annotations.get(1).getElementValue("value"));
+		assertEquals("Argument of the first annotation is \"Local 1\"", "Local 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
+		assertEquals("Argument of the second annotation is \"Local 2\"", "Local 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
 
 	@Test
@@ -723,8 +723,8 @@ public class AnnotationTest {
 		assertEquals("Local variable must to have multi annotation of the same type", 2, annotations.size());
 		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
 		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
-		assertEquals("Argument of the first annotation is \"Package 1\"", "Package 1", annotations.get(0).getElementValue("value"));
-		assertEquals("Argument of the second annotation is \"Package 2\"", "Package 2", annotations.get(1).getElementValue("value"));
+		assertEquals("Argument of the first annotation is \"Package 1\"", "Package 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
+		assertEquals("Argument of the second annotation is \"Package 2\"", "Package 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
 
 	@Test
@@ -839,11 +839,11 @@ public class AnnotationTest {
 	}
 
 	private CtLiteral<?> getLiteralValueInAnnotation(CtAnnotation<?> annotation) {
-		return (CtLiteral<?>) annotation.getElementValues().get("value");
+		return (CtLiteral<?>) annotation.getValues().get("value");
 	}
 
 	private CtAnnotation<?> getInnerAnnotation(CtAnnotation<?> firstAnnotationInArray) {
-		return (CtAnnotation<?>) firstAnnotationInArray.getElementValues().get("value");
+		return (CtAnnotation<?>) firstAnnotationInArray.getValues().get("value");
 	}
 
 	private CtAnnotation<?> getMiddleAnnotation(CtNewArray<?> arrayAnnotations, int index) {

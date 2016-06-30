@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -523,42 +522,6 @@ public class TypeFactory extends SubFactory {
 		CtTypeParameterReference typeParam = factory.Core().createTypeParameterReference();
 		typeParam.setSimpleName(name);
 		return typeParam;
-	}
-
-	/**
-	 * Creates a type parameter reference.
-	 *
-	 * @param name
-	 * 		the name of the formal parameter
-	 * @param bounds
-	 * 		the bounds
-	 */
-	public CtTypeParameterReference createTypeParameterReference(String name, List<CtTypeReference<?>> bounds) {
-		CtTypeParameterReference typeParam = factory.Core().createTypeParameterReference();
-		typeParam.setSimpleName(name);
-		typeParam.setBoundingType(createIntersectionTypeReference(bounds));
-		return typeParam;
-	}
-
-	/**
-	 * Creates an intersection type reference.
-	 *
-	 * @param bounds
-	 * 		List of bounds saved in the intersection type. The first bound will be the intersection type.
-	 * @param <T>
-	 * 		Type of the first bound.
-	 * @see #createIntersectionTypeReferenceWithBounds(Set)
-	 */
-	@Deprecated
-	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReference(List<CtTypeReference<?>> bounds) {
-		final CtIntersectionTypeReference<T> intersectionRef = factory.Core().createIntersectionTypeReference();
-		CtTypeReference<?> firstBound = bounds.get(0).clone();
-		intersectionRef.setSimpleName(firstBound.getSimpleName());
-		intersectionRef.setDeclaringType(firstBound.getDeclaringType());
-		intersectionRef.setPackage(firstBound.getPackage());
-		intersectionRef.setActualTypeArguments(firstBound.getActualTypeArguments());
-		intersectionRef.setBounds(new TreeSet<>(bounds));
-		return intersectionRef;
 	}
 
 	/**

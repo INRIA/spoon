@@ -933,14 +933,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if (bounds && b.superInterfaces != null && b.superInterfaces != Binding.NO_SUPERINTERFACES) {
 					bounds = false;
 					bindingCache.put(binding, ref);
-					List<CtTypeReference<?>> bounds = new ArrayList<>(b.superInterfaces.length);
+					Set<CtTypeReference<?>> bounds = new TreeSet<>();
 					if (((CtTypeParameterReference) ref).getBoundingType() != null) {
 						bounds.add(((CtTypeParameterReference) ref).getBoundingType());
 					}
 					for (ReferenceBinding superInterface : b.superInterfaces) {
 						bounds.add(getTypeReference(superInterface));
 					}
-					((CtTypeParameterReference) ref).setBoundingType(factory.Type().createIntersectionTypeReference(bounds));
+					((CtTypeParameterReference) ref).setBoundingType(factory.Type().createIntersectionTypeReferenceWithBounds(bounds));
 				}
 				if (binding instanceof CaptureBinding) {
 					bounds = false;
@@ -1036,11 +1036,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 				ref.setSimpleName(new String(binding.sourceName()));
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else if (binding instanceof IntersectionTypeBinding18) {
-				List<CtTypeReference<?>> bounds = new ArrayList<>(binding.getIntersectingTypes().length);
+				Set<CtTypeReference<?>> bounds = new TreeSet<>();
 				for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
 					bounds.add(getTypeReference(superInterface));
 				}
-				ref = factory.Type().createIntersectionTypeReference(bounds);
+				ref = factory.Type().createIntersectionTypeReferenceWithBounds(bounds);
 			} else {
 				throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 			}
@@ -2571,12 +2571,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (typeParameter.bounds != null) {
 			int length = typeParameter.bounds.length;
 
-			final List<CtTypeReference<?>> bounds = new ArrayList<>();
+			final Set<CtTypeReference<?>> bounds = new TreeSet<>();
 			bounds.add(typeParameterRef.getBoundingType());
 			for (int i = 0; i < length; ++i) {
 				bounds.add(buildTypeReference(typeParameter.bounds[i], (BlockScope) null));
 			}
-			typeParameterRef.setBoundingType(factory.Type().createIntersectionTypeReference(bounds));
+			typeParameterRef.setBoundingType(factory.Type().createIntersectionTypeReferenceWithBounds(bounds));
 		}
 
 		return false;
