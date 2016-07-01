@@ -2094,6 +2094,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+		if (typeAccess.isImplicit()) {
+			return;
+		}
 		enterCtExpression(typeAccess);
 		scan(typeAccess.getAccessedType());
 		exitCtExpression(typeAccess);
