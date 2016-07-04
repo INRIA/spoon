@@ -46,7 +46,7 @@ public class EnumFactory extends TypeFactory {
 	public CtEnum<?> create(CtPackage owner, String simpleName) {
 		CtEnum<?> e = factory.Core().createEnum();
 		e.setSimpleName(simpleName);
-		owner.getTypes().add(e);
+		owner.addType(e);
 		return e;
 	}
 
