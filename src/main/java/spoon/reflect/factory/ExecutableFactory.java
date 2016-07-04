@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -103,8 +104,7 @@ public class ExecutableFactory extends SubFactory {
 		if (e instanceof CtMethod) {
 			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), ((CtMethod<T>) e).getType().clone(), e.getSimpleName(), refs);
 		} else if (e instanceof CtLambda) {
-			// A lambda isn't a structural element and doesn't have a declaring type like a method or a constructor.
-			return createReference(null, e.getType(), e.getSimpleName(), refs);
+			return createReference(e.getParent(CtType.class).getReference(), e.getType(), e.getSimpleName(), refs);
 		}
 		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), ((CtConstructor<T>) e).getType().clone(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
