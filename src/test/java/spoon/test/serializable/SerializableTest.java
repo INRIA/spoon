@@ -26,8 +26,8 @@ public class SerializableTest {
 		byte[] ser = ByteSerialization.serialize(sta2);
 		CtStatement des = (CtStatement) ByteSerialization.deserialize(ser);
 
-		String sigBef = sta2.getSignature();
-		String sigAf = des.getSignature();
+		String sigBef = sta2.getShortRepresentation();
+		String sigAf = des.getShortRepresentation();
 
 		CtType<?> typeBef = sta2.getParent(CtType.class);
 		assertNotNull(typeBef);

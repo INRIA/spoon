@@ -122,10 +122,8 @@ public class GenericsTest {
 
 	@Test
 	public void testModelBuildingSimilarSignatureMethods() throws Exception {
-		CtClass<?> type = build("spoon.test.generics",
-				"SimilarSignatureMethodes");
-		List<CtNamedElement> methods = type
-				.getElements(new NameFilter<CtNamedElement>("methode"));
+		CtClass<?> type = build("spoon.test.generics", "SimilarSignatureMethodes");
+		List<CtNamedElement> methods = type.getElements(new NameFilter<CtNamedElement>("methode"));
 		assertEquals(2, methods.size());
 		CtTypeParameterReference generic = ((CtMethod<?>) methods.get(0)).getFormalTypeParameters().get(0);
 		assertEquals("E", generic.getSimpleName());

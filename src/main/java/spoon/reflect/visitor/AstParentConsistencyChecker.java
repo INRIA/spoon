@@ -38,6 +38,6 @@ public class AstParentConsistencyChecker extends CtScanner {
 	}
 
 	private static String toDebugString(CtElement e) {
-		return "Element: " + e + "\nSignature: " + e.getSignature() + "\nClass: " + e.getClass() + "\n";
+		return "Element: " + e + "\nSignature: " + e.getShortRepresentation() + "\nClass: " + e.getClass() + "\n";
 	}
 }

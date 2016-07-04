@@ -140,6 +140,11 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	boolean isFinal();
 
 	/**
+	 * Gets the signature of this method or constructor as specified by chapter "8.4.2 Method Signature" of the Java specification
+	 */
+	String getSignature();
+
+	/**
 	 * Replaces an executable reference by another one.
 	 */
 	void replace(CtExecutableReference<?> reference);

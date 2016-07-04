@@ -69,7 +69,7 @@ public class VariableAccessTest {
 				try {
 					element.clone().getDeclaration();
 				} catch (NullPointerException e) {
-					fail("Fail with " + element.getSimpleName() + " declared in " + element.getParent().getSignature());
+					fail("Fail with " + element.getSimpleName() + " declared in " + element.getParent().getShortRepresentation());
 				}
 				return super.matches(element);
 			}

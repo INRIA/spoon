@@ -31,7 +31,7 @@ import spoon.reflect.visitor.CtInheritanceScanner;
  * Otherwise returns the empty string  */
 public class SignaturePrinter extends  CtInheritanceScanner {
 
-	final StringBuffer signature = new StringBuffer();
+	private final StringBuffer signature = new StringBuffer();
 
 	public String getSignature() {
 		return signature.toString();

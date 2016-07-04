@@ -41,7 +41,7 @@ public abstract class AbstractCtElementAssert<T extends AbstractCtElementAssert<
 		process(actual.getFactory(), processors);
 
 		if (!actual.equals(expected)) {
-			throw new AssertionError(String.format("%1$s and %2$s aren't equals.", actual.getSignature(), expected.getSignature()));
+			throw new AssertionError(String.format("%1$s and %2$s aren't equals.", actual.getShortRepresentation(), expected.getShortRepresentation()));
 		}
 		return this.myself;
 	}
@@ -59,7 +59,7 @@ public abstract class AbstractCtElementAssert<T extends AbstractCtElementAssert<
 		process(actual.getFactory(), processors);
 
 		if (!actual.toString().equals(expected)) {
-			throw new AssertionError(String.format("%1$s and %2$s aren't equals.", actual.getSignature(), expected));
+			throw new AssertionError(String.format("%1$s and %2$s aren't equals.", actual.getShortRepresentation(), expected));
 		}
 		return this.myself;
 	}

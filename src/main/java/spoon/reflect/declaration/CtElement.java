@@ -80,16 +80,10 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	 */
 	String getDocComment();
 
-
 	/**
-	 * Gets the signature of the element.
-	 * Has been introduced for CtMethod, see chapter "8.4.2 Method Signature" of the Java specification.
-	 * Overtime, has been badly exploited.
-	 *
- 	 * Deprecated, will be moved in {@link CtExecutable}, in order to follow the Java specification
+	 * Build a short representation of any element.
 	 */
-	@Deprecated
-	String getSignature();
+	String getShortRepresentation();
 
 	/**
 	 * Gets the position of this element in input source files

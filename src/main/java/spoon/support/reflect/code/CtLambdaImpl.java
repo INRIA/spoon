@@ -156,6 +156,11 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
+	public String getSignature() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public CtExecutableReference<T> getReference() {
 		return getFactory().Executable().createReference(this);
 	}

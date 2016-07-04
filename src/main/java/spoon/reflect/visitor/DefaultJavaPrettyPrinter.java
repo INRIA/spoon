@@ -517,7 +517,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (!removeLine()) {
 					if (line > e.getPosition().getEndLine()) {
 						env.report(null, Level.WARN, e,
-								"cannot adjust position of " + e.getClass().getSimpleName() + " '" + e.getSignature() + "' " + " to match lines: " + line + " > [" + e.getPosition().getLine() + ", "
+								"cannot adjust position of " + e.getClass().getSimpleName() + " '" + e.getShortRepresentation() + "' " + " to match lines: " + line + " > [" + e.getPosition().getLine() + ", "
 										+ e.getPosition().getEndLine() + "]");
 					}
 					break;
