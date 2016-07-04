@@ -7,7 +7,9 @@ import spoon.SpoonAPI;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -23,6 +25,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -133,5 +136,26 @@ public class VisibilityTest {
 		final CtClass<?> tacos = launcher.getFactory().Class().get("spoon.test.visibility.testclasses.Tacos");
 		assertEquals(tacos, field.getDeclaringType().getDeclaration());
 		assertEquals(tacos.getFields().get(0), field.getDeclaration());
+	}
+
+	@Test
+	public void testInvocationVisibilityInFieldDeclaration() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/noclasspath/Solver.java");
+		launcher.setSourceOutputDirectory("./target/spooned");
+		launcher.buildModel();
+
+		final CtType<Object> aSolver = launcher.getFactory().Type().get("org.sat4j.minisat.core.Solver");
+		final CtField<?> lbdTimerField = aSolver.getField("lbdTimer");
+		final CtInvocation<?> ctInvocation = lbdTimerField.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
+			@Override
+			public boolean matches(CtInvocation<?> element) {
+				return "bound".equals(element.getExecutable().getSimpleName()) && super.matches(element);
+			}
+		}).get(0);
+		assertNotNull(ctInvocation.getTarget());
+		assertTrue(ctInvocation.getTarget().isImplicit());
+		assertEquals("bound()", ctInvocation.toString());
 	}
 }

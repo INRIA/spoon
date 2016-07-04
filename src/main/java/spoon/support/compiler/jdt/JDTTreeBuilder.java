@@ -2921,6 +2921,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 					// We are in a static complex in noclasspath mode.
 					if (inv.getExecutable() != null && inv.getExecutable().getDeclaringType() != null) {
 						final CtTypeAccess ta = factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType());
+						if (ta.getAccessedType().isAnonymous()) {
+							ta.setImplicit(true);
+						}
 						inv.setTarget(ta);
 					}
 					if (messageSend.expectedType() != null) {
@@ -2971,7 +2974,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(inv, messageSend);
 			if (messageSend.receiver.isImplicitThis()) {
 				if (inv.getExecutable().getDeclaringType() != null && inv.getExecutable().isStatic()) {
-					inv.setTarget(factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType()));
+					final CtTypeAccess<?> typeAccess = factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType());
+					if (typeAccess.getAccessedType().isAnonymous()) {
+						typeAccess.setImplicit(true);
+					}
+					inv.setTarget(typeAccess);
 				} else if (inv.getExecutable().getDeclaringType() != null && !inv.getExecutable().isStatic()) {
 					messageSend.receiver.traverse(this, scope);
 					if (inv.getTarget() instanceof CtThisAccess) {
