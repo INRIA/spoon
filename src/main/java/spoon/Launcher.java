@@ -372,14 +372,6 @@ public class Launcher implements SpoonAPI {
 			jsap.registerParameter(sw1);
 
 			// Enable generation of javadoc.
-			sw1 = new Switch("generate-javadoc");
-			sw1.setShortFlag('j');
-			sw1.setLongFlag("generate-javadoc");
-			sw1.setHelp("Enable the generation of the javadoc. Deprecated, use enable-comments argument.");
-			sw1.setDefault("false");
-			jsap.registerParameter(sw1);
-
-			// Enable generation of javadoc.
 			sw1 = new Switch("enable-comments");
 			sw1.setShortFlag('c');
 			sw1.setLongFlag("enable-comments");
@@ -434,7 +426,6 @@ public class Launcher implements SpoonAPI {
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
-		environment.setGenerateJavadoc(jsapActualArgs.getBoolean("generate-javadoc"));
 		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
 
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));

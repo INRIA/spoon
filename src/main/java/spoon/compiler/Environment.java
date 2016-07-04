@@ -288,20 +288,6 @@ public interface Environment {
 	void setCopyResources(boolean copyResources);
 
 	/**
-	 * Returns the value of the option generate-javadoc.
-	 *
-	 * @see #isCommentsEnabled()
-	 */
-	@Deprecated
-	boolean isGenerateJavadoc();
-
-	/**
-	 * Sets the option generate-javadoc to generate javadoc of the project on the source generated.
-	 */
-	@Deprecated
-	void setGenerateJavadoc(boolean generateJavadoc);
-
-	/**
 	 * Returns the value of the option enable-comments.
 	 */
 	boolean isCommentsEnabled();

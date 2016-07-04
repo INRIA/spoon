@@ -77,22 +77,22 @@ public class FactoryTest {
 		final CtType<Foo> foo = buildClass(Foo.class);
 
 		assertEquals(1, foo.getAnnotations().size());
-		assertEquals(0, foo.getAnnotations().get(0).getElementValues().size());
+		assertEquals(0, foo.getAnnotations().get(0).getValues().size());
 
 		foo.getFactory().Annotation().annotate(foo, Foo.Bar.class, "clazz", Foo.class);
 
 		assertEquals(1, foo.getAnnotations().size());
-		assertEquals(1, foo.getAnnotations().get(0).getElementValues().size());
-		assertTrue(foo.getAnnotations().get(0).getElementValues().get("clazz") instanceof CtFieldRead);
-		assertEquals("spoon.test.factory.testclasses.Foo.class", foo.getAnnotations().get(0).getElementValues().get("clazz").toString());
+		assertEquals(1, foo.getAnnotations().get(0).getValues().size());
+		assertTrue(foo.getAnnotations().get(0).getValues().get("clazz") instanceof CtFieldRead);
+		assertEquals("spoon.test.factory.testclasses.Foo.class", foo.getAnnotations().get(0).getValues().get("clazz").toString());
 
 		foo.getFactory().Annotation().annotate(foo, Foo.Bar.class, "classes", new Class[] { Foo.class });
 
 		assertEquals(1, foo.getAnnotations().size());
-		assertEquals(2, foo.getAnnotations().get(0).getElementValues().size());
-		assertTrue(foo.getAnnotations().get(0).getElementValues().get("classes") instanceof CtNewArray);
-		assertEquals(1, ((CtNewArray) foo.getAnnotations().get(0).getElementValues().get("classes")).getElements().size());
-		assertEquals("spoon.test.factory.testclasses.Foo.class", ((CtNewArray) foo.getAnnotations().get(0).getElementValues().get("classes")).getElements().get(0).toString());
+		assertEquals(2, foo.getAnnotations().get(0).getValues().size());
+		assertTrue(foo.getAnnotations().get(0).getValues().get("classes") instanceof CtNewArray);
+		assertEquals(1, ((CtNewArray) foo.getAnnotations().get(0).getValues().get("classes")).getElements().size());
+		assertEquals("spoon.test.factory.testclasses.Foo.class", ((CtNewArray) foo.getAnnotations().get(0).getValues().get("classes")).getElements().get(0).toString());
 	}
 
 	@Test

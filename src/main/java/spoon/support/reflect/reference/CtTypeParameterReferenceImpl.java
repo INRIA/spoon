@@ -26,9 +26,8 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
@@ -50,16 +49,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public List<CtTypeReference<?>> getBounds() {
-		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			return Arrays.asList(getBoundingType().asCtIntersectionTypeReference().getBounds().toArray(new CtTypeReference<?>[0]));
-		} else if (getBoundingType() != null) {
-			return Collections.<CtTypeReference<?>>singletonList(getBoundingType());
-		}
-		return emptyList();
-	}
-
-	@Override
 	public boolean isUpper() {
 		return upper;
 	}
@@ -73,7 +62,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().setBounds(new TreeSet<>(bounds));
 		} else if (bounds.size() > 1) {
-			setBoundingType(getFactory().Type().createIntersectionTypeReference(bounds));
+			final Set<CtTypeReference<?>> refs = new TreeSet<>();
+			refs.addAll(bounds);
+			setBoundingType(getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));
 		} else {
 			setBoundingType(bounds.get(0));
 		}
@@ -142,7 +133,10 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
 		} else {
-			setBoundingType(getFactory().Type().createIntersectionTypeReference(Arrays.asList(getBoundingType(), bound)));
+			final Set<CtTypeReference<?>> refs = new TreeSet<>();
+			refs.add(getBoundingType());
+			refs.add(bound);
+			setBoundingType(getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));
 		}
 		return (T) this;
 	}

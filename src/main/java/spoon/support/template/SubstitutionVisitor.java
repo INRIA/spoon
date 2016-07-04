@@ -433,7 +433,7 @@ public class SubstitutionVisitor extends CtScanner {
 				System.err.println(reference.getParent());
 			}
 			visitCtTypeReference(reference.getDeclaringType());
-			scanCtGenericElementReference(reference);
+			scanCtActualTypeContainer(reference);
 		}
 
 		/**

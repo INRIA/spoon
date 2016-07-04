@@ -56,13 +56,6 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 */
 	List<CtEnumValue<?>> getEnumValues();
 
-	/**
-	 * Returns the set of predefined constant values of this enum
-	 * @see #getEnumValues()
-	 */
-	@Deprecated
-	List<CtField<?>> getValues();
-
 	@Override
 	CtEnum<T> clone();
 }

@@ -91,15 +91,6 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
-	public List<CtField<?>> getValues() {
-		List<CtField<?>> result = new ArrayList<>();
-		for (CtField<?> field : getEnumValues()) {
-			result.add(field);
-		}
-		return Collections.unmodifiableList(result);
-	}
-
-	@Override
 	public List<CtField<?>> getFields() {
 		List<CtField<?>> result = new ArrayList<>();
 		result.addAll(getEnumValues());
