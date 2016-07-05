@@ -37,7 +37,7 @@ import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.EqualVisitor;
 import spoon.support.visitor.HashcodeVisitor;
-import spoon.support.visitor.SignaturePrinter;
+import spoon.support.visitor.ShortRepresentationPrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 import spoon.support.visitor.equals.CloneHelper;
 import spoon.support.visitor.equals.EqualsVisitor;
@@ -77,20 +77,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		return list.isEmpty() ? Collections.<T>emptyList() : Collections.unmodifiableList(list);
 	}
 
-	public String getSignature() {
-		SignaturePrinter pr = new SignaturePrinter();
-		pr.scan(this);
-		String sig = pr.getSignature();
-
-		// we have a signature return it
-		if (sig.length() > 0) {
-			return sig;
-		}
-
-		// else fallback to backward compatibility
-		return getDeepRepresentation(this);
-	}
-
 	transient Factory factory;
 
 	protected CtElement parent;
@@ -111,6 +97,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	 * based on the deep representation
 	 * which is also used in {@link #equals(Object)}.
 	 */
+	@Override
 	public int compareTo(CtElement o) {
 		String current = getDeepRepresentation(this);
 		String other = getDeepRepresentation(o);
@@ -118,6 +105,13 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 			throw new ClassCastException("Unable to compare elements");
 		}
 		return current.compareTo(other);
+	}
+
+	@Override
+	public String getShortRepresentation() {
+		final ShortRepresentationPrinter printer = new ShortRepresentationPrinter();
+		printer.scan(this);
+		return printer.getShortRepresentation();
 	}
 
 	private String getDeepRepresentation(CtElement elem) {

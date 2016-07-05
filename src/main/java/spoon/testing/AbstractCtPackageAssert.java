@@ -66,7 +66,7 @@ public abstract class AbstractCtPackageAssert<T extends AbstractCtPackageAssert<
 			final CtType<?> actualType = actualTypes.get(i);
 			final CtType<?> expectedType = expectedTypes.get(i);
 			if (!actualType.toString().equals(expectedType.toString())) {
-				throw new AssertionError(String.format("%1$s and %2$s aren't equals.", actualType.getSignature(), expectedType.getSignature()));
+				throw new AssertionError(String.format("%1$s and %2$s aren't equals.", actualType.getShortRepresentation(), expectedType.getShortRepresentation()));
 			}
 		}
 

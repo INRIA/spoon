@@ -16,22 +16,12 @@
  */
 package spoon.processing;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -40,6 +30,14 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.processing.XmlProcessorProperties;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A processor to add/replace/override/remove annotations described in an XML
@@ -149,8 +147,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @see CtElement#getSignature()
 	 */
 	protected boolean isFieldMatching(CtField<?> field, String fieldExpression) {
-		String signature = field.getSignature();
-		return java.util.regex.Pattern.matches(fieldExpression, signature);
+		return java.util.regex.Pattern.matches(fieldExpression, field.getShortRepresentation());
 	}
 
 	public final void process() {

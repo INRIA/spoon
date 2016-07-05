@@ -1,18 +1,7 @@
 package spoon.test.signature;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.HashSet;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonCompiler;
@@ -37,6 +26,16 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+
+import java.util.HashSet;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SignatureTest {
 
@@ -121,9 +120,6 @@ public class SignatureTest {
 				.compile();
 
 		CtStatement sta2bis = ((CtBlock<?>)sta2.getParent()).getStatement(1);
-
-		String signature1 = sta1.getSignature();
-		String signature2 = sta2bis.getSignature();
 
 		assertFalse(sta1.equals(sta2bis));// equals depends on deep equality
 

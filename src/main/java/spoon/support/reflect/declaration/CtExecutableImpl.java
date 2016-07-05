@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.visitor.SignaturePrinter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,6 +139,13 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	@Override
 	public boolean removeThrownType(CtTypeReference<? extends Throwable> throwType) {
 		return thrownTypes.remove(throwType);
+	}
+
+	@Override
+	public String getSignature() {
+		final SignaturePrinter pr = new SignaturePrinter();
+		pr.scan(this);
+		return pr.getSignature();
 	}
 
 	@Override
