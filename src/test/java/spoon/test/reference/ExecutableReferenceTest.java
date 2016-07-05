@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
@@ -124,5 +125,26 @@ public class ExecutableReferenceTest {
 		final List<CtExecutableReference<?>> kuuExecutables = kuu.getAllExecutables().stream().collect(Collectors.toList());
 		assertEquals(1, kuuExecutables.size());
 		assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0));
+	}
+
+	@Test
+	public void testCreateReferenceForAnonymousExecutable() {
+		final spoon.Launcher launcher = new spoon.Launcher();
+		launcher.addInputResource("src/test/resources/noclasspath/Foo4.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(8);
+		launcher.buildModel();
+
+		launcher.getModel().getElements(new TypeFilter<CtExecutable<?>>(CtExecutable.class) {
+			@Override
+			public boolean matches(final CtExecutable<?> exec) {
+				try {
+					exec.getReference();
+				} catch (ClassCastException ex) {
+					fail(ex.getMessage());
+				}
+				return super.matches(exec);
+			}
+		});
 	}
 }
