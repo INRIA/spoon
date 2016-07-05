@@ -19,12 +19,8 @@ package spoon.reflect.code;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
- * This code element defines an access to a type.
- *
- * In Java, it is generally of the form: <code>Type</code>.
- *
- * For example, you can have:
- *
+ * This code element represents a type reference usable as an expression.
+ * It is used in particular for static accesses, Java 8 method references, instanceof binary expressions and ".class".
  * <pre>
  *     Type.staticField
  *     Type.staticMethod()
