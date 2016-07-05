@@ -146,13 +146,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 			Class<? extends Annotation> annotationType);
 
 	/**
-	 * Returns true if this element is implicit and automatically added by the
-	 * Java compiler.
+	 * Returns true if this element is not present in the code (automatically added by the
+	 * Java compiler or inferred when the model is built).
+	 * Consequently, implicit elements are not pretty-printed and have no position.
 	 */
 	boolean isImplicit();
 
 	/**
-	 * Sets this element to be implicit (will not be printed).
+	 * Sets this element to be implicit.
 	 */
 	<E extends CtElement> E setImplicit(boolean b);
 
