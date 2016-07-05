@@ -113,7 +113,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @param typeExpression
 	 * 		and expression to match the type against.
 	 * @return true if the type matches the expression
-	 * @see CtElement#getSignature()
+	 * @see CtType#getQualifiedName()
 	 */
 	protected boolean isTypeMatching(CtType<?> type, String typeExpression) {
 		return java.util.regex.Pattern.matches(typeExpression, type.getQualifiedName());
@@ -128,7 +128,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @param executableExpression
 	 * 		and expression to match the executable against.
 	 * @return true if the executable matches the expression
-	 * @see CtElement#getSignature()
+	 * @see CtExecutable#getSignature()
 	 */
 	protected boolean isExecutableMatching(CtExecutable<?> executable, String executableExpression) {
 		String signature = executable.getSignature();
@@ -144,7 +144,7 @@ public class XMLAnnotationProcessor extends AbstractManualProcessor {
 	 * @param fieldExpression
 	 * 		and expression to match the field against.
 	 * @return true if the field matches the expression
-	 * @see CtElement#getSignature()
+	 * @see CtElement#getShortRepresentation()
 	 */
 	protected boolean isFieldMatching(CtField<?> field, String fieldExpression) {
 		return java.util.regex.Pattern.matches(fieldExpression, field.getShortRepresentation());
