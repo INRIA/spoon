@@ -105,6 +105,8 @@ public class ExecutableFactory extends SubFactory {
 			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), ((CtMethod<T>) e).getType().clone(), e.getSimpleName(), refs);
 		} else if (e instanceof CtLambda) {
 			return createReference(e.getParent(CtType.class).getReference(), e.getType(), e.getSimpleName(), refs);
+		} else if (e instanceof CtAnonymousExecutable) {
+			return createReference(((CtAnonymousExecutable) e).getDeclaringType().getReference(), e.getType().clone(), e.getSimpleName());
 		}
 		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), ((CtConstructor<T>) e).getType().clone(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
