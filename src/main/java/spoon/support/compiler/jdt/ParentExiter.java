@@ -462,7 +462,6 @@ public class ParentExiter extends CtInheritanceScanner {
 				ctPackage.getTypes().remove(child);
 			}
 			ctPackage.getTypes().add((CtType<?>) child);
-			this.jdtTreeBuilder.context.addCreatedType((CtType<?>) child);
 			if (child.getPosition() != null && child.getPosition().getCompilationUnit() != null) {
 				child.getPosition().getCompilationUnit().getDeclaredTypes().add((CtType<?>) child);
 			}
