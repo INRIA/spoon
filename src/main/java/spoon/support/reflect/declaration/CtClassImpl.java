@@ -18,6 +18,13 @@ package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder.InputType;
+import spoon.diff.AddAction;
+import spoon.diff.DeleteAction;
+import spoon.diff.DeleteAllAction;
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ListContext;
+import spoon.diff.context.ObjectContext;
+import spoon.diff.context.SetContext;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -46,6 +53,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -109,11 +117,23 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e) {
+		if (e == null) {
+			return (C) this;
+		}
+		e.setParent(this);
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			List<CtAnonymousExecutable> anonymousExecutables = getAnonymousExecutables();
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(anonymousExecutables, anonymousExecutables.size()), e));
+		}
 		return addTypeMember(e);
 	}
 
 	@Override
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			List<CtAnonymousExecutable> anonymousExecutables = getAnonymousExecutables();
+			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(anonymousExecutables, anonymousExecutables.indexOf(e)), e));
+		}
 		return removeTypeMember(e);
 	}
 
@@ -124,6 +144,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(typeMembers), new ArrayList<>(getAnonymousExecutables())));
+		}
 		if (anonymousExecutables == null || anonymousExecutables.isEmpty()) {
 			this.typeMembers.removeAll(getAnonymousExecutables());
 			return (C) this;
@@ -137,11 +160,15 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
+		Set<CtConstructor<T>> oldConstructor = getConstructors();
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(typeMembers), new HashSet<>(oldConstructor)));
+		}
 		if (constructors == null || constructors.isEmpty()) {
-			this.typeMembers.removeAll(getConstructors());
+			this.typeMembers.removeAll(oldConstructor);
 			return (C) this;
 		}
-		typeMembers.removeAll(getConstructors());
+		typeMembers.removeAll(oldConstructor);
 		for (CtConstructor<T> constructor : constructors) {
 			addConstructor(constructor);
 		}
@@ -150,6 +177,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(typeMembers), constructor));
+		}
 		return addTypeMember(constructor);
 	}
 
@@ -162,6 +192,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
 		if (superClass != null) {
 			superClass.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "superClass"), superClass, this.superClass));
 		}
 		this.superClass = superClass;
 		return (C) this;

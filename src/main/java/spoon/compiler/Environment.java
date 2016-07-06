@@ -17,6 +17,8 @@
 package spoon.compiler;
 
 import org.apache.log4j.Level;
+import spoon.diff.Action;
+import spoon.diff.AddAction;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -330,4 +332,20 @@ public interface Environment {
 
 	/** Set the directory where binary .class files are created */
 	String getBinaryOutputDirectory();
+
+	/**
+	 * Checks if we want to build the stack changes on the AST.
+	 */
+	boolean buildStackChanges();
+
+	/**
+	 * If you set at true this method, you'll stack any changes done on your AST but you can't modify
+	 * list or set returned by the AST.
+	 */
+	void setBuildStackChanges(boolean buildStackChanges);
+
+	/**
+	 * Push an action on the stack changes.
+	 */
+	void pushToStack(Action action);
 }

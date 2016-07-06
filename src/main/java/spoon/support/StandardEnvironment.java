@@ -24,6 +24,7 @@ import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.diff.Action;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -84,6 +85,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private boolean shouldCompile = false;
 
 	private boolean skipSelfChecks;
+
+	private boolean buildStackChanges;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -147,6 +150,21 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setSelfChecks(boolean skip) {
 		skipSelfChecks = skip;
+	}
+
+	@Override
+	public boolean buildStackChanges() {
+		return buildStackChanges;
+	}
+
+	@Override
+	public void setBuildStackChanges(boolean buildStackChanges) {
+		this.buildStackChanges = buildStackChanges;
+	}
+
+	@Override
+	public void pushToStack(Action action) {
+
 	}
 
 	private Level toLevel(String level) {
