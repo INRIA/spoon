@@ -243,7 +243,7 @@ public class HelperJDTTreeBuilder {
 	 * @param typeName Type name.
 	 * @return qualified name of the expected type.
 	 */
-	static String hasTypeInImports(String typeName, BuilderContext context) {
+	static String hasTypeInImports(String typeName, ContextBuilder context) {
 		if (typeName == null) {
 			return null;
 		} else if (context.compilationunitdeclaration.imports == null) {

@@ -17,21 +17,14 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
-import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtTry;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayDeque;
@@ -41,7 +34,7 @@ import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 
-public class BuilderContext {
+public class ContextBuilder {
 
 	Deque<String> annotationValueName = new ArrayDeque<>();
 
@@ -80,7 +73,7 @@ public class BuilderContext {
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 
-	BuilderContext(JDTTreeBuilder jdtTreeBuilder) {
+	ContextBuilder(JDTTreeBuilder jdtTreeBuilder) {
 		this.jdtTreeBuilder = jdtTreeBuilder;
 	}
 
@@ -89,40 +82,9 @@ public class BuilderContext {
 		stack.push(new ASTPair(e, node));
 		// aststack.push(node);
 		if (compilationunitdeclaration != null) {
-			CoreFactory cf = this.jdtTreeBuilder.factory.Core();
-			int sourceStartDeclaration = node.sourceStart;
-			int sourceStartSource = node.sourceStart;
-			int sourceEnd = node.sourceEnd;
-			if (node instanceof AbstractVariableDeclaration) {
-				sourceStartDeclaration = ((AbstractVariableDeclaration) node).declarationSourceStart;
-				sourceEnd = ((AbstractVariableDeclaration) node).declarationSourceEnd;
-			} else if (node instanceof TypeDeclaration) {
-				sourceStartDeclaration = ((TypeDeclaration) node).declarationSourceStart;
-				sourceEnd = ((TypeDeclaration) node).declarationSourceEnd;
-			} else if ((e instanceof CtStatementList) && (node instanceof AbstractMethodDeclaration)) {
-				sourceStartDeclaration = ((AbstractMethodDeclaration) node).bodyStart - 1;
-				sourceEnd = ((AbstractMethodDeclaration) node).bodyEnd + 1;
-			} else if ((node instanceof AbstractMethodDeclaration)) {
-				if (((AbstractMethodDeclaration) node).bodyStart == 0) {
-					sourceStartDeclaration = -1;
-					sourceStartSource = -1;
-					sourceEnd = -1;
-				} else {
-					sourceStartDeclaration = ((AbstractMethodDeclaration) node).declarationSourceStart;
-					sourceEnd = ((AbstractMethodDeclaration) node).declarationSourceEnd;
-				}
-			}
-			if ((node instanceof Expression)) {
-				if (((Expression) node).statementEnd > 0) {
-					sourceEnd = ((Expression) node).statementEnd;
-				}
-			}
-			if (!(e instanceof CtNamedElement)) {
-				sourceStartSource = sourceStartDeclaration;
-			}
-			CompilationUnit cu = this.jdtTreeBuilder.factory.CompilationUnit().create(new String(compilationunitdeclaration.getFileName()));
-			e.setPosition(cf.createSourcePosition(cu, sourceStartDeclaration, sourceStartSource, sourceEnd, compilationunitdeclaration.compilationResult.lineSeparatorPositions));
+			e.setPosition(this.jdtTreeBuilder.getPosition().buildPositionCtElement(e, node));
 		}
+
 		ASTPair pair = stack.peek();
 		CtElement current = pair.element;
 
@@ -138,7 +100,7 @@ public class BuilderContext {
 		try {
 			if (e instanceof CtTypedElement && node instanceof Expression) {
 				if (((CtTypedElement<?>) e).getType() == null) {
-					((CtTypedElement<Object>) e).setType(this.jdtTreeBuilder.references.getTypeReference(((Expression) node).resolvedType));
+					((CtTypedElement<Object>) e).setType(this.jdtTreeBuilder.getReferences().getTypeReference(((Expression) node).resolvedType));
 				}
 			}
 		} catch (UnsupportedOperationException ignore) {
@@ -154,8 +116,8 @@ public class BuilderContext {
 		}
 		CtElement current = pair.element;
 		if (!stack.isEmpty()) {
-			this.jdtTreeBuilder.exiter.child = current;
-			this.jdtTreeBuilder.exiter.scan(stack.peek().element);
+			this.jdtTreeBuilder.getExiter().setChild(current);
+			this.jdtTreeBuilder.getExiter().scan(stack.peek().element);
 		}
 	}
 
