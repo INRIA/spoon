@@ -85,8 +85,8 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 
 				if ("Map".equals(targetInvocation.getExecutable().getType().getSimpleName())) {
 					((CtExpression) replace.getArguments().get(0)).replace(factory.Code().createInvocation(targetInvocation, factory.Executable().createReference("List Map#values()")));
-					replace.getArguments().add(1, factory.Code().createInvocation((CtExpression) replace.getArguments().get(1), factory.Executable().createReference("List Map#values()")));
-					replace.getArguments().remove(2);
+					replace.addArgument(1, factory.Code().createInvocation((CtExpression) replace.getArguments().get(1), factory.Executable().createReference("List Map#values()")));
+					replace.removeArgument((CtExpression) replace.getArguments().get(2));
 				}
 
 				clone.getBody().getStatement(i).replace(replace);

@@ -16,6 +16,13 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.AddAction;
+import spoon.diff.DeleteAction;
+import spoon.diff.DeleteAllAction;
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.diff.context.SetContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtRHSReceiver;
@@ -28,11 +35,11 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVariable<T> {
@@ -80,12 +87,18 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (defaultExpression != null) {
 			defaultExpression.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "defaultExpression"), defaultExpression, this.defaultExpression));
+		}
 		this.defaultExpression = defaultExpression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "name"), simpleName, this.name));
+		}
 		this.name = simpleName;
 		return (C) this;
 	}
@@ -94,6 +107,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "type"), type, this.type));
 		}
 		this.type = type;
 		return (C) this;
@@ -112,7 +128,14 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			this.modifiers = EnumSet.copyOf(modifiers);
+			if (getFactory().getEnvironment().buildStackChanges()) {
+				getFactory().getEnvironment().pushToStack(new DeleteAllAction(new SetContext(this, this.modifiers), new HashSet<>(this.modifiers)));
+			}
+			this.modifiers.clear();
+			for (ModifierKind modifier : modifiers) {
+				addModifier(modifier);
+			}
+
 		}
 		return (C) this;
 	}
@@ -122,13 +145,24 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new AddAction(new SetContext(
+					this, this.modifiers), modifier));
+		}
 		modifiers.add(modifier);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		return !modifiers.isEmpty() && modifiers.remove(modifier);
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
+			return false;
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAction(new SetContext(
+					this, modifiers), modifier));
+		}
+		return modifiers.remove(modifier);
 	}
 
 	@Override

@@ -16,12 +16,14 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronized {
 	private static final long serialVersionUID = 1L;
@@ -52,6 +54,9 @@ public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronize
 		if (block != null) {
 			block.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "block"), block, this.block));
+		}
 		this.block = block;
 		return (T) this;
 	}
@@ -60,6 +65,9 @@ public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronize
 	public <T extends CtSynchronized> T setExpression(CtExpression<?> expression) {
 		if (expression != null) {
 			expression.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "expression"), expression, this.expression));
 		}
 		this.expression = expression;
 		return (T) this;

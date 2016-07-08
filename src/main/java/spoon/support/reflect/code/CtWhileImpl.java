@@ -16,11 +16,13 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtWhileImpl extends CtLoopImpl implements CtWhile {
 	private static final long serialVersionUID = 1L;
@@ -42,6 +44,9 @@ public class CtWhileImpl extends CtLoopImpl implements CtWhile {
 	public <T extends CtWhile> T setLoopingExpression(CtExpression<Boolean> expression) {
 		if (expression != null) {
 			expression.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "expression"), expression, this.expression));
 		}
 		this.expression = expression;
 		return (T) this;

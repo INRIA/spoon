@@ -16,11 +16,15 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.AddAction;
+import spoon.diff.DeleteAction;
+import spoon.diff.DeleteAllAction;
+import spoon.diff.context.ListContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -58,6 +62,10 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			this.dimensionExpressions = CtElementImpl.emptyList();
 			return (C) this;
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
+					this, this.dimensionExpressions), new ArrayList<>(this.dimensionExpressions)));
+		}
 		this.dimensionExpressions.clear();
 		for (CtExpression<Integer> expr : dimensionExpressions) {
 			addDimensionExpression(expr);
@@ -74,15 +82,24 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			dimensionExpressions = new ArrayList<>(NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		dimension.setParent(this);
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
+					this, this.dimensionExpressions), dimension));
+		}
 		dimensionExpressions.add(dimension);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeDimensionExpression(CtExpression<Integer> dimension) {
-		return dimensionExpressions
-				!= CtElementImpl.<CtExpression<Integer>>emptyList()
-				&& dimensionExpressions.remove(dimension);
+		if (dimensionExpressions == CtElementImpl.<CtExpression<Integer>>emptyList()) {
+			return false;
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
+					this, dimensionExpressions, dimensionExpressions.indexOf(dimension)), dimension));
+		}
+		return dimensionExpressions.remove(dimension);
 	}
 
 	@Override
@@ -90,6 +107,10 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 		if (expressions == null || expressions.isEmpty()) {
 			this.expressions = CtElementImpl.emptyList();
 			return (C) this;
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
+					this, this.expressions), new ArrayList<>(this.expressions)));
 		}
 		this.expressions.clear();
 		for (CtExpression<?> expr : expressions) {
@@ -107,13 +128,24 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			this.expressions = new ArrayList<>();
 		}
 		expression.setParent(this);
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
+					this, this.expressions), expression));
+		}
 		expressions.add(expression);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeElement(CtExpression<?> expression) {
-		return expressions != CtElementImpl.<CtExpression<?>>emptyList() && expressions.remove(expression);
+		if (expressions == CtElementImpl.<CtExpression<?>>emptyList()) {
+			return false;
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
+					this, expressions, expressions.indexOf(expression)), expression));
+		}
+		return expressions.remove(expression);
 	}
 
 	@Override

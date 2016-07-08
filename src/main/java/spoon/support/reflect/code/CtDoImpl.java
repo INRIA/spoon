@@ -16,11 +16,13 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtDoImpl extends CtLoopImpl implements CtDo {
 	private static final long serialVersionUID = 1L;
@@ -42,6 +44,9 @@ public class CtDoImpl extends CtLoopImpl implements CtDo {
 	public <T extends CtDo> T setLoopingExpression(CtExpression<Boolean> expression) {
 		if (expression != null) {
 			expression.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "expression"), expression, this.expression));
 		}
 		this.expression = expression;
 		return (T) this;

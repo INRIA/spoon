@@ -16,12 +16,14 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtSuperAccessImpl<T> extends CtVariableReadImpl<T> implements CtSuperAccess<T> {
 
@@ -44,6 +46,9 @@ public class CtSuperAccessImpl<T> extends CtVariableReadImpl<T> implements CtSup
 	public <C extends CtTargetedExpression<T, CtExpression<?>>> C setTarget(CtExpression<?> target) {
 		if (target != null) {
 			target.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "target"), target, this.target));
 		}
 		this.target = target;
 		return null;

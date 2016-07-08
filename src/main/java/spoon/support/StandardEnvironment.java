@@ -43,7 +43,9 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -87,6 +89,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private boolean skipSelfChecks;
 
 	private boolean buildStackChanges;
+
+	private Deque<Action> actions = new ArrayDeque<>();
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -164,7 +168,12 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void pushToStack(Action action) {
+		actions.push(action);
+	}
 
+	@Override
+	public Deque<Action> getActionChanges() {
+		return actions;
 	}
 
 	private Level toLevel(String level) {

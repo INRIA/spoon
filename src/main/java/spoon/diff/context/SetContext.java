@@ -16,10 +16,12 @@
  */
 package spoon.diff.context;
 
+import spoon.reflect.declaration.CtElement;
+
 import java.util.Set;
 
 public class SetContext extends CollectionContext<Set<?>> {
-	public SetContext(Set<?> original) {
-		super(original);
+	public SetContext(CtElement element, Set<?> original) {
+		super(element, original);
 	}
 }

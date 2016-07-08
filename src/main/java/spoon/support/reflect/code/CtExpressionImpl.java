@@ -16,11 +16,16 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.AddAction;
+import spoon.diff.DeleteAllAction;
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ListContext;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -51,6 +56,9 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		if (type != null) {
 			type.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "type"), type, this.type));
+		}
 		this.type = type;
 		return (C) this;
 	}
@@ -63,6 +71,10 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		}
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
+					this, this.typeCasts), new ArrayList<>(this.typeCasts)));
 		}
 		this.typeCasts.clear();
 		for (CtTypeReference<?> cast : casts) {
@@ -80,6 +92,10 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 			typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		type.setParent(this);
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
+					this, this.typeCasts), type));
+		}
 		typeCasts.add(type);
 		return (C) this;
 	}

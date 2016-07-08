@@ -24,6 +24,10 @@ public class AddAction extends Action {
 		super(context, newElement);
 	}
 
+	public AddAction(Context context, Object newValue) {
+		super(context, newValue);
+	}
+
 	@Override
 	public void rollback() {
 	}

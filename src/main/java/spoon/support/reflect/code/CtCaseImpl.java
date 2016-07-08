@@ -16,13 +16,19 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.AddAction;
+import spoon.diff.DeleteAction;
+import spoon.diff.DeleteAllAction;
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ListContext;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -60,6 +66,9 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		if (caseExpression != null) {
 			caseExpression.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "caseExpression"), caseExpression, this.caseExpression));
+		}
 		this.caseExpression = caseExpression;
 		return (T) this;
 	}
@@ -69,6 +78,10 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		if (statements == null || statements.isEmpty()) {
 			this.statements = CtElementImpl.emptyList();
 			return (T) this;
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
+					this, this.statements), new ArrayList<>(this.statements)));
 		}
 		this.statements.clear();
 		for (CtStatement stmt : statements) {
@@ -86,6 +99,10 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 			statements = new ArrayList<>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
+					this, this.statements), statement));
+		}
 		statements.add(statement);
 		return (T) this;
 	}
@@ -94,6 +111,10 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	public void removeStatement(CtStatement statement) {
 		if (statements == CtElementImpl.<CtStatement>emptyList()) {
 			return;
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
+					this, statements, statements.indexOf(statement)), statement));
 		}
 		statements.remove(statement);
 	}

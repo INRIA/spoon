@@ -422,11 +422,11 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					@Override
 					public boolean matches(CtMethod element) {
 						final CtBlock body = element.getBody();
-						if (body.getStatements().size() != 2) {
+						if (body.getStatements().size() != 3) {
 							return false;
 						}
-						if (body.getStatement(0) instanceof CtAssignment) {
-							final CtExpression assigned = ((CtAssignment) body.getStatement(0)).getAssigned();
+						if (body.getStatement(1) instanceof CtAssignment) {
+							final CtExpression assigned = ((CtAssignment) body.getStatement(1)).getAssigned();
 							if (!(assigned instanceof CtFieldAccess)) {
 								return false;
 							}
@@ -440,7 +440,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					}
 				});
 				if (matchers.size() != 1) {
-					throw new SpoonException("Get more than one setter. Please make an more ingenious method to get setter method.");
+					throw new SpoonException("Get more than one setter. Please make an more ingenious method to get setter method. " + matchers.size() + " " + ctField);
 				}
 				return matchers.get(0);
 			}

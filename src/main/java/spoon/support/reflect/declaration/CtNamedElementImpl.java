@@ -16,12 +16,14 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements CtNamedElement {
 
@@ -43,10 +45,16 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
 		Factory factory = getFactory();
+		if (factory == null) {
+			this.simpleName = simpleName;
+			return (T) this;
+		}
 		if (factory instanceof FactoryImpl) {
 			simpleName = ((FactoryImpl) factory).dedup(simpleName);
 		}
-
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "simpleName"), simpleName, this.simpleName));
+		}
 		this.simpleName = simpleName;
 		return (T) this;
 	}

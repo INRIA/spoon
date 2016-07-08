@@ -24,6 +24,10 @@ public class DeleteAction extends Action {
 		super(context, oldElement);
 	}
 
+	public DeleteAction(Context context, Object oldElement) {
+		super(context, oldElement);
+	}
+
 	@Override
 	public void rollback() {
 

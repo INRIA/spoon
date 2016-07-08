@@ -17,6 +17,8 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
@@ -186,18 +188,27 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "declaringType"), declaringType, this.declaringType));
+		}
 		this.declaringType = declaringType;
 		return (C) this;
 	}
 
 	@Override
-	public <C extends CtFieldReference<T>> C setFinal(boolean b) {
-		fina = b;
+	public <C extends CtFieldReference<T>> C setFinal(boolean fina) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "fina"), fina, this.fina));
+		}
+		this.fina = fina;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtFieldReference<T>> C setStatic(boolean stat) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "stat"), stat, this.stat));
+		}
 		this.stat = stat;
 		return (C) this;
 	}

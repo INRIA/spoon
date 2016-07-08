@@ -17,6 +17,8 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtLabelledFlowBreak;
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtStatement;
@@ -45,6 +47,9 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 
 	@Override
 	public <T extends CtLabelledFlowBreak> T setTargetLabel(String targetLabel) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "targetLabel"), targetLabel, this.targetLabel));
+		}
 		this.targetLabel = targetLabel;
 		return (T) this;
 	}

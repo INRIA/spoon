@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -24,7 +27,6 @@ import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUnaryOperator<T> {
 	private static final long serialVersionUID = 1L;
@@ -87,18 +89,27 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 		if (expression != null) {
 			expression.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "operand"), expression, this.operand));
+		}
 		this.operand = expression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtUnaryOperator> C setKind(UnaryOperatorKind kind) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "kind"), kind, this.kind));
+		}
 		this.kind = kind;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtStatement> C setLabel(String label) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "label"), label, this.label));
+		}
 		this.label = label;
 		return (C) this;
 	}

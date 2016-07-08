@@ -26,6 +26,8 @@ import java.util.List;
 import static spoon.reflect.path.CtRole.ARGUMENT;
 import static spoon.reflect.path.CtRole.EXECUTABLE;
 
+import java.util.List;
+
 /**
  * This code element defines an abstract invocation on a
  * {@link spoon.reflect.declaration.CtExecutable}.
@@ -49,10 +51,15 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	<C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument);
 
 	/**
+	 * Adds an argument expression to the invocation at a position.
+	 */
+	<C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument);
+
+	/**
 	 * Removes an argument expression from the invocation.
 	 */
 	@PropertySetter(role = ARGUMENT)
-	void removeArgument(CtExpression<?> argument);
+	boolean removeArgument(CtExpression<?> argument);
 
 	/**
 	 * Sets the invocation's arguments.

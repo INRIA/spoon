@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
@@ -49,6 +51,9 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 	public <C extends CtVariableReference<T>> C setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "type"), type, this.type));
 		}
 		this.type = type;
 		return (C) this;

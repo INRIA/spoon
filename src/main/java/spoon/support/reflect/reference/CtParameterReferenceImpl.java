@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
@@ -96,6 +98,9 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 	public <C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable) {
 		if (executable != null) {
 			executable.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "executable"), executable, this.executable));
 		}
 		this.executable = executable;
 		return (C) this;

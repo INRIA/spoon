@@ -24,7 +24,7 @@ import spoon.diff.DeleteAllAction;
 import spoon.diff.UpdateAction;
 import spoon.diff.context.ListContext;
 import spoon.diff.context.ObjectContext;
-import spoon.diff.context.SetContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -39,7 +39,6 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.reflect.code.CtStatementImpl;
@@ -53,7 +52,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -122,8 +120,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		}
 		e.setParent(this);
 		if (getFactory().getEnvironment().buildStackChanges()) {
-			List<CtAnonymousExecutable> anonymousExecutables = getAnonymousExecutables();
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(anonymousExecutables, anonymousExecutables.size()), e));
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(this, typeMembers), e));
 		}
 		return addTypeMember(e);
 	}
@@ -131,8 +128,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
 		if (getFactory().getEnvironment().buildStackChanges()) {
-			List<CtAnonymousExecutable> anonymousExecutables = getAnonymousExecutables();
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(anonymousExecutables, anonymousExecutables.indexOf(e)), e));
+			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(this, typeMembers, typeMembers.indexOf(e)), e));
 		}
 		return removeTypeMember(e);
 	}
@@ -145,7 +141,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
 		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(typeMembers), new ArrayList<>(getAnonymousExecutables())));
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(this, typeMembers), new ArrayList<>(getAnonymousExecutables())));
 		}
 		if (anonymousExecutables == null || anonymousExecutables.isEmpty()) {
 			this.typeMembers.removeAll(getAnonymousExecutables());
@@ -162,7 +158,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
 		Set<CtConstructor<T>> oldConstructor = getConstructors();
 		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(typeMembers), new HashSet<>(oldConstructor)));
+			for (CtConstructor<?> constructor : oldConstructor) {
+				getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(this, typeMembers), constructor));
+			}
 		}
 		if (constructors == null || constructors.isEmpty()) {
 			this.typeMembers.removeAll(oldConstructor);
@@ -178,7 +176,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
 		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(typeMembers), constructor));
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(this, typeMembers), constructor));
 		}
 		return addTypeMember(constructor);
 	}

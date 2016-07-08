@@ -17,6 +17,8 @@
 package spoon.support.reflect.reference;
 
 import spoon.SpoonException;
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -75,6 +77,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "upper"), upper, this.upper));
+		}
 		this.upper = upper;
 		return (T) this;
 	}
@@ -114,6 +119,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	@UnsettableProperty
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		return false;
 	}
@@ -158,6 +164,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	public <T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType) {
 		if (superType != null) {
 			superType.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "superType"), superType, this.superType));
 		}
 		this.superType = superType;
 		return (T) this;

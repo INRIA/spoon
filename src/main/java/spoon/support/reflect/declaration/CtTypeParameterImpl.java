@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -32,7 +35,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 import spoon.support.visitor.GenericTypeAdapter;
 
@@ -59,6 +61,9 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	public <C extends CtType<Object>> C setSuperclass(CtTypeReference<?> superClass) {
 		if (superClass != null) {
 			superClass.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "superClass"), superClass, this.superClass));
 		}
 		this.superClass = superClass;
 		return (C) this;

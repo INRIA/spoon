@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -58,6 +60,9 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 	public <C extends CtArrayTypeReference<T>> C setComponentType(CtTypeReference<?> componentType) {
 		if (componentType != null) {
 			componentType.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "componentType"), componentType, this.componentType));
 		}
 		this.componentType = componentType;
 		return (C) this;

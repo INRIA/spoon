@@ -19,11 +19,10 @@ package spoon.diff.context;
 import spoon.reflect.declaration.CtElement;
 
 public class ObjectContext extends Context {
-	private final CtElement ctElement;
 	private final String fieldName;
 
 	public ObjectContext(CtElement ctElement, String fieldName) {
-		this.ctElement = ctElement;
+		super(ctElement);
 		this.fieldName = fieldName;
 	}
 

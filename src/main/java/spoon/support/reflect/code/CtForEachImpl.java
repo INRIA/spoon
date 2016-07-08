@@ -16,12 +16,14 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 	private static final long serialVersionUID = 1L;
@@ -52,6 +54,9 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 		if (expression != null) {
 			expression.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "expression"), expression, this.expression));
+		}
 		this.expression = expression;
 		return (T) this;
 	}
@@ -60,6 +65,9 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 	public <T extends CtForEach> T setVariable(CtLocalVariable<?> variable) {
 		if (variable != null) {
 			variable.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "variable"), variable, this.variable));
 		}
 		this.variable = variable;
 		return (T) this;

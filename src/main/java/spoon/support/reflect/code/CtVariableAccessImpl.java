@@ -16,13 +16,15 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements CtVariableAccess<T> {
 	private static final long serialVersionUID = 1L;
@@ -48,6 +50,9 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 		if (variable != null) {
 			variable.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "variable"), variable, this.variable));
+		}
 		this.variable = variable;
 		return (C) this;
 	}
@@ -59,6 +64,7 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 	}
 
 	@Override
+	@DerivedProperty
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);

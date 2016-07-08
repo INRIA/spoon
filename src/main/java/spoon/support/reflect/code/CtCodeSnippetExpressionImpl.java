@@ -16,12 +16,14 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SnippetCompilationHelper;
 
@@ -41,6 +43,9 @@ public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implemen
 	}
 
 	public <C extends CtCodeSnippet> C setValue(String value) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "value"), value, this.value));
+		}
 		this.value = value;
 		return (C) this;
 	}

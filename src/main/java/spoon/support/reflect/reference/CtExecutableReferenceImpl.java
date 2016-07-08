@@ -17,6 +17,12 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.diff.AddAction;
+import spoon.diff.DeleteAction;
+import spoon.diff.DeleteAllAction;
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ListContext;
+import spoon.diff.context.ObjectContext;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -43,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
@@ -198,21 +205,32 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (this.parameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.parameters = new ArrayList<>();
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
+					this, this.parameters), new ArrayList<>(this.parameters)));
+		}
 		this.parameters.clear();
 		for (CtTypeReference<?> parameter : parameters) {
-			if (parameter == null) {
-				continue;
-			}
-			parameter.setParent(this);
-			this.parameters.add(parameter);
+			addParameter(parameter);
 		}
 		return (C) this;
 	}
 
+	private boolean addParameter(CtTypeReference<?> parameter) {
+		if (parameter == null) {
+			return false;
+		}
+		parameter.setParent(this);
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
+					this, this.parameters), parameter));
+		}
+		return this.parameters.add(parameter);
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends T> CtExecutableReference<S> getOverridingExecutable(
-			CtTypeReference<?> subType) {
+	public <S extends T> CtExecutableReference<S> getOverridingExecutable(CtTypeReference<?> subType) {
 		if ((subType == null) || subType.equals(getDeclaringType())) {
 			return null;
 		}
@@ -264,6 +282,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>();
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
+					this, this.actualTypeArguments), new ArrayList<>(this.actualTypeArguments)));
+		}
 		this.actualTypeArguments.clear();
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
 			addActualTypeArgument(actualTypeArgument);
@@ -276,6 +298,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "declaringType"), declaringType, this.declaringType));
+		}
 		this.declaringType = declaringType;
 		return (C) this;
 	}
@@ -284,6 +309,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	public <C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "type"), type, this.type));
 		}
 		this.type = type;
 		return (C) this;
@@ -304,8 +332,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 		method_loop:
 		for (Method m : getDeclaringType().getActualClass().getDeclaredMethods()) {
-			if (!m.getDeclaringClass().isSynthetic()
-					&& m.isSynthetic()) {
+			if (!m.getDeclaringClass().isSynthetic() && m.isSynthetic()) {
 				continue;
 			}
 			if (!m.getName().equals(getSimpleName())) {
@@ -350,8 +377,11 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setStatic(boolean b) {
-		this.stat = b;
+	public <C extends CtExecutableReference<T>> C setStatic(boolean stat) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "stat"), stat, this.stat));
+		}
+		this.stat = stat;
 		return (C) this;
 	}
 
@@ -406,8 +436,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return getOverloadedExecutable(st, objectType);
 	}
 
-	private CtExecutableReference<?> getOverloadedExecutable(
-			CtTypeReference<?> t, CtTypeReference<Object> objectType) {
+	private CtExecutableReference<?> getOverloadedExecutable(CtTypeReference<?> t, CtTypeReference<Object> objectType) {
 		if (t == null) {
 			return null;
 		}
@@ -435,15 +464,24 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			actualTypeArguments = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		actualTypeArgument.setParent(this);
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
+					this, this.actualTypeArguments), actualTypeArgument));
+		}
 		actualTypeArguments.add(actualTypeArgument);
 		return (C) this;
 	}
 
 	@Override
-	public boolean removeActualTypeArgument(
-			CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
-				&& actualTypeArguments.remove(actualTypeArgument);
+	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			return false;
+		}
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
+					this, actualTypeArguments, actualTypeArguments.indexOf(actualTypeArgument)), actualTypeArgument));
+		}
+		return actualTypeArguments.remove(actualTypeArgument);
 	}
 
 	@Override

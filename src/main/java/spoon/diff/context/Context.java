@@ -16,5 +16,16 @@
  */
 package spoon.diff.context;
 
+import spoon.reflect.declaration.CtElement;
+
 public abstract class Context {
+	private CtElement element;
+
+	public Context(CtElement element) {
+		this.element = element;
+	}
+
+	public CtElement getElement() {
+		return element;
+	}
 }

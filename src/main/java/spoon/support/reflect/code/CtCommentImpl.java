@@ -16,10 +16,12 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.diff.UpdateAction;
+import spoon.diff.context.ObjectContext;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	private static final long serialVersionUID = 1L;
@@ -37,6 +39,9 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	@Override
 	public <E extends CtComment> E setContent(String content) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "content"), content, this.content));
+		}
 		this.content = content;
 		return (E) this;
 	}
@@ -48,6 +53,9 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	@Override
 	public <E extends CtComment> E setCommentType(CommentType commentType) {
+		if (getFactory().getEnvironment().buildStackChanges()) {
+			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "type"), commentType, this.type));
+		}
 		type = commentType;
 		return (E) this;
 	}
