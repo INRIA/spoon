@@ -40,8 +40,8 @@ public class PositionBuilder {
 	}
 
 	SourcePosition buildPosition(int sourceStart, int sourceEnd) {
-		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().create(new String(this.jdtTreeBuilder.getContext().compilationunitdeclaration.getFileName()));
-		final int[] lineSeparatorPositions = this.jdtTreeBuilder.getContext().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().create(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
+		final int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
 		return this.jdtTreeBuilder.getFactory().Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
@@ -77,7 +77,7 @@ public class PositionBuilder {
 		if (!(e instanceof CtNamedElement)) {
 			sourceStartSource = sourceStartDeclaration;
 		}
-		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().create(new String(this.jdtTreeBuilder.getContext().compilationunitdeclaration.getFileName()));
-		return cf.createSourcePosition(cu, sourceStartDeclaration, sourceStartSource, sourceEnd, this.jdtTreeBuilder.getContext().compilationunitdeclaration.compilationResult.lineSeparatorPositions);
+		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().create(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
+		return cf.createSourcePosition(cu, sourceStartDeclaration, sourceStartSource, sourceEnd, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions);
 	}
 }

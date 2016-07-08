@@ -146,7 +146,7 @@ public class ReferenceBuilder {
 			if (currentReference == null) {
 				break;
 			}
-			this.jdtTreeBuilder.getContext().enter(currentReference, type);
+			this.jdtTreeBuilder.getContextBuilder().enter(currentReference, type);
 			if (type.annotations != null && type.annotations.length - 1 <= position && type.annotations[position] != null && type.annotations[position].length > 0) {
 				for (Annotation annotation : type.annotations[position]) {
 					if (scope instanceof ClassScope) {
@@ -171,7 +171,7 @@ public class ReferenceBuilder {
 			if (type instanceof Wildcard && typeReference instanceof CtTypeParameterReference) {
 				((CtTypeParameterReference) typeReference).setBoundingType(buildTypeReference(((Wildcard) type).bound, scope));
 			}
-			this.jdtTreeBuilder.getContext().exit(type);
+			this.jdtTreeBuilder.getContextBuilder().exit(type);
 			currentReference = currentReference.getDeclaringType();
 		}
 		return typeReference;
@@ -192,15 +192,15 @@ public class ReferenceBuilder {
 			int i = 0;
 			for (; i < tokens.length; i++) {
 				final char[][] qualified = Arrays.copyOfRange(tokens, 0, i + 1);
-				if (!HelperJDTTreeBuilder.isPackage(qualified, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContext().compilationunitdeclaration.scope.environment.typeRequestor))) {
+				if (!HelperJDTTreeBuilder.isPackage(qualified, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor))) {
 					access = CharOperation.toString(qualified);
 					break;
 				}
 			}
 			if (!access.contains(CtPackage.PACKAGE_SEPARATOR)) {
-				access = HelperJDTTreeBuilder.hasTypeInImports(access, this.jdtTreeBuilder.getContext());
+				access = HelperJDTTreeBuilder.hasTypeInImports(access, this.jdtTreeBuilder.getContextBuilder());
 			}
-			final TypeBinding accessBinding = HelperJDTTreeBuilder.searchTypeBinding(access, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContext().compilationunitdeclaration.scope.environment.typeRequestor));
+			final TypeBinding accessBinding = HelperJDTTreeBuilder.searchTypeBinding(access, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor));
 			if (accessBinding != null && listener.onAccess(tokens, i)) {
 				final TypeBinding superClassBinding = HelperJDTTreeBuilder.searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
 				if (superClassBinding != null) {
@@ -226,8 +226,8 @@ public class ReferenceBuilder {
 	 * @return CtReference which can be a CtTypeReference, a CtPackageReference or null.
 	 */
 	CtReference getDeclaringReferenceFromImports(char[] expectedName) {
-		if (this.jdtTreeBuilder.getContext().compilationunitdeclaration != null && this.jdtTreeBuilder.getContext().compilationunitdeclaration.imports != null) {
-			for (ImportReference anImport : this.jdtTreeBuilder.getContext().compilationunitdeclaration.imports) {
+		if (this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration != null && this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports != null) {
+			for (ImportReference anImport : this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports) {
 				if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], expectedName)) {
 					if (anImport.isStatic()) {
 						int indexDeclaring = 2;
@@ -239,27 +239,27 @@ public class ReferenceBuilder {
 						char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - indexDeclaring, anImport.getImportName().length - (indexDeclaring - 1));
 						PackageBinding aPackage;
 						if (packageName.length != 0) {
-							aPackage = this.jdtTreeBuilder.getContext().compilationunitdeclaration.scope.environment.createPackage(packageName);
+							aPackage = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(packageName);
 						} else {
 							aPackage = null;
 						}
-						final MissingTypeBinding declaringType = this.jdtTreeBuilder.getContext().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
-						this.jdtTreeBuilder.getContext().ignoreComputeImports = true;
+						final MissingTypeBinding declaringType = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
 						final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
-						this.jdtTreeBuilder.getContext().ignoreComputeImports = false;
+						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
 						return typeReference;
 					} else {
 						char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
-						Binding someBinding = this.jdtTreeBuilder.getContext().compilationunitdeclaration.scope.findImport(chars, false, false);
+						Binding someBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.findImport(chars, false, false);
 						PackageBinding packageBinding;
 						if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
 							packageBinding = (PackageBinding) someBinding;
 						} else {
-							packageBinding = this.jdtTreeBuilder.getContext().compilationunitdeclaration.scope.environment.createPackage(chars);
+							packageBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(chars);
 							if (packageBinding == null) {
 								// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
 								// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
-								packageBinding = new PackageBinding(chars, null, this.jdtTreeBuilder.getContext().compilationunitdeclaration.scope.environment);
+								packageBinding = new PackageBinding(chars, null, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment);
 							}
 						}
 						return getPackageReference(packageBinding);
@@ -507,7 +507,7 @@ public class ReferenceBuilder {
 				ref = getTypeReference(binding.actualType());
 			} else {
 				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-				ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped);
+				ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName("");
 				} else {
@@ -522,7 +522,7 @@ public class ReferenceBuilder {
 
 			if (((ParameterizedTypeBinding) binding).arguments != null) {
 				for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
-					if (!this.jdtTreeBuilder.getContext().isGenericTypeExplicit) {
+					if (!this.jdtTreeBuilder.getContextBuilder().isGenericTypeExplicit) {
 						isImplicit = true;
 					}
 					if (bindingCache.containsKey(b)) {
@@ -537,7 +537,7 @@ public class ReferenceBuilder {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setSimpleName(new String(binding.sourceName()));
 			ref.setPackage(getPackageReference(binding.getPackage()));
-			if (!this.jdtTreeBuilder.getContext().ignoreComputeImports) {
+			if (!this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports) {
 				final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
 				if (declaring instanceof CtPackageReference) {
 					ref.setPackage((CtPackageReference) declaring);
@@ -547,7 +547,7 @@ public class ReferenceBuilder {
 			}
 		} else if (binding instanceof BinaryTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped);
+			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			if (binding.enclosingType() != null) {
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else {
@@ -557,7 +557,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof TypeVariableBinding) {
 			boolean oldBounds = bounds;
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
-			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped);
+			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			if (binding instanceof CaptureBinding) {
 				ref.setSimpleName("?");
 				bounds = true;
@@ -593,7 +593,7 @@ public class ReferenceBuilder {
 			}
 		} else if (binding instanceof BaseTypeBinding) {
 			String name = new String(binding.sourceName());
-			if (!this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped) {
+			if (!this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped) {
 				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 				ref.setImplicit(true);
 				ref.setSimpleName(name);
@@ -609,7 +609,7 @@ public class ReferenceBuilder {
 			}
 		} else if (binding instanceof WildcardBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
-			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped);
+			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			ref.setSimpleName("?");
 			if (((WildcardBinding) binding).boundKind == Wildcard.SUPER && ref instanceof CtTypeParameterReference) {
 				((CtTypeParameterReference) ref).setUpper(false);
@@ -625,7 +625,7 @@ public class ReferenceBuilder {
 			}
 		} else if (binding instanceof LocalTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped);
+			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			if (binding.isAnonymousType()) {
 				ref.setSimpleName(HelperJDTTreeBuilder.computeAnonymousName((SourceTypeBinding) binding));
 				ref.setDeclaringType(getTypeReference((binding.enclosingType())));
@@ -640,7 +640,7 @@ public class ReferenceBuilder {
 			}
 		} else if (binding instanceof SourceTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped);
+			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			if (binding.isAnonymousType()) {
 				ref.setSimpleName(HelperJDTTreeBuilder.computeAnonymousName((SourceTypeBinding) binding));
 				ref.setDeclaringType(getTypeReference((binding.enclosingType())));
@@ -662,7 +662,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof ArrayBinding) {
 			CtArrayTypeReference<Object> arrayref;
 			arrayref = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
-			arrayref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped);
+			arrayref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			ref = arrayref;
 			for (int i = 1; i < binding.dimensions(); i++) {
 				CtArrayTypeReference<Object> tmp = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
@@ -673,7 +673,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof ProblemReferenceBinding || binding instanceof PolyTypeBinding) {
 			// Spoon is able to analyze also without the classpath
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContext().isLambdaParameterImplicitlyTyped);
+			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			ref.setSimpleName(new String(binding.readableName()));
 			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
 			this.jdtTreeBuilder.setPackageOrDeclaringType(ref, declaring);
@@ -761,14 +761,14 @@ public class ReferenceBuilder {
 				ref.setSimpleName(new String(varbin.name));
 				CtTypeReference<T> ref2 = getTypeReference(varbin.type);
 				ref.setType(ref2);
-				ref.setDeclaration((CtCatchVariable<T>) this.jdtTreeBuilder.getCatchVariableDeclaration(ref.getSimpleName()));
+				ref.setDeclaration((CtCatchVariable<T>) this.jdtTreeBuilder.getContextBuilder().getCatchVariableDeclaration(ref.getSimpleName()));
 				return ref;
 			} else {
 				CtLocalVariableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createLocalVariableReference();
 				ref.setSimpleName(new String(varbin.name));
 				CtTypeReference<T> ref2 = getTypeReference(varbin.type);
 				ref.setType(ref2);
-				ref.setDeclaration((CtLocalVariable<T>) this.jdtTreeBuilder.getLocalVariableDeclaration(ref.getSimpleName()));
+				ref.setDeclaration((CtLocalVariable<T>) this.jdtTreeBuilder.getContextBuilder().getLocalVariableDeclaration(ref.getSimpleName()));
 				return ref;
 			}
 		} else {

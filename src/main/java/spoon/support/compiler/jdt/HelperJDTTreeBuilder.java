@@ -39,7 +39,7 @@ import spoon.reflect.declaration.ModifierKind;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class HelperJDTTreeBuilder {
+class HelperJDTTreeBuilder {
 
 	static UnaryOperatorKind getUnaryOperator(int op) {
 		switch (op) {
@@ -263,7 +263,7 @@ public class HelperJDTTreeBuilder {
 	 *
 	 * @param a           An annotation.
 	 * @param elementType Type of the annotation.
-	 * @return true if the annotation is compitble with the given element type.
+	 * @return true if the annotation is compatible with the given element type.
 	 */
 	private static boolean hasAnnotationWithType(Annotation a, CtAnnotatedElementType elementType) {
 		if (a.resolvedType == null) {

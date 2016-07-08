@@ -19,13 +19,16 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -82,7 +85,7 @@ public class ContextBuilder {
 		stack.push(new ASTPair(e, node));
 		// aststack.push(node);
 		if (compilationunitdeclaration != null) {
-			e.setPosition(this.jdtTreeBuilder.getPosition().buildPositionCtElement(e, node));
+			e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
 		}
 
 		ASTPair pair = stack.peek();
@@ -100,7 +103,7 @@ public class ContextBuilder {
 		try {
 			if (e instanceof CtTypedElement && node instanceof Expression) {
 				if (((CtTypedElement<?>) e).getType() == null) {
-					((CtTypedElement<Object>) e).setType(this.jdtTreeBuilder.getReferences().getTypeReference(((Expression) node).resolvedType));
+					((CtTypedElement<Object>) e).setType(this.jdtTreeBuilder.getReferencesBuilder().getTypeReference(((Expression) node).resolvedType));
 				}
 			}
 		} catch (UnsupportedOperationException ignore) {
@@ -119,6 +122,59 @@ public class ContextBuilder {
 			this.jdtTreeBuilder.getExiter().setChild(current);
 			this.jdtTreeBuilder.getExiter().scan(stack.peek().element);
 		}
+	}
+
+	<T> CtLocalVariable<T> getLocalVariableDeclaration(final String name) {
+		for (ASTPair astPair : this.stack) {
+			// TODO check if the variable is visible from here
+
+			EarlyTerminatingScanner<CtLocalVariable<?>> scanner = new EarlyTerminatingScanner<CtLocalVariable<?>>() {
+				@Override
+				public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
+					if (name.equals(localVariable.getSimpleName())) {
+						setResult(localVariable);
+						terminate();
+						return;
+					}
+					super.visitCtLocalVariable(localVariable);
+				}
+			};
+			astPair.element.accept(scanner);
+			CtLocalVariable<T> var = (CtLocalVariable<T>) scanner.getResult();
+			if (var != null) {
+				return var;
+			}
+		}
+		// note: this happens when using the new try(vardelc) structure
+		this.jdtTreeBuilder.getLogger().error("could not find declaration for local variable " + name + " at " + this.stack.peek().element.getPosition());
+
+		return null;
+	}
+
+	<T> CtCatchVariable<T> getCatchVariableDeclaration(final String name) {
+		for (ASTPair astPair : this.stack) {
+			EarlyTerminatingScanner<CtCatchVariable<?>> scanner = new EarlyTerminatingScanner<CtCatchVariable<?>>() {
+				@Override
+				public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
+					if (name.equals(catchVariable.getSimpleName())) {
+						setResult(catchVariable);
+						terminate();
+						return;
+					}
+					super.visitCtCatchVariable(catchVariable);
+				}
+			};
+			astPair.element.accept(scanner);
+
+			CtCatchVariable<T> var = (CtCatchVariable<T>) scanner.getResult();
+			if (var != null) {
+				return null;
+			}
+		}
+		// note: this happens when using the new try(vardelc) structure
+		this.jdtTreeBuilder.getLogger().error("could not find declaration for catch variable " + name + " at " + this.stack.peek().element.getPosition());
+
+		return null;
 	}
 
 	boolean isArgument(CtElement e) {

@@ -181,7 +181,6 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 
 import java.util.ArrayList;
@@ -212,22 +211,26 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	boolean defaultValue;
 
+	public static Logger getLogger() {
+		return LOGGER;
+	}
+
 	private static final Logger LOGGER = Logger.getLogger(JDTTreeBuilder.class);
 
-	public PositionBuilder getPosition() {
+	public PositionBuilder getPositionBuilder() {
 		return position;
 	}
 
-	public ContextBuilder getContext() {
+	public ContextBuilder getContextBuilder() {
 		return context;
+	}
+
+	public ReferenceBuilder getReferencesBuilder() {
+		return references;
 	}
 
 	public ParentExiter getExiter() {
 		return exiter;
-	}
-
-	public ReferenceBuilder getReferences() {
-		return references;
 	}
 
 	public Factory getFactory() {
@@ -241,7 +244,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		this.context = new ContextBuilder(this);
 		this.exiter = new ParentExiter(this);
 		this.references = new ReferenceBuilder(this);
-		LOGGER.setLevel(factory.getEnvironment().getLevel());
+		this.LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
 	interface OnAccessListener {
@@ -829,59 +832,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 
-	//TODO
-	protected <T> CtLocalVariable<T> getLocalVariableDeclaration(final String name) {
-		for (ASTPair astPair : context.stack) {
-			// TODO check if the variable is visible from here
 
-			EarlyTerminatingScanner<CtLocalVariable<?>> scanner = new EarlyTerminatingScanner<CtLocalVariable<?>>() {
-				@Override
-				public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-					if (name.equals(localVariable.getSimpleName())) {
-						setResult(localVariable);
-						terminate();
-						return;
-					}
-					super.visitCtLocalVariable(localVariable);
-				}
-			};
-			astPair.element.accept(scanner);
-			CtLocalVariable<T> var = (CtLocalVariable<T>) scanner.getResult();
-			if (var != null) {
-				return var;
-			}
-		}
-		// note: this happens when using the new try(vardelc) structure
-		LOGGER.error("could not find declaration for local variable " + name + " at " + context.stack.peek().element.getPosition());
-
-		return null;
-	}
-
-	protected <T> CtCatchVariable<T> getCatchVariableDeclaration(final String name) {
-		for (ASTPair astPair : context.stack) {
-			EarlyTerminatingScanner<CtCatchVariable<?>> scanner = new EarlyTerminatingScanner<CtCatchVariable<?>>() {
-				@Override
-				public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
-					if (name.equals(catchVariable.getSimpleName())) {
-						setResult(catchVariable);
-						terminate();
-						return;
-					}
-					super.visitCtCatchVariable(catchVariable);
-				}
-			};
-			astPair.element.accept(scanner);
-
-			CtCatchVariable<T> var = (CtCatchVariable<T>) scanner.getResult();
-			if (var != null) {
-				return null;
-			}
-		}
-		// note: this happens when using the new try(vardelc) structure
-		LOGGER.error("could not find declaration for catch variable " + name + " at " + context.stack.peek().element.getPosition());
-
-		return null;
-	}
 
 	@Override
 	public boolean visit(ReferenceExpression referenceExpression, BlockScope blockScope) {
@@ -2304,7 +2255,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 			CtLocalVariableReference ref = factory.Core().createLocalVariableReference();
 			ref.setSimpleName(new String(singleNameReference.token));
-			ref.setDeclaration((CtLocalVariable) getLocalVariableDeclaration(ref.getSimpleName()));
+			ref.setDeclaration((CtLocalVariable) this.context.getLocalVariableDeclaration(ref.getSimpleName()));
 			va.setVariable(ref);
 		}
 		if (va != null) {
