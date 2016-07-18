@@ -24,8 +24,6 @@ import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -97,6 +95,11 @@ public class DefaultPrettyPrinterTest {
 			  "" +nl+
 			  "    public List<? extends ArrayList> aMethodWithGeneric() {" +nl+
 			  "        return new ArrayList<>();" +nl+
+			  "    }" +nl+
+			  "" +nl+
+			  "    public void param(String c) {" +nl+
+			  "        String a = c + \"\";" +nl+
+			  "        a = a.substring(0);" +nl+
 			  "    }" +nl+
 			  "}";
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);

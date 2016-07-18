@@ -188,6 +188,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	private TokenWriter printer;
 
+	public PrinterHelper getPrinter() {
+		return printer;
+	}
+
 	/**
 	 * Element printer helper.
 	 */

@@ -263,22 +263,14 @@ public class ElementPrinterHelper {
 			Set<String> setImports = new HashSet<>();
 			Set<String> setStaticImports = new HashSet<>();
 			for (CtReference ref : imports) {
-				String importTypeStr = "";
-
-				if (ref instanceof CtTypeReference) {
-					CtTypeReference typeRef = (CtTypeReference) ref;
-					importTypeStr = typeRef.getQualifiedName();
-					if (isJavaLangClasses(importTypeStr) == false) {
-						setImports.add(importTypeStr);
+				String anImport = printImport(ref);
+				if (!"".equals(anImport)) {
+					if (ref instanceof CtFieldReference ||
+							(ref instanceof CtExecutableReference
+									&& ((CtExecutableReference) ref).getDeclaringType() != null)) {
+						setStaticImports.add(anImport);
 					}
-				} else if (ref instanceof CtExecutableReference) {
-					CtExecutableReference execRef = (CtExecutableReference) ref;
-					if (execRef.getDeclaringType() != null) {
-						setStaticImports.add(this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName());
-					}
-				} else if (ref instanceof CtFieldReference) {
-					CtFieldReference fieldRef = (CtFieldReference) ref;
-					setStaticImports.add(this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName());
+					setImports.add(anImport);
 				}
 			}
 
@@ -304,6 +296,28 @@ public class ElementPrinterHelper {
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
 		writeQualifiedName(packageQualifiedName).writeSeparator(";");
+	}
+
+	public String printImport(CtReference ref) {
+		String importTypeStr = "";
+
+		if (ref instanceof CtTypeReference) {
+			CtTypeReference typeRef = (CtTypeReference) ref;
+			if (isJavaLangClasses(importTypeStr) == false) {
+				importTypeStr = typeRef.getQualifiedName();
+			}
+		} else if (ref instanceof CtExecutableReference) {
+			CtExecutableReference execRef = (CtExecutableReference) ref;
+			if (execRef.getDeclaringType() != null) {
+				importTypeStr = this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName();
+			}
+		} else if (ref instanceof CtFieldReference) {
+			CtFieldReference fieldRef = (CtFieldReference) ref;
+			importTypeStr = this.removeInnerTypeSeparator(
+					fieldRef.getDeclaringType().getQualifiedName()) + "."
+					+ fieldRef.getSimpleName();
+		}
+		return importTypeStr;
 	}
 
 	private String removeInnerTypeSeparator(String fqn) {

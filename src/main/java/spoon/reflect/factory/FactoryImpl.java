@@ -147,7 +147,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public AnnotationFactory Annotation() {
 		if (annotation == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			annotation = new AnnotationFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return annotation;
 	}
@@ -160,7 +163,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public ClassFactory Class() {
 		if (clazz == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			clazz = new ClassFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return clazz;
 	}
@@ -173,7 +179,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CodeFactory Code() {
 		if (code == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			code = new CodeFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return code;
 	}
@@ -186,7 +195,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public ConstructorFactory Constructor() {
 		if (constructor == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			constructor = new ConstructorFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return constructor;
 	}
@@ -199,9 +211,12 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CoreFactory Core() {
 		if (core == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			//During deserialization, the transient field core, is null
 			core = new DefaultCoreFactory();
 			core.setMainFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return core;
 	}
@@ -214,7 +229,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public EnumFactory Enum() {
 		if (enumF == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			enumF = new EnumFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return enumF;
 	}
@@ -240,7 +258,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public ExecutableFactory Executable() {
 		if (executable == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			executable = new ExecutableFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return executable;
 	}
@@ -266,7 +287,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public FieldFactory Field() {
 		if (field == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			field = new FieldFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return field;
 	}
@@ -282,7 +306,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public InterfaceFactory Interface() {
 		if (interfaceF == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			interfaceF = new InterfaceFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return interfaceF;
 	}
@@ -295,7 +322,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public MethodFactory Method() {
 		if (methodF == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			methodF = new MethodFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return methodF;
 	}
@@ -308,7 +338,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public PackageFactory Package() {
 		if (packageF == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			packageF = new PackageFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return packageF;
 	}
@@ -321,7 +354,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CompilationUnitFactory CompilationUnit() {
 		if (compilationUnit == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			compilationUnit = new CompilationUnitFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return compilationUnit;
 	}
@@ -334,7 +370,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public TypeFactory Type() {
 		if (type == null) {
+			boolean buildStackChanges = getEnvironment().buildStackChanges();
+			getEnvironment().setBuildStackChanges(false);
 			type = new TypeFactory(this);
+			getEnvironment().setBuildStackChanges(buildStackChanges);
 		}
 		return type;
 	}
