@@ -316,6 +316,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(conditional.getThenExpression());
 		scan(conditional.getElseExpression());
 		scan(conditional.getComments());
+		scan(conditional.getTypeCasts());
 		exit(conditional);
 	}
 
