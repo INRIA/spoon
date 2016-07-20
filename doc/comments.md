@@ -1,8 +1,10 @@
 ---
-title: Comments
-keywords: comments
-last_updated: May 25, 2016
+title: Comments and position
+keywords: comments position
+last_updated: November 25, 2016
 ---
+
+# Comment
 
 In Spoon there are four different kinds of comments:
 
@@ -92,3 +94,16 @@ public class CtCommentProcessor extends AbstractProcessor<CtComment> {
     } 
 }
 ```
+
+# Source Position
+
+`SourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/cu/SourcePosition.html)) defines the position of the `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html)) in the original source file. 
+SourcePosition is extended by three specialized positions:
+
+- `DeclarationSourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/cu/position/DeclarationSourcePosition.html)) 
+- `BodyHolderSourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/cu/position/BodyHolderSourcePosition.html)).
+
+These three specializations are used to define the position of specific CtElement.
+For example DeclarationSourcePosition is used to define the position of all declarations (variable, type, method, ...).
+This provide an easy access to the position of the modifiers and the name.
+The BodyHolderSourcePosition is used to declare the position of all elements that have a body.

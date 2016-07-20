@@ -43,7 +43,6 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -285,6 +284,8 @@ class JDTTreeBuilderHelper {
 			va = createVariableAccess(ref, isOtherBinding && fromAssignment);
 		}
 
+		ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+
 		if (qualifiedNameReference.otherBindings != null) {
 			int i = 0; //positions index;
 			va.setPosition(ref.getPosition());
@@ -310,10 +311,8 @@ class JDTTreeBuilderHelper {
 				CtFieldAccess<T> other = createFieldAccess(//
 						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
 				//set source position of va;
-				CompilationUnit cu = jdtTreeBuilder.getFactory().CompilationUnit().create(new String(jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
 				sourceEnd = (int) (positions[i]);
-				final int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
-				va.setPosition(jdtTreeBuilder.getFactory().Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions));
+				va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 				va = other;
 			}
 		}

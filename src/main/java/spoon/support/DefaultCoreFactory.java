@@ -64,6 +64,8 @@ import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -140,7 +142,9 @@ import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
-import spoon.support.reflect.cu.SourcePositionImpl;
+import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
+import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
+import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
 import spoon.support.reflect.declaration.CtAnnotationMethodImpl;
 import spoon.support.reflect.declaration.CtAnnotationTypeImpl;
@@ -637,8 +641,30 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		this.factory = mainFactory;
 	}
 
+	@Override
+	@Deprecated
 	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startDeclaration, int startSource, int end, int[] lineSeparatorPositions) {
-		return new SourcePositionImpl(compilationUnit, startDeclaration, startSource, end, lineSeparatorPositions);
+		return new SourcePositionImpl(compilationUnit, startSource, end, lineSeparatorPositions);
+	}
+
+	@Override
+	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
+		return new SourcePositionImpl(compilationUnit, startSource, end, lineSeparatorPositions);
+	}
+
+	@Override
+	public DeclarationSourcePosition createDeclarationSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
+		return new DeclarationSourcePositionImpl(compilationUnit, startSource, end, modifierStart, modifierEnd, declarationStart, declarationEnd, lineSeparatorPositions);
+	}
+
+	@Override
+	public BodyHolderSourcePosition createBodyHolderSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int bodyStart, int bodyEnd, int[] lineSeparatorPositions) {
+		return new BodyHolderSourcePositionImpl(compilationUnit,
+				startSource, end,
+				modifierStart, modifierEnd,
+				declarationStart, declarationEnd,
+				bodyStart, bodyEnd,
+				lineSeparatorPositions);
 	}
 
 	public CompilationUnit createCompilationUnit() {

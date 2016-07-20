@@ -1,9 +1,11 @@
 package spoon.test.position.testclasses;
 
-public class FooMethod {
+public class FooGeneric<T extends Object> {
 
-	public static void m(int parm1) {
-		return;
+	public final T variable = null;
+
+	public @Deprecated static <S> S m(int parm1) {
+		return null;
 	}
 
 	/**
@@ -23,7 +25,7 @@ public class FooMethod {
 		return parm1;
 	}
 
-	public FooMethod(int arg1) {
+	public FooGeneric(int arg1) {
 
 	}
 }

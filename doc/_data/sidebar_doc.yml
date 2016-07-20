@@ -95,7 +95,7 @@ entries:
           product: all
           version: all
 
-        - title: Comments
+        - title: Comments and Positions
           url: /comments.html
           audience: writers, designers
           platform: all
