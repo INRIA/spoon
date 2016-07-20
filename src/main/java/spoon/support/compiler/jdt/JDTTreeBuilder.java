@@ -3296,6 +3296,30 @@ public class JDTTreeBuilder extends ASTVisitor {
 					va = other;
 					i++;
 				}
+			} else if (qualifiedNameReference.tokens.length > 1) {
+				int sourceStart = (int) (positions[0] >>> 32);
+				for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
+					char[] token = qualifiedNameReference.tokens[i];
+					CtFieldAccess<Object> other;
+					if (qualifiedNameReference.tokens.length == i + 1 && context.stack.peek().element instanceof CtAssignment) {
+						other = factory.Core().createFieldWrite();
+					} else {
+						other = factory.Core().createFieldRead();
+					}
+					CtFieldReference lengthReference = factory.Core().createFieldReference();
+					lengthReference.setSimpleName(new String(token));
+					other.setVariable(lengthReference);
+					if ("length".equals(new String(token)) && ((VariableBinding) qualifiedNameReference.binding).type instanceof ArrayBinding) {
+						lengthReference.setType(factory.Type().integerPrimitiveType());
+					}
+					other.setTarget(va);
+					//set source position of va;
+					CompilationUnit cu = factory.CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
+					int sourceEnd = (int) (positions[i]);
+					final int[] lineSeparatorPositions = context.compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+					va.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions));
+					va = other;
+				}
 			}
 			context.enter(va, qualifiedNameReference);
 			return false;
