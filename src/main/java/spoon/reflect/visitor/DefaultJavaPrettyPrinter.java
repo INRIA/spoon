@@ -1033,7 +1033,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (f.getTarget() != null) {
 			if (!isInitializeStaticFinalField(f.getTarget())) {
 				scan(f.getTarget());
-				if (!f.getTarget().isImplicit()) {
+				if (!f.getTarget().isImplicit()
+						// spoon does not handle static import
+						|| f.getVariable().isStatic()) {
 					write(".");
 				}
 			}
@@ -1396,7 +1398,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				scan(invocation.getTarget());
 				context.exitTarget();
 				context.ignoreGenerics = false;
-				if (!invocation.getTarget().isImplicit()) {
+				if (!invocation.getTarget().isImplicit()
+						// spoon does not handle static import
+						|| invocation.getExecutable().isStatic()) {
 					write(".");
 				}
 			}

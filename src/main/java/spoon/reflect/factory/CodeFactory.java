@@ -131,6 +131,7 @@ public class CodeFactory extends SubFactory {
 	public <T> CtFieldAccess<Class<T>> createClassAccess(CtTypeReference<T> type) {
 		@SuppressWarnings({ "rawtypes", "unchecked" }) CtTypeReference<Class<T>> classType = (CtTypeReference) factory.Type().createReference(Class.class);
 		CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(type);
+		typeAccess.setPosition(type.getPosition());
 
 		CtFieldReference<Class<T>> fieldReference = factory.Core().createFieldReference();
 		fieldReference.setSimpleName("class");

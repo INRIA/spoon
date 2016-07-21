@@ -10,18 +10,27 @@ import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtBiScannerDefault;
@@ -35,6 +44,7 @@ import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -91,6 +101,84 @@ public class MainTest {
 
 		// clone
 		checkEqualityBetweenOriginalAndClone(pack);
+
+		// position
+		checkCtElementPosition(pack);
+	}
+
+	private void checkCtElementPosition(CtPackage pack) {
+		Set<CtElement> elementWithoutParent = new HashSet<>();
+		new CtScanner() {
+			/**
+			 * Implicit element does not have position.
+			 * @param e the element to check
+			 * @return true if the element or one of its parent is implicit
+			 */
+			private boolean isImplicit(CtElement e) {
+				CtElement current = e;
+				while(current != null) {
+					if (current.isImplicit()) {
+						return true;
+					}
+					current = current.getParent();
+				}
+				return false;
+			}
+
+			private boolean toConsider(CtElement e) {
+				if (	// all references does not have position
+						e instanceof CtArrayTypeReference
+						|| e instanceof CtLocalVariableReference
+						|| e instanceof CtFieldReference
+						|| e instanceof CtCatchVariableReference
+						|| e instanceof CtParameterReference
+						|| e instanceof CtTypeParameterReference
+						|| e instanceof CtPackageReference
+						|| e instanceof CtExecutableReference
+						|| e instanceof CtFieldReference
+						// the package does not have a position
+						|| e instanceof CtPackage) {
+					return false;
+				}
+				if (e.getParent() instanceof CtReference) {
+					return false;
+				}
+				if (e instanceof CtTypeReference && e.getParent() instanceof CtTypedElement) {
+					if (e.getParent() instanceof CtTypeAccess) {
+						if (((CtTypeAccess) e.getParent()).getAccessedType() == e) {
+							return false;
+						}
+					}
+					if (((CtTypedElement) e.getParent()).getType() == e) {
+						return false;
+					}
+				}
+				// the super class of the enum value declaration are not printer thus does not have a position
+				if (e instanceof CtTypeReference
+						&& ((CtTypeReference) e).getDeclaration() instanceof CtEnum
+						&& e.getParent(CtEnumValue.class) != null) {
+					return false;
+				}
+				return true;
+			}
+
+			@Override
+			protected void enter(CtElement e) {
+				if (e != null && !isImplicit(e) && toConsider(e)) {
+					if (e.getPosition() == null) {
+						elementWithoutParent.add(e);
+					}
+				}
+				super.enter(e);
+			}
+		}.visitCtPackage(pack);
+
+		for (Iterator<CtElement> iterator = elementWithoutParent
+				.iterator(); iterator.hasNext(); ) {
+			CtElement next = iterator.next();
+			System.out.println(next + next.getClass().getName());
+		}
+		assertEquals("All elements does not have position.", 0, elementWithoutParent.size());
 	}
 
 	private void checkEqualityBetweenOriginalAndClone(CtPackage pack) {
@@ -245,6 +333,9 @@ public class MainTest {
 		checkShadow(spoon.getFactory().Package().getRootPackage());
 
 		checkParentConsistency(spoon.getFactory().Package().getRootPackage());
+
+		// position
+		checkCtElementPosition(spoon.getFactory().Package().getRootPackage());
 	}
 
 	private void checkContractCtScanner(CtPackage pack) {

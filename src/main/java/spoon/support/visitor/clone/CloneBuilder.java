@@ -37,7 +37,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	private spoon.reflect.declaration.CtElement other;
 
 	public void setOther(spoon.reflect.declaration.CtElement other) {
-		spoon.support.visitor.clone.CloneBuilder.this.other = other;
+		this.other = other;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
