@@ -192,6 +192,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtConditional.setThenExpression(spoon.support.visitor.equals.CloneHelper.clone(conditional.getThenExpression()));
 		aCtConditional.setElseExpression(spoon.support.visitor.equals.CloneHelper.clone(conditional.getElseExpression()));
 		aCtConditional.setComments(spoon.support.visitor.equals.CloneHelper.clone(conditional.getComments()));
+		aCtConditional.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(conditional.getTypeCasts()));
 		this.other = aCtConditional;
 	}
 

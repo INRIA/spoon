@@ -189,6 +189,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(conditional.getThenExpression(), other.getThenExpression());
 		biScan(conditional.getElseExpression(), other.getElseExpression());
 		biScan(conditional.getComments(), other.getComments());
+		biScan(conditional.getTypeCasts(), other.getTypeCasts());
 		exit(conditional);
 	}
 

@@ -186,6 +186,7 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		biScan(conditional.getCondition(), other.getCondition());
 		biScan(conditional.getThenExpression(), other.getThenExpression());
 		biScan(conditional.getElseExpression(), other.getElseExpression());
+		biScan(conditional.getTypeCasts(), other.getTypeCasts());
 		exit(conditional);
 	}
 
