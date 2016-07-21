@@ -1,7 +1,10 @@
 package spoon.reflect.ast;
 
+import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtConditional;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -69,5 +72,31 @@ public class CloneTest {
 				return "CtElement".equals(intrface.getSimpleName());
 			}
 		}.scan(launcher.getModel().getRootPackage());
+	}
+
+	@Test
+	public void testCloneCastConditional() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setSourceOutputDirectory("./target/trash");
+
+		launcher.addInputResource("./src/test/resources/spoon/test/visitor/ConditionalRes.java");
+
+		launcher.addProcessor(new AbstractProcessor<CtConditional<?>>() {
+			@Override
+			public void process(CtConditional<?> conditional) {
+				CtConditional clone = conditional.clone();
+				Assert.assertEquals(0, conditional.getTypeCasts().size());
+				Assert.assertEquals(0, clone.getTypeCasts().size());
+				Assert.assertEquals(conditional, clone);
+				conditional.addTypeCast(getFactory().Type().bytePrimitiveType());
+				Assert.assertEquals(1, conditional.getTypeCasts().size());
+				Assert.assertNotEquals(conditional, clone);
+				clone = conditional.clone();
+				Assert.assertEquals(conditional, clone);
+				Assert.assertEquals(1, clone.getTypeCasts().size());
+			}
+		});
+		launcher.run();
 	}
 }
