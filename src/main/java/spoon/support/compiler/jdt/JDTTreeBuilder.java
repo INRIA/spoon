@@ -319,7 +319,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)
 						&& resolvedType.enclosingType() != null
 						&& typeDeclaration.enclosingType.superclass != null
-						&& Collections.disjoint(modifiers, HelperJDTTreeBuilder.getModifiers(resolvedType.enclosingType().modifiers))) {
+						&& Collections.disjoint(modifiers, JDTTreeBuilderHelper.getModifiers(resolvedType.enclosingType().modifiers))) {
 					typeDeclaration.superclass.resolvedType = new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
 							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
 				}
@@ -328,7 +328,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				((CtClass) type).setSuperclass(this.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 			}
 			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
-				type.setSimpleName(HelperJDTTreeBuilder.computeAnonymousName(typeDeclaration.binding));
+				type.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(typeDeclaration.binding));
 			} else {
 				type.setSimpleName(new String(typeDeclaration.name));
 			}
@@ -337,7 +337,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 
 		// Setting modifiers
-		type.setModifiers(HelperJDTTreeBuilder.getModifiers(typeDeclaration.modifiers));
+		type.setModifiers(JDTTreeBuilderHelper.getModifiers(typeDeclaration.modifiers));
 
 		return type;
 	}
@@ -963,7 +963,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(AND_AND_Expression and_and_Expression, BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-		op.setKind(HelperJDTTreeBuilder.getBinaryOperatorKind((and_and_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
+		op.setKind(JDTTreeBuilderHelper.getBinaryOperatorKind((and_and_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, and_and_Expression);
 		return true; // do nothing by default, keep traversing
 	}
@@ -979,7 +979,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (annotationTypeDeclaration.annotations != null) {
 			for (Annotation a : annotationTypeDeclaration.annotations) {
 				a.traverse(this, annotationTypeDeclaration.scope);
-				HelperJDTTreeBuilder.substituteAnnotation(f, a, CtAnnotatedElementType.TYPE_USE);
+				JDTTreeBuilderHelper.substituteAnnotation(f, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -996,7 +996,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtParameter<Object> p = factory.Core().createParameter();
 		p.setSimpleName(new String(argument.name));
 		p.setVarArgs(argument.isVarArgs());
-		p.setModifiers(HelperJDTTreeBuilder.getModifiers(argument.modifiers));
+		p.setModifiers(JDTTreeBuilderHelper.getModifiers(argument.modifiers));
 		if (argument.binding != null && argument.binding.type != null) {
 			context.isLambdaParameterImplicitlyTyped = argument.type != null;
 			if (argument.binding.type instanceof WildcardBinding) {
@@ -1031,7 +1031,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (argument.annotations != null) {
 			for (Annotation a : argument.annotations) {
 				a.traverse(this, scope);
-				HelperJDTTreeBuilder.substituteAnnotation(p, a, CtAnnotatedElementType.TYPE_USE);
+				JDTTreeBuilderHelper.substituteAnnotation(p, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -1164,7 +1164,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(BinaryExpression binaryExpression, BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-		op.setKind(HelperJDTTreeBuilder.getBinaryOperatorKind((binaryExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
+		op.setKind(JDTTreeBuilderHelper.getBinaryOperatorKind((binaryExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, binaryExpression);
 		return true;
 	}
@@ -1224,7 +1224,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(CompoundAssignment compoundAssignment, BlockScope scope) {
 		CtOperatorAssignment<Object, Object> a = factory.Core().createOperatorAssignment();
-		a.setKind(HelperJDTTreeBuilder.getBinaryOperatorKind(compoundAssignment.operator));
+		a.setKind(JDTTreeBuilderHelper.getBinaryOperatorKind(compoundAssignment.operator));
 		context.enter(a, compoundAssignment);
 		context.arguments.push(a);
 		context.assigned = true;
@@ -1250,7 +1250,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		CtConstructor<?> c = factory.Core().createConstructor();
-		c.setModifiers(HelperJDTTreeBuilder.getModifiers(constructorDeclaration.modifiers));
+		c.setModifiers(JDTTreeBuilderHelper.getModifiers(constructorDeclaration.modifiers));
 
 		context.enter(c, constructorDeclaration);
 
@@ -1376,7 +1376,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(EqualExpression equalExpression, BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-		op.setKind(HelperJDTTreeBuilder.getBinaryOperatorKind((equalExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
+		op.setKind(JDTTreeBuilderHelper.getBinaryOperatorKind((equalExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, equalExpression);
 		return true; // do nothing by default, keep traversing
 	}
@@ -1449,7 +1449,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 		field.setSimpleName(new String(fieldDeclaration.name));
-		field.setModifiers(HelperJDTTreeBuilder.getModifiers(fieldDeclaration.modifiers));
+		field.setModifiers(JDTTreeBuilderHelper.getModifiers(fieldDeclaration.modifiers));
 
 		if (fieldDeclaration.annotations != null) {
 			int annotationsLength = fieldDeclaration.annotations.length;
@@ -1596,7 +1596,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
 		v.setSimpleName(new String(localDeclaration.name));
 		v.setType(this.references.buildTypeReference(localDeclaration.type, scope));
-		v.setModifiers(HelperJDTTreeBuilder.getModifiers(localDeclaration.modifiers));
+		v.setModifiers(JDTTreeBuilderHelper.getModifiers(localDeclaration.modifiers));
 		context.enter(v, localDeclaration);
 
 		if (localDeclaration.initialization != null) {
@@ -1608,7 +1608,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (localDeclaration.annotations != null) {
 			for (Annotation a : localDeclaration.annotations) {
 				a.traverse(this, scope);
-				HelperJDTTreeBuilder.substituteAnnotation(v, a, CtAnnotatedElementType.TYPE_USE);
+				JDTTreeBuilderHelper.substituteAnnotation(v, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -1790,7 +1790,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtMethod<Object> m = factory.Core().createMethod();
 		m.setSimpleName(new String(methodDeclaration.selector));
 		m.setType(this.references.buildTypeReference(methodDeclaration.returnType, scope));
-		m.setModifiers(HelperJDTTreeBuilder.getModifiers(methodDeclaration.modifiers));
+		m.setModifiers(JDTTreeBuilderHelper.getModifiers(methodDeclaration.modifiers));
 		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
 
 		context.enter(m, methodDeclaration);
@@ -1811,7 +1811,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (methodDeclaration.annotations != null) {
 			for (Annotation a : methodDeclaration.annotations) {
 				a.traverse(this, methodDeclaration.scope);
-				HelperJDTTreeBuilder.substituteAnnotation(m, a, CtAnnotatedElementType.TYPE_USE);
+				JDTTreeBuilderHelper.substituteAnnotation(m, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -1847,7 +1847,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(OR_OR_Expression or_or_Expression, BlockScope scope) {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-		op.setKind(HelperJDTTreeBuilder.getBinaryOperatorKind((or_or_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
+		op.setKind(JDTTreeBuilderHelper.getBinaryOperatorKind((or_or_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, or_or_Expression);
 		return true;
 	}
@@ -2135,7 +2135,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				((CtFieldAccess) va).setTarget(factory.Code().createTypeAccess(declaringRef));
 			}
 			// In no classpath mode and with qualified name, the binding don't have a good name.
-			va.getVariable().setSimpleName(HelperJDTTreeBuilder.createTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
+			va.getVariable().setSimpleName(JDTTreeBuilderHelper.createTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
 			context.enter(va, qualifiedNameReference);
 			return false;
 		} else {
@@ -2480,7 +2480,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(var, jdtCatch);
 		var.setSimpleName(new String(jdtCatch.name));
 		var.setType(r);
-		for (ModifierKind modifier : HelperJDTTreeBuilder.getModifiers(jdtCatch.modifiers)) {
+		for (ModifierKind modifier : JDTTreeBuilderHelper.getModifiers(jdtCatch.modifiers)) {
 			var.addModifier(modifier);
 		}
 		context.exit(jdtCatch);
@@ -2497,7 +2497,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		for (CtTypeReference<?> ref : refs) {
 			var.addMultiType(ref);
 		}
-		for (ModifierKind modifier : HelperJDTTreeBuilder.getModifiers(jdtCatch.modifiers)) {
+		for (ModifierKind modifier : JDTTreeBuilderHelper.getModifiers(jdtCatch.modifiers)) {
 			var.addModifier(modifier);
 		}
 		context.exit(jdtCatch);
@@ -2604,7 +2604,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(UnaryExpression unaryExpression, BlockScope scope) {
 		CtUnaryOperator<?> op = factory.Core().createUnaryOperator();
-		op.setKind(HelperJDTTreeBuilder.getUnaryOperator((unaryExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
+		op.setKind(JDTTreeBuilderHelper.getUnaryOperator((unaryExpression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, unaryExpression);
 		return true;
 	}

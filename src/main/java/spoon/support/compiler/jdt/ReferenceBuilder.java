@@ -187,22 +187,22 @@ public class ReferenceBuilder {
 	 * @return a type reference.
 	 */
 	<T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, TypeBinding receiverType, ReferenceBinding enclosingType, JDTTreeBuilder.OnAccessListener listener) {
-		if (enclosingType != null && Collections.disjoint(Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED), HelperJDTTreeBuilder.getModifiers(enclosingType.modifiers))) {
+		if (enclosingType != null && Collections.disjoint(Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED), JDTTreeBuilderHelper.getModifiers(enclosingType.modifiers))) {
 			String access = "";
 			int i = 0;
 			for (; i < tokens.length; i++) {
 				final char[][] qualified = Arrays.copyOfRange(tokens, 0, i + 1);
-				if (!HelperJDTTreeBuilder.isPackage(qualified, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor))) {
+				if (!JDTTreeBuilderHelper.isPackage(qualified, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor))) {
 					access = CharOperation.toString(qualified);
 					break;
 				}
 			}
 			if (!access.contains(CtPackage.PACKAGE_SEPARATOR)) {
-				access = HelperJDTTreeBuilder.hasTypeInImports(access, this.jdtTreeBuilder.getContextBuilder());
+				access = JDTTreeBuilderHelper.hasTypeInImports(access, this.jdtTreeBuilder.getContextBuilder());
 			}
-			final TypeBinding accessBinding = HelperJDTTreeBuilder.searchTypeBinding(access, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor));
+			final TypeBinding accessBinding = JDTTreeBuilderHelper.searchTypeBinding(access, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor));
 			if (accessBinding != null && listener.onAccess(tokens, i)) {
-				final TypeBinding superClassBinding = HelperJDTTreeBuilder.searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
+				final TypeBinding superClassBinding = JDTTreeBuilderHelper.searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
 				if (superClassBinding != null) {
 					return this.getTypeReference(superClassBinding.clone(accessBinding));
 				} else {
@@ -627,14 +627,14 @@ public class ReferenceBuilder {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			if (binding.isAnonymousType()) {
-				ref.setSimpleName(HelperJDTTreeBuilder.computeAnonymousName((SourceTypeBinding) binding));
+				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName((SourceTypeBinding) binding));
 				ref.setDeclaringType(getTypeReference((binding.enclosingType())));
 			} else {
 				ref.setSimpleName(new String(binding.sourceName()));
 				if (((LocalTypeBinding) binding).enclosingMethod == null && binding.enclosingType() != null && binding.enclosingType() instanceof LocalTypeBinding) {
 					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				} else if (binding.enclosingMethod() != null) {
-					ref.setSimpleName(HelperJDTTreeBuilder.computeAnonymousName((SourceTypeBinding) binding));
+					ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName((SourceTypeBinding) binding));
 					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				}
 			}
@@ -642,7 +642,7 @@ public class ReferenceBuilder {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			if (binding.isAnonymousType()) {
-				ref.setSimpleName(HelperJDTTreeBuilder.computeAnonymousName((SourceTypeBinding) binding));
+				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName((SourceTypeBinding) binding));
 				ref.setDeclaringType(getTypeReference((binding.enclosingType())));
 			} else {
 				ref.setSimpleName(new String(binding.sourceName()));

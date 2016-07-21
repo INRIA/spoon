@@ -39,7 +39,7 @@ import spoon.reflect.declaration.ModifierKind;
 import java.util.EnumSet;
 import java.util.Set;
 
-class HelperJDTTreeBuilder {
+class JDTTreeBuilderHelper {
 
 	static UnaryOperatorKind getUnaryOperator(int op) {
 		switch (op) {
@@ -297,7 +297,7 @@ class HelperJDTTreeBuilder {
 	 * @param elementType  Type of the annotation.
 	 */
 	static void substituteAnnotation(CtTypedElement<Object> typedElement, Annotation a, CtAnnotatedElementType elementType) {
-		if (HelperJDTTreeBuilder.hasAnnotationWithType(a, elementType)) {
+		if (JDTTreeBuilderHelper.hasAnnotationWithType(a, elementType)) {
 			CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = typedElement.getAnnotations().get(typedElement.getAnnotations().size() - 1);
 			typedElement.removeAnnotation(targetAnnotation);
 			typedElement.getType().addAnnotation(targetAnnotation);
