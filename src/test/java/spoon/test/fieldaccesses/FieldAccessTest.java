@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
@@ -139,14 +140,14 @@ public class FieldAccessTest {
 		CtType<?> type = build("spoon.test.fieldaccesses", "BUG20160112");
 		assertEquals("BUG20160112", type.getSimpleName());
 		CtOperatorAssignment<?, ?> ass = type.getElements(
-				new TypeFilter<CtOperatorAssignment<?,?>>(CtOperatorAssignment.class)).get(0);
+				new TypeFilter<CtOperatorAssignment<?, ?>>(CtOperatorAssignment.class)).get(0);
 		assertNotNull("z+=a.us", ass);
 		CtExpression<?> righthand = ass.getAssignment();
 		assertTrue("a.us should be CtFieldRead", righthand instanceof CtFieldRead);
 	}
 
 	@Test
-	public void testTargetedAccessPosition() throws Exception{
+	public void testTargetedAccessPosition() throws Exception {
 		CtType<?> type = build("spoon.test.fieldaccesses", "TargetedAccessPosition");
 		List<CtFieldAccess<?>> vars = type.getElements(
 				new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
@@ -162,8 +163,8 @@ public class FieldAccessTest {
 		assertEquals(3, vars.get(0).getTarget().getPosition().getSourceEnd() - vars.get(0).getTarget().getPosition().getSourceStart());
 
 		// 0 is length(t)-1
-		assertEquals(0, ((CtFieldAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() -
-				((CtFieldAccess<?>)vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
+		assertEquals(0, ((CtFieldAccess<?>) vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() -
+				((CtFieldAccess<?>) vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
 	}
 
 	@Test
@@ -350,5 +351,33 @@ public class FieldAccessTest {
 		final DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(aType.getFactory().getEnvironment());
 		assertEquals(0, printer.computeImports(aType).size());
 		assertEquals("spoon.test.fieldaccesses.testclasses.Mole.Delicious delicious", aType.getMethodsByName("m").get(0).getParameters().get(0).toString());
+	}
+
+	@Test
+	public void testFieldAccessOnUnknownType() throws Exception {
+		final Launcher launcher = new Launcher();
+
+		launcher.addInputResource("./src/test/resources/noclasspath/FieldAccessRes.java");
+		launcher.setSourceOutputDirectory("./target/trash");
+
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+
+		launcher.run();
+
+		class CounterScanner extends CtScanner {
+			private int visited = 0;
+			@Override
+			public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+				visited++;
+				assertEquals("array", ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName());
+				assertEquals("length", fieldWrite.getVariable().getSimpleName());
+			}
+		}
+
+		CounterScanner scanner = new CounterScanner();
+		launcher.getFactory().Class().get("FieldAccessRes").accept(scanner);
+
+		assertEquals(1, scanner.visited);
 	}
 }
