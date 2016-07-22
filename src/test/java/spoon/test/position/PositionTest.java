@@ -1,9 +1,16 @@
 package spoon.test.position;
 
 import org.junit.Test;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -70,6 +77,38 @@ public class PositionTest {
 
 		assertEquals("int field2 =\n"
 				+ "\t\t\t0;", contentAtPosition(classContent, position2));
+
+
+		CtAssignment m = foo.getMethod("m").getBody().getStatement(0);
+		CtFieldAccess assigned = (CtFieldAccess) m.getAssigned();
+		SourcePosition position3 = assigned.getPosition();
+		assertEquals(13, position3.getLine());
+		assertEquals(13, position3.getEndLine());
+
+		assertEquals(168, position3.getSourceStart());
+		assertEquals(184, position3.getSourceEnd());
+
+		assertEquals("FooField.f.field2", contentAtPosition(classContent, position3));
+
+		CtFieldAccess target = (CtFieldAccess) assigned.getTarget();
+		SourcePosition position4 = target.getPosition();
+		assertEquals(13, position4.getLine());
+		assertEquals(13, position4.getEndLine());
+
+		assertEquals(168, position4.getSourceStart());
+		assertEquals(177, position4.getSourceEnd());
+
+		assertEquals("FooField.f", contentAtPosition(classContent, position4));
+
+		CtExpression typeAccess = target.getTarget();
+		SourcePosition position5 = typeAccess.getPosition();
+		assertEquals(13, position5.getLine());
+		assertEquals(13, position5.getEndLine());
+
+		assertEquals(168, position5.getSourceStart());
+		assertEquals(175, position5.getSourceEnd());
+
+		assertEquals("FooField", contentAtPosition(classContent, position5));
 	}
 
 	@Test

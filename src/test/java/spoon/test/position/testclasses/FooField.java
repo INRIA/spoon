@@ -6,4 +6,10 @@ public class FooField {
 
 	int field2 =
 			0;
+
+	static FooField f = null;
+
+	public void m() {
+		FooField.f.field2 = 0;
+	}
 }
