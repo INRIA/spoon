@@ -2117,9 +2117,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 					CtFieldReference fieldReference = factory.Core().createFieldReference();
 					fieldReference.setSimpleName(new String(token));
 					other.setVariable(fieldReference);
-					if ("length".equals(new String(token)) && ((VariableBinding) qualifiedNameReference.binding).type instanceof ArrayBinding) {
-						fieldReference.setType(factory.Type().integerPrimitiveType());
-					}
 					other.setTarget(va);
 					//set source position of va;
 					CompilationUnit cu = factory.CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
