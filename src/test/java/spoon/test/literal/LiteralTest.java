@@ -29,4 +29,12 @@ public class LiteralTest {
 		assertEquals(':', (char) charLiteral.getValue());
 		canBeBuilt("./target/literal", 8, true);
 	}
+
+	@Test
+	public void testLiteralInForEachWithNoClasspath() {
+		Launcher runLaunch = new Launcher();
+		runLaunch.getEnvironment().setNoClasspath(true);
+		runLaunch.addInputResource("./src/test/resources/noclasspath/LiteralInForEach.java");
+		runLaunch.buildModel();
+	}
 }
