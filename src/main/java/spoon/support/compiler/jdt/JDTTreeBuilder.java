@@ -1608,7 +1608,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			if (localDeclaration.initialization instanceof Literal
 					// exclude StringLiterals if scope is null. In other words:
 					// StringLiteral -> scope!=null <=> !StringLiteral v scope!=null.
-					&& ( !(localDeclaration.initialization instanceof StringLiteral) || scope != null) ) {
+					&& (!(localDeclaration.initialization instanceof StringLiteral) || scope != null)) {
 				final Literal literal = (Literal) localDeclaration.initialization;
 				if (literal.constant == null) {
 					literal.resolveType(scope);
