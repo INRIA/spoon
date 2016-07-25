@@ -249,18 +249,23 @@ public class ReferenceBuilder {
 						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
 						return typeReference;
 					} else {
+						PackageBinding packageBinding = null;
 						char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
-						Binding someBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.findImport(chars, false, false);
-						PackageBinding packageBinding;
-						if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
-							packageBinding = (PackageBinding) someBinding;
-						} else {
-							packageBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(chars);
-							if (packageBinding == null) {
-								// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
-								// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
-								packageBinding = new PackageBinding(chars, null, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment);
+						// `findImport(chars, false, false);` and `createPackage(chars)` require
+						// an array with a minimum length of 1 and throw an
+						// ArrayIndexOutOfBoundsException if `chars.length == 0`. Fixes #759.
+						if (chars.length > 0) {
+							Binding someBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.findImport(chars, false, false);
+							if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
+								packageBinding = (PackageBinding) someBinding;
+							} else {
+								packageBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(chars);
 							}
+						}
+						if (packageBinding == null) {
+							// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
+							// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
+							packageBinding = new PackageBinding(chars, null, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment);
 						}
 						return getPackageReference(packageBinding);
 					}
