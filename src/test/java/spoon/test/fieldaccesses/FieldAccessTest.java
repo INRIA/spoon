@@ -358,12 +358,10 @@ public class FieldAccessTest {
 		final Launcher launcher = new Launcher();
 
 		launcher.addInputResource("./src/test/resources/noclasspath/FieldAccessRes.java");
-		launcher.setSourceOutputDirectory("./target/trash");
 
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setAutoImports(true);
 
-		launcher.run();
+		launcher.buildModel();
 
 		class CounterScanner extends CtScanner {
 			private int visited = 0;
