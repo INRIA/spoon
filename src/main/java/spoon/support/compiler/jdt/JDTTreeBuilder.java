@@ -1605,10 +1605,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			// resolve Literal#constant if null (by calling `resolveType`). Otherwise,
 			// `localDeclaration.initialization.traverse(this, scope);` throws a
 			// NullPointerException. Fixes #755.
-			if (localDeclaration.initialization instanceof Literal &&
+			if (localDeclaration.initialization instanceof Literal
 					// exclude StringLiterals if scope is null. In other words:
 					// StringLiteral -> scope!=null <=> !StringLiteral v scope!=null.
-					( !(localDeclaration.initialization instanceof StringLiteral) || scope != null) ) {
+					&& ( !(localDeclaration.initialization instanceof StringLiteral) || scope != null) ) {
 				final Literal literal = (Literal) localDeclaration.initialization;
 				if (literal.constant == null) {
 					literal.resolveType(scope);
