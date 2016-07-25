@@ -102,6 +102,7 @@ import org.eclipse.jdt.internal.compiler.ast.UnaryExpression;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.WhileStatement;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -160,6 +161,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -2103,7 +2105,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 					i++;
 				}
 			} else if (qualifiedNameReference.tokens.length > 1) {
-				int sourceStart = (int) (positions[0] >>> 32);
+				sourceStart = (int) (positions[0] >>> 32);
 				for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
 					char[] token = qualifiedNameReference.tokens[i];
 					CtFieldAccess<Object> other;
@@ -2112,16 +2114,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 					} else {
 						other = factory.Core().createFieldRead();
 					}
-					CtFieldReference lengthReference = factory.Core().createFieldReference();
-					lengthReference.setSimpleName(new String(token));
-					other.setVariable(lengthReference);
+					CtFieldReference fieldReference = factory.Core().createFieldReference();
+					fieldReference.setSimpleName(new String(token));
+					other.setVariable(fieldReference);
 					if ("length".equals(new String(token)) && ((VariableBinding) qualifiedNameReference.binding).type instanceof ArrayBinding) {
-						lengthReference.setType(factory.Type().integerPrimitiveType());
+						fieldReference.setType(factory.Type().integerPrimitiveType());
 					}
 					other.setTarget(va);
 					//set source position of va;
 					CompilationUnit cu = factory.CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
-					int sourceEnd = (int) (positions[i]);
+					sourceEnd = (int) (positions[i]);
 					final int[] lineSeparatorPositions = context.compilationunitdeclaration.compilationResult.lineSeparatorPositions;
 					va.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions));
 					va = other;
