@@ -160,6 +160,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -2101,6 +2102,27 @@ public class JDTTreeBuilder extends ASTVisitor {
 					other.setPosition(this.position.buildPosition(sourceStart, sourceEnd));
 					va = other;
 					i++;
+				}
+			} else if (qualifiedNameReference.tokens.length > 1) {
+				sourceStart = (int) (positions[0] >>> 32);
+				for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
+					char[] token = qualifiedNameReference.tokens[i];
+					CtFieldAccess<Object> other;
+					if (qualifiedNameReference.tokens.length == i + 1 && context.stack.peek().element instanceof CtAssignment) {
+						other = factory.Core().createFieldWrite();
+					} else {
+						other = factory.Core().createFieldRead();
+					}
+					CtFieldReference fieldReference = factory.Core().createFieldReference();
+					fieldReference.setSimpleName(new String(token));
+					other.setVariable(fieldReference);
+					other.setTarget(va);
+					//set source position of va;
+					CompilationUnit cu = factory.CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
+					sourceEnd = (int) (positions[i]);
+					final int[] lineSeparatorPositions = context.compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+					va.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions));
+					va = other;
 				}
 			}
 			va.setPosition(this.position.buildPosition(qualifiedNameReference.sourceStart(), qualifiedNameReference.sourceEnd()));
