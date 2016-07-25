@@ -61,6 +61,7 @@ import org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
 import org.eclipse.jdt.internal.compiler.ast.IntLiteral;
 import org.eclipse.jdt.internal.compiler.ast.LabeledStatement;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
+import org.eclipse.jdt.internal.compiler.ast.Literal;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LongLiteral;
 import org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
@@ -1602,6 +1603,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (localDeclaration.initialization != null) {
 			context.arguments.push(v);
+			// resolve Literal#constant if null (by calling `resolveType`). Otherwise,
+			// `localDeclaration.initialization.traverse(this, scope);` throws a
+			// NullPointerException. Fixes #755.
+			if (localDeclaration.initialization instanceof Literal
+					// exclude StringLiterals if scope is null. In other words:
+					// StringLiteral -> scope!=null <=> !StringLiteral v scope!=null.
+					&& (!(localDeclaration.initialization instanceof StringLiteral) || scope != null)) {
+				final Literal literal = (Literal) localDeclaration.initialization;
+				if (literal.constant == null) {
+					literal.resolveType(scope);
+				}
+			}
 			localDeclaration.initialization.traverse(this, scope);
 			context.arguments.pop();
 		}
