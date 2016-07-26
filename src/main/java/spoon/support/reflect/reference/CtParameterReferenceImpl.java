@@ -25,59 +25,59 @@ import spoon.reflect.declaration.CtElement;
 
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 
-    private static final long serialVersionUID = 1L;
-    private CtParameter declaration;
-    CtExecutableReference<?> executable;
+	private static final long serialVersionUID = 1L;
+	private CtParameter declaration;
+	CtExecutableReference<?> executable;
 
-    public CtParameterReferenceImpl() {
-        super();
-    }
+	public CtParameterReferenceImpl() {
+		super();
+	}
 
-    @Override
-    public void accept(CtVisitor visitor) {
-        visitor.visitCtParameterReference(this);
-    }
+	@Override
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtParameterReference(this);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public CtParameter<T> getDeclaration() {
-        if (declaration != null) {
-            return declaration;
-        }
-        CtElement element = this;
-        do {
-            CtExecutable executable = element.getInitializedParent(CtExecutable.class);
-            if (executable == null) {
-                return null;
-            }
-            declaration = filter(executable.getParameters(), CtParameter.class);
-            element = executable;
-        } while (declaration == null);
-        return declaration;
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public CtParameter<T> getDeclaration() {
+		if (declaration != null) {
+			return declaration;
+		}
+		CtElement element = this;
+		do {
+			CtExecutable executable = element.getInitializedParent(CtExecutable.class);
+			if (executable == null) {
+				return null;
+			}
+			declaration = filter(executable.getParameters(), CtParameter.class);
+			element = executable;
+		} while (declaration == null);
+		return declaration;
+	}
 
-    @Override
-    public CtExecutableReference<?> getDeclaringExecutable() {
-        return executable;
-    }
+	@Override
+	public CtExecutableReference<?> getDeclaringExecutable() {
+		return executable;
+	}
 
-    @Override
-    public <C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable) {
-        if (executable != null) {
-            executable.setParent(this);
-        }
-        this.executable = executable;
-        return (C) this;
-    }
+	@Override
+	public <C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable) {
+		if (executable != null) {
+			executable.setParent(this);
+		}
+		this.executable = executable;
+		return (C) this;
+	}
 
-    @Override
-    public CtParameterReference<T> clone() {
-        return (CtParameterReference<T>) super.clone();
-    }
+	@Override
+	public CtParameterReference<T> clone() {
+		return (CtParameterReference<T>) super.clone();
+	}
 
-    @Override
-    public <C extends CtParameterReference<T>> C setDeclaration(CtParameter<T> declaration) {
-        this.declaration = declaration;
-        return (C) this;
-    }
+	@Override
+	public <C extends CtParameterReference<T>> C setDeclaration(CtParameter<T> declaration) {
+		this.declaration = declaration;
+		return (C) this;
+	}
 }

@@ -26,67 +26,67 @@ import java.lang.reflect.Member;
  */
 public interface CtFieldReference<T> extends CtVariableReference<T> {
 
-    /**
-     * Gets the runtime member that corresponds to a field reference if any.
-     *
-     * @return the member (null if not found)
-     */
-    Member getActualField();
+	/**
+	 * Gets the runtime member that corresponds to a field reference if any.
+	 *
+	 * @return the member (null if not found)
+	 */
+	Member getActualField();
 
-    @Override
-    CtField<T> getDeclaration();
+	@Override
+	CtField<T> getDeclaration();
 
-    /**
-     * @param declaration if not null, set declaration of this variable
-     * reference; if null, set declaration as unknown and lookup it on next call
-     * to `getDeclaration()`
-     */
-    <C extends CtFieldReference<T>> C setDeclaration(CtField<T> declaration);
+	/**
+	 * @param declaration if not null, set declaration of this variable
+	 * reference; if null, set declaration as unknown and lookup it on next call
+	 * to `getDeclaration()`
+	 */
+	<C extends CtFieldReference<T>> C setDeclaration(CtField<T> declaration);
 
-    /**
-     * Returns the {@link CtField} that corresponds to the reference even if its
-     * declaring type isn't in the Spoon source path (in this case, the Spoon
-     * elements are built with runtime reflection)
-     *
-     * @return the field declaration that corresponds to the reference.
-     */
-    CtField<T> getFieldDeclaration();
+	/**
+	 * Returns the {@link CtField} that corresponds to the reference even if its
+	 * declaring type isn't in the Spoon source path (in this case, the Spoon
+	 * elements are built with runtime reflection)
+	 *
+	 * @return the field declaration that corresponds to the reference.
+	 */
+	CtField<T> getFieldDeclaration();
 
-    /**
-     * Gets the type in which the field is declared.
-     */
-    CtTypeReference<?> getDeclaringType();
+	/**
+	 * Gets the type in which the field is declared.
+	 */
+	CtTypeReference<?> getDeclaringType();
 
-    /**
-     * Gets the qualified name of the field.
-     */
-    String getQualifiedName();
+	/**
+	 * Gets the qualified name of the field.
+	 */
+	String getQualifiedName();
 
-    /**
-     * Tells if the referenced field is final.
-     */
-    boolean isFinal();
+	/**
+	 * Tells if the referenced field is final.
+	 */
+	boolean isFinal();
 
-    /**
-     * Tells if the referenced field is static.
-     */
-    boolean isStatic();
+	/**
+	 * Tells if the referenced field is static.
+	 */
+	boolean isStatic();
 
-    /**
-     * Sets the type in which the field is declared.
-     */
-    <C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
+	/**
+	 * Sets the type in which the field is declared.
+	 */
+	<C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
-    /**
-     * Forces a reference to a final element.
-     */
-    <C extends CtFieldReference<T>> C setFinal(boolean b);
+	/**
+	 * Forces a reference to a final element.
+	 */
+	<C extends CtFieldReference<T>> C setFinal(boolean b);
 
-    /**
-     * Forces a reference to a static element.
-     */
-    <C extends CtFieldReference<T>> C setStatic(boolean b);
+	/**
+	 * Forces a reference to a static element.
+	 */
+	<C extends CtFieldReference<T>> C setStatic(boolean b);
 
-    @Override
-    CtFieldReference<T> clone();
+	@Override
+	CtFieldReference<T> clone();
 }
