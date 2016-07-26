@@ -47,6 +47,9 @@ public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 			try {
 				do {
 					CtStatementList block = element.getParent(CtStatementList.class);
+					if (block == null) {
+						return null;
+					}
 					for (CtStatement ctStatement : block.getStatements()) {
 						if (ctStatement instanceof CtLocalVariable && ((CtLocalVariable) ctStatement).getSimpleName().equals(name)) {
 							optional = (CtLocalVariable) ctStatement;

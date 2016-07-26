@@ -34,6 +34,7 @@ public interface CtParameterReference<T> extends CtVariableReference<T> {
 	 */
 	<C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable);
 
+	@Override
 	CtParameter<T> getDeclaration();
 
 	@Override
