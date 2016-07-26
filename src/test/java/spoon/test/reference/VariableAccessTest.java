@@ -10,6 +10,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -106,5 +108,45 @@ public class VariableAccessTest {
 				return super.matches(exec);
 			}
 		});
+	}
+
+	@Test
+	public void testGetDeclarationAfterClone() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/noclasspath/A2.java");
+		launcher.buildModel();
+
+		final CtClass<Object> a2 = launcher.getFactory().Class().get("A2");
+		final CtClass<Object> a2Cloned = a2.clone();
+
+		assertEquals(a2, a2Cloned);
+
+		final CtMethod<Object> methodA2 = getMethod(launcher, a2);
+		final CtMethod<Object> methodA2Cloned = getMethod(launcher, a2Cloned);
+
+		final CtLocalVariable declaration = methodA2.getBody().getStatement(0);
+		final CtLocalVariable declarationCloned = methodA2Cloned.getBody().getStatement(0);
+
+		final CtLocalVariableReference localVarRef = getLocalVariableRefF1(methodA2);
+		final CtLocalVariableReference localVarRefCloned = getLocalVariableRefF1(methodA2Cloned);
+
+		assertEquals(localVarRef.getDeclaration(), declaration);
+		assertTrue(localVarRef.getDeclaration() == declaration);
+		assertEquals(localVarRefCloned.getDeclaration(), declarationCloned);
+		assertTrue(localVarRefCloned.getDeclaration() == declarationCloned);
+	}
+
+	private CtMethod<Object> getMethod(Launcher launcher, CtClass<Object> a2) {
+		return a2.getMethod("b", launcher.getFactory().Type().integerPrimitiveType());
+	}
+
+	private CtLocalVariableReference getLocalVariableRefF1(CtMethod<Object> method) {
+		return method.getElements(new TypeFilter<CtLocalVariableReference>(CtLocalVariableReference.class) {
+			@Override
+			public boolean matches(CtLocalVariableReference element) {
+				return "f1".equals(element.getSimpleName()) && super.matches(element);
+			}
+		}).get(0);
 	}
 }
