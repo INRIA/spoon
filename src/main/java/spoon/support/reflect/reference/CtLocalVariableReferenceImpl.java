@@ -17,36 +17,51 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtLocalVariableReference<T> {
-	private static final long serialVersionUID = 1L;
 
-	private CtLocalVariable<T> declaration;
+    private static final long serialVersionUID = 1L;
 
-	public CtLocalVariableReferenceImpl() {
-		super();
-	}
+    private CtLocalVariable<T> declaration;
 
-	@Override
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtLocalVariableReference(this);
-	}
+    public CtLocalVariableReferenceImpl() {
+        super();
+    }
 
-	@Override
-	public CtLocalVariable<T> getDeclaration() {
-		return declaration;
-	}
+    @Override
+    public void accept(CtVisitor visitor) {
+        visitor.visitCtLocalVariableReference(this);
+    }
 
-	@Override
-	public <C extends CtLocalVariableReference<T>> C setDeclaration(CtLocalVariable<T> declaration) {
-		this.declaration = declaration;
-		return (C) this;
-	}
+    @Override
+    public CtLocalVariable<T> getDeclaration() {
+        if (declaration != null) {
+            return declaration;
+        }
+        CtElement element = this;
+        do {
+            CtStatementList block = element.getInitializedParent(CtStatementList.class);
+            if (block == null) {
+                return null;
+            }
+            declaration = filter(block.getStatements(), CtLocalVariable.class);
+            element = block;
+        } while (declaration == null);
+        return declaration;
+    }
 
-	@Override
-	public CtLocalVariableReference<T> clone() {
-		return (CtLocalVariableReference<T>) super.clone();
-	}
+    @Override
+    public <C extends CtLocalVariableReference<T>> C setDeclaration(CtLocalVariable<T> declaration) {
+        this.declaration = declaration;
+        return (C) this;
+    }
+
+    @Override
+    public CtLocalVariableReference<T> clone() {
+        return (CtLocalVariableReference<T>) super.clone();
+    }
 }

@@ -23,64 +23,76 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
 public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl implements CtVariableReference<T> {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	CtTypeReference<T> type;
+    CtTypeReference<T> type;
 
-	public CtVariableReferenceImpl() {
-		super();
-	}
+    public CtVariableReferenceImpl() {
+        super();
+    }
 
-	@Override
-	public void accept(CtVisitor visitor) {
-		// nothing
-	}
+    @Override
+    public void accept(CtVisitor visitor) {
+        // nothing
+    }
 
-	@Override
-	public CtTypeReference<T> getType() {
-		return type;
-	}
+    @Override
+    public CtTypeReference<T> getType() {
+        return type;
+    }
 
-	@Override
-	public <C extends CtVariableReference<T>> C setType(CtTypeReference<T> type) {
-		if (type != null) {
-			type.setParent(this);
-		}
-		this.type = type;
-		return (C) this;
-	}
+    @Override
+    public <C extends CtVariableReference<T>> C setType(CtTypeReference<T> type) {
+        if (type != null) {
+            type.setParent(this);
+        }
+        this.type = type;
+        return (C) this;
+    }
 
-	@Override
-	protected AnnotatedElement getActualAnnotatedElement() {
-		// this is never available through reflection
-		return null;
-	}
+    @Override
+    protected AnnotatedElement getActualAnnotatedElement() {
+        // this is never available through reflection
+        return null;
+    }
 
-	@Override
-	public CtVariable<T> getDeclaration() {
-		return null;
-	}
+    @Override
+    public CtVariable<T> getDeclaration() {
+        return null;
+    }
 
-	@Override
-	public Set<ModifierKind> getModifiers() {
-		CtVariable<T> v = getDeclaration();
-		if (v != null) {
-			return v.getModifiers();
-		}
-		return new TreeSet<>();
-	}
+    @Override
+    public Set<ModifierKind> getModifiers() {
+        CtVariable<T> v = getDeclaration();
+        if (v != null) {
+            return v.getModifiers();
+        }
+        return new TreeSet<>();
+    }
 
-	@Override
-	public void replace(CtVariableReference<?> reference) {
-		super.replace(reference);
-	}
+    @Override
+    public void replace(CtVariableReference<?> reference) {
+        super.replace(reference);
+    }
 
-	@Override
-	public CtVariableReference<T> clone() {
-		return (CtVariableReference<T>) super.clone();
-	}
+    @Override
+    public CtVariableReference<T> clone() {
+        return (CtVariableReference<T>) super.clone();
+    }
+
+    protected <V extends CtVariable> V filter(Collection collection, Class<V> c) {
+        for (Object object : collection) {
+            if (object != null
+                && c.isAssignableFrom(object.getClass())
+                && simplename.equals(((V) object).getSimpleName())) {
+                return (V) object;
+            }
+        }
+        return null;
+    }
 }

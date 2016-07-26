@@ -31,188 +31,217 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.Set;
 import java.util.TreeSet;
+import spoon.reflect.declaration.CtElement;
 
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
-	private static final long serialVersionUID = 1L;
 
-	CtTypeReference<?> declaringType;
+    private static final long serialVersionUID = 1L;
 
-	boolean fina = false;
+    CtTypeReference<?> declaringType;
+    private CtField<T> declaration;
 
-	boolean stat = false;
+    boolean fina = false;
 
-	public CtFieldReferenceImpl() {
-		super();
-	}
+    boolean stat = false;
 
-	@Override
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtFieldReference(this);
-	}
+    public CtFieldReferenceImpl() {
+        super();
+    }
 
-	@Override
-	public Member getActualField() {
-		try {
-			if (getDeclaringType().getActualClass().isAnnotation()) {
-				return getDeclaringType().getActualClass().getDeclaredMethod(
-						getSimpleName());
-			}
-			return getDeclaringType().getActualClass().getDeclaredField(
-					getSimpleName());
-		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
-		}
-		return null;
-	}
+    @Override
+    public void accept(CtVisitor visitor) {
+        visitor.visitCtFieldReference(this);
+    }
 
-	@Override
-	protected AnnotatedElement getActualAnnotatedElement() {
-		return (AnnotatedElement) getActualField();
-	}
+    @Override
+    public Member getActualField() {
+        try {
+            if (getDeclaringType().getActualClass().isAnnotation()) {
+                return getDeclaringType().getActualClass().getDeclaredMethod(
+                    getSimpleName());
+            }
+            return getDeclaringType().getActualClass().getDeclaredField(
+                getSimpleName());
+        } catch (Exception e) {
+            Launcher.LOGGER.error(e.getMessage(), e);
+        }
+        return null;
+    }
 
-	// @Override
-	// public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-	// A annotation = super.getAnnotation(annotationType);
-	// if (annotation != null) {
-	// return annotation;
-	// }
-	// // use reflection
-	// Class<?> c = getDeclaringType().getActualClass();
-	// if (c.isAnnotation()) {
-	// for (Method m : RtHelper.getAllMethods(c)) {
-	// if (!getSimpleName().equals(m.getName())) {
-	// continue;
-	// }
-	// m.setAccessible(true);
-	// return m.getAnnotation(annotationType);
-	// }
-	// } else {
-	// for (Field f : RtHelper.getAllFields(c)) {
-	// if (!getSimpleName().equals(f.getName())) {
-	// continue;
-	// }
-	// f.setAccessible(true);
-	// return f.getAnnotation(annotationType);
-	// }
-	// }
-	// return null;
-	// }
+    @Override
+    protected AnnotatedElement getActualAnnotatedElement() {
+        return (AnnotatedElement) getActualField();
+    }
 
-	// @Override
-	// public Annotation[] getAnnotations() {
-	// Annotation[] annotations = super.getAnnotations();
-	// if (annotations != null) {
-	// return annotations;
-	// }
-	// // use reflection
-	// Class<?> c = getDeclaringType().getActualClass();
-	// for (Field f : RtHelper.getAllFields(c)) {
-	// if (!getSimpleName().equals(f.getName())) {
-	// continue;
-	// }
-	// f.setAccessible(true);
-	// return f.getAnnotations();
-	// }
-	// // If the fields belong to an annotation type, they are actually
-	// // methods
-	// for (Method m : RtHelper.getAllMethods(c)) {
-	// if (!getSimpleName().equals(m.getName())) {
-	// continue;
-	// }
-	// m.setAccessible(true);
-	// return m.getAnnotations();
-	// }
-	// return null;
-	// }
+    // @Override
+    // public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+    // A annotation = super.getAnnotation(annotationType);
+    // if (annotation != null) {
+    // return annotation;
+    // }
+    // // use reflection
+    // Class<?> c = getDeclaringType().getActualClass();
+    // if (c.isAnnotation()) {
+    // for (Method m : RtHelper.getAllMethods(c)) {
+    // if (!getSimpleName().equals(m.getName())) {
+    // continue;
+    // }
+    // m.setAccessible(true);
+    // return m.getAnnotation(annotationType);
+    // }
+    // } else {
+    // for (Field f : RtHelper.getAllFields(c)) {
+    // if (!getSimpleName().equals(f.getName())) {
+    // continue;
+    // }
+    // f.setAccessible(true);
+    // return f.getAnnotation(annotationType);
+    // }
+    // }
+    // return null;
+    // }
+    // @Override
+    // public Annotation[] getAnnotations() {
+    // Annotation[] annotations = super.getAnnotations();
+    // if (annotations != null) {
+    // return annotations;
+    // }
+    // // use reflection
+    // Class<?> c = getDeclaringType().getActualClass();
+    // for (Field f : RtHelper.getAllFields(c)) {
+    // if (!getSimpleName().equals(f.getName())) {
+    // continue;
+    // }
+    // f.setAccessible(true);
+    // return f.getAnnotations();
+    // }
+    // // If the fields belong to an annotation type, they are actually
+    // // methods
+    // for (Method m : RtHelper.getAllMethods(c)) {
+    // if (!getSimpleName().equals(m.getName())) {
+    // continue;
+    // }
+    // m.setAccessible(true);
+    // return m.getAnnotations();
+    // }
+    // return null;
+    // }
+    @Override
+    @SuppressWarnings("unchecked")
+    public CtField<T> getDeclaration() {
+        if (declaration != null) {
+            return declaration;
+        }
+        if (declaringType == null) {
+            CtElement element = this;
+            do {
+                CtType type = element.getInitializedParent(CtType.class);
+                if (type == null) {
+                    return null;
+                }
+                declaration = filter(type.getFields(), CtField.class);
+                element = type;
+            } while (declaration == null);
+            return declaration;
+        }
+        CtType<?> type = declaringType.getDeclaration();
+        if (type != null) {
+            return declaration = (CtField<T>) type.getField(getSimpleName());
+        }
+        return null;
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public CtField<T> getDeclaration() {
-		if (declaringType == null) {
-			return null;
-		}
-		CtType<?> type = declaringType.getDeclaration();
-		if (type != null) {
-			return (CtField<T>) type.getField(getSimpleName());
-		}
-		return null;
-	}
+    @Override
+    public <C extends CtFieldReference<T>> C setDeclaration(CtField<T> declaration) {
+        this.declaration = declaration;
+        if (declaration != null) {
+            CtType type = declaration.getDeclaringType();
+            if (type == null) {
+                // copied just that field
+                this.declaringType = null;
+            } else {
+                this.declaringType = type.getReference();
+            }
+        }
+        return (C) this;
+    }
 
-	@Override
-	public CtField<T> getFieldDeclaration() {
-		if (declaringType == null) {
-			return null;
-		}
-		CtType<?> type = declaringType.getTypeDeclaration();
-		if (type != null) {
-			final CtField<T> ctField = (CtField<T>) type.getField(getSimpleName());
-			if (ctField == null && type instanceof CtEnum) {
-				return ((CtEnum) type).getEnumValue(getSimpleName());
-			}
-			return ctField;
-		}
-		return null;
-	}
+    @Override
+    public CtField<T> getFieldDeclaration() {
+        CtField field = getDeclaration();
+        if (field != null) {
+            return field;
+        }
+        CtType<?> type = declaringType.getTypeDeclaration();
+        if (type != null) {
+            final CtField<T> ctField = (CtField<T>) type.getField(getSimpleName());
+            if (ctField == null && type instanceof CtEnum) {
+                return ((CtEnum) type).getEnumValue(getSimpleName());
+            }
+            return ctField;
+        }
+        return null;
+    }
 
-	@Override
-	public CtTypeReference<?> getDeclaringType() {
-		return declaringType;
-	}
+    @Override
+    public CtTypeReference<?> getDeclaringType() {
+        return declaringType;
+    }
 
-	@Override
-	public String getQualifiedName() {
-		return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
-	}
+    @Override
+    public String getQualifiedName() {
+        return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
+    }
 
-	@Override
-	public boolean isFinal() {
-		return fina;
-	}
+    @Override
+    public boolean isFinal() {
+        return fina;
+    }
 
-	/**
-	 * Tells if the referenced field is static.
-	 */
-	@Override
-	public boolean isStatic() {
-		return stat;
-	}
+    /**
+     * Tells if the referenced field is static.
+     */
+    @Override
+    public boolean isStatic() {
+        return stat;
+    }
 
-	@Override
-	public <C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
-		if (declaringType != null) {
-			declaringType.setParent(this);
-		}
-		this.declaringType = declaringType;
-		return (C) this;
-	}
+    @Override
+    public <C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
+        if (declaringType != null) {
+            declaringType.setParent(this);
+        }
+        this.declaringType = declaringType;
+        return (C) this;
+    }
 
-	@Override
-	public <C extends CtFieldReference<T>> C setFinal(boolean b) {
-		fina = b;
-		return (C) this;
-	}
+    @Override
+    public <C extends CtFieldReference<T>> C setFinal(boolean b) {
+        fina = b;
+        return (C) this;
+    }
 
-	@Override
-	public <C extends CtFieldReference<T>> C setStatic(boolean stat) {
-		this.stat = stat;
-		return (C) this;
-	}
+    @Override
+    public <C extends CtFieldReference<T>> C setStatic(boolean stat) {
+        this.stat = stat;
+        return (C) this;
+    }
 
-	@Override
-	public Set<ModifierKind> getModifiers() {
-		CtVariable<?> v = getDeclaration();
-		if (v != null) {
-			return v.getModifiers();
-		}
-		Member m = getActualField();
-		if (m != null) {
-			return RtHelper.getModifiers(m.getModifiers());
-		}
-		return new TreeSet<>();
-	}
+    @Override
+    public Set<ModifierKind> getModifiers() {
+        CtVariable<?> v = getDeclaration();
+        if (v != null) {
+            return v.getModifiers();
+        }
+        Member m = getActualField();
+        if (m != null) {
+            return RtHelper.getModifiers(m.getModifiers());
+        }
+        return new TreeSet<>();
+    }
 
-	@Override
-	public CtFieldReference<T> clone() {
-		return (CtFieldReference<T>) super.clone();
-	}
+    @Override
+    public CtFieldReference<T> clone() {
+        return (CtFieldReference<T>) super.clone();
+    }
 }

@@ -209,6 +209,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	 */
 	<E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException;
 
+    /**
+	 * Gets the first parent that matches the given type. Never fail with 
+     * ParentNotInitializedException and returns null instead
+	 */
+    public <P extends CtElement> P getInitializedParent(Class<P> parentType);
 	/**
 	 * Manually sets the parent element of the current element.
 	 *

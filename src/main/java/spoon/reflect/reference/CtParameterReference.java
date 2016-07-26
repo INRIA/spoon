@@ -24,18 +24,25 @@ import spoon.reflect.declaration.CtParameter;
  */
 public interface CtParameterReference<T> extends CtVariableReference<T> {
 
-	/**
-	 * Gets the declaring executable of the referenced parameter.
-	 */
-	CtExecutableReference<?> getDeclaringExecutable();
+    /**
+     * Gets the declaring executable of the referenced parameter.
+     */
+    CtExecutableReference<?> getDeclaringExecutable();
 
-	/**
-	 * Sets the declaring executable of the referenced parameter.
-	 */
-	<C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable);
+    /**
+     * @param declaration if not null, set declaration of this variable
+     * reference; if null, set declaration as unknown and lookup it on next call
+     * to `getDeclaration()`
+     */
+    <C extends CtParameterReference<T>> C setDeclaration(CtParameter<T> declaration);
 
-	CtParameter<T> getDeclaration();
+    /**
+     * Sets the declaring executable of the referenced parameter.
+     */
+    <C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable);
 
-	@Override
-	CtParameterReference<T> clone();
+    CtParameter<T> getDeclaration();
+
+    @Override
+    CtParameterReference<T> clone();
 }

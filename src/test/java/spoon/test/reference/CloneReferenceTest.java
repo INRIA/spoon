@@ -35,6 +35,9 @@ public class CloneReferenceTest {
         }
 
         CtClass b = a.clone();
+        //deleteme
+        names = Arrays.asList( "a", "b", "x", "param");
+     
         //System.out.println(b);
         // test after clone
         for (String name : names) {
