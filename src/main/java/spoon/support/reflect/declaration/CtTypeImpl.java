@@ -806,7 +806,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public CtType<T> clone() {
-		return (CtType<T>) super.clone();
+		return (CtType<T>) super.clone().setParent(parent);
 	}
 
 	@Override public int compareTo(CtElement o) {

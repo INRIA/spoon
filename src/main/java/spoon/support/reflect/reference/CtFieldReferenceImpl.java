@@ -132,19 +132,18 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (declaration != null) {
 			return declaration;
 		}
-		if (declaringType == null) {
-			CtElement element = this;
-			do {
-				CtType type = element.getInitializedParent(CtType.class);
-				if (type == null) {
-					return null;
+		String typeName = declaringType == null ? null : declaringType.getQualifiedName();
+		CtElement element = this;
+		CtType<?> type;
+		while ((type = element.getInitializedParent(CtType.class)) != null) {
+			if (typeName == null || type.getQualifiedName().equals(typeName)) {
+				if ((declaration = filter(type.getFields(), CtField.class)) != null) {
+					return declaration;
 				}
-				declaration = filter(type.getFields(), CtField.class);
-				element = type;
-			} while (declaration == null);
-			return declaration;
+			}
+			element = type;
 		}
-		CtType<?> type = declaringType.getDeclaration();
+		type = declaringType.getDeclaration();
 		if (type != null) {
 			return declaration = (CtField<T>) type.getField(getSimpleName());
 		}
