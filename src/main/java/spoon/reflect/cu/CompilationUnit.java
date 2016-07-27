@@ -16,11 +16,12 @@
  */
 package spoon.reflect.cu;
 
+import spoon.processing.FactoryAccessor;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+
 import java.io.File;
 import java.util.List;
-
-import spoon.processing.FactoryAccessor;
-import spoon.reflect.declaration.CtType;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
@@ -48,6 +49,16 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * Sets the types declared in this compilation unit.
 	 */
 	void setDeclaredTypes(List<CtType<?>> types);
+
+	/**
+	 * Gets the package declared in the top level type of the compilation unit.
+	 */
+	CtPackage getDeclaredPackage();
+
+	/**
+	 * Sets the package declared in the top level type of the compilation unit.
+	 */
+	void setDeclaredPackage(CtPackage ctPackage);
 
 	/**
 	 * Searches and returns the main type (the type which has the same name as

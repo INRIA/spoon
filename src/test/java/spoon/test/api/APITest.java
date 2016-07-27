@@ -12,6 +12,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -72,7 +73,7 @@ public class APITest {
 			public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
 				return new JavaOutputProcessor() {
 					@Override
-					public void process(CtType<?> e) {
+					public void process(CtNamedElement e) {
 						l.add(e);
 					}
 					@Override

@@ -44,6 +44,7 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -172,8 +173,12 @@ class JDTCommentBuilder {
 	private void insertCommentInAST(final CtComment comment) {
 		CtElement commentParent = findCommentParent(comment);
 		if (commentParent == null) {
-			comment.setCommentType(CtComment.CommentType.FILE);
-			addCommentToNear(comment, new ArrayList<CtElement>(spoonUnit.getDeclaredTypes()));
+			if (spoonUnit.getFile().getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
+				spoonUnit.getDeclaredPackage().addComment(comment);
+			} else {
+				comment.setCommentType(CtComment.CommentType.FILE);
+				addCommentToNear(comment, new ArrayList<CtElement>(spoonUnit.getDeclaredTypes()));
+			}
 			return;
 		}
 		// visitor that inserts the comment in the element

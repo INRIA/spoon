@@ -25,9 +25,12 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 
 import java.util.ArrayDeque;
@@ -46,6 +49,8 @@ public class ContextBuilder {
 	List<CtTypeReference<?>> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 
 	CompilationUnitDeclaration compilationunitdeclaration;
+
+	CompilationUnit compilationUnitSpoon;
 
 	Deque<CtTry> finallyzer = new ArrayDeque<>();
 
@@ -83,9 +88,10 @@ public class ContextBuilder {
 	@SuppressWarnings("unchecked")
 	void enter(CtElement e, ASTNode node) {
 		stack.push(new ASTPair(e, node));
-		// aststack.push(node);
-		if (compilationunitdeclaration != null) {
-			e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
+		if (!(e instanceof CtPackage) || (compilationUnitSpoon.getFile() != null && compilationUnitSpoon.getFile().getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION))) {
+			if (compilationunitdeclaration != null) {
+				e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
+			}
 		}
 
 		ASTPair pair = stack.peek();

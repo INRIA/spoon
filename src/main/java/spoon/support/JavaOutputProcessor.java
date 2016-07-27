@@ -21,6 +21,7 @@ import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
 import spoon.processing.TraversalStrategy;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -40,14 +41,12 @@ import java.util.Map;
 /**
  * A processor that generates compilable Java source files from the meta-model.
  */
-public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements FileGenerator<CtType<?>> {
+public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> implements FileGenerator<CtNamedElement> {
 	PrettyPrinter printer;
 
 	File directory;
 
 	List<File> printedFiles = new ArrayList<>();
-
-	boolean writePackageAnnotationFile = true;
 
 	/**
 	 * Creates a new processor for generating Java source files.
@@ -139,42 +138,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements
 
 		PrintStream stream = null;
 
-		// create package directory
-		File packageDir;
-		if (pack.isUnnamedPackage()) {
-			packageDir = new File(directory.getAbsolutePath());
-		} else {
-			// Create current package dir
-			packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
-		}
-		if (!packageDir.exists()) {
-			if (!packageDir.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
-			}
-		}
-
-		// Create package annotation file
-		if (writePackageAnnotationFile && element.getPackage().getAnnotations().size() > 0) {
-			File packageAnnot = new File(packageDir.getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
-			if (!printedFiles.contains(packageAnnot)) {
-				printedFiles.add(packageAnnot);
-			}
-			try {
-				stream = new PrintStream(packageAnnot);
-				stream.println(printer.getPackageDeclaration());
-				stream.close();
-			} catch (FileNotFoundException e) {
-				Launcher.LOGGER.error(e.getMessage(), e);
-			} finally {
-				if (stream != null) {
-					stream.close();
-				}
-			}
-		}
-
 		// print type
 		try {
-			File file = new File(packageDir.getAbsolutePath() + File.separatorChar + element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+			File file = new File(getPackageFile(pack).getAbsolutePath() + File.separatorChar + element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
 			file.createNewFile();
 			if (!printedFiles.contains(file)) {
 				printedFiles.add(file);
@@ -195,15 +161,58 @@ public class JavaOutputProcessor extends AbstractProcessor<CtType<?>> implements
 
 	}
 
+	@Override
+	public boolean isToBeProcessed(CtNamedElement candidate) {
+		return candidate instanceof CtType<?> || candidate instanceof CtPackage && (candidate.getComments().size() > 0 || candidate.getAnnotations().size() > 0);
+	}
+
 	/**
 	 * Creates a source file for each processed top-level type and pretty prints
 	 * its contents.
 	 */
-	public void process(CtType<?> type) {
-		if (type.isTopLevel()) {
-			createJavaFile(type);
+	public void process(CtNamedElement nameElement) {
+		if (nameElement instanceof CtType && ((CtType) nameElement).isTopLevel()) {
+			createJavaFile((CtType<?>) nameElement);
+		} else if (nameElement instanceof CtPackage) {
+			createPackageFile((CtPackage) nameElement);
 		}
 		printer.reset();
+	}
+
+	private void createPackageFile(CtPackage pack) {
+		// Create package annotation file
+		File packageAnnot = new File(getPackageFile(pack).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
+		if (!printedFiles.contains(packageAnnot)) {
+			printedFiles.add(packageAnnot);
+		}
+		PrintStream stream = null;
+		try {
+			stream = new PrintStream(packageAnnot);
+			stream.println(printer.printPackageInfo(pack));
+			stream.close();
+		} catch (FileNotFoundException e) {
+			Launcher.LOGGER.error(e.getMessage(), e);
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
+		}
+	}
+
+	private File getPackageFile(CtPackage pack) {
+		File packageDir;
+		if (pack.isUnnamedPackage()) {
+			packageDir = new File(directory.getAbsolutePath());
+		} else {
+			// Create current package dir
+			packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
+		}
+		if (!packageDir.exists()) {
+			if (!packageDir.mkdirs()) {
+				throw new RuntimeException("Error creating output directory");
+			}
+		}
+		return packageDir;
 	}
 
 	public void setOutputDirectory(File directory) {

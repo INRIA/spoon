@@ -292,16 +292,24 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 *
 	 * @see spoon.reflect.visitor.JavaPrettyPrinter#getPackageDeclaration()
 	 */
+	@Override
 	public String getPackageDeclaration() {
+		return printPackageInfo(context.currentTopLevel.getPackage());
+	}
+
+	@Override
+	public String printPackageInfo(CtPackage pack) {
 		StringBuffer bck = sbf;
 		sbf = new StringBuffer();
 
-		for (CtAnnotation<?> a : context.currentTopLevel.getPackage().getAnnotations()) {
+		printComment(pack);
+
+		for (CtAnnotation<?> a : pack.getAnnotations()) {
 			a.accept(this);
 		}
 
-		if (!context.currentTopLevel.getPackage().isUnnamedPackage()) {
-			write("package " + context.currentTopLevel.getPackage().getQualifiedName() + ";");
+		if (!pack.isUnnamedPackage()) {
+			write("package " + pack.getQualifiedName() + ";");
 		}
 		String ret = sbf.toString();
 		sbf = bck;
