@@ -66,11 +66,7 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 		CtClass<? extends ExpressionTemplate<?>> c;
 		CtBlock<?> b;
 		c = targetType.getFactory().Class().get(this.getClass());
-		if (c == null) {
-			c = targetType.getFactory().Class().get(this.getClass());
-		}
-		b = Substitution
-				.substitute(targetType, this, getExpressionBlock(c));
+		b = Substitution.substitute(targetType, this, getExpressionBlock(c));
 		return ((CtReturn<T>) b.getStatements().get(0)).getReturnedExpression();
 	}
 
