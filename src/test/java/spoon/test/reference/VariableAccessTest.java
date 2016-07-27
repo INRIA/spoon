@@ -16,6 +16,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
+import spoon.test.reference.testclasses.Tortillas;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class VariableAccessTest {
 
@@ -135,6 +137,13 @@ public class VariableAccessTest {
 		assertTrue(localVarRef.getDeclaration() == declaration);
 		assertEquals(localVarRefCloned.getDeclaration(), declarationCloned);
 		assertTrue(localVarRefCloned.getDeclaration() == declarationCloned);
+	}
+
+	@Test
+	public void testReferences() throws Exception {
+		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
+		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
+		System.out.println(make);
 	}
 
 	private CtMethod<Object> getMethod(Launcher launcher, CtClass<Object> a2) {

@@ -43,10 +43,14 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtParameter<T> getDeclaration() {
-		final CtParameter<T> ctParameter = fromDeclaringExecutable();
+		final CtParameter<T> ctParameter = lookupDynamically();
 		if (ctParameter != null) {
 			return ctParameter;
 		}
+		return fromDeclaringExecutable();
+	}
+
+	private CtParameter<T> lookupDynamically() {
 		CtElement element = this;
 		CtParameter optional = null;
 		String name = getSimpleName();

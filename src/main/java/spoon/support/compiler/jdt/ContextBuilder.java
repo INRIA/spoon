@@ -61,11 +61,14 @@ public class ContextBuilder {
 
 	boolean isGenericTypeExplicit = true;
 
+	boolean isBuildLambda = false;
+
 	boolean isLambdaParameterImplicitlyTyped = true;
 
 	boolean ignoreComputeImports = false;
 
 	boolean isTypeParameter = false;
+
 
 	/**
 	 * Stack of all parents elements

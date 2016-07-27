@@ -884,7 +884,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 
 		if (lambdaExpression.body() != null) {
+			final boolean isBuildLambdaBack = context.isBuildLambda;
+			context.isBuildLambda = true;
 			lambdaExpression.body().traverse(this, blockScope);
+			context.isBuildLambda = isBuildLambdaBack;
 		}
 
 		return false;
@@ -2288,9 +2291,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 			} else {
 				va = factory.Core().createVariableRead();
 			}
-			CtLocalVariableReference ref = factory.Core().createLocalVariableReference();
-			ref.setSimpleName(new String(singleNameReference.token));
-			ref.setDeclaration((CtLocalVariable) this.context.getLocalVariableDeclaration(ref.getSimpleName()));
+			final String name = CharOperation.charToString(singleNameReference.token);
+			CtVariableReference ref;
+			if (context.isBuildLambda) {
+				ref = factory.Core().createParameterReference();
+			} else {
+				ref = factory.Core().createLocalVariableReference();
+				((CtLocalVariableReference) ref).setDeclaration((CtLocalVariable) this.context.getLocalVariableDeclaration(name));
+			}
+			ref.setSimpleName(name);
 			va.setVariable(ref);
 		}
 		if (va != null) {

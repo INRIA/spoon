@@ -130,10 +130,14 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtField<T> getDeclaration() {
-		final CtField<T> ctField = fromDeclaringType();
+		final CtField<T> ctField = lookupDynamically();
 		if (ctField != null) {
 			return ctField;
 		}
+		return fromDeclaringType();
+	}
+
+	private CtField<T> lookupDynamically() {
 		CtElement element = this;
 		CtField optional = null;
 		String name = getSimpleName();
