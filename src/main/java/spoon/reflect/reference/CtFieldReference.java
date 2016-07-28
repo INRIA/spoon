@@ -25,6 +25,7 @@ import java.lang.reflect.Member;
  * {@link spoon.reflect.declaration.CtField}.
  */
 public interface CtFieldReference<T> extends CtVariableReference<T> {
+
 	/**
 	 * Gets the runtime member that corresponds to a field reference if any.
 	 *
@@ -36,9 +37,16 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	CtField<T> getDeclaration();
 
 	/**
-	 * Returns the {@link CtField} that corresponds to the reference
-	 * even if its declaring type isn't in the Spoon source path  (in this case,
-	 * the Spoon elements are built with runtime reflection)
+	 * @param declaration if not null, set declaration of this variable
+	 * reference; if null, set declaration as unknown and lookup it on next call
+	 * to `getDeclaration()`
+	 */
+	<C extends CtFieldReference<T>> C setDeclaration(CtField<T> declaration);
+
+	/**
+	 * Returns the {@link CtField} that corresponds to the reference even if its
+	 * declaring type isn't in the Spoon source path (in this case, the Spoon
+	 * elements are built with runtime reflection)
 	 *
 	 * @return the field declaration that corresponds to the reference.
 	 */

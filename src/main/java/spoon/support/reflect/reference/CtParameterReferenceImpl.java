@@ -21,12 +21,12 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.List;
+import spoon.reflect.declaration.CtElement;
 
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
-	private static final long serialVersionUID = 1L;
 
+	private static final long serialVersionUID = 1L;
+	private CtParameter declaration;
 	CtExecutableReference<?> executable;
 
 	public CtParameterReferenceImpl() {
@@ -41,18 +41,19 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtParameter<T> getDeclaration() {
-		CtExecutable<?> exec = executable.getDeclaration();
-		if (exec == null) {
-			return null;
+		if (declaration != null) {
+			return declaration;
 		}
-		List<CtParameter<?>> params = exec.getParameters();
-		for (CtParameter<?> p : params) {
-			if (this.getSimpleName().equals(p.getSimpleName())) {
-				return (CtParameter<T>) p;
+		CtElement element = this;
+		do {
+			CtExecutable executable = element.getInitializedParent(CtExecutable.class);
+			if (executable == null) {
+				return null;
 			}
-		}
-		throw new IllegalStateException(
-				"Cannot found declaration for parameter " + getSimpleName());
+			declaration = filter(executable.getParameters(), CtParameter.class);
+			element = executable;
+		} while (declaration == null);
+		return declaration;
 	}
 
 	@Override
@@ -72,5 +73,11 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 	@Override
 	public CtParameterReference<T> clone() {
 		return (CtParameterReference<T>) super.clone();
+	}
+
+	@Override
+	public <C extends CtParameterReference<T>> C setDeclaration(CtParameter<T> declaration) {
+		this.declaration = declaration;
+		return (C) this;
 	}
 }

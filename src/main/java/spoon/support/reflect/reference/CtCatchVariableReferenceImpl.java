@@ -16,11 +16,14 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtCatchVariableReference<T> {
+
 	private static final long serialVersionUID = 1L;
 
 	private CtCatchVariable<T> declaration;
@@ -36,6 +39,19 @@ public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 
 	@Override
 	public CtCatchVariable<T> getDeclaration() {
+		if (declaration != null) {
+			return declaration;
+		}
+		CtElement element = this;
+		String name = getSimpleName();
+		do {
+			CtCatch catchBlock = element.getInitializedParent(CtCatch.class);
+			if (catchBlock == null) {
+				return null;
+			}
+			declaration = (CtCatchVariable<T>) catchBlock.getParameter();
+			element = catchBlock;
+		} while (!name.equals(declaration.getSimpleName()));
 		return declaration;
 	}
 

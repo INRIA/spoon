@@ -348,6 +348,18 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	@Override
+	public <P extends CtElement> P getInitializedParent(Class<P> parentType) {
+		CtElement element = this;
+		while (element.isParentInitialized()) {
+			element = element.getParent();
+			if (parentType.isAssignableFrom(element.getClass())) {
+				return (P) element;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public boolean hasParent(CtElement candidate) throws ParentNotInitializedException {
 		return this != getFactory().getModel().getRootPackage() && (getParent() == candidate || getParent().hasParent(candidate));
 	}

@@ -23,6 +23,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -82,5 +83,16 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 	@Override
 	public CtVariableReference<T> clone() {
 		return (CtVariableReference<T>) super.clone();
+	}
+
+	protected <V extends CtVariable> V filter(Collection collection, Class<V> c) {
+		for (Object object : collection) {
+			if (object != null
+				&& c.isAssignableFrom(object.getClass())
+				&& simplename.equals(((V) object).getSimpleName())) {
+				return (V) object;
+			}
+		}
+		return null;
 	}
 }

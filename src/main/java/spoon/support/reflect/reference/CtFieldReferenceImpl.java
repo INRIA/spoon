@@ -31,11 +31,14 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.Set;
 import java.util.TreeSet;
+import spoon.reflect.declaration.CtElement;
 
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
+
 	private static final long serialVersionUID = 1L;
 
 	CtTypeReference<?> declaringType;
+	private CtField<T> declaration;
 
 	boolean fina = false;
 
@@ -55,10 +58,10 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		try {
 			if (getDeclaringType().getActualClass().isAnnotation()) {
 				return getDeclaringType().getActualClass().getDeclaredMethod(
-						getSimpleName());
+					getSimpleName());
 			}
 			return getDeclaringType().getActualClass().getDeclaredField(
-					getSimpleName());
+				getSimpleName());
 		} catch (Exception e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 		}
@@ -97,7 +100,6 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 	// }
 	// return null;
 	// }
-
 	// @Override
 	// public Annotation[] getAnnotations() {
 	// Annotation[] annotations = super.getAnnotations();
@@ -124,24 +126,50 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 	// }
 	// return null;
 	// }
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtField<T> getDeclaration() {
-		if (declaringType == null) {
-			return null;
+		if (declaration != null) {
+			return declaration;
 		}
-		CtType<?> type = declaringType.getDeclaration();
+		String typeName = declaringType == null ? null : declaringType.getQualifiedName();
+		CtElement element = this;
+		CtType<?> type;
+		while ((type = element.getInitializedParent(CtType.class)) != null) {
+			if (typeName == null || type.getQualifiedName().equals(typeName)) {
+				if ((declaration = filter(type.getFields(), CtField.class)) != null) {
+					return declaration;
+				}
+			}
+			element = type;
+		}
+		type = declaringType.getDeclaration();
 		if (type != null) {
-			return (CtField<T>) type.getField(getSimpleName());
+			return declaration = (CtField<T>) type.getField(getSimpleName());
 		}
 		return null;
 	}
 
 	@Override
+	public <C extends CtFieldReference<T>> C setDeclaration(CtField<T> declaration) {
+		this.declaration = declaration;
+		if (declaration != null) {
+			CtType type = declaration.getDeclaringType();
+			if (type == null) {
+				// copied just that field
+				this.declaringType = null;
+			} else {
+				this.declaringType = type.getReference();
+			}
+		}
+		return (C) this;
+	}
+
+	@Override
 	public CtField<T> getFieldDeclaration() {
-		if (declaringType == null) {
-			return null;
+		CtField field = getDeclaration();
+		if (field != null) {
+			return field;
 		}
 		CtType<?> type = declaringType.getTypeDeclaration();
 		if (type != null) {
