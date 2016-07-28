@@ -1114,7 +1114,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (declaration == null) {
 				return true;
 			}
-			return variable.getDeclaration().getModifiers().contains(ModifierKind.FINAL);
+			return declaration.getModifiers().contains(ModifierKind.FINAL);
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}

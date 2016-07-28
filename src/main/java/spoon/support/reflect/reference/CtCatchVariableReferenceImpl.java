@@ -16,7 +16,10 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -36,6 +39,24 @@ public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 
 	@Override
 	public CtCatchVariable<T> getDeclaration() {
+		if (declaration == null) {
+			CtElement element = this;
+			String name = getSimpleName();
+			CtCatchVariable var;
+			try {
+				do {
+					CtCatch catchBlock = element.getParent(CtCatch.class);
+					if (catchBlock == null) {
+						return null;
+					}
+					var = catchBlock.getParameter();
+					element = catchBlock;
+				} while (!name.equals(var.getSimpleName()));
+			} catch (ParentNotInitializedException e) {
+				return null;
+			}
+			return var;
+		}
 		return declaration;
 	}
 

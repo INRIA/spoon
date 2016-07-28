@@ -19,7 +19,7 @@ package spoon.generating.replace;
 import spoon.reflect.declaration.CtElement;
 
 class CtListener implements ReplaceListener<CtElement> {
-	private CtElement element;
+	private final CtElement element;
 
 	CtListener(CtElement element) {
 		this.element = element;

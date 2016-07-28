@@ -22,12 +22,14 @@ import spoon.reflect.code.CtCatchVariable;
  * This interface defines a reference to {@link spoon.reflect.code.CtCatchVariable}.
  */
 public interface CtCatchVariableReference<T> extends CtVariableReference<T> {
+	@Override
 	CtCatchVariable<T> getDeclaration();
 
 	/**
 	 * Sets the catch variable declaration that corresponds to this catch
 	 * variable reference.
 	 */
+	@Deprecated
 	<C extends CtCatchVariableReference<T>> C setDeclaration(CtCatchVariable<T> declaration);
 
 	@Override

@@ -17,6 +17,10 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -36,6 +40,28 @@ public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 
 	@Override
 	public CtLocalVariable<T> getDeclaration() {
+		if (declaration == null) {
+			CtElement element = this;
+			CtLocalVariable<T> optional = null;
+			String name = getSimpleName();
+			try {
+				do {
+					CtStatementList block = element.getParent(CtStatementList.class);
+					if (block == null) {
+						return null;
+					}
+					for (CtStatement ctStatement : block.getStatements()) {
+						if (ctStatement instanceof CtLocalVariable && ((CtLocalVariable) ctStatement).getSimpleName().equals(name)) {
+							optional = (CtLocalVariable) ctStatement;
+						}
+					}
+					element = block;
+				} while (optional == null);
+			} catch (ParentNotInitializedException e) {
+				return null;
+			}
+			return optional;
+		}
 		return declaration;
 	}
 
