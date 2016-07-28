@@ -119,6 +119,15 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		} else if (isPrimitive(value.getClass()) || value instanceof String) {
 			// Value should be a literal.
 			res = getFactory().Code().createLiteral(value);
+		} else if (value.getClass().isEnum()) {
+			final CtTypeReference declaringClass = getFactory().Type().createReference(((Enum) value).getDeclaringClass());
+			final CtFieldReference variableRef = getFactory().Field().createReference(declaringClass, declaringClass, ((Enum) value).name());
+			CtTypeAccess target = getFactory().Code().createTypeAccess(declaringClass);
+			CtFieldRead fieldRead = getFactory().Core().createFieldRead();
+			fieldRead.setVariable(variableRef);
+			fieldRead.setTarget(target);
+			fieldRead.setType(declaringClass);
+			res = fieldRead;
 		} else {
 			throw new SpoonException("Please, submit a valid value.");
 		}

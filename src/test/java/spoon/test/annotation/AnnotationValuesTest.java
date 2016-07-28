@@ -4,18 +4,22 @@ import org.junit.Test;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotationValues;
+import spoon.test.annotation.testclasses.BoundNumber;
 import spoon.testing.utils.ModelUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -100,6 +104,18 @@ public class AnnotationValuesTest {
 
 		annotation = factory.Annotation().annotate(target, SuppressWarnings.class, "value", "test2");
 		on(annotation).giveMeAnnotationValue("value").isTypedBy(CtNewArray.class);
+	}
+
+	@Test
+	public void testAnnotateWithEnum() throws Exception {
+		final Factory factory = createFactory();
+		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
+		final CtField<String> field = factory.Field().create(target, new HashSet<>(), factory.Type().STRING, "field");
+		target.addField(field);
+
+		final CtAnnotation<BoundNumber> byteOrder = factory.Annotation().annotate(field, BoundNumber.class, "byteOrder", BoundNumber.ByteOrder.LittleEndian);
+		assertEquals(byteOrder, on(field).giveMeAnnotation(BoundNumber.class));
+		assertTrue(on(byteOrder).giveMeAnnotationValue("byteOrder").element instanceof CtFieldRead);
 	}
 
 	static class Request {
