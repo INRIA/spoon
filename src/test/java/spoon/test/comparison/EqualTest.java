@@ -36,8 +36,7 @@ public class EqualTest {
 		}
 
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
-
-		CtMethod<?> method = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+		CtMethod<?> method = (CtMethod<?>) clazz1.getMethods().toArray()[0];
 
 		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getStatement(0);
 

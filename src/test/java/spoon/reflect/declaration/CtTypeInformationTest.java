@@ -26,38 +26,46 @@ public class CtTypeInformationTest {
 
 	@Test
 	public void testGetSuperclass() throws Exception {
-		// test superclass of class
-		final CtType<?> type = this.factory.Type().get(Subclass.class);
 
-		CtTypeReference<?> superclass = type.getSuperclass();
+		final CtType<?> extendObject = this.factory.Type().get(ExtendsObject.class);
+
+		// only 1 method directly in this class
+		Assert.assertEquals(1, extendObject.getMethods().size());
+
+		// + 48 of ArrayList (in library)
+		// + 12 of java.lang.Object
+		Assert.assertEquals(1+12+48, extendObject.getAllMethods().size());
+
+		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
+		assertEquals(2, subClass.getMethods().size());
+		assertEquals(61+2, subClass.getAllMethods().size());
+
+		CtTypeReference<?> superclass = subClass.getSuperclass();
 		Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());
 
-		//        superclass = superclass.getSuperclass();
-		//        Assert.assertEquals(Object.class.getName(), superclass.getQualifiedName());
+		Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());
 
-		Assert.assertNull(superclass.getSuperclass());
+		Assert.assertNotNull(superclass.getSuperclass());
 
 		// test superclass of interface type reference
-		Set<CtTypeReference<?>> superInterfaces = type.getSuperInterfaces();
+		Set<CtTypeReference<?>> superInterfaces = subClass.getSuperInterfaces();
 		Assert.assertEquals(1, superInterfaces.size());
 		CtTypeReference<?> superinterface = superInterfaces.iterator().next();
 		Assert.assertEquals(Subinterface.class.getName(), superinterface.getQualifiedName());
 		Assert.assertNull(superinterface.getSuperclass());
-
-		assertEquals(2, type.getAllMethods().size());
 
 		// test superclass of interface
 		final CtType<?> type2 = this.factory.Type().get(Subinterface.class);
 		Assert.assertNull(type2.getSuperclass());
 
 		// the interface abstract method and the implementation method have the same signature
-		CtMethod<?> fooConcrete = type.getMethodsByName("foo").get(0);
+		CtMethod<?> fooConcrete = subClass.getMethodsByName("foo").get(0);
 		CtMethod<?> fooAbstract = type2.getMethodsByName("foo").get(0);
 		assertEquals(fooConcrete.getSignature(), fooAbstract.getSignature());
 		// yet they are different AST node
 		Assert.assertNotEquals(fooConcrete, fooAbstract);
 
-		assertEquals(type.getMethodsByName("foo").get(0).getSignature(),
+		assertEquals(subClass.getMethodsByName("foo").get(0).getSignature(),
 				type2.getMethodsByName("foo").get(0).getSignature());
 
 	}

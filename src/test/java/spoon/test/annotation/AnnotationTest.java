@@ -317,7 +317,7 @@ public class AnnotationTest {
 		CtAnnotationType<?> annotationType = pkg.getType("Bound");
 		assertEquals(Bound.class, annotationType.getActualClass());
 		assertNull(annotationType.getSuperclass());
-		assertEquals(annotationType.getFields().size(),annotationType.getAllMethods().size());
+		assertEquals(annotationType.getFields().size(),annotationType.getMethods().size());
 		assertEquals(0,annotationType.getSuperInterfaces().size());
 
 		annotations = annotationType.getAnnotations();
