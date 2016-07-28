@@ -16,11 +16,12 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+
 import java.util.List;
 import java.util.Map;
-
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtType;
 
 /**
  * This interface defines the pretty printers.
@@ -31,6 +32,11 @@ public interface PrettyPrinter {
 	 * Gets the package declaration contents.
 	 */
 	String getPackageDeclaration();
+
+	/**
+	 * Prints the package info.
+	 */
+	String printPackageInfo(CtPackage pack);
 
 	/**
 	 * Gets the contents of the compilation unit.

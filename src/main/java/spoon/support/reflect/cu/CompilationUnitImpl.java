@@ -19,6 +19,7 @@ package spoon.support.reflect.cu;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.Import;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
@@ -36,6 +37,8 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	Factory factory;
 
 	List<CtType<?>> declaredTypes = new ArrayList<>(COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
+
+	CtPackage ctPackage;
 
 	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;
@@ -67,6 +70,16 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setDeclaredTypes(List<CtType<?>> types) {
 		this.declaredTypes = types;
+	}
+
+	@Override
+	public CtPackage getDeclaredPackage() {
+		return ctPackage;
+	}
+
+	@Override
+	public void setDeclaredPackage(CtPackage ctPackage) {
+		this.ctPackage = ctPackage;
 	}
 
 	public void setFile(File file) {

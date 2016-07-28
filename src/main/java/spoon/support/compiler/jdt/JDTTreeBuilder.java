@@ -39,6 +39,7 @@ import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.CharLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompoundAssignment;
 import org.eclipse.jdt.internal.compiler.ast.ConditionalExpression;
 import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
@@ -132,7 +133,6 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
@@ -820,7 +820,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		while (!context.stack.isEmpty() && context.stack.peek().node == typeDeclaration) {
 			context.exit(typeDeclaration);
 		}
-		context.compilationunitdeclaration = null;
 	}
 
 	@Override
@@ -833,8 +832,19 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.exit(whileStatement);
 	}
 
+	@Override
+	public void endVisit(CompilationUnitDeclaration compilationUnitDeclaration, CompilationUnitScope scope) {
+		context.compilationunitdeclaration = null;
+		context.compilationUnitSpoon = null;
+	}
 
-
+	@Override
+	public boolean visit(CompilationUnitDeclaration compilationUnitDeclaration, CompilationUnitScope scope) {
+		context.compilationunitdeclaration = scope.referenceContext;
+		context.compilationUnitSpoon = getFactory().CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
+		context.compilationUnitSpoon.setDeclaredPackage(getFactory().Package().getOrCreate(CharOperation.toString(scope.currentPackageName)));
+		return true;
+	}
 
 	@Override
 	public boolean visit(ReferenceExpression referenceExpression, BlockScope blockScope) {
@@ -2576,13 +2586,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		if (new String(typeDeclaration.name).equals("package-info")) {
-			CtPackage pack = factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName()));
-			String s = new String(typeDeclaration.compilationResult.compilationUnit.getContents(), typeDeclaration.javadoc.sourceStart, typeDeclaration.javadoc.sourceEnd - typeDeclaration.javadoc.sourceStart + 1);
-			pack.addComment(factory.Code().createComment(JDTCommentBuilder.cleanComment(s), CtComment.CommentType.JAVADOC));
-
-			context.compilationunitdeclaration = scope.referenceContext;
-			context.enter(pack, typeDeclaration);
-
+			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {
 			CtPackage pack = null;
@@ -2592,7 +2596,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 				pack = factory.Package().getRootPackage();
 			}
 			context.enter(pack, typeDeclaration);
-			context.compilationunitdeclaration = scope.referenceContext;
 			CtType<?> type = createType(typeDeclaration);
 			pack.addType(type);
 
