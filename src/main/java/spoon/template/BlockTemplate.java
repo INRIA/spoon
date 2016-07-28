@@ -49,9 +49,6 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	public CtBlock<?> apply(CtType<?> targetType) {
 		CtClass<? extends BlockTemplate> c;
 		c = targetType.getFactory().Class().get(this.getClass());
-		if (c == null) {
-			c = targetType.getFactory().Class().get(this.getClass());
-		}
 		return Substitution.substitute(targetType, this, getBlock(c));
 	}
 
