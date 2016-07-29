@@ -479,43 +479,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return true;
 	}
 
-	protected void printCharArray(char[] c) {
-		for (int i = 0; i < c.length; i++) {
-			switch (c[i]) {
-			case '\b':
-				System.out.print("\\b"); //$NON-NLS-1$
-				break;
-			case '\t':
-				System.out.print("\\t"); //$NON-NLS-1$
-				break;
-			case '\n':
-				System.out.print("\\n"); //$NON-NLS-1$
-				break;
-			case '\f':
-				System.out.print("\\f"); //$NON-NLS-1$
-				break;
-			case '\r':
-				System.out.print("\\r"); //$NON-NLS-1$
-				break;
-			case '\"':
-				System.out.print("\\\""); //$NON-NLS-1$
-				break;
-			case '\'':
-				System.out.print("\\'"); //$NON-NLS-1$
-				break;
-			case '\\': // take care not to display the escape as a potential
-				// real char
-				System.out.println("\\\\"); //$NON-NLS-1$
-				break;
-			default:
-				System.out.print(c[i]);
-			}
-			if (i < c.length - 1) {
-				System.out.print(",");
-			}
-		}
-	}
-
 	private void adjustPosition(CtElement e) {
 		if (e.getPosition() != null && !e.isImplicit() && e.getPosition().getCompilationUnit() != null && e.getPosition().getCompilationUnit() == sourceCompilationUnit) {
 			while (line < e.getPosition().getLine()) {
@@ -1430,22 +1393,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(invocation);
 	}
 
-	public static String byteToHex(byte b) {
-		// Returns hex String representation of byte b
-		char hexDigit[] = {
-				'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-		};
-		char[] array = { hexDigit[(b >> 4) & 0x0f], hexDigit[b & 0x0f] };
-		return new String(array);
-	}
-
-	public static String charToHex(char c) {
-		// Returns hex String representation of char c
-		byte hi = (byte) (c >>> 8);
-		byte lo = (byte) (c & 0xff);
-		return byteToHex(hi) + byteToHex(lo);
-	}
-
 	private void writeStringLiteral(String value, boolean mayContainsSpecialCharacter) {
 		if (!mayContainsSpecialCharacter) {
 			write(value);
@@ -1592,11 +1539,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		write(reference.getSimpleName());
 	}
 
-	public DefaultJavaPrettyPrinter writeTypeReference(CtTypeReference<?> t) {
-		scan(t);
-		return this;
-	}
-
 	public DefaultJavaPrettyPrinter writeExecutableParameters(CtExecutable<?> e) {
 		if (e.getParameters().size() > 0) {
 			for (CtParameter<?> p : e.getParameters()) {
@@ -1679,8 +1621,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		return commentsToPrint;
 	}
-
-
 
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		printComment(m);
@@ -1960,7 +1900,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(returnStatement.getReturnedExpression());
 	}
 
-	<T> void visitCtType(CtType<T> type) {
+	private <T> void visitCtType(CtType<T> type) {
 		printComment(type, CommentOffset.BEFORE);
 		mapLine(line, type);
 		if (type.isTopLevel()) {
@@ -1970,7 +1910,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		writeModifiers(type);
 	}
 
-	public <R> void visitCtStatementList(CtStatementList statements) {
+	public void visitCtStatementList(CtStatementList statements) {
 		for (CtStatement s : statements.getStatements()) {
 			scan(s);
 		}
@@ -2442,21 +2382,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			break;
 		}
 		return this;
-	}
-
-	/**
-	 * Write some parameters.
-	 */
-	protected void writeParameters(Collection<CtTypeReference<?>> params) {
-		if (params.size() > 0) {
-			write("(");
-			for (CtTypeReference<?> param : params) {
-				scan(param);
-				write(", ");
-			}
-			removeLastChar();
-			write(")");
-		}
 	}
 
 	/**
