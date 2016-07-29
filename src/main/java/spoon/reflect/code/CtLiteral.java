@@ -19,6 +19,8 @@ package spoon.reflect.code;
 /**
  * This code element defines a literal value (an int, a string, etc).
  *
+ * A null literal, as in "s = null", is represented by a CtLiteral whose value is null.
+ *
  * @param <T>
  * 		type of literal's value
  */
@@ -34,6 +36,7 @@ public interface CtLiteral<T> extends CtExpression<T> {
 	 */
 	<C extends CtLiteral<T>> C setValue(T value);
 
+	/** Overriding return type, a clone of a CtLiteral returns a CtLiteral */
 	@Override
 	CtLiteral<T> clone();
 }
