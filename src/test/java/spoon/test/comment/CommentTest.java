@@ -213,7 +213,7 @@ public class CommentTest {
 				+ " ? // comment before then CtConditional" + newLine
 				+ "null// comment after then CtConditional" + newLine
 				+ " : // comment before else CtConditional" + newLine
-				+ "new java.lang.Double((j / ((double) ((i - 1)))))", ctLocalVariable1.toString());
+				+ "new java.lang.Double((j / ((double) (i - 1))))", ctLocalVariable1.toString());
 
 		CtNewArray ctNewArray = (CtNewArray) ((CtLocalVariable) m1.getBody().getStatement(11)).getDefaultExpression();
 		CtElement arrayValue = (CtElement) ctNewArray.getElements().get(0);

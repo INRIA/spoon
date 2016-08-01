@@ -11,8 +11,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.QualifiedThisRef;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 public class QualifiedThisRefTest {
 
@@ -37,7 +38,9 @@ public class QualifiedThisRefTest {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 		CtType<?> ctClass = factory.Type().get(QualifiedThisRef.class);
 		Collection<CtTypeReference<?>> imports = printer.computeImports(ctClass);
-		printer.writeHeader(Collections.singletonList(ctClass), imports);
+		final List<CtType<?>> ctTypes = new ArrayList<>();
+		ctTypes.add(ctClass);
+		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
 		Assert.assertTrue(printer.getResult().contains("Object o = QualifiedThisRef.Sub.this"));
 	}
