@@ -38,6 +38,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,8 +56,11 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 	private boolean useFactory;
 
 	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, boolean useFactory) {
-		super(new PrintWriter(System.out), new PrintWriter(
-		/* new NullOutputStream() */System.err), false, null, null);
+		this(jdtCompiler, useFactory, System.out, System.err);
+	}
+
+	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, boolean useFactory, OutputStream outWriter, OutputStream errWriter) {
+		super(new PrintWriter(outWriter), new PrintWriter(errWriter), false, null, null);
 		this.jdtCompiler = jdtCompiler;
 		this.useFactory = useFactory;
 		this.jdtCompiler.loadedContent.clear();
