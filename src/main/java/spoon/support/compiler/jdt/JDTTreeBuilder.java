@@ -2229,85 +2229,101 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(SingleNameReference singleNameReference, BlockScope scope) {
-		CtVariableAccess<Object> va = null;
 		if (singleNameReference.binding instanceof FieldBinding) {
-			if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-				va = factory.Core().createFieldWrite();
-			} else {
-				va = factory.Core().createFieldRead();
-			}
-			va.setVariable(references.getVariableReference(singleNameReference.fieldBinding().original()));
-			if (va.getVariable() instanceof CtFieldReference) {
-				final CtFieldReference<Object> ref = (CtFieldReference<Object>) va.getVariable();
-
-				if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
-					final CtTypeAccess typeAccess = factory.Code().createTypeAccess(ref.getDeclaringType());
-					((CtFieldAccess) va).setTarget(typeAccess);
-				} else if (!ref.isStatic()) {
-					final CtTypeReference<Object> type = references.getTypeReference(singleNameReference.actualReceiverType);
-					final CtThisAccess<?> thisAccess = factory.Code().createThisAccess(type);
-					thisAccess.setTarget(factory.Code().createTypeAccess(type));
-					thisAccess.setImplicit(true);
-					((CtFieldAccess) va).setTarget(thisAccess);
-				}
-			}
+			context.enter(createFieldAccess(singleNameReference), singleNameReference);
 		} else if (singleNameReference.binding instanceof VariableBinding) {
-			if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-				va = factory.Core().createVariableWrite();
-			} else {
-				va = factory.Core().createVariableRead();
-			}
-			va.setVariable(references.getVariableReference((VariableBinding) singleNameReference.binding));
+			context.enter(createVariableAccess(singleNameReference), singleNameReference);
 		} else if (singleNameReference.binding instanceof TypeBinding) {
-			CtTypeAccess<Object> ta = factory.Code().createTypeAccessWithoutCloningReference(
-					references.getTypeReference((TypeBinding) singleNameReference.binding));
-			context.enter(ta, singleNameReference);
+			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) singleNameReference.binding)), singleNameReference);
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
-			if (context.stack.peek().element instanceof CtInvocation
-					&& Character.isUpperCase(CharOperation.charToString(singleNameReference.token).charAt(0))) {
-				CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-				typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
-				final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
-				setPackageOrDeclaringType(typeReference, declaring);
-				final CtTypeAccess<Object> ta = factory.Code().createTypeAccess(typeReference);
-				context.enter(ta, singleNameReference);
-				return true;
-			} else if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-				va = factory.Core().createFieldWrite();
+			if (context.stack.peek().element instanceof CtInvocation && Character.isUpperCase(CharOperation.charToString(singleNameReference.token).charAt(0))) {
+				context.enter(createInvocationNoClasspath(singleNameReference), singleNameReference);
 			} else {
-				va = factory.Core().createFieldRead();
-			}
-			va.setVariable(references.getVariableReference((ProblemBinding) singleNameReference.binding));
-			final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
-			if (declaring instanceof CtTypeReference && va.getVariable() instanceof CtFieldReference) {
-				final CtTypeReference<Object> declaringRef = (CtTypeReference<Object>) declaring;
-				((CtFieldAccess) va).setTarget(factory.Code().createTypeAccess(declaringRef));
-				((CtFieldReference) va.getVariable()).setDeclaringType(declaringRef);
-				((CtFieldReference) va.getVariable()).setStatic(true);
+				context.enter(createFieldAccessNoClasspath(singleNameReference), singleNameReference);
 			}
 		} else if (singleNameReference.binding == null) {
-			// In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
-			// By default, we assume that when we don't have any information, we create a variable access.
-			if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-				va = factory.Core().createVariableWrite();
-			} else {
-				va = factory.Core().createVariableRead();
-			}
-			final String name = CharOperation.charToString(singleNameReference.token);
-			CtVariableReference ref;
-			if (context.isBuildLambda) {
-				ref = factory.Core().createParameterReference();
-			} else {
-				ref = factory.Core().createLocalVariableReference();
-				((CtLocalVariableReference) ref).setDeclaration((CtLocalVariable) this.context.getLocalVariableDeclaration(name));
-			}
-			ref.setSimpleName(name);
-			va.setVariable(ref);
-		}
-		if (va != null) {
-			context.enter(va, singleNameReference);
+			context.enter(createVariableAccessNoClasspath(singleNameReference), singleNameReference);
 		}
 		return true;
+	}
+
+	private <T> CtTypeAccess<T> createInvocationNoClasspath(SingleNameReference singleNameReference) {
+		CtTypeReference<T> typeReference = factory.Core().createTypeReference();
+		typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
+		setPackageOrDeclaringType(typeReference, references.getDeclaringReferenceFromImports(singleNameReference.token));
+		return factory.Code().createTypeAccess(typeReference);
+	}
+
+	private <T> CtVariableAccess<T> createVariableAccess(SingleNameReference singleNameReference) {
+		CtVariableAccess<T> va;
+		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
+			va = factory.Core().createVariableWrite();
+		} else {
+			va = factory.Core().createVariableRead();
+		}
+		va.setVariable(references.<T>getVariableReference((VariableBinding) singleNameReference.binding));
+		return va;
+	}
+
+	/**
+	 * In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
+	 * By default, we assume that when we don't have any information, we create a variable access.
+	 */
+	private <T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
+		CtVariableAccess<T> va;
+		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
+			va = factory.Core().createVariableWrite();
+		} else {
+			va = factory.Core().createVariableRead();
+		}
+		final String name = CharOperation.charToString(singleNameReference.token);
+		CtVariableReference<T> ref;
+		if (context.isBuildLambda) {
+			ref = factory.Core().createParameterReference();
+		} else {
+			ref = factory.Core().createLocalVariableReference();
+			((CtLocalVariableReference<T>) ref).setDeclaration(this.context.<T>getLocalVariableDeclaration(name));
+		}
+		ref.setSimpleName(name);
+		va.setVariable(ref);
+		return va;
+	}
+
+	private <T> CtFieldAccess<T> createFieldAccess(SingleNameReference singleNameReference) {
+		CtFieldAccess<T> va;
+		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
+			va = factory.Core().createFieldWrite();
+		} else {
+			va = factory.Core().createFieldRead();
+		}
+		va.setVariable(references.<T>getVariableReference(singleNameReference.fieldBinding().original()));
+		if (va.getVariable() != null) {
+			final CtFieldReference<T> ref = va.getVariable();
+			if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
+				va.setTarget(factory.Code().createTypeAccess(ref.getDeclaringType()));
+			} else if (!ref.isStatic()) {
+				va.setTarget(factory.Code().createThisAccess(references.getTypeReference(singleNameReference.actualReceiverType), true));
+			}
+		}
+		return va;
+	}
+
+	private <T> CtFieldAccess<T> createFieldAccessNoClasspath(SingleNameReference singleNameReference) {
+		CtFieldAccess<T> va;
+		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
+			va = factory.Core().createFieldWrite();
+		} else {
+			va = factory.Core().createFieldRead();
+		}
+		va.setVariable(references.<T>getVariableReference((ProblemBinding) singleNameReference.binding));
+		final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
+		if (declaring instanceof CtTypeReference && va.getVariable() != null) {
+			final CtTypeReference<Object> declaringRef = (CtTypeReference<Object>) declaring;
+			va.setTarget(factory.Code().createTypeAccess(declaringRef));
+			va.getVariable().setDeclaringType(declaringRef);
+			va.getVariable().setStatic(true);
+		}
+		return va;
 	}
 
 	@Override
