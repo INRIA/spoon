@@ -24,7 +24,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -52,8 +51,6 @@ public class ContextBuilder {
 
 	CompilationUnit compilationUnitSpoon;
 
-	Deque<CtTry> finallyzer = new ArrayDeque<>();
-
 	boolean forinit = false;
 
 	boolean forupdate = false;
@@ -61,8 +58,6 @@ public class ContextBuilder {
 	boolean assigned = false;
 
 	Deque<String> label = new ArrayDeque<>();
-
-	boolean selector = false;
 
 	boolean isGenericTypeExplicit = true;
 
@@ -73,7 +68,6 @@ public class ContextBuilder {
 	boolean ignoreComputeImports = false;
 
 	boolean isTypeParameter = false;
-
 
 	/**
 	 * Stack of all parents elements

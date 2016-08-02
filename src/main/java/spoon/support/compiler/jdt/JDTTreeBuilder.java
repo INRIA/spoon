@@ -122,6 +122,7 @@ import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -130,7 +131,6 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
-import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConditional;
@@ -151,15 +151,11 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtSwitch;
-import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotatedElementType;
@@ -267,26 +263,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			throw new AssertionError(
 					"unexpected declaring type: " + declaring.getClass() + " of " + declaring);
 		}
-	}
-
-	private void createExpression(StringLiteralConcatenation literal, BlockScope scope, List<Expression> rst) {
-		if (rst.isEmpty()) {
-			return;
-		}
-
-		rst.get(0).traverse(this, scope);
-		rst.remove(0);
-
-		if (rst.size() > 1) {
-			CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-			op.setKind(BinaryOperatorKind.PLUS);
-			context.enter(op, literal);
-			createExpression(literal, scope, rst);
-			context.exit(literal);
-		} else {
-			createExpression(literal, scope, rst);
-		}
-
 	}
 
 	CtType<?> createType(TypeDeclaration typeDeclaration) {
@@ -441,7 +417,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(CaseStatement caseStatement, BlockScope scope) {
-		context.exit(caseStatement);
 	}
 
 	@Override
@@ -688,12 +663,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(QualifiedTypeReference arg0, BlockScope arg1) {
+	public void endVisit(QualifiedTypeReference qualifiedTypeReference, BlockScope scope) {
 		if (skipTypeInAnnotation) {
 			skipTypeInAnnotation = false;
 			return;
 		}
-		context.exit(arg0);
+		context.exit(qualifiedTypeReference);
+	}
+
+	@Override
+	public void endVisit(QualifiedTypeReference qualifiedTypeReference, ClassScope scope) {
+		endVisit(qualifiedTypeReference, (BlockScope) null);
 	}
 
 	@Override
@@ -768,6 +748,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(SwitchStatement switchStatement, BlockScope scope) {
+		if (context.stack.peek().node instanceof CaseStatement) {
+			context.exit(context.stack.peek().node);
+		}
 		context.exit(switchStatement);
 	}
 
@@ -1008,6 +991,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(Argument argument, BlockScope scope) {
+		if (this.getContextBuilder().stack.peekFirst().element instanceof CtTry) {
+			context.enter(factory.Core().createCatch(), argument);
+			return true;
+		}
 		CtParameter<Object> p = factory.Core().createParameter();
 		p.setSimpleName(new String(argument.name));
 		p.setVarArgs(argument.isVarArgs());
@@ -1199,19 +1186,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		context.enter(b, breakStatement);
 		return true;
-	}
-
-	@Override
-	public boolean visit(CaseStatement caseStatement, BlockScope scope) {
-		CtCase<?> c = factory.Core().createCase();
-		context.enter(c, caseStatement);
-
-		if (caseStatement.constantExpression != null) {
-			context.selector = true;
-			caseStatement.constantExpression.traverse(this, scope);
-			context.selector = false;
-		}
-		return false;
 	}
 
 	@Override
@@ -2202,14 +2176,31 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(QualifiedTypeReference arg0, BlockScope arg1) {
+	public boolean visit(QualifiedTypeReference qualifiedTypeReference, BlockScope scope) {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(
-				references.getTypeReference(arg0.resolvedType));
-		context.enter(typeAccess, arg0);
+		if (context.stack.peekFirst().node instanceof UnionTypeReference) {
+			context.enter(references.<Throwable>getTypeReference(qualifiedTypeReference.resolvedType), qualifiedTypeReference);
+			return true;
+		} else if (context.stack.peekFirst().element instanceof CtCatch) {
+			final Argument jdtCatch = (Argument) context.stack.peekFirst().node;
+			final Set<ModifierKind> modifiers = JDTTreeBuilderHelper.getModifiers(jdtCatch.modifiers);
+			final CtCatchVariable<Throwable> catchVariable = factory.Code().createCatchVariable(//
+					references.<Throwable>getTypeReference(qualifiedTypeReference.resolvedType), //
+					CharOperation.charToString(jdtCatch.name), //
+					modifiers.toArray(new ModifierKind[modifiers.size()]));
+			context.enter(catchVariable, qualifiedTypeReference);
+			return true;
+		}
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(qualifiedTypeReference.resolvedType));
+		context.enter(typeAccess, qualifiedTypeReference);
 		return true; // do nothing by default, keep traversing
+	}
+
+	@Override
+	public boolean visit(QualifiedTypeReference qualifiedTypeReference, ClassScope scope) {
+		return visit(qualifiedTypeReference, (BlockScope) null);
 	}
 
 	@Override
@@ -2365,25 +2356,61 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(UnionTypeReference unionTypeReference, BlockScope scope) {
+		context.exit(unionTypeReference);
+	}
+
+	@Override
+	public void endVisit(UnionTypeReference unionTypeReference, ClassScope scope) {
+		endVisit(unionTypeReference, (BlockScope) null);
+	}
+
+	@Override
+	public boolean visit(UnionTypeReference unionTypeReference, BlockScope scope) {
+		if (!(context.stack.peekFirst().node instanceof Argument)) {
+			throw new SpoonException("UnionType is only supported for CtCatch.");
+		}
+		final Argument jdtCatch = (Argument) context.stack.peekFirst().node;
+		final Set<ModifierKind> modifiers = JDTTreeBuilderHelper.getModifiers(jdtCatch.modifiers);
+		final CtCatchVariable<Throwable> catchVariable = factory.Code().createCatchVariable(//
+				references.<Throwable>getTypeReference(unionTypeReference.resolvedType), //
+				CharOperation.charToString(jdtCatch.name), //
+				modifiers.toArray(new ModifierKind[modifiers.size()]));
+		context.enter(catchVariable, unionTypeReference);
+		return true;
+	}
+
+	@Override
+	public boolean visit(UnionTypeReference unionTypeReference, ClassScope scope) {
+		return visit(unionTypeReference, (BlockScope) null);
+	}
+
+	@Override
 	public boolean visit(SingleTypeReference singleTypeReference, BlockScope scope) {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(
-				references.getTypeReference(singleTypeReference.resolvedType));
+		if (context.stack.peekFirst().node instanceof UnionTypeReference) {
+			context.enter(references.<Throwable>getTypeReference(singleTypeReference.resolvedType), singleTypeReference);
+			return true;
+		} else if (context.stack.peekFirst().element instanceof CtCatch) {
+			final Argument jdtCatch = (Argument) context.stack.peekFirst().node;
+			final Set<ModifierKind> modifiers = JDTTreeBuilderHelper.getModifiers(jdtCatch.modifiers);
+			final CtCatchVariable<Throwable> catchVariable = factory.Code().createCatchVariable(//
+					references.<Throwable>getTypeReference(singleTypeReference.resolvedType), //
+					CharOperation.charToString(jdtCatch.name), //
+					modifiers.toArray(new ModifierKind[modifiers.size()]));
+			context.enter(catchVariable, singleTypeReference);
+			return true;
+		}
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(singleTypeReference.resolvedType));
 		context.enter(typeAccess, singleTypeReference);
 		return true; // do nothing by default, keep traversing
 	}
 
 	@Override
 	public boolean visit(SingleTypeReference singleTypeReference, ClassScope scope) {
-		if (skipTypeInAnnotation) {
-			return true;
-		}
-		CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(
-				references.getTypeReference(singleTypeReference.resolvedType));
-		context.enter(typeAccess, singleTypeReference);
-		return true; // do nothing by default, keep traversing
+		return visit(singleTypeReference, (BlockScope) null);
 	}
 
 	@Override
@@ -2426,53 +2453,57 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return false;
 	}
 
+	private void createExpression(StringLiteralConcatenation literal, BlockScope scope, List<Expression> rst) {
+		if (rst.isEmpty()) {
+			return;
+		}
+
+		rst.get(0).traverse(this, scope);
+		rst.remove(0);
+
+		if (rst.size() > 1) {
+			CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
+			op.setKind(BinaryOperatorKind.PLUS);
+			context.enter(op, literal);
+			createExpression(literal, scope, rst);
+			context.exit(literal);
+		} else {
+			createExpression(literal, scope, rst);
+		}
+
+	}
+
+	@Override
+	public boolean visit(CaseStatement caseStatement, BlockScope scope) {
+		if (context.stack.peek().node instanceof CaseStatement) {
+			context.exit(context.stack.peek().node);
+		}
+
+		context.enter(factory.Core().createCase(), caseStatement);
+		return true;
+	}
+
 	@Override
 	public boolean visit(SwitchStatement switchStatement, BlockScope scope) {
-		CtSwitch<?> s = factory.Core().createSwitch();
-		context.enter(s, switchStatement);
-
-		switchStatement.expression.traverse(this, switchStatement.scope);
-
-		if (switchStatement.statements != null) {
-			int statementsLength = switchStatement.statements.length;
-			for (int i = 0; i < statementsLength; i++) {
-				if (switchStatement.statements[i] instanceof CaseStatement) {
-					if (context.stack.peek().element instanceof CtCase) {
-						context.exit(context.stack.peek().node);
-					}
-					CaseStatement cas = (CaseStatement) switchStatement.statements[i];
-
-					visit(cas, switchStatement.scope);
-				} else {
-					switchStatement.statements[i].traverse(this, switchStatement.scope);
-				}
-			}
-			if (context.stack.peek().element instanceof CtCase) {
-				context.exit(context.stack.peek().node);
-			}
-		}
-		return false;
+		context.enter(factory.Core().createSwitch(), switchStatement);
+		return true;
 	}
 
 	@Override
 	public boolean visit(SynchronizedStatement synchronizedStatement, BlockScope scope) {
-		CtSynchronized s = factory.Core().createSynchronized();
-		context.enter(s, synchronizedStatement);
-		return super.visit(synchronizedStatement, scope);
+		context.enter(factory.Core().createSynchronized(), synchronizedStatement);
+		return true;
 	}
 
 	@Override
 	public boolean visit(ThrowStatement throwStatement, BlockScope scope) {
-		CtThrow t = factory.Core().createThrow();
-		context.enter(t, throwStatement);
+		context.enter(factory.Core().createThrow(), throwStatement);
 		return true;
 	}
 
 	@Override
 	public boolean visit(TrueLiteral trueLiteral, BlockScope scope) {
-		CtLiteral<Boolean> l = factory.Core().createLiteral();
-		l.setValue(true);
-		context.enter(l, trueLiteral);
+		context.enter(factory.Code().createLiteral(true), trueLiteral);
 		return true;
 	}
 
@@ -2485,77 +2516,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			t = factory.Core().createTry();
 		}
 		context.enter(t, tryStatement);
-		for (LocalDeclaration localDeclaration : tryStatement.resources) {
-			localDeclaration.traverse(this, scope);
-		}
-		tryStatement.tryBlock.traverse(this, scope);
-		if (tryStatement.catchArguments != null) {
-			for (int i = 0; i < tryStatement.catchArguments.length; i++) {
-				//  the jdt catch
-				Argument jdtCatch = tryStatement.catchArguments[i];
-
-				// case 1: old catch
-				if (jdtCatch.type instanceof SingleTypeReference || jdtCatch.type instanceof QualifiedTypeReference) {
-					CtTypeReference<Throwable> r = references.getTypeReference(jdtCatch.type.resolvedType);
-					createCtCatch(jdtCatch, r);
-					tryStatement.catchBlocks[i].traverse(this, scope);
-					context.exit(jdtCatch);
-				} else if (jdtCatch.type instanceof UnionTypeReference) {
-					// case 2: Java 7 multiple catch blocks
-					UnionTypeReference utr = (UnionTypeReference) jdtCatch.type;
-
-					final List<CtTypeReference<?>> refs = new ArrayList<>(utr.typeReferences.length);
-					for (TypeReference type : utr.typeReferences) {
-						CtTypeReference<Throwable> r = references.getTypeReference(type.resolvedType);
-						refs.add(r);
-					}
-					CtTypeReference<Throwable> r = references.getTypeReference(jdtCatch.type.resolvedType);
-					createCtCatchJava7(jdtCatch, r, refs);
-					tryStatement.catchBlocks[i].traverse(this, scope);
-					context.exit(jdtCatch);
-				} else {
-					throw new RuntimeException("I don't know how to do this");
-				}
-
-			}
-		}
-		if (tryStatement.finallyBlock != null) {
-			context.finallyzer.push(t);
-			tryStatement.finallyBlock.traverse(this, scope);
-			context.finallyzer.pop();
-		}
-		return false;
-	}
-
-	private CtCatch createCtCatch(Argument jdtCatch, CtTypeReference<Throwable> r) {
-		CtCatch c = factory.Core().createCatch();
-		CtCatchVariable<Throwable> var = factory.Core().createCatchVariable();
-		context.enter(c, jdtCatch);
-		context.enter(var, jdtCatch);
-		var.setSimpleName(new String(jdtCatch.name));
-		var.setType(r);
-		for (ModifierKind modifier : JDTTreeBuilderHelper.getModifiers(jdtCatch.modifiers)) {
-			var.addModifier(modifier);
-		}
-		context.exit(jdtCatch);
-		return c;
-	}
-
-	private CtCatch createCtCatchJava7(Argument jdtCatch, CtTypeReference<Throwable> r, List<CtTypeReference<?>> refs) {
-		CtCatch c = factory.Core().createCatch();
-		CtCatchVariable<Throwable> var = factory.Core().createCatchVariable();
-		context.enter(c, jdtCatch);
-		context.enter(var, jdtCatch);
-		var.setSimpleName(new String(jdtCatch.name));
-		var.setType(r);
-		for (CtTypeReference<?> ref : refs) {
-			var.addMultiType(ref);
-		}
-		for (ModifierKind modifier : JDTTreeBuilderHelper.getModifiers(jdtCatch.modifiers)) {
-			var.addModifier(modifier);
-		}
-		context.exit(jdtCatch);
-		return c;
+		return true;
 	}
 
 	@Override
@@ -2568,27 +2529,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 			((CtClass) t).setSuperclass(references.getTypeReference(null, localTypeDeclaration.allocation.type));
 			context.enter(t, localTypeDeclaration);
 		} else {
-			t = createType(localTypeDeclaration);
+			createType(localTypeDeclaration);
 		}
-
-		// AST bug HACK (see TypeDeclaration.traverse)
-		if (localTypeDeclaration.fields != null) {
-			int length = localTypeDeclaration.fields.length;
-			for (int i = 0; i < length; i++) {
-				FieldDeclaration field;
-				if ((field = localTypeDeclaration.fields[i]).isStatic()) {
-					// local type actually can have static fields
-					field.traverse(this, localTypeDeclaration.initializerScope);
-				}
-			}
-		}
-
 		return true;
 	}
 
 	@Override
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
-		CtType<?> type = createType(memberTypeDeclaration);
+		createType(memberTypeDeclaration);
 		return true;
 	}
 
@@ -2598,53 +2546,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {
-			CtPackage pack = null;
+			CtPackage pack;
 			if (typeDeclaration.binding.fPackage.shortReadableName() != null && typeDeclaration.binding.fPackage.shortReadableName().length > 0) {
 				pack = factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.shortReadableName()));
 			} else {
 				pack = factory.Package().getRootPackage();
 			}
 			context.enter(pack, typeDeclaration);
-			CtType<?> type = createType(typeDeclaration);
-			pack.addType(type);
-
-			// AST bug HACK
-			if (typeDeclaration.annotations != null) {
-				for (Annotation a : typeDeclaration.annotations) {
-					a.traverse(this, (BlockScope) null);
-				}
-			}
-
-			if (typeDeclaration.typeParameters != null) {
-				for (TypeParameter p : typeDeclaration.typeParameters) {
-					p.traverse(this, (BlockScope) null);
-				}
-			}
-
-			if (typeDeclaration.memberTypes != null) {
-				int length = typeDeclaration.memberTypes.length;
-				for (int i = 0; i < length; i++) {
-					typeDeclaration.memberTypes[i].traverse(this, typeDeclaration.scope);
-				}
-			}
-			if (typeDeclaration.fields != null) {
-				int length = typeDeclaration.fields.length;
-				for (int i = 0; i < length; i++) {
-					FieldDeclaration field;
-					if ((field = typeDeclaration.fields[i]).isStatic()) {
-						field.traverse(this, typeDeclaration.staticInitializerScope);
-					} else {
-						field.traverse(this, typeDeclaration.initializerScope);
-					}
-				}
-			}
-			if (typeDeclaration.methods != null) {
-				int length = typeDeclaration.methods.length;
-				for (int i = 0; i < length; i++) {
-					typeDeclaration.methods[i].traverse(this, typeDeclaration.scope);
-				}
-			}
-			return false;
+			pack.addType(createType(typeDeclaration));
+			return true;
 		}
 	}
 
@@ -2658,9 +2568,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(WhileStatement whileStatement, BlockScope scope) {
-		CtWhile w = factory.Core().createWhile();
-		context.enter(w, whileStatement);
+		context.enter(factory.Core().createWhile(), whileStatement);
 		return true;
 	}
-
 }

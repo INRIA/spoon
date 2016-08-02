@@ -16,7 +16,10 @@
  */
 package spoon.support.compiler.jdt;
 
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -68,9 +71,8 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
-
-import java.util.ArrayList;
 
 @SuppressWarnings("unchecked")
 public class ParentExiter extends CtInheritanceScanner {
@@ -264,7 +266,8 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
-		if (this.jdtTreeBuilder.getContextBuilder().selector && caseStatement.getCaseExpression() == null && child instanceof CtExpression) {
+		final ASTNode node = jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpression != null && caseStatement.getCaseExpression() == null && child instanceof CtExpression) {
 			caseStatement.setCaseExpression((CtExpression<E>) child);
 			return;
 		} else if (child instanceof CtStatement) {
@@ -284,6 +287,15 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtCatch(catchBlock);
+	}
+
+	@Override
+	public <T> void visitCtCatchVariable(CtCatchVariable<T> e) {
+		if (jdtTreeBuilder.getContextBuilder().stack.peekFirst().node instanceof UnionTypeReference) {
+			e.addMultiType((CtTypeReference<?>) child);
+			return;
+		}
+		super.visitCtCatchVariable(e);
 	}
 
 	@Override
@@ -521,10 +533,13 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void visitCtTry(CtTry tryBlock) {
 		if (child instanceof CtBlock) {
-			if (!this.jdtTreeBuilder.getContextBuilder().finallyzer.isEmpty() && this.jdtTreeBuilder.getContextBuilder().finallyzer.peek() == tryBlock) {
-				tryBlock.setFinalizer((CtBlock<?>) child);
+			final CtBlock<?> childBlock = (CtBlock<?>) this.child;
+			if (tryBlock.getCatchers().size() > 0 && tryBlock.getCatchers().get(tryBlock.getCatchers().size() - 1).getBody() == null) {
+				tryBlock.getCatchers().get(tryBlock.getCatchers().size() - 1).setBody(childBlock);
+			} else if (tryBlock.getBody() != null && tryBlock.getFinalizer() == null) {
+				tryBlock.setFinalizer(childBlock);
 			} else {
-				tryBlock.setBody((CtBlock<?>) child);
+				tryBlock.setBody(childBlock);
 			}
 			return;
 		} else if (child instanceof CtCatch) {
@@ -536,23 +551,10 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
-		if (child instanceof CtBlock) {
-			if (!this.jdtTreeBuilder.getContextBuilder().finallyzer.isEmpty() && this.jdtTreeBuilder.getContextBuilder().finallyzer.peek() == tryWithResource) {
-				tryWithResource.setFinalizer((CtBlock<?>) child);
-			} else {
-				tryWithResource.setBody((CtBlock<?>) child);
-			}
-			return;
-		} else if (child instanceof CtLocalVariable) {
-			if (tryWithResource.getResources() == null) {
-				tryWithResource.setResources(new ArrayList<CtLocalVariable<?>>());
-			}
+		if (child instanceof CtLocalVariable) {
 			tryWithResource.addResource((CtLocalVariable<?>) child);
-		} else if (child instanceof CtCatch) {
-			tryWithResource.addCatcher((CtCatch) child);
-			return;
 		}
-		super.visitCtTry(tryWithResource);
+		super.visitCtTryWithResource(tryWithResource);
 	}
 
 	@Override

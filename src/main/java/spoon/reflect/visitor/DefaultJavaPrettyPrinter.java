@@ -149,8 +149,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		boolean ignoreGenerics = false;
 
-		boolean isInvocation = false;
-
 		boolean skipArray = false;
 
 		boolean ignoreStaticAccess = false;
@@ -1587,7 +1585,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.write(ref.getSimpleName());
 		}
-		if ((!context.isInvocation || "?".equals(ref.getSimpleName())) && ref.getBoundingType() != null) {
+		if (ref.getBoundingType() != null) {
 			if (ref.isUpper()) {
 				printer.write(" extends ");
 			} else {
