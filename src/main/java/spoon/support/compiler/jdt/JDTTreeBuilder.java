@@ -2315,44 +2315,25 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		CtTypeReference<Object> typeRefOfSuper = references.getTypeReference(qualifiedSuperReference.qualification.resolvedType);
-		final CtSuperAccess<Object> superAccess = factory.Core().createSuperAccess();
-
-		CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(typeRefOfSuper);
-		superAccess.setTarget(typeAccess);
-
-		context.enter(superAccess, qualifiedSuperReference);
-		return false;
+		context.enter(factory.Core().createSuperAccess(), qualifiedSuperReference);
+		return true;
 	}
 
 	@Override
 	public boolean visit(SuperReference superReference, BlockScope scope) {
 		context.enter(factory.Core().createSuperAccess(), superReference);
-		return super.visit(superReference, scope);
+		return true;
 	}
 
 	@Override
-	public boolean visit(QualifiedThisReference qualifiedThisReference, BlockScope scope) {
-		final CtTypeReference<Object> typeRefOfThis = references.getTypeReference(qualifiedThisReference.qualification.resolvedType);
-		CtThisAccess<Object> thisAccess = factory.Core().createThisAccess();
-		thisAccess.setImplicit(qualifiedThisReference.isImplicitThis());
-		thisAccess.setType(typeRefOfThis);
-
-		CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(typeRefOfThis);
-		thisAccess.setTarget(typeAccess);
-
-		context.enter(thisAccess, qualifiedThisReference);
+	public boolean visit(QualifiedThisReference qualifiedThisRef, BlockScope scope) {
+		context.enter(factory.Code().createThisAccess(references.getTypeReference(qualifiedThisRef.qualification.resolvedType), qualifiedThisRef.isImplicitThis()), qualifiedThisRef);
 		return true;
 	}
 
 	@Override
 	public boolean visit(ThisReference thisReference, BlockScope scope) {
-		CtThisAccess<Object> thisAccess = factory.Core().createThisAccess();
-		thisAccess.setImplicit(thisReference.isImplicitThis());
-		thisAccess.setType(references.getTypeReference(thisReference.resolvedType));
-		thisAccess.setTarget(factory.Code().createTypeAccess(thisAccess.getType()));
-
-		context.enter(thisAccess, thisReference);
+		context.enter(factory.Code().createThisAccess(references.getTypeReference(thisReference.resolvedType), thisReference.isImplicitThis()), thisReference);
 		return true;
 	}
 

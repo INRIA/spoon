@@ -357,6 +357,29 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
+	 * Creates an access to a <code>this</code> variable (of the form
+	 * <code>type.this</code>).
+	 *
+	 * @param <T>
+	 * 		the actual type of <code>this</code>
+	 * @param type
+	 * 		the reference to the type that holds the <code>this</code>
+	 * 		variable
+	 * @param isImplicit
+	 * 		type of the this access is implicit or not.
+	 * @return a <code>type.this</code> expression
+	 */
+	public <T> CtThisAccess<T> createThisAccess(CtTypeReference<T> type, boolean isImplicit) {
+		CtThisAccess<T> thisAccess = factory.Core().<T>createThisAccess();
+		thisAccess.setImplicit(isImplicit);
+		thisAccess.setType(type);
+		CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(type);
+		typeAccess.setImplicit(isImplicit);
+		thisAccess.setTarget(typeAccess);
+		return thisAccess;
+	}
+
+	/**
 	 * Creates a variable access.
 	 */
 	public <T> CtVariableAccess<T> createVariableRead(CtVariableReference<T> variable, boolean isStatic) {

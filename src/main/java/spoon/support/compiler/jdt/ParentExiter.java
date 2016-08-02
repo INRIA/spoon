@@ -49,12 +49,14 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
@@ -401,6 +403,15 @@ public class ParentExiter extends CtInheritanceScanner {
 			}
 		}
 		super.visitCtIf(ifElement);
+	}
+
+	@Override
+	public <T> void visitCtSuperAccess(CtSuperAccess<T> superAccess) {
+		if (child instanceof CtTypeAccess<?>) {
+			superAccess.setTarget((CtTypeAccess<?>) child);
+			return;
+		}
+		super.visitCtSuperAccess(superAccess);
 	}
 
 	@Override
