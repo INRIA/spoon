@@ -3,7 +3,7 @@ package spoon.test.strings;
 public class Main {
 
 	public static void main(String[] args) {
-		
+
 		System.out.println("a"+"b");
 		System.out.println("a\n"+"b\n");
 		System.out.println("ab");
@@ -12,7 +12,7 @@ public class Main {
 		System.out.println("c\n");
 		System.out.println("c\n"+"test");
 		System.out.println("c"+"test".toString());
-		
+
 	}
-	
+
 }

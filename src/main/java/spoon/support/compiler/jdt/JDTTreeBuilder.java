@@ -168,6 +168,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -2415,62 +2416,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(StringLiteral stringLiteral, BlockScope scope) {
-		CtLiteral<String> s = factory.Core().createLiteral();
-		// references.getTypeReference(stringLiteral.resolvedType) can be null
-		s.setType(factory.Type().createReference(String.class));
-
-		// there are two methods in JDT: source() and toString()
-		// source() seems better but actually does not return the real source
-		// (for instance \n are not \n but newline)
-		// toString seems better (see StringLiteralTest)
-		// here there is a contract between JDTTreeBuilder and
-		// DefaultJavaPrettyPrinter:
-		// JDTTreeBuilder si responsible for adding the double quotes
-		// s.setValue(new String(stringLiteral.toString()));
-
-		// RP: this is not a good idea but many other usages of the value can be
-		// done (apart from the pretty printer). So I moved back the
-		// responsibility of pretty printing the string inside the pretty
-		// printer (i.e. where it belongs)
-		s.setValue(new String(stringLiteral.source()));
-
-		context.enter(s, stringLiteral);
+		context.enter(factory.Code().createLiteral(CharOperation.charToString(stringLiteral.source())).setType(factory.Type().stringType()), stringLiteral);
 		return true;
 	}
 
 	@Override
 	public boolean visit(StringLiteralConcatenation literal, BlockScope scope) {
-		CtBinaryOperator<String> op = factory.Core().createBinaryOperator();
-		op.setKind(BinaryOperatorKind.PLUS);
-		context.enter(op, literal);
-
-		List<Expression> exp = new ArrayList<>(literal.counter);
-		for (int i = 0; i < literal.counter; i++) {
-			exp.add(literal.literals[i]);
-		}
-
-		createExpression(literal, scope, exp);
-		return false;
-	}
-
-	private void createExpression(StringLiteralConcatenation literal, BlockScope scope, List<Expression> rst) {
-		if (rst.isEmpty()) {
-			return;
-		}
-
-		rst.get(0).traverse(this, scope);
-		rst.remove(0);
-
-		if (rst.size() > 1) {
-			CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
-			op.setKind(BinaryOperatorKind.PLUS);
-			context.enter(op, literal);
-			createExpression(literal, scope, rst);
-			context.exit(literal);
-		} else {
-			createExpression(literal, scope, rst);
-		}
-
+		context.enter(factory.Core().createBinaryOperator().<CtBinaryOperator>setKind(BinaryOperatorKind.PLUS), literal);
+		return true;
 	}
 
 	@Override

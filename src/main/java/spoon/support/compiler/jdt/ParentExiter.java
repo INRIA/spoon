@@ -19,8 +19,10 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -249,6 +251,13 @@ public class ParentExiter extends CtInheritanceScanner {
 				return;
 			} else if (operator.getRightHandOperand() == null) {
 				operator.setRightHandOperand((CtExpression<?>) child);
+				return;
+			} else if (jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof StringLiteralConcatenation) {
+				CtBinaryOperator<?> op = operator.getFactory().Core().createBinaryOperator();
+				op.setKind(BinaryOperatorKind.PLUS);
+				op.setLeftHandOperand(operator.getRightHandOperand());
+				op.setRightHandOperand((CtExpression<?>) child);
+				operator.setRightHandOperand(op);
 				return;
 			}
 		}
