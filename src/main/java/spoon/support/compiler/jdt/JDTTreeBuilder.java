@@ -133,24 +133,18 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
-import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
@@ -159,7 +153,6 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotatedElementType;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -168,7 +161,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -832,10 +824,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ReferenceExpression referenceExpression, BlockScope blockScope) {
-		CtExecutableReferenceExpression<?, ?> executableRef = createExecutableReferenceExpression(referenceExpression);
-
-		context.enter(executableRef, referenceExpression);
-
+		context.enter(createExecutableReferenceExpression(referenceExpression), referenceExpression);
 		return true;
 	}
 
@@ -1076,9 +1065,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayInitializer arrayInitializer, BlockScope scope) {
-		CtNewArray<?> array = factory.Core().createNewArray();
-		context.enter(array, arrayInitializer);
-		return super.visit(arrayInitializer, scope);
+		context.enter(factory.Core().createNewArray(), arrayInitializer);
+		return true;
 	}
 
 	@Override
@@ -1174,8 +1162,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(Block block, BlockScope scope) {
-		CtBlock<?> b = factory.Core().createBlock();
-		context.enter(b, block);
+		context.enter(factory.Core().createBlock(), block);
 		return true;
 	}
 
@@ -1198,10 +1185,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(CharLiteral charLiteral, BlockScope scope) {
-		CtLiteral<Character> l = factory.Core().createLiteral();
 		charLiteral.computeConstant();
-		l.setValue(charLiteral.constant.charValue());
-		context.enter(l, charLiteral);
+		context.enter(factory.Code().createLiteral(charLiteral.constant.charValue()), charLiteral);
 		return true;
 	}
 
@@ -1232,9 +1217,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ConditionalExpression conditionalExpression, BlockScope scope) {
-		CtConditional<?> c = factory.Core().createConditional();
-		context.enter(c, conditionalExpression);
-		return super.visit(conditionalExpression, scope);
+		context.enter(factory.Core().createConditional(), conditionalExpression);
+		return true;
 	}
 
 	@Override
@@ -1350,16 +1334,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoStatement doStatement, BlockScope scope) {
-		CtDo d = factory.Core().createDo();
-		context.enter(d, doStatement);
+		context.enter(factory.Core().createDo(), doStatement);
 		return true;
 	}
 
 	@Override
 	public boolean visit(DoubleLiteral doubleLiteral, BlockScope scope) {
-		CtLiteral<Double> d = factory.Core().createLiteral();
-		d.setValue(doubleLiteral.constant.doubleValue());
-		context.enter(d, doubleLiteral);
+		context.enter(factory.Code().createLiteral(doubleLiteral.constant.doubleValue()), doubleLiteral);
 		return true;
 	}
 
@@ -1410,17 +1391,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ExtendedStringLiteral extendedStringLiteral, BlockScope scope) {
-		CtLiteral<String> l = factory.Core().createLiteral();
-		l.setValue(new String(extendedStringLiteral.source()));
-		context.enter(l, extendedStringLiteral);
+		context.enter(factory.Code().createLiteral(CharOperation.charToString(extendedStringLiteral.source())), extendedStringLiteral);
 		return true;
 	}
 
 	@Override
 	public boolean visit(FalseLiteral falseLiteral, BlockScope scope) {
-		CtLiteral<Boolean> l = factory.Core().createLiteral();
-		l.setValue(false);
-		context.enter(l, falseLiteral);
+		context.enter(factory.Code().createLiteral(false), falseLiteral);
 		return true;
 	}
 
@@ -1493,16 +1470,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(FloatLiteral floatLiteral, BlockScope scope) {
-		CtLiteral<Float> l = factory.Core().createLiteral();
-		l.setValue(floatLiteral.constant.floatValue());
-		context.enter(l, floatLiteral);
+		context.enter(factory.Code().createLiteral(floatLiteral.constant.floatValue()), floatLiteral);
 		return true;
 	}
 
 	@Override
 	public boolean visit(ForeachStatement forStatement, BlockScope scope) {
-		CtForEach fe = factory.Core().createForEach();
-		context.enter(fe, forStatement);
+		context.enter(factory.Core().createForEach(), forStatement);
 		return true;
 	}
 
@@ -1540,9 +1514,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(IfStatement ifStatement, BlockScope scope) {
-		CtIf ifs = factory.Core().createIf();
-		context.enter(ifs, ifStatement);
-		return super.visit(ifStatement, scope);
+		context.enter(factory.Core().createIf(), ifStatement);
+		return true;
 	}
 
 	@Override
@@ -1566,8 +1539,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(IntLiteral intLiteral, BlockScope scope) {
 		CtLiteral<Integer> l = factory.Core().createLiteral();
-		CtTypeReference<Integer> r = references.getTypeReference(intLiteral.resolvedType);
-		l.setType(r);
+		l.setType(getFactory().Type().integerType());
 		if (intLiteral.constant != null) { // check required for noclasspath mode
 			l.setValue(intLiteral.constant.intValue());
 		}
@@ -1619,11 +1591,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(LongLiteral longLiteral, BlockScope scope) {
-		CtLiteral<Long> l = factory.Core().createLiteral();
-		l.setValue(longLiteral.constant.longValue());
-		CtTypeReference<Long> r = references.getTypeReference(longLiteral.resolvedType);
-		l.setType(r);
-		context.enter(l, longLiteral);
+		context.enter(factory.Code().createLiteral(longLiteral.constant.longValue()).<CtLiteral<Long>>setType(getFactory().Type().longType()), longLiteral);
 		return true;
 	}
 
@@ -1647,20 +1615,21 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return visitMarkerAnnotation(annotation, scope);
 	}
 
+	@Override
+	public boolean visit(SingleMemberAnnotation annotation, BlockScope scope) {
+		visitMarkerAnnotation(annotation, scope);
+		context.annotationValueName.push("value");
+		return true;
+	}
+
 	private <A extends java.lang.annotation.Annotation> boolean visitNormalAnnotation(NormalAnnotation annotation, Scope scope) {
-		CtAnnotation<A> a = factory.Core().createAnnotation();
-		CtTypeReference<A> r = references.getTypeReference(annotation.resolvedType);
-		a.setAnnotationType(r);
-		context.enter(a, annotation);
+		context.enter(factory.Code().createAnnotation(references.<A>getTypeReference(annotation.resolvedType)), annotation);
 		skipTypeInAnnotation = true;
 		return true;
 	}
 
 	private <A extends java.lang.annotation.Annotation> boolean visitMarkerAnnotation(Annotation annotation, Scope scope) {
-		CtAnnotation<A> a = factory.Core().createAnnotation();
-		CtTypeReference<A> t = references.getTypeReference(annotation.resolvedType, annotation.type);
-		a.setAnnotationType(t);
-		context.enter(a, annotation);
+		context.enter(factory.Code().createAnnotation(references.<A>getTypeReference(annotation.resolvedType, annotation.type)), annotation);
 		skipTypeInAnnotation = true;
 		return true;
 	}
@@ -1839,10 +1808,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(NullLiteral nullLiteral, BlockScope scope) {
-		CtLiteral<Object> lit = factory.Core().createLiteral();
-		CtTypeReference ref = factory.Type().nullType();
-		lit.setType(ref);
-		context.enter(lit, nullLiteral);
+		context.enter(factory.Code().createLiteral(null).setType((CtTypeReference<Object>) factory.Type().nullType()), nullLiteral);
 		return true;
 	}
 
@@ -1856,46 +1822,30 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference, BlockScope scope) {
-		if (skipTypeInAnnotation) {
-			return true;
-		}
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(
-				references.getTypeReference(parameterizedQualifiedTypeReference.resolvedType));
-		context.enter(typeAccess, parameterizedQualifiedTypeReference);
-		return true;
+		return createParameterizedType(parameterizedQualifiedTypeReference);
 	}
 
 	@Override
 	public boolean visit(ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference, ClassScope scope) {
-		if (skipTypeInAnnotation) {
-			return true;
-		}
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(
-				references.getTypeReference(parameterizedQualifiedTypeReference.resolvedType));
-		context.enter(typeAccess, parameterizedQualifiedTypeReference);
-		return true;
+		return createParameterizedType(parameterizedQualifiedTypeReference);
 	}
 
 	@Override
 	public boolean visit(ParameterizedSingleTypeReference parameterizedSingleTypeReference, BlockScope scope) {
-		if (skipTypeInAnnotation) {
-			return true;
-		}
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(
-				references.getTypeReference(parameterizedSingleTypeReference.resolvedType));
-		context.enter(typeAccess, parameterizedSingleTypeReference);
-		return true;
+		return createParameterizedType(parameterizedSingleTypeReference);
 	}
 
 	@Override
 	public boolean visit(ParameterizedSingleTypeReference parameterizedSingleTypeReference, ClassScope scope) {
+		return createParameterizedType(parameterizedSingleTypeReference);
+	}
+
+	private boolean createParameterizedType(TypeReference parameterizedTypeReference) {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(
-				references.getTypeReference(parameterizedSingleTypeReference.resolvedType));
-		context.enter(typeAccess, parameterizedSingleTypeReference);
-		return super.visit(parameterizedSingleTypeReference, scope);
+		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(parameterizedTypeReference.resolvedType)), parameterizedTypeReference);
+		return true;
 	}
 
 	@Override
@@ -2206,24 +2156,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ReturnStatement returnStatement, BlockScope scope) {
-		CtReturn<?> ret = factory.Core().createReturn();
-		context.enter(ret, returnStatement);
-		return true;
-	}
-
-
-	@Override
-	public boolean visit(SingleMemberAnnotation annotation, BlockScope scope) {
-		return visitSingleMemberAnnotation(annotation, scope);
-	}
-
-	private <A extends java.lang.annotation.Annotation> boolean visitSingleMemberAnnotation(SingleMemberAnnotation annotation, BlockScope scope) {
-		CtAnnotation<A> a = factory.Core().createAnnotation();
-		CtTypeReference<A> r = references.getTypeReference(annotation.resolvedType);
-		a.setAnnotationType(r);
-		context.enter(a, annotation);
-		context.annotationValueName.push("value");
-		skipTypeInAnnotation = true;
+		context.enter(factory.Core().createReturn(), returnStatement);
 		return true;
 	}
 

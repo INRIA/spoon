@@ -40,6 +40,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
@@ -55,6 +56,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -537,6 +539,19 @@ public class CodeFactory extends SubFactory {
 	 */
 	public CtPackageReference createCtPackageReference(Package originalPackage) {
 		return factory.Core().createPackageReference().setSimpleName(originalPackage.getName());
+	}
+
+	/**
+	 * Creates an annotation.
+	 *
+	 * @param annotationType
+	 * 		Type of the annotation.
+	 * @return an annotation.
+	 */
+	public <A extends Annotation> CtAnnotation<A> createAnnotation(CtTypeReference<A> annotationType) {
+		final CtAnnotation<A> a = factory.Core().createAnnotation();
+		a.setAnnotationType(annotationType);
+		return a;
 	}
 
 	/**
