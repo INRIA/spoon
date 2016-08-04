@@ -667,7 +667,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtVariableRead(final spoon.reflect.code.CtVariableRead<T> variableRead) {
 		spoon.reflect.code.CtVariableRead<T> aCtVariableRead = spoon.support.visitor.clone.CloneBuilder.build(this.builder, variableRead, variableRead.getFactory().Core().createVariableRead());
 		aCtVariableRead.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(variableRead.getAnnotations()));
-		aCtVariableRead.setType(spoon.support.visitor.equals.CloneHelper.clone(variableRead.getType()));
 		aCtVariableRead.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(variableRead.getTypeCasts()));
 		aCtVariableRead.setVariable(spoon.support.visitor.equals.CloneHelper.clone(variableRead.getVariable()));
 		aCtVariableRead.setComments(spoon.support.visitor.equals.CloneHelper.clone(variableRead.getComments()));
@@ -679,7 +678,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtVariableWrite(final spoon.reflect.code.CtVariableWrite<T> variableWrite) {
 		spoon.reflect.code.CtVariableWrite<T> aCtVariableWrite = spoon.support.visitor.clone.CloneBuilder.build(this.builder, variableWrite, variableWrite.getFactory().Core().createVariableWrite());
 		aCtVariableWrite.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(variableWrite.getAnnotations()));
-		aCtVariableWrite.setType(spoon.support.visitor.equals.CloneHelper.clone(variableWrite.getType()));
 		aCtVariableWrite.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(variableWrite.getTypeCasts()));
 		aCtVariableWrite.setVariable(spoon.support.visitor.equals.CloneHelper.clone(variableWrite.getVariable()));
 		aCtVariableWrite.setComments(spoon.support.visitor.equals.CloneHelper.clone(variableWrite.getComments()));

@@ -17,6 +17,7 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
 public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements CtVariableAccess<T> {
@@ -36,6 +37,11 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 		}
 		this.variable = variable;
 		return (C) this;
+	}
+
+	@Override
+	public CtTypeReference<T> getType() {
+		return getVariable() == null ? null : getVariable().getType();
 	}
 
 	@Override

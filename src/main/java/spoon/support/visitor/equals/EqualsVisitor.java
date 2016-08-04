@@ -622,7 +622,6 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		spoon.reflect.code.CtVariableRead other = ((spoon.reflect.code.CtVariableRead) (stack.peek()));
 		enter(variableRead);
 		biScan(variableRead.getAnnotations(), other.getAnnotations());
-		biScan(variableRead.getType(), other.getType());
 		biScan(variableRead.getTypeCasts(), other.getTypeCasts());
 		biScan(variableRead.getVariable(), other.getVariable());
 		exit(variableRead);
@@ -633,7 +632,6 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		spoon.reflect.code.CtVariableWrite other = ((spoon.reflect.code.CtVariableWrite) (stack.peek()));
 		enter(variableWrite);
 		biScan(variableWrite.getAnnotations(), other.getAnnotations());
-		biScan(variableWrite.getType(), other.getType());
 		biScan(variableWrite.getTypeCasts(), other.getTypeCasts());
 		biScan(variableWrite.getVariable(), other.getVariable());
 		exit(variableWrite);

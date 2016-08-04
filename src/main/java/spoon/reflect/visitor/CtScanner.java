@@ -752,7 +752,6 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtVariableRead(final CtVariableRead<T> variableRead) {
 		enter(variableRead);
 		scan(variableRead.getAnnotations());
-		scan(variableRead.getType());
 		scan(variableRead.getTypeCasts());
 		scan(variableRead.getVariable());
 		scan(variableRead.getComments());
@@ -763,7 +762,6 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtVariableWrite(final CtVariableWrite<T> variableWrite) {
 		enter(variableWrite);
 		scan(variableWrite.getAnnotations());
-		scan(variableWrite.getType());
 		scan(variableWrite.getTypeCasts());
 		scan(variableWrite.getVariable());
 		scan(variableWrite.getComments());

@@ -395,7 +395,35 @@ public class CodeFactory extends SubFactory {
 		} else {
 			va = factory.Core().createVariableRead();
 		}
-		return va.setVariable(variable).setType(variable.getType() == null ? null : variable.getType().clone());
+		return va.setVariable(variable);
+	}
+
+	/**
+	 * Creates variable access.
+	 */
+	public <T> CtVariableAccess<T> createVariableAccess(CtVariableReference<T> variableReference, boolean isReadAccess) {
+		CtVariableAccess<T> variableAccess;
+		if (isReadAccess) {
+			variableAccess = factory.Core().createVariableWrite();
+		} else {
+			variableAccess = factory.Core().createVariableRead();
+		}
+		return variableAccess.setVariable(variableReference);
+	}
+
+	/**
+	 * Creates field access.
+	 */
+	public <T> CtFieldAccess<T> createFieldAccess(CtVariableReference<T> variableReference, CtExpression<?> target, boolean isReadAccess) {
+		CtFieldAccess<T> fieldAccess;
+		if (isReadAccess) {
+			fieldAccess = factory.Core().createFieldWrite();
+		} else {
+			fieldAccess = factory.Core().createFieldRead();
+		}
+		fieldAccess.setVariable(variableReference);
+		fieldAccess.setTarget(target);
+		return fieldAccess;
 	}
 
 	/**

@@ -724,14 +724,13 @@ public class ReferenceBuilder {
 		return ref;
 	}
 
-	@SuppressWarnings("unchecked")
 	<T> CtFieldReference<T> getVariableReference(FieldBinding varbin) {
 		CtFieldReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createFieldReference();
 		if (varbin == null) {
 			return ref;
 		}
 		ref.setSimpleName(new String(varbin.name));
-		ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
+		ref.setType(this.<T>getTypeReference(varbin.type));
 
 		if (varbin.declaringClass != null) {
 			ref.setDeclaringType(getTypeReference(varbin.declaringClass));
@@ -740,6 +739,15 @@ public class ReferenceBuilder {
 		}
 		ref.setFinal(varbin.isFinal());
 		ref.setStatic((varbin.modifiers & ClassFileConstants.AccStatic) != 0);
+		return ref;
+	}
+
+	<T> CtFieldReference<T> getVariableReference(FieldBinding fieldBinding, char[] tokens) {
+		final CtFieldReference<T> ref = getVariableReference(fieldBinding);
+		if (fieldBinding != null) {
+			return ref;
+		}
+		ref.setSimpleName(CharOperation.charToString(tokens));
 		return ref;
 	}
 
