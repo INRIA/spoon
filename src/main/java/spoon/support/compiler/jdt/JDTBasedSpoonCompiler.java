@@ -18,6 +18,7 @@ package spoon.support.compiler.jdt;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.log4j.Level;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
@@ -100,7 +101,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	protected JDTBatchCompiler createBatchCompiler(boolean useFactory) {
-		return new JDTBatchCompiler(this, useFactory);
+		if (factory != null && factory.getEnvironment().getLevel() == Level.OFF) {
+			return new JDTBatchCompiler(this, useFactory, new NullOutputStream(), new NullOutputStream());
+		} else {
+			return new JDTBatchCompiler(this, useFactory);
+		}
 	}
 
 	@Override
