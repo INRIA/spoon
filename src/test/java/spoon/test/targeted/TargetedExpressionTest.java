@@ -393,7 +393,7 @@ public class TargetedExpressionTest {
 		final CtThisAccess<Object> expectedThisAccess = launcher.getFactory().Code().createThisAccess(foo);
 		final CtTypeAccess<Object> expectedTypeAccess = launcher.getFactory().Code().createTypeAccess(foo);
 		final CtTypeAccess<Object> expectedBarTypeAccess = launcher.getFactory().Code().createTypeAccess(bar);
-		final CtTypeAccess<Object> fiiFuuTypeAccess = launcher.getFactory().Code().createTypeAccess(launcher.getFactory().Core().createTypeReference().setSimpleName("Fii.Fuu"));
+		final CtTypeAccess<Object> fiiFuuTypeAccess = launcher.getFactory().Code().createTypeAccess(launcher.getFactory().Type().createReference("Fii.Fuu"));
 
 		final CtMethod<?> invMethod = launcher.getFactory().Class().get("Foo").getMethodsByName("inv").get(0);
 		final List<CtInvocation<?>> elements = invMethod.getElements(new TypeFilter<>(CtInvocation.class));

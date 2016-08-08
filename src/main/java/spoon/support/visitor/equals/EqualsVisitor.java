@@ -601,7 +601,6 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		spoon.reflect.code.CtTypeAccess other = ((spoon.reflect.code.CtTypeAccess) (stack.peek()));
 		enter(typeAccess);
 		biScan(typeAccess.getAnnotations(), other.getAnnotations());
-		biScan(typeAccess.getType(), other.getType());
 		biScan(typeAccess.getTypeCasts(), other.getTypeCasts());
 		biScan(typeAccess.getAccessedType(), other.getAccessedType());
 		exit(typeAccess);

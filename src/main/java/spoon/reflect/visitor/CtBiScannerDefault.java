@@ -641,7 +641,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		spoon.reflect.code.CtTypeAccess other = ((spoon.reflect.code.CtTypeAccess) (stack.peek()));
 		enter(typeAccess);
 		biScan(typeAccess.getAnnotations(), other.getAnnotations());
-		biScan(typeAccess.getType(), other.getType());
 		biScan(typeAccess.getTypeCasts(), other.getTypeCasts());
 		biScan(typeAccess.getAccessedType(), other.getAccessedType());
 		biScan(typeAccess.getComments(), other.getComments());

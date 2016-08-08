@@ -644,7 +644,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtTypeAccess(final spoon.reflect.code.CtTypeAccess<T> typeAccess) {
 		spoon.reflect.code.CtTypeAccess<T> aCtTypeAccess = spoon.support.visitor.clone.CloneBuilder.build(this.builder, typeAccess, typeAccess.getFactory().Core().createTypeAccess());
 		aCtTypeAccess.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(typeAccess.getAnnotations()));
-		aCtTypeAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(typeAccess.getType()));
 		aCtTypeAccess.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(typeAccess.getTypeCasts()));
 		aCtTypeAccess.setAccessedType(spoon.support.visitor.equals.CloneHelper.clone(typeAccess.getAccessedType()));
 		aCtTypeAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(typeAccess.getComments()));

@@ -21,6 +21,7 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -84,6 +85,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
 
 public class ReferenceBuilder {
 
@@ -187,22 +192,23 @@ public class ReferenceBuilder {
 	 * @return a type reference.
 	 */
 	<T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, TypeBinding receiverType, ReferenceBinding enclosingType, JDTTreeBuilder.OnAccessListener listener) {
-		if (enclosingType != null && Collections.disjoint(Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED), JDTTreeBuilderHelper.getModifiers(enclosingType.modifiers))) {
+		if (enclosingType != null && Collections.disjoint(Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED), JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers))) {
 			String access = "";
 			int i = 0;
+			final CompilationUnitDeclaration[] units = ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
 			for (; i < tokens.length; i++) {
 				final char[][] qualified = Arrays.copyOfRange(tokens, 0, i + 1);
-				if (!JDTTreeBuilderHelper.isPackage(qualified, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor))) {
+				if (searchPackage(qualified, units) == null) {
 					access = CharOperation.toString(qualified);
 					break;
 				}
 			}
 			if (!access.contains(CtPackage.PACKAGE_SEPARATOR)) {
-				access = JDTTreeBuilderHelper.hasTypeInImports(access, this.jdtTreeBuilder.getContextBuilder());
+				access = searchType(access, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports);
 			}
-			final TypeBinding accessBinding = JDTTreeBuilderHelper.searchTypeBinding(access, ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor));
+			final TypeBinding accessBinding = searchTypeBinding(access, units);
 			if (accessBinding != null && listener.onAccess(tokens, i)) {
-				final TypeBinding superClassBinding = JDTTreeBuilderHelper.searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
+				final TypeBinding superClassBinding = searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
 				if (superClassBinding != null) {
 					return this.getTypeReference(superClassBinding.clone(accessBinding));
 				} else {
@@ -632,14 +638,14 @@ public class ReferenceBuilder {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			if (binding.isAnonymousType()) {
-				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName((SourceTypeBinding) binding));
+				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
 				ref.setDeclaringType(getTypeReference((binding.enclosingType())));
 			} else {
 				ref.setSimpleName(new String(binding.sourceName()));
 				if (((LocalTypeBinding) binding).enclosingMethod == null && binding.enclosingType() != null && binding.enclosingType() instanceof LocalTypeBinding) {
 					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				} else if (binding.enclosingMethod() != null) {
-					ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName((SourceTypeBinding) binding));
+					ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
 					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				}
 			}
@@ -647,7 +653,7 @@ public class ReferenceBuilder {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			if (binding.isAnonymousType()) {
-				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName((SourceTypeBinding) binding));
+				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
 				ref.setDeclaringType(getTypeReference((binding.enclosingType())));
 			} else {
 				ref.setSimpleName(new String(binding.sourceName()));

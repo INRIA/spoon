@@ -116,7 +116,6 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
@@ -133,7 +132,6 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtExecutableReferenceExpression;
@@ -150,9 +148,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -167,13 +163,11 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
-import spoon.reflect.reference.CtVariableReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -183,10 +177,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.computeAnonymousName;
-import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.createTypeName;
-import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.getBinaryOperatorKind;
-import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.getModifiers;
-import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.getUnaryOperator;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
 import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.substituteAnnotation;
 
 /**
@@ -201,6 +194,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	private final ParentExiter exiter;
 
 	private final ReferenceBuilder references;
+
+	private final JDTTreeBuilderHelper helper;
 
 	private final Factory factory;
 
@@ -243,7 +238,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		this.context = new ContextBuilder(this);
 		this.exiter = new ParentExiter(this);
 		this.references = new ReferenceBuilder(this);
-		this.LOGGER.setLevel(factory.getEnvironment().getLevel());
+		this.helper = new JDTTreeBuilderHelper(this);
+		LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
 	interface OnAccessListener {
@@ -307,7 +303,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				((CtClass) type).setSuperclass(this.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 			}
 			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
-				type.setSimpleName(computeAnonymousName(typeDeclaration.binding));
+				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
 			} else {
 				type.setSimpleName(new String(typeDeclaration.name));
 			}
@@ -1901,17 +1897,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(QualifiedNameReference qualifiedNameRef, BlockScope scope) {
 		if (qualifiedNameRef.binding instanceof FieldBinding || qualifiedNameRef.binding instanceof VariableBinding) {
-			context.enter(createVariableAccess(qualifiedNameRef), qualifiedNameRef);
+			context.enter(helper.createVariableAccess(qualifiedNameRef), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof TypeBinding) {
 			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) qualifiedNameRef.binding)), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation) {
-				context.enter(createInvocationNoClasspath(qualifiedNameRef), qualifiedNameRef);
+				context.enter(helper.createTypeAccessNoClasspath(qualifiedNameRef), qualifiedNameRef);
 				return true;
 			}
-			context.enter(createFieldAccessNoClasspath(qualifiedNameRef), qualifiedNameRef);
+			context.enter(helper.createFieldAccessNoClasspath(qualifiedNameRef), qualifiedNameRef);
 			return true;
 		} else {
 			context.enter(
@@ -1924,149 +1920,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 	}
 
-	private <T> CtTypeAccess<T> createInvocationNoClasspath(QualifiedNameReference qualifiedNameReference) {
-		final CtTypeReference<T> typeReference = factory.Core().createTypeReference();
-		typeReference.setSimpleName(qualifiedNameReference.toString());
-		return factory.Code().createTypeAccessWithoutCloningReference(typeReference);
-	}
-
-	private <T> CtFieldAccess<T> createFieldAccessNoClasspath(QualifiedNameReference qualifiedNameReference) {
-		boolean fromAssignment = context.stack.peek().element instanceof CtAssignment && context.assigned;
-		CtFieldAccess<T> fieldAccess = factory.Code().createFieldAccess(references.<T>getVariableReference((ProblemBinding) qualifiedNameReference.binding), null, fromAssignment);
-		// In no classpath mode and with qualified name, the type given by JDT is wrong...
-		final char[][] declaringClass = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
-		final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(null, declaringClass);
-		final CtTypeReference<T> declaringRef = references.getTypeReference(declaringType);
-		fieldAccess.getVariable().setDeclaringType(declaringRef);
-		fieldAccess.getVariable().setStatic(true);
-		fieldAccess.setTarget(factory.Code().createTypeAccess(declaringRef));
-		// In no classpath mode and with qualified name, the binding don't have a good name.
-		fieldAccess.getVariable().setSimpleName(createTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
-		return fieldAccess;
-	}
-
-	private <T> CtVariableAccess<T> createVariableAccess(QualifiedNameReference qualifiedNameReference) {
-		long[] positions = qualifiedNameReference.sourcePositions;
-
-		int sourceStart = qualifiedNameReference.sourceStart();
-		int sourceEnd = qualifiedNameReference.sourceEnd();
-		if (qualifiedNameReference.indexOfFirstFieldBinding < positions.length) {
-			sourceEnd = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding] >>> 32) - 2;
-		}
-		CtVariableAccess<T> va;
-		CtVariableReference<T> ref;
-		boolean fromAssignment = context.stack.peek().element instanceof CtAssignment && context.assigned;
-		boolean isOtherBinding = qualifiedNameReference.otherBindings == null || qualifiedNameReference.otherBindings.length == 0;
-		if (qualifiedNameReference.binding instanceof FieldBinding) {
-			ref = references.getVariableReference(qualifiedNameReference.fieldBinding());
-			ref.setPosition(this.position.buildPosition(sourceStart, sourceEnd));
-
-			va = factory.Code().createFieldAccess(ref, createTargetFieldAccess(qualifiedNameReference, (CtFieldReference<Object>) ref), isOtherBinding && fromAssignment);
-		} else {
-			ref = references.getVariableReference((VariableBinding) qualifiedNameReference.binding);
-			ref.setPosition(this.position.buildPosition(sourceStart, sourceEnd));
-
-			va = factory.Code().createVariableAccess(ref, isOtherBinding && fromAssignment);
-		}
-
-		if (qualifiedNameReference.otherBindings != null) {
-			int i = 0; //positions index;
-			va.setPosition(ref.getPosition());
-			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
-			for (FieldBinding b : qualifiedNameReference.otherBindings) {
-				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
-				CtFieldAccess<T> other = factory.Code().createFieldAccess(references.<T>getVariableReference(b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
-				//set source position of fa
-				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
-					sourceEnd = qualifiedNameReference.sourceEnd();
-				} else {
-					sourceEnd = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding + i + 1] >>> 32) - 2;
-				}
-				other.setPosition(this.position.buildPosition(sourceStart, sourceEnd));
-				va = other;
-				i++;
-			}
-		} else if (!(qualifiedNameReference.binding instanceof FieldBinding) && qualifiedNameReference.tokens.length > 1) {
-			sourceStart = (int) (positions[0] >>> 32);
-			for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
-				isOtherBinding = qualifiedNameReference.tokens.length == i + 1;
-				CtFieldAccess<T> other = factory.Code().createFieldAccess(references.<T>getVariableReference(null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
-				//set source position of va;
-				CompilationUnit cu = factory.CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
-				sourceEnd = (int) (positions[i]);
-				final int[] lineSeparatorPositions = context.compilationunitdeclaration.compilationResult.lineSeparatorPositions;
-				va.setPosition(factory.Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions));
-				va = other;
-			}
-		}
-		va.setPosition(this.position.buildPosition(qualifiedNameReference.sourceStart(), qualifiedNameReference.sourceEnd()));
-		return va;
-	}
-
-	private CtExpression<?> createTargetFieldAccess(QualifiedNameReference qualifiedNameReference, CtFieldReference<Object> ref) {
-		CtExpression<?> target = null;
-		if (isValidProblemBindingField(qualifiedNameReference)) {
-			target = createTargetTypeAccessNoClasspath(qualifiedNameReference);
-		} else if (ref.isStatic()) {
-			target = createTargetTypeAccess(qualifiedNameReference, ref);
-		} else if (!ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
-			target = createTargetThisAccess(qualifiedNameReference);
-		}
-		return target;
-	}
-
-	private <T> CtThisAccess<T> createTargetThisAccess(QualifiedNameReference qualifiedNameReference) {
-		return factory.Code().createThisAccess(references.<T>getTypeReference(qualifiedNameReference.actualReceiverType), true);
-	}
-
-	private CtTypeAccess<?> createTargetTypeAccess(QualifiedNameReference qualifiedNameReference, CtFieldReference<?> fieldReference) {
-		final TypeBinding receiverType = qualifiedNameReference.actualReceiverType;
-		if (receiverType != null) {
-			final CtTypeReference<Object> qualifiedRef = this.references.getQualifiedTypeReference(qualifiedNameReference.tokens, receiverType, qualifiedNameReference.fieldBinding().declaringClass.enclosingType(), new OnAccessListener() {
-				@Override
-				public boolean onAccess(char[][] tokens, int index) {
-					return !CharOperation.equals(tokens[index + 1], tokens[tokens.length - 1]);
-				}
-			});
-			if (qualifiedRef != null) {
-				fieldReference.setDeclaringType(qualifiedRef);
-			} else {
-				fieldReference.setDeclaringType(references.getTypeReference(receiverType));
-			}
-		}
-
-		CtTypeAccess<?> typeAccess = factory.Code().createTypeAccess(fieldReference.getDeclaringType());
-		if (qualifiedNameReference.indexOfFirstFieldBinding > 1) {
-			// the array sourcePositions contains the position of each element of the qualifiedNameReference
-			// the last element contains the position of the field
-			long[] positions = qualifiedNameReference.sourcePositions;
-			typeAccess.setPosition(this.position.buildPosition(qualifiedNameReference.sourceStart(), (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32) - 2));
-		} else {
-			typeAccess.setImplicit(true);
-		}
-
-		return typeAccess;
-	}
-
-	private <T> CtTypeAccess<T> createTargetTypeAccessNoClasspath(QualifiedNameReference qualifiedNameReference) {
-		final ReferenceBinding declaringClass = ((FieldBinding) qualifiedNameReference.binding).declaringClass;
-		final CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(references.<T>getTypeReference(declaringClass));
-
-		long[] positions = qualifiedNameReference.sourcePositions;
-		int sourceStart = qualifiedNameReference.sourceStart();
-		int sourceEnd = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32) - 2;
-		typeAccess.setPosition(this.position.buildPosition(sourceStart, sourceEnd));
-
-		return typeAccess;
-	}
-
-	private boolean isValidProblemBindingField(QualifiedNameReference qualifiedNameReference) {
-		return qualifiedNameReference.binding instanceof ProblemFieldBinding
-				&& !((FieldBinding) qualifiedNameReference.binding).declaringClass.isAnonymousType()
-				&& qualifiedNameReference.tokens.length - 1 == ((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName.length
-				&& CharOperation.equals(CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1), ((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName);
-	}
-
 	@Override
 	public boolean visit(QualifiedTypeReference qualifiedTypeReference, BlockScope scope) {
 		if (skipTypeInAnnotation) {
@@ -2076,18 +1929,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(references.<Throwable>getTypeReference(qualifiedTypeReference.resolvedType), qualifiedTypeReference);
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
-			final Argument jdtCatch = (Argument) context.stack.peekFirst().node;
-			final Set<ModifierKind> modifiers = getModifiers(jdtCatch.modifiers);
-			final CtCatchVariable<Throwable> catchVariable = factory.Code().createCatchVariable(//
-					references.<Throwable>getTypeReference(qualifiedTypeReference.resolvedType), //
-					CharOperation.charToString(jdtCatch.name), //
-					modifiers.toArray(new ModifierKind[modifiers.size()]));
-			context.enter(catchVariable, qualifiedTypeReference);
+			context.enter(helper.createCatchVariable(qualifiedTypeReference), qualifiedTypeReference);
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(qualifiedTypeReference.resolvedType));
-		context.enter(typeAccess, qualifiedTypeReference);
-		return true; // do nothing by default, keep traversing
+		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(qualifiedTypeReference.resolvedType)), qualifiedTypeReference);
+		return true;
 	}
 
 	@Override
@@ -2104,100 +1950,28 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(SingleNameReference singleNameReference, BlockScope scope) {
 		if (singleNameReference.binding instanceof FieldBinding) {
-			context.enter(createFieldAccess(singleNameReference), singleNameReference);
+			context.enter(helper.createFieldAccess(singleNameReference), singleNameReference);
 		} else if (singleNameReference.binding instanceof VariableBinding) {
-			context.enter(createVariableAccess(singleNameReference), singleNameReference);
+			context.enter(helper.createVariableAccess(singleNameReference), singleNameReference);
 		} else if (singleNameReference.binding instanceof TypeBinding) {
 			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) singleNameReference.binding)), singleNameReference);
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation && Character.isUpperCase(CharOperation.charToString(singleNameReference.token).charAt(0))) {
 				context.enter(createInvocationNoClasspath(singleNameReference), singleNameReference);
 			} else {
-				context.enter(createFieldAccessNoClasspath(singleNameReference), singleNameReference);
+				context.enter(helper.createFieldAccessNoClasspath(singleNameReference), singleNameReference);
 			}
 		} else if (singleNameReference.binding == null) {
-			context.enter(createVariableAccessNoClasspath(singleNameReference), singleNameReference);
+			context.enter(helper.createVariableAccessNoClasspath(singleNameReference), singleNameReference);
 		}
 		return true;
 	}
 
 	private <T> CtTypeAccess<T> createInvocationNoClasspath(SingleNameReference singleNameReference) {
-		CtTypeReference<T> typeReference = factory.Core().createTypeReference();
+		final CtTypeReference<T> typeReference = getFactory().Core().createTypeReference();
 		typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
-		setPackageOrDeclaringType(typeReference, references.getDeclaringReferenceFromImports(singleNameReference.token));
-		return factory.Code().createTypeAccess(typeReference);
-	}
-
-	private <T> CtVariableAccess<T> createVariableAccess(SingleNameReference singleNameReference) {
-		CtVariableAccess<T> va;
-		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-			va = factory.Core().createVariableWrite();
-		} else {
-			va = factory.Core().createVariableRead();
-		}
-		va.setVariable(references.<T>getVariableReference((VariableBinding) singleNameReference.binding));
-		return va;
-	}
-
-	/**
-	 * In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
-	 * By default, we assume that when we don't have any information, we create a variable access.
-	 */
-	private <T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
-		CtVariableAccess<T> va;
-		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-			va = factory.Core().createVariableWrite();
-		} else {
-			va = factory.Core().createVariableRead();
-		}
-		final String name = CharOperation.charToString(singleNameReference.token);
-		CtVariableReference<T> ref;
-		if (context.isBuildLambda) {
-			ref = factory.Core().createParameterReference();
-		} else {
-			ref = factory.Core().createLocalVariableReference();
-			((CtLocalVariableReference<T>) ref).setDeclaration(this.context.<T>getLocalVariableDeclaration(name));
-		}
-		ref.setSimpleName(name);
-		va.setVariable(ref);
-		return va;
-	}
-
-	private <T> CtFieldAccess<T> createFieldAccess(SingleNameReference singleNameReference) {
-		CtFieldAccess<T> va;
-		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-			va = factory.Core().createFieldWrite();
-		} else {
-			va = factory.Core().createFieldRead();
-		}
-		va.setVariable(references.<T>getVariableReference(singleNameReference.fieldBinding().original()));
-		if (va.getVariable() != null) {
-			final CtFieldReference<T> ref = va.getVariable();
-			if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
-				va.setTarget(factory.Code().createTypeAccess(ref.getDeclaringType()));
-			} else if (!ref.isStatic()) {
-				va.setTarget(factory.Code().createThisAccess(references.getTypeReference(singleNameReference.actualReceiverType), true));
-			}
-		}
-		return va;
-	}
-
-	private <T> CtFieldAccess<T> createFieldAccessNoClasspath(SingleNameReference singleNameReference) {
-		CtFieldAccess<T> va;
-		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-			va = factory.Core().createFieldWrite();
-		} else {
-			va = factory.Core().createFieldRead();
-		}
-		va.setVariable(references.<T>getVariableReference((ProblemBinding) singleNameReference.binding));
-		final CtReference declaring = references.getDeclaringReferenceFromImports(singleNameReference.token);
-		if (declaring instanceof CtTypeReference && va.getVariable() != null) {
-			final CtTypeReference<Object> declaringRef = (CtTypeReference<Object>) declaring;
-			va.setTarget(factory.Code().createTypeAccess(declaringRef));
-			va.getVariable().setDeclaringType(declaringRef);
-			va.getVariable().setStatic(true);
-		}
-		return va;
+		setPackageOrDeclaringType(typeReference, getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token));
+		return getFactory().Code().createTypeAccess(typeReference);
 	}
 
 	@Override
@@ -2242,13 +2016,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (!(context.stack.peekFirst().node instanceof Argument)) {
 			throw new SpoonException("UnionType is only supported for CtCatch.");
 		}
-		final Argument jdtCatch = (Argument) context.stack.peekFirst().node;
-		final Set<ModifierKind> modifiers = getModifiers(jdtCatch.modifiers);
-		final CtCatchVariable<Throwable> catchVariable = factory.Code().createCatchVariable(//
-				references.<Throwable>getTypeReference(unionTypeReference.resolvedType), //
-				CharOperation.charToString(jdtCatch.name), //
-				modifiers.toArray(new ModifierKind[modifiers.size()]));
-		context.enter(catchVariable, unionTypeReference);
+		context.enter(helper.createCatchVariable(unionTypeReference), unionTypeReference);
 		return true;
 	}
 
@@ -2266,13 +2034,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(references.<Throwable>getTypeReference(singleTypeReference.resolvedType), singleTypeReference);
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
-			final Argument jdtCatch = (Argument) context.stack.peekFirst().node;
-			final Set<ModifierKind> modifiers = getModifiers(jdtCatch.modifiers);
-			final CtCatchVariable<Throwable> catchVariable = factory.Code().createCatchVariable(//
-					references.<Throwable>getTypeReference(singleTypeReference.resolvedType), //
-					CharOperation.charToString(jdtCatch.name), //
-					modifiers.toArray(new ModifierKind[modifiers.size()]));
-			context.enter(catchVariable, singleTypeReference);
+			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);
 			return true;
 		}
 		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(singleTypeReference.resolvedType));
