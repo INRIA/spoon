@@ -17,6 +17,7 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
@@ -84,6 +85,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	private final JDTTreeBuilder jdtTreeBuilder;
 
 	private CtElement child;
+	private ASTNode childJDT;
 
 	/**
 	 * @param jdtTreeBuilder
@@ -94,6 +96,10 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	public void setChild(CtElement child) {
 		this.child = child;
+	}
+
+	public void setChild(ASTNode child) {
+		this.childJDT = child;
 	}
 
 	@Override
@@ -443,19 +449,47 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-		if (this.jdtTreeBuilder.getContextBuilder().isArgument(ctConstructorCall) && child instanceof CtExpression) {
-			ctConstructorCall.addArgument((CtExpression<?>) child);
+		if (child instanceof CtTypeAccess) {
+			if (hasChildEqualsToType(ctConstructorCall)) {
+				ctConstructorCall.getExecutable().setType(((CtTypeAccess) child).getAccessedType());
+			} else {
+				ctConstructorCall.addActualTypeArgument(((CtTypeAccess) child).getAccessedType());
+			}
+			return;
+		} else if (child instanceof CtExpression) {
+			if (hasChildEqualsToEnclosingInstance(ctConstructorCall)) {
+				ctConstructorCall.setTarget((CtExpression<?>) child);
+			} else {
+				ctConstructorCall.addArgument((CtExpression<?>) child);
+			}
 			return;
 		}
 		super.visitCtConstructorCall(ctConstructorCall);
 	}
 
+	private <T> boolean hasChildEqualsToEnclosingInstance(CtConstructorCall<T> ctConstructorCall) {
+		if (!(jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof QualifiedAllocationExpression)) {
+			return false;
+		}
+		final QualifiedAllocationExpression parent = (QualifiedAllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		// Enclosing instance is equals to the jdt child.
+		return parent.enclosingInstance != null
+				&& parent.enclosingInstance.equals(childJDT)
+				// Enclosing instance not yet initialized.
+				&& !child.equals(ctConstructorCall.getTarget());
+	}
+
+	private <T> boolean hasChildEqualsToType(CtConstructorCall<T> ctConstructorCall) {
+		final AllocationExpression parent = (AllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		// Type is equals to the jdt child.
+		return parent.type != null && parent.type.equals(childJDT)
+				// Type not yet initialized.
+				&& !((CtTypeAccess) child).getAccessedType().equals(ctConstructorCall.getExecutable().getType());
+	}
+
 	@Override
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
-		if (this.jdtTreeBuilder.getContextBuilder().isArgument(newClass) && child instanceof CtExpression) {
-			newClass.addArgument((CtExpression<?>) child);
-			return;
-		} else if (child instanceof CtClass) {
+		if (child instanceof CtClass) {
 			newClass.setAnonymousClass((CtClass<?>) child);
 			final QualifiedAllocationExpression node = (QualifiedAllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
 			final ReferenceBinding[] referenceBindings = node.resolvedType == null ? null : node.resolvedType.superInterfaces();
@@ -594,5 +628,4 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		super.visitCtWhile(whileLoop);
 	}
-
 }

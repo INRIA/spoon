@@ -19,11 +19,14 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
+import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
@@ -172,6 +175,14 @@ public class ReferenceBuilder {
 						currentReference.addActualTypeArgument(buildTypeReference(typeArgument, scope));
 					}
 				}
+			} else if ((type instanceof ParameterizedSingleTypeReference || type instanceof ParameterizedQualifiedTypeReference)
+					&& !isTypeArgumentExplicit(type.getTypeArguments())) {
+				for (CtTypeReference<?> actualTypeArgument : currentReference.getActualTypeArguments()) {
+					actualTypeArgument.setImplicit(true);
+					if (actualTypeArgument instanceof CtArrayTypeReference) {
+						((CtArrayTypeReference) actualTypeArgument).getComponentType().setImplicit(true);
+					}
+				}
 			}
 			if (type instanceof Wildcard && typeReference instanceof CtTypeParameterReference) {
 				((CtTypeParameterReference) typeReference).setBoundingType(buildTypeReference(((Wildcard) type).bound, scope));
@@ -180,6 +191,22 @@ public class ReferenceBuilder {
 			currentReference = currentReference.getDeclaringType();
 		}
 		return typeReference;
+	}
+
+	private boolean isTypeArgumentExplicit(TypeReference[][] typeArguments) {
+		if (typeArguments == null) {
+			return true;
+		}
+		boolean isGenericTypeExplicit = true;
+		// This loop is necessary because it is the only way to know if the generic type
+		// is implicit or not.
+		for (TypeReference[] typeArgument : typeArguments) {
+			isGenericTypeExplicit = typeArgument != null && typeArgument.length > 0;
+			if (isGenericTypeExplicit) {
+				break;
+			}
+		}
+		return isGenericTypeExplicit;
 	}
 
 	/**
@@ -330,6 +357,27 @@ public class ReferenceBuilder {
 			ref.setParameters(parameters);
 		}
 
+		return ref;
+	}
+
+	<T> CtExecutableReference<T> getExecutableReference(AllocationExpression allocationExpression) {
+		CtExecutableReference<T> ref;
+		if (allocationExpression.binding != null) {
+			ref = getExecutableReference(allocationExpression.binding);
+		} else {
+			ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
+			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
+			ref.setDeclaringType(getTypeReference(null, allocationExpression.type));
+
+			final List<CtTypeReference<?>> parameters = new ArrayList<>(allocationExpression.argumentTypes.length);
+			for (TypeBinding b : allocationExpression.argumentTypes) {
+				parameters.add(getTypeReference(b));
+			}
+			ref.setParameters(parameters);
+		}
+		if (allocationExpression.type == null) {
+			ref.setType(this.<T>getTypeReference(allocationExpression.expectedType()));
+		}
 		return ref;
 	}
 
@@ -533,9 +581,6 @@ public class ReferenceBuilder {
 
 			if (((ParameterizedTypeBinding) binding).arguments != null) {
 				for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
-					if (!this.jdtTreeBuilder.getContextBuilder().isGenericTypeExplicit) {
-						isImplicit = true;
-					}
 					if (bindingCache.containsKey(b)) {
 						ref.addActualTypeArgument(getCtCircularTypeReference(b));
 					} else {

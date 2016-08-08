@@ -887,69 +887,23 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(AllocationExpression allocationExpression, BlockScope scope) {
-		buildCommonPartForCtNewClassAndCtConstructorCall(allocationExpression, scope, factory.Core().createConstructorCall());
-		return false;
+		CtConstructorCall constructorCall = factory.Core().createConstructorCall();
+		constructorCall.setExecutable(references.getExecutableReference(allocationExpression));
+		context.enter(constructorCall, allocationExpression);
+		return true;
 	}
 
-	private <T extends CtConstructorCall<Object>> T buildCommonPartForCtNewClassAndCtConstructorCall(AllocationExpression allocationExpression, BlockScope scope, T constructorCall) {
-		context.enter(constructorCall, allocationExpression);
-
-		if (allocationExpression.binding != null) {
-			constructorCall.setExecutable(references.getExecutableReference(allocationExpression.binding));
+	@Override
+	public boolean visit(QualifiedAllocationExpression qualifiedAllocationExpression, BlockScope scope) {
+		CtConstructorCall constructorCall;
+		if (qualifiedAllocationExpression.anonymousType != null) {
+			constructorCall = factory.Core().createNewClass();
 		} else {
-			final CtExecutableReference<Object> ref = factory.Core().createExecutableReference();
-			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
-			ref.setType(references.getTypeReference(null, allocationExpression.type));
-			ref.setDeclaringType(references.getTypeReference(null, allocationExpression.type));
-
-			final List<CtTypeReference<?>> parameters = new ArrayList<>(allocationExpression.argumentTypes.length);
-			for (TypeBinding b : allocationExpression.argumentTypes) {
-				parameters.add(references.getTypeReference(b));
-			}
-			ref.setParameters(parameters);
-			constructorCall.setExecutable(ref);
+			constructorCall = factory.Core().createConstructorCall();
 		}
-
-		if (allocationExpression.type != null && allocationExpression.type.resolvedType != null) {
-			final TypeReference[][] typeArguments = allocationExpression.type.getTypeArguments();
-			// If typeArguments are null or empty, we have an element with a generic type.
-			if (typeArguments != null && typeArguments.length > 0) {
-				context.isGenericTypeExplicit = true;
-				// This loop is necessary because it is the only way to know if the generic type
-				// is implicit or not.
-				for (TypeReference[] typeArgument : typeArguments) {
-					context.isGenericTypeExplicit = typeArgument != null && typeArgument.length > 0;
-					if (context.isGenericTypeExplicit) {
-						break;
-					}
-				}
-			}
-			constructorCall.getExecutable().setType(this.references.buildTypeReference(allocationExpression.type, scope));
-			context.isGenericTypeExplicit = true;
-		} else if (allocationExpression.expectedType() != null) {
-			constructorCall.getExecutable().setType(references.getTypeReference(allocationExpression.expectedType()));
-		}
-
-		if (allocationExpression.typeArguments != null) {
-			for (TypeReference typeArgument : allocationExpression.typeArguments) {
-				constructorCall.addActualTypeArgument(this.references.buildTypeReference(typeArgument, scope));
-			}
-		}
-
-		if (allocationExpression.enclosingInstance() != null) {
-			context.target.push(constructorCall);
-			allocationExpression.enclosingInstance().traverse(this, scope);
-			context.target.pop();
-		}
-
-		context.pushArgument(constructorCall);
-		if (allocationExpression.arguments != null) {
-			for (Expression e : allocationExpression.arguments) {
-				e.traverse(this, scope);
-			}
-		}
-		context.popArgument(constructorCall);
-		return constructorCall;
+		constructorCall.setExecutable(references.getExecutableReference(qualifiedAllocationExpression));
+		context.enter(constructorCall, qualifiedAllocationExpression);
+		return true;
 	}
 
 	@Override
@@ -1848,7 +1802,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (skipTypeInAnnotation) {
 			return true;
 		}
-		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(parameterizedTypeReference.resolvedType)), parameterizedTypeReference);
+		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(parameterizedTypeReference, null)), parameterizedTypeReference);
 		return true;
 	}
 
@@ -1876,22 +1830,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		context.enter(op, prefixExpression);
 		return true;
-	}
-
-	@Override
-	public boolean visit(QualifiedAllocationExpression qualifiedAllocationExpression, BlockScope scope) {
-		// anonymous class
-		if (qualifiedAllocationExpression.anonymousType != null) {
-			buildCommonPartForCtNewClassAndCtConstructorCall(qualifiedAllocationExpression, scope, factory.Core().createNewClass());
-			qualifiedAllocationExpression.anonymousType.traverse(this, scope);
-		} else {
-			// constructor call
-			buildCommonPartForCtNewClassAndCtConstructorCall(qualifiedAllocationExpression, scope, factory.Core().createConstructorCall());
-		}
-		if (qualifiedAllocationExpression.enclosingInstance != null) {
-			qualifiedAllocationExpression.enclosingInstance.traverse(this, scope);
-		}
-		return false;
 	}
 
 	@Override
@@ -1932,7 +1870,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(helper.createCatchVariable(qualifiedTypeReference), qualifiedTypeReference);
 			return true;
 		}
-		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(qualifiedTypeReference.resolvedType)), qualifiedTypeReference);
+		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(qualifiedTypeReference, scope)), qualifiedTypeReference);
 		return true;
 	}
 
@@ -2037,8 +1975,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);
 			return true;
 		}
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference(singleTypeReference.resolvedType));
-		context.enter(typeAccess, singleTypeReference);
+		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(singleTypeReference, scope)), singleTypeReference);
 		return true; // do nothing by default, keep traversing
 	}
 

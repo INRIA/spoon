@@ -20,6 +20,7 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
@@ -58,8 +59,6 @@ public class ContextBuilder {
 	boolean assigned = false;
 
 	Deque<String> label = new ArrayDeque<>();
-
-	boolean isGenericTypeExplicit = true;
 
 	boolean isBuildLambda = false;
 
@@ -104,7 +103,7 @@ public class ContextBuilder {
 		}
 
 		try {
-			if (e instanceof CtTypedElement && node instanceof Expression) {
+			if (e instanceof CtTypedElement && !(e instanceof CtConstructorCall) && node instanceof Expression) {
 				if (((CtTypedElement<?>) e).getType() == null) {
 					((CtTypedElement<Object>) e).setType(this.jdtTreeBuilder.getReferencesBuilder().getTypeReference(((Expression) node).resolvedType));
 				}
@@ -123,6 +122,7 @@ public class ContextBuilder {
 		CtElement current = pair.element;
 		if (!stack.isEmpty()) {
 			this.jdtTreeBuilder.getExiter().setChild(current);
+			this.jdtTreeBuilder.getExiter().setChild(pair.node);
 			this.jdtTreeBuilder.getExiter().scan(stack.peek().element);
 		}
 	}
