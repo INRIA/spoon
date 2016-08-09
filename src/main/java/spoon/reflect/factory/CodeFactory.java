@@ -111,6 +111,26 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
+	 * Creates a accessed type.
+	 *
+	 * <p>This method sets a <i>clone</i> of the given {@code accessedType} object to the
+	 * {@linkplain CtTypeAccess#getAccessedType() accessedType} field of the returned {@link CtTypeAccess}. If the
+	 * given {@code accessedType} is unique and cloning is not needed, use
+	 * {@link #createTypeAccessWithoutCloningReference(CtTypeReference)} instead of this method.</p>
+	 *
+	 * @param accessedType
+	 * 		a type reference to the accessed type.
+	 * @param isImplicit
+	 * 		type of the type access is implicit or not.
+	 * @param <T>
+	 * 		the type of the expression.
+	 * @return a accessed type expression.
+	 */
+	public <T> CtTypeAccess<T> createTypeAccess(CtTypeReference<T> accessedType, boolean isImplicit) {
+		return createTypeAccess(accessedType).setImplicit(isImplicit);
+	}
+
+	/**
 	 * Creates a accessed type, see {@link #createTypeAccess(CtTypeReference)} for details.
 	 * @param accessedType a type reference to the accessed type.
 	 * @param <T> the type of the expression.

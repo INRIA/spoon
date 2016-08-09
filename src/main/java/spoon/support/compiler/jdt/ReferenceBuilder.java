@@ -23,10 +23,14 @@ import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
@@ -377,6 +381,33 @@ public class ReferenceBuilder {
 		}
 		if (allocationExpression.type == null) {
 			ref.setType(this.<T>getTypeReference(allocationExpression.expectedType()));
+		}
+		return ref;
+	}
+
+	<T> CtExecutableReference<T> getExecutableReference(MessageSend messageSend) {
+		if (messageSend.binding != null) {
+			return getExecutableReference(messageSend.binding);
+		}
+		CtExecutableReference<T> ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
+		ref.setSimpleName(CharOperation.charToString(messageSend.selector));
+		ref.setType(this.<T>getTypeReference(messageSend.expectedType()));
+		if (messageSend.receiver.resolvedType == null) {
+			// It is crisis dude! static context, we don't have much more information.
+			if (messageSend.receiver instanceof SingleNameReference) {
+				ref.setDeclaringType(jdtTreeBuilder.getHelper().createTypeAccessNoClasspath((SingleNameReference) messageSend.receiver).getAccessedType());
+			} else if (messageSend.receiver instanceof QualifiedNameReference) {
+				ref.setDeclaringType(jdtTreeBuilder.getHelper().createTypeAccessNoClasspath((QualifiedNameReference) messageSend.receiver).getAccessedType());
+			}
+		} else {
+			ref.setDeclaringType(getTypeReference(messageSend.receiver.resolvedType));
+		}
+		if (messageSend.arguments != null) {
+			final List<CtTypeReference<?>> parameters = new ArrayList<>();
+			for (Expression expression : messageSend.arguments) {
+				parameters.add(getTypeReference(expression.resolvedType));
+			}
+			ref.setParameters(parameters);
 		}
 		return ref;
 	}
@@ -732,7 +763,7 @@ public class ReferenceBuilder {
 			ref.setImplicit(isImplicit || !this.jdtTreeBuilder.getContextBuilder().isLambdaParameterImplicitlyTyped);
 			ref.setSimpleName(new String(binding.readableName()));
 			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
-			this.jdtTreeBuilder.setPackageOrDeclaringType(ref, declaring);
+			this.jdtTreeBuilder.references.setPackageOrDeclaringType(ref, declaring);
 		} else if (binding instanceof JDTTreeBuilder.SpoonReferenceBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setSimpleName(new String(binding.sourceName()));
@@ -857,5 +888,20 @@ public class ReferenceBuilder {
 			res.add(getBoundedTypeReference(tb));
 		}
 		return res;
+	}
+
+	/**
+	 * Sets {@code declaring} as inner of {@code ref}, as either the package or the declaring type
+	 */
+	void setPackageOrDeclaringType(CtTypeReference<?> ref, CtReference declaring) {
+		if (declaring instanceof CtPackageReference) {
+			ref.setPackage((CtPackageReference) declaring);
+		} else if (declaring instanceof CtTypeReference) {
+			ref.setDeclaringType((CtTypeReference) declaring);
+		} else if (declaring == null) {
+			ref.setPackage(jdtTreeBuilder.getFactory().Package().topLevel());
+		} else {
+			throw new AssertionError("unexpected declaring type: " + declaring.getClass() + " of " + declaring);
+		}
 	}
 }

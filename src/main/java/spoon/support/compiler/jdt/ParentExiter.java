@@ -20,9 +20,14 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
+import org.eclipse.jdt.internal.compiler.ast.CastExpression;
+import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -56,6 +61,7 @@ import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
@@ -475,16 +481,59 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-		if (child instanceof CtExpression) {
-			if (this.jdtTreeBuilder.getContextBuilder().isArgument(invocation)) {
-				invocation.addArgument((CtExpression<?>) child);
-				return;
+		if (childJDT instanceof TypeReference && child instanceof CtTypeAccess) {
+			invocation.getExecutable().addActualTypeArgument(((CtTypeAccess) child).getAccessedType());
+			return;
+		} else if (child instanceof CtExpression) {
+			if (hasChildEqualsToReceiver(invocation) || hasChildEqualsToQualification(invocation)) {
+				if (child instanceof CtThisAccess) {
+					final CtTypeReference<?> declaringType = invocation.getExecutable().getDeclaringType();
+					if (declaringType != null && invocation.getExecutable().isStatic() && child.isImplicit()) {
+						invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, declaringType.isAnonymous()));
+					} else if (declaringType != null && !invocation.getExecutable().isStatic() && child.isImplicit()) {
+						((CtThisAccess) child).setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, true));
+						invocation.setTarget((CtThisAccess<?>) child);
+					} else {
+						invocation.setTarget((CtThisAccess<?>) child);
+					}
+				} else {
+					invocation.setTarget((CtExpression<?>) child);
+				}
 			} else {
-				invocation.setTarget((CtExpression<?>) child);
-				return;
+				invocation.addArgument((CtExpression<?>) child);
 			}
+			return;
 		}
 		super.visitCtInvocation(invocation);
+	}
+
+	private <T> boolean hasChildEqualsToQualification(CtInvocation<T> ctInvocation) {
+		if (!(jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof ExplicitConstructorCall)) {
+			return false;
+		}
+		final ExplicitConstructorCall parent = (ExplicitConstructorCall) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		// qualification is equals to the jdt child.
+		return parent.qualification != null && getFinalExpressionFromCast(parent.qualification).equals(childJDT)
+				// qualification not yet initialized.
+				&& !child.equals(ctInvocation.getTarget());
+	}
+
+	private <T> boolean hasChildEqualsToReceiver(CtInvocation<T> ctInvocation) {
+		if (!(jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof MessageSend)) {
+			return false;
+		}
+		final MessageSend parent = (MessageSend) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		// Receiver is equals to the jdt child.
+		return parent.receiver != null && getFinalExpressionFromCast(parent.receiver).equals(childJDT)
+				// Receiver not yet initialized.
+				&& !child.equals(ctInvocation.getTarget());
+	}
+
+	private Expression getFinalExpressionFromCast(Expression potentialCase) {
+		if (!(potentialCase instanceof CastExpression)) {
+			return potentialCase;
+		}
+		return getFinalExpressionFromCast(((CastExpression) potentialCase).expression);
 	}
 
 	@Override

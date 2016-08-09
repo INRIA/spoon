@@ -24,6 +24,7 @@ import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -358,14 +359,26 @@ class JDTTreeBuilderHelper {
 	 * @return a type access.
 	 */
 	<T> CtTypeAccess<T> createTypeAccessNoClasspath(QualifiedNameReference qualifiedNameReference) {
-		CtTypeAccess<T> typeAccess;
+		CtTypeReference<T> typeReference;
 		if (qualifiedNameReference.binding instanceof ProblemBinding) {
-			typeAccess = jdtTreeBuilder.getFactory().Code().createTypeAccess(//
-					jdtTreeBuilder.getFactory().Type().<T>createReference(CharOperation.toString(qualifiedNameReference.tokens)));
-		} else {
+			typeReference = jdtTreeBuilder.getFactory().Type().<T>createReference(CharOperation.toString(qualifiedNameReference.tokens));
+		} else if (qualifiedNameReference.binding instanceof FieldBinding) {
 			final ReferenceBinding declaringClass = ((FieldBinding) qualifiedNameReference.binding).declaringClass;
-			typeAccess = jdtTreeBuilder.getFactory().Code().createTypeAccess(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(declaringClass));
+			typeReference = jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(declaringClass);
+		} else {
+			// TODO try to determine package/class boundary by upper case
+			char[][] packageName = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
+			char[][] className = CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length);
+			if (packageName.length > 0) {
+				final PackageBinding aPackage = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(packageName);
+				final MissingTypeBinding declaringType = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+
+				typeReference = jdtTreeBuilder.getReferencesBuilder().getTypeReference(declaringType);
+			} else {
+				typeReference = jdtTreeBuilder.getFactory().Type().createReference(qualifiedNameReference.toString());
+			}
 		}
+		final CtTypeAccess<T> typeAccess = jdtTreeBuilder.getFactory().Code().createTypeAccess(typeReference);
 
 		long[] positions = qualifiedNameReference.sourcePositions;
 		int sourceStart = qualifiedNameReference.sourceStart();
@@ -373,6 +386,24 @@ class JDTTreeBuilderHelper {
 		typeAccess.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 
 		return typeAccess;
+	}
+
+	/**
+	 * Creates a type access from its single name.
+	 *
+	 * @param singleNameReference
+	 * 		Used to get the simple name of the type.
+	 * @return a type access.
+	 */
+	<T> CtTypeAccess<T> createTypeAccessNoClasspath(SingleNameReference singleNameReference) {
+		final CtTypeReference<T> typeReference = jdtTreeBuilder.getFactory().Core().createTypeReference();
+		if (singleNameReference.binding == null) {
+			typeReference.setSimpleName(CharOperation.charToString(singleNameReference.token));
+		} else {
+			typeReference.setSimpleName(CharOperation.charToString(singleNameReference.binding.readableName()));
+		}
+		jdtTreeBuilder.getReferencesBuilder().setPackageOrDeclaringType(typeReference, jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token));
+		return jdtTreeBuilder.getFactory().Code().createTypeAccess(typeReference);
 	}
 
 	/**

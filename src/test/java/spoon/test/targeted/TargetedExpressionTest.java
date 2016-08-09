@@ -402,7 +402,7 @@ public class TargetedExpressionTest {
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(CtFieldReadImpl.class).result("foo.staticMethod()"), elements.get(1));
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedThisAccess).result("Foo.this.staticMethod()"), elements.get(2));
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedTypeAccess).result("Foo.staticMethod()"), elements.get(3));
-		assertEqualsInvocation(new ExpectedTargetedExpression().result("staticMethod()"), elements.get(4));
+		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedThisAccess).result("staticMethod()"), elements.get(4));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticMethodBar()"), elements.get(5));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticMethodBar()"), elements.get(6));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(launcher.getFactory().Class().create("Fii.Fuu").getReference()).target(fiiFuuTypeAccess).result("Fii.Fuu.m()"), elements.get(7));

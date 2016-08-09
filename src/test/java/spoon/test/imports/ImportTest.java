@@ -7,6 +7,7 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -285,7 +286,7 @@ public class ImportTest {
 
 	private void assertCorrectInvocationWithLimit(Expected expected, CtInvocation<?> ctInvocation) {
 		assertEquals(1, ctInvocation.getArguments().size());
-		assertNull(ctInvocation.getTarget());
+		assertTrue(ctInvocation.getTarget() instanceof CtThisAccess);
 		assertNotNull(ctInvocation.getExecutable());
 		assertEquals(expected.name, ctInvocation.getExecutable().getSimpleName());
 		assertNull(ctInvocation.getExecutable().getDeclaringType());

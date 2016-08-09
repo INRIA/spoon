@@ -114,8 +114,6 @@ import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
-import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -125,7 +123,6 @@ import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -145,7 +142,6 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
@@ -164,13 +160,10 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -193,7 +186,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	private final ParentExiter exiter;
 
-	private final ReferenceBuilder references;
+	final ReferenceBuilder references;
 
 	private final JDTTreeBuilderHelper helper;
 
@@ -223,6 +216,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return references;
 	}
 
+	public JDTTreeBuilderHelper getHelper() {
+		return helper;
+	}
+
 	public ParentExiter getExiter() {
 		return exiter;
 	}
@@ -244,22 +241,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	interface OnAccessListener {
 		boolean onAccess(char[][] tokens, int index);
-	}
-
-	/**
-	 * Sets {@code declaring} as inner of {@code ref}, as either the package or the declaring type
-	 */
-	void setPackageOrDeclaringType(CtTypeReference<?> ref, CtReference declaring) {
-		if (declaring instanceof CtPackageReference) {
-			ref.setPackage((CtPackageReference) declaring);
-		} else if (declaring instanceof CtTypeReference) {
-			ref.setDeclaringType((CtTypeReference) declaring);
-		} else if (declaring == null) {
-			ref.setPackage(factory.Package().topLevel());
-		} else {
-			throw new AssertionError(
-					"unexpected declaring type: " + declaring.getClass() + " of " + declaring);
-		}
 	}
 
 	CtType<?> createType(TypeDeclaration typeDeclaration) {
@@ -1322,41 +1303,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return true; // do nothing by default, keep traversing
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(ExplicitConstructorCall explicitConstructor, BlockScope scope) {
 		CtInvocation<Object> inv = factory.Core().createInvocation();
-		if (explicitConstructor.isImplicitSuper()) {
-			inv.setImplicit(true);
-		}
-		CtExecutableReference<Object> er = references.getExecutableReference(explicitConstructor.binding);
-		inv.setExecutable(er);
+		inv.setImplicit(explicitConstructor.isImplicitSuper());
+		inv.setExecutable(references.getExecutableReference(explicitConstructor.binding));
 		inv.getExecutable().setType((CtTypeReference<Object>) inv.getExecutable().getDeclaringType());
 
-		if (explicitConstructor.genericTypeArguments() != null) {
-			inv.getExecutable().setActualTypeArguments(references.getBoundedTypesReferences(explicitConstructor.genericTypeArguments()));
-		}
-
 		context.enter(inv, explicitConstructor);
-
-		if (explicitConstructor.qualification != null) {
-			explicitConstructor.qualification.traverse(this, scope);
-		}
-		if (explicitConstructor.typeArguments != null) {
-			for (int i = 0, typeArgumentsLength = explicitConstructor.typeArguments.length; i < typeArgumentsLength; i++) {
-				explicitConstructor.typeArguments[i].traverse(this, scope);
-			}
-		}
-
-		context.arguments.push(inv);
-		if (explicitConstructor.arguments != null) {
-			for (int i = 0, argumentLength = explicitConstructor.arguments.length; i < argumentLength; i++) {
-				explicitConstructor.arguments[i].traverse(this, scope);
-			}
-		}
-		context.arguments.pop();
-
-		return false;
+		return true;
 	}
 
 	@Override
@@ -1618,112 +1573,19 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(MessageSend messageSend, BlockScope scope) {
-		if (messageSend.actualReceiverType == null
-				|| !messageSend.actualReceiverType.isAnnotationType()
-				|| messageSend.binding instanceof MethodBinding) {
-			CtInvocation<Object> inv = factory.Core().createInvocation();
-			if (messageSend.binding != null) {
-				inv.setExecutable(references.getExecutableReference(messageSend.binding));
-				if (messageSend.binding instanceof ProblemMethodBinding) {
-					// We are in a static complex in noclasspath mode.
-					if (inv.getExecutable() != null && inv.getExecutable().getDeclaringType() != null) {
-						final CtTypeAccess ta = factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType());
-						if (ta.getAccessedType().isAnonymous()) {
-							ta.setImplicit(true);
-						}
-						inv.setTarget(ta);
-					}
-					if (messageSend.expectedType() != null) {
-						inv.getExecutable().setType(references.getTypeReference(messageSend.expectedType()));
-					}
-				}
-			} else {
-				CtExecutableReference<Object> ref = factory.Core().createExecutableReference();
-				ref.setSimpleName(new String(messageSend.selector));
-				ref.setType(references.getTypeReference(messageSend.expectedType()));
-				if (messageSend.receiver.resolvedType == null) {
-					// It is crisis dude! static context, we don't have much more information.
-					if (messageSend.receiver instanceof SingleNameReference) {
-						CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-						typeReference.setSimpleName(messageSend.receiver.toString());
-						final CtReference declaring = references.getDeclaringReferenceFromImports(((SingleNameReference) messageSend.receiver).token);
-						setPackageOrDeclaringType(typeReference, declaring);
-						ref.setDeclaringType(typeReference);
-					} else if (messageSend.receiver instanceof QualifiedNameReference) {
-						QualifiedNameReference qualifiedNameReference = (QualifiedNameReference) messageSend.receiver;
-
-						// TODO try to determine package/class boundary by upper case
-						char[][] packageName = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
-						char[][] className = CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length);
-						if (packageName.length > 0) {
-							final PackageBinding aPackage = context.compilationunitdeclaration.scope.environment.createPackage(packageName);
-							final MissingTypeBinding declaringType = context.compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
-
-							ref.setDeclaringType(references.getTypeReference(declaringType));
-						} else {
-							final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-							typeReference.setSimpleName(messageSend.receiver.toString());
-							ref.setDeclaringType(typeReference);
-						}
-					}
-				} else {
-					ref.setDeclaringType(references.getTypeReference(messageSend.receiver.resolvedType));
-				}
-				if (messageSend.arguments != null) {
-					final List<CtTypeReference<?>> parameters = new ArrayList<>();
-					for (Expression argument : messageSend.arguments) {
-						parameters.add(references.getTypeReference(argument.resolvedType));
-					}
-					ref.setParameters(parameters);
-				}
-				inv.setExecutable(ref);
+		CtInvocation<Object> inv = factory.Core().createInvocation();
+		inv.setExecutable(references.getExecutableReference(messageSend));
+		if (messageSend.binding instanceof ProblemMethodBinding) {
+			// We are in a static complex in noclasspath mode.
+			if (inv.getExecutable() != null && inv.getExecutable().getDeclaringType() != null) {
+				inv.setTarget(factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType(), inv.getExecutable().getDeclaringType().isAnonymous()));
 			}
-			context.enter(inv, messageSend);
-			if (messageSend.receiver.isImplicitThis()) {
-				if (inv.getExecutable().getDeclaringType() != null && inv.getExecutable().isStatic()) {
-					final CtTypeAccess<?> typeAccess = factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType());
-					if (typeAccess.getAccessedType().isAnonymous()) {
-						typeAccess.setImplicit(true);
-					}
-					inv.setTarget(typeAccess);
-				} else if (inv.getExecutable().getDeclaringType() != null && !inv.getExecutable().isStatic()) {
-					messageSend.receiver.traverse(this, scope);
-					if (inv.getTarget() instanceof CtThisAccess) {
-						((CtThisAccess) inv.getTarget()).setTarget(factory.Code().createTypeAccess(inv.getExecutable().getDeclaringType()));
-					}
-				} else if (!(messageSend.binding() instanceof ProblemMethodBinding)) {
-					messageSend.receiver.traverse(this, scope);
-				}
-			} else {
-				messageSend.receiver.traverse(this, scope);
+			if (messageSend.expectedType() != null) {
+				inv.getExecutable().setType(references.getTypeReference(messageSend.expectedType()));
 			}
-			context.pushArgument(inv);
-			if (messageSend.arguments != null) {
-				for (Expression e : messageSend.arguments) {
-					e.traverse(this, scope);
-				}
-			}
-			if (messageSend.typeArguments != null) {
-				for (TypeReference typeBinding : messageSend.typeArguments) {
-					inv.getExecutable().addActualTypeArgument(references.getTypeReference(typeBinding.resolvedType));
-				}
-			}
-			context.popArgument(inv);
-			return false;
-
-		} else {
-			CtAnnotationFieldAccess<Object> acc = factory.Core().createAnnotationFieldAccess();
-			acc.setVariable(references.getVariableReference(messageSend.binding));
-			acc.setType(references.getTypeReference(messageSend.resolvedType));
-
-			context.enter(acc, messageSend);
-
-			context.target.push(acc);
-			messageSend.receiver.traverse(this, scope);
-			context.target.pop();
-
-			return false;
 		}
+		context.enter(inv, messageSend);
+		return true;
 	}
 
 	@Override
@@ -1876,7 +1738,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) singleNameReference.binding)), singleNameReference);
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation && Character.isUpperCase(CharOperation.charToString(singleNameReference.token).charAt(0))) {
-				context.enter(createInvocationNoClasspath(singleNameReference), singleNameReference);
+				context.enter(helper.createTypeAccessNoClasspath(singleNameReference), singleNameReference);
 			} else {
 				context.enter(helper.createFieldAccessNoClasspath(singleNameReference), singleNameReference);
 			}
@@ -1884,13 +1746,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(helper.createVariableAccessNoClasspath(singleNameReference), singleNameReference);
 		}
 		return true;
-	}
-
-	private <T> CtTypeAccess<T> createInvocationNoClasspath(SingleNameReference singleNameReference) {
-		final CtTypeReference<T> typeReference = getFactory().Core().createTypeReference();
-		typeReference.setSimpleName(new String(singleNameReference.binding.readableName()));
-		setPackageOrDeclaringType(typeReference, getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token));
-		return getFactory().Code().createTypeAccess(typeReference);
 	}
 
 	@Override
