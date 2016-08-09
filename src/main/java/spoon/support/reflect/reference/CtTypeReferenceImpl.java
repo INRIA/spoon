@@ -138,7 +138,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		try {
 			return (Class<T>) getFactory().getEnvironment().getClassLoader().loadClass(getQualifiedName());
 		} catch (java.lang.ClassNotFoundException cnfe) {
-			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName() + " with class loader " + Thread.currentThread().getContextClassLoader(), cnfe);
+			String msg = "cannot load class: " + getQualifiedName() + " with class loader " + Thread.currentThread().getContextClassLoader();
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				// is in no classpath, null is appropriate as getFields does a null check and return a empty list
+				Launcher.LOGGER.warn(msg);
+				return null;
+			} else {
+				throw new SpoonClassNotFoundException(msg, cnfe);
+			}
 		}
 	}
 

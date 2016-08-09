@@ -45,19 +45,12 @@ public class NoClasspathTest {
 		CtTypeReference<?> superclass = clazz.getSuperclass();
 		// "Unknown" is not in the classpath at all
 		assertEquals("Unknown", superclass.getSimpleName());
-		try {
-			superclass.getActualClass();
-			fail();
-		} catch (SpoonClassNotFoundException e) {
-			// expected
-		}
+
+		assertNull(superclass.getActualClass());
 		assertNull(superclass.getDeclaration());
 
 		// now we really make sure we don't have the class in the classpath
-		try {
-			superclass.getActualClass();
-			fail();
-		} catch (SpoonException e) {}
+		assertNull(superclass.getActualClass());
 
 		{
 			CtMethod<?> method = clazz.getMethod("method", new CtTypeReference[0]);
