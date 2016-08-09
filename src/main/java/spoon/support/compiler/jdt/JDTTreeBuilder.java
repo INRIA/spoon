@@ -60,6 +60,7 @@ import org.eclipse.jdt.internal.compiler.ast.IfStatement;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
 import org.eclipse.jdt.internal.compiler.ast.IntLiteral;
+import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.LabeledStatement;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
 import org.eclipse.jdt.internal.compiler.ast.Literal;
@@ -180,7 +181,6 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.computeAnonymousNa
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
-import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.substituteAnnotation;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -819,6 +819,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public boolean visit(Javadoc javadoc, BlockScope scope) {
+		// Use a custom compiler.
+		return false;
+	}
+
+	@Override
+	public boolean visit(Javadoc javadoc, ClassScope scope) {
+		// Use a custom compiler.
+		return false;
+	}
+
+	@Override
 	public boolean visit(CompilationUnitDeclaration compilationUnitDeclaration, CompilationUnitScope scope) {
 		context.compilationunitdeclaration = scope.referenceContext;
 		context.compilationUnitSpoon = getFactory().CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
@@ -920,14 +932,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 		f.setSimpleName(new String(annotationTypeDeclaration.selector));
 		context.enter(f, annotationTypeDeclaration);
 
-		f.setType(this.references.buildTypeReference(annotationTypeDeclaration.returnType, classScope));
-
 		if (annotationTypeDeclaration.annotations != null) {
 			for (Annotation a : annotationTypeDeclaration.annotations) {
 				a.traverse(this, annotationTypeDeclaration.scope);
-				substituteAnnotation(f, a, CtAnnotatedElementType.TYPE_USE);
+				JDTTreeBuilderHelper.substituteAnnotation(f, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
+
+		f.setType(this.references.buildTypeReference(annotationTypeDeclaration.returnType, classScope));
 
 		defaultValue = true;
 		if (annotationTypeDeclaration.defaultValue != null) {
@@ -981,7 +993,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (argument.annotations != null) {
 			for (Annotation a : argument.annotations) {
 				a.traverse(this, scope);
-				substituteAnnotation(p, a, CtAnnotatedElementType.TYPE_USE);
+				JDTTreeBuilderHelper.substituteAnnotation(p, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -1540,7 +1552,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (localDeclaration.annotations != null) {
 			for (Annotation a : localDeclaration.annotations) {
 				a.traverse(this, scope);
-				substituteAnnotation(v, a, CtAnnotatedElementType.TYPE_USE);
+				JDTTreeBuilderHelper.substituteAnnotation(v, a, CtAnnotatedElementType.TYPE_USE);
 			}
 		}
 
@@ -1718,50 +1730,19 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		CtMethod<Object> m = factory.Core().createMethod();
 		m.setSimpleName(new String(methodDeclaration.selector));
-		m.setType(this.references.buildTypeReference(methodDeclaration.returnType, scope));
 		m.setModifiers(getModifiers(methodDeclaration.modifiers));
 		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
 
 		context.enter(m, methodDeclaration);
 
-		if (methodDeclaration.thrownExceptions != null) {
-			for (TypeReference r : methodDeclaration.thrownExceptions) {
-				CtTypeReference<Throwable> throwType = this.references.buildTypeReference(r, scope);
-				m.addThrownType(throwType);
-			}
-		}
-
-		if (methodDeclaration.typeParameters() != null) {
-			for (TypeParameter typeParameter : methodDeclaration.typeParameters()) {
-				typeParameter.traverse(this, scope);
-			}
-		}
-
-		if (methodDeclaration.annotations != null) {
-			for (Annotation a : methodDeclaration.annotations) {
-				a.traverse(this, methodDeclaration.scope);
-				substituteAnnotation(m, a, CtAnnotatedElementType.TYPE_USE);
-			}
-		}
-
-		if (methodDeclaration.arguments != null) {
-			for (Argument a : methodDeclaration.arguments) {
-				a.traverse(this, methodDeclaration.scope);
-			}
-		}
-
 		// Create block
 		if (!methodDeclaration.isAbstract() && (methodDeclaration.modifiers & ClassFileConstants.AccNative) == 0) {
-			CtBlock<?> b = factory.Core().createBlock();
-			context.enter(b, methodDeclaration);
+			m.setBody(getFactory().Core().createBlock());
+			context.enter(m.getBody(), methodDeclaration);
+			context.exit(methodDeclaration);
 		}
 
-		if (methodDeclaration.statements != null) {
-			for (Statement s : methodDeclaration.statements) {
-				s.traverse(this, methodDeclaration.scope);
-			}
-		}
-		return false;
+		return true;
 	}
 
 	@Override

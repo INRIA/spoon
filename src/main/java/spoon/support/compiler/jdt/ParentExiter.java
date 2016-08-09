@@ -18,7 +18,9 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
@@ -60,6 +62,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -74,10 +77,16 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class ParentExiter extends CtInheritanceScanner {
@@ -86,6 +95,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	private CtElement child;
 	private ASTNode childJDT;
+	private Map<CtTypedElement<?>, List<CtTypeReference<? extends java.lang.annotation.Annotation>>> annotationsMap = new HashMap<>();
 
 	/**
 	 * @param jdtTreeBuilder
@@ -106,6 +116,16 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void scanCtElement(CtElement e) {
 		if (child instanceof CtAnnotation && this.jdtTreeBuilder.getContextBuilder().annotationValueName.isEmpty()) {
 			e.addAnnotation((CtAnnotation<?>) child);
+			if (e instanceof CtTypedElement && JDTTreeBuilderQuery.hasAnnotationWithType((Annotation) childJDT, CtAnnotatedElementType.TYPE_USE)) {
+				List<CtTypeReference<? extends java.lang.annotation.Annotation>> annotations = new ArrayList<>();
+				if (!annotationsMap.containsKey(e)) {
+					annotationsMap.put((CtTypedElement<?>) e, annotations);
+				} else {
+					annotations = annotationsMap.get(e);
+				}
+				annotations.add(((CtAnnotation) child).getType());
+				annotationsMap.put((CtTypedElement<?>) e, annotations);
+			}
 			return;
 		}
 	}
@@ -115,7 +135,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtParameter) {
 			e.addParameter((CtParameter<?>) child);
 			return;
-		} else if (child instanceof CtBlock) {
+		} else if (child instanceof CtBlock && !(e instanceof CtMethod)) {
 			e.setBody((CtBlock<R>) child);
 			return;
 		}
@@ -185,6 +205,39 @@ public class ParentExiter extends CtInheritanceScanner {
 			annotation.addValue(this.jdtTreeBuilder.getContextBuilder().annotationValueName.peek(), child);
 		}
 		super.visitCtAnnotation(annotation);
+	}
+
+	@Override
+	public <T> void visitCtMethod(CtMethod<T> e) {
+		if (child instanceof CtStatement && !(child instanceof CtBlock)) {
+			visitCtBlock(e.getBody());
+			return;
+		} else if (child instanceof CtTypeAccess) {
+			if (hasChildEqualsToType(e)) {
+				e.setType(((CtTypeAccess) child).getAccessedType());
+				if (annotationsMap.containsKey(e)) {
+					List<CtTypeReference<? extends java.lang.annotation.Annotation>> annotations = annotationsMap.get(e);
+					for (CtTypeReference<? extends java.lang.annotation.Annotation> annotation : annotations) {
+						final CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = e.getAnnotation(annotation);
+						e.removeAnnotation(targetAnnotation);
+						e.getType().addAnnotation(targetAnnotation);
+					}
+					annotationsMap.remove(e);
+				}
+			} else {
+				e.addThrownType(((CtTypeAccess) child).getAccessedType());
+			}
+			return;
+		}
+		super.visitCtMethod(e);
+	}
+
+	private <T> boolean hasChildEqualsToType(CtMethod<T> ctMethod) {
+		final MethodDeclaration parent = (MethodDeclaration) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		// Return type is equals to the jdt child.
+		return parent.returnType != null && parent.returnType.equals(childJDT)
+				// Return type not yet initialized.
+				&& !child.equals(ctMethod.getType());
 	}
 
 	@Override
@@ -473,8 +526,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		final QualifiedAllocationExpression parent = (QualifiedAllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
 		// Enclosing instance is equals to the jdt child.
-		return parent.enclosingInstance != null
-				&& parent.enclosingInstance.equals(childJDT)
+		return parent.enclosingInstance != null && parent.enclosingInstance.equals(childJDT)
 				// Enclosing instance not yet initialized.
 				&& !child.equals(ctConstructorCall.getTarget());
 	}
