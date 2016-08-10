@@ -60,6 +60,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -174,10 +175,10 @@ public class CodeFactory extends SubFactory {
 	/**
 	 * Creates a new class with an anonymous class.
 	 *
-	 * @param type the decelerating type of the constructor.
+	 * @param type the declaring type of the constructor.
 	 * @param anonymousClass Anonymous class in the new class.
 	 * @param parameters the arguments of the constructor call.
-	 * @param <T> the actual type of the decelerating type of the constructor if available/
+	 * @param <T> the actual type of the declaring type of the constructor if available/
 	 * @return the new class.
 	 */
 	public <T> CtNewClass<T> createNewClass(CtTypeReference<T> type, CtClass<?> anonymousClass, CtExpression<?>...parameters) {
@@ -186,7 +187,7 @@ public class CodeFactory extends SubFactory {
 		ctNewClass.setArguments(Arrays.asList(parameters));
 		ctNewClass.setExecutable(executableReference);
 		ctNewClass.setAnonymousClass(anonymousClass);
-		anonymousClass.setSimpleName("0");
+		anonymousClass.setSimpleName(String.valueOf(1000 + new Random().nextInt(Integer.MAX_VALUE - 1000)));
 		return ctNewClass;
 	}
 
