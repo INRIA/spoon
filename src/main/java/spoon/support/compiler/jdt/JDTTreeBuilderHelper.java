@@ -38,9 +38,11 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtReference;
@@ -425,5 +427,28 @@ class JDTTreeBuilderHelper {
 			target = jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().<Object>getTypeReference(qualifiedNameReference.actualReceiverType), true);
 		}
 		return target;
+	}
+
+	/**
+	 * Creates a parameter. If the argument have a type == null, we get the type from its binding. A type == null is possible when
+	 * this type is implicit like in a lambda where you don't need to specify the type of parameters.
+	 *
+	 * @param argument
+	 * 		Used to get the name of the parameter, the modifiers, know if it is a var args parameter.
+	 * @return a parameter.
+	 */
+	<T> CtParameter<T> createParameter(Argument argument) {
+		CtParameter<T> p = jdtTreeBuilder.getFactory().Core().createParameter();
+		p.setSimpleName(CharOperation.charToString(argument.name));
+		p.setVarArgs(argument.isVarArgs());
+		p.setModifiers(getModifiers(argument.modifiers));
+		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
+			p.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(argument.binding.type));
+			p.getType().setImplicit(argument.type == null);
+			if (p.getType() instanceof CtArrayTypeReference) {
+				((CtArrayTypeReference) p.getType()).getComponentType().setImplicit(argument.type == null);
+			}
+		}
+		return p;
 	}
 }

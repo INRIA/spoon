@@ -17,8 +17,10 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
@@ -136,6 +138,18 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 	}
 
+	private void substituteAnnotation(CtTypedElement ele) {
+		if (annotationsMap.containsKey(ele)) {
+			List<CtTypeReference<? extends java.lang.annotation.Annotation>> annotations = annotationsMap.get(ele);
+			for (CtTypeReference<? extends java.lang.annotation.Annotation> annotation : annotations) {
+				final CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = ele.getAnnotation(annotation);
+				ele.removeAnnotation(targetAnnotation);
+				ele.getType().addAnnotation(targetAnnotation);
+			}
+			annotationsMap.remove(ele);
+		}
+	}
+
 	@Override
 	public <R> void scanCtExecutable(CtExecutable<R> e) {
 		if (child instanceof CtParameter) {
@@ -198,11 +212,30 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void scanCtVariable(CtVariable<T> v) {
-		if (child instanceof CtExpression && !this.jdtTreeBuilder.getContextBuilder().arguments.isEmpty() && this.jdtTreeBuilder.getContextBuilder().arguments.peek() == v) {
+		if (childJDT instanceof TypeReference && child instanceof CtTypeAccess) {
+			v.setType(((CtTypeAccess) child).getAccessedType());
+			substituteAnnotation((CtTypedElement) v);
+			return;
+		} else if (child instanceof CtExpression && hasChildEqualsToDefaultValue(v)) {
 			v.setDefaultExpression((CtExpression<T>) child);
 			return;
 		}
 		super.scanCtVariable(v);
+	}
+
+	private <T> boolean hasChildEqualsToDefaultValue(CtVariable<T> ctVariable) {
+		if (jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof AnnotationMethodDeclaration) {
+			final AnnotationMethodDeclaration parent = (AnnotationMethodDeclaration) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+			// Default value is equals to the jdt child.
+			return parent.defaultValue != null && getFinalExpressionFromCast(parent.defaultValue).equals(childJDT)
+					// Return type not yet initialized.
+					&& !child.equals(ctVariable.getDefaultExpression());
+		}
+		final AbstractVariableDeclaration parent = (AbstractVariableDeclaration) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		// Default value is equals to the jdt child.
+		return parent.initialization != null && getFinalExpressionFromCast(parent.initialization).equals(childJDT)
+				// Return type not yet initialized.
+				&& !child.equals(ctVariable.getDefaultExpression());
 	}
 
 	@Override
@@ -221,15 +254,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtTypeAccess) {
 			if (hasChildEqualsToType(e)) {
 				e.setType(((CtTypeAccess) child).getAccessedType());
-				if (annotationsMap.containsKey(e)) {
-					List<CtTypeReference<? extends java.lang.annotation.Annotation>> annotations = annotationsMap.get(e);
-					for (CtTypeReference<? extends java.lang.annotation.Annotation> annotation : annotations) {
-						final CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = e.getAnnotation(annotation);
-						e.removeAnnotation(targetAnnotation);
-						e.getType().addAnnotation(targetAnnotation);
-					}
-					annotationsMap.remove(e);
-				}
+				substituteAnnotation(e);
 			} else {
 				e.addThrownType(((CtTypeAccess) child).getAccessedType());
 			}
@@ -410,15 +435,6 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtDo(doLoop);
-	}
-
-	@Override
-	public <T> void visitCtField(CtField<T> f) {
-		if ((f.getDefaultExpression() == null && child instanceof CtExpression && !(child instanceof CtAnnotation)) || jdtTreeBuilder.defaultValue) {
-			f.setDefaultExpression((CtExpression<T>) child);
-			return;
-		}
-		super.visitCtField(f);
 	}
 
 	@Override

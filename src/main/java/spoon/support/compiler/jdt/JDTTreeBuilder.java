@@ -63,7 +63,6 @@ import org.eclipse.jdt.internal.compiler.ast.IntLiteral;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.LabeledStatement;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
-import org.eclipse.jdt.internal.compiler.ast.Literal;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LongLiteral;
 import org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
@@ -120,7 +119,6 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
-import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
@@ -146,14 +144,12 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -192,11 +188,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	private final Factory factory;
 
-	public boolean template = false;
-
 	boolean skipTypeInAnnotation = false;
-
-	boolean defaultValue;
 
 	public static Logger getLogger() {
 		return LOGGER;
@@ -912,22 +904,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtField<Object> f = factory.Core().createField();
 		f.setSimpleName(new String(annotationTypeDeclaration.selector));
 		context.enter(f, annotationTypeDeclaration);
-
-		if (annotationTypeDeclaration.annotations != null) {
-			for (Annotation a : annotationTypeDeclaration.annotations) {
-				a.traverse(this, annotationTypeDeclaration.scope);
-				JDTTreeBuilderHelper.substituteAnnotation(f, a, CtAnnotatedElementType.TYPE_USE);
-			}
-		}
-
-		f.setType(this.references.buildTypeReference(annotationTypeDeclaration.returnType, classScope));
-
-		defaultValue = true;
-		if (annotationTypeDeclaration.defaultValue != null) {
-			annotationTypeDeclaration.defaultValue.traverse(this, annotationTypeDeclaration.scope);
-		}
-		defaultValue = false;
-		return false;
+		return true;
 	}
 
 	@Override
@@ -936,49 +913,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(factory.Core().createCatch(), argument);
 			return true;
 		}
-		CtParameter<Object> p = factory.Core().createParameter();
-		p.setSimpleName(new String(argument.name));
-		p.setVarArgs(argument.isVarArgs());
-		p.setModifiers(getModifiers(argument.modifiers));
-		if (argument.binding != null && argument.binding.type != null) {
-			context.isLambdaParameterImplicitlyTyped = argument.type != null;
-			if (argument.binding.type instanceof WildcardBinding) {
-				p.setType(references.getTypeReference((((WildcardBinding) argument.binding.type).bound)));
-			} else {
-				p.setType(references.getTypeReference((argument.binding.type)));
-			}
-			context.isLambdaParameterImplicitlyTyped = true;
-		} else if (argument.type != null) {
-			p.setType(references.getTypeReference(argument.type));
-		}
-
-		final TypeBinding receiverType = argument.type != null ? argument.type.resolvedType : null;
-		if (receiverType != null && argument.type instanceof QualifiedTypeReference) {
-			final QualifiedTypeReference qualifiedNameReference = (QualifiedTypeReference) argument.type;
-			final CtTypeReference<Object> ref = this.references.getQualifiedTypeReference(qualifiedNameReference.tokens, receiverType, receiverType.enclosingType(), new OnAccessListener() {
-				@Override
-				public boolean onAccess(char[][] tokens, int index) {
-					return true;
-				}
-			});
-			if (ref != null) {
-				p.setType(ref);
-			}
-		}
-
-		context.enter(p, argument);
-		if (argument.initialization != null) {
-			argument.initialization.traverse(this, scope);
-		}
-
-		if (argument.annotations != null) {
-			for (Annotation a : argument.annotations) {
-				a.traverse(this, scope);
-				JDTTreeBuilderHelper.substituteAnnotation(p, a, CtAnnotatedElementType.TYPE_USE);
-			}
-		}
-
-		return false;
+		context.enter(helper.createParameter(argument), argument);
+		return true;
 	}
 
 	@Override
@@ -1038,14 +974,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayTypeReference arrayTypeReference, BlockScope scope) {
-		final CtTypeAccess<Object> typeAccess = factory.Core().createTypeAccess();
-
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.buildTypeReference(arrayTypeReference, scope));
+		if (typeAccess.getAccessedType() instanceof CtArrayTypeReference) {
+			((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType().setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
+		}
 		context.enter(typeAccess, arrayTypeReference);
-
-		final CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayTypeReference.resolvedType);
-		arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
-		typeAccess.setAccessedType(arrayType);
-
 		return true;
 	}
 
@@ -1291,6 +1224,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(DoubleLiteral doubleLiteral, BlockScope scope) {
+		doubleLiteral.computeConstant();
 		context.enter(factory.Code().createLiteral(doubleLiteral.constant.doubleValue()), doubleLiteral);
 		return true;
 	}
@@ -1331,29 +1265,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtField<Object> field;
 		if (fieldDeclaration.type != null) {
 			field = factory.Core().createField();
-			context.enter(field, fieldDeclaration);
-			field.setType(this.references.buildTypeReference(fieldDeclaration.type, scope));
 		} else {
 			field = factory.Core().createEnumValue();
-			context.enter(field, fieldDeclaration);
 			if (fieldDeclaration.binding != null) {
-				field.setType(references.getVariableReference(fieldDeclaration.binding).getType());
+				field.setType(references.getTypeReference(fieldDeclaration.binding.type));
 			}
 		}
-		field.setSimpleName(new String(fieldDeclaration.name));
+		field.setSimpleName(CharOperation.charToString(fieldDeclaration.name));
 		field.setModifiers(getModifiers(fieldDeclaration.modifiers));
-
-		if (fieldDeclaration.annotations != null) {
-			int annotationsLength = fieldDeclaration.annotations.length;
-			for (int i = 0; i < annotationsLength; i++) {
-				fieldDeclaration.annotations[i].traverse(this, scope);
-			}
-		}
-
-		if (fieldDeclaration.initialization != null) {
-			fieldDeclaration.initialization.traverse(this, scope);
-		}
-		return false;
+		context.enter(field, fieldDeclaration);
+		return true;
 	}
 
 	@Override
@@ -1395,6 +1316,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(FloatLiteral floatLiteral, BlockScope scope) {
+		floatLiteral.computeConstant();
 		context.enter(factory.Code().createLiteral(floatLiteral.constant.floatValue()), floatLiteral);
 		return true;
 	}
@@ -1407,8 +1329,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ForStatement forStatement, BlockScope scope) {
-		CtFor for1 = factory.Core().createFor();
-		context.enter(for1, forStatement);
+		context.enter(factory.Core().createFor(), forStatement);
 
 		if (forStatement.initializations != null) {
 			context.forinit = true;
@@ -1463,11 +1384,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(IntLiteral intLiteral, BlockScope scope) {
-		CtLiteral<Integer> l = factory.Core().createLiteral();
+		intLiteral.computeConstant();
+		CtLiteral<Integer> l = factory.Code().createLiteral(intLiteral.constant.intValue());
 		l.setType(getFactory().Type().integerType());
-		if (intLiteral.constant != null) { // check required for noclasspath mode
-			l.setValue(intLiteral.constant.intValue());
-		}
 		context.enter(l, intLiteral);
 		return true;
 	}
@@ -1481,41 +1400,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
-		v.setSimpleName(new String(localDeclaration.name));
-		v.setType(this.references.buildTypeReference(localDeclaration.type, scope));
+		v.setSimpleName(CharOperation.charToString(localDeclaration.name));
 		v.setModifiers(getModifiers(localDeclaration.modifiers));
 		context.enter(v, localDeclaration);
-
-		if (localDeclaration.initialization != null) {
-			context.arguments.push(v);
-			// resolve Literal#constant if null (by calling `resolveType`). Otherwise,
-			// `localDeclaration.initialization.traverse(this, scope);` throws a
-			// NullPointerException. Fixes #755.
-			if (localDeclaration.initialization instanceof Literal
-					// exclude StringLiterals if scope is null. In other words:
-					// StringLiteral -> scope!=null <=> !StringLiteral v scope!=null.
-					&& (!(localDeclaration.initialization instanceof StringLiteral) || scope != null)) {
-				final Literal literal = (Literal) localDeclaration.initialization;
-				if (literal.constant == null) {
-					literal.resolveType(scope);
-				}
-			}
-			localDeclaration.initialization.traverse(this, scope);
-			context.arguments.pop();
-		}
-
-		if (localDeclaration.annotations != null) {
-			for (Annotation a : localDeclaration.annotations) {
-				a.traverse(this, scope);
-				JDTTreeBuilderHelper.substituteAnnotation(v, a, CtAnnotatedElementType.TYPE_USE);
-			}
-		}
-
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean visit(LongLiteral longLiteral, BlockScope scope) {
+		longLiteral.computeConstant();
 		context.enter(factory.Code().createLiteral(longLiteral.constant.longValue()).<CtLiteral<Long>>setType(getFactory().Type().longType()), longLiteral);
 		return true;
 	}
