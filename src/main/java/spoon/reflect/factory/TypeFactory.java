@@ -16,6 +16,7 @@
  */
 package spoon.reflect.factory;
 
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
@@ -310,7 +311,12 @@ public class TypeFactory extends SubFactory {
 			ref.setPackage(factory.Package().createReference(type.getPackage()));
 		}
 
-		ref.setSimpleName(type.getSimpleName());
+		if (type.isParentInitialized() && type.getParent() instanceof CtBlock && !Character.isDigit(type.getSimpleName().charAt(0))) {
+			ref.setSimpleName("1" + type.getSimpleName());
+		} else {
+			ref.setSimpleName(type.getSimpleName());
+		}
+
 		return ref;
 	}
 
