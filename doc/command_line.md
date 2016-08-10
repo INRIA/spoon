@@ -20,16 +20,13 @@ You see the output at the end of this page for the current release version of Sp
 The basic usage of Spoon consists in defining the original source location and the list of compiled processors to be used. 
 
 ```console
-$ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-4.2.0-jar-with-dependencies.jar -jar spoon-core-4.2.0-jar-with-dependencies.jar -i /path/to/src/of/your/project -p fr.inria.gforge.spoon.processors.CatchProcessor
+$ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-4.2.0-jar-with-dependencies.jar spoon.Launcher -i /path/to/src/of/your/project -p fr.inria.gforge.spoon.processors.CatchProcessor
 ```
 
 Note that when you use Spoon in command line, you manually handle the classpath.
 In particular, if the to-be-transformed source files depend on libraries, specify them with the `--source-classpath` flag.
 
 ```console
-$ java -jar spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar --help
-Spoon version {{site.spoon_release}} 
-Usage: java <launcher name> [option(s)]
 
 Options : 
 
