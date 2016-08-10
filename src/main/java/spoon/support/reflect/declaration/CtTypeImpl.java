@@ -776,14 +776,17 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> l = new HashSet<>(getMethods());
-		if ((getSuperclass() != null) && (getSuperclass().getDeclaration() != null)) {
-			CtType<?> t = getSuperclass().getDeclaration();
+		if ((getSuperclass() != null) && (getSuperclass().getTypeDeclaration() != null)) {
+			CtType<?> t = getSuperclass().getTypeDeclaration();
 			addAllBasedOnSignature(t.getAllMethods(), l);
+		} else {
+			// this is object
+			addAllBasedOnSignature(getFactory().Type().get(Object.class).getMethods(), l);
 		}
 
 		for (CtTypeReference<?> ref : getSuperInterfaces()) {
-			if (ref.getDeclaration() != null) {
-				CtType<?> t = ref.getDeclaration();
+			if (ref.getTypeDeclaration() != null) {
+				CtType<?> t = ref.getTypeDeclaration();
 				addAllBasedOnSignature(t.getAllMethods(), l);
 			}
 		}

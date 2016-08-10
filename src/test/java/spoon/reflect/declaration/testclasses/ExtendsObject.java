@@ -1,4 +1,7 @@
 package spoon.reflect.declaration.testclasses;
 
-public class ExtendsObject {
+import java.util.ArrayList;
+
+public class ExtendsObject extends ArrayList {
+	void m() {}
 }

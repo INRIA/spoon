@@ -2,6 +2,7 @@ package spoon.test.signature;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonCompiler;
@@ -29,6 +30,7 @@ import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -97,7 +99,8 @@ public class SignatureTest {
 		}
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
 
-		CtMethod<?> method = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+		Set<CtMethod<?>> methods = clazz1.getMethods();
+		CtMethod<?> method = (CtMethod<?>) methods.toArray()[0];
 		assertEquals("java.lang.Object foo(java.util.List)", method.getSignature());
 
 
@@ -202,14 +205,14 @@ public class SignatureTest {
 
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
-		CtMethod<?> methodInteger = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+		CtMethod<?> methodInteger = (CtMethod<?>) clazz1.getMethods().toArray()[0];
 		assertEquals("java.lang.Object foo(int)", methodInteger.getSignature());
 
 		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodInteger.getBody().getStatement(1);
 		CtExpression<?> argumentToInt1 = invoToInt1.getArguments().get(0);
 
 		//----------From the second method we take the Method Inv
-		CtMethod<?> methodString = (CtMethod<?>) clazz1.getAllMethods().toArray()[1];
+		CtMethod<?> methodString = (CtMethod<?>) clazz1.getMethods().toArray()[1];
 		assertEquals("java.lang.Object foo(java.lang.String)", methodString.getSignature());
 
 		CtInvocation<?> invoToString = (CtInvocation<?>) methodString.getBody().getStatement(1);
@@ -268,7 +271,7 @@ public class SignatureTest {
 
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
-		CtMethod<?> methodString = (CtMethod<?>) clazz1.getAllMethods().toArray()[0];
+		CtMethod<?> methodString = (CtMethod<?>) clazz1.getMethods().toArray()[0];
 		assertEquals("java.io.File foo(java.lang.String)", methodString.getSignature());
 
 		CtAssignment<?,?> invoToInt1 = (CtAssignment<?,?>) methodString.getBody().getStatement(0);

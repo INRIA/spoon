@@ -58,7 +58,7 @@ public class InterfaceTest {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(ExtendsDefaultMethodInterface.class);
 
 		assertEquals("Sub interface must have only one method in its interface", 1, ctInterface.getMethods().size());
-		assertEquals("Sub interface must have 6 methods in its interface and its super interfaces", 6, ctInterface.getAllMethods().size());
+		assertEquals("Sub interface must have 6+12(from java.lang.Object) methods in its interface and its super interfaces", 18, ctInterface.getAllMethods().size());
 
 		final CtMethod<?> getZonedDateTimeMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
 		assertTrue("Method in the sub interface must be a default method", getZonedDateTimeMethod.isDefaultMethod());
@@ -70,7 +70,7 @@ public class InterfaceTest {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(RedefinesDefaultMethodInterface.class);
 
 		assertEquals("Sub interface must have only one method in its interface", 1, ctInterface.getMethods().size());
-		assertEquals("Sub interface must have 6 methods in its interface and its super interfaces", 6, ctInterface.getAllMethods().size());
+		assertEquals("Sub interface must have 6+12(from java.lang.Object) methods in its interface and its super interfaces", 18, ctInterface.getAllMethods().size());
 
 		final CtMethod<?> getZonedDateTimeMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
 		assertFalse("Method in the sub interface mustn't be a default method", getZonedDateTimeMethod.isDefaultMethod());
@@ -82,7 +82,7 @@ public class InterfaceTest {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(ExtendsStaticMethodInterface.class);
 
 		assertEquals("Sub interface must have only one method in its interface", 1, ctInterface.getMethods().size());
-		assertEquals("Sub interface must have 6 methods in its interface and its super interfaces", 6, ctInterface.getAllMethods().size());
+		assertEquals("Sub interface must have 6+12(from java.lang.Object) methods in its interface and its super interfaces", 18, ctInterface.getAllMethods().size());
 
 		final CtMethod<?> getZoneIdMethod = ctInterface.getMethodsByName("getZoneId").get(0);
 		assertTrue("Method in the sub interface must be a static method", getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC));
@@ -94,7 +94,7 @@ public class InterfaceTest {
 		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(RedefinesStaticMethodInterface.class);
 
 		assertEquals("Sub interface must have only one method in its interface", 1, ctInterface.getMethods().size());
-		assertEquals("Sub interface must have 6 methods in its interface and its super interfaces", 6, ctInterface.getAllMethods().size());
+		assertEquals("Sub interface must have 6+12(from java.lang.Object) methods in its interface and its super interfaces", 18, ctInterface.getAllMethods().size());
 
 		final CtMethod<?> getZoneIdMethod = ctInterface.getMethodsByName("getZoneId").get(0);
 		assertFalse("Method in the sub interface mustn't be a static method", getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC));
