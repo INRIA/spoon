@@ -122,7 +122,6 @@ import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
@@ -163,6 +162,7 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.computeAnonymousNa
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -929,7 +929,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ArrayReference arrayReference, BlockScope scope) {
 		CtArrayAccess<?, ?> a;
-		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
+		if (context.stack.peek().node instanceof Assignment && ((Assignment) context.stack.peek().node).lhs.equals(arrayReference)) {
 			a = factory.Core().createArrayWrite();
 		} else {
 			a = factory.Core().createArrayRead();
@@ -990,20 +990,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(Assignment assignment, BlockScope scope) {
-		CtAssignment<Object, Object> assign = factory.Core().createAssignment();
-		context.enter(assign, assignment);
-		context.arguments.push(assign);
-		context.assigned = true;
-		if (assignment.lhs != null) {
-			assignment.lhs.traverse(this, scope);
-		}
-		context.assigned = false;
+		context.enter(factory.Core().createAssignment(), assignment);
+		return true;
+	}
 
-		if (assignment.expression != null) {
-			assignment.expression.traverse(this, scope);
-		}
-		context.arguments.pop();
-		return false;
+	@Override
+	public boolean visit(CompoundAssignment compoundAssignment, BlockScope scope) {
+		CtOperatorAssignment<Object, Object> a = factory.Core().createOperatorAssignment();
+		a.setKind(getBinaryOperatorKind(compoundAssignment.operator));
+		context.enter(a, compoundAssignment);
+		return true;
 	}
 
 	@Override
@@ -1047,25 +1043,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ClassLiteralAccess classLiteral, BlockScope scope) {
 		context.enter(factory.Code().createClassAccess(references.getTypeReference(classLiteral.targetType)), classLiteral);
-		return false;
-	}
-
-	@Override
-	public boolean visit(CompoundAssignment compoundAssignment, BlockScope scope) {
-		CtOperatorAssignment<Object, Object> a = factory.Core().createOperatorAssignment();
-		a.setKind(getBinaryOperatorKind(compoundAssignment.operator));
-		context.enter(a, compoundAssignment);
-		context.arguments.push(a);
-		context.assigned = true;
-		if ((compoundAssignment.lhs) != null) {
-			compoundAssignment.lhs.traverse(this, scope);
-		}
-
-		context.assigned = false;
-		if ((compoundAssignment.expression) != null) {
-			compoundAssignment.expression.traverse(this, scope);
-		}
-		context.arguments.pop();
 		return false;
 	}
 
@@ -1431,7 +1408,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(
 					factory.Code().createVariableAccess(
 							factory.Core().createUnboundVariableReference().<CtUnboundVariableReference>setSimpleName(qualifiedNameRef.toString()),
-							context.stack.peek().element instanceof CtAssignment && context.assigned),
+							isLhsAssignment(context, qualifiedNameRef)),
 					qualifiedNameRef
 			);
 			return true;

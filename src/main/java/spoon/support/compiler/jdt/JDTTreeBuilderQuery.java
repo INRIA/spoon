@@ -18,7 +18,9 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.eclipse.jdt.internal.compiler.ast.Assignment;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.OperatorIds;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
@@ -191,6 +193,19 @@ class JDTTreeBuilderQuery {
 				&& qualifiedNameReference.tokens.length - 1 == ((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName.length && CharOperation
 				.equals(CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1),
 						((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName);
+	}
+
+	/**
+	 * Checks if the last node in the stack in the context is an assignment and have a lhs equals to the given expression.
+	 *
+	 * @param context
+	 * 		Context of the {@link JDTTreeBuilder}.
+	 * @param lhs
+	 * 		Potential lhs of the assignment.
+	 * @return true if the lhs is equals to the given expression.
+	 */
+	static boolean isLhsAssignment(ContextBuilder context, Expression lhs) {
+		return context.stack.peek().node instanceof Assignment && ((Assignment) context.stack.peek().node).lhs.equals(lhs);
 	}
 
 	/**

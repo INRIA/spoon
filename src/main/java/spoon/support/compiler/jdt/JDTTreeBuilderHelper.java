@@ -30,7 +30,6 @@ import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -53,6 +52,7 @@ import spoon.reflect.reference.CtVariableReference;
 import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
 class JDTTreeBuilderHelper {
 	private final JDTTreeBuilder jdtTreeBuilder;
@@ -134,7 +134,7 @@ class JDTTreeBuilderHelper {
 	 */
 	<T> CtVariableAccess<T> createVariableAccess(SingleNameReference singleNameReference) {
 		CtVariableAccess<T> va;
-		if (jdtTreeBuilder.getContextBuilder().stack.peek().element instanceof CtAssignment && jdtTreeBuilder.getContextBuilder().assigned) {
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
 			va = jdtTreeBuilder.getFactory().Core().createVariableWrite();
 		} else {
 			va = jdtTreeBuilder.getFactory().Core().createVariableRead();
@@ -153,7 +153,7 @@ class JDTTreeBuilderHelper {
 	 */
 	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
 		CtVariableAccess<T> va;
-		if (jdtTreeBuilder.getContextBuilder().stack.peek().element instanceof CtAssignment && jdtTreeBuilder.getContextBuilder().assigned) {
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
 			va = jdtTreeBuilder.getFactory().Core().createVariableWrite();
 		} else {
 			va = jdtTreeBuilder.getFactory().Core().createVariableRead();
@@ -187,7 +187,7 @@ class JDTTreeBuilderHelper {
 		}
 		CtVariableAccess<T> va;
 		CtVariableReference<T> ref;
-		boolean fromAssignment = jdtTreeBuilder.getContextBuilder().stack.peek().element instanceof CtAssignment && jdtTreeBuilder.getContextBuilder().assigned;
+		boolean fromAssignment = isLhsAssignment(jdtTreeBuilder.getContextBuilder(), qualifiedNameReference);
 		boolean isOtherBinding = qualifiedNameReference.otherBindings == null || qualifiedNameReference.otherBindings.length == 0;
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
 			ref = jdtTreeBuilder.getReferencesBuilder().getVariableReference(qualifiedNameReference.fieldBinding());
@@ -246,7 +246,7 @@ class JDTTreeBuilderHelper {
 	 */
 	<T> CtFieldAccess<T> createFieldAccess(SingleNameReference singleNameReference) {
 		CtFieldAccess<T> va;
-		if (jdtTreeBuilder.getContextBuilder().stack.peek().element instanceof CtAssignment && jdtTreeBuilder.getContextBuilder().assigned) {
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
 			va = jdtTreeBuilder.getFactory().Core().createFieldWrite();
 		} else {
 			va = jdtTreeBuilder.getFactory().Core().createFieldRead();
@@ -273,7 +273,7 @@ class JDTTreeBuilderHelper {
 	 */
 	<T> CtFieldAccess<T> createFieldAccessNoClasspath(SingleNameReference singleNameReference) {
 		CtFieldAccess<T> va;
-		if (jdtTreeBuilder.getContextBuilder().stack.peek().element instanceof CtAssignment && jdtTreeBuilder.getContextBuilder().assigned) {
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
 			va = jdtTreeBuilder.getFactory().Core().createFieldWrite();
 		} else {
 			va = jdtTreeBuilder.getFactory().Core().createFieldRead();
@@ -298,7 +298,7 @@ class JDTTreeBuilderHelper {
 	 * @return a field access.
 	 */
 	<T> CtFieldAccess<T> createFieldAccessNoClasspath(QualifiedNameReference qualifiedNameReference) {
-		boolean fromAssignment = jdtTreeBuilder.getContextBuilder().stack.peek().element instanceof CtAssignment && jdtTreeBuilder.getContextBuilder().assigned;
+		boolean fromAssignment = isLhsAssignment(jdtTreeBuilder.getContextBuilder(), qualifiedNameReference);
 		CtFieldAccess<T> fieldAccess = jdtTreeBuilder.getFactory().Code()
 				.createFieldAccess(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference((ProblemBinding) qualifiedNameReference.binding), null, fromAssignment);
 		// In no classpath mode and with qualified name, the type given by JDT is wrong...
@@ -322,7 +322,7 @@ class JDTTreeBuilderHelper {
 	 */
 	<T> CtFieldAccess<T> createFieldAccess(FieldReference fieldReference) {
 		CtFieldAccess<T> fieldAccess;
-		if (jdtTreeBuilder.getContextBuilder().stack.peek().element instanceof CtAssignment && jdtTreeBuilder.getContextBuilder().assigned) {
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), fieldReference)) {
 			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldWrite();
 		} else {
 			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldRead();

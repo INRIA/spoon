@@ -51,8 +51,6 @@ public class ContextBuilder {
 
 	CompilationUnit compilationUnitSpoon;
 
-	boolean assigned = false;
-
 	Deque<String> label = new ArrayDeque<>();
 
 	boolean isBuildLambda = false;
