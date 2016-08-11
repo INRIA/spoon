@@ -133,7 +133,6 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
@@ -1330,32 +1329,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ForStatement forStatement, BlockScope scope) {
 		context.enter(factory.Core().createFor(), forStatement);
-
-		if (forStatement.initializations != null) {
-			context.forinit = true;
-			int initializationsLength = forStatement.initializations.length;
-			for (int i = 0; i < initializationsLength; i++) {
-				forStatement.initializations[i].traverse(this, scope);
-			}
-			context.forinit = false;
-		}
-		if (forStatement.condition != null) {
-			forStatement.condition.traverse(this, scope);
-		}
-
-		if (forStatement.increments != null) {
-			context.forupdate = true;
-			int incrementsLength = forStatement.increments.length;
-			for (int i = 0; i < incrementsLength; i++) {
-				forStatement.increments[i].traverse(this, scope);
-			}
-			context.forupdate = false;
-		}
-		if (forStatement.action != null) {
-			forStatement.action.traverse(this, scope);
-		}
-
-		return false;
+		return true;
 	}
 
 	@Override

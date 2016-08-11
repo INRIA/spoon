@@ -52,10 +52,6 @@ public class ContextBuilder {
 
 	CompilationUnit compilationUnitSpoon;
 
-	boolean forinit = false;
-
-	boolean forupdate = false;
-
 	boolean assigned = false;
 
 	Deque<String> label = new ArrayDeque<>();

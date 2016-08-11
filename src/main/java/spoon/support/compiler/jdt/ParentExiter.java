@@ -25,9 +25,11 @@ import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.ForStatement;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
@@ -439,19 +441,49 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtFor(CtFor forLoop) {
-		if (this.jdtTreeBuilder.getContextBuilder().forinit && child instanceof CtStatement) {
+		if (isContainedInForInit() && child instanceof CtStatement) {
 			forLoop.addForInit((CtStatement) child);
 			return;
-		}
-		if (!this.jdtTreeBuilder.getContextBuilder().forupdate && forLoop.getExpression() == null && child instanceof CtExpression) {
+		} else if (isContainedInForUpdate() && child instanceof CtStatement) {
+			forLoop.addForUpdate((CtStatement) child);
+			return;
+		} else if (forLoop.getExpression() == null && child instanceof CtExpression) {
 			forLoop.setExpression((CtExpression<Boolean>) child);
 			return;
 		}
-		if (this.jdtTreeBuilder.getContextBuilder().forupdate && child instanceof CtStatement) {
-			forLoop.addForUpdate((CtStatement) child);
-			return;
-		}
 		super.visitCtFor(forLoop);
+	}
+
+	private boolean isContainedInForInit() {
+		if (!(jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof ForStatement)) {
+			return false;
+		}
+		final ForStatement parent = (ForStatement) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		if (parent.initializations == null) {
+			return false;
+		}
+		for (Statement initialization : parent.initializations) {
+			if (initialization != null && initialization.equals(childJDT)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isContainedInForUpdate() {
+		if (!(jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof ForStatement)) {
+			return false;
+		}
+		final ForStatement parent = (ForStatement) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		if (parent.increments == null) {
+			return false;
+		}
+		for (Statement increment : parent.increments) {
+			if (increment != null && increment.equals(childJDT)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -467,6 +499,15 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtForEach(foreach);
+	}
+
+	@Override
+	public void visitCtWhile(CtWhile whileLoop) {
+		if (whileLoop.getLoopingExpression() == null && child instanceof CtExpression) {
+			whileLoop.setLoopingExpression((CtExpression<Boolean>) child);
+			return;
+		}
+		super.visitCtWhile(whileLoop);
 	}
 
 	@Override
@@ -735,14 +776,5 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtUnaryOperator(operator);
-	}
-
-	@Override
-	public void visitCtWhile(CtWhile whileLoop) {
-		if (whileLoop.getLoopingExpression() == null && child instanceof CtExpression) {
-			whileLoop.setLoopingExpression((CtExpression<Boolean>) child);
-			return;
-		}
-		super.visitCtWhile(whileLoop);
 	}
 }
