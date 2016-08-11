@@ -121,7 +121,6 @@ import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
-import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
@@ -889,35 +888,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayAllocationExpression arrayAllocationExpression, BlockScope scope) {
-		CtNewArray<Object> array = factory.Core().createNewArray();
-		context.enter(array, arrayAllocationExpression);
-
-		CtTypeReference<?> typeReference;
-		if (arrayAllocationExpression.resolvedType != null) {
-			typeReference = references.getTypeReference(arrayAllocationExpression.resolvedType.leafComponentType(), arrayAllocationExpression.type);
-		} else {
-			typeReference = references.getTypeReference(arrayAllocationExpression.type);
-		}
-		final CtArrayTypeReference arrayType = factory.Type().createArrayReference(typeReference, arrayAllocationExpression.dimensions.length);
-		arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayAllocationExpression.type, scope).getAnnotations());
-		array.setType(arrayType);
-
-		context.pushArgument(array);
-		if (arrayAllocationExpression.dimensions != null) {
-			for (Expression e : arrayAllocationExpression.dimensions) {
-				if (e != null) {
-					e.traverse(this, scope);
-				}
-			}
-		}
-		context.popArgument(array);
-
-		if (arrayAllocationExpression.initializer != null && arrayAllocationExpression.initializer.expressions != null) {
-			for (Expression e : arrayAllocationExpression.initializer.expressions) {
-				e.traverse(this, scope);
-			}
-		}
-		return false;
+		context.enter(factory.Core().createNewArray(), arrayAllocationExpression);
+		return true;
 	}
 
 	@Override
@@ -929,17 +901,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ArrayReference arrayReference, BlockScope scope) {
 		CtArrayAccess<?, ?> a;
-		if (context.stack.peek().node instanceof Assignment && ((Assignment) context.stack.peek().node).lhs.equals(arrayReference)) {
+		if (isLhsAssignment(context, arrayReference)) {
 			a = factory.Core().createArrayWrite();
 		} else {
 			a = factory.Core().createArrayRead();
 		}
 		context.enter(a, arrayReference);
-		arrayReference.receiver.traverse(this, scope);
-		context.arguments.push(a);
-		arrayReference.position.traverse(this, scope);
-		context.arguments.pop();
-		return false;
+		return true;
 	}
 
 	@Override
@@ -977,15 +945,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(AssertStatement assertStatement, BlockScope scope) {
-		CtAssert<?> a = factory.Core().createAssert();
-		context.enter(a, assertStatement);
-		assertStatement.assertExpression.traverse(this, scope);
-		context.arguments.push(a);
-		if (assertStatement.exceptionArgument != null) {
-			assertStatement.exceptionArgument.traverse(this, scope);
-		}
-		context.arguments.pop();
-		return false;
+		context.enter(factory.Core().createAssert(), assertStatement);
+		return true;
 	}
 
 	@Override

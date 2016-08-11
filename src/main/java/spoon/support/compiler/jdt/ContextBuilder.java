@@ -43,8 +43,6 @@ public class ContextBuilder {
 
 	Deque<String> annotationValueName = new ArrayDeque<>();
 
-	Deque<CtElement> arguments = new ArrayDeque<>();
-
 	List<CtTypeReference<?>> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 
 	CompilationUnitDeclaration compilationunitdeclaration;
@@ -166,19 +164,4 @@ public class ContextBuilder {
 
 		return null;
 	}
-
-	boolean isArgument(CtElement e) {
-		return arguments.size() > 0 && arguments.peek() == e;
-	}
-
-	void popArgument(CtElement e) {
-		if (arguments.pop() != e) {
-			throw new RuntimeException("Unconsistant stack");
-		}
-	}
-
-	void pushArgument(CtElement e) {
-		arguments.push(e);
-	}
-
 }

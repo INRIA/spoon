@@ -21,6 +21,7 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
@@ -90,6 +91,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
@@ -307,11 +309,11 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	private <T, E extends CtExpression<?>> boolean visitArrayAccess(CtArrayAccess<T, E> arrayAccess) {
 		if (child instanceof CtExpression) {
-			if (this.jdtTreeBuilder.getContextBuilder().arguments.size() > 0 && this.jdtTreeBuilder.getContextBuilder().arguments.peek() == arrayAccess) {
-				arrayAccess.setIndexExpression((CtExpression<Integer>) child);
-				return false;
-			} else if (arrayAccess.getTarget() == null) {
+			if (arrayAccess.getTarget() == null) {
 				arrayAccess.setTarget((E) child);
+				return false;
+			} else {
+				arrayAccess.setIndexExpression((CtExpression<Integer>) child);
 				return false;
 			}
 		}
@@ -321,11 +323,11 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public <T> void visitCtAssert(CtAssert<T> asserted) {
 		if (child instanceof CtExpression) {
-			if (!this.jdtTreeBuilder.getContextBuilder().arguments.isEmpty() && this.jdtTreeBuilder.getContextBuilder().arguments.peek() == asserted) {
-				asserted.setExpression((CtExpression<T>) child);
+			if (asserted.getAssertExpression() == null) {
+				asserted.setAssertExpression((CtExpression<Boolean>) child);
 				return;
 			} else {
-				asserted.setAssertExpression((CtExpression<Boolean>) child);
+				asserted.setExpression((CtExpression<T>) child);
 				return;
 			}
 		}
@@ -604,15 +606,34 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
-		if (child instanceof CtExpression) {
-			if (this.jdtTreeBuilder.getContextBuilder().isArgument(newArray)) {
+		if (childJDT instanceof TypeReference && child instanceof CtTypeAccess) {
+			final ArrayAllocationExpression arrayAlloc = (ArrayAllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+			newArray.setType((CtArrayTypeReference) jdtTreeBuilder.getFactory().Type().createArrayReference(((CtTypeAccess) child).getAccessedType(), arrayAlloc.dimensions.length));
+		} else if (child instanceof CtExpression) {
+			if (isContainedInDimensionExpression()) {
 				newArray.addDimensionExpression((CtExpression<Integer>) child);
-				return;
+			} else if (child instanceof CtNewArray) {
+				newArray.setElements(((CtNewArray) child).getElements());
 			} else {
-				newArray.addElement((CtExpression<?>) child);
-				return;
+				newArray.addElement((CtExpression) child);
 			}
 		}
+	}
+
+	private boolean isContainedInDimensionExpression() {
+		if (!(jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof ArrayAllocationExpression)) {
+			return false;
+		}
+		final ArrayAllocationExpression parent = (ArrayAllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		if (parent.dimensions == null) {
+			return false;
+		}
+		for (Expression dimension : parent.dimensions) {
+			if (dimension != null && dimension.equals(childJDT)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
