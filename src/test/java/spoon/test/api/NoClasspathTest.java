@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -21,6 +22,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.reference.SpoonClassNotFoundException;
@@ -45,12 +47,25 @@ public class NoClasspathTest {
 		CtTypeReference<?> superclass = clazz.getSuperclass();
 		// "Unknown" is not in the classpath at all
 		assertEquals("Unknown", superclass.getSimpleName());
-
-		assertNull(superclass.getActualClass());
+		try {
+			superclass.getActualClass();
+			fail();
+		} catch (SpoonClassNotFoundException e) {
+			// expected
+		}
 		assertNull(superclass.getDeclaration());
 
+		Collection<CtFieldReference<?>> allFields = superclass.getAllFields();
+		System.out.println(allFields);
+		System.out.println(superclass.getDeclaredFields());
+
 		// now we really make sure we don't have the class in the classpath
-		assertNull(superclass.getActualClass());
+		try {
+			superclass.getActualClass();
+			fail();
+		} catch (SpoonClassNotFoundException e) {
+			// expected
+		}
 
 		{
 			CtMethod<?> method = clazz.getMethod("method", new CtTypeReference[0]);
