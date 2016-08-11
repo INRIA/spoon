@@ -160,8 +160,6 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.computeAnonymousName;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
@@ -744,13 +742,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(TypeParameter typeParameter, BlockScope scope) {
 		context.exit(typeParameter);
-		context.isTypeParameter = false;
 	}
 
 	@Override
 	public void endVisit(TypeParameter typeParameter, ClassScope scope) {
 		context.exit(typeParameter);
-		context.isTypeParameter = false;
 	}
 
 	@Override
@@ -1169,38 +1165,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return visitTypeParameter(typeParameter, scope);
 	}
 
-	public boolean visitTypeParameter(TypeParameter typeParameter, Scope scope) {
+	private boolean visitTypeParameter(TypeParameter typeParameter, Scope scope) {
 		final CtTypeParameterReference typeParameterRef = factory.Core().createTypeParameterReference();
-		context.isTypeParameter = true;
-		context.enter(typeParameterRef, typeParameter);
-
 		typeParameterRef.setSimpleName(CharOperation.charToString(typeParameter.name));
-
-		// Extends of the generic type.
-		typeParameterRef.setBoundingType(this.references.buildTypeReference(typeParameter.type, (BlockScope) null));
-
-		// Annotations.
-		if (typeParameter.annotations != null) {
-			int length = typeParameter.annotations.length;
-
-			for (int i = 0; i < length; ++i) {
-				typeParameter.annotations[i].traverse(this, (BlockScope) null);
-			}
-		}
-
-		// Bounds with the extend type: T extends String & Serializer
-		if (typeParameter.bounds != null) {
-			int length = typeParameter.bounds.length;
-
-			final Set<CtTypeReference<?>> bounds = new TreeSet<>();
-			bounds.add(typeParameterRef.getBoundingType());
-			for (int i = 0; i < length; ++i) {
-				bounds.add(this.references.buildTypeReference(typeParameter.bounds[i], (BlockScope) null));
-			}
-			typeParameterRef.setBoundingType(factory.Type().createIntersectionTypeReferenceWithBounds(bounds));
-		}
-
-		return false;
+		context.enter(typeParameterRef, typeParameter);
+		return true;
 	}
 
 	@Override

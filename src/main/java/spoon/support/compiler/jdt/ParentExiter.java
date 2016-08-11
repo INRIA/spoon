@@ -31,6 +31,7 @@ import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
+import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -166,7 +167,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void scanCtFormalTypeDeclarer(CtFormalTypeDeclarer e) {
-		if (this.jdtTreeBuilder.getContextBuilder().isTypeParameter && child instanceof CtTypeParameterReference) {
+		if (childJDT instanceof TypeParameter && child instanceof CtTypeParameterReference) {
 			e.addFormalTypeParameter((CtTypeParameterReference) child);
 		}
 		return;
@@ -776,5 +777,13 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtUnaryOperator(operator);
+	}
+
+	@Override
+	public void visitCtTypeParameterReference(CtTypeParameterReference e) {
+		if (childJDT instanceof TypeReference && child instanceof CtTypeAccess) {
+			e.addBound(((CtTypeAccess) child).getAccessedType());
+		}
+		super.visitCtTypeParameterReference(e);
 	}
 }

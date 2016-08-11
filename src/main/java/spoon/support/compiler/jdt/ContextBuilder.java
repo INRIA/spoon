@@ -60,8 +60,6 @@ public class ContextBuilder {
 
 	boolean ignoreComputeImports = false;
 
-	boolean isTypeParameter = false;
-
 	/**
 	 * Stack of all parents elements
 	 */
