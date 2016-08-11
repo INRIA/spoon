@@ -87,7 +87,6 @@ import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
-import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.SuperReference;
@@ -125,7 +124,6 @@ import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
@@ -407,9 +405,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		context.exit(constructorDeclaration);
-		if (context.stack.peek().node == constructorDeclaration) {
-			context.exit(constructorDeclaration);
-		}
 	}
 
 	@Override
@@ -543,9 +538,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		// Exit from method and Block
 		context.exit(methodDeclaration);
-		if (context.stack.peek().node == methodDeclaration) {
-			context.exit(methodDeclaration);
-		}
 	}
 
 	@Override
@@ -833,33 +825,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(LambdaExpression lambdaExpression, BlockScope blockScope) {
 		CtLambda<?> lambda = factory.Core().createLambda();
-
 		final MethodBinding methodBinding = lambdaExpression.getMethodBinding();
 		if (methodBinding != null) {
-			lambda.setSimpleName(String.valueOf(methodBinding.constantPoolName()));
+			lambda.setSimpleName(CharOperation.charToString(methodBinding.constantPoolName()));
 		}
-
+		context.isBuildLambda = true;
 		context.enter(lambda, lambdaExpression);
-
-		final Argument[] arguments = lambdaExpression.arguments();
-		if (arguments != null && arguments.length > 0) {
-			for (Argument e : arguments) {
-				e.traverse(this, blockScope);
-			}
-		}
-
-		if (lambdaExpression.body() != null) {
-			final boolean isBuildLambdaBack = context.isBuildLambda;
-			context.isBuildLambda = true;
-			lambdaExpression.body().traverse(this, blockScope);
-			context.isBuildLambda = isBuildLambdaBack;
-		}
-
-		return false;
+		return true;
 	}
 
 	@Override
 	public void endVisit(LambdaExpression lambdaExpression, BlockScope blockScope) {
+		context.isBuildLambda = false;
 		context.exit(lambdaExpression);
 	}
 
@@ -1099,60 +1076,36 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
-		CtConstructor<?> c = factory.Core().createConstructor();
-		c.setModifiers(getModifiers(constructorDeclaration.modifiers));
+	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
+		CtMethod<Object> m = factory.Core().createMethod();
+		m.setSimpleName(CharOperation.charToString(methodDeclaration.selector));
+		m.setModifiers(getModifiers(methodDeclaration.modifiers));
+		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
 
-		context.enter(c, constructorDeclaration);
-
-		if (constructorDeclaration.annotations != null) {
-			int annotationsLength = constructorDeclaration.annotations.length;
-			for (int i = 0; i < annotationsLength; i++) {
-				constructorDeclaration.annotations[i].traverse(this, constructorDeclaration.scope);
-			}
-		}
-
-		context.pushArgument(c);
-		if (constructorDeclaration.arguments != null) {
-			int argumentLength = constructorDeclaration.arguments.length;
-			for (int i = 0; i < argumentLength; i++) {
-				constructorDeclaration.arguments[i].traverse(this, constructorDeclaration.scope);
-			}
-		}
-		context.popArgument(c);
-
-		if (constructorDeclaration.thrownExceptions != null) {
-			for (TypeReference r : constructorDeclaration.thrownExceptions) {
-				// Cast scope to BlockScope because some members values with potential
-				// type annotations don't override traverse method with ClassScope.
-				// Thanks JDT...
-				CtTypeReference<? extends Throwable> throwType = this.references.buildTypeReference(r, (BlockScope) null);
-				c.addThrownType(throwType);
-			}
-		}
-
-		if (constructorDeclaration.typeParameters() != null) {
-			for (TypeParameter typeParameter : constructorDeclaration.typeParameters()) {
-				typeParameter.traverse(this, scope);
-			}
-		}
+		context.enter(m, methodDeclaration);
 
 		// Create block
-		if (!constructorDeclaration.isAbstract()) {
-			CtBlock<?> b = factory.Core().createBlock();
-			context.enter(b, constructorDeclaration);
+		if (!methodDeclaration.isAbstract() && (methodDeclaration.modifiers & ClassFileConstants.AccNative) == 0) {
+			m.setBody(getFactory().Core().createBlock());
+			context.enter(m.getBody(), methodDeclaration);
+			context.exit(methodDeclaration);
 		}
 
-		if (constructorDeclaration.constructorCall != null) {
-			constructorDeclaration.constructorCall.traverse(this, constructorDeclaration.scope);
-		}
+		return true;
+	}
 
-		if (constructorDeclaration.statements != null) {
-			for (Statement s : constructorDeclaration.statements) {
-				s.traverse(this, constructorDeclaration.scope);
-			}
-		}
-		return false;
+	@Override
+	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
+		CtConstructor<Object> c = factory.Core().createConstructor();
+		c.setModifiers(getModifiers(constructorDeclaration.modifiers));
+		context.enter(c, constructorDeclaration);
+
+		// Create block
+		c.setBody(factory.Core().createBlock());
+		context.enter(c.getBody(), constructorDeclaration);
+		context.exit(constructorDeclaration);
+
+		return true;
 	}
 
 	@Override
@@ -1388,25 +1341,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 		context.enter(inv, messageSend);
-		return true;
-	}
-
-	@Override
-	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
-		CtMethod<Object> m = factory.Core().createMethod();
-		m.setSimpleName(new String(methodDeclaration.selector));
-		m.setModifiers(getModifiers(methodDeclaration.modifiers));
-		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
-
-		context.enter(m, methodDeclaration);
-
-		// Create block
-		if (!methodDeclaration.isAbstract() && (methodDeclaration.modifiers & ClassFileConstants.AccNative) == 0) {
-			m.setBody(getFactory().Core().createBlock());
-			context.enter(m.getBody(), methodDeclaration);
-			context.exit(methodDeclaration);
-		}
-
 		return true;
 	}
 

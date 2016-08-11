@@ -155,10 +155,13 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <R> void scanCtExecutable(CtExecutable<R> e) {
-		if (child instanceof CtParameter) {
+		if (child instanceof CtTypeAccess) {
+			e.addThrownType(((CtTypeAccess) child).getAccessedType());
+			return;
+		} else if (child instanceof CtParameter) {
 			e.addParameter((CtParameter<?>) child);
 			return;
-		} else if (child instanceof CtBlock && !(e instanceof CtMethod)) {
+		} else if (child instanceof CtBlock && !(e instanceof CtMethod || e instanceof CtConstructor)) {
 			e.setBody((CtBlock<R>) child);
 			return;
 		}
@@ -250,17 +253,22 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
+	public <T> void visitCtConstructor(CtConstructor<T> e) {
+		if (child instanceof CtStatement && !(child instanceof CtBlock)) {
+			visitCtBlock(e.getBody());
+			return;
+		}
+		super.visitCtConstructor(e);
+	}
+
+	@Override
 	public <T> void visitCtMethod(CtMethod<T> e) {
 		if (child instanceof CtStatement && !(child instanceof CtBlock)) {
 			visitCtBlock(e.getBody());
 			return;
-		} else if (child instanceof CtTypeAccess) {
-			if (hasChildEqualsToType(e)) {
-				e.setType(((CtTypeAccess) child).getAccessedType());
-				substituteAnnotation(e);
-			} else {
-				e.addThrownType(((CtTypeAccess) child).getAccessedType());
-			}
+		} else if (child instanceof CtTypeAccess && hasChildEqualsToType(e)) {
+			e.setType(((CtTypeAccess) child).getAccessedType());
+			substituteAnnotation(e);
 			return;
 		}
 		super.visitCtMethod(e);

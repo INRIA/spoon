@@ -24,7 +24,6 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -64,8 +63,6 @@ public class ContextBuilder {
 	 * Stack of all parents elements
 	 */
 	Deque<ASTPair> stack = new ArrayDeque<>();
-
-	Deque<CtTargetedExpression<?, ?>> target = new ArrayDeque<>();
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 

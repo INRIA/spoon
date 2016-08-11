@@ -317,8 +317,7 @@ class JDTTreeBuilderHelper {
 	/**
 	 * Creates a field access from a field reference.
 	 *
-	 * @param fieldReference
-	 * 		Used to build the spoon variable reference and the type of the field access.
+	 * @param fieldReference Used to build the spoon variable reference and the type of the field access.
 	 * @return a field access.
 	 */
 	<T> CtFieldAccess<T> createFieldAccess(FieldReference fieldReference) {
