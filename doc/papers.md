@@ -3,7 +3,7 @@ title: Papers
 keywords: papers
 last_updated: September 9, 2015
 ---
-as
+
 # Articles 
 
 [Automatic Parallelization: Executing Sequential Programs on a Task-Based Parallel Runtime](http://arxiv.org/pdf/1604.03211) (Fonseca, A., Cabral, B., Rafael, J., & Correia, I.) International Journal of Parallel Programming, 1-22.
