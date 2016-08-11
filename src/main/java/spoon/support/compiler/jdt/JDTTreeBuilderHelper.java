@@ -17,13 +17,18 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
@@ -31,24 +36,27 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtAnnotatedElementType;
-import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -71,26 +79,6 @@ class JDTTreeBuilderHelper {
 	static String computeAnonymousName(char[] anonymousQualifiedName) {
 		final String poolName = CharOperation.charToString(anonymousQualifiedName);
 		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1, poolName.length());
-	}
-
-	/**
-	 * When an annotation is specified on a method, a local declaration or an argument, JDT doesn't know
-	 * if the annotation is specified on the type or on the element. Due to this method, if the annotation
-	 * is compatible with types, we substitute the annotation from the element to the type of this element.
-	 *
-	 * @param typedElement
-	 * 		Element annotated.
-	 * @param a
-	 * 		Annotation of the element.
-	 * @param elementType
-	 * 		Type of the annotation.
-	 */
-	static void substituteAnnotation(CtTypedElement<Object> typedElement, Annotation a, CtAnnotatedElementType elementType) {
-		if (JDTTreeBuilderQuery.hasAnnotationWithType(a, elementType)) {
-			CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = typedElement.getAnnotations().get(typedElement.getAnnotations().size() - 1);
-			typedElement.removeAnnotation(targetAnnotation);
-			typedElement.getType().addAnnotation(targetAnnotation);
-		}
 	}
 
 	/**
@@ -317,7 +305,8 @@ class JDTTreeBuilderHelper {
 	/**
 	 * Creates a field access from a field reference.
 	 *
-	 * @param fieldReference Used to build the spoon variable reference and the type of the field access.
+	 * @param fieldReference
+	 * 		Used to build the spoon variable reference and the type of the field access.
 	 * @return a field access.
 	 */
 	<T> CtFieldAccess<T> createFieldAccess(FieldReference fieldReference) {
@@ -469,5 +458,86 @@ class JDTTreeBuilderHelper {
 			}
 		}
 		return p;
+	}
+
+	/**
+	 * Creates an executable reference expression.
+	 *
+	 * @param referenceExpression
+	 * 		Used to get the executable reference.
+	 * @return an executable reference expression.
+	 */
+	<T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression(ReferenceExpression referenceExpression) {
+		CtExecutableReferenceExpression<T, E> executableRef = jdtTreeBuilder.getFactory().Core().createExecutableReferenceExpression();
+		CtExecutableReference<T> executableReference = jdtTreeBuilder.getReferencesBuilder().getExecutableReference(referenceExpression.binding);
+		if (executableReference == null) {
+			// No classpath mode.
+			executableReference = jdtTreeBuilder.getFactory().Core().createExecutableReference();
+			executableReference.setSimpleName(CharOperation.charToString(referenceExpression.selector));
+			executableReference.setDeclaringType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(referenceExpression.lhs.resolvedType));
+		}
+		final CtTypeReference<T> declaringType = (CtTypeReference<T>) executableReference.getDeclaringType();
+		executableReference.setType(declaringType == null ? null : declaringType.clone());
+		executableRef.setExecutable(executableReference);
+		return executableRef;
+	}
+
+	/**
+	 * Creates a class, an enum, an interface or a annotation type.
+	 *
+	 * @return a type.
+	 */
+	CtType<?> createType(TypeDeclaration typeDeclaration) {
+		CtType<?> type;
+		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
+			type = jdtTreeBuilder.getFactory().Core().<java.lang.annotation.Annotation>createAnnotationType();
+		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
+			type = jdtTreeBuilder.getFactory().Core().createEnum();
+		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccInterface) != 0) {
+			type = jdtTreeBuilder.getFactory().Core().createInterface();
+		} else {
+			type = jdtTreeBuilder.getFactory().Core().createClass();
+		}
+		jdtTreeBuilder.getContextBuilder().enter(type, typeDeclaration);
+
+		if (typeDeclaration.superInterfaces != null) {
+			for (TypeReference ref : typeDeclaration.superInterfaces) {
+				final CtTypeReference superInterface = jdtTreeBuilder.references.buildTypeReference(ref, null);
+				type.addSuperInterface(superInterface);
+			}
+		}
+
+		if (type instanceof CtClass) {
+			if (typeDeclaration.superclass != null && typeDeclaration.superclass.resolvedType != null && typeDeclaration.enclosingType != null && !new String(
+					typeDeclaration.superclass.resolvedType.qualifiedPackageName()).equals(new String(typeDeclaration.binding.qualifiedPackageName()))) {
+
+				// Sorry for this hack but see the test case ImportTest#testImportOfAnInnerClassInASuperClassPackage.
+				// JDT isn't smart enough to return me a super class available. So, I modify their AST when
+				// superclasses aren't in the same package and when their visibilities are "default".
+				List<ModifierKind> modifiers = Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED);
+				final TypeBinding resolvedType = typeDeclaration.superclass.resolvedType;
+				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)
+						&& resolvedType.enclosingType() != null && typeDeclaration.enclosingType.superclass != null
+						&& Collections.disjoint(modifiers, getModifiers(resolvedType.enclosingType().modifiers))) {
+					typeDeclaration.superclass.resolvedType = jdtTreeBuilder.new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
+							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
+				}
+			}
+			if (typeDeclaration.superclass != null) {
+				((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
+			}
+			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
+				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
+			} else {
+				type.setSimpleName(new String(typeDeclaration.name));
+			}
+		} else {
+			type.setSimpleName(new String(typeDeclaration.name));
+		}
+
+		// Setting modifiers
+		type.setModifiers(getModifiers(typeDeclaration.modifiers));
+
+		return type;
 	}
 }

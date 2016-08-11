@@ -48,7 +48,6 @@ import org.eclipse.jdt.internal.compiler.ast.DoStatement;
 import org.eclipse.jdt.internal.compiler.ast.DoubleLiteral;
 import org.eclipse.jdt.internal.compiler.ast.EqualExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
-import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
 import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
@@ -103,13 +102,10 @@ import org.eclipse.jdt.internal.compiler.ast.UnaryExpression;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.WhileStatement;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
-import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
-import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
@@ -126,13 +122,10 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
-import spoon.reflect.code.CtExecutableReferenceExpression;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
@@ -148,16 +141,10 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static spoon.support.compiler.jdt.JDTTreeBuilderHelper.computeAnonymousName;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
@@ -227,61 +214,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		boolean onAccess(char[][] tokens, int index);
 	}
 
-	CtType<?> createType(TypeDeclaration typeDeclaration) {
-		CtType<?> type = null;
-		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
-			type = factory.Core().<java.lang.annotation.Annotation>createAnnotationType();
-		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
-			type = factory.Core().createEnum();
-		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccInterface) != 0) {
-			type = factory.Core().createInterface();
-		} else {
-			type = factory.Core().createClass();
-		}
-		context.enter(type, typeDeclaration);
-
-		if (typeDeclaration.superInterfaces != null) {
-			for (TypeReference ref : typeDeclaration.superInterfaces) {
-				final CtTypeReference superInterface = this.references.buildTypeReference(ref, null);
-				type.addSuperInterface(superInterface);
-			}
-		}
-
-		if (type instanceof CtClass) {
-			if (typeDeclaration.superclass != null && typeDeclaration.superclass.resolvedType != null && typeDeclaration.enclosingType != null && !new String(
-					typeDeclaration.superclass.resolvedType.qualifiedPackageName()).equals(new String(typeDeclaration.binding.qualifiedPackageName()))) {
-
-				// Sorry for this hack but see the test case ImportTest#testImportOfAnInnerClassInASuperClassPackage.
-				// JDT isn't smart enough to return me a super class available. So, I modify their AST when
-				// superclasses aren't in the same package and when their visibilities are "default".
-				List<ModifierKind> modifiers = Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED);
-				final TypeBinding resolvedType = typeDeclaration.superclass.resolvedType;
-				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)
-						&& resolvedType.enclosingType() != null
-						&& typeDeclaration.enclosingType.superclass != null
-						&& Collections.disjoint(modifiers, getModifiers(resolvedType.enclosingType().modifiers))) {
-					typeDeclaration.superclass.resolvedType = new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
-							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
-				}
-			}
-			if (typeDeclaration.superclass != null) {
-				((CtClass) type).setSuperclass(this.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
-			}
-			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
-				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
-			} else {
-				type.setSimpleName(new String(typeDeclaration.name));
-			}
-		} else {
-			type.setSimpleName(new String(typeDeclaration.name));
-		}
-
-		// Setting modifiers
-		type.setModifiers(getModifiers(typeDeclaration.modifiers));
-
-		return type;
-	}
-
 	class SpoonReferenceBinding extends ReferenceBinding {
 		private ReferenceBinding enclosingType;
 
@@ -295,7 +227,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return enclosingType;
 		}
 	}
-
 
 	@Override
 	public void endVisit(AllocationExpression allocationExpression, BlockScope scope) {
@@ -797,23 +728,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ReferenceExpression referenceExpression, BlockScope blockScope) {
-		context.enter(createExecutableReferenceExpression(referenceExpression), referenceExpression);
+		context.enter(helper.createExecutableReferenceExpression(referenceExpression), referenceExpression);
 		return true;
-	}
-
-	private <T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression(ReferenceExpression referenceExpression) {
-		CtExecutableReferenceExpression<T, E> executableRef = factory.Core().createExecutableReferenceExpression();
-		CtExecutableReference<T> executableReference = references.getExecutableReference(referenceExpression.binding);
-		if (executableReference == null) {
-			// No classpath mode.
-			executableReference = factory.Core().createExecutableReference();
-			executableReference.setSimpleName(new String(referenceExpression.selector));
-			executableReference.setDeclaringType(references.getTypeReference(referenceExpression.lhs.resolvedType));
-		}
-		final CtTypeReference<T> declaringType = (CtTypeReference<T>) executableReference.getDeclaringType();
-		executableReference.setType(declaringType == null ? null : declaringType.clone());
-		executableRef.setExecutable(executableReference);
-		return executableRef;
 	}
 
 	@Override
@@ -865,7 +781,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtBinaryOperator<?> op = factory.Core().createBinaryOperator();
 		op.setKind(getBinaryOperatorKind((and_and_Expression.bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT));
 		context.enter(op, and_and_Expression);
-		return true; // do nothing by default, keep traversing
+		return true;
 	}
 
 	@Override
@@ -1487,7 +1403,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(singleTypeReference, scope)), singleTypeReference);
-		return true; // do nothing by default, keep traversing
+		return true;
 	}
 
 	@Override
@@ -1563,14 +1479,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 			((CtClass) t).setSuperclass(references.getTypeReference(null, localTypeDeclaration.allocation.type));
 			context.enter(t, localTypeDeclaration);
 		} else {
-			createType(localTypeDeclaration);
+			helper.createType(localTypeDeclaration);
 		}
 		return true;
 	}
 
 	@Override
 	public boolean visit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
-		createType(memberTypeDeclaration);
+		helper.createType(memberTypeDeclaration);
 		return true;
 	}
 
@@ -1587,7 +1503,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				pack = factory.Package().getRootPackage();
 			}
 			context.enter(pack, typeDeclaration);
-			pack.addType(createType(typeDeclaration));
+			pack.addType(helper.createType(typeDeclaration));
 			return true;
 		}
 	}
