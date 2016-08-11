@@ -182,7 +182,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T, E extends CtExpression<?>> void scanCtTargetedExpression(CtTargetedExpression<T, E> targetedExpression) {
-		if (!this.jdtTreeBuilder.getContextBuilder().target.isEmpty() && this.jdtTreeBuilder.getContextBuilder().target.peek() == targetedExpression && child instanceof CtExpression) {
+		if (child instanceof CtExpression) {
 			targetedExpression.setTarget((E) child);
 			return;
 		}

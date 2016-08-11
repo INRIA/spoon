@@ -132,7 +132,6 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
@@ -154,7 +153,6 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
@@ -1278,39 +1276,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(FieldReference fieldReference, BlockScope scope) {
-		CtFieldAccess<Object> fieldAccess;
-		if (context.stack.peek().element instanceof CtAssignment && context.assigned) {
-			fieldAccess = factory.Core().createFieldWrite();
-		} else {
-			fieldAccess = factory.Core().createFieldRead();
-		}
-		CtFieldReference<Object> variableReference = references.getVariableReference(fieldReference.binding);
-		if (variableReference.getSimpleName() == null) {
-			variableReference.setSimpleName(new String(fieldReference.token));
-		}
-		fieldAccess.setVariable(variableReference);
-		fieldAccess.setType(references.getTypeReference(fieldReference.resolvedType));
-
-		// Hmmm Maybe this should not be commented, but I cannot see why we need
-		// it.
-		// Anyway, the problem is that in jdt-core 3.5+ fieldReferences no
-		// longer have a receiverType,
-		// As far as I can tell, this if makes sure that pika.length if pika is
-		// an array, gets the correct type.
-		// if anything, I guess that the jdt-core now does not think that length
-		// is a field... so we wouldn't need this anymore.
-
-		// if (fieldReference.receiverType instanceof ArrayBinding
-		// && new String(fieldReference.token).equals("length")) {
-		// acc.getVariable().setDeclaringType(
-		// references.getTypeReference(fieldReference.receiverType));
-		// }
-		context.enter(fieldAccess, fieldReference);
-
-		context.target.push(fieldAccess);
-		fieldReference.receiver.traverse(this, scope);
-		context.target.pop();
-		return false;
+		context.enter(helper.createFieldAccess(fieldReference), fieldReference);
+		return true;
 	}
 
 	@Override

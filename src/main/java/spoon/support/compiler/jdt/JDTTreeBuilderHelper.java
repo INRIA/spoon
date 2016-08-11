@@ -19,6 +19,7 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -310,6 +311,25 @@ class JDTTreeBuilderHelper {
 		// In no classpath mode and with qualified name, the binding don't have a good name.
 		fieldAccess.getVariable()
 				.setSimpleName(createQualifiedTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
+		return fieldAccess;
+	}
+
+	/**
+	 * Creates a field access from a field reference.
+	 *
+	 * @param fieldReference
+	 * 		Used to build the spoon variable reference and the type of the field access.
+	 * @return a field access.
+	 */
+	<T> CtFieldAccess<T> createFieldAccess(FieldReference fieldReference) {
+		CtFieldAccess<T> fieldAccess;
+		if (jdtTreeBuilder.getContextBuilder().stack.peek().element instanceof CtAssignment && jdtTreeBuilder.getContextBuilder().assigned) {
+			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldWrite();
+		} else {
+			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldRead();
+		}
+		fieldAccess.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(fieldReference.binding, fieldReference.token));
+		fieldAccess.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(fieldReference.resolvedType));
 		return fieldAccess;
 	}
 
