@@ -40,6 +40,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
@@ -55,10 +56,12 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -105,6 +108,26 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtTypeAccess<T> createTypeAccess(CtTypeReference<T> accessedType) {
 		return createTypeAccessWithoutCloningReference(accessedType == null ? null : accessedType.clone());
+	}
+
+	/**
+	 * Creates a accessed type.
+	 *
+	 * <p>This method sets a <i>clone</i> of the given {@code accessedType} object to the
+	 * {@linkplain CtTypeAccess#getAccessedType() accessedType} field of the returned {@link CtTypeAccess}. If the
+	 * given {@code accessedType} is unique and cloning is not needed, use
+	 * {@link #createTypeAccessWithoutCloningReference(CtTypeReference)} instead of this method.</p>
+	 *
+	 * @param accessedType
+	 * 		a type reference to the accessed type.
+	 * @param isImplicit
+	 * 		type of the type access is implicit or not.
+	 * @param <T>
+	 * 		the type of the expression.
+	 * @return a accessed type expression.
+	 */
+	public <T> CtTypeAccess<T> createTypeAccess(CtTypeReference<T> accessedType, boolean isImplicit) {
+		return createTypeAccess(accessedType).setImplicit(isImplicit);
 	}
 
 	/**
@@ -307,10 +330,12 @@ public class CodeFactory extends SubFactory {
 	 * 		the reference to the type
 	 * @param name
 	 * 		the name of the variable
+	 * @param modifierKinds
+	 * 		Modifiers of the catch variable
 	 * @return a new catch variable declaration
 	 */
-	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name) {
-		return factory.Core().<T>createCatchVariable().<CtCatchVariable<T>>setSimpleName(name).setType(type);
+	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind...modifierKinds) {
+		return factory.Core().<T>createCatchVariable().<CtCatchVariable<T>>setSimpleName(name).<CtCatchVariable<T>>setType(type).setModifiers(new HashSet<>(Arrays.asList(modifierKinds)));
 	}
 
 	/**
@@ -354,6 +379,29 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
+	 * Creates an access to a <code>this</code> variable (of the form
+	 * <code>type.this</code>).
+	 *
+	 * @param <T>
+	 * 		the actual type of <code>this</code>
+	 * @param type
+	 * 		the reference to the type that holds the <code>this</code>
+	 * 		variable
+	 * @param isImplicit
+	 * 		type of the this access is implicit or not.
+	 * @return a <code>type.this</code> expression
+	 */
+	public <T> CtThisAccess<T> createThisAccess(CtTypeReference<T> type, boolean isImplicit) {
+		CtThisAccess<T> thisAccess = factory.Core().<T>createThisAccess();
+		thisAccess.setImplicit(isImplicit);
+		thisAccess.setType(type);
+		CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(type);
+		typeAccess.setImplicit(isImplicit);
+		thisAccess.setTarget(typeAccess);
+		return thisAccess;
+	}
+
+	/**
 	 * Creates a variable access.
 	 */
 	public <T> CtVariableAccess<T> createVariableRead(CtVariableReference<T> variable, boolean isStatic) {
@@ -367,7 +415,7 @@ public class CodeFactory extends SubFactory {
 		} else {
 			va = factory.Core().createVariableRead();
 		}
-		return va.setVariable(variable).setType(variable.getType() == null ? null : variable.getType().clone());
+		return va.setVariable(variable);
 	}
 
 	/**
@@ -511,6 +559,19 @@ public class CodeFactory extends SubFactory {
 	 */
 	public CtPackageReference createCtPackageReference(Package originalPackage) {
 		return factory.Core().createPackageReference().setSimpleName(originalPackage.getName());
+	}
+
+	/**
+	 * Creates an annotation.
+	 *
+	 * @param annotationType
+	 * 		Type of the annotation.
+	 * @return an annotation.
+	 */
+	public <A extends Annotation> CtAnnotation<A> createAnnotation(CtTypeReference<A> annotationType) {
+		final CtAnnotation<A> a = factory.Core().createAnnotation();
+		a.setAnnotationType(annotationType);
+		return a;
 	}
 
 	/**

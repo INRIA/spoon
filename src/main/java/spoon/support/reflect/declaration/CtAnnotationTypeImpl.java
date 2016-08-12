@@ -47,6 +47,11 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 		v.visitCtAnnotationType(this);
 	}
 
+	@Override
+	public boolean isAnnotationType() {
+		return true;
+	}
+
 	private <R> CtMethod<R> createGhostMethod(CtField<R> field) {
 		if (field == null) {
 			return null;

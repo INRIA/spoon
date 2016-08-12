@@ -235,8 +235,8 @@ public class FieldAccessTest {
 		final CtMethod<?> make = aMole.getMethodsByName("make").get(0);
 		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
 
-		final CtFieldRead<Object> fieldRead = aMole.getFactory().Core().createFieldRead();
-		fieldRead.setTarget(aMole.getFactory().Code().createThisAccess(aMole.getReference()));
+		final CtFieldWrite<Object> fieldRead = aMole.getFactory().Core().createFieldWrite();
+		fieldRead.setTarget(aMole.getFactory().Code().createThisAccess(aMole.getReference(), true));
 		final CtFieldReference fieldReference = aMole.getField("i").getReference();
 		fieldRead.setVariable(fieldReference);
 

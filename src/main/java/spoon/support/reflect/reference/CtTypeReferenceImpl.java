@@ -511,6 +511,16 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
+	@Override
+	public boolean isAnnotationType() {
+		CtType<T> t = getDeclaration();
+		if (t == null) {
+			return getActualClass().isAnnotation();
+		} else {
+			return t.isAnnotationType();
+		}
+	}
+
 	boolean isShadow;
 
 	@Override

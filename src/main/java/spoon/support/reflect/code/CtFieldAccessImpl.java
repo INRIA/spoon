@@ -20,7 +20,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtTypeReference;
 
 public abstract class CtFieldAccessImpl<T> extends CtVariableReadImpl<T> implements CtFieldAccess<T> {
 	private static final long serialVersionUID = 1L;
@@ -45,11 +44,6 @@ public abstract class CtFieldAccessImpl<T> extends CtVariableReadImpl<T> impleme
 	@Override
 	public CtFieldReference<T> getVariable() {
 		return (CtFieldReference<T>) super.getVariable();
-	}
-
-	@Override
-	public CtTypeReference<T> getType() {
-		return getVariable() == null ? null : getVariable().getType();
 	}
 
 	@Override

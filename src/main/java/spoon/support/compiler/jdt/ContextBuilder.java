@@ -20,11 +20,10 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -44,43 +43,22 @@ public class ContextBuilder {
 
 	Deque<String> annotationValueName = new ArrayDeque<>();
 
-	Deque<CtElement> arguments = new ArrayDeque<>();
-
 	List<CtTypeReference<?>> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 
 	CompilationUnitDeclaration compilationunitdeclaration;
 
 	CompilationUnit compilationUnitSpoon;
 
-	Deque<CtTry> finallyzer = new ArrayDeque<>();
-
-	boolean forinit = false;
-
-	boolean forupdate = false;
-
-	boolean assigned = false;
-
 	Deque<String> label = new ArrayDeque<>();
-
-	boolean selector = false;
-
-	boolean isGenericTypeExplicit = true;
 
 	boolean isBuildLambda = false;
 
-	boolean isLambdaParameterImplicitlyTyped = true;
-
 	boolean ignoreComputeImports = false;
-
-	boolean isTypeParameter = false;
-
 
 	/**
 	 * Stack of all parents elements
 	 */
 	Deque<ASTPair> stack = new ArrayDeque<>();
-
-	Deque<CtTargetedExpression<?, ?>> target = new ArrayDeque<>();
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 
@@ -110,7 +88,7 @@ public class ContextBuilder {
 		}
 
 		try {
-			if (e instanceof CtTypedElement && node instanceof Expression) {
+			if (e instanceof CtTypedElement && !(e instanceof CtConstructorCall) && node instanceof Expression) {
 				if (((CtTypedElement<?>) e).getType() == null) {
 					((CtTypedElement<Object>) e).setType(this.jdtTreeBuilder.getReferencesBuilder().getTypeReference(((Expression) node).resolvedType));
 				}
@@ -129,6 +107,7 @@ public class ContextBuilder {
 		CtElement current = pair.element;
 		if (!stack.isEmpty()) {
 			this.jdtTreeBuilder.getExiter().setChild(current);
+			this.jdtTreeBuilder.getExiter().setChild(pair.node);
 			this.jdtTreeBuilder.getExiter().scan(stack.peek().element);
 		}
 	}
@@ -185,19 +164,4 @@ public class ContextBuilder {
 
 		return null;
 	}
-
-	boolean isArgument(CtElement e) {
-		return arguments.size() > 0 && arguments.peek() == e;
-	}
-
-	void popArgument(CtElement e) {
-		if (arguments.pop() != e) {
-			throw new RuntimeException("Unconsistant stack");
-		}
-	}
-
-	void pushArgument(CtElement e) {
-		arguments.push(e);
-	}
-
 }

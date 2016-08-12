@@ -17,5 +17,5 @@ public class ClassWithSwitchExample {
 		}
 		return result;
 	}
-	
+
 }

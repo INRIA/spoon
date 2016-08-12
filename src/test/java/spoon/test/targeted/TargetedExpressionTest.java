@@ -393,7 +393,7 @@ public class TargetedExpressionTest {
 		final CtThisAccess<Object> expectedThisAccess = launcher.getFactory().Code().createThisAccess(foo);
 		final CtTypeAccess<Object> expectedTypeAccess = launcher.getFactory().Code().createTypeAccess(foo);
 		final CtTypeAccess<Object> expectedBarTypeAccess = launcher.getFactory().Code().createTypeAccess(bar);
-		final CtTypeAccess<Object> fiiFuuTypeAccess = launcher.getFactory().Code().createTypeAccess(launcher.getFactory().Core().createTypeReference().setSimpleName("Fii.Fuu"));
+		final CtTypeAccess<Object> fiiFuuTypeAccess = launcher.getFactory().Code().createTypeAccess(launcher.getFactory().Type().createReference("Fii.Fuu"));
 
 		final CtMethod<?> invMethod = launcher.getFactory().Class().get("Foo").getMethodsByName("inv").get(0);
 		final List<CtInvocation<?>> elements = invMethod.getElements(new TypeFilter<>(CtInvocation.class));
@@ -402,7 +402,7 @@ public class TargetedExpressionTest {
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(CtFieldReadImpl.class).result("foo.staticMethod()"), elements.get(1));
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedThisAccess).result("Foo.this.staticMethod()"), elements.get(2));
 		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedTypeAccess).result("Foo.staticMethod()"), elements.get(3));
-		assertEqualsInvocation(new ExpectedTargetedExpression().result("staticMethod()"), elements.get(4));
+		assertEqualsInvocation(new ExpectedTargetedExpression().target(expectedThisAccess).result("staticMethod()"), elements.get(4));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticMethodBar()"), elements.get(5));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(bar).target(expectedBarTypeAccess).result("Bar.staticMethodBar()"), elements.get(6));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(launcher.getFactory().Class().create("Fii.Fuu").getReference()).target(fiiFuuTypeAccess).result("Fii.Fuu.m()"), elements.get(7));

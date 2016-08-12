@@ -17,290 +17,556 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.internal.compiler.ast.Annotation;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.ImportReference;
-import org.eclipse.jdt.internal.compiler.ast.OperatorIds;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
+import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
-import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
+import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.declaration.CtAnnotatedElementType;
-import spoon.reflect.declaration.CtAnnotation;
+import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtExecutableReferenceExpression;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
+
 class JDTTreeBuilderHelper {
+	private final JDTTreeBuilder jdtTreeBuilder;
 
-	static UnaryOperatorKind getUnaryOperator(int op) {
-		switch (op) {
-			case OperatorIds.PLUS:
-				return UnaryOperatorKind.POS;
-			case OperatorIds.MINUS:
-				return UnaryOperatorKind.NEG;
-			case OperatorIds.NOT:
-				return UnaryOperatorKind.NOT;
-			case OperatorIds.TWIDDLE:
-				return UnaryOperatorKind.COMPL;
-		}
-		return null;
-	}
-
-	static Set<ModifierKind> getModifiers(int mod) {
-		Set<ModifierKind> ret = EnumSet.noneOf(ModifierKind.class);
-		if ((mod & ClassFileConstants.AccPublic) != 0) {
-			ret.add(ModifierKind.PUBLIC);
-		}
-		if ((mod & ClassFileConstants.AccPrivate) != 0) {
-			ret.add(ModifierKind.PRIVATE);
-		}
-		if ((mod & ClassFileConstants.AccProtected) != 0) {
-			ret.add(ModifierKind.PROTECTED);
-		}
-		if ((mod & ClassFileConstants.AccStatic) != 0) {
-			ret.add(ModifierKind.STATIC);
-		}
-		if ((mod & ClassFileConstants.AccFinal) != 0) {
-			ret.add(ModifierKind.FINAL);
-		}
-		if ((mod & ClassFileConstants.AccSynchronized) != 0) {
-			ret.add(ModifierKind.SYNCHRONIZED);
-		}
-		if ((mod & ClassFileConstants.AccVolatile) != 0) {
-			ret.add(ModifierKind.VOLATILE);
-		}
-		if ((mod & ClassFileConstants.AccTransient) != 0) {
-			ret.add(ModifierKind.TRANSIENT);
-		}
-		if ((mod & ClassFileConstants.AccAbstract) != 0) {
-			ret.add(ModifierKind.ABSTRACT);
-		}
-		if ((mod & ClassFileConstants.AccStrictfp) != 0) {
-			ret.add(ModifierKind.STRICTFP);
-		}
-		if ((mod & ClassFileConstants.AccNative) != 0) {
-			ret.add(ModifierKind.NATIVE);
-		}
-		return ret;
-	}
-
-	static BinaryOperatorKind getBinaryOperatorKind(int bits) {
-		// switch ((bits & ASTNode.OperatorMASK) >> ASTNode.OperatorSHIFT) {
-		switch (bits) {
-			case OperatorIds.EQUAL_EQUAL:
-				return BinaryOperatorKind.EQ;
-			case OperatorIds.LESS_EQUAL:
-				return BinaryOperatorKind.LE;
-			case OperatorIds.GREATER_EQUAL:
-				return BinaryOperatorKind.GE;
-			case OperatorIds.NOT_EQUAL:
-				return BinaryOperatorKind.NE;
-			case OperatorIds.LEFT_SHIFT:
-				return BinaryOperatorKind.SL;
-			case OperatorIds.RIGHT_SHIFT:
-				return BinaryOperatorKind.SR;
-			case OperatorIds.UNSIGNED_RIGHT_SHIFT:
-				return BinaryOperatorKind.USR;
-			case OperatorIds.OR_OR:
-				return BinaryOperatorKind.OR;
-			case OperatorIds.AND_AND:
-				return BinaryOperatorKind.AND;
-			case OperatorIds.PLUS:
-				return BinaryOperatorKind.PLUS;
-			case OperatorIds.MINUS:
-				return BinaryOperatorKind.MINUS;
-			case OperatorIds.NOT:
-				return BinaryOperatorKind.NE;
-			case OperatorIds.REMAINDER:
-				return BinaryOperatorKind.MOD;
-			case OperatorIds.XOR:
-				return BinaryOperatorKind.BITXOR;
-			case OperatorIds.AND:
-				return BinaryOperatorKind.BITAND;
-			case OperatorIds.MULTIPLY:
-				return BinaryOperatorKind.MUL;
-			case OperatorIds.OR:
-				return BinaryOperatorKind.BITOR;
-			case OperatorIds.DIVIDE:
-				return BinaryOperatorKind.DIV;
-			case OperatorIds.GREATER:
-				return BinaryOperatorKind.GT;
-			case OperatorIds.LESS:
-				return BinaryOperatorKind.LT;
-			case OperatorIds.QUESTIONCOLON:
-				throw new RuntimeException("Unknown operator");
-			case OperatorIds.EQUAL:
-				return BinaryOperatorKind.EQ;
-		}
-		return null;
+	JDTTreeBuilderHelper(JDTTreeBuilder jdtTreeBuilder) {
+		this.jdtTreeBuilder = jdtTreeBuilder;
 	}
 
 	/**
-	 * Searches a type from an entry-point according to a simple name.
+	 * Computes the anonymous simple name from its fully qualified type name.
 	 *
-	 * @param type       Entry-point to search.
-	 * @param simpleName Expected type name.
-	 * @return type binding.
+	 * @param anonymousQualifiedName
+	 * 		Qualified name which contains the anonymous name.
+	 * @return Anonymous simple name.
 	 */
-	static TypeBinding searchTypeBinding(ReferenceBinding type, String simpleName) {
-		if (simpleName == null || type == null) {
-			return null;
-		}
-
-		if (type.memberTypes() != null) {
-			for (ReferenceBinding memberType : type.memberTypes()) {
-				if (simpleName.equals(CharOperation.charToString(memberType.sourceName()))) {
-					return memberType;
-				}
-			}
-		}
-
-		return searchTypeBinding(type.superclass(), simpleName);
+	static String computeAnonymousName(char[] anonymousQualifiedName) {
+		final String poolName = CharOperation.charToString(anonymousQualifiedName);
+		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1, poolName.length());
 	}
 
 	/**
-	 * Searches a type in the project.
+	 * Creates a qualified type name from a two-dimensional array.
 	 *
-	 * @param qualifiedName Qualified name of the expected type.
-	 * @return type binding.
+	 * @param typeName
+	 * 		two-dimensional array which represents the qualified name expected.
+	 * @return Qualified name.
 	 */
-	static TypeBinding searchTypeBinding(String qualifiedName, TreeBuilderCompiler treeBuilderCompiler) {
-		if (qualifiedName == null) {
-			return null;
-		}
-		for (CompilationUnitDeclaration unitsToProcess : treeBuilderCompiler.unitsToProcess) {
-			for (TypeDeclaration type : unitsToProcess.types) {
-				if (qualifiedName.equals(CharOperation.toString(type.binding.compoundName))) {
-					return type.binding;
-				}
-				if (type.memberTypes != null) {
-					for (TypeDeclaration memberType : type.memberTypes) {
-						if (qualifiedName.equals(CharOperation.toString(memberType.binding.compoundName))) {
-							return type.binding;
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	static String computeAnonymousName(SourceTypeBinding binding) {
-		final String poolName = String.valueOf(binding.constantPoolName());
-		final int lastIndexSeparator = poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
-		return poolName.substring(lastIndexSeparator + 1, poolName.length());
-	}
-
-	static String createTypeName(char[][] typeName) {
+	static String createQualifiedTypeName(char[][] typeName) {
 		String s = "";
 		for (int i = 0; i < typeName.length - 1; i++) {
-			s += new String(typeName[i]) + ".";
+			s += CharOperation.charToString(typeName[i]) + ".";
 		}
-		s += new String(typeName[typeName.length - 1]);
+		s += CharOperation.charToString(typeName[typeName.length - 1]);
 		return s;
 	}
 
+	/**
+	 * Creates a catch variable from a type reference.
+	 *
+	 * @param typeReference
+	 * 		Correspond to the exception type declared in the catch.
+	 * @return a catch variable.
+	 */
+	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference) {
+		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
+		final Set<ModifierKind> modifiers = getModifiers(jdtCatch.modifiers);
+		return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
+				jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType), //
+				CharOperation.charToString(jdtCatch.name), //
+				modifiers.toArray(new ModifierKind[modifiers.size()]));
+	}
 
 	/**
-	 * Checks to know if a name is a package or not.
-	 *
-	 * @param packageName Package name.
-	 * @return boolean
+	 * Creates variable access from a {@link CtVariableReference}. Think to move this method
+	 * in the {@link spoon.reflect.factory.CodeFactory} if you think that is a good idea.
 	 */
-	static boolean isPackage(char[][] packageName, TreeBuilderCompiler treeBuilderCompiler) {
-		for (CompilationUnitDeclaration unit : treeBuilderCompiler.unitsToProcess) {
-			final char[][] tokens = unit.currentPackage.tokens;
-			if (packageName.length > tokens.length) {
-				continue;
+	public <T> CtVariableAccess<T> createVariableAccess(CtVariableReference<T> variableReference, boolean isReadAccess) {
+		CtVariableAccess<T> variableAccess;
+		if (isReadAccess) {
+			variableAccess = jdtTreeBuilder.getFactory().Core().createVariableWrite();
+		} else {
+			variableAccess = jdtTreeBuilder.getFactory().Core().createVariableRead();
+		}
+		return variableAccess.setVariable(variableReference);
+	}
+
+	/**
+	 * Creates a variable access from its single name.
+	 *
+	 * @param singleNameReference
+	 * 		Used to build a variable reference which will be contained in the variable access.
+	 * @return a variable access.
+	 */
+	<T> CtVariableAccess<T> createVariableAccess(SingleNameReference singleNameReference) {
+		CtVariableAccess<T> va;
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
+			va = jdtTreeBuilder.getFactory().Core().createVariableWrite();
+		} else {
+			va = jdtTreeBuilder.getFactory().Core().createVariableRead();
+		}
+		va.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference((VariableBinding) singleNameReference.binding));
+		return va;
+	}
+
+	/**
+	 * In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
+	 * By default, we assume that when we don't have any information, we create a variable access.
+	 *
+	 * @param singleNameReference
+	 * 		Used to set the name of the variable reference contained in the variable access.
+	 * @return a variable access.
+	 */
+	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
+		CtVariableAccess<T> va;
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
+			va = jdtTreeBuilder.getFactory().Core().createVariableWrite();
+		} else {
+			va = jdtTreeBuilder.getFactory().Core().createVariableRead();
+		}
+		final String name = CharOperation.charToString(singleNameReference.token);
+		CtVariableReference<T> ref;
+		if (jdtTreeBuilder.getContextBuilder().isBuildLambda) {
+			ref = jdtTreeBuilder.getFactory().Core().createParameterReference();
+		} else {
+			ref = jdtTreeBuilder.getFactory().Core().createLocalVariableReference();
+			((CtLocalVariableReference<T>) ref).setDeclaration(jdtTreeBuilder.getContextBuilder().<T>getLocalVariableDeclaration(name));
+		}
+		ref.setSimpleName(name);
+		va.setVariable(ref);
+		return va;
+	}
+
+	/**
+	 * Creates a variable or a field access from its qualified name.
+	 *
+	 * @param qualifiedNameReference
+	 * 		Used to build the variable access. See all sub methods of this class to understand its usage.
+	 * @return a variable access.
+	 */
+	<T> CtVariableAccess<T> createVariableAccess(QualifiedNameReference qualifiedNameReference) {
+		long[] positions = qualifiedNameReference.sourcePositions;
+		int sourceStart = qualifiedNameReference.sourceStart();
+		int sourceEnd = qualifiedNameReference.sourceEnd();
+		if (qualifiedNameReference.indexOfFirstFieldBinding < positions.length) {
+			sourceEnd = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding] >>> 32) - 2;
+		}
+		CtVariableAccess<T> va;
+		CtVariableReference<T> ref;
+		boolean fromAssignment = isLhsAssignment(jdtTreeBuilder.getContextBuilder(), qualifiedNameReference);
+		boolean isOtherBinding = qualifiedNameReference.otherBindings == null || qualifiedNameReference.otherBindings.length == 0;
+		if (qualifiedNameReference.binding instanceof FieldBinding) {
+			ref = jdtTreeBuilder.getReferencesBuilder().getVariableReference(qualifiedNameReference.fieldBinding());
+			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+
+			va = createFieldAccess(ref, createTargetFieldAccess(qualifiedNameReference, (CtFieldReference<Object>) ref), isOtherBinding && fromAssignment);
+		} else {
+			ref = jdtTreeBuilder.getReferencesBuilder().getVariableReference((VariableBinding) qualifiedNameReference.binding);
+			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+
+			va = createVariableAccess(ref, isOtherBinding && fromAssignment);
+		}
+
+		if (qualifiedNameReference.otherBindings != null) {
+			int i = 0; //positions index;
+			va.setPosition(ref.getPosition());
+			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
+			for (FieldBinding b : qualifiedNameReference.otherBindings) {
+				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
+				CtFieldAccess<T> other = createFieldAccess(//
+						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
+				//set source position of fa
+				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
+					sourceEnd = qualifiedNameReference.sourceEnd();
+				} else {
+					sourceEnd = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding + i + 1] >>> 32) - 2;
+				}
+				other.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+				va = other;
+				i++;
 			}
-			boolean isFound = true;
-			for (int i = 0; i < packageName.length; i++) {
-				char[] chars = packageName[i];
-				if (!CharOperation.equals(chars, tokens[i])) {
-					isFound = false;
-					break;
+		} else if (!(qualifiedNameReference.binding instanceof FieldBinding) && qualifiedNameReference.tokens.length > 1) {
+			sourceStart = (int) (positions[0] >>> 32);
+			for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
+				isOtherBinding = qualifiedNameReference.tokens.length == i + 1;
+				CtFieldAccess<T> other = createFieldAccess(//
+						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
+				//set source position of va;
+				CompilationUnit cu = jdtTreeBuilder.getFactory().CompilationUnit().create(new String(jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
+				sourceEnd = (int) (positions[i]);
+				final int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+				va.setPosition(jdtTreeBuilder.getFactory().Core().createSourcePosition(cu, sourceStart, sourceStart, sourceEnd, lineSeparatorPositions));
+				va = other;
+			}
+		}
+		va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(qualifiedNameReference.sourceStart(), qualifiedNameReference.sourceEnd()));
+		return va;
+	}
+
+	/**
+	 * Creates variable access from a {@link CtVariableReference}. Think to move this method
+	 * in the {@link spoon.reflect.factory.CodeFactory} if you think that is a good idea.
+	 */
+	public <T> CtFieldAccess<T> createFieldAccess(CtVariableReference<T> variableReference, CtExpression<?> target, boolean isReadAccess) {
+		CtFieldAccess<T> fieldAccess;
+		if (isReadAccess) {
+			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldWrite();
+		} else {
+			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldRead();
+		}
+		fieldAccess.setVariable(variableReference);
+		fieldAccess.setTarget(target);
+		return fieldAccess;
+	}
+
+	/**
+	 * Creates a field access from its single name.
+	 *
+	 * @param singleNameReference
+	 * 		Used to build a variable reference and a target which will be contained in the field access.
+	 * @return a field access.
+	 */
+	<T> CtFieldAccess<T> createFieldAccess(SingleNameReference singleNameReference) {
+		CtFieldAccess<T> va;
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
+			va = jdtTreeBuilder.getFactory().Core().createFieldWrite();
+		} else {
+			va = jdtTreeBuilder.getFactory().Core().createFieldRead();
+		}
+		va.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(singleNameReference.fieldBinding().original()));
+		if (va.getVariable() != null) {
+			final CtFieldReference<T> ref = va.getVariable();
+			if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
+				va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(ref.getDeclaringType()));
+			} else if (!ref.isStatic()) {
+				va.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().getTypeReference(singleNameReference.actualReceiverType), true));
+			}
+		}
+		return va;
+	}
+
+	/**
+	 * In no classpath mode, when we build a field access, we have a binding typed by ProblemBinding.
+	 * This binding doesn't contain all information but we can get some of them.
+	 *
+	 * @param singleNameReference
+	 * 		Used to get the problem binding of the field access and the name of the declaring type.
+	 * @return a field access.
+	 */
+	<T> CtFieldAccess<T> createFieldAccessNoClasspath(SingleNameReference singleNameReference) {
+		CtFieldAccess<T> va;
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
+			va = jdtTreeBuilder.getFactory().Core().createFieldWrite();
+		} else {
+			va = jdtTreeBuilder.getFactory().Core().createFieldRead();
+		}
+		va.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference((ProblemBinding) singleNameReference.binding));
+		final CtReference declaring = jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token);
+		if (declaring instanceof CtTypeReference && va.getVariable() != null) {
+			final CtTypeReference<Object> declaringRef = (CtTypeReference<Object>) declaring;
+			va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringRef));
+			va.getVariable().setDeclaringType(declaringRef);
+			va.getVariable().setStatic(true);
+		}
+		return va;
+	}
+
+	/**
+	 * In no classpath mode, when we build a field access, we have a binding typed by ProblemBinding.
+	 * We try to get all information we can get from this binding.
+	 *
+	 * @param qualifiedNameReference
+	 * 		Used to get the problem binding of the field access and the name of the declaring type.
+	 * @return a field access.
+	 */
+	<T> CtFieldAccess<T> createFieldAccessNoClasspath(QualifiedNameReference qualifiedNameReference) {
+		boolean fromAssignment = isLhsAssignment(jdtTreeBuilder.getContextBuilder(), qualifiedNameReference);
+		CtFieldAccess<T> fieldAccess = createFieldAccess(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference((ProblemBinding) qualifiedNameReference.binding), null, fromAssignment);
+		// In no classpath mode and with qualified name, the type given by JDT is wrong...
+		final char[][] declaringClass = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
+		final MissingTypeBinding declaringType = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(null, declaringClass);
+		final CtTypeReference<T> declaringRef = jdtTreeBuilder.getReferencesBuilder().getTypeReference(declaringType);
+		fieldAccess.getVariable().setDeclaringType(declaringRef);
+		fieldAccess.getVariable().setStatic(true);
+		fieldAccess.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringRef));
+		// In no classpath mode and with qualified name, the binding don't have a good name.
+		fieldAccess.getVariable()
+				.setSimpleName(createQualifiedTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
+		return fieldAccess;
+	}
+
+	/**
+	 * Creates a field access from a field reference.
+	 *
+	 * @param fieldReference
+	 * 		Used to build the spoon variable reference and the type of the field access.
+	 * @return a field access.
+	 */
+	<T> CtFieldAccess<T> createFieldAccess(FieldReference fieldReference) {
+		CtFieldAccess<T> fieldAccess;
+		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), fieldReference)) {
+			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldWrite();
+		} else {
+			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldRead();
+		}
+		fieldAccess.setVariable(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(fieldReference.binding, fieldReference.token));
+		fieldAccess.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(fieldReference.resolvedType));
+		return fieldAccess;
+	}
+
+	/**
+	 * Creates a type access from its qualified name and with a field reference.
+	 *
+	 * @param qualifiedNameReference
+	 * 		Used to update the field reference if necessary.
+	 * @param fieldReference
+	 * 		Used to get its declaring class and to put it in the type access.
+	 * @return a type access.
+	 */
+	CtTypeAccess<?> createTypeAccess(QualifiedNameReference qualifiedNameReference, CtFieldReference<?> fieldReference) {
+		final TypeBinding receiverType = qualifiedNameReference.actualReceiverType;
+		if (receiverType != null) {
+			final CtTypeReference<Object> qualifiedRef = jdtTreeBuilder.getReferencesBuilder().getQualifiedTypeReference(//
+					qualifiedNameReference.tokens, receiverType, qualifiedNameReference.fieldBinding().declaringClass.enclosingType(), new JDTTreeBuilder.OnAccessListener() {
+						@Override
+						public boolean onAccess(char[][] tokens, int index) {
+							return !CharOperation.equals(tokens[index + 1], tokens[tokens.length - 1]);
+						}
+					});
+			if (qualifiedRef != null) {
+				fieldReference.setDeclaringType(qualifiedRef);
+			} else {
+				fieldReference.setDeclaringType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(receiverType));
+			}
+		}
+
+		CtTypeAccess<?> typeAccess = jdtTreeBuilder.getFactory().Code().createTypeAccess(fieldReference.getDeclaringType());
+		if (qualifiedNameReference.indexOfFirstFieldBinding > 1) {
+			// the array sourcePositions contains the position of each element of the qualifiedNameReference
+			// the last element contains the position of the field
+			long[] positions = qualifiedNameReference.sourcePositions;
+			typeAccess.setPosition(
+					jdtTreeBuilder.getPositionBuilder().buildPosition(qualifiedNameReference.sourceStart(), (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32) - 2));
+		} else {
+			typeAccess.setImplicit(true);
+		}
+
+		return typeAccess;
+	}
+
+	/**
+	 * Creates a type access from its qualified name.
+	 *
+	 * @param qualifiedNameReference
+	 * 		Used to get the declaring class of this type. This qualified type should have a type as target.
+	 * @return a type access.
+	 */
+	<T> CtTypeAccess<T> createTypeAccessNoClasspath(QualifiedNameReference qualifiedNameReference) {
+		CtTypeReference<T> typeReference;
+		if (qualifiedNameReference.binding instanceof ProblemBinding) {
+			typeReference = jdtTreeBuilder.getFactory().Type().<T>createReference(CharOperation.toString(qualifiedNameReference.tokens));
+		} else if (qualifiedNameReference.binding instanceof FieldBinding) {
+			final ReferenceBinding declaringClass = ((FieldBinding) qualifiedNameReference.binding).declaringClass;
+			typeReference = jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(declaringClass);
+		} else {
+			// TODO try to determine package/class boundary by upper case
+			char[][] packageName = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
+			char[][] className = CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length);
+			if (packageName.length > 0) {
+				final PackageBinding aPackage = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(packageName);
+				final MissingTypeBinding declaringType = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+
+				typeReference = jdtTreeBuilder.getReferencesBuilder().getTypeReference(declaringType);
+			} else {
+				typeReference = jdtTreeBuilder.getFactory().Type().createReference(qualifiedNameReference.toString());
+			}
+		}
+		final CtTypeAccess<T> typeAccess = jdtTreeBuilder.getFactory().Code().createTypeAccess(typeReference);
+
+		long[] positions = qualifiedNameReference.sourcePositions;
+		int sourceStart = qualifiedNameReference.sourceStart();
+		int sourceEnd = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32) - 2;
+		typeAccess.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+
+		return typeAccess;
+	}
+
+	/**
+	 * Creates a type access from its single name.
+	 *
+	 * @param singleNameReference
+	 * 		Used to get the simple name of the type.
+	 * @return a type access.
+	 */
+	<T> CtTypeAccess<T> createTypeAccessNoClasspath(SingleNameReference singleNameReference) {
+		final CtTypeReference<T> typeReference = jdtTreeBuilder.getFactory().Core().createTypeReference();
+		if (singleNameReference.binding == null) {
+			typeReference.setSimpleName(CharOperation.charToString(singleNameReference.token));
+		} else {
+			typeReference.setSimpleName(CharOperation.charToString(singleNameReference.binding.readableName()));
+		}
+		jdtTreeBuilder.getReferencesBuilder().setPackageOrDeclaringType(typeReference, jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token));
+		return jdtTreeBuilder.getFactory().Code().createTypeAccess(typeReference);
+	}
+
+	/**
+	 * Creates the target of a field access.
+	 *
+	 * @param qualifiedNameReference
+	 * 		Used to get the declaring class of the target.
+	 * @param ref
+	 * 		Used in a static context.
+	 * @return an expression.
+	 */
+	CtExpression<?> createTargetFieldAccess(QualifiedNameReference qualifiedNameReference, CtFieldReference<Object> ref) {
+		CtExpression<?> target = null;
+		if (JDTTreeBuilderQuery.isValidProblemBindingField(qualifiedNameReference)) {
+			target = createTypeAccessNoClasspath(qualifiedNameReference);
+		} else if (ref.isStatic()) {
+			target = createTypeAccess(qualifiedNameReference, ref);
+		} else if (!ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
+			target = jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().<Object>getTypeReference(qualifiedNameReference.actualReceiverType), true);
+		}
+		return target;
+	}
+
+	/**
+	 * Creates a parameter. If the argument have a type == null, we get the type from its binding. A type == null is possible when
+	 * this type is implicit like in a lambda where you don't need to specify the type of parameters.
+	 *
+	 * @param argument
+	 * 		Used to get the name of the parameter, the modifiers, know if it is a var args parameter.
+	 * @return a parameter.
+	 */
+	<T> CtParameter<T> createParameter(Argument argument) {
+		CtParameter<T> p = jdtTreeBuilder.getFactory().Core().createParameter();
+		p.setSimpleName(CharOperation.charToString(argument.name));
+		p.setVarArgs(argument.isVarArgs());
+		p.setModifiers(getModifiers(argument.modifiers));
+		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
+			p.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(argument.binding.type));
+			p.getType().setImplicit(argument.type == null);
+			if (p.getType() instanceof CtArrayTypeReference) {
+				((CtArrayTypeReference) p.getType()).getComponentType().setImplicit(argument.type == null);
+			}
+		}
+		return p;
+	}
+
+	/**
+	 * Creates an executable reference expression.
+	 *
+	 * @param referenceExpression
+	 * 		Used to get the executable reference.
+	 * @return an executable reference expression.
+	 */
+	<T, E extends CtExpression<?>> CtExecutableReferenceExpression<T, E> createExecutableReferenceExpression(ReferenceExpression referenceExpression) {
+		CtExecutableReferenceExpression<T, E> executableRef = jdtTreeBuilder.getFactory().Core().createExecutableReferenceExpression();
+		CtExecutableReference<T> executableReference = jdtTreeBuilder.getReferencesBuilder().getExecutableReference(referenceExpression.binding);
+		if (executableReference == null) {
+			// No classpath mode.
+			executableReference = jdtTreeBuilder.getFactory().Core().createExecutableReference();
+			executableReference.setSimpleName(CharOperation.charToString(referenceExpression.selector));
+			executableReference.setDeclaringType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(referenceExpression.lhs.resolvedType));
+		}
+		final CtTypeReference<T> declaringType = (CtTypeReference<T>) executableReference.getDeclaringType();
+		executableReference.setType(declaringType == null ? null : declaringType.clone());
+		executableRef.setExecutable(executableReference);
+		return executableRef;
+	}
+
+	/**
+	 * Creates a class, an enum, an interface or a annotation type.
+	 *
+	 * @return a type.
+	 */
+	CtType<?> createType(TypeDeclaration typeDeclaration) {
+		CtType<?> type;
+		if ((typeDeclaration.modifiers & ClassFileConstants.AccAnnotation) != 0) {
+			type = jdtTreeBuilder.getFactory().Core().<java.lang.annotation.Annotation>createAnnotationType();
+		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccEnum) != 0) {
+			type = jdtTreeBuilder.getFactory().Core().createEnum();
+		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccInterface) != 0) {
+			type = jdtTreeBuilder.getFactory().Core().createInterface();
+		} else {
+			type = jdtTreeBuilder.getFactory().Core().createClass();
+		}
+		jdtTreeBuilder.getContextBuilder().enter(type, typeDeclaration);
+
+		if (typeDeclaration.superInterfaces != null) {
+			for (TypeReference ref : typeDeclaration.superInterfaces) {
+				final CtTypeReference superInterface = jdtTreeBuilder.references.buildTypeReference(ref, null);
+				type.addSuperInterface(superInterface);
+			}
+		}
+
+		if (type instanceof CtClass) {
+			if (typeDeclaration.superclass != null && typeDeclaration.superclass.resolvedType != null && typeDeclaration.enclosingType != null && !new String(
+					typeDeclaration.superclass.resolvedType.qualifiedPackageName()).equals(new String(typeDeclaration.binding.qualifiedPackageName()))) {
+
+				// Sorry for this hack but see the test case ImportTest#testImportOfAnInnerClassInASuperClassPackage.
+				// JDT isn't smart enough to return me a super class available. So, I modify their AST when
+				// superclasses aren't in the same package and when their visibilities are "default".
+				List<ModifierKind> modifiers = Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED);
+				final TypeBinding resolvedType = typeDeclaration.superclass.resolvedType;
+				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)//
+						&& resolvedType.enclosingType() != null && typeDeclaration.enclosingType.superclass != null//
+						&& Collections.disjoint(modifiers, getModifiers(resolvedType.enclosingType().modifiers))) {
+					typeDeclaration.superclass.resolvedType = jdtTreeBuilder.new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
+							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
 				}
 			}
-			if (isFound) {
-				return true;
+			if (typeDeclaration.superclass != null) {
+				((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 			}
+			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
+				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
+			} else {
+				type.setSimpleName(new String(typeDeclaration.name));
+			}
+		} else {
+			type.setSimpleName(new String(typeDeclaration.name));
 		}
-		return false;
-	}
 
-	/**
-	 * Checks if a type is specified in imports.
-	 *
-	 * @param typeName Type name.
-	 * @return qualified name of the expected type.
-	 */
-	static String hasTypeInImports(String typeName, ContextBuilder context) {
-		if (typeName == null) {
-			return null;
-		} else if (context.compilationunitdeclaration.imports == null) {
-			return null;
-		}
-		for (ImportReference anImport : context.compilationunitdeclaration.imports) {
-			final String importType = CharOperation.charToString(anImport.getImportName()[anImport.getImportName().length - 1]);
-			if (importType != null && importType.equals(typeName)) {
-				return CharOperation.toString(anImport.getImportName());
-			}
-		}
-		return null;
-	}
+		// Setting modifiers
+		type.setModifiers(getModifiers(typeDeclaration.modifiers));
 
-	/**
-	 * Check if the annotation is declared with the given element type.
-	 *
-	 * @param a           An annotation.
-	 * @param elementType Type of the annotation.
-	 * @return true if the annotation is compatible with the given element type.
-	 */
-	private static boolean hasAnnotationWithType(Annotation a, CtAnnotatedElementType elementType) {
-		if (a.resolvedType == null) {
-			return false;
-		}
-		for (AnnotationBinding annotation : a.resolvedType.getAnnotations()) {
-			if (!"Target".equals(CharOperation.charToString(annotation.getAnnotationType().sourceName()))) {
-				continue;
-			}
-			Object value = annotation.getElementValuePairs()[0].value;
-			if (value == null || !value.getClass().isArray()) {
-				continue;
-			}
-			Object[] fields = (Object[]) value;
-			for (Object field : fields) {
-				if (field instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) field).name))) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * When an annotation is specified on a method, a local declaration or an argument, JDT doesn't know
-	 * if the annotation is specified on the type or on the element. Due to this method, if the annotation
-	 * is compatible with types, we substitute the annotation from the element to the type of this element.
-	 *
-	 * @param typedElement Element annotated.
-	 * @param a            Annotation of the element.
-	 * @param elementType  Type of the annotation.
-	 */
-	static void substituteAnnotation(CtTypedElement<Object> typedElement, Annotation a, CtAnnotatedElementType elementType) {
-		if (JDTTreeBuilderHelper.hasAnnotationWithType(a, elementType)) {
-			CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = typedElement.getAnnotations().get(typedElement.getAnnotations().size() - 1);
-			typedElement.removeAnnotation(targetAnnotation);
-			typedElement.getType().addAnnotation(targetAnnotation);
-		}
+		return type;
 	}
 }
