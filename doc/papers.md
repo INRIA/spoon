@@ -29,7 +29,7 @@ last_updated: September 9, 2015
 
 [AVal: an Extensible Attribute-Oriented Programming Validator for Java](https://hal.inria.fr/inria-00180333/file/AVal.pdf) (Noguera, C., Pawlak R.), In 6th IEEE International Workshop on Source Code Analysis and Manipulation (SCAM'06), Philadelphia, PA, USA, September 2006.
 
-Using Attribute-Oriented Programming to Leverage Fractal-Based Developments. (Rouvoy, R., Pessemier, N., Pawlak, R., Merle, P.), In 5th International ECOOP Workshop on Fractal Component Model, Nantes, France, July 2006.
+[Using Attribute-Oriented Programming to Leverage Fractal-Based Developments](https://hal.inria.fr/hal-01353552) (Rouvoy, R., Pessemier, N., Pawlak, R., Merle, P.), In 5th International ECOOP Workshop on Fractal Component Model, Nantes, France, July 2006.
 
 [Spoon: Program Analysis and Transformation in Java.](http://hal.inria.fr/inria-00071366) (Pawlak, R., Noguera, C., Petitprez, N.), INRIA Research Report #5901, May 2006.
 
