@@ -4,30 +4,44 @@ keywords: papers
 last_updated: September 9, 2015
 ---
 
-# Presentations
+# Articles 
 
-2016-07-07 [Code Transformation with Spoon](http://fr.slideshare.net/GrardPaligot/code-transformation-with-spoon), PADR Talk (France, Lille).
+[Automatic Parallelization: Executing Sequential Programs on a Task-Based Parallel Runtime](http://arxiv.org/pdf/1604.03211) (Fonseca, A., Cabral, B., Rafael, J., & Correia, I.) International Journal of Parallel Programming, 1-22.
 
-# Articles that use Spoon
+[ASTOR: A Program Repair Library for Java](https://hal.archives-ouvertes.fr/hal-01321615/document) (Matias Martinez and Martin Monperrus), In Proceedings of ISSTA, Demonstration Track, 2016. (<https://github.com/SpoonLabs/astor>)
+
+[Mutation-Based Graph Inference for Fault Localization](https://hal.inria.fr/hal-01350515/document) (Vincenzo Musco, Martin Monperrus and Philippe Preux), In International Working Conference on Source Code Analysis and Manipulation, 2016.
+
+[TTC'2015 Case: Refactoring Java Programs using Spoon](https://hal.inria.fr/hal-01185189/document) (Gérard Paligot, Nicolas Petitprez and Martin Monperrus), In Proceedings of the 2015 Transformation Tool Contest, 2015
 
 [SWIN: Towards Type-Safe Java Program Adaptation between APIs](http://sei.pku.edu.cn/~xiongyf04/papers/PEPM15.pdf) (Li, Jun, et al.) Proceedings of the 2015 Workshop on Partial Evaluation and Program Manipulation. 2015.
 
-[Test Case Purification for Improving Fault Localization](https://hal.inria.fr/hal-01061911/PDF/main.pdf) (Jifeng Xuan, [Martin Monperrus](http://www.monperrus.net/martin/)), In Proceedings of the International Symposium on the Foundations of Software Engineering, 2014.
+[Test Case Purification for Improving Fault Localization](https://hal.inria.fr/hal-01061911/PDF/main.pdf) (Jifeng Xuan, Martin Monperrus), In Proceedings of the International Symposium on the Foundations of Software Engineering, 2014.
 
-Exception Handling Analysis and Transformation Using Fault Injection: Study of Resilience Against Unanticipated Exceptions (Benoit Cornu, Lionel Seinturier, [Martin Monperrus](http://www.monperrus.net/martin/)), In Information and Software Technology, Elsevier, 2014. 
+[B-Refactoring: Automatic Test Code Refactoring to Improve Dynamic Analysis](https://hal.archives-ouvertes.fr/hal-01309004/document) (Jifeng Xuan, Benoit Cornu, Matias Martinez, Benoit Baudry, Lionel Seinturier and Martin Monperrus), In Information and Software Technology, Elsevier, 2016. (<https://github.com/Spirals-Team/banana-refactoring>)
 
-[Automatic Repair of Buggy If Conditions and Missing Preconditions with SMT](https://hal.inria.fr/hal-00977798/PDF/NOPOL-Automatic-Repair-of-Buggy-If-Conditions-and-Missing-Preconditions-with-SMT.pdf) (Favio DeMarco, Jifeng Xuan, Daniel Le Berre, [Martin Monperrus](http://www.monperrus.net/martin/)), In Proceedings of the 6th International Workshop on Constraints in Software Testing, Verification, and Analysis (CSTVA 2014), 2014.
+[Exception Handling Analysis and Transformation Using Fault Injection: Study of Resilience Against Unanticipated Exceptions](https://hal.inria.fr/hal-01062969/document) (Benoit Cornu, Lionel Seinturier, Martin Monperrus), In Information and Software Technology, Elsevier, 2014. 
+[Automatic Repair of Buggy If Conditions and Missing Preconditions with SMT](https://hal.inria.fr/hal-00977798/PDF/NOPOL-Automatic-Repair-of-Buggy-If-Conditions-and-Missing-Preconditions-with-SMT.pdf) (Favio DeMarco, Jifeng Xuan, Daniel Le Berre, Martin Monperrus), In Proceedings of the 6th International Workshop on Constraints in Software Testing, Verification, and Analysis (CSTVA 2014), 2014.
 
-[Tailored Source Code Transformations to Synthesize Computationally Diverse Program Variants](https://hal.inria.fr/hal-00938855/PDF/sosies.pdf) ([Benoit Baudry](http://people.rennes.inria.fr/Benoit.Baudry/), Simon Allier, [Martin Monperrus](http://www.monperrus.net/martin/)), In Proceedings of the International Symposium on Software Testing and Analysis, 2014.
+[Tailored Source Code Transformations to Synthesize Computationally Diverse Program Variants](https://hal.inria.fr/hal-00938855/PDF/sosies.pdf) (Benoit Baudry, Simon Allier, Martin Monperrus), In Proceedings of the International Symposium on Software Testing and Analysis, 2014.
 
 [Remodularizing Java programs for improved locality of feature implementations in source code.](https://findresearcher.sdu.dk:8443/ws/files/49141761/B1FADd01.pdf) (Olszak, Andrzej, and Bo Nørregaard Jørgensen) Science of Computer Programming 77.3, 2012.
 
-AVal: an Extensible Attribute-Oriented Programming Validator for Java (Noguera, C., Pawlak R.), In 6th IEEE International Workshop on Source Code Analysis and Manipulation (SCAM'06), Philadelphia, PA, USA, September 2006.
+[AVal: an Extensible Attribute-Oriented Programming Validator for Java](https://hal.inria.fr/inria-00180333/file/AVal.pdf) (Noguera, C., Pawlak R.), In 6th IEEE International Workshop on Source Code Analysis and Manipulation (SCAM'06), Philadelphia, PA, USA, September 2006.
 
-Using Attribute-Oriented Programming to Leverage Fractal-Based Developments. (Rouvoy, R., Pessemier, N., Pawlak, R., Merle, P.), In 5th International ECOOP Workshop on Fractal Component Model, Nantes, France, July 2006.
+[Using Attribute-Oriented Programming to Leverage Fractal-Based Developments](https://hal.inria.fr/hal-01353552) (Rouvoy, R., Pessemier, N., Pawlak, R., Merle, P.), In 5th International ECOOP Workshop on Fractal Component Model, Nantes, France, July 2006.
 
 [Spoon: Program Analysis and Transformation in Java.](http://hal.inria.fr/inria-00071366) (Pawlak, R., Noguera, C., Petitprez, N.), INRIA Research Report #5901, May 2006.
 
 [Spoon: Compile-time Annotation Processing for Middleware](http://www.computer.org/csdl/mags/ds/index.html) (Pawlak R.), IEEE Distributed Systems Online, vol. 7, no. 11, 2006, art. no. 0611-oy001
 
-Spoon: Annotation-Driven Program Transformation - The AOP Case. (Pawlak, R.), First Workshop on Aspect-Orientation for Middleware Development. Middleware 2005, Grenoble, France.
+[Spoon: Annotation-Driven Program Transformation - The AOP Case](http://middleware05.objectweb.org/WSProceedings/AOMD05/a6-pawlak.pdf) (Pawlak, R.), First Workshop on Aspect-Orientation for Middleware Development. Middleware 2005, Grenoble, France.
+
+# Dissertations
+
+[Semi-automatic code-to-code transformer for Java: Transformation of library calls](http://liu.diva-portal.org/smash/get/diva2:944700/FULLTEXT01.pdf) (Boije, Niklas and Borg, Kristoffer ), Linköping University, 2016 
+
+# Presentations
+
+2016-07-07 [Code Transformation with Spoon](http://fr.slideshare.net/GrardPaligot/code-transformation-with-spoon), PADR Talk (France, Lille).
+
