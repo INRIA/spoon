@@ -91,11 +91,6 @@ public interface CtTypeInformation {
 	boolean isAnnotationType();
 
 	/**
-	 * Returns true if the types is a new class.
-	 */
-	boolean isNewClass();
-
-	/**
 	 * Returns true if the referenced type is a sub-type of the given type.
 	 */
 	boolean isSubtypeOf(CtTypeReference<?> type);

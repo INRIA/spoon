@@ -16,7 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.reflect.code.CtNewClass;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -429,17 +428,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public boolean isAnnotationType() {
 		return false;
-	}
-
-	@Override
-	public boolean isNewClass() {
-		CtElement parent;
-		try {
-			parent = getParent();
-		} catch (ParentNotInitializedException e) {
-			parent = null;
-		}
-		return (simpleName == null || simpleName.isEmpty()) && parent != null && parent instanceof CtNewClass;
 	}
 
 	@Override
