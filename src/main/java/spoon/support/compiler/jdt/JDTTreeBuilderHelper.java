@@ -114,6 +114,20 @@ class JDTTreeBuilderHelper {
 	}
 
 	/**
+	 * Creates variable access from a {@link CtVariableReference}. Think to move this method
+	 * in the {@link spoon.reflect.factory.CodeFactory} if you think that is a good idea.
+	 */
+	public <T> CtVariableAccess<T> createVariableAccess(CtVariableReference<T> variableReference, boolean isReadAccess) {
+		CtVariableAccess<T> variableAccess;
+		if (isReadAccess) {
+			variableAccess = jdtTreeBuilder.getFactory().Core().createVariableWrite();
+		} else {
+			variableAccess = jdtTreeBuilder.getFactory().Core().createVariableRead();
+		}
+		return variableAccess.setVariable(variableReference);
+	}
+
+	/**
 	 * Creates a variable access from its single name.
 	 *
 	 * @param singleNameReference
@@ -181,12 +195,12 @@ class JDTTreeBuilderHelper {
 			ref = jdtTreeBuilder.getReferencesBuilder().getVariableReference(qualifiedNameReference.fieldBinding());
 			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 
-			va = jdtTreeBuilder.getFactory().Code().createFieldAccess(ref, createTargetFieldAccess(qualifiedNameReference, (CtFieldReference<Object>) ref), isOtherBinding && fromAssignment);
+			va = createFieldAccess(ref, createTargetFieldAccess(qualifiedNameReference, (CtFieldReference<Object>) ref), isOtherBinding && fromAssignment);
 		} else {
 			ref = jdtTreeBuilder.getReferencesBuilder().getVariableReference((VariableBinding) qualifiedNameReference.binding);
 			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 
-			va = jdtTreeBuilder.getFactory().Code().createVariableAccess(ref, isOtherBinding && fromAssignment);
+			va = createVariableAccess(ref, isOtherBinding && fromAssignment);
 		}
 
 		if (qualifiedNameReference.otherBindings != null) {
@@ -195,8 +209,8 @@ class JDTTreeBuilderHelper {
 			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
 			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
-				CtFieldAccess<T> other = jdtTreeBuilder.getFactory().Code()
-						.createFieldAccess(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
+				CtFieldAccess<T> other = createFieldAccess(//
+						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
 				//set source position of fa
 				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
 					sourceEnd = qualifiedNameReference.sourceEnd();
@@ -211,8 +225,8 @@ class JDTTreeBuilderHelper {
 			sourceStart = (int) (positions[0] >>> 32);
 			for (int i = 1; i < qualifiedNameReference.tokens.length; i++) {
 				isOtherBinding = qualifiedNameReference.tokens.length == i + 1;
-				CtFieldAccess<T> other = jdtTreeBuilder.getFactory().Code()
-						.createFieldAccess(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
+				CtFieldAccess<T> other = createFieldAccess(//
+						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(null, qualifiedNameReference.tokens[i]), va, isOtherBinding && fromAssignment);
 				//set source position of va;
 				CompilationUnit cu = jdtTreeBuilder.getFactory().CompilationUnit().create(new String(jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
 				sourceEnd = (int) (positions[i]);
@@ -223,6 +237,22 @@ class JDTTreeBuilderHelper {
 		}
 		va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(qualifiedNameReference.sourceStart(), qualifiedNameReference.sourceEnd()));
 		return va;
+	}
+
+	/**
+	 * Creates variable access from a {@link CtVariableReference}. Think to move this method
+	 * in the {@link spoon.reflect.factory.CodeFactory} if you think that is a good idea.
+	 */
+	public <T> CtFieldAccess<T> createFieldAccess(CtVariableReference<T> variableReference, CtExpression<?> target, boolean isReadAccess) {
+		CtFieldAccess<T> fieldAccess;
+		if (isReadAccess) {
+			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldWrite();
+		} else {
+			fieldAccess = jdtTreeBuilder.getFactory().Core().createFieldRead();
+		}
+		fieldAccess.setVariable(variableReference);
+		fieldAccess.setTarget(target);
+		return fieldAccess;
 	}
 
 	/**
@@ -287,8 +317,7 @@ class JDTTreeBuilderHelper {
 	 */
 	<T> CtFieldAccess<T> createFieldAccessNoClasspath(QualifiedNameReference qualifiedNameReference) {
 		boolean fromAssignment = isLhsAssignment(jdtTreeBuilder.getContextBuilder(), qualifiedNameReference);
-		CtFieldAccess<T> fieldAccess = jdtTreeBuilder.getFactory().Code()
-				.createFieldAccess(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference((ProblemBinding) qualifiedNameReference.binding), null, fromAssignment);
+		CtFieldAccess<T> fieldAccess = createFieldAccess(jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference((ProblemBinding) qualifiedNameReference.binding), null, fromAssignment);
 		// In no classpath mode and with qualified name, the type given by JDT is wrong...
 		final char[][] declaringClass = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
 		final MissingTypeBinding declaringType = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(null, declaringClass);
@@ -516,8 +545,8 @@ class JDTTreeBuilderHelper {
 				// superclasses aren't in the same package and when their visibilities are "default".
 				List<ModifierKind> modifiers = Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED);
 				final TypeBinding resolvedType = typeDeclaration.superclass.resolvedType;
-				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)
-						&& resolvedType.enclosingType() != null && typeDeclaration.enclosingType.superclass != null
+				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)//
+						&& resolvedType.enclosingType() != null && typeDeclaration.enclosingType.superclass != null//
 						&& Collections.disjoint(modifiers, getModifiers(resolvedType.enclosingType().modifiers))) {
 					typeDeclaration.superclass.resolvedType = jdtTreeBuilder.new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
 							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);

@@ -1283,7 +1283,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		} else {
 			context.enter(
-					factory.Code().createVariableAccess(
+					helper.createVariableAccess(
 							factory.Core().createUnboundVariableReference().<CtUnboundVariableReference>setSimpleName(qualifiedNameRef.toString()),
 							isLhsAssignment(context, qualifiedNameRef)),
 					qualifiedNameRef
