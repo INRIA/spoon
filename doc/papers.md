@@ -12,6 +12,8 @@ last_updated: September 9, 2015
 
 [Mutation-Based Graph Inference for Fault Localization](https://hal.inria.fr/hal-01350515/document) (Vincenzo Musco, Martin Monperrus and Philippe Preux), In International Working Conference on Source Code Analysis and Manipulation, 2016.
 
+[TTC'2015 Case: Refactoring Java Programs using Spoon](https://hal.inria.fr/hal-01185189/document) (Gérard Paligot, Nicolas Petitprez and Martin Monperrus), In Proceedings of the 2015 Transformation Tool Contest, 2015
+
 [SWIN: Towards Type-Safe Java Program Adaptation between APIs](http://sei.pku.edu.cn/~xiongyf04/papers/PEPM15.pdf) (Li, Jun, et al.) Proceedings of the 2015 Workshop on Partial Evaluation and Program Manipulation. 2015.
 
 [Test Case Purification for Improving Fault Localization](https://hal.inria.fr/hal-01061911/PDF/main.pdf) (Jifeng Xuan, Martin Monperrus), In Proceedings of the International Symposium on the Foundations of Software Engineering, 2014.
