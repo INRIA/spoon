@@ -940,8 +940,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		// Create block
 		if (!methodDeclaration.isAbstract() && (methodDeclaration.modifiers & ClassFileConstants.AccNative) == 0) {
-			m.setBody(getFactory().Core().createBlock());
-			context.enter(m.getBody(), methodDeclaration);
+			context.enter(getFactory().Core().createBlock(), methodDeclaration);
 			context.exit(methodDeclaration);
 		}
 
@@ -955,8 +954,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(c, constructorDeclaration);
 
 		// Create block
-		c.setBody(factory.Core().createBlock());
-		context.enter(c.getBody(), constructorDeclaration);
+		context.enter(factory.Core().createBlock(), constructorDeclaration);
 		context.exit(constructorDeclaration);
 
 		return true;

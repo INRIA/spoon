@@ -257,7 +257,10 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtConstructor(CtConstructor<T> e) {
-		if (child instanceof CtStatement && !(child instanceof CtBlock)) {
+		if (e.getBody() == null && child instanceof CtBlock) {
+			e.setBody((CtBlock) child);
+			return;
+		} else if (child instanceof CtStatement) {
 			visitCtBlock(e.getBody());
 			return;
 		}
@@ -266,7 +269,10 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> e) {
-		if (child instanceof CtStatement && !(child instanceof CtBlock)) {
+		if (e.getBody() == null && child instanceof CtBlock) {
+			e.setBody((CtBlock) child);
+			return;
+		} else if (child instanceof CtStatement) {
 			visitCtBlock(e.getBody());
 			return;
 		} else if (child instanceof CtTypeAccess && hasChildEqualsToType(e)) {
