@@ -73,7 +73,7 @@ public class ArraysTest {
 		try {
 			launcher.getModelBuilder().compile();
 		} catch (Exception e) {
-			fail();
+			fail(e.getMessage());
 		}
 	}
 }

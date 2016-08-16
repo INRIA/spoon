@@ -630,7 +630,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			return false;
 		}
 		for (Expression dimension : parent.dimensions) {
-			if (dimension != null && dimension.equals(childJDT)) {
+			if (dimension != null && getFinalExpressionFromCast(dimension).equals(childJDT)) {
 				return true;
 			}
 		}
@@ -663,7 +663,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		final QualifiedAllocationExpression parent = (QualifiedAllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
 		// Enclosing instance is equals to the jdt child.
-		return parent.enclosingInstance != null && parent.enclosingInstance.equals(childJDT)
+		return parent.enclosingInstance != null && getFinalExpressionFromCast(parent.enclosingInstance).equals(childJDT)
 				// Enclosing instance not yet initialized.
 				&& !child.equals(ctConstructorCall.getTarget());
 	}
