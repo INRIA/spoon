@@ -19,6 +19,7 @@ package spoon.reflect.factory;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.CtModelImpl;
+import spoon.reflect.builder.Builder;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -266,6 +267,16 @@ public class FactoryImpl implements Factory, Serializable {
 		return internal;
 	}
 
+	private transient Builder builder;
+
+	@Override
+	public Builder Builder() {
+		if (internal == null) {
+			builder = new Builder(this);
+		}
+		return builder;
+	}
+
 	/**
 	 * A constructor that takes the parent factory
 	 */
@@ -324,6 +335,7 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	private final CtModel model = new CtModelImpl(this);
+
 
 	@Override
 	public CtModel getModel() {

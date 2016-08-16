@@ -18,6 +18,7 @@ package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
+import spoon.reflect.builder.Builder;
 
 /**
  * Provides the sub-factories required by Spoon.
@@ -62,4 +63,6 @@ public interface Factory {
 	ConstructorFactory Constructor(); // used 3 times
 
 	InternalFactory Internal();
+
+	Builder Builder();
 }
