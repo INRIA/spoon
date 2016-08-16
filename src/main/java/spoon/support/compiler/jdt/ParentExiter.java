@@ -22,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
@@ -612,7 +613,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtExpression) {
 			if (isContainedInDimensionExpression()) {
 				newArray.addDimensionExpression((CtExpression<Integer>) child);
-			} else if (child instanceof CtNewArray) {
+			} else if (child instanceof CtNewArray && childJDT instanceof ArrayInitializer && jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof ArrayAllocationExpression) {
 				newArray.setElements(((CtNewArray) child).getElements());
 			} else {
 				newArray.addElement((CtExpression) child);
