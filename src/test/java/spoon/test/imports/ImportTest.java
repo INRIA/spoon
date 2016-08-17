@@ -7,6 +7,8 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
@@ -25,6 +27,7 @@ import spoon.test.imports.testclasses.Mole;
 import spoon.test.imports.testclasses.NotImportExecutableType;
 import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.SubClass;
+import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
 
 import java.util.Arrays;
@@ -259,6 +262,20 @@ public class ImportTest {
 
 		assertEquals(1, imports.size());
 		assertEquals("spoon.test.imports.testclasses.internal2.Menudo", imports.toArray()[0].toString());
+	}
+
+	@Test
+	public void testImportStaticAndFieldAccess() throws Exception {
+		// contract: Qualified field access and an import static should rewrite in fully qualified mode.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Tacos.java");
+		launcher.buildModel();
+
+		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
+		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
+		assertTrue(assignment instanceof CtLocalVariable);
+		assertEquals("spoon.test.imports.testclasses.internal4.Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
 	}
 
 	private Factory getFactory(String...inputs) {

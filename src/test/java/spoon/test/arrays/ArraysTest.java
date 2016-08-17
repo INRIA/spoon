@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class ArraysTest {
@@ -62,4 +63,17 @@ public class ArraysTest {
 		assertEquals("new Type[list.size()]", local.toString());
 	}
 
+	@Test
+	public void testCtNewArrayInnerCtNewArray() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/Foo.java");
+		launcher.setSourceOutputDirectory("target/foo");
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }

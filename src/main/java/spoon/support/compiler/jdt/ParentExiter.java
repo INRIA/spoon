@@ -22,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
@@ -256,7 +257,10 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtConstructor(CtConstructor<T> e) {
-		if (child instanceof CtStatement && !(child instanceof CtBlock)) {
+		if (e.getBody() == null && child instanceof CtBlock) {
+			e.setBody((CtBlock) child);
+			return;
+		} else if (child instanceof CtStatement) {
 			visitCtBlock(e.getBody());
 			return;
 		}
@@ -265,7 +269,10 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> e) {
-		if (child instanceof CtStatement && !(child instanceof CtBlock)) {
+		if (e.getBody() == null && child instanceof CtBlock) {
+			e.setBody((CtBlock) child);
+			return;
+		} else if (child instanceof CtStatement) {
 			visitCtBlock(e.getBody());
 			return;
 		} else if (child instanceof CtTypeAccess && hasChildEqualsToType(e)) {
@@ -612,7 +619,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtExpression) {
 			if (isContainedInDimensionExpression()) {
 				newArray.addDimensionExpression((CtExpression<Integer>) child);
-			} else if (child instanceof CtNewArray) {
+			} else if (child instanceof CtNewArray && childJDT instanceof ArrayInitializer && jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof ArrayAllocationExpression) {
 				newArray.setElements(((CtNewArray) child).getElements());
 			} else {
 				newArray.addElement((CtExpression) child);
@@ -629,7 +636,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			return false;
 		}
 		for (Expression dimension : parent.dimensions) {
-			if (dimension != null && dimension.equals(childJDT)) {
+			if (dimension != null && getFinalExpressionFromCast(dimension).equals(childJDT)) {
 				return true;
 			}
 		}
@@ -662,7 +669,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		final QualifiedAllocationExpression parent = (QualifiedAllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
 		// Enclosing instance is equals to the jdt child.
-		return parent.enclosingInstance != null && parent.enclosingInstance.equals(childJDT)
+		return parent.enclosingInstance != null && getFinalExpressionFromCast(parent.enclosingInstance).equals(childJDT)
 				// Enclosing instance not yet initialized.
 				&& !child.equals(ctConstructorCall.getTarget());
 	}

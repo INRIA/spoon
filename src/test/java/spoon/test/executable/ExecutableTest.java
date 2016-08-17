@@ -2,13 +2,18 @@ package spoon.test.executable;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.executable.testclasses.Pozole;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ExecutableTest {
 	@Test
@@ -28,5 +33,11 @@ public class ExecutableTest {
 			assertEquals(0, anonymousExecutable.getParameters().size());
 			assertEquals(0, anonymousExecutable.getThrownTypes().size());
 		}
+	}
+
+	@Test
+	public void testBlockInExecutable() throws Exception {
+		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
+		assertTrue(aPozole.getMethod("m").getBody().getStatement(1) instanceof CtBlock);
 	}
 }

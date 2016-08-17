@@ -9,4 +9,12 @@ public class Pozole implements Runnable {
 	public void run() {
 
 	}
+
+	void m() {
+		int i;
+		{
+			i = 0;
+		}
+		int x = 2 * i;
+	}
 }

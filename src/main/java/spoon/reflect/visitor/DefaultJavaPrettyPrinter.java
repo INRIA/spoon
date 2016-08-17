@@ -1679,7 +1679,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write(ref.getSimpleName());
 		}
 		if (withGenerics && !context.ignoreGenerics) {
+			final boolean old = context.ignoreEnclosingClass;
+			context.ignoreEnclosingClass = false;
 			elementPrinterHelper.writeActualTypeArguments(ref);
+			context.ignoreEnclosingClass = old;
 		}
 	}
 
