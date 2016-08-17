@@ -384,7 +384,7 @@ class JDTTreeBuilderHelper {
 			typeAccess.setPosition(
 					jdtTreeBuilder.getPositionBuilder().buildPosition(qualifiedNameReference.sourceStart(), (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32) - 2));
 		} else {
-			typeAccess.setImplicit(true);
+			typeAccess.setImplicit(qualifiedNameReference.isImplicitThis());
 		}
 
 		return typeAccess;
