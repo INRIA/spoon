@@ -7,9 +7,12 @@ import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -25,6 +28,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
+import spoon.test.reference.testclasses.Panini;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
@@ -40,6 +44,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -496,6 +501,16 @@ public class TypeReferenceTest {
 		final Factory factory = createFactory();
 		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 		typeReference.setSimpleName("?");
+	}
+
+	@Test
+	public void testIgnoreEnclosingClassInActualTypes() throws Exception {
+		final CtType<Panini> aPanini = buildClass(Panini.class);
+		final CtStatement ctReturn = aPanini.getMethod("entryIterator").getBody().getStatement(0);
+		assertTrue(ctReturn instanceof CtReturn);
+		final CtExpression ctConstructorCall = ((CtReturn) ctReturn).getReturnedExpression();
+		assertTrue(ctConstructorCall instanceof CtConstructorCall);
+		assertEquals("spoon.test.reference.testclasses.Panini<K, V>.Itr<java.util.Map.Entry<K, V>>", ctConstructorCall.getType().toString());
 	}
 
 	class A {
