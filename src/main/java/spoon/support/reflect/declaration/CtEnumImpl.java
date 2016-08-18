@@ -25,13 +25,19 @@ import spoon.reflect.visitor.CtVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import spoon.reflect.declaration.ModifierKind;
 
 public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
 
 	private List<CtEnumValue<?>> enumValues = CtElementImpl.<CtEnumValue<?>>emptyList();
+
+	private CtMethod<T[]> valuesMethod;
+
+	private CtMethod<T> valueOfMethod;
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -40,7 +46,10 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
-		return getMethods();
+		Set<CtMethod<?>> allMethods = new HashSet<>(getMethods());
+		allMethods.add(valuesMethod());
+		allMethods.add(valueOfMethod());
+		return allMethods;
 	}
 
 	@Override
@@ -50,7 +59,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 				return true;
 			}
 		}
-		return false;
+		return getSuperclass().isSubtypeOf(type);
 	}
 
 	@Override
@@ -110,5 +119,66 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	@Override
 	public CtEnum<T> clone() {
 		return (CtEnum<T>) super.clone();
+	}
+
+	@Override
+	public CtTypeReference<?> getSuperclass() {
+		return getFactory().Type().createReference(Enum.class);
+	}
+
+	private CtMethod valuesMethod() {
+		if (valuesMethod == null) {
+			valuesMethod = getFactory().Core().createMethod();
+			valuesMethod.setParent(this);
+			valuesMethod.addModifier(ModifierKind.PUBLIC);
+			valuesMethod.addModifier(ModifierKind.STATIC);
+			valuesMethod.setSimpleName("values");
+			valuesMethod.setImplicit(true);
+			valuesMethod.setType(factory.Type().createArrayReference(getReference()));
+		}
+		return valuesMethod;
+	}
+
+	private CtMethod valueOfMethod() {
+		if (valueOfMethod == null) {
+			valueOfMethod = getFactory().Core().createMethod();
+			valueOfMethod.setParent(this);
+			valueOfMethod.addModifier(ModifierKind.PUBLIC);
+			valueOfMethod.addModifier(ModifierKind.STATIC);
+			valueOfMethod.setSimpleName("valueOf");
+			valueOfMethod.setImplicit(true);
+			valueOfMethod.addThrownType(
+				getFactory().Type().createReference(IllegalArgumentException.class));
+			valueOfMethod.setType(getReference());
+			factory.Method().createParameter(valuesMethod, factory.Type().STRING, "name");
+		}
+		return valueOfMethod;
+	}
+
+	@Override
+	public <R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes) {
+		if ("values".equals(name) && parameterTypes.length == 0) {
+			return valuesMethod();
+		} else if ("valueOf".equals(name) && parameterTypes.length == 1 && parameterTypes[0].equals(factory.Type().STRING)) {
+			return valueOfMethod();
+		} else {
+			return super.getMethod(name, parameterTypes);
+		}
+	}
+
+	@Override
+	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>... parameterTypes) {
+		if ("values".equals(name)
+			&& parameterTypes.length == 0
+			&& returnType.equals(getReference())) {
+			return valuesMethod();
+		} else if ("valueOf".equals(name)
+			&& parameterTypes.length == 1
+			&& parameterTypes[0].equals(factory.Type().STRING)
+			&& returnType.equals(factory.Type().createArrayReference(getReference()))) {
+			return valueOfMethod();
+		} else {
+			return super.getMethod(returnType, name, parameterTypes);
+		}
 	}
 }
