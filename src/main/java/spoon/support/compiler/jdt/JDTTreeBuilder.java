@@ -131,6 +131,7 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -786,9 +787,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(AnnotationMethodDeclaration annotationTypeDeclaration, ClassScope classScope) {
-		CtField<Object> f = factory.Core().createField();
-		f.setSimpleName(new String(annotationTypeDeclaration.selector));
-		context.enter(f, annotationTypeDeclaration);
+		CtAnnotationMethod<Object> ctAnnotationMethod = factory.Core().createAnnotationMethod();
+		ctAnnotationMethod.setSimpleName(CharOperation.charToString(annotationTypeDeclaration.selector));
+		context.enter(ctAnnotationMethod, annotationTypeDeclaration);
 		return true;
 	}
 

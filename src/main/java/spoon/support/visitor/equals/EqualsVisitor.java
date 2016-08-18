@@ -15,6 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
+
 package spoon.support.visitor.equals;
 
 
@@ -394,6 +395,16 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		biScan(m.getThrownTypes(), other.getThrownTypes());
 		biScan(m.getBody(), other.getBody());
 		exit(m);
+	}
+
+	@java.lang.Override
+	public <T> void visitCtAnnotationMethod(spoon.reflect.declaration.CtAnnotationMethod<T> annotationMethod) {
+		spoon.reflect.declaration.CtAnnotationMethod other = ((spoon.reflect.declaration.CtAnnotationMethod) (stack.peek()));
+		enter(annotationMethod);
+		biScan(annotationMethod.getAnnotations(), other.getAnnotations());
+		biScan(annotationMethod.getType(), other.getType());
+		biScan(annotationMethod.getDefaultExpression(), other.getDefaultExpression());
+		exit(annotationMethod);
 	}
 
 	public <T> void visitCtNewArray(final spoon.reflect.code.CtNewArray<T> newArray) {

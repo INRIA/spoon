@@ -63,6 +63,7 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -285,6 +286,11 @@ public interface CtVisitor {
 	 * Visits a method declaration.
 	 */
 	<T> void visitCtMethod(CtMethod<T> m);
+
+	/**
+	 * Visits an annotation method declaration.
+	 */
+	<T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod);
 
 	/**
 	 * Visits an array construction.

@@ -15,6 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
+
 package spoon.support.visitor.clone;
 
 
@@ -420,6 +421,17 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtMethod.setBody(spoon.support.visitor.equals.CloneHelper.clone(m.getBody()));
 		aCtMethod.setComments(spoon.support.visitor.equals.CloneHelper.clone(m.getComments()));
 		this.other = aCtMethod;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public <T> void visitCtAnnotationMethod(spoon.reflect.declaration.CtAnnotationMethod<T> annotationMethod) {
+		spoon.reflect.declaration.CtAnnotationMethod<T> aCtAnnotationMethod = spoon.support.visitor.clone.CloneBuilder.build(this.builder, annotationMethod, annotationMethod.getFactory().Core().createAnnotationMethod());
+		aCtAnnotationMethod.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(annotationMethod.getAnnotations()));
+		aCtAnnotationMethod.setType(spoon.support.visitor.equals.CloneHelper.clone(annotationMethod.getType()));
+		aCtAnnotationMethod.setDefaultExpression(spoon.support.visitor.equals.CloneHelper.clone(annotationMethod.getDefaultExpression()));
+		aCtAnnotationMethod.setComments(spoon.support.visitor.equals.CloneHelper.clone(annotationMethod.getComments()));
+		this.other = aCtAnnotationMethod;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator

@@ -15,6 +15,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -51,6 +52,7 @@ import spoon.test.annotation.testclasses.Foo.OuterAnnotation;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.annotation.testclasses.InnerAnnot;
 import spoon.test.annotation.testclasses.Main;
+import spoon.test.annotation.testclasses.SuperAnnotation;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
 
@@ -67,6 +69,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class AnnotationTest {
@@ -317,7 +320,7 @@ public class AnnotationTest {
 		CtAnnotationType<?> annotationType = pkg.getType("Bound");
 		assertEquals(Bound.class, annotationType.getActualClass());
 		assertNull(annotationType.getSuperclass());
-		assertEquals(annotationType.getFields().size(),annotationType.getMethods().size());
+		assertEquals(1, annotationType.getMethods().size());
 		assertEquals(0,annotationType.getSuperInterfaces().size());
 
 		annotations = annotationType.getAnnotations();
@@ -334,12 +337,12 @@ public class AnnotationTest {
 		CtType<?> annotationInnerClass = type.getNestedType("Annotation");
 		assertEquals("Annotation", annotationInnerClass.getSimpleName());
 		assertEquals(1, annotationInnerClass.getAnnotations().size());
-		assertEquals(res, annotationInnerClass.getField("value").toString());
+		assertEquals(res, annotationInnerClass.getMethod("value").toString());
 
 		CtType<?> annotation = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArray");
 		assertEquals("AnnotArray", annotation.getSimpleName());
 		assertEquals(1, annotation.getAnnotations().size());
-		assertEquals(res, annotation.getField("value").toString());
+		assertEquals(res, annotation.getMethod("value").toString());
 	}
 
 	@Test
@@ -731,10 +734,10 @@ public class AnnotationTest {
 	public void testDefaultValueInAnnotationsForAnnotationFields() throws Exception {
 		final CtType<?> annotation = factory.Type().get(AnnotationDefaultAnnotation.class);
 
-		final CtField<?> ctField = annotation.getFields().get(0);
-		assertEquals("Field is typed by an annotation.", InnerAnnot.class, ctField.getType().getActualClass());
+		final CtAnnotationMethod<?> ctAnnotations = annotation.getMethods().toArray(new CtAnnotationMethod<?>[0])[0];
+		assertEquals("Field is typed by an annotation.", InnerAnnot.class, ctAnnotations.getType().getActualClass());
 		assertEquals("Default value of a field typed by an annotation must be an annotation",
-				InnerAnnot.class, ctField.getDefaultExpression().getType().getActualClass());
+				InnerAnnot.class, ctAnnotations.getDefaultExpression().getType().getActualClass());
 	}
 
 	@Test
@@ -800,6 +803,24 @@ public class AnnotationTest {
 		CtMethod<?> mMethod = aClass.getMethod("m");
 		CtStatement statement = mMethod.getBody().getStatement(1);
 		assertEquals("annotation.equals(null)", statement.toString());
+	}
+
+	@Test
+	public void testFieldAndMethodInAnnotation() throws Exception {
+		final CtType<SuperAnnotation> aTypeAnnotation = buildClass(SuperAnnotation.class);
+		final CtField<?> fieldValue = aTypeAnnotation.getField("value");
+		assertNotNull(fieldValue);
+		assertEquals("java.lang.String value = \"\";", fieldValue.toString());
+		final CtMethod<Object> methodValue = aTypeAnnotation.getMethod("value");
+		assertTrue(methodValue instanceof CtAnnotationMethod);
+		assertEquals("java.lang.String value() default spoon.test.annotation.testclasses.SuperAnnotation.value;", methodValue.toString());
+		final CtMethod<Object> methodNoDefault = aTypeAnnotation.getMethod("value1");
+		assertTrue(methodNoDefault instanceof CtAnnotationMethod);
+		assertEquals("java.lang.String value1();", methodNoDefault.toString());
+
+		assertEquals(2, aTypeAnnotation.getMethods().size());
+		aTypeAnnotation.addMethod(methodValue.clone());
+		assertEquals(2, aTypeAnnotation.getMethods().size());
 	}
 
 	abstract class AbstractElementsProcessor<A extends Annotation, E extends CtElement>
