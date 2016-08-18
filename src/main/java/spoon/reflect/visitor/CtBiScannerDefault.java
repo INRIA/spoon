@@ -17,7 +17,6 @@
 
 package spoon.reflect.visitor;
 
-
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.
  *
@@ -417,6 +416,17 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(m.getBody(), other.getBody());
 		biScan(m.getComments(), other.getComments());
 		exit(m);
+	}
+
+	@java.lang.Override
+	public <T> void visitCtAnnotationMethod(spoon.reflect.declaration.CtAnnotationMethod<T> annotationMethod) {
+		spoon.reflect.declaration.CtAnnotationMethod other = ((spoon.reflect.declaration.CtAnnotationMethod) (stack.peek()));
+		enter(annotationMethod);
+		biScan(annotationMethod.getAnnotations(), other.getAnnotations());
+		biScan(annotationMethod.getType(), other.getType());
+		biScan(annotationMethod.getDefaultExpression(), other.getDefaultExpression());
+		biScan(annotationMethod.getComments(), other.getComments());
+		exit(annotationMethod);
 	}
 
 	public <T> void visitCtNewArray(final spoon.reflect.code.CtNewArray<T> newArray) {

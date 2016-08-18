@@ -77,6 +77,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -289,6 +290,23 @@ public class ParentExiter extends CtInheritanceScanner {
 		return parent.returnType != null && parent.returnType.equals(childJDT)
 				// Return type not yet initialized.
 				&& !child.equals(ctMethod.getType());
+	}
+
+	@Override
+	public <T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod) {
+		if (child instanceof CtExpression && hasChildEqualsToDefaultValue(annotationMethod)) {
+			annotationMethod.setDefaultExpression((CtExpression) child);
+			return;
+		}
+		super.visitCtAnnotationMethod(annotationMethod);
+	}
+
+	private <T> boolean hasChildEqualsToDefaultValue(CtAnnotationMethod<T> ctAnnotationMethod) {
+		final AnnotationMethodDeclaration parent = (AnnotationMethodDeclaration) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		// Default value is equals to the jdt child.
+		return parent.defaultValue != null && parent.defaultValue.equals(childJDT)
+				// Default value not yet initialized.
+				&& !child.equals(ctAnnotationMethod.getDefaultExpression());
 	}
 
 	@Override

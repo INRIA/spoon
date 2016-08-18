@@ -65,6 +65,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -304,6 +305,11 @@ public interface CoreFactory {
 	 * Creates a method.
 	 */
 	<T> CtMethod<T> createMethod();
+
+	/**
+	 * Creates an annotation method.
+	 */
+	<T> CtAnnotationMethod<T> createAnnotationMethod();
 
 	/**
 	 * Creates a new array expression.

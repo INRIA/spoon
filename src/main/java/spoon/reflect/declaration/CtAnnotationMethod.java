@@ -16,33 +16,22 @@
  */
 package spoon.reflect.declaration;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import spoon.reflect.code.CtExpression;
 
 /**
- * This element defines an annotation type.
+ * This element defines an annotation method declared in an annotation type.
  */
-public interface CtAnnotationType<T extends Annotation> extends CtType<T> {
+public interface CtAnnotationMethod<T> extends CtMethod<T> {
+	/**
+	 * Gets the default expression assigned to the annotation method.
+	 */
+	CtExpression<T> getDefaultExpression();
 
 	/**
-	 * Gets the methods of this annotation type which are necessarily {@link CtAnnotationMethod}.
+	 * Sets the default expression assigned to the annotation method.
 	 */
-	Set<CtAnnotationMethod<?>> getAnnotationMethods();
-
-	/**
-	 * {@inheritDoc}
-	 * The method passed as parameter must be a {@link CtAnnotationMethod}.
-	 */
-	@Override
-	<M, C extends CtType<T>> C addMethod(CtMethod<M> method);
-
-	/**
-	 * {@inheritDoc}
-	 * The methods passed as parameter must be typed by {@link CtAnnotationMethod}.
-	 */
-	@Override
-	<C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods);
+	<C extends CtAnnotationMethod<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 
 	@Override
-	CtAnnotationType<T> clone();
+	CtAnnotationMethod<T> clone();
 }
