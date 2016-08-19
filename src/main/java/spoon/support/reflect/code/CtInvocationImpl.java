@@ -144,15 +144,6 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	}
 
 	@Override
-	public void replace(CtElement element) {
-		if (element instanceof CtStatementList) {
-			CtStatementImpl.replace(this, (CtStatementList) element);
-		} else {
-			super.replace(element);
-		}
-	}
-
-	@Override
 	public CtTypeReference<T> getType() {
 		return getExecutable() == null ? null : getExecutable().getType();
 	}
