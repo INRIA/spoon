@@ -344,7 +344,7 @@ public class TypeReferenceTest {
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("Demo2");
 		Set<CtTypeReference<?>> superInterfaces = aClass.getSuperInterfaces();
 		final CtTypeReference superInterface = superInterfaces.toArray(new CtTypeReference[superInterfaces.size()])[0];
-        assertEquals("Bar", superInterface.getSimpleName());
+		assertEquals("Bar", superInterface.getSimpleName());
 		assertEquals(2, superInterface.getActualTypeArguments().size());
 		final CtTypeReference<?> first = superInterface.getActualTypeArguments().get(0);
 		assertTrue(first instanceof CtTypeParameterReference);
@@ -523,14 +523,14 @@ public class TypeReferenceTest {
 		class Tacos<K extends A> {
 		}
 	}
-    
-    @Test
+	
+	@Test
 	public void testCorrectEnumParent() {
 		final Launcher launcher = new Launcher();
-        launcher.getEnvironment().setNoClasspath(true);
-        launcher.buildModel();
-        CtEnum e = launcher.getFactory().Enum().create("spoon.test.reference.EnumE");
-        CtTypeReference correctParent = launcher.getFactory().Type().createReference(java.lang.Enum.class);
-        assertEquals(correctParent, e.getReference().getSuperclass());
-    }
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+		CtEnum e = launcher.getFactory().Enum().create("spoon.test.reference.EnumE");
+		CtTypeReference correctParent = launcher.getFactory().Type().createReference(java.lang.Enum.class);
+		assertEquals(correctParent, e.getReference().getSuperclass());
+	}
 }
