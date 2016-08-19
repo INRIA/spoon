@@ -147,4 +147,22 @@ public class ExecutableReferenceTest {
 			}
 		});
 	}
+
+	@Test
+	public void testInvokeEnumMethod() {
+		final spoon.Launcher launcher = new spoon.Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/reference/Enum.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(8);
+		launcher.buildModel();
+
+		CtInvocation invocation = launcher.getModel().getElements(new TypeFilter<CtInvocation>(CtInvocation.class) {
+			@Override
+			public boolean matches(CtInvocation element) {
+				return super.matches(element) 
+					&& element.getExecutable().getSimpleName().equals("valueOf");
+			}
+		}).get(0);
+		assertNotNull(invocation.getExecutable().getExecutableDeclaration());
+	}
 }

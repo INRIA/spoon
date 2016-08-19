@@ -44,6 +44,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import spoon.reflect.declaration.CtEnum;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -521,5 +522,15 @@ public class TypeReferenceTest {
 	class B {
 		class Tacos<K extends A> {
 		}
+	}
+	
+	@Test
+	public void testCorrectEnumParent() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+		CtEnum e = launcher.getFactory().Enum().create("spoon.test.reference.EnumE");
+		CtTypeReference correctParent = launcher.getFactory().Type().createReference(java.lang.Enum.class);
+		assertEquals(correctParent, e.getReference().getSuperclass());
 	}
 }

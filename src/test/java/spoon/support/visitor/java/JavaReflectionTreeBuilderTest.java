@@ -44,7 +44,7 @@ public class JavaReflectionTreeBuilderTest {
 		final CtEnum<TextStyle> anEnum = new JavaReflectionTreeBuilder(createFactory()).scan(TextStyle.class);
 		assertNotNull(anEnum);
 		assertEquals("java.time.format.TextStyle", anEnum.getQualifiedName());
-		assertNull(anEnum.getSuperclass());
+		assertNotNull(anEnum.getSuperclass());
 		assertTrue(anEnum.getFields().size() > 0);
 		assertTrue(anEnum.getEnumValues().size() > 0);
 		assertTrue(anEnum.getMethods().size() > 0);
