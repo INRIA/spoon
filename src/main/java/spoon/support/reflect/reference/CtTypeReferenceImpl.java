@@ -356,32 +356,36 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		Collection<CtFieldReference<?>> l = new ArrayList<>();
 		CtType<?> t = getDeclaration();
 		if (t == null) {
 			try {
-				createFieldReferences(l);
+				return getDeclaredFieldReferences();
 			} catch (SpoonClassNotFoundException cnfe) {
 				return handleParentNotFound(cnfe);
 			}
 		} else {
 			return t.getDeclaredFields();
 		}
-		return l;
 	}
 
-	private void createFieldReferences(Collection<CtFieldReference<?>> l) {
+	/**
+	 * Collects all field references of the declared class.
+	 *
+	 * @return collection of field references
+	 */
+	private Collection<CtFieldReference<?>> getDeclaredFieldReferences() {
+		Collection<CtFieldReference<?>> references = new ArrayList<>();
 		for (Field f : getActualClass().getDeclaredFields()) {
-			l.add(getFactory().Field().createReference(f));
+			references.add(getFactory().Field().createReference(f));
 		}
 		if (getActualClass().isAnnotation()) {
 			for (Method m : getActualClass().getDeclaredMethods()) {
 				CtTypeReference<?> retRef = getFactory().Type().createReference(m.getReturnType());
 				CtFieldReference<?> fr = getFactory().Field().createReference(this, retRef, m.getName());
-				// fr.
-				l.add(fr);
+				references.add(fr);
 			}
 		}
+		return references;
 	}
 
 	private Collection<CtFieldReference<?>> handleParentNotFound(SpoonClassNotFoundException cnfe) {
@@ -409,15 +413,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public Collection<CtFieldReference<?>> getAllFields() {
 		CtType<?> t = getDeclaration();
-			if (t == null) {
-				try {
-					return RtHelper.getAllFields(getActualClass(), getFactory());
-				} catch (SpoonClassNotFoundException cnfe) {
-					return handleParentNotFound(cnfe);
-				}
-			} else {
-				return t.getAllFields();
+		if (t == null) {
+			try {
+				return RtHelper.getAllFields(getActualClass(), getFactory());
+			} catch (SpoonClassNotFoundException cnfe) {
+				return handleParentNotFound(cnfe);
 			}
+		} else {
+			return t.getAllFields();
+		}
 	}
 
 	@Override

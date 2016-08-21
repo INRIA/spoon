@@ -55,10 +55,6 @@ public class NoClasspathTest {
 		}
 		assertNull(superclass.getDeclaration());
 
-		Collection<CtFieldReference<?>> allFields = superclass.getAllFields();
-		System.out.println(allFields);
-		System.out.println(superclass.getDeclaredFields());
-
 		// now we really make sure we don't have the class in the classpath
 		try {
 			superclass.getActualClass();
