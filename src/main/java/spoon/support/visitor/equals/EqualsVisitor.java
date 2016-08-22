@@ -584,6 +584,15 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 	}
 
 	@java.lang.Override
+	public void visitCtWildcardReference(spoon.reflect.reference.CtWildcardReference wildcardReference) {
+		spoon.reflect.reference.CtWildcardReference other = ((spoon.reflect.reference.CtWildcardReference) (stack.peek()));
+		enter(wildcardReference);
+		biScan(wildcardReference.getAnnotations(), other.getAnnotations());
+		biScan(wildcardReference.getBoundingType(), other.getBoundingType());
+		exit(wildcardReference);
+	}
+
+	@java.lang.Override
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
 		spoon.reflect.reference.CtIntersectionTypeReference other = ((spoon.reflect.reference.CtIntersectionTypeReference) (stack.peek()));
 		enter(reference);

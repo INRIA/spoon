@@ -1620,6 +1620,12 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	@java.lang.Override
+	public void visitCtWildcardReference(spoon.reflect.reference.CtWildcardReference wildcardReference) {
+		replaceInListIfExist(wildcardReference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(wildcardReference));
+		replaceElementIfExist(wildcardReference.getBoundingType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeParameterReferenceBoundingTypeReplaceListener(wildcardReference));
+	}
+
+	@java.lang.Override
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
 		replaceInSetIfExist(reference.getBounds(), new spoon.support.visitor.replace.ReplacementVisitor.CtIntersectionTypeReferenceBoundsReplaceListener(reference));
 	}

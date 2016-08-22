@@ -14,27 +14,29 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.internal;
+package spoon.support.reflect.reference;
 
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 
-public class CtCircularTypeReferenceImpl extends CtTypeParameterReferenceImpl implements CtCircularTypeReference {
+public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implements CtWildcardReference {
 	@Override
 	public void accept(CtVisitor visitor) {
-		visitor.visitCtCircularTypeReference(this);
+		visitor.visitCtWildcardReference(this);
+	}
+
+	public CtWildcardReferenceImpl() {
+		simplename = "?";
 	}
 
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
-		this.simplename = simplename;
 		return (T) this;
 	}
 
 	@Override
-	public CtCircularTypeReference clone() {
-		return (CtCircularTypeReference) super.clone();
+	public CtWildcardReference clone() {
+		return (CtWildcardReference) super.clone();
 	}
 }

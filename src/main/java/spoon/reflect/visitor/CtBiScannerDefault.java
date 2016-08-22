@@ -15,7 +15,9 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
+
 package spoon.reflect.visitor;
+
 
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.
@@ -618,6 +620,15 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(ref.getAnnotations(), other.getAnnotations());
 		biScan(ref.getBoundingType(), other.getBoundingType());
 		exit(ref);
+	}
+
+	@java.lang.Override
+	public void visitCtWildcardReference(spoon.reflect.reference.CtWildcardReference wildcardReference) {
+		spoon.reflect.reference.CtWildcardReference other = ((spoon.reflect.reference.CtWildcardReference) (stack.peek()));
+		enter(wildcardReference);
+		biScan(wildcardReference.getAnnotations(), other.getAnnotations());
+		biScan(wildcardReference.getBoundingType(), other.getBoundingType());
+		exit(wildcardReference);
 	}
 
 	@java.lang.Override

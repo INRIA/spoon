@@ -101,6 +101,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
 import spoon.reflect.visitor.printer.PrinterHelper;
@@ -1600,6 +1601,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			scan(ref.getBoundingType());
 		}
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
+		visitCtTypeParameterReference(wildcardReference);
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {

@@ -92,6 +92,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.reflect.code.CtAnnotationFieldAccessImpl;
 import spoon.support.reflect.code.CtArrayReadImpl;
 import spoon.support.reflect.code.CtArrayWriteImpl;
@@ -164,6 +165,7 @@ import spoon.support.reflect.reference.CtParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
+import spoon.support.reflect.reference.CtWildcardReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
 
 import java.io.Serializable;
@@ -544,6 +546,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	public CtTypeParameterReference createTypeParameterReference() {
 		CtTypeParameterReference e = new CtTypeParameterReferenceImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public CtWildcardReference createWildcardReference() {
+		CtWildcardReference e = new CtWildcardReferenceImpl();
 		e.setFactory(getMainFactory());
 		return e;
 	}
