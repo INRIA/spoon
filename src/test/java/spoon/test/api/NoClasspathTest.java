@@ -55,6 +55,9 @@ public class NoClasspathTest {
 		}
 		assertNull(superclass.getDeclaration());
 
+		// should be empty as in noClasspath the actual class cannot be retrieved
+		assertTrue(superclass.getAllFields().isEmpty());
+
 		// now we really make sure we don't have the class in the classpath
 		try {
 			superclass.getActualClass();
