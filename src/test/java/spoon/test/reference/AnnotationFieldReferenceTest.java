@@ -3,7 +3,6 @@ package spoon.test.reference;
 import org.junit.Test;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -22,7 +21,7 @@ public class AnnotationFieldReferenceTest {
 		final CtInvocation<?> annotationInv = make.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class)).get(0);
 		final CtExecutable<?> executableDeclaration = annotationInv.getExecutable().getExecutableDeclaration();
 		assertNotNull(executableDeclaration);
-		final CtField<?> value = factory.Annotation().get(Parameter.class).getField("value");
+		final CtMethod<?> value = factory.Annotation().get(Parameter.class).getMethod("value");
 		assertNotNull(value);
 		assertEquals(value.getSimpleName(), executableDeclaration.getSimpleName());
 		assertEquals(value.getType(), executableDeclaration.getType());

@@ -28,6 +28,7 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -257,8 +258,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		// Try by CT reflection
 		CtType<?> t = getAnnotationType().getDeclaration();
 		if (t != null) {
-			CtField<?> f = t.getField(name);
-			return f.getType().getActualClass();
+			CtMethod<?> method = t.getMethod(name);
+			return method.getType().getActualClass();
 		}
 		// Try with RT reflection
 		Class<?> c = getAnnotationType().getActualClass();
@@ -278,7 +279,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		Object ret = null;
 		CtAnnotationType<?> at = (CtAnnotationType<?>) getAnnotationType().getDeclaration();
 		if (at != null) {
-			CtField<?> f = at.getField(fieldName);
+			CtAnnotationMethod<?> f = (CtAnnotationMethod) at.getMethod(fieldName);
 			ret = f.getDefaultExpression();
 		}
 		return ret;

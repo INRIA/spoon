@@ -64,6 +64,7 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -527,6 +528,16 @@ public abstract class CtScanner implements CtVisitor {
 		scan(m.getBody());
 		scan(m.getComments());
 		exit(m);
+	}
+
+	@Override
+	public <T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod) {
+		enter(annotationMethod);
+		scan(annotationMethod.getAnnotations());
+		scan(annotationMethod.getType());
+		scan(annotationMethod.getDefaultExpression());
+		scan(annotationMethod.getComments());
+		exit(annotationMethod);
 	}
 
 	public <T> void visitCtNewArray(final CtNewArray<T> newArray) {

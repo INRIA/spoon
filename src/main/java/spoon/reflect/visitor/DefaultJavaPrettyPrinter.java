@@ -71,6 +71,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -348,6 +349,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
 		lst.addAll(annotationType.getNestedTypes());
 		lst.addAll(annotationType.getFields());
+		lst.addAll(annotationType.getMethods());
 		elementPrinterHelper.writeElementList(lst);
 		printer.decTab().writeTabs().write("}");
 	}
@@ -681,17 +683,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write(" ");
 		printer.write(f.getSimpleName());
 
-		if (f.getDeclaringType().isAnnotationType()) {
-			printer.write("()");
-			if (f.getDefaultExpression() != null) {
-				printer.write(" default ");
-				scan(f.getDefaultExpression());
-			}
-		} else {
-			if (f.getDefaultExpression() != null) {
-				printer.write(" = ");
-				scan(f.getDefaultExpression());
-			}
+		if (f.getDefaultExpression() != null) {
+			printer.write(" = ");
+			scan(f.getDefaultExpression());
 		}
 		printer.write(";");
 	}
@@ -1251,6 +1245,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	public <T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod) {
+		elementPrinterHelper.writeComment(annotationMethod);
+		elementPrinterHelper.visitCtNamedElement(annotationMethod, sourceCompilationUnit);
+		elementPrinterHelper.writeModifiers(annotationMethod);
+		scan(annotationMethod.getType());
+		printer.write(" ");
+		printer.write(annotationMethod.getSimpleName());
+
+		printer.write("()");
+		if (annotationMethod.getDefaultExpression() != null) {
+			printer.write(" default ");
+			scan(annotationMethod.getDefaultExpression());
+		}
+		printer.write(";");
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
@@ -1679,7 +1690,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write(ref.getSimpleName());
 		}
 		if (withGenerics && !context.ignoreGenerics) {
+			final boolean old = context.ignoreEnclosingClass;
+			context.ignoreEnclosingClass = false;
 			elementPrinterHelper.writeActualTypeArguments(ref);
+			context.ignoreEnclosingClass = old;
 		}
 	}
 

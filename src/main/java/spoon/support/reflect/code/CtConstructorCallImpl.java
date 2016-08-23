@@ -85,15 +85,6 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
-	public void replace(CtElement element) {
-		if (element instanceof CtStatementList) {
-			CtStatementImpl.replace(this, (CtStatementList) element);
-		} else {
-			super.replace(element);
-		}
-	}
-
-	@Override
 	public <C extends CtAbstractInvocation<T>> C setArguments(List<CtExpression<?>> arguments) {
 		if (arguments == null || arguments.isEmpty()) {
 			this.arguments = CtElementImpl.emptyList();

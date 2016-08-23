@@ -78,15 +78,6 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	}
 
 	@Override
-	public void replace(CtElement element) {
-		if (element instanceof CtStatementList) {
-			CtStatementImpl.replace(this, (CtStatementList) element);
-		} else {
-			super.replace(element);
-		}
-	}
-
-	@Override
 	public <C extends CtUnaryOperator> C setOperand(CtExpression<T> expression) {
 		if (expression != null) {
 			expression.setParent(this);

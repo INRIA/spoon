@@ -131,6 +131,7 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -786,9 +787,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(AnnotationMethodDeclaration annotationTypeDeclaration, ClassScope classScope) {
-		CtField<Object> f = factory.Core().createField();
-		f.setSimpleName(new String(annotationTypeDeclaration.selector));
-		context.enter(f, annotationTypeDeclaration);
+		CtAnnotationMethod<Object> ctAnnotationMethod = factory.Core().createAnnotationMethod();
+		ctAnnotationMethod.setSimpleName(CharOperation.charToString(annotationTypeDeclaration.selector));
+		context.enter(ctAnnotationMethod, annotationTypeDeclaration);
 		return true;
 	}
 
@@ -940,8 +941,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		// Create block
 		if (!methodDeclaration.isAbstract() && (methodDeclaration.modifiers & ClassFileConstants.AccNative) == 0) {
-			m.setBody(getFactory().Core().createBlock());
-			context.enter(m.getBody(), methodDeclaration);
+			context.enter(getFactory().Core().createBlock(), methodDeclaration);
 			context.exit(methodDeclaration);
 		}
 
@@ -955,8 +955,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(c, constructorDeclaration);
 
 		// Create block
-		c.setBody(factory.Core().createBlock());
-		context.enter(c.getBody(), constructorDeclaration);
+		context.enter(factory.Core().createBlock(), constructorDeclaration);
 		context.exit(constructorDeclaration);
 
 		return true;

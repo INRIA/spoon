@@ -65,6 +65,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -140,6 +141,7 @@ import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.SourcePositionImpl;
 import spoon.support.reflect.declaration.CompilationUnitVirtualImpl;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
+import spoon.support.reflect.declaration.CtAnnotationMethodImpl;
 import spoon.support.reflect.declaration.CtAnnotationTypeImpl;
 import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
 import spoon.support.reflect.declaration.CtClassImpl;
@@ -422,6 +424,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	public <T> CtMethod<T> createMethod() {
 		CtMethod<T> e = new CtMethodImpl<>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public <T> CtAnnotationMethod<T> createAnnotationMethod() {
+		CtAnnotationMethod<T> e = new CtAnnotationMethodImpl<T>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

@@ -72,6 +72,7 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -634,6 +635,11 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtModifiable(e);
 		scanCtVisitable(e);
+	}
+
+	@Override
+	public <T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod) {
+		visitCtMethod(annotationMethod);
 	}
 
 	public <T> void visitCtNewArray(CtNewArray<T> e) {

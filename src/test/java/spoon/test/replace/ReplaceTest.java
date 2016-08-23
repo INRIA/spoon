@@ -13,6 +13,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -29,13 +30,16 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.replace.testclasses.Mole;
 import spoon.test.replace.testclasses.Tacos;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class ReplaceTest {
 
@@ -154,7 +158,8 @@ public class ReplaceTest {
 		stmt.replace(lst);
 
 		// we should have only 2 statements after (from the stmt list)
-		assertEquals(2, sample.getMethod("retry").getBody().getStatements().size());
+		assertEquals(1, sample.getMethod("retry").getBody().getStatements().size());
+		assertEquals(2, ((CtBlock) sample.getMethod("retry").getBody().getStatement(0)).getStatements().size());
 	}
 
 	@Test
@@ -328,5 +333,16 @@ public class ReplaceTest {
 
 		assertEquals(newExecutable, inv.getExecutable());
 		assertEquals("java.io.PrintStream#print(java.lang.String)", inv.getExecutable().toString());
+	}
+
+	@Test
+	public void testReplaceBlockTry() throws Exception {
+		final CtType<Mole> aMole = buildClass(Mole.class);
+		final CtBlock<?> newBlock = aMole.getFactory().Code().createCtBlock(aMole.getFactory().Code().createCodeSnippetStatement("int j = 0;").compile());
+		final CtTry ctTry = aMole.getMethod("m").getElements(new TypeFilter<>(CtTry.class)).get(0);
+
+		assertNotEquals(newBlock, ctTry.getBody());
+		ctTry.getBody().replace(newBlock);
+		assertEquals(newBlock, ctTry.getBody());
 	}
 }
