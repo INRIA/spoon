@@ -13,10 +13,13 @@ SPOON_JAR="lib/spoon.jar"
 ### 1) the fully qualified name of the processor to use (ex: com.example.spoonprocessors.MyProcessor)
 ### 2) the location of the source code to be spooned (ex: tester_project/src)
 ### 3) the destination for the spooned output source code (ex: spooned)
+### 4) [OPTIONAL AND ONLY USED IN OSX CONFIGURATION] the path to the processor source code (ex: src/com/example/spoonprocessors/MyProcessor.java)
 processor="$1"
 input="$2"
 output="$3"
 processor_src="src/${processor//./\/}.java"
+# The following is a configuration targeted toward osx or other operating systems that don't handle the escape character backslash above well
+processor_src="$4"
 
 # STEP 1: COMPILE THE PROCESSOR
 
