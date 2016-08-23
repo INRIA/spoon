@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
@@ -30,6 +31,7 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
 import spoon.test.generics.testclasses.Mole;
+import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
@@ -509,5 +511,10 @@ public class GenericsTest {
 		assertEquals("java.lang.Integer", newPrepare.getActualTypeArguments().get(0).toString());
 		assertEquals(1, newPrepare.getType().getActualTypeArguments().size());
 		assertEquals("java.lang.String", newPrepare.getType().getActualTypeArguments().get(0).toString());
+	}
+
+	@Test
+	public void testWildcard() throws Exception {
+		assertEquals(3, buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class)).size());
 	}
 }

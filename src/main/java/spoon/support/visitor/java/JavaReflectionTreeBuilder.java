@@ -36,6 +36,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.ExecutableRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.PackageRuntimeBuilderContext;
@@ -341,15 +342,14 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public void visitType(WildcardType type) {
-		final CtTypeParameterReference ctTypeReference = factory.Core().createTypeParameterReference();
-		ctTypeReference.setSimpleName("?");
-		ctTypeReference.setUpper(type.getUpperBounds() != null && !type.getUpperBounds()[0].equals(Object.class));
+		final CtWildcardReference wildcard = factory.Core().createWildcardReference();
+		wildcard.setUpper(type.getUpperBounds() != null && !type.getUpperBounds()[0].equals(Object.class));
 
-		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
+		enter(new TypeReferenceRuntimeBuilderContext(wildcard));
 		super.visitType(type);
 		exit();
 
-		contexts.peek().addTypeName(ctTypeReference);
+		contexts.peek().addTypeName(wildcard);
 	}
 
 	private String getTypeName(Type type) {

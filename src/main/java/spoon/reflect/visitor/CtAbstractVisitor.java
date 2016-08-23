@@ -87,6 +87,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 
 import java.lang.annotation.Annotation;
 
@@ -368,6 +369,11 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
+
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
 
 	}
 

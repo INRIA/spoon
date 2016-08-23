@@ -556,7 +556,7 @@ public class ReferenceBuilder {
 			Pattern pattern = Pattern.compile("([^<]+)<(.+)>");
 			Matcher m = pattern.matcher(name);
 			if (name.startsWith("?")) {
-				main = (CtTypeReference) this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
+				main = (CtTypeReference) this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 			} else {
 				main = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			}
@@ -571,7 +571,7 @@ public class ReferenceBuilder {
 			main = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			main.setSimpleName(name);
 		} else if (name.startsWith("?")) {
-			return (CtTypeReference) this.jdtTreeBuilder.getFactory().Type().createTypeParameterReference(name);
+			return (CtTypeReference) this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 		}
 		return main;
 	}
@@ -584,7 +584,7 @@ public class ReferenceBuilder {
 		CtTypeParameterReference param = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 		if (name.contains("extends") || name.contains("super")) {
 			String[] split = name.contains("extends") ? name.split("extends") : name.split("super");
-			param.setSimpleName(split[0].trim());
+			param = getTypeParameterReference(split[0].trim());
 			param.setBoundingType(getTypeReference(split[split.length - 1].trim()));
 		} else if (name.matches(".*(<.+>)")) {
 			Pattern pattern = Pattern.compile("([^<]+)<(.+)>");
@@ -596,6 +596,8 @@ public class ReferenceBuilder {
 					param.addActualTypeArgument(getTypeParameterReference(parameter.trim()));
 				}
 			}
+		} else if (name.contains("?")) {
+			param = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 		} else {
 			param.setSimpleName(name);
 		}
@@ -665,7 +667,7 @@ public class ReferenceBuilder {
 			boolean oldBounds = bounds;
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 			if (binding instanceof CaptureBinding) {
-				ref.setSimpleName("?");
+				ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 				bounds = true;
 			} else {
 				ref.setSimpleName(new String(binding.sourceName()));
@@ -708,8 +710,7 @@ public class ReferenceBuilder {
 				ref = ref == null ? ref : ref.clone();
 			}
 		} else if (binding instanceof WildcardBinding) {
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
-			ref.setSimpleName("?");
+			ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 			if (((WildcardBinding) binding).boundKind == Wildcard.SUPER && ref instanceof CtTypeParameterReference) {
 				((CtTypeParameterReference) ref).setUpper(false);
 			}

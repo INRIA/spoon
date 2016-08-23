@@ -14,27 +14,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.internal;
+package spoon.reflect.reference;
 
-import spoon.reflect.internal.CtCircularTypeReference;
-import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
-
-public class CtCircularTypeReferenceImpl extends CtTypeParameterReferenceImpl implements CtCircularTypeReference {
+/**
+ * Represents a wildcard in generic type annotations, i.e. the "?" (e.g. the "?" in Collection&lt;?&gt; or Collection&lt;? extends List&gt;).
+ */
+public interface CtWildcardReference extends CtTypeParameterReference {
 	@Override
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtCircularTypeReference(this);
-	}
-
-	@Override
-	public <T extends CtReference> T setSimpleName(String simplename) {
-		this.simplename = simplename;
-		return (T) this;
-	}
-
-	@Override
-	public CtCircularTypeReference clone() {
-		return (CtCircularTypeReference) super.clone();
-	}
+	CtWildcardReference clone();
 }

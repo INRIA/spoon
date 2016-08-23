@@ -31,7 +31,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	private static final long serialVersionUID = 1L;
 
-	String simplename;
+	protected String simplename;
 
 	public CtReferenceImpl() {
 		super();

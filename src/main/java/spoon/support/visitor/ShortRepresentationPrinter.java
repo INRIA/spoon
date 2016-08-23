@@ -91,6 +91,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.annotation.Annotation;
@@ -636,6 +637,11 @@ public class ShortRepresentationPrinter implements CtVisitor {
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 		write(ref.getQualifiedName());
 		scan(ref.getBoundingType());
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
+		visitCtTypeParameterReference(wildcardReference);
 	}
 
 	@Override

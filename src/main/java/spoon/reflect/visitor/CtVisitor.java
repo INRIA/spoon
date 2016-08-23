@@ -87,6 +87,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 
 import java.lang.annotation.Annotation;
 
@@ -383,6 +384,11 @@ public interface CtVisitor {
 	 * Visits a reference to a type parameter.
 	 */
 	void visitCtTypeParameterReference(CtTypeParameterReference ref);
+
+	/**
+	 * Visits a reference to a wildcard.
+	 */
+	void visitCtWildcardReference(CtWildcardReference wildcardReference);
 
 	/**
 	 * Visits an intersection type.

@@ -627,6 +627,15 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
+	public void visitCtWildcardReference(spoon.reflect.reference.CtWildcardReference wildcardReference) {
+		spoon.reflect.reference.CtWildcardReference aCtWildcardReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, wildcardReference, wildcardReference.getFactory().Core().createWildcardReference());
+		aCtWildcardReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(wildcardReference.getAnnotations()));
+		aCtWildcardReference.setBoundingType(spoon.support.visitor.equals.CloneHelper.clone(wildcardReference.getBoundingType()));
+		this.other = aCtWildcardReference;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
 		spoon.reflect.reference.CtIntersectionTypeReference<T> aCtIntersectionTypeReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createIntersectionTypeReference());
 		aCtIntersectionTypeReference.setBounds(spoon.support.visitor.equals.CloneHelper.clone(reference.getBounds()));

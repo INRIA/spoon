@@ -90,6 +90,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -713,6 +714,14 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ref.getAnnotations());
 		scan(ref.getBoundingType());
 		exit(ref);
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
+		enter(wildcardReference);
+		scan(wildcardReference.getAnnotations());
+		scan(wildcardReference.getBoundingType());
+		exit(wildcardReference);
 	}
 
 	@Override

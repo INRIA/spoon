@@ -89,6 +89,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 
 import java.lang.annotation.Annotation;
 
@@ -407,6 +408,11 @@ public interface CoreFactory {
 	 * Creates a type parameter reference.
 	 */
 	CtTypeParameterReference createTypeParameterReference();
+
+	/**
+	 * Creates a wildcard reference.
+	 */
+	CtWildcardReference createWildcardReference();
 
 	/**
 	 * Creates an intersection type reference.

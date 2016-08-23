@@ -111,6 +111,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -771,6 +772,11 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference e) {
 		visitCtTypeReference(e);
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
+		visitCtTypeParameterReference(wildcardReference);
 	}
 
 	@Override

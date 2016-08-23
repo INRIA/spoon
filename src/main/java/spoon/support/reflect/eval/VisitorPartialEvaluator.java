@@ -104,6 +104,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.RtHelper;
 
@@ -720,6 +721,11 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 	}
 
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
+		throw new RuntimeException("Unknown Element");
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
 		throw new RuntimeException("Unknown Element");
 	}
 

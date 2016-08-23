@@ -18,7 +18,6 @@ package spoon.support.reflect.reference;
 
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtIntersectionTypeReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -172,12 +171,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	protected AnnotatedElement getActualAnnotatedElement() {
 		// this is never annotated
 		return null;
-	}
-
-	@Override
-	public <T extends CtReference> T setSimpleName(String simplename) {
-		this.simplename = simplename;
-		return (T) this;
 	}
 
 	@Override
