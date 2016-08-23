@@ -91,17 +91,21 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("unchecked")
 public class ParentExiter extends CtInheritanceScanner {
@@ -174,8 +178,9 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void scanCtFormalTypeDeclarer(CtFormalTypeDeclarer e) {
-		if (childJDT instanceof TypeParameter && child instanceof CtTypeParameterReference) {
-			e.addFormalTypeParameter((CtTypeParameterReference) child);
+		if (childJDT instanceof TypeParameter && child instanceof CtTypeParameter) {
+			e.addFormalCtTypeParameter((CtTypeParameter) child);
+			e.addFormalTypeParameter(((CtTypeParameter) child).getReference());
 		}
 		return;
 	}
@@ -199,7 +204,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void scanCtType(CtType<T> type) {
-		if (child instanceof CtType) {
+		if (child instanceof CtType && !(child instanceof CtTypeParameter)) {
 			if (type.getNestedTypes().contains(child)) {
 				type.getNestedTypes().remove(child);
 			}
@@ -450,6 +455,24 @@ public class ParentExiter extends CtInheritanceScanner {
 			ctClass.addAnonymousExecutable((CtAnonymousExecutable) child);
 		}
 		super.visitCtClass(ctClass);
+	}
+
+	@Override
+	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
+		if (childJDT instanceof TypeReference && child instanceof CtTypeAccess) {
+			if (typeParameter.getSuperclass() == null) {
+				typeParameter.setSuperclass(((CtTypeAccess) child).getAccessedType());
+			} else if (typeParameter.getSuperclass() instanceof CtIntersectionTypeReference) {
+				typeParameter.getSuperclass().asCtIntersectionTypeReference().addBound(((CtTypeAccess) child).getAccessedType());
+			} else {
+				final Set<CtTypeReference<?>> refs = new HashSet<>();
+				refs.add(typeParameter.getSuperclass());
+				refs.add(((CtTypeAccess) child).getAccessedType());
+				typeParameter.setSuperclass(jdtTreeBuilder.getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));
+			}
+			return;
+		}
+		super.visitCtTypeParameter(typeParameter);
 	}
 
 	@Override

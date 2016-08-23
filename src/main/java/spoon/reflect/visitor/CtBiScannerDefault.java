@@ -173,6 +173,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(ctClass.getSuperclass(), other.getSuperclass());
 		biScan(ctClass.getSuperInterfaces(), other.getSuperInterfaces());
 		biScan(ctClass.getFormalTypeParameters(), other.getFormalTypeParameters());
+		biScan(ctClass.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(ctClass.getAnonymousExecutables(), other.getAnonymousExecutables());
 		biScan(ctClass.getNestedTypes(), other.getNestedTypes());
 		biScan(ctClass.getFields(), other.getFields());
@@ -180,6 +181,16 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(ctClass.getMethods(), other.getMethods());
 		biScan(ctClass.getComments(), other.getComments());
 		exit(ctClass);
+	}
+
+	@Override
+	public void visitCtTypeParameter(spoon.reflect.declaration.CtTypeParameter typeParameter) {
+		spoon.reflect.declaration.CtTypeParameter other = ((spoon.reflect.declaration.CtTypeParameter) (stack.peek()));
+		enter(typeParameter);
+		biScan(typeParameter.getAnnotations(), other.getAnnotations());
+		biScan(typeParameter.getSuperclass(), other.getSuperclass());
+		biScan(typeParameter.getComments(), other.getComments());
+		exit(typeParameter);
 	}
 
 	public <T> void visitCtConditional(final spoon.reflect.code.CtConditional<T> conditional) {
@@ -201,6 +212,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(c.getParameters(), other.getParameters());
 		biScan(c.getThrownTypes(), other.getThrownTypes());
 		biScan(c.getFormalTypeParameters(), other.getFormalTypeParameters());
+		biScan(c.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(c.getBody(), other.getBody());
 		biScan(c.getComments(), other.getComments());
 		exit(c);
@@ -343,6 +355,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(intrface.getAnnotations(), other.getAnnotations());
 		biScan(intrface.getSuperInterfaces(), other.getSuperInterfaces());
 		biScan(intrface.getFormalTypeParameters(), other.getFormalTypeParameters());
+		biScan(intrface.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(intrface.getNestedTypes(), other.getNestedTypes());
 		biScan(intrface.getFields(), other.getFields());
 		biScan(intrface.getMethods(), other.getMethods());
@@ -412,6 +425,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(m);
 		biScan(m.getAnnotations(), other.getAnnotations());
 		biScan(m.getFormalTypeParameters(), other.getFormalTypeParameters());
+		biScan(m.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(m.getType(), other.getType());
 		biScan(m.getParameters(), other.getParameters());
 		biScan(m.getThrownTypes(), other.getThrownTypes());

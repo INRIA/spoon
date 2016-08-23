@@ -78,6 +78,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.SubFactory;
@@ -154,6 +155,7 @@ import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
+import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
@@ -275,6 +277,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		CtClass<T> e = new CtClassImpl<>();
 		e.setFactory(getMainFactory());
 		e.setParent(getMainFactory().Package().getRootPackage());
+		return e;
+	}
+
+	@Override
+	public CtTypeParameter createTypeParameter() {
+		CtTypeParameter e = new CtTypeParameterImpl();
+		e.setFactory(getMainFactory());
 		return e;
 	}
 

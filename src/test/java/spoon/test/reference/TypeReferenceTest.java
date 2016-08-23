@@ -14,10 +14,12 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -44,7 +46,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import spoon.reflect.declaration.CtEnum;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -209,11 +210,18 @@ public class TypeReferenceTest {
 		launcher.run();
 
 		Factory factory = launcher.getFactory();
+
+		// Old type parameter declaration.
 		final CtTypeParameterReference firstRef = factory.Type().get(A.Tacos.class).getFormalTypeParameters().get(0);
 		final CtTypeParameterReference secondRef = factory.Type().get(B.Tacos.class).getFormalTypeParameters().get(0);
-
 		assertNotEquals(firstRef.toString(), secondRef.toString());
 		assertNotEquals(firstRef, secondRef);
+
+		// New type parameter declaration.
+		final CtTypeParameter firstTypeParam = factory.Type().get(A.Tacos.class).getFormalCtTypeParameters().get(0);
+		final CtTypeParameter secondTypeParam = factory.Type().get(B.Tacos.class).getFormalCtTypeParameters().get(0);
+		assertNotEquals(firstTypeParam.toString(), secondTypeParam.toString());
+		assertNotEquals(firstTypeParam, secondTypeParam);
 	}
 
 	@Test
@@ -260,9 +268,15 @@ public class TypeReferenceTest {
 		final CtClass<EnumValue> aClass = launcher.getFactory().Class().get(EnumValue.class);
 		final CtMethod<?> asEnum = aClass.getMethodsByName("asEnum").get(0);
 
+		// Old type parameter declaration.
 		final CtTypeParameterReference genericType = asEnum.getFormalTypeParameters().get(0);
 		assertNotNull(genericType);
 		assertNotNull(genericType.getBoundingType());
+
+		// New type parameter declaration.
+		final CtTypeParameter typeParameter = asEnum.getFormalCtTypeParameters().get(0);
+		assertNotNull(typeParameter);
+		assertNotNull(typeParameter.getSuperclass());
 
 		final CtTypeReference<?> extendsGeneric = genericType.getBoundingType();
 		assertNotNull(extendsGeneric);
@@ -523,7 +537,7 @@ public class TypeReferenceTest {
 		class Tacos<K extends A> {
 		}
 	}
-	
+
 	@Test
 	public void testCorrectEnumParent() {
 		final Launcher launcher = new Launcher();

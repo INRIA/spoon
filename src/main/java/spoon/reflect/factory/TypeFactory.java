@@ -17,9 +17,11 @@
 package spoon.reflect.factory;
 
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -29,6 +31,7 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -310,6 +313,23 @@ public class TypeFactory extends SubFactory {
 			ref.setPackage(factory.Package().createReference(type.getPackage()));
 		}
 
+		ref.setSimpleName(type.getSimpleName());
+		return ref;
+	}
+
+	/**
+	 * Create a reference to a simple type
+	 */
+	public CtTypeParameterReference createReference(CtTypeParameter type) {
+		CtTypeParameterReference ref = factory.Core().createTypeParameterReference();
+
+		if (type.getSuperclass() != null) {
+			ref.setBoundingType(type.getSuperclass().clone());
+		}
+
+		for (CtAnnotation<? extends Annotation> ctAnnotation : type.getAnnotations()) {
+			ref.addAnnotation(ctAnnotation.clone());
+		}
 		ref.setSimpleName(type.getSimpleName());
 		return ref;
 	}

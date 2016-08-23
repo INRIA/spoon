@@ -20,7 +20,9 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
@@ -69,9 +71,16 @@ public class GenericsTest {
 	public void testModelBuildingTree() throws Exception {
 		CtClass<?> type = build("spoon.test.generics", "Tree");
 		assertEquals("Tree", type.getSimpleName());
+
+		// Old type parameter declaration.
 		CtTypeParameterReference generic = type.getFormalTypeParameters().get(0);
 		assertEquals("V", generic.getSimpleName());
 		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", generic.getBoundingType().asCtIntersectionTypeReference().getBounds().toString());
+
+		// New type parameter declaration.
+		CtTypeParameter typeParameter = type.getFormalCtTypeParameters().get(0);
+		assertEquals("V", typeParameter.getSimpleName());
+		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", typeParameter.getSuperclass().asCtIntersectionTypeReference().getBounds().toString());
 
 		CtMethod<?> node5 = type.getElements(
 				new NameFilter<CtMethod<?>>("node5")).get(0);
@@ -84,11 +93,10 @@ public class GenericsTest {
 	public void testModelBuildingGenericConstructor() throws Exception {
 		CtClass<?> type = build("spoon.test.generics", "GenericConstructor");
 		assertEquals("GenericConstructor", type.getSimpleName());
-		CtTypeParameterReference generic = (CtTypeParameterReference) type
-				.getElements(
-						new TypeFilter<CtConstructor<?>>(CtConstructor.class))
-				.get(0).getFormalTypeParameters().get(0);
+		CtTypeParameterReference generic = type.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0).getFormalTypeParameters().get(0);
 		assertEquals("E", generic.getSimpleName());
+		CtTypeParameter typeParameter = type.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0).getFormalCtTypeParameters().get(0);
+		assertEquals("E", typeParameter.getSimpleName());
 	}
 
 	@Test
@@ -129,8 +137,9 @@ public class GenericsTest {
 		assertEquals(2, methods.size());
 		CtTypeParameterReference generic = ((CtMethod<?>) methods.get(0)).getFormalTypeParameters().get(0);
 		assertEquals("E", generic.getSimpleName());
-		CtParameter<?> param = ((CtMethod<?>) methods.get(0)).getParameters()
-				.get(0);
+		CtTypeParameter typeParameter = ((CtMethod<?>) methods.get(0)).getFormalCtTypeParameters().get(0);
+		assertEquals("E", typeParameter.getSimpleName());
+		CtParameter<?> param = ((CtMethod<?>) methods.get(0)).getParameters().get(0);
 		assertEquals("E", param.getType().toString());
 	}
 
@@ -142,6 +151,7 @@ public class GenericsTest {
 		CtTypeReference<?> tr1 = classThatBindsAGenericType.getSuperclass();
 		CtTypeReference<?> trExtends = tr1.getActualTypeArguments().get(0);
 		CtTypeReference<?> tr2 = classThatDefinesANewTypeArgument.getFormalTypeParameters().get(0);
+		CtTypeParameter tr2bis = classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0);
 		CtTypeReference<?> tr3 = classThatDefinesANewTypeArgument.getMethodsByName("foo").get(0).getParameters().get(0).getReference().getType();
 
 		// an bound type is not an TypeParameterRefernce
@@ -156,6 +166,7 @@ public class GenericsTest {
 		assertEquals("File", trExtends.getSimpleName());
 		assertEquals(java.io.File.class, trExtends.getActualClass());
 		assertEquals("T", tr2.getSimpleName());
+		assertEquals("T", tr2bis.getSimpleName());
 		assertEquals("T", tr3.getSimpleName());
 	}
 
@@ -166,6 +177,7 @@ public class GenericsTest {
 
 		// an bound type is not an TypeParameterRefernce
 		assertEquals("E extends java.lang.Enum<E>", meth.getFormalTypeParameters().get(0).toString());
+		assertEquals("E extends java.lang.Enum<E>", meth.getFormalCtTypeParameters().get(0).toString());
 	}
 
 	@Test
@@ -286,12 +298,15 @@ public class GenericsTest {
 		}).get(0);
 
 		final List<CtTypeParameterReference> barGenerics = bar.getFormalTypeParameters();
+		final List<CtTypeParameter> barTypeParamGenerics = bar.getFormalCtTypeParameters();
 		final CtTypeReference<?> anonymousBar = newAnonymousBar.getType();
 
 		assertEquals("Name of the first generic parameter in Bar interface must to be I.", "I", barGenerics.get(0).getSimpleName());
+		assertEquals("Name of the first generic parameter in Bar interface must to be I.", "I", barTypeParamGenerics.get(0).getSimpleName());
 		assertEquals("Name of the first generic parameter in Bar usage must to be K.", "K", anonymousBar.getActualTypeArguments().get(0).getSimpleName());
 
 		assertEquals("Name of the second generic parameter in Bar interface must to be O.", "O", barGenerics.get(1).getSimpleName());
+		assertEquals("Name of the second generic parameter in Bar interface must to be O.", "O", barTypeParamGenerics.get(1).getSimpleName());
 		assertEquals("Name of the second generic parameter in Bar usage must to be V.", "V", anonymousBar.getActualTypeArguments().get(1).getSimpleName());
 	}
 
@@ -305,6 +320,7 @@ public class GenericsTest {
 
 		final CtClass<?> aTacos = launcher.getFactory().Class().get(Tacos.class);
 		assertEquals(2, aTacos.getFormalTypeParameters().size());
+		assertEquals(2, aTacos.getFormalCtTypeParameters().size());
 		final CtTypeReference interfaces = aTacos.getSuperInterfaces().toArray(new CtTypeReference[0])[0];
 		assertEquals(1, interfaces.getActualTypeArguments().size());
 
@@ -515,6 +531,23 @@ public class GenericsTest {
 
 	@Test
 	public void testWildcard() throws Exception {
-		assertEquals(3, buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class)).size());
+		assertEquals(3, buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class) {
+			@Override
+			public boolean matches(CtWildcardReference element) {
+				return element.getParent(CtTypeParameter.class) != null;
+			}
+		}).size());
+	}
+
+	public void testDeclarationOfTypeParameterReference() throws Exception {
+		CtType<Tacos> aTacos = buildClass(Tacos.class);
+		for (CtTypeParameterReference parameterReference : aTacos.getElements(new TypeFilter<CtTypeParameterReference>(CtTypeParameterReference.class) {
+			@Override
+			public boolean matches(CtTypeParameterReference element) {
+				return !(element instanceof CtWildcardReference) && !(element.getParent() instanceof CtReference);
+			}
+		})) {
+			assertNotNull(parameterReference.getDeclaration());
+		}
 	}
 }

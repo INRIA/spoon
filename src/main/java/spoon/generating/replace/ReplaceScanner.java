@@ -17,7 +17,9 @@
 package spoon.generating.replace;
 
 import spoon.SpoonException;
+import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -28,6 +30,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -76,6 +79,13 @@ public class ReplaceScanner extends CtScanner {
 		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
 			CtInvocation inv = element.getBody().getStatement(i);
 			CtInvocation getter = (CtInvocation) inv.getArguments().get(0);
+			if (clone.getComments().size() == 0) {
+				// Add auto-generated comment.
+				final CtComment comment = factory.Core().createComment();
+				comment.setCommentType(CtComment.CommentType.INLINE);
+				comment.setContent("auto-generated, see " + ReplacementVisitorGenerator.class.getName());
+				clone.addComment(comment);
+			}
 			if (excludes.contains(getter.getExecutable().toString())) {
 				continue;
 			}
@@ -103,8 +113,14 @@ public class ReplaceScanner extends CtScanner {
 			type = Type.ELEMENT;
 		}
 		// Listener
+		String execDeclaringType = getter.getExecutable().getDeclaringType().getSimpleName();
+		if (getter.getTarget().getType().equals(factory.Type().createReference(CtClass.class))) {
+			execDeclaringType = "CtClass";
+		} else if (getter.getTarget().getType().equals(factory.Type().createReference(CtTypeParameter.class))) {
+			execDeclaringType = "CtTypeParameter";
+		}
 		final String name = getter.getExecutable().getSimpleName().substring(3);
-		final String listenerName = getter.getExecutable().getDeclaringType().getSimpleName() + name + "ReplaceListener";
+		final String listenerName = execDeclaringType + name + "ReplaceListener";
 
 		CtClass listener;
 		if (listeners.containsKey(listenerName)) {
@@ -116,6 +132,11 @@ public class ReplaceScanner extends CtScanner {
 			final CtField field = updateField(listener, setter.getDeclaringType().getReference());
 			updateConstructor(listener, setter.getDeclaringType().getReference());
 			updateSetter(factory, (CtMethod<?>) listener.getMethodsByName("set").get(0), getterType, field, setter);
+			// Add auto-generated comment.
+			final CtComment comment = factory.Core().createComment();
+			comment.setCommentType(CtComment.CommentType.INLINE);
+			comment.setContent("auto-generated, see " + ReplacementVisitorGenerator.class.getName());
+			listener.addComment(comment);
 			listeners.put(listenerName, listener);
 		}
 

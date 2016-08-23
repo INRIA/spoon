@@ -78,6 +78,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -186,6 +187,11 @@ public interface CoreFactory {
 	 * Creates a class.
 	 */
 	<T> CtClass<T> createClass();
+
+	/**
+	 * Creates a type parameter declaration.
+	 */
+	CtTypeParameter createTypeParameter();
 
 	/**
 	 * Creates a conditional expression (<code>boolExpr?ifTrue:ifFalse</code>).

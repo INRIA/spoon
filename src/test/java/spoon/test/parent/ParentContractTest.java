@@ -131,13 +131,15 @@ public class ParentContractTest<T extends CtVisitable> {
 				// we create a fresh object
 				CtElement receiver = ((CtElement) o).clone();
 				// we invoke the setter
-				setter.invoke(receiver, new Object[]{mockedArgument});
+				setter.invoke(receiver, new Object[] { mockedArgument });
 				// we check that setParent has been called
 				verify(mockedArgument).setParent((CtElement) receiver);
 			} catch (AssertionError e) {
-				Assert.fail("call setParent contract failed for "+setter.toString()+" "+e.toString());
+				Assert.fail("call setParent contract failed for " + setter.toString() + " " + e.toString());
 			} catch (InvocationTargetException e) {
-				if (e.getCause() instanceof RuntimeException) {
+				if (e.getCause() instanceof UnsupportedOperationException) {
+					// ignore
+				} else if (e.getCause() instanceof RuntimeException) {
 					throw e.getCause();
 				} else {
 					throw new SpoonException(e.getCause());

@@ -81,6 +81,7 @@ public class ConstructorFactory extends ExecutableFactory {
 		newConstructor.setBody(method.getBody());
 		newConstructor.setDocComment(method.getDocComment());
 		newConstructor.setFormalTypeParameters(method.getFormalTypeParameters());
+		newConstructor.setFormalCtTypeParameters(method.getFormalCtTypeParameters());
 		newConstructor.setModifiers(method.getModifiers());
 		newConstructor.setParameters(method.getParameters());
 		target.addConstructor(newConstructor);

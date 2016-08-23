@@ -94,6 +94,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.internal.CtCircularTypeReference;
@@ -457,6 +458,18 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtModifiable(e);
 		scanCtVisitable(e);
+	}
+
+	@Override
+	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
+		scanCtType(typeParameter);
+		scanCtTypeInformation(typeParameter);
+		scanCtFormalTypeDeclarer(typeParameter);
+		scanCtNamedElement(typeParameter);
+		scanCtTypeMember(typeParameter);
+		scanCtElement(typeParameter);
+		scanCtModifiable(typeParameter);
+		scanCtVisitable(typeParameter);
 	}
 
 	public <T> void visitCtConditional(CtConditional<T> e) {

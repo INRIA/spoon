@@ -29,6 +29,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -168,15 +169,17 @@ public class TypeTest {
 		final List<CtClass> localTypes = prepare.getElements(new TypeFilter<>(CtClass.class));
 		assertEquals(1, localTypes.size());
 
+		// Old type parameter declaration.
 		final CtTypeParameterReference generic = localTypes.get(0).getFormalTypeParameters().get(0);
 		assertNotNull(generic);
 		assertEquals("T", generic.getSimpleName());
-		assertNotNull(generic.getBoundingType());
-		assertTrue(generic.getBoundingType() instanceof CtIntersectionTypeReference);
-		assertEquals("java.lang.Runnable & java.io.Serializable", generic.getBoundingType().toString());
-		final CtIntersectionTypeReference<?> superType = generic.getBoundingType().asCtIntersectionTypeReference();
-		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), superType.getBounds().stream().collect(Collectors.toList()).get(0));
-		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), superType.getBounds().stream().collect(Collectors.toList()).get(1));
+		assertIntersectionTypeForPozolePrepareMethod(aPozole, generic.getBoundingType());
+
+		// New type parameter declaration.
+		final CtTypeParameter typeParameter = localTypes.get(0).getFormalCtTypeParameters().get(0);
+		assertNotNull(typeParameter);
+		assertEquals("T", typeParameter.getSimpleName());
+		assertIntersectionTypeForPozolePrepareMethod(aPozole, typeParameter.getSuperclass());
 
 		// Intersection type in casts.
 		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
@@ -190,6 +193,15 @@ public class TypeTest {
 		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), intersectionType.getBounds().stream().collect(Collectors.toList()).get(1));
 
 		canBeBuilt(target, 8, true);
+	}
+
+	private void assertIntersectionTypeForPozolePrepareMethod(CtClass<Pozole> aPozole, CtTypeReference<?> boundingType) {
+		assertNotNull(boundingType);
+		assertTrue(boundingType instanceof CtIntersectionTypeReference);
+		assertEquals("java.lang.Runnable & java.io.Serializable", boundingType.toString());
+		final CtIntersectionTypeReference<?> superType = boundingType.asCtIntersectionTypeReference();
+		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), superType.getBounds().stream().collect(Collectors.toList()).get(0));
+		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), superType.getBounds().stream().collect(Collectors.toList()).get(1));
 	}
 
 	@Test
@@ -208,13 +220,17 @@ public class TypeTest {
 		final List<CtClass> localTypes = prepare.getElements(new TypeFilter<>(CtClass.class));
 		assertEquals(1, localTypes.size());
 
+		// Old type parameter declaration.
 		final CtTypeParameterReference generic = localTypes.get(0).getFormalTypeParameters().get(0);
 		assertNotNull(generic);
 		assertEquals("T", generic.getSimpleName());
-		assertNotNull(generic.getBoundingType());
-		assertTrue(generic.getBoundingType() instanceof CtTypeReference);
-		assertEquals("java.lang.Runnable", generic.getBoundingType().toString());
-		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), generic.getBoundingType());
+		assertIntersectionTypeForPozoleFinishMethod(aPozole, generic.getBoundingType());
+
+		// New type parameter declaration.
+		final CtTypeParameter typeParameter = localTypes.get(0).getFormalCtTypeParameters().get(0);
+		assertNotNull(typeParameter);
+		assertEquals("T", typeParameter.getSimpleName());
+		assertIntersectionTypeForPozoleFinishMethod(aPozole, typeParameter.getSuperclass());
 
 		// Intersection type in casts.
 		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
@@ -227,17 +243,34 @@ public class TypeTest {
 		canBeBuilt(target, 8, true);
 	}
 
+	private void assertIntersectionTypeForPozoleFinishMethod(CtClass<Pozole> aPozole, CtTypeReference<?> boundingType) {
+		assertNotNull(boundingType);
+		assertEquals("java.lang.Runnable", boundingType.toString());
+		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), boundingType);
+	}
+
 	@Test
 	public void testIntersectionTypeOnTopLevelType() throws Exception {
 		final CtType<Mole> aMole = buildClass(Mole.class);
 
 		assertEquals(1, aMole.getFormalTypeParameters().size());
+		assertEquals(1, aMole.getFormalCtTypeParameters().size());
+
+		// Old type parameter declaration.
 		final CtTypeParameterReference ref = aMole.getFormalTypeParameters().get(0);
-		assertNotNull(ref.getBoundingType());
-		assertTrue(ref.getBoundingType() instanceof CtIntersectionTypeReference);
-		assertEquals(2, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().size());
-		assertEquals(Number.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(0).getActualClass());
-		assertEquals(Comparable.class, ref.getBoundingType().asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(1).getActualClass());
+		assertIntersectionTypeForMole(aMole, ref.getBoundingType());
+
+		// New type parameter declaration.
+		final CtTypeParameter typeParameter = aMole.getFormalCtTypeParameters().get(0);
+		assertIntersectionTypeForMole(aMole, typeParameter.getSuperclass());
+	}
+
+	private void assertIntersectionTypeForMole(CtType<Mole> aMole, CtTypeReference<?> boundingType) {
+		assertNotNull(boundingType);
+		assertTrue(boundingType instanceof CtIntersectionTypeReference);
+		assertEquals(2, boundingType.asCtIntersectionTypeReference().getBounds().size());
+		assertEquals(Number.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(0).getActualClass());
+		assertEquals(Comparable.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(1).getActualClass());
 		assertEquals("public class Mole<NUMBER extends java.lang.Number & java.lang.Comparable<NUMBER>> {}", aMole.toString());
 	}
 

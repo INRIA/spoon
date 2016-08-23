@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
@@ -48,6 +50,8 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	boolean defaultMethod = false;
 
 	List<CtTypeParameterReference> formalTypeParameters = emptyList();
+
+	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
 	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
@@ -127,6 +131,45 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@Override
 	public boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
 		return formalTypeParameter != null && formalTypeParameters != CtElementImpl.<CtTypeParameterReference>emptyList() && formalTypeParameters.remove(formalTypeParameter);
+	}
+
+	@Override
+	public List<CtTypeParameter> getFormalCtTypeParameters() {
+		return formalCtTypeParameters;
+	}
+
+	@Override
+	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
+			this.formalCtTypeParameters = CtElementImpl.emptyList();
+			return (C) this;
+		}
+		if (this.formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
+			this.formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.formalCtTypeParameters.clear();
+		for (CtTypeParameter formalTypeParameter : formalTypeParameters) {
+			addFormalCtTypeParameter(formalTypeParameter);
+		}
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+		if (formalTypeParameter == null) {
+			return (C) this;
+		}
+		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
+			formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		formalTypeParameter.setParent(this);
+		formalCtTypeParameters.add(formalTypeParameter);
+		return (C) this;
+	}
+
+	@Override
+	public boolean removeFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+		return formalCtTypeParameters.contains(formalTypeParameter) && formalCtTypeParameters.remove(formalTypeParameter);
 	}
 
 	@Override

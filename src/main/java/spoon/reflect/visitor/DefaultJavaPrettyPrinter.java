@@ -86,6 +86,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.internal.CtCircularTypeReference;
@@ -536,6 +537,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
+		visitCtTypeParameterReference(typeParameter.getReference());
+	}
+
+	@Override
 	public <T> void visitCtConditional(CtConditional<T> conditional) {
 		enterCtExpression(conditional);
 		CtExpression<Boolean> condition = conditional.getCondition();
@@ -593,7 +599,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.visitCtNamedElement(constructor, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(constructor);
 		elementPrinterHelper.writeFormalTypeParameters(constructor);
-		if (constructor.getFormalTypeParameters().size() > 0) {
+		if (constructor.getFormalCtTypeParameters().size() > 0) {
 			printer.write(' ');
 		}
 		if (constructor.getDeclaringType().isLocalType()) {
@@ -1038,7 +1044,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
 		visitCtType(intrface);
 		printer.write("interface " + intrface.getSimpleName());
-		if (intrface.getFormalTypeParameters() != null) {
+		if (intrface.getFormalCtTypeParameters() != null) {
 			elementPrinterHelper.writeFormalTypeParameters(intrface);
 		}
 
@@ -1215,7 +1221,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write("default ");
 		}
 		elementPrinterHelper.writeFormalTypeParameters(m);
-		if (m.getFormalTypeParameters().size() > 0) {
+		if (m.getFormalCtTypeParameters().size() > 0) {
 			printer.write(' ');
 		}
 		final boolean old = context.ignoreGenerics;
