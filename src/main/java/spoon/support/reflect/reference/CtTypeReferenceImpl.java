@@ -40,6 +40,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -138,7 +139,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		try {
 			return (Class<T>) getFactory().getEnvironment().getClassLoader().loadClass(getQualifiedName());
 		} catch (java.lang.ClassNotFoundException cnfe) {
-			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName() + " with class loader " + Thread.currentThread().getContextClassLoader(), cnfe);
+			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName() + " with class loader "
+					+ Thread.currentThread().getContextClassLoader(), cnfe);
 		}
 	}
 
@@ -354,25 +356,48 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		Collection<CtFieldReference<?>> l = new ArrayList<>();
 		CtType<?> t = getDeclaration();
 		if (t == null) {
-			for (Field f : getActualClass().getDeclaredFields()) {
-				l.add(getFactory().Field().createReference(f));
+			try {
+				return getDeclaredFieldReferences();
+			} catch (SpoonClassNotFoundException cnfe) {
+				return handleParentNotFound(cnfe);
 			}
-			if (getActualClass().isAnnotation()) {
-				for (Method m : getActualClass().getDeclaredMethods()) {
-					CtTypeReference<?> retRef = getFactory().Type().createReference(m.getReturnType());
-					CtFieldReference<?> fr = getFactory().Field().createReference(this, retRef, m.getName());
-					// fr.
-					l.add(fr);
-				}
-			}
-
 		} else {
 			return t.getDeclaredFields();
 		}
-		return l;
+	}
+
+	/**
+	 * Collects all field references of the declared class.
+	 *
+	 * @return collection of field references
+	 */
+	private Collection<CtFieldReference<?>> getDeclaredFieldReferences() {
+		Collection<CtFieldReference<?>> references = new ArrayList<>();
+		for (Field f : getActualClass().getDeclaredFields()) {
+			references.add(getFactory().Field().createReference(f));
+		}
+		if (getActualClass().isAnnotation()) {
+			for (Method m : getActualClass().getDeclaredMethods()) {
+				CtTypeReference<?> retRef = getFactory().Type().createReference(m.getReturnType());
+				CtFieldReference<?> fr = getFactory().Field().createReference(this, retRef, m.getName());
+				references.add(fr);
+			}
+		}
+		return references;
+	}
+
+	private Collection<CtFieldReference<?>> handleParentNotFound(SpoonClassNotFoundException cnfe) {
+		String msg = "cannot load class: " + getQualifiedName() + " with class loader "
+				+ Thread.currentThread().getContextClassLoader();
+		if (getFactory().getEnvironment().getNoClasspath()) {
+			// should not be thrown in 'noClasspath' environment (#775)
+			Launcher.LOGGER.warn(msg);
+			return Collections.emptyList();
+		} else {
+			throw cnfe;
+		}
 	}
 
 	@Override
@@ -389,7 +414,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public Collection<CtFieldReference<?>> getAllFields() {
 		CtType<?> t = getDeclaration();
 		if (t == null) {
-			return RtHelper.getAllFields(getActualClass(), getFactory());
+			try {
+				return RtHelper.getAllFields(getActualClass(), getFactory());
+			} catch (SpoonClassNotFoundException cnfe) {
+				return handleParentNotFound(cnfe);
+			}
 		} else {
 			return t.getAllFields();
 		}
