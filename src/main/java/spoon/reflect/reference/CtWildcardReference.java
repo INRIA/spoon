@@ -16,6 +16,9 @@
  */
 package spoon.reflect.reference;
 
+/**
+ * Represents a wildcard in generic type annotations, i.e. the "?" (e.g. the "?" in Collection&lt;?&gt; or Collection&lt;? extends List&gt;).
+ */
 public interface CtWildcardReference extends CtTypeParameterReference {
 	@Override
 	CtWildcardReference clone();
