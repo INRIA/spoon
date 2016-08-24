@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * This abstract element defines a declaration that accepts formal type
- * parameters (aka generics).
+ * parameters (aka generics), such as a CtType (<code>class A&lt;E&gt;</code>), CtMethod or CtConstructor.
  */
 public interface CtFormalTypeDeclarer extends CtElement {
 	/**

@@ -21,6 +21,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 /**
  * This element defines a declaration of a type parameter (aka generics).
+ * For example, in class A&lt;E&gt; { ... }, the "E" is modeled as an instance of CtTypeParameter.
  */
 public interface CtTypeParameter extends CtType<Object> {
 	/**
@@ -28,9 +29,11 @@ public interface CtTypeParameter extends CtType<Object> {
 	 */
 	<C extends CtTypeParameter> C setSuperclass(CtTypeReference<?> superClass);
 
+	// override the return type
 	@Override
 	CtTypeParameterReference getReference();
 
+	// override the return type
 	@Override
 	CtTypeParameter clone();
 }
