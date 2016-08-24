@@ -302,7 +302,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctClass.getAnnotations());
 		scan(ctClass.getSuperclass());
 		scan(ctClass.getSuperInterfaces());
-		scan(ctClass.getFormalTypeParameters());
 		scan(ctClass.getFormalCtTypeParameters());
 		scan(ctClass.getAnonymousExecutables());
 		scan(ctClass.getNestedTypes());
@@ -338,7 +337,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(c.getAnnotations());
 		scan(c.getParameters());
 		scan(c.getThrownTypes());
-		scan(c.getFormalTypeParameters());
 		scan(c.getFormalCtTypeParameters());
 		scan(c.getBody());
 		scan(c.getComments());
@@ -470,7 +468,6 @@ public abstract class CtScanner implements CtVisitor {
 		enter(intrface);
 		scan(intrface.getAnnotations());
 		scan(intrface.getSuperInterfaces());
-		scan(intrface.getFormalTypeParameters());
 		scan(intrface.getFormalCtTypeParameters());
 		scan(intrface.getNestedTypes());
 		scan(intrface.getFields());
@@ -535,7 +532,6 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtMethod(final CtMethod<T> m) {
 		enter(m);
 		scan(m.getAnnotations());
-		scan(m.getFormalTypeParameters());
 		scan(m.getFormalCtTypeParameters());
 		scan(m.getType());
 		scan(m.getParameters());

@@ -854,9 +854,9 @@ public class AnnotationTest {
 		}
 	}
 
-	class TypeAnnotationProcessor extends AbstractElementsProcessor<TypeAnnotation, CtTypeReference> {
+	class TypeAnnotationProcessor extends AbstractElementsProcessor<TypeAnnotation, CtElement> {
 		@Override
-		public void process(TypeAnnotation annotation, CtTypeReference element) {
+		public void process(TypeAnnotation annotation, CtElement element) {
 			super.process(annotation, element);
 		}
 	}

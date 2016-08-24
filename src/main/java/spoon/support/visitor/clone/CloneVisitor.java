@@ -175,7 +175,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtClass.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getAnnotations()));
 		aCtClass.setSuperclass(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getSuperclass()));
 		aCtClass.setSuperInterfaces(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getSuperInterfaces()));
-		aCtClass.setFormalTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getFormalTypeParameters()));
 		aCtClass.setFormalCtTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getFormalCtTypeParameters()));
 		aCtClass.setAnonymousExecutables(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getAnonymousExecutables()));
 		aCtClass.setNestedTypes(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getNestedTypes()));
@@ -214,7 +213,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtConstructor.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(c.getAnnotations()));
 		aCtConstructor.setParameters(spoon.support.visitor.equals.CloneHelper.clone(c.getParameters()));
 		aCtConstructor.setThrownTypes(spoon.support.visitor.equals.CloneHelper.clone(c.getThrownTypes()));
-		aCtConstructor.setFormalTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(c.getFormalTypeParameters()));
 		aCtConstructor.setFormalCtTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(c.getFormalCtTypeParameters()));
 		aCtConstructor.setBody(spoon.support.visitor.equals.CloneHelper.clone(c.getBody()));
 		aCtConstructor.setComments(spoon.support.visitor.equals.CloneHelper.clone(c.getComments()));
@@ -357,7 +355,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.declaration.CtInterface<T> aCtInterface = spoon.support.visitor.clone.CloneBuilder.build(this.builder, intrface, intrface.getFactory().Core().createInterface());
 		aCtInterface.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(intrface.getAnnotations()));
 		aCtInterface.setSuperInterfaces(spoon.support.visitor.equals.CloneHelper.clone(intrface.getSuperInterfaces()));
-		aCtInterface.setFormalTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(intrface.getFormalTypeParameters()));
 		aCtInterface.setFormalCtTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(intrface.getFormalCtTypeParameters()));
 		aCtInterface.setNestedTypes(spoon.support.visitor.equals.CloneHelper.clone(intrface.getNestedTypes()));
 		aCtInterface.setFields(spoon.support.visitor.equals.CloneHelper.clone(intrface.getFields()));
@@ -427,7 +424,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtMethod(final spoon.reflect.declaration.CtMethod<T> m) {
 		spoon.reflect.declaration.CtMethod<T> aCtMethod = spoon.support.visitor.clone.CloneBuilder.build(this.builder, m, m.getFactory().Core().createMethod());
 		aCtMethod.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(m.getAnnotations()));
-		aCtMethod.setFormalTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(m.getFormalTypeParameters()));
 		aCtMethod.setFormalCtTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(m.getFormalCtTypeParameters()));
 		aCtMethod.setType(spoon.support.visitor.equals.CloneHelper.clone(m.getType()));
 		aCtMethod.setParameters(spoon.support.visitor.equals.CloneHelper.clone(m.getParameters()));

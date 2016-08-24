@@ -531,12 +531,7 @@ public class GenericsTest {
 
 	@Test
 	public void testWildcard() throws Exception {
-		assertEquals(3, buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class) {
-			@Override
-			public boolean matches(CtWildcardReference element) {
-				return element.getParent(CtTypeParameter.class) != null;
-			}
-		}).size());
+		assertEquals(3, buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class)).size());
 	}
 
 	public void testDeclarationOfTypeParameterReference() throws Exception {
