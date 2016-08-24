@@ -68,6 +68,11 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	public boolean isGenerics() {
+		return true;
+	}
+
+	@Override
 	public CtTypeParameter clone() {
 		return (CtTypeParameter) super.clone();
 	}

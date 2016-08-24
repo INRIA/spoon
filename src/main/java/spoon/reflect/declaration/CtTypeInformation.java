@@ -91,6 +91,11 @@ public interface CtTypeInformation {
 	boolean isAnnotationType();
 
 	/**
+	 * Returns true if this element is a generics (eg "T") and false if it is an actual type (eg 'Book" or "String")
+	 */
+	boolean isGenerics();
+
+	/**
 	 * Returns true if the referenced type is a sub-type of the given type.
 	 */
 	boolean isSubtypeOf(CtTypeReference<?> type);

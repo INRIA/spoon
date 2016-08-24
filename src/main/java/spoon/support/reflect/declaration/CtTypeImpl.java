@@ -435,6 +435,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public boolean isGenerics() {
+		return false;
+	}
+
+	@Override
 	public List<CtFieldReference<?>> getAllFields() {
 		List<CtFieldReference<?>> l = new ArrayList<>(getFields().size());
 		for (CtField<?> f : getFields()) {

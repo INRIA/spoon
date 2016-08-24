@@ -82,6 +82,11 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	public boolean isGenerics() {
+		return true;
+	}
+
+	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		return false;
 	}
