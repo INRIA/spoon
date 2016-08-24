@@ -18,6 +18,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -91,6 +92,22 @@ public class MainTest {
 
 		// clone
 		checkEqualityBetweenOriginalAndClone(pack);
+
+		// type parameter reference.
+		checkBoundAndUnboundTypeReference(pack);
+	}
+
+	private void checkBoundAndUnboundTypeReference(CtPackage pack) {
+		new CtScanner() {
+			@Override
+			public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
+				CtTypeParameter declaration = ref.getDeclaration();
+				if (declaration != null) {
+					assertEquals(ref.getSimpleName(), declaration.getSimpleName());
+				}
+				super.visitCtTypeParameterReference(ref);
+			}
+		}.scan(pack);
 	}
 
 	private void checkEqualityBetweenOriginalAndClone(CtPackage pack) {

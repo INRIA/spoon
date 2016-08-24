@@ -178,14 +178,14 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public CtType<Object> getDeclaration() {
+	public CtTypeParameter getDeclaration() {
 		if (!isParentInitialized()) {
 			return null;
 		}
 		return getRecursiveDeclaration(this);
 	}
 
-	private CtType<Object> getRecursiveDeclaration(CtElement element) {
+	private CtTypeParameter getRecursiveDeclaration(CtElement element) {
 		final CtFormalTypeDeclarer formalTypeDeclarer = element.getParent(CtFormalTypeDeclarer.class);
 		if (formalTypeDeclarer == null) {
 			return null;
