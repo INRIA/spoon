@@ -1759,7 +1759,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public void visitCtTypeParameterReference(final spoon.reflect.reference.CtTypeParameterReference ref) {
 		replaceElementIfExist(ref.getPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferencePackageReplaceListener(ref));
 		replaceElementIfExist(ref.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferenceDeclaringTypeReplaceListener(ref));
-		replaceInListIfExist(ref.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtActualTypeContainerActualTypeArgumentsReplaceListener(ref));
 		replaceInListIfExist(ref.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(ref));
 		replaceElementIfExist(ref.getBoundingType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeParameterReferenceBoundingTypeReplaceListener(ref));
 	}
