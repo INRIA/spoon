@@ -216,16 +216,24 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage) {
 		Set<CtTypeReference<?>> typeRefs = new HashSet<>();
-		for (CtTypeReference<?> typeRef : Query
-				.getReferences(this, new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
-			if (!(typeRef.isPrimitive() || (typeRef instanceof CtArrayTypeReference) || typeRef.toString()
-					.equals(CtTypeReference.NULL_TYPE_NAME) || ((typeRef.getPackage() != null) && "java.lang"
-					.equals(typeRef.getPackage().toString()))) && !(!includeSamePackage && getPackageReference(typeRef)
-					.equals(this.getPackage().getReference()))) {
+		for (CtTypeReference<?> typeRef : Query.getReferences(this, new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
+			if (isValidTypeReference(typeRef) && shouldIncludeSamePackage(includeSamePackage, typeRef)) {
 				typeRefs.add(typeRef);
 			}
 		}
 		return typeRefs;
+	}
+
+	private boolean shouldIncludeSamePackage(boolean includeSamePackage, CtTypeReference<?> typeRef) {
+		return includeSamePackage || (getPackage() != null && !getPackageReference(typeRef).equals(getPackage().getReference()));
+	}
+
+	private boolean isValidTypeReference(CtTypeReference<?> typeRef) {
+		return !(isFromJavaLang(typeRef) || typeRef.isPrimitive() || typeRef instanceof CtArrayTypeReference || CtTypeReference.NULL_TYPE_NAME.equals(typeRef.toString()));
+	}
+
+	private boolean isFromJavaLang(CtTypeReference<?> typeRef) {
+		return typeRef.getPackage() != null && "java.lang".equals(typeRef.getPackage().toString());
 	}
 
 	/**
