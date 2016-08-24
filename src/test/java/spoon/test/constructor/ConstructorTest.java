@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -118,10 +117,11 @@ public class ConstructorTest {
 		assertEquals("T", typeParameter.getSimpleName());
 		assertEquals(1, typeParameter.getAnnotations().size());
 		assertIntersectionTypeInConstructor(typeParameter.getSuperclass());
+
+		assertEquals(typeParameter, genericT.getDeclaration());
 	}
 
 	private void assertIntersectionTypeInConstructor(CtTypeReference<?> boundingType1) {
-		assertNotNull(boundingType1);
 		assertTrue(boundingType1 instanceof CtIntersectionTypeReference);
 		CtIntersectionTypeReference<?> boundingType = boundingType1.asCtIntersectionTypeReference();
 

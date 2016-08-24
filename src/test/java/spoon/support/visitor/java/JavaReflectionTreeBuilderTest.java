@@ -92,6 +92,9 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("E extends java.lang.Comparable<? super E>", ctTypeParameter.toString());
 		assertEquals(1, ctTypeParameter.getSuperclass().getActualTypeArguments().size());
 		assertTrue(ctTypeParameter.getSuperclass().getActualTypeArguments().get(0) instanceof CtTypeParameterReference);
+		assertEquals("? super E", ctTypeParameter.getSuperclass().getActualTypeArguments().get(0).toString());
+
+		assertEquals(ctTypeParameter, ctTypeParameterReference.getDeclaration());
 	}
 
 	@Test

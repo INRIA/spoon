@@ -222,6 +222,9 @@ public class TypeReferenceTest {
 		final CtTypeParameter secondTypeParam = factory.Type().get(B.Tacos.class).getFormalCtTypeParameters().get(0);
 		assertNotEquals(firstTypeParam.toString(), secondTypeParam.toString());
 		assertNotEquals(firstTypeParam, secondTypeParam);
+
+		assertEquals(firstTypeParam, firstRef.getDeclaration());
+		assertEquals(secondTypeParam, secondRef.getDeclaration());
 	}
 
 	@Test
@@ -277,6 +280,8 @@ public class TypeReferenceTest {
 		final CtTypeParameter typeParameter = asEnum.getFormalCtTypeParameters().get(0);
 		assertNotNull(typeParameter);
 		assertNotNull(typeParameter.getSuperclass());
+
+		assertEquals(typeParameter, genericType.getDeclaration());
 
 		final CtTypeReference<?> extendsGeneric = genericType.getBoundingType();
 		assertNotNull(extendsGeneric);

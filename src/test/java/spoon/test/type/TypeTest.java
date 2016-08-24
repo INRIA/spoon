@@ -181,6 +181,8 @@ public class TypeTest {
 		assertEquals("T", typeParameter.getSimpleName());
 		assertIntersectionTypeForPozolePrepareMethod(aPozole, typeParameter.getSuperclass());
 
+		assertEquals(typeParameter, generic.getDeclaration());
+
 		// Intersection type in casts.
 		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
 		assertEquals(1, lambdas.size());
@@ -232,6 +234,8 @@ public class TypeTest {
 		assertEquals("T", typeParameter.getSimpleName());
 		assertIntersectionTypeForPozoleFinishMethod(aPozole, typeParameter.getSuperclass());
 
+		assertEquals(typeParameter, generic.getDeclaration());
+
 		// Intersection type in casts.
 		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
 		assertEquals(1, lambdas.size());
@@ -263,6 +267,8 @@ public class TypeTest {
 		// New type parameter declaration.
 		final CtTypeParameter typeParameter = aMole.getFormalCtTypeParameters().get(0);
 		assertIntersectionTypeForMole(aMole, typeParameter.getSuperclass());
+
+		assertEquals(typeParameter, ref.getDeclaration());
 	}
 
 	private void assertIntersectionTypeForMole(CtType<Mole> aMole, CtTypeReference<?> boundingType) {

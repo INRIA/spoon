@@ -6,15 +6,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import spoon.SpoonException;
-import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
@@ -111,19 +107,12 @@ public class ParentContractTest<T extends CtVisitable> {
 			// special case: impossible methods on some objects (they throw an UnsupportedOperationException)
 			if (setter.getAnnotation(Deprecated.class) != null) continue;
 			if (o instanceof CtAnnotationType && "addMethod".equals(setter.getName())) continue;
-			if (o instanceof CtAnnotationType && "addFormalTypeParameter".equals(setter.getName())) continue;
-			if (o instanceof CtParameter && "setDefaultExpression".equals(setter.getName())) continue;
-			if (o instanceof CtCatchVariable && "setDefaultExpression".equals(setter.getName())) continue;
-			if (o instanceof CtConstructor && "setType".equals(setter.getName())) continue;
 			if (CtActualTypeContainer.class.isAssignableFrom(o.getClass())) {
 				if ("setActualTypeArguments".equals(setter.getName())) continue;
 				if ("addActualTypeArgument".equals(setter.getName())) continue;
 			}
 			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
 			if ((o instanceof CtConstructorCall || CtConstructorCall.class.isAssignableFrom(o.getClass())) && "setType".equals(setter.getName())) continue;
-			if (o instanceof CtAnonymousExecutable && ("addParameter".equals(setter.getName()) || "setParameters".equals(setter.getName()))) continue;
-			if (o instanceof CtAnonymousExecutable && ("addThrownType".equals(setter.getName()) || "setThrownTypes".equals(setter.getName()))) continue;
-			if (o instanceof CtAnonymousExecutable && "setType".equals(setter.getName())) continue;
 			if (o instanceof CtTypeAccess && "setType".equals(setter.getName())) continue;
 
 			CtElement mockedArgument = (CtElement) mock(setter.getParameters()[0].getType(),  Mockito.withSettings().extraInterfaces(Comparable.class));

@@ -82,6 +82,8 @@ public class GenericsTest {
 		assertEquals("V", typeParameter.getSimpleName());
 		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", typeParameter.getSuperclass().asCtIntersectionTypeReference().getBounds().toString());
 
+		assertEquals(typeParameter, generic.getDeclaration());
+
 		CtMethod<?> node5 = type.getElements(
 				new NameFilter<CtMethod<?>>("node5")).get(0);
 		assertEquals(
@@ -97,6 +99,8 @@ public class GenericsTest {
 		assertEquals("E", generic.getSimpleName());
 		CtTypeParameter typeParameter = type.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0).getFormalCtTypeParameters().get(0);
 		assertEquals("E", typeParameter.getSimpleName());
+
+		assertEquals(typeParameter, generic.getDeclaration());
 	}
 
 	@Test
@@ -141,6 +145,8 @@ public class GenericsTest {
 		assertEquals("E", typeParameter.getSimpleName());
 		CtParameter<?> param = ((CtMethod<?>) methods.get(0)).getParameters().get(0);
 		assertEquals("E", param.getType().toString());
+
+		assertEquals(typeParameter, generic.getDeclaration());
 	}
 
 	@Test
@@ -168,6 +174,8 @@ public class GenericsTest {
 		assertEquals("T", tr2.getSimpleName());
 		assertEquals("T", tr2bis.getSimpleName());
 		assertEquals("T", tr3.getSimpleName());
+
+		assertEquals(tr2bis, tr2.getDeclaration());
 	}
 
 	@Test
@@ -178,6 +186,8 @@ public class GenericsTest {
 		// an bound type is not an TypeParameterRefernce
 		assertEquals("E extends java.lang.Enum<E>", meth.getFormalTypeParameters().get(0).toString());
 		assertEquals("E extends java.lang.Enum<E>", meth.getFormalCtTypeParameters().get(0).toString());
+
+		assertEquals(meth.getFormalCtTypeParameters().get(0), meth.getFormalTypeParameters().get(0).getDeclaration());
 	}
 
 	@Test
@@ -534,6 +544,7 @@ public class GenericsTest {
 		assertEquals(3, buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class)).size());
 	}
 
+	@Test
 	public void testDeclarationOfTypeParameterReference() throws Exception {
 		CtType<Tacos> aTacos = buildClass(Tacos.class);
 		for (CtTypeParameterReference parameterReference : aTacos.getElements(new TypeFilter<CtTypeParameterReference>(CtTypeParameterReference.class) {

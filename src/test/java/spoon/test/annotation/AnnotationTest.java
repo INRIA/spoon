@@ -548,6 +548,9 @@ public class AnnotationTest {
 		assertEquals("First generic type must have type annotation", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", typeParameters.get(0).toString());
 		assertEquals("Second generic type must have type annotation", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "K", typeParameters.get(1).toString());
 
+		assertEquals(typeParameters.get(0), formalTypeParameters.get(0).getDeclaration());
+		assertEquals(typeParameters.get(1), formalTypeParameters.get(1).getDeclaration());
+
 		final CtTypeReference<?> superInterface = genericClass.getSuperInterfaces().toArray(new CtTypeReference<?>[0])[0];
 		final String expected = "spoon.test.annotation.testclasses.BasicAnnotation<@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T>";
 		assertEquals("Super interface has a generic type with type annotation", expected, superInterface.toString());
@@ -569,6 +572,8 @@ public class AnnotationTest {
 		final List<CtTypeParameter> typeParameters = method.getFormalCtTypeParameters();
 		assertEquals("Method has 1 generic parameter", 1, typeParameters.size());
 		assertEquals("Method with an type annotation must be well printed", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", typeParameters.get(0).toString());
+
+		assertEquals(typeParameters.get(0), formalTypeParameters.get(0).getDeclaration());
 
 		final CtBlock<?> body = method.getBody();
 		final String expectedFirstStatement =
