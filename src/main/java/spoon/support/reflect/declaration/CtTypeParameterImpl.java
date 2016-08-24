@@ -49,7 +49,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
-	public <C extends CtTypeParameter> C setSuperclass(CtTypeReference<?> superClass) {
+	public <C extends CtType<Object>> C setSuperclass(CtTypeReference<?> superClass) {
 		if (superClass != null) {
 			superClass.setParent(this);
 		}

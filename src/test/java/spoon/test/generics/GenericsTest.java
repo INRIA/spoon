@@ -46,6 +46,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.buildNoClasspath;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -546,7 +547,7 @@ public class GenericsTest {
 
 	@Test
 	public void testDeclarationOfTypeParameterReference() throws Exception {
-		CtType<Tacos> aTacos = buildClass(Tacos.class);
+		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
 		for (CtTypeParameterReference parameterReference : aTacos.getElements(new TypeFilter<CtTypeParameterReference>(CtTypeParameterReference.class) {
 			@Override
 			public boolean matches(CtTypeParameterReference element) {

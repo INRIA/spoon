@@ -231,6 +231,11 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<M> boolean removeMethod(CtMethod<M> method);
 
 	/**
+	 * Sets the superclass type.
+	 */
+	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
+
+	/**
 	 * Sets the super interfaces of this type.
 	 */
 	<C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces);

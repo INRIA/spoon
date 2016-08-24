@@ -80,6 +80,7 @@ public abstract class IntercessionScanner extends CtScanner {
 				&& !(candidate.getSimpleName().equals("setAssignment") && candidate.getDeclaringType().getSimpleName().equals("CtFieldImpl")) //
 				&& !(candidate.getSimpleName().equals("addMethod") && candidate.getDeclaringType().getSimpleName().equals("CtAnnotationTypeImpl")) //
 				&& !(candidate.getSimpleName().equals("setBounds") && candidate.getDeclaringType().getSimpleName().equals("CtTypeParameterReferenceImpl")) //
+				&& !(candidate.getSimpleName().equals("setSuperclass") && candidate.getDeclaringType().getSimpleName().equals("CtTypeImpl")) //
 				&& !candidate.getSimpleName().equals("setDeclaration");
 	}
 }

@@ -419,7 +419,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public CtTypeReference<?> getSuperclass() {
-		// overridden in CtClassImpl
+		// overridden in subclasses.
 		return null;
 	}
 
@@ -763,6 +763,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		for (CtMethod<?> meth : methods) {
 			addMethod(meth);
 		}
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
+		// overridden in subclasses.
 		return (C) this;
 	}
 

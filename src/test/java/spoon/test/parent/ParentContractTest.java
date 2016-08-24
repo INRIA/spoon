@@ -11,6 +11,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
@@ -114,6 +115,7 @@ public class ParentContractTest<T extends CtVisitable> {
 			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
 			if ((o instanceof CtConstructorCall || CtConstructorCall.class.isAssignableFrom(o.getClass())) && "setType".equals(setter.getName())) continue;
 			if (o instanceof CtTypeAccess && "setType".equals(setter.getName())) continue;
+			if (o instanceof CtType && "setSuperclass".equals(setter.getName())) continue;
 
 			CtElement mockedArgument = (CtElement) mock(setter.getParameters()[0].getType(),  Mockito.withSettings().extraInterfaces(Comparable.class));
 			try {

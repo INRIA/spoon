@@ -30,7 +30,6 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -113,14 +112,8 @@ public class ReplaceScanner extends CtScanner {
 			type = Type.ELEMENT;
 		}
 		// Listener
-		String execDeclaringType = getter.getExecutable().getDeclaringType().getSimpleName();
-		if (getter.getTarget().getType().equals(factory.Type().createReference(CtClass.class))) {
-			execDeclaringType = "CtClass";
-		} else if (getter.getTarget().getType().equals(factory.Type().createReference(CtTypeParameter.class))) {
-			execDeclaringType = "CtTypeParameter";
-		}
 		final String name = getter.getExecutable().getSimpleName().substring(3);
-		final String listenerName = execDeclaringType + name + "ReplaceListener";
+		final String listenerName = getter.getExecutable().getDeclaringType().getSimpleName() + name + "ReplaceListener";
 
 		CtClass listener;
 		if (listeners.containsKey(listenerName)) {
