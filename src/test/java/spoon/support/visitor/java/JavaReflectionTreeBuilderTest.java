@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
@@ -76,12 +77,24 @@ public class JavaReflectionTreeBuilderTest {
 	public void testScannerGenericsInClass() throws Exception {
 		final CtType<ComparableComparatorBug> aType = new JavaReflectionTreeBuilder(createFactory()).scan(ComparableComparatorBug.class);
 		assertNotNull(aType);
+
+		// Old type parameter declaration.
 		assertEquals(1, aType.getFormalTypeParameters().size());
 		assertTrue(aType.getFormalTypeParameters().get(0) instanceof CtTypeParameterReference);
-		CtTypeParameterReference ctTypeParameterReference = (CtTypeParameterReference) aType.getFormalTypeParameters().get(0);
+		CtTypeParameterReference ctTypeParameterReference = aType.getFormalTypeParameters().get(0);
 		assertEquals("E extends java.lang.Comparable<? super E>", ctTypeParameterReference.toString());
 		assertEquals(1, ctTypeParameterReference.getBoundingType().getActualTypeArguments().size());
 		assertTrue(ctTypeParameterReference.getBoundingType().getActualTypeArguments().get(0) instanceof CtTypeParameterReference);
+
+		// New type parameter declaration.
+		assertEquals(1, aType.getFormalCtTypeParameters().size());
+		CtTypeParameter ctTypeParameter = aType.getFormalCtTypeParameters().get(0);
+		assertEquals("E extends java.lang.Comparable<? super E>", ctTypeParameter.toString());
+		assertEquals(1, ctTypeParameter.getSuperclass().getActualTypeArguments().size());
+		assertTrue(ctTypeParameter.getSuperclass().getActualTypeArguments().get(0) instanceof CtTypeParameterReference);
+		assertEquals("? super E", ctTypeParameter.getSuperclass().getActualTypeArguments().get(0).toString());
+
+		assertEquals(ctTypeParameter, ctTypeParameterReference.getDeclaration());
 	}
 
 	@Test

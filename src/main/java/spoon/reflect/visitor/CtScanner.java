@@ -77,6 +77,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
@@ -301,7 +302,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctClass.getAnnotations());
 		scan(ctClass.getSuperclass());
 		scan(ctClass.getSuperInterfaces());
-		scan(ctClass.getFormalTypeParameters());
+		scan(ctClass.getFormalCtTypeParameters());
 		scan(ctClass.getAnonymousExecutables());
 		scan(ctClass.getNestedTypes());
 		scan(ctClass.getFields());
@@ -309,6 +310,15 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctClass.getMethods());
 		scan(ctClass.getComments());
 		exit(ctClass);
+	}
+
+	@Override
+	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
+		enter(typeParameter);
+		scan(typeParameter.getAnnotations());
+		scan(typeParameter.getSuperclass());
+		scan(typeParameter.getComments());
+		exit(typeParameter);
 	}
 
 	public <T> void visitCtConditional(final CtConditional<T> conditional) {
@@ -327,7 +337,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(c.getAnnotations());
 		scan(c.getParameters());
 		scan(c.getThrownTypes());
-		scan(c.getFormalTypeParameters());
+		scan(c.getFormalCtTypeParameters());
 		scan(c.getBody());
 		scan(c.getComments());
 		exit(c);
@@ -458,7 +468,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(intrface);
 		scan(intrface.getAnnotations());
 		scan(intrface.getSuperInterfaces());
-		scan(intrface.getFormalTypeParameters());
+		scan(intrface.getFormalCtTypeParameters());
 		scan(intrface.getNestedTypes());
 		scan(intrface.getFields());
 		scan(intrface.getMethods());
@@ -522,7 +532,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtMethod(final CtMethod<T> m) {
 		enter(m);
 		scan(m.getAnnotations());
-		scan(m.getFormalTypeParameters());
+		scan(m.getFormalCtTypeParameters());
 		scan(m.getType());
 		scan(m.getParameters());
 		scan(m.getThrownTypes());

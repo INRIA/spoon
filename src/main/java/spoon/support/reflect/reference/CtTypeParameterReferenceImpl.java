@@ -16,6 +16,10 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -171,6 +175,32 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	protected AnnotatedElement getActualAnnotatedElement() {
 		// this is never annotated
 		return null;
+	}
+
+	@Override
+	public CtType<Object> getDeclaration() {
+		if (!isParentInitialized()) {
+			return null;
+		}
+		return getRecursiveDeclaration(this);
+	}
+
+	private CtType<Object> getRecursiveDeclaration(CtElement element) {
+		final CtFormalTypeDeclarer formalTypeDeclarer = element.getParent(CtFormalTypeDeclarer.class);
+		if (formalTypeDeclarer == null) {
+			return null;
+		}
+		for (CtTypeParameter typeParameter : formalTypeDeclarer.getFormalCtTypeParameters()) {
+			if (simplename.equals(typeParameter.getSimpleName())) {
+				return typeParameter;
+			}
+		}
+		return getRecursiveDeclaration(formalTypeDeclarer);
+	}
+
+	@Override
+	public CtType<Object> getTypeDeclaration() {
+		return getDeclaration();
 	}
 
 	@Override

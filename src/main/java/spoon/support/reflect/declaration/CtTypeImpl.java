@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -64,6 +65,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	private static final long serialVersionUID = 1L;
 
 	List<CtTypeParameterReference> formalTypeParameters = emptyList();
+
+	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
 	Set<CtTypeReference<?>> interfaces = emptySet();
 
@@ -416,7 +419,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public CtTypeReference<?> getSuperclass() {
-		// overridden in CtClassImpl
+		// overridden in subclasses.
 		return null;
 	}
 
@@ -571,6 +574,45 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public List<CtTypeParameter> getFormalCtTypeParameters() {
+		return formalCtTypeParameters;
+	}
+
+	@Override
+	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
+			this.formalCtTypeParameters = CtElementImpl.emptyList();
+			return (C) this;
+		}
+		if (this.formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
+			this.formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		this.formalCtTypeParameters.clear();
+		for (CtTypeParameter formalTypeParameter : formalTypeParameters) {
+			addFormalCtTypeParameter(formalTypeParameter);
+		}
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+		if (formalTypeParameter == null) {
+			return (C) this;
+		}
+		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
+			formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		formalTypeParameter.setParent(this);
+		formalCtTypeParameters.add(formalTypeParameter);
+		return (C) this;
+	}
+
+	@Override
+	public boolean removeFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+		return formalCtTypeParameters.contains(formalTypeParameter) && formalCtTypeParameters.remove(formalTypeParameter);
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>...
 			parameterTypes) {
@@ -721,6 +763,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		for (CtMethod<?> meth : methods) {
 			addMethod(meth);
 		}
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
+		// overridden in subclasses.
 		return (C) this;
 	}
 

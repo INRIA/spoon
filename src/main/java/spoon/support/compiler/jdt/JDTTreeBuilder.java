@@ -139,10 +139,10 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 
@@ -972,7 +972,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	private boolean visitTypeParameter(TypeParameter typeParameter, Scope scope) {
-		final CtTypeParameterReference typeParameterRef = factory.Core().createTypeParameterReference();
+		final CtTypeParameter typeParameterRef = factory.Core().createTypeParameter();
 		typeParameterRef.setSimpleName(CharOperation.charToString(typeParameter.name));
 		context.enter(typeParameterRef, typeParameter);
 		return true;

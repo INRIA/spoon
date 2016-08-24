@@ -75,6 +75,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
@@ -177,6 +178,11 @@ public interface CtVisitor {
 	 * Visits a class declaration.
 	 */
 	<T> void visitCtClass(CtClass<T> ctClass);
+
+	/**
+	 * Visits a type parameter declaration.
+	 */
+	void visitCtTypeParameter(CtTypeParameter typeParameter);
 
 	/**
 	 * Visits a conditional expression

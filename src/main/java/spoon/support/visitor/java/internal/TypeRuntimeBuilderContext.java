@@ -21,7 +21,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -65,7 +65,15 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	}
 
 	@Override
-	public void addFormalType(CtTypeParameterReference parameterRef) {
-		this.type.addFormalTypeParameter(parameterRef);
+	public void addFormalType(CtTypeParameter parameterRef) {
+		this.type.addFormalCtTypeParameter(parameterRef);
+		this.type.addFormalTypeParameter(parameterRef.getReference());
+	}
+
+	@Override
+	public void addTypeName(CtTypeReference<?> ctTypeReference) {
+		if (type instanceof CtTypeParameter) {
+			((CtTypeParameter) this.type).setSuperclass(ctTypeReference);
+		}
 	}
 }

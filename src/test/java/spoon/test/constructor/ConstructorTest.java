@@ -7,6 +7,7 @@ import spoon.SpoonAPI;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -21,7 +22,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -104,13 +104,26 @@ public class ConstructorTest {
 		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
 
 		assertEquals(1, aConstructor.getFormalTypeParameters().size());
+		assertEquals(1, aConstructor.getFormalCtTypeParameters().size());
+
+		// Old type parameter declaration.
 		CtTypeParameterReference genericT = aConstructor.getFormalTypeParameters().get(0);
 		assertEquals("T", genericT.getSimpleName());
 		assertEquals(1, genericT.getAnnotations().size());
+		assertIntersectionTypeInConstructor(genericT.getBoundingType());
 
-		assertNotNull(genericT.getBoundingType());
-		assertTrue(genericT.getBoundingType() instanceof CtIntersectionTypeReference);
-		CtIntersectionTypeReference<?> boundingType = genericT.getBoundingType().asCtIntersectionTypeReference();
+		// New type parameter declaration.
+		CtTypeParameter typeParameter = aConstructor.getFormalCtTypeParameters().get(0);
+		assertEquals("T", typeParameter.getSimpleName());
+		assertEquals(1, typeParameter.getAnnotations().size());
+		assertIntersectionTypeInConstructor(typeParameter.getSuperclass());
+
+		assertEquals(typeParameter, genericT.getDeclaration());
+	}
+
+	private void assertIntersectionTypeInConstructor(CtTypeReference<?> boundingType1) {
+		assertTrue(boundingType1 instanceof CtIntersectionTypeReference);
+		CtIntersectionTypeReference<?> boundingType = boundingType1.asCtIntersectionTypeReference();
 
 		final List<CtTypeReference<?>> bounds = boundingType.getBounds().stream().collect(Collectors.toList());
 		CtTypeReference<?> genericTacos = bounds.get(0);

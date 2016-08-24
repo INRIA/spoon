@@ -29,12 +29,12 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
@@ -293,15 +293,14 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameter(TypeVariable<T> parameter) {
-		final CtTypeParameterReference ctTypeReference = factory.Core().createTypeParameterReference();
-		ctTypeReference.setSimpleName(parameter.getName());
-		ctTypeReference.setUpper(parameter.getBounds() != null && (parameter.getBounds().length > 0));
+		final CtTypeParameter typeParameter = factory.Core().createTypeParameter();
+		typeParameter.setSimpleName(parameter.getName());
 
-		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
+		enter(new TypeRuntimeBuilderContext(typeParameter));
 		super.visitTypeParameter(parameter);
 		exit();
 
-		contexts.peek().addFormalType(ctTypeReference);
+		contexts.peek().addFormalType(typeParameter);
 	}
 
 	@Override

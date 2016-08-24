@@ -24,8 +24,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -53,7 +53,7 @@ public interface RuntimeBuilderContext {
 
 	void addArrayReference(CtArrayTypeReference<?> arrayTypeReference);
 
-	void addFormalType(CtTypeParameterReference parameterRef);
+	void addFormalType(CtTypeParameter parameterRef);
 
 	void addTypeName(CtTypeReference<?> ctTypeReference);
 }

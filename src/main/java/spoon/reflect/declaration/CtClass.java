@@ -87,11 +87,6 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	void removeConstructor(CtConstructor<T> constructor);
 
 	/**
-	 * Sets the superclass type.
-	 */
-	<C extends CtClass<T>> C setSuperclass(CtTypeReference<?> classType);
-
-	/**
 	 * Return {@code true} if the referenced type is a anonymous type
 	 */
 	boolean isAnonymous();

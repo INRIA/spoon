@@ -22,32 +22,62 @@ import java.util.List;
 
 /**
  * This abstract element defines a declaration that accepts formal type
- * parameters (aka generics).
+ * parameters (aka generics), such as a CtType (<code>class A&lt;E&gt;</code>), CtMethod or CtConstructor.
  */
 public interface CtFormalTypeDeclarer extends CtElement {
 	/**
 	 * Returns the formal type parameters of this generic element.
+	 *
+	 * @see #getFormalCtTypeParameters()
 	 */
+	@Deprecated
 	List<CtTypeParameterReference> getFormalTypeParameters();
+
+	/**
+	 * Returns the formal type parameters of this generic element.
+	 */
+	List<CtTypeParameter> getFormalCtTypeParameters();
+
+	/**
+	 * Sets the type parameters of this generic element.
+	 *
+	 * @see #setFormalCtTypeParameters(List)
+	 */
+	@Deprecated
+	<T extends CtFormalTypeDeclarer> T setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters);
 
 	/**
 	 * Sets the type parameters of this generic element.
 	 */
-	<T extends CtFormalTypeDeclarer> T setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters);
+	<T extends CtFormalTypeDeclarer> T setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
 
 	/**
 	 * Add a type parameter to this generic element.
 	 *
 	 * @param formalTypeParameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
+	 * @see #addFormalCtTypeParameter(CtTypeParameter)
 	 */
+	@Deprecated
 	<T extends CtFormalTypeDeclarer> T addFormalTypeParameter(CtTypeParameterReference formalTypeParameter);
+
+	/**
+	 * Add a type parameter to this generic element.
+	 */
+	<T extends CtFormalTypeDeclarer> T addFormalCtTypeParameter(CtTypeParameter formalTypeParameter);
 
 	/**
 	 * Removes a type parameters from this generic element.
 	 *
 	 * @param formalTypeParameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
+	 * @see #removeFormalCtTypeParameter(CtTypeParameter)
 	 */
+	@Deprecated
 	boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter);
+
+	/**
+	 * Removes a type parameters from this generic element.
+	 */
+	boolean removeFormalCtTypeParameter(CtTypeParameter formalTypeParameter);
 }

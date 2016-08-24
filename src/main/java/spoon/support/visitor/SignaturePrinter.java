@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -115,13 +116,13 @@ public class SignaturePrinter extends  CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		if (!m.getFormalTypeParameters().isEmpty()) {
+		if (!m.getFormalCtTypeParameters().isEmpty()) {
 			write("<");
-			for (CtTypeParameterReference ref: m.getFormalTypeParameters()) {
-				scan(ref);
+			for (CtTypeParameter typeParameter: m.getFormalCtTypeParameters()) {
+				scan(typeParameter.getReference());
 				write(",");
 			}
-			if (m.getFormalTypeParameters().size() > 0) {
+			if (m.getFormalCtTypeParameters().size() > 0) {
 				clearLast();
 			}
 			write("> ");

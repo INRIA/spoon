@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -534,10 +535,21 @@ public class AnnotationTest {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtClass<?> genericClass = ctClass.getElements(new NameFilter<CtClass<?>>("DummyGenericClass")).get(0);
+
+		// Old type parameter declaration.
 		final List<CtTypeParameterReference> formalTypeParameters = genericClass.getFormalTypeParameters();
 		assertEquals("Generic class has 2 generics parameters.", 2, formalTypeParameters.size());
 		assertEquals("First generic type must have type annotation", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", formalTypeParameters.get(0).toString());
 		assertEquals("Second generic type must have type annotation", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "K", formalTypeParameters.get(1).toString());
+
+		// New type parameter declaration.
+		final List<CtTypeParameter> typeParameters = genericClass.getFormalCtTypeParameters();
+		assertEquals("Generic class has 2 generics parameters.", 2, formalTypeParameters.size());
+		assertEquals("First generic type must have type annotation", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", typeParameters.get(0).toString());
+		assertEquals("Second generic type must have type annotation", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "K", typeParameters.get(1).toString());
+
+		assertEquals(typeParameters.get(0), formalTypeParameters.get(0).getDeclaration());
+		assertEquals(typeParameters.get(1), formalTypeParameters.get(1).getDeclaration());
 
 		final CtTypeReference<?> superInterface = genericClass.getSuperInterfaces().toArray(new CtTypeReference<?>[0])[0];
 		final String expected = "spoon.test.annotation.testclasses.BasicAnnotation<@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T>";
@@ -549,11 +561,19 @@ public class AnnotationTest {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtMethod<?> method = ctClass.getMethodsByName("m4").get(0);
+
+		// Old type parameter declaration.
 		final List<CtTypeParameterReference> formalTypeParameters = method.getFormalTypeParameters();
 		assertEquals("Method has 1 generic parameter", 1, formalTypeParameters.size());
-		assertEquals("Method with an type annotation must be well printed",
-					 "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator()
-							 + "T", formalTypeParameters.get(0).toString());
+		assertEquals("Method with an type annotation must be well printed", //
+				"@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", formalTypeParameters.get(0).toString());
+
+		// New type parameter declaration.
+		final List<CtTypeParameter> typeParameters = method.getFormalCtTypeParameters();
+		assertEquals("Method has 1 generic parameter", 1, typeParameters.size());
+		assertEquals("Method with an type annotation must be well printed", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", typeParameters.get(0).toString());
+
+		assertEquals(typeParameters.get(0), formalTypeParameters.get(0).getDeclaration());
 
 		final CtBlock<?> body = method.getBody();
 		final String expectedFirstStatement =

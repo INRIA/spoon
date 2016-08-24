@@ -38,12 +38,12 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.util.SortedList;
@@ -206,13 +206,13 @@ public class ElementPrinterHelper {
 	 * 		Reference with formal type arguments.
 	 */
 	public void writeFormalTypeParameters(CtFormalTypeDeclarer ctFormalTypeDeclarer) {
-		final Collection<CtTypeParameterReference> parameters = ctFormalTypeDeclarer.getFormalTypeParameters();
+		final Collection<CtTypeParameter> parameters = ctFormalTypeDeclarer.getFormalCtTypeParameters();
 		if (parameters == null) {
 			return;
 		}
 		if (parameters.size() > 0) {
 			printer.write('<');
-			for (CtTypeReference<?> parameter : parameters) {
+			for (CtTypeParameter parameter : parameters) {
 				prettyPrinter.scan(parameter);
 				printer.write(", ");
 			}

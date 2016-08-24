@@ -99,7 +99,9 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	 */
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void scanCtType(spoon.reflect.declaration.CtType<T> type) {
-		((spoon.reflect.declaration.CtType<T>) (this.other)).setModifiers(new java.util.TreeSet(type.getModifiers()));
+		if (!((this.other) instanceof spoon.reflect.declaration.CtTypeParameter)) {
+			((spoon.reflect.declaration.CtType<T>) (this.other)).setModifiers(new java.util.TreeSet(type.getModifiers()));
+		}
 		((spoon.reflect.declaration.CtType<T>) (this.other)).setShadow(type.isShadow());
 		super.scanCtType(type);
 	}
@@ -118,7 +120,9 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void visitCtAnonymousExecutable(spoon.reflect.declaration.CtAnonymousExecutable e) {
-		((spoon.reflect.declaration.CtAnonymousExecutable) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		if (!((this.other) instanceof spoon.reflect.declaration.CtTypeParameter)) {
+			((spoon.reflect.declaration.CtAnonymousExecutable) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		}
 		super.visitCtAnonymousExecutable(e);
 	}
 
@@ -136,7 +140,9 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtConstructor(spoon.reflect.declaration.CtConstructor<T> e) {
-		((spoon.reflect.declaration.CtConstructor<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		if (!((this.other) instanceof spoon.reflect.declaration.CtTypeParameter)) {
+			((spoon.reflect.declaration.CtConstructor<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		}
 		((spoon.reflect.declaration.CtConstructor<T>) (this.other)).setShadow(e.isShadow());
 		super.visitCtConstructor(e);
 	}
@@ -155,7 +161,9 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtField(spoon.reflect.declaration.CtField<T> e) {
-		((spoon.reflect.declaration.CtField<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		if (!((this.other) instanceof spoon.reflect.declaration.CtTypeParameter)) {
+			((spoon.reflect.declaration.CtField<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		}
 		((spoon.reflect.declaration.CtField<T>) (this.other)).setShadow(e.isShadow());
 		super.visitCtField(e);
 	}
@@ -186,7 +194,9 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		if (!(((this.other) instanceof spoon.reflect.declaration.CtAnonymousExecutable) || ((this.other) instanceof spoon.reflect.declaration.CtConstructor))) {
 			((spoon.reflect.code.CtLocalVariable<T>) (this.other)).setSimpleName(e.getSimpleName());
 		}
-		((spoon.reflect.code.CtLocalVariable<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		if (!((this.other) instanceof spoon.reflect.declaration.CtTypeParameter)) {
+			((spoon.reflect.code.CtLocalVariable<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		}
 		super.visitCtLocalVariable(e);
 	}
 
@@ -195,14 +205,18 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		if (!(((this.other) instanceof spoon.reflect.declaration.CtAnonymousExecutable) || ((this.other) instanceof spoon.reflect.declaration.CtConstructor))) {
 			((spoon.reflect.code.CtCatchVariable<T>) (this.other)).setSimpleName(e.getSimpleName());
 		}
-		((spoon.reflect.code.CtCatchVariable<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		if (!((this.other) instanceof spoon.reflect.declaration.CtTypeParameter)) {
+			((spoon.reflect.code.CtCatchVariable<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		}
 		super.visitCtCatchVariable(e);
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtMethod(spoon.reflect.declaration.CtMethod<T> e) {
 		((spoon.reflect.declaration.CtMethod<T>) (this.other)).setDefaultMethod(e.isDefaultMethod());
-		((spoon.reflect.declaration.CtMethod<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		if (!((this.other) instanceof spoon.reflect.declaration.CtTypeParameter)) {
+			((spoon.reflect.declaration.CtMethod<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		}
 		((spoon.reflect.declaration.CtMethod<T>) (this.other)).setShadow(e.isShadow());
 		super.visitCtMethod(e);
 	}
@@ -240,7 +254,9 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtParameter(spoon.reflect.declaration.CtParameter<T> e) {
 		((spoon.reflect.declaration.CtParameter<T>) (this.other)).setVarArgs(e.isVarArgs());
-		((spoon.reflect.declaration.CtParameter<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		if (!((this.other) instanceof spoon.reflect.declaration.CtTypeParameter)) {
+			((spoon.reflect.declaration.CtParameter<T>) (this.other)).setModifiers(new java.util.TreeSet(e.getModifiers()));
+		}
 		((spoon.reflect.declaration.CtParameter<T>) (this.other)).setShadow(e.isShadow());
 		super.visitCtParameter(e);
 	}

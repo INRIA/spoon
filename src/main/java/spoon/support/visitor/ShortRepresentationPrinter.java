@@ -79,6 +79,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
@@ -237,6 +238,11 @@ public class ShortRepresentationPrinter implements CtVisitor {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		write("class ").write(ctClass.getQualifiedName());
+	}
+
+	@Override
+	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
+		write(typeParameter.getSimpleName());
 	}
 
 	@Override
@@ -444,8 +450,8 @@ public class ShortRepresentationPrinter implements CtVisitor {
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		if (!m.getFormalTypeParameters().isEmpty()) {
-			scan(m.getFormalTypeParameters());
+		if (!m.getFormalCtTypeParameters().isEmpty()) {
+			scan(m.getFormalCtTypeParameters());
 			write(" ");
 		}
 		scan(m.getType());
@@ -467,11 +473,11 @@ public class ShortRepresentationPrinter implements CtVisitor {
 		visitCtMethod(annotationMethod);
 	}
 
-	private void scan(List<CtTypeParameterReference> formalTypeParameters) {
+	private void scan(List<CtTypeParameter> formalTypeParameters) {
 		if (formalTypeParameters != null && formalTypeParameters.size() > 0) {
 			write("<");
-			for (CtTypeReference<?> type : formalTypeParameters) {
-				scan(type);
+			for (CtTypeParameter typeParameter : formalTypeParameters) {
+				scan(typeParameter);
 				write(",");
 			}
 			clearLast();
