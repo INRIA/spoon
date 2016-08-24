@@ -664,13 +664,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public void visitCtCircularTypeReference(final spoon.reflect.internal.CtCircularTypeReference reference) {
-		spoon.reflect.internal.CtCircularTypeReference aCtCircularTypeReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Internal().createCircularTypeReference());
-		this.other = aCtCircularTypeReference;
-	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
 	public <T> void visitCtTypeAccess(final spoon.reflect.code.CtTypeAccess<T> typeAccess) {
 		spoon.reflect.code.CtTypeAccess<T> aCtTypeAccess = spoon.support.visitor.clone.CloneBuilder.build(this.builder, typeAccess, typeAccess.getFactory().Core().createTypeAccess());
 		aCtTypeAccess.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(typeAccess.getAnnotations()));

@@ -618,13 +618,6 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 	}
 
 	@java.lang.Override
-	public void visitCtCircularTypeReference(final spoon.reflect.internal.CtCircularTypeReference reference) {
-		spoon.reflect.internal.CtCircularTypeReference other = ((spoon.reflect.internal.CtCircularTypeReference) (stack.peek()));
-		enter(reference);
-		exit(reference);
-	}
-
-	@java.lang.Override
 	public <T> void visitCtTypeAccess(final spoon.reflect.code.CtTypeAccess<T> typeAccess) {
 		spoon.reflect.code.CtTypeAccess other = ((spoon.reflect.code.CtTypeAccess) (stack.peek()));
 		enter(typeAccess);
