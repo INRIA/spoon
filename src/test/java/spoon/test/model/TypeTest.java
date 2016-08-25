@@ -1,6 +1,7 @@
 package spoon.test.model;
 
 import org.junit.Test;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class TypeTest {
 
@@ -53,5 +55,11 @@ public class TypeTest {
 
 		CtTypeReference<?> inface = interfaces.iterator().next();
 		assertNull(inface.getSuperclass());
+	}
+
+	@Test
+	public void testGetUsedTypesForTypeInRootPackage() throws Exception {
+		CtClass<?> cl = createFactory().Code().createCodeSnippetStatement("class X { X x; }").compile();
+		assertEquals(0, cl.getUsedTypes(false).size());
 	}
 }
