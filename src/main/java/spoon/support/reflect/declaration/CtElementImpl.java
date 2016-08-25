@@ -35,7 +35,7 @@ import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
-import spoon.support.visitor.EqualVisitor;
+import spoon.support.visitor.DeepRepresentationVisitor;
 import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.ShortRepresentationPrinter;
 import spoon.support.visitor.TypeReferenceScanner;
@@ -115,7 +115,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 	}
 
 	private String getDeepRepresentation(CtElement elem) {
-		EqualVisitor prThis = new EqualVisitor();
+		DeepRepresentationVisitor prThis = new DeepRepresentationVisitor();
 		prThis.scan(elem);
 		return  prThis.getRepresentation();
 	}
