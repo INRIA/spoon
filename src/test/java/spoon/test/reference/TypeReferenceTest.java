@@ -21,7 +21,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -258,7 +257,7 @@ public class TypeReferenceTest {
 		assertNotNull(genericExtends);
 		assertNotNull(genericExtends.getBoundingType());
 
-		assertTrue(genericExtends.getBoundingType() instanceof CtCircularTypeReference);
+		assertTrue(genericExtends.getBoundingType() instanceof CtTypeReference);
 	}
 
 	@Test

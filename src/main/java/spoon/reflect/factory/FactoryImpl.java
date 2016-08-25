@@ -31,7 +31,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.support.DefaultCoreFactory;
-import spoon.support.DefaultInternalFactory;
 import spoon.support.StandardEnvironment;
 
 import java.io.Serializable;
@@ -254,16 +253,6 @@ public class FactoryImpl implements Factory, Serializable {
 			type = new TypeFactory(this);
 		}
 		return type;
-	}
-
-	private transient InternalFactory internal;
-
-	@Override
-	public InternalFactory Internal() {
-		if (internal == null) {
-			internal = new DefaultInternalFactory(this);
-		}
-		return internal;
 	}
 
 	/**

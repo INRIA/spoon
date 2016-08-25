@@ -629,7 +629,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.reference.CtTypeParameterReference aCtTypeParameterReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ref, ref.getFactory().Core().createTypeParameterReference());
 		aCtTypeParameterReference.setPackage(spoon.support.visitor.equals.CloneHelper.clone(ref.getPackage()));
 		aCtTypeParameterReference.setDeclaringType(spoon.support.visitor.equals.CloneHelper.clone(ref.getDeclaringType()));
-		aCtTypeParameterReference.setActualTypeArguments(spoon.support.visitor.equals.CloneHelper.clone(ref.getActualTypeArguments()));
 		aCtTypeParameterReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(ref.getAnnotations()));
 		aCtTypeParameterReference.setBoundingType(spoon.support.visitor.equals.CloneHelper.clone(ref.getBoundingType()));
 		this.other = aCtTypeParameterReference;
@@ -661,13 +660,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtTypeReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(reference.getAnnotations()));
 		aCtTypeReference.setComments(spoon.support.visitor.equals.CloneHelper.clone(reference.getComments()));
 		this.other = aCtTypeReference;
-	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
-	public void visitCtCircularTypeReference(final spoon.reflect.internal.CtCircularTypeReference reference) {
-		spoon.reflect.internal.CtCircularTypeReference aCtCircularTypeReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Internal().createCircularTypeReference());
-		this.other = aCtCircularTypeReference;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator

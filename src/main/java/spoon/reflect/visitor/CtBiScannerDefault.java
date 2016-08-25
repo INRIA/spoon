@@ -626,7 +626,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(ref);
 		biScan(ref.getPackage(), other.getPackage());
 		biScan(ref.getDeclaringType(), other.getDeclaringType());
-		biScan(ref.getActualTypeArguments(), other.getActualTypeArguments());
 		biScan(ref.getAnnotations(), other.getAnnotations());
 		biScan(ref.getBoundingType(), other.getBoundingType());
 		exit(ref);
@@ -657,13 +656,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
 		biScan(reference.getAnnotations(), other.getAnnotations());
 		biScan(reference.getComments(), other.getComments());
-		exit(reference);
-	}
-
-	@java.lang.Override
-	public void visitCtCircularTypeReference(final spoon.reflect.internal.CtCircularTypeReference reference) {
-		spoon.reflect.internal.CtCircularTypeReference other = ((spoon.reflect.internal.CtCircularTypeReference) (stack.peek()));
-		enter(reference);
 		exit(reference);
 	}
 

@@ -16,6 +16,8 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.declaration.CtTypeParameter;
+
 import java.util.List;
 
 /**
@@ -68,6 +70,11 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 */
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 
+	// override the return
+	@Override
+	CtTypeParameter getDeclaration();
+
+	// override the return
 	@Override
 	CtTypeParameterReference clone();
 }

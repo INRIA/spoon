@@ -25,15 +25,11 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
@@ -86,6 +82,11 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	public boolean isGenerics() {
+		return true;
+	}
+
+	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		return false;
 	}
@@ -108,22 +109,18 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
+		throw new UnsupportedOperationException("Type parameter can't have an actual type argument");
+	}
+
+	@Override
 	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		if (actualTypeArgument == null) {
-			return (C) this;
-		}
-		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		actualTypeArgument.setParent(this);
-		actualTypeArguments.add(actualTypeArgument);
-		return (C) this;
+		throw new UnsupportedOperationException("Type parameter can't have an actual type argument");
 	}
 
 	@Override
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
-				&& actualTypeArguments.remove(actualTypeArgument);
+		throw new UnsupportedOperationException("Type parameter can't have an actual type argument");
 	}
 
 	@Override
@@ -178,14 +175,14 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public CtType<Object> getDeclaration() {
+	public CtTypeParameter getDeclaration() {
 		if (!isParentInitialized()) {
 			return null;
 		}
 		return getRecursiveDeclaration(this);
 	}
 
-	private CtType<Object> getRecursiveDeclaration(CtElement element) {
+	private CtTypeParameter getRecursiveDeclaration(CtElement element) {
 		final CtFormalTypeDeclarer formalTypeDeclarer = element.getParent(CtFormalTypeDeclarer.class);
 		if (formalTypeDeclarer == null) {
 			return null;

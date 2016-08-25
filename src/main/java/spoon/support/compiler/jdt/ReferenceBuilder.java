@@ -69,7 +69,6 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -464,7 +463,6 @@ public class ReferenceBuilder {
 				typeParameterRef.setSimpleName(ctRef.getSimpleName());
 				typeParameterRef.setDeclaringType(ctRef.getDeclaringType());
 				typeParameterRef.setPackage(ctRef.getPackage());
-				typeParameterRef.setActualTypeArguments(ctRef.getActualTypeArguments());
 				ctRef = typeParameterRef;
 			}
 			insertGenericTypesInNoClasspathFromJDTInSpoon(ref, ctRef);
@@ -580,16 +578,17 @@ public class ReferenceBuilder {
 	 * Try to build a CtTypeParameterReference from a single name with specified generic types but
 	 * keep in mind that if you give wrong data in the strong, reference will be wrong.
 	 */
-	private CtTypeParameterReference getTypeParameterReference(String name) {
-		CtTypeParameterReference param = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
+	private CtTypeReference<Object> getTypeParameterReference(String name) {
+		CtTypeReference<Object> param = null;
 		if (name.contains("extends") || name.contains("super")) {
 			String[] split = name.contains("extends") ? name.split("extends") : name.split("super");
 			param = getTypeParameterReference(split[0].trim());
-			param.setBoundingType(getTypeReference(split[split.length - 1].trim()));
+			((CtTypeParameterReference) param).setBoundingType(getTypeReference(split[split.length - 1].trim()));
 		} else if (name.matches(".*(<.+>)")) {
 			Pattern pattern = Pattern.compile("([^<]+)<(.+)>");
 			Matcher m = pattern.matcher(name);
 			if (m.find()) {
+				param = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 				param.setSimpleName(m.group(1));
 				final String[] split = m.group(2).split(",");
 				for (String parameter : split) {
@@ -599,6 +598,7 @@ public class ReferenceBuilder {
 		} else if (name.contains("?")) {
 			param = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 		} else {
+			param = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 			param.setSimpleName(name);
 		}
 		return param;
@@ -717,8 +717,7 @@ public class ReferenceBuilder {
 
 			if (((WildcardBinding) binding).bound != null && ref instanceof CtTypeParameterReference) {
 				if (bindingCache.containsKey(((WildcardBinding) binding).bound)) {
-					final CtCircularTypeReference circularRef = getCtCircularTypeReference(((WildcardBinding) binding).bound);
-					((CtTypeParameterReference) ref).setBoundingType(circularRef);
+					((CtTypeParameterReference) ref).setBoundingType(getCtCircularTypeReference(((WildcardBinding) binding).bound));
 				} else {
 					((CtTypeParameterReference) ref).setBoundingType(getTypeReference(((WildcardBinding) binding).bound));
 				}
@@ -790,15 +789,8 @@ public class ReferenceBuilder {
 		return (CtTypeReference<T>) ref;
 	}
 
-	private CtCircularTypeReference getCtCircularTypeReference(TypeBinding b) {
-		final CtCircularTypeReference circularRef = this.jdtTreeBuilder.getFactory().Internal().createCircularTypeReference();
-		final CtTypeReference originalRef = bindingCache.get(b).clone();
-		circularRef.setPackage(originalRef.getPackage());
-		circularRef.setSimpleName(originalRef.getSimpleName());
-		circularRef.setDeclaringType(originalRef.getDeclaringType());
-		circularRef.setActualTypeArguments(originalRef.getActualTypeArguments());
-		circularRef.setAnnotations(originalRef.getAnnotations());
-		return circularRef;
+	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
+		return bindingCache.get(b).clone();
 	}
 
 	@SuppressWarnings("unchecked")

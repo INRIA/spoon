@@ -35,6 +35,7 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -434,6 +435,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public boolean isGenerics() {
+		return false;
+	}
+
+	@Override
 	public List<CtFieldReference<?>> getAllFields() {
 		List<CtFieldReference<?>> l = new ArrayList<>(getFields().size());
 		for (CtField<?> f : getFields()) {
@@ -672,17 +678,30 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return null;
 	}
 
-	private boolean isSameParameter(CtTypeReference<?> ctParameterType, CtTypeReference<?> parameterType) {
-		if (parameterType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
+	private boolean isSameParameter(CtTypeReference<?> ctParameterType, CtTypeReference<?> expectedType) {
+		if (expectedType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
 			// Check if Object or extended.
-			if (!ctParameterType.equals(parameterType)) {
+			if (!ctParameterType.equals(expectedType)) {
 				return false;
 			}
-		} else if (parameterType instanceof CtTypeParameterReference) {
-			if (!ctParameterType.isSubtypeOf(factory.Type().createReference(parameterType.getActualClass()))) {
+		} else if (expectedType instanceof CtTypeParameterReference) {
+			if (!ctParameterType.isSubtypeOf(factory.Type().createReference(expectedType.getActualClass()))) {
 				return false;
 			}
-		} else if (!parameterType.equals(ctParameterType)) {
+		} else if (ctParameterType instanceof CtTypeParameterReference) {
+			CtTypeParameter declaration = (CtTypeParameter) ctParameterType.getDeclaration();
+			if (declaration.getSuperclass() instanceof CtIntersectionTypeReference) {
+				for (CtTypeReference<?> ctTypeReference : declaration.getSuperclass().asCtIntersectionTypeReference().getBounds()) {
+					if (ctTypeReference.equals(expectedType)) {
+						return true;
+					}
+				}
+			} else if (declaration.getSuperclass() != null) {
+				return declaration.getSuperclass().equals(expectedType);
+			} else {
+				return getFactory().Type().objectType().equals(expectedType);
+			}
+		} else if (!expectedType.equals(ctParameterType)) {
 			return false;
 		}
 		return true;

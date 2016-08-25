@@ -74,7 +74,6 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -598,11 +597,6 @@ public class EqualVisitor extends CtScanner {
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 		write(reference.getQualifiedName());
 		write(" ");
-	}
-
-	@Override
-	public void visitCtCircularTypeReference(CtCircularTypeReference reference) {
-		visitCtTypeReference(reference);
 	}
 
 	@Override

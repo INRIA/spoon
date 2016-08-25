@@ -89,7 +89,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -1642,11 +1641,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtTypeReference(CtTypeReference<T> ref) {
 		visitCtTypeReference(ref, true);
-	}
-
-	@Override
-	public void visitCtCircularTypeReference(CtCircularTypeReference reference) {
-		visitCtTypeReference(reference);
 	}
 
 	@Override

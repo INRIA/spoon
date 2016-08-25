@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
@@ -556,5 +557,17 @@ public class GenericsTest {
 		})) {
 			assertNotNull(parameterReference.getDeclaration());
 		}
+	}
+
+	@Test
+	public void testIsGenericsMethod() throws Exception {
+		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
+		CtTypeParameter typeParameter = aTacos.getFormalCtTypeParameters().get(0);
+		assertTrue(typeParameter.isGenerics());
+		assertTrue(typeParameter.getReference().isGenerics());
+
+		CtTypeReference ctTypeReference = aTacos.getSuperInterfaces().toArray(new CtTypeReference[aTacos.getSuperInterfaces().size()])[0];
+		assertFalse(aTacos.isGenerics());
+		assertFalse(ctTypeReference.isGenerics());
 	}
 }

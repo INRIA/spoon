@@ -550,6 +550,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
+	@Override
+	public boolean isGenerics() {
+		return false;
+	}
+
 	boolean isShadow;
 
 	@Override
