@@ -67,6 +67,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -91,15 +92,15 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.lang.annotation.Annotation;
 
 /**
- * Responsible for computing a deep representation of the object. Used by {@link CtElementImpl#equals(Object)} for deep equality.
+ * Responsible for computing a deep representation of the object. Used by {@link CtElementImpl#compareTo(CtElement)} for deep compare.
  *
  *  Can also be seen as a super fast toString (without requiring to be valid java code)
- **/
-public class EqualVisitor extends CtScanner {
+ */
+public class DeepRepresentationVisitor extends CtScanner {
 
 	StringBuffer representation;
 
-	public EqualVisitor() {
+	public DeepRepresentationVisitor() {
 		super();
 		reset();
 	}
@@ -112,7 +113,7 @@ public class EqualVisitor extends CtScanner {
 		representation = new StringBuffer();
 	}
 
-	protected EqualVisitor write(String value) {
+	protected DeepRepresentationVisitor write(String value) {
 		representation.append(value);
 		return this;
 	}
