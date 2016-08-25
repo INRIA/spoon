@@ -770,7 +770,11 @@ public class ReferenceBuilder {
 				arrayref = tmp;
 			}
 			arrayref.setComponentType(getTypeReference(binding.leafComponentType()));
-		} else if (binding instanceof ProblemReferenceBinding || binding instanceof PolyTypeBinding) {
+		} else if (binding instanceof PolyTypeBinding) {
+			// JDT can't resolve the type of this binding and we only have a string.
+			// In this case, we return a type Object because we can't know more about it.
+			ref = this.jdtTreeBuilder.getFactory().Type().objectType();
+		} else if (binding instanceof ProblemReferenceBinding) {
 			// Spoon is able to analyze also without the classpath
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setSimpleName(new String(binding.readableName()));

@@ -22,6 +22,7 @@ import spoon.Launcher;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
@@ -299,5 +300,22 @@ public class TypeTest {
 		final Factory factory = createFactory();
 		assertNotNull(factory.Interface().create("fr.inria.ITest").getReference().getDeclaration());
 		assertNotNull(factory.Enum().create("fr.inria.ETest").getReference().getDeclaration());
+	}
+
+	@Test
+	public void testPolyTypBindingInTernaryExpression() throws Exception {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/ternary-bug");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		CtType<Object> aType = launcher.getFactory().Type().get("de.uni_bremen.st.quide.persistence.transformators.IssueTransformator");
+		CtConstructorCall ctConstructorCall = aType.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class) {
+			@Override
+			public boolean matches(CtConstructorCall element) {
+				return "TOIssue".equals(element.getExecutable().getType().getSimpleName()) && super.matches(element);
+			}
+		}).get(0);
+		assertEquals(launcher.getFactory().Type().objectType(), ctConstructorCall.getExecutable().getParameters().get(9));
 	}
 }
