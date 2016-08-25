@@ -17,7 +17,10 @@
 package spoon.reflect.code;
 
 import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
 
 /**
  * This code element defines a concrete invocation.
@@ -26,6 +29,30 @@ import spoon.reflect.reference.CtTypeReference;
  * 		Return type of this invocation
  */
 public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, CtTargetedExpression<T, CtExpression<?>>, CtActualTypeContainer {
+	/**
+	 * Delegate to the executable reference of the invocation.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	List<CtTypeReference<?>> getActualTypeArguments();
+
+	/**
+	 * Delegate to the executable reference of the invocation.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+
+	/**
+	 * Delegate to the executable reference of the invocation.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+
 	/**
 	 * Return the type returned by the invocation. If the invocation is to a
 	 * method where the returned type is a generic type, this method returns

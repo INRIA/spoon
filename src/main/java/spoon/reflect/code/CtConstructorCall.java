@@ -17,6 +17,10 @@
 package spoon.reflect.code;
 
 import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
 
 /**
  * This code element represents a constructor call.
@@ -25,6 +29,30 @@ import spoon.reflect.reference.CtActualTypeContainer;
  * 		created type
  */
 public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpression<?>>, CtAbstractInvocation<T>, CtStatement, CtActualTypeContainer {
+	/**
+	 * Delegate to the executable reference of the constructor call.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	List<CtTypeReference<?>> getActualTypeArguments();
+
+	/**
+	 * Delegate to the executable reference of the constructor call.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+
+	/**
+	 * Delegate to the executable reference of the constructor call.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+
 	@Override
 	CtConstructorCall<T> clone();
 }

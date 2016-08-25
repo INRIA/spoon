@@ -17,6 +17,11 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
+
+import java.util.List;
 
 /**
  * This code element represents the creation of a anonymous class.
@@ -25,6 +30,29 @@ import spoon.reflect.declaration.CtClass;
  * 		created type
  */
 public interface CtNewClass<T> extends CtConstructorCall<T> {
+	/**
+	 * Delegate to the executable reference of the new class.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	List<CtTypeReference<?>> getActualTypeArguments();
+
+	/**
+	 * Delegate to the executable reference of the new class.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+
+	/**
+	 * Delegate to the executable reference of the new class.
+	 *
+	 * @see CtExecutableReference#getActualTypeArguments()
+	 */
+	@Override
+	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
 	 * Gets the created class.
