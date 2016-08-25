@@ -50,6 +50,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
@@ -164,6 +165,7 @@ class JDTTreeBuilderHelper {
 		CtVariableReference<T> ref;
 		if (jdtTreeBuilder.getContextBuilder().isBuildLambda) {
 			ref = jdtTreeBuilder.getFactory().Core().createParameterReference();
+			((CtParameterReference) ref).setDeclaringExecutable(jdtTreeBuilder.getReferencesBuilder().getLambdaExecutableReference(singleNameReference));
 		} else {
 			ref = jdtTreeBuilder.getFactory().Core().createLocalVariableReference();
 			((CtLocalVariableReference<T>) ref).setDeclaration(jdtTreeBuilder.getContextBuilder().<T>getLocalVariableDeclaration(name));
