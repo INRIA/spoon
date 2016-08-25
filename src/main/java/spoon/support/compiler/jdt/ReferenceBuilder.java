@@ -66,8 +66,10 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.internal.CtCircularTypeReference;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -494,8 +496,10 @@ public class ReferenceBuilder {
 	private <T> void insertGenericTypesInNoClasspathFromJDTInSpoon(TypeReference original, CtTypeReference<T> type) {
 		if (original.resolvedType instanceof ProblemReferenceBinding && original.getTypeArguments() != null) {
 			for (TypeReference[] typeReferences : original.getTypeArguments()) {
-				for (TypeReference typeReference : typeReferences) {
-					type.addActualTypeArgument(this.getTypeReference(typeReference.resolvedType));
+				if (typeReferences != null) {
+					for (TypeReference typeReference : typeReferences) {
+						type.addActualTypeArgument(this.getTypeReference(typeReference.resolvedType));
+					}
 				}
 			}
 		}
@@ -912,5 +916,43 @@ public class ReferenceBuilder {
 		} else {
 			throw new AssertionError("unexpected declaring type: " + declaring.getClass() + " of " + declaring);
 		}
+	}
+
+	/**
+	 * In noclasspath, lambda doesn't have always a binding for their variables accesses in their block/expression.
+	 * Here, we make the job of JDT and bind their variables accesses to their parameters.
+	 *
+	 * @param singleNameReference Name of the variable access.
+	 * @return executable reference which corresponds to the lambda.
+	 */
+	public CtExecutableReference<?> getLambdaExecutableReference(SingleNameReference singleNameReference) {
+		ASTPair potentialLambda = null;
+		for (ASTPair astPair : jdtTreeBuilder.getContextBuilder().stack) {
+			if (astPair.node instanceof LambdaExpression) {
+				potentialLambda = astPair;
+			}
+		}
+		if (potentialLambda == null) {
+			return null;
+		}
+		LambdaExpression lambdaJDT = (LambdaExpression) potentialLambda.node;
+		for (Argument argument : lambdaJDT.arguments()) {
+			if (CharOperation.equals(argument.name, singleNameReference.token)) {
+				CtTypeReference<?> declaringType = null;
+				if (lambdaJDT.enclosingScope instanceof MethodScope) {
+					declaringType = jdtTreeBuilder.getReferencesBuilder().getTypeReference(((MethodScope) lambdaJDT.enclosingScope).parent.enclosingSourceType());
+				}
+				CtLambda<?> ctLambda = (CtLambda<?>) potentialLambda.element;
+				List<CtTypeReference<?>> parametersType = new ArrayList<>();
+				List<CtParameter<?>> parameters = ctLambda.getParameters();
+				for (CtParameter<?> parameter : parameters) {
+					if (parameter.getType() != null) {
+						parametersType.add(parameter.getType().clone());
+					}
+				}
+				return jdtTreeBuilder.getFactory().Executable().createReference(declaringType, ctLambda.getType(), ctLambda.getSimpleName(), parametersType);
+			}
+		}
+		return null;
 	}
 }
