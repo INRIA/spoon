@@ -328,4 +328,20 @@ public class ElementPrinterHelper {
 		}
 		return commentsToPrint;
 	}
+
+	public void writeIfOrLoopBlock(CtStatement block, DefaultJavaPrettyPrinter defaultJavaPrettyPrinter) {
+		if (block != null) {
+			if (!block.isImplicit()) {
+				printer.write(" ");
+			}
+			defaultJavaPrettyPrinter.scan((CtStatement) block);
+			if (!block.isImplicit()) {
+				if (!block.isParentInitialized() || (!(block.getParent() instanceof CtFor) && !(block.getParent() instanceof CtForEach))) {
+					printer.write(" ");
+				}
+			}
+		} else {
+			printer.write(";");
+		}
+	}
 }

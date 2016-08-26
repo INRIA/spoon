@@ -427,17 +427,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <R> void visitCtBlock(CtBlock<R> block) {
 		enterCtStatement(block);
-		printer.write("{").incTab();
+		if (!block.isImplicit()) {
+			printer.write("{");
+		}
+		printer.incTab();
 		for (CtStatement statement : block.getStatements()) {
 			if (!statement.isImplicit()) {
 				printer.writeln().writeTabs();
 				elementPrinterHelper.writeStatement(statement);
 			}
 		}
+		printer.decTab();
 		if (env.isPreserveLineNumbers()) {
-			printer.decTab().write("}");
+			if (!block.isImplicit()) {
+				printer.write("}");
+			}
 		} else {
-			printer.decTab().writeln().writeTabs().write("}");
+			printer.writeln().writeTabs();
+			if (!block.isImplicit()) {
+				printer.write("}");
+			}
 		}
 	}
 
@@ -624,9 +633,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtDo(CtDo doLoop) {
 		enterCtStatement(doLoop);
-		printer.write("do ");
-		elementPrinterHelper.writeStatement(doLoop.getBody());
-		printer.write(" while (");
+		printer.write("do");
+		elementPrinterHelper.writeIfOrLoopBlock(doLoop.getBody(), this);
+		printer.write("while (");
 		scan(doLoop.getLoopingExpression());
 		printer.write(" )");
 	}
@@ -959,14 +968,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.removeLastChar();
 		}
 		printer.write(")");
-		if (forLoop.getBody() instanceof CtBlock) {
-			printer.write(" ");
-			scan(forLoop.getBody());
-		} else {
-			printer.incTab().writeln().writeTabs();
-			elementPrinterHelper.writeStatement(forLoop.getBody());
-			printer.decTab();
-		}
+		elementPrinterHelper.writeIfOrLoopBlock(forLoop.getBody(), this);
 	}
 
 	@Override
@@ -977,15 +979,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write(" : ");
 		scan(foreach.getExpression());
 		printer.write(")");
-
-		if (foreach.getBody() instanceof CtBlock) {
-			printer.write(" ");
-			scan(foreach.getBody());
-		} else {
-			printer.incTab().writeln().writeTabs();
-			elementPrinterHelper.writeStatement(foreach.getBody());
-			printer.decTab();
-		}
+		elementPrinterHelper.writeIfOrLoopBlock(foreach.getBody(), this);
 	}
 
 	@Override
@@ -994,47 +988,27 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write("if (");
 		scan(ifElement.getCondition());
 		printer.write(")");
-		if (ifElement.getThenStatement() instanceof CtBlock) {
-			printer.write(" ");
-			scan((CtStatement) ifElement.getThenStatement());
-			printer.write(" ");
-		} else {
-			printer.incTab().writeln().writeTabs();
-			List<CtComment> comments = elementPrinterHelper.getComments(ifElement, CommentOffset.INSIDE);
-			for (CtComment comment : comments) {
-				if (comment.getPosition().getSourceStart() <= ifElement.getThenStatement().getPosition().getSourceStart()) {
-					elementPrinterHelper.writeComment(comment);
-				}
-			}
-			elementPrinterHelper.writeStatement(ifElement.getThenStatement());
-			if (env.isPreserveLineNumbers()) {
-				printer.decTab();
-			} else {
-				printer.decTab().writeln().writeTabs();
-			}
-		}
+		elementPrinterHelper.writeIfOrLoopBlock(ifElement.getThenStatement(), this);
 		if (ifElement.getElseStatement() != null) {
 			List<CtComment> comments = elementPrinterHelper.getComments(ifElement, CommentOffset.INSIDE);
 			for (CtComment comment : comments) {
-				if (comment.getPosition().getSourceStart() > ifElement.getThenStatement().getPosition().getSourceEnd()) {
+				SourcePosition thenPosition =
+						ifElement.getThenStatement().getPosition() == null ? ((CtBlock) ifElement.getThenStatement()).getStatement(0).getPosition() : ifElement.getThenStatement().getPosition();
+				if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd()) {
 					elementPrinterHelper.writeComment(comment);
 				}
 			}
 			printer.write("else");
 			if (ifElement.getElseStatement() instanceof CtIf) {
-				printer.write(" ");
+				if (!ifElement.getElseStatement().isImplicit()) {
+					printer.write(" ");
+				}
 				scan((CtStatement) ifElement.getElseStatement());
 			} else if (ifElement.getElseStatement() instanceof CtBlock) {
-				printer.write(" ");
-				scan((CtStatement) ifElement.getElseStatement());
-			} else {
-				printer.incTab().writeln().writeTabs();
-				elementPrinterHelper.writeStatement(ifElement.getElseStatement());
-				if (env.isPreserveLineNumbers()) {
-					printer.decTab();
-				} else {
-					printer.decTab().writeln().writeTabs();
+				if (!ifElement.getElseStatement().isImplicit()) {
+					printer.write(" ");
 				}
+				scan((CtStatement) ifElement.getElseStatement());
 			}
 		}
 	}
@@ -1733,14 +1707,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(whileLoop.getLoopingExpression());
 		printer.write(")");
 
-		if (whileLoop.getBody() instanceof CtBlock) {
-			printer.write(" ");
-			scan(whileLoop.getBody());
-		} else {
-			printer.incTab().writeln().writeTabs();
-			elementPrinterHelper.writeStatement(whileLoop.getBody());
-			printer.decTab();
-		}
+		elementPrinterHelper.writeIfOrLoopBlock(whileLoop.getBody(), this);
 	}
 
 	@Override

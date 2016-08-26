@@ -185,13 +185,15 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 			}
 
 			@Override
-			void insertFromFirstStatement(CtBlock<?> block, CtStatement target,
-					CtStatementList statementsToBeInserted) {
+			void insertFromFirstStatement(CtBlock<?> block, CtStatement target, CtStatementList statementsToBeInserted) {
 				// check the reference not the equality
 				int indexOfTargetElement = indexOfReference(block.getStatements(), target);
 				for (CtStatement s : statementsToBeInserted) {
 					s.setParent(block);
 					block.getStatements().add(indexOfTargetElement++, s);
+				}
+				if (block.isImplicit() && block.getStatements().size() > 1) {
+					block.setImplicit(false);
 				}
 			}
 
@@ -219,6 +221,9 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 				for (CtStatement s : statementsToBeInserted) {
 					s.setParent(block);
 					block.getStatements().add(++indexOfTargetElement, s);
+				}
+				if (block.isImplicit() && block.getStatements().size() > 1) {
+					block.setImplicit(false);
 				}
 			}
 

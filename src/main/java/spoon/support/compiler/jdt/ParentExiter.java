@@ -188,7 +188,12 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void scanCtLoop(CtLoop loop) {
 		if (loop.getBody() == null && child instanceof CtStatement) {
-			loop.setBody((CtStatement) child);
+			CtStatement child = (CtStatement) this.child;
+			if (!(this.child instanceof CtBlock)) {
+				child = jdtTreeBuilder.getFactory().Code().createCtBlock(child);
+				child.setImplicit(true);
+			}
+			loop.setBody(child);
 		}
 		super.scanCtLoop(loop);
 	}
@@ -575,11 +580,16 @@ public class ParentExiter extends CtInheritanceScanner {
 			ifElement.setCondition((CtExpression<Boolean>) child);
 			return;
 		} else if (child instanceof CtStatement) {
+			CtStatement child = (CtStatement) this.child;
+			if (!(this.child instanceof CtBlock)) {
+				child = jdtTreeBuilder.getFactory().Code().createCtBlock(child);
+				child.setImplicit(true);
+			}
 			if (ifElement.getThenStatement() == null) {
-				ifElement.setThenStatement((CtStatement) child);
+				ifElement.setThenStatement(child);
 				return;
 			} else if (ifElement.getElseStatement() == null) {
-				ifElement.setElseStatement((CtStatement) child);
+				ifElement.setElseStatement(child);
 				return;
 			}
 		}

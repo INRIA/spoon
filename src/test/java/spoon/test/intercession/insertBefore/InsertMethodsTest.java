@@ -23,6 +23,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -231,7 +232,7 @@ public class InsertMethodsTest {
 		 * if (condition)
 		 *     while (loop_condition)
 		 *
-		 * In this case the 'while' is not inside a block, but
+		 * In this case the 'while' is inside an implicit block, but
 		 * when we insert a new statement
 		 *
 		 * if (condition) {
@@ -240,7 +241,7 @@ public class InsertMethodsTest {
 		 *     ...
 		 * }
 		 *
-		 * Now the while is inside a block.
+		 * Now the while is inside an explicit block.
 		 */
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
@@ -253,8 +254,9 @@ public class InsertMethodsTest {
 
 		// We make sure the parent of the while is the CtIf and not the block
 		CtElement parent = theWhile.getParent();
-		assertTrue(CtIf.class.isInstance(parent));
-		CtIf ifParent = (CtIf) parent;
+		assertTrue(parent instanceof CtBlock);
+		assertTrue(parent.isImplicit());
+		CtIf ifParent = (CtIf) parent.getParent();
 
 		// Create a new statement to be inserted before the while
 		CtStatement insert = factory.Code().createCodeSnippetStatement("System.out.println()");
@@ -265,6 +267,7 @@ public class InsertMethodsTest {
 		// We make sure the parent of the while is updated
 		CtElement newParent = theWhile.getParent();
 		assertTrue(newParent != ifParent);
-		assertTrue(CtBlock.class.isInstance(newParent));
+		assertTrue(newParent instanceof CtBlock);
+		assertFalse(newParent.isImplicit());
 	}
 }
