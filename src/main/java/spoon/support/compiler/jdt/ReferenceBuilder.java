@@ -434,7 +434,7 @@ public class ReferenceBuilder {
 					throw new SpoonException();
 				}
 				ref.setDeclaringType(typeAccess.getAccessedType());
-			} catch (final SpoonException e) {/* ignore */}
+			} catch (final SpoonException e) { /* ignore */ }
 		} else {
 			ref.setDeclaringType(getTypeReference(messageSend.receiver.resolvedType));
 		}
