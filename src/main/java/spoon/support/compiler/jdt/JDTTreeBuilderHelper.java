@@ -400,7 +400,9 @@ class JDTTreeBuilderHelper {
 		final CodeFactory codeFactory = jdtTreeBuilder.getFactory().Code();
 
 		final char[] readableName;
-		if (arrayReference.receiver instanceof QualifiedNameReference) {
+		if (arrayReference.receiver instanceof ArrayReference) {
+			return createTypeAccessNoClasspath((ArrayReference) arrayReference.receiver);
+		} else if (arrayReference.receiver instanceof QualifiedNameReference) {
 			readableName = ((QualifiedNameReference) arrayReference.receiver).binding.readableName();
 		} else if (arrayReference.receiver instanceof SingleNameReference) {
 			readableName = arrayReference.receiver.resolvedType.leafComponentType().readableName();
