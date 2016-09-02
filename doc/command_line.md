@@ -23,6 +23,8 @@ The basic usage of Spoon consists in defining the original source location and t
 $ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-4.2.0-jar-with-dependencies.jar spoon.Launcher -i /path/to/src/of/your/project -p fr.inria.gforge.spoon.processors.CatchProcessor
 ```
 
+If you plan to repeatedly run Spoon from the command line, it may be a good idea to combine all of your commands into a single bash script. An example of this can be found [here](https://github.com/INRIA/spoon/blob/master/docs/example_scripts/example_usage_script.sh).
+
 Note that when you use Spoon in command line, you manually handle the classpath.
 In particular, if the to-be-transformed source files depend on libraries, specify them with the `--source-classpath` flag.
 
