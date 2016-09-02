@@ -28,9 +28,10 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.EarlyTerminatingScanner;
+import spoon.reflect.visitor.filter.AbstractFilter;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.Deque;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
+import static java.lang.String.format;
 
 public class ContextBuilder {
 
@@ -113,54 +115,72 @@ public class ContextBuilder {
 	}
 
 	<T> CtLocalVariable<T> getLocalVariableDeclaration(final String name) {
-		for (ASTPair astPair : this.stack) {
-			// TODO check if the variable is visible from here
-
-			EarlyTerminatingScanner<CtLocalVariable<?>> scanner = new EarlyTerminatingScanner<CtLocalVariable<?>>() {
-				@Override
-				public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-					if (name.equals(localVariable.getSimpleName())) {
-						setResult(localVariable);
-						terminate();
-						return;
-					}
-					super.visitCtLocalVariable(localVariable);
-				}
-			};
-			astPair.element.accept(scanner);
-			CtLocalVariable<T> var = (CtLocalVariable<T>) scanner.getResult();
-			if (var != null) {
-				return var;
-			}
+		final Class<CtLocalVariable<T>> clazz = (Class<CtLocalVariable<T>>)
+				jdtTreeBuilder.getFactory().Core().createLocalVariable().getClass();
+		final CtLocalVariable<T> localVariable =
+				this.<T, CtLocalVariable<T>>getVariableDeclaration(name, clazz);
+		if (localVariable == null) {
+			// note: this happens when using the new try(vardelc) structure
+			this.jdtTreeBuilder.getLogger().error(
+					format("Could not find declaration for local variable %s at %s",
+							name, stack.peek().element.getPosition()));
 		}
-		// note: this happens when using the new try(vardelc) structure
-		this.jdtTreeBuilder.getLogger().error("could not find declaration for local variable " + name + " at " + this.stack.peek().element.getPosition());
-
-		return null;
+		return localVariable;
 	}
 
 	<T> CtCatchVariable<T> getCatchVariableDeclaration(final String name) {
-		for (ASTPair astPair : this.stack) {
-			EarlyTerminatingScanner<CtCatchVariable<?>> scanner = new EarlyTerminatingScanner<CtCatchVariable<?>>() {
-				@Override
-				public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
-					if (name.equals(catchVariable.getSimpleName())) {
-						setResult(catchVariable);
-						terminate();
-						return;
-					}
-					super.visitCtCatchVariable(catchVariable);
-				}
-			};
-			astPair.element.accept(scanner);
+		final Class<CtCatchVariable<T>> clazz = (Class<CtCatchVariable<T>>)
+				jdtTreeBuilder.getFactory().Core().createCatchVariable().getClass();
+		final CtCatchVariable<T> catchVariable =
+				this.<T, CtCatchVariable<T>>getVariableDeclaration(name, clazz);
+		if (catchVariable == null) {
+			// note: this happens when using the new try(vardelc) structure
+			this.jdtTreeBuilder.getLogger().error(
+					format("Could not find declaration for catch variable %s at %s",
+							name, stack.peek().element.getPosition()));
+		}
+		return catchVariable;
+	}
 
-			CtCatchVariable<T> var = (CtCatchVariable<T>) scanner.getResult();
-			if (var != null) {
-				return null;
+	<T> CtVariable<T> getVariableDeclaration(final String name) {
+		final CtVariable<T> variable = this.<T, CtVariable<T>>getVariableDeclaration(name, null);
+		if (variable == null) {
+			// note: this happens when using the new try(vardelc) structure
+			this.jdtTreeBuilder.getLogger().error(
+					format("Could not find declaration for variable %s at %s",
+							name, stack.peek().element.getPosition()));
+		}
+		return variable;
+	}
+
+	private <T, U extends CtVariable<T>> U getVariableDeclaration(
+			final String name, final Class<U> clazz) {
+		for (final ASTPair astPair : stack) {
+			final List<U> variables = astPair.element.getElements(new AbstractFilter<U>() {
+				@Override
+				public boolean matches(final U element) {
+					if (name.equals(element.getSimpleName())) {
+						final U castedElement = (U) element;
+						for (CtElement parent = castedElement.getParent();
+								parent != null; parent = parent.getParent()) {
+							if (astPair.element.equals(parent)) {
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+
+				@Override
+				public Class<U> getType() {
+					return clazz != null ? clazz : super.getType();
+				}
+			});
+
+			if (!variables.isEmpty()) {
+				return variables.get(0);
 			}
 		}
-		// note: this happens when using the new try(vardelc) structure
-		this.jdtTreeBuilder.getLogger().error("could not find declaration for catch variable " + name + " at " + this.stack.peek().element.getPosition());
 
 		return null;
 	}
