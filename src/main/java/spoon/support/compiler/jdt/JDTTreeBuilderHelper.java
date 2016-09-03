@@ -212,9 +212,12 @@ class JDTTreeBuilderHelper {
 
 				// create a reference to method's declaring class
 				final CtTypeReference declaringReferenceOfMethod =
-						referenceBuilder.getTypeReference(methodJDT.binding.declaringClass);
+						// `binding` may be null for anonymous classes which means we have to
+						// create an 'empty' type reference since we have no further information
+						methodJDT.binding == null ? coreFactory.createTypeReference()
+								: referenceBuilder.getTypeReference(methodJDT.binding.declaringClass);
 
-				// create a reference to the method of the currently proccessed parameter reference
+				// create a reference to the method of the currently processed parameter reference
 				final CtExecutableReference methodReference =
 						executableFactory.createReference(declaringReferenceOfMethod,
 								// we need to clone method's return type (rt) before passing to
