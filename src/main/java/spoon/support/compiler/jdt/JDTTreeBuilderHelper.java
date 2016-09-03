@@ -509,9 +509,8 @@ class JDTTreeBuilderHelper {
 		}
 		final CtTypeAccess<T> typeAccess = jdtTreeBuilder.getFactory().Code().createTypeAccess(typeReference);
 
-		long[] positions = qualifiedNameReference.sourcePositions;
 		int sourceStart = qualifiedNameReference.sourceStart();
-		int sourceEnd = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32) - 2;
+		int sourceEnd = qualifiedNameReference.sourceEnd();
 		typeAccess.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 
 		return typeAccess;
