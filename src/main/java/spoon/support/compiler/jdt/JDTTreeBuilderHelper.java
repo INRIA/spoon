@@ -221,9 +221,7 @@ class JDTTreeBuilderHelper {
 								// `createReference` since this method (indirectly) sets the parent
 								// of the rt and, therefore, may break the AST
 								method.getType().clone(),
-								// though, at the moment of writing, `createReference` does not set
-								// the parent of method's simple name (sn) we clone sn to be more
-								// failsafe
+								// no need to clone/copy as Strings are immutable
 								method.getSimpleName(),
 								// no need to clone/copy as we just created this object
 								parameterTypesOfMethod);
