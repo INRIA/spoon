@@ -176,6 +176,7 @@ class JDTTreeBuilderHelper {
 		}
 
 		final CtVariableReference<T> variableReference;
+		final CtVariableAccess<T> variableAccess;
 		if (variable instanceof CtParameter) {
 			// create variable of concrete type to avoid type casting while calling methods
 			final CtParameterReference<T> parameterReference = coreFactory.createParameterReference();
@@ -233,10 +234,12 @@ class JDTTreeBuilderHelper {
 				parameterReference.setDeclaringExecutable(methodReference);
 			}
 			variableReference = parameterReference;
+			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
+					? coreFactory.<T>createVariableWrite() : coreFactory.<T>createVariableRead();
 		} else if (variable instanceof CtField) {
-			final CtField fieldVariable = (CtField) variable;
+			final CtField<T> fieldVariable = (CtField<T>) variable;
 			// create variable of concrete type to avoid type casting while calling methods
-			CtFieldReference fieldReference = fieldVariable.getReference();
+			CtFieldReference<T> fieldReference = fieldVariable.getReference();
 			if (fieldReference == null) {
 				// the referenced field is part of an unknown class (noclasspath mode)
 				fieldReference = coreFactory.createFieldReference();
@@ -247,8 +250,12 @@ class JDTTreeBuilderHelper {
 				}
 			}
 			variableReference = fieldReference;
+			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
+					? coreFactory.<T>createFieldWrite() : coreFactory.<T>createFieldRead();
 		} else if (variable instanceof CtLocalVariable) {
 			variableReference = variable.getReference();
+			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
+					? coreFactory.<T>createVariableWrite() : coreFactory.<T>createVariableRead();
 		} else {
 			// unknown or currently not implemented variable access
 			return null;
@@ -256,11 +263,8 @@ class JDTTreeBuilderHelper {
 		variableReference.setSimpleName(name);
 		variableReference.setPosition(positionBuilder.buildPosition(
 				singleNameReference.sourceStart(), singleNameReference.sourceEnd()));
-
-		final CtVariableAccess<T> va = isLhsAssignment(contextBuilder, singleNameReference)
-				? coreFactory.<T>createVariableWrite() : coreFactory.<T>createVariableRead();
-		va.setVariable(variableReference);
-		return va;
+		variableAccess.setVariable(variableReference);
+		return variableAccess;
 	}
 
 	/**
