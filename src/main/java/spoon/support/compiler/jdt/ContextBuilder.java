@@ -19,6 +19,10 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
@@ -26,9 +30,12 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -114,6 +121,7 @@ public class ContextBuilder {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	<T> CtLocalVariable<T> getLocalVariableDeclaration(final String name) {
 		final Class<CtLocalVariable<T>> clazz = (Class<CtLocalVariable<T>>)
 				jdtTreeBuilder.getFactory().Core().createLocalVariable().getClass();
@@ -128,6 +136,7 @@ public class ContextBuilder {
 		return localVariable;
 	}
 
+	@SuppressWarnings("unchecked")
 	<T> CtCatchVariable<T> getCatchVariableDeclaration(final String name) {
 		final Class<CtCatchVariable<T>> clazz = (Class<CtCatchVariable<T>>)
 				jdtTreeBuilder.getFactory().Core().createCatchVariable().getClass();
@@ -155,7 +164,15 @@ public class ContextBuilder {
 
 	private <T, U extends CtVariable<T>> U getVariableDeclaration(
 			final String name, final Class<U> clazz) {
+		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
+		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
+		// there is some extra work to do if we are looking for CtFields (and subclasses)
+		final boolean lookingForFields = clazz == null
+				|| coreFactory.createField().getClass().isAssignableFrom(clazz);
+
+		// try to find the variable on stack beginning with the most recent element
 		for (final ASTPair astPair : stack) {
+			// the variable may have been declared directly by one of these elements
 			final List<U> variables = astPair.element.getElements(new AbstractFilter<U>() {
 				@Override
 				public boolean matches(final U element) {
@@ -176,9 +193,49 @@ public class ContextBuilder {
 					return clazz != null ? clazz : super.getType();
 				}
 			});
-
 			if (!variables.isEmpty()) {
 				return variables.get(0);
+			}
+
+			// the variable may have been declared in a super class/interface
+			if (lookingForFields && astPair.node instanceof TypeDeclaration) {
+				final TypeDeclaration nodeDeclaration = (TypeDeclaration) astPair.node;
+				final Deque<ReferenceBinding> tds = new ArrayDeque<>();
+				// add super class if any
+				if (nodeDeclaration.superclass != null
+						&& nodeDeclaration.superclass.resolvedType instanceof ReferenceBinding) {
+					tds.add((ReferenceBinding) nodeDeclaration.superclass.resolvedType);
+				}
+				// add interfaces if any
+				if (nodeDeclaration.superInterfaces != null) {
+					for (final TypeReference tr : nodeDeclaration.superInterfaces) {
+						if (tr.resolvedType instanceof ReferenceBinding) {
+							tds.add((ReferenceBinding) tr.resolvedType);
+						}
+					}
+				}
+
+				while (!tds.isEmpty()) {
+					final ReferenceBinding rb = tds.pop();
+					for (final FieldBinding fb : rb.fields()) {
+						if (name.equals(new String(fb.readableName()))) {
+							// extract TypeDeclaration to create a CtField from it.
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// the variable may have been imported statically from another class/interface
+		if (lookingForFields) {
+			final CtReference potentialReferenceToField =
+					referenceBuilder.getDeclaringReferenceFromImports(name.toCharArray());
+			if (potentialReferenceToField != null) {
+				final CtElement potentialField = potentialReferenceToField.getDeclaration();
+				if (potentialField instanceof CtField) {
+					return (U) potentialField;
+				}
 			}
 		}
 
