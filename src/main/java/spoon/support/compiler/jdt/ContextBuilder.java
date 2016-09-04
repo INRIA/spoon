@@ -32,6 +32,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.CoreFactory;
@@ -200,27 +201,45 @@ public class ContextBuilder {
 			// the variable may have been declared in a super class/interface
 			if (lookingForFields && astPair.node instanceof TypeDeclaration) {
 				final TypeDeclaration nodeDeclaration = (TypeDeclaration) astPair.node;
-				final Deque<ReferenceBinding> tds = new ArrayDeque<>();
+				final Deque<ReferenceBinding> referenceBindings = new ArrayDeque<>();
 				// add super class if any
 				if (nodeDeclaration.superclass != null
 						&& nodeDeclaration.superclass.resolvedType instanceof ReferenceBinding) {
-					tds.add((ReferenceBinding) nodeDeclaration.superclass.resolvedType);
+					referenceBindings.push((ReferenceBinding) nodeDeclaration.superclass.resolvedType);
 				}
 				// add interfaces if any
 				if (nodeDeclaration.superInterfaces != null) {
 					for (final TypeReference tr : nodeDeclaration.superInterfaces) {
 						if (tr.resolvedType instanceof ReferenceBinding) {
-							tds.add((ReferenceBinding) tr.resolvedType);
+							referenceBindings.push((ReferenceBinding) tr.resolvedType);
 						}
 					}
 				}
 
-				while (!tds.isEmpty()) {
-					final ReferenceBinding rb = tds.pop();
-					for (final FieldBinding fb : rb.fields()) {
-						if (name.equals(new String(fb.readableName()))) {
-							// extract TypeDeclaration to create a CtField from it.
-							break;
+				while (!referenceBindings.isEmpty()) {
+					final ReferenceBinding referenceBinding = referenceBindings.pop();
+					for (final FieldBinding fieldBinding : referenceBinding.fields()) {
+						if (name.equals(new String(fieldBinding.readableName()))) {
+							final CtType parentOfField = referenceBinding.isClass()
+									? coreFactory.createClass() : coreFactory.createInterface();
+							parentOfField.setSimpleName(new String(referenceBinding.readableName()));
+							final CtField field = coreFactory.createField();
+							field.setParent(parentOfField);
+							field.setSimpleName(name);
+							field.setType(referenceBuilder.getTypeReference(fieldBinding.type));
+							return (U) field;
+						}
+					}
+					// add super class if any
+					final ReferenceBinding superclass = referenceBinding.superclass();
+					if (superclass != null) {
+						referenceBindings.push(superclass);
+					}
+					// add interfaces if any
+					final ReferenceBinding[] interfaces = referenceBinding.superInterfaces();
+					if (interfaces != null) {
+						for (ReferenceBinding rb : interfaces) {
+							referenceBindings.push(rb);
 						}
 					}
 				}
