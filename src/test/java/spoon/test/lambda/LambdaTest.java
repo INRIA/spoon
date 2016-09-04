@@ -5,10 +5,10 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -29,12 +29,9 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -95,6 +92,22 @@ public class LambdaTest {
 			public boolean matches(final CtTypeAccess element) {
 				return element.getAccessedType().getSimpleName().equals("Strings");
 			}
+		}).size(), 1);
+	}
+
+	@Test
+	public void testFieldAccessInLambdaNoClassPath() {
+		final Launcher runLaunch = new Launcher();
+		runLaunch.getEnvironment().setNoClasspath(true);
+		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/FieldAccessInLambda.java");
+		runLaunch.buildModel();
+
+		assertEquals("The token 'fieldVariable' has not been parsed as CtFieldAccess",
+					runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
+				@Override
+				public boolean matches(final CtFieldAccess element) {
+					return element.getVariable().getSimpleName().equals("fieldVariable");
+				}
 		}).size(), 1);
 	}
 
