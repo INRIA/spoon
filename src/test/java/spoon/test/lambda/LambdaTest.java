@@ -102,13 +102,21 @@ public class LambdaTest {
 		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/FieldAccessInLambda.java");
 		runLaunch.buildModel();
 
-		assertEquals("The token 'fieldVariable' has not been parsed as CtFieldAccess",
-					runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
-				@Override
-				public boolean matches(final CtFieldAccess element) {
-					return element.getVariable().getSimpleName().equals("fieldVariable");
-				}
-		}).size(), 1);
+		final List<CtFieldAccess> fieldAccesses =
+				runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
+			@Override
+			public boolean matches(final CtFieldAccess element) {
+				final String name = element.getVariable().getSimpleName();
+				return name.equals("localField")
+						|| name.equals("pathSeparator")
+						|| name.equals("fieldInClassBase")
+						|| name.equals("fieldInClass")
+						|| name.equals("fieldInInterfaceBase")
+						|| name.equals("fieldInInterface")
+						|| name.equals("iAmToLazyForAnotherFieldName");
+			}
+		});
+		assertEquals(fieldAccesses.size(), 7);
 	}
 
 	@Test

@@ -35,7 +35,9 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.factory.ClassFactory;
 import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.factory.InterfaceFactory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -163,9 +165,12 @@ public class ContextBuilder {
 		return variable;
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T, U extends CtVariable<T>> U getVariableDeclaration(
 			final String name, final Class<U> clazz) {
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
+		final ClassFactory classFactory = jdtTreeBuilder.getFactory().Class();
+		final InterfaceFactory interfaceFactory = jdtTreeBuilder.getFactory().Interface();
 		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
 		// there is some extra work to do if we are looking for CtFields (and subclasses)
 		final boolean lookingForFields = clazz == null
@@ -250,11 +255,13 @@ public class ContextBuilder {
 		if (lookingForFields) {
 			final CtReference potentialReferenceToField =
 					referenceBuilder.getDeclaringReferenceFromImports(name.toCharArray());
-			if (potentialReferenceToField != null) {
-				final CtElement potentialField = potentialReferenceToField.getDeclaration();
-				if (potentialField instanceof CtField) {
-					return (U) potentialField;
-				}
+			if (potentialReferenceToField != null
+					&& potentialReferenceToField instanceof CtTypeReference) {
+				final CtTypeReference typeReference = (CtTypeReference) potentialReferenceToField;
+				final CtType declaringTypeOfField = typeReference.isInterface()
+						? interfaceFactory.get(typeReference.getActualClass())
+						: classFactory.get(typeReference.getActualClass());
+				return (U) declaringTypeOfField.getField(name);
 			}
 		}
 
