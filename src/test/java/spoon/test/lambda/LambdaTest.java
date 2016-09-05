@@ -122,6 +122,21 @@ public class LambdaTest {
 	}
 
 	@Test
+	public void testFieldAccessInLambdaNoClassPathExternal1Example() {
+		final Launcher runLaunch = new Launcher();
+		runLaunch.getEnvironment().setNoClasspath(true);
+		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/external1");
+		runLaunch.buildModel();
+
+		assertEquals(runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
+			@Override
+			public boolean matches(final CtFieldAccess element) {
+				return element.getVariable().getSimpleName().equals("DEFAULT_RATING");
+			}
+		}).size(), 3);
+	}
+
+	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithoutTypeForParameter() throws Exception {
 		final CtLambda<?> lambda = getLambdaByName("lambda$1");
 
