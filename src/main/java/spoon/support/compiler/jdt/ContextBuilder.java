@@ -42,6 +42,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.support.reflect.reference.SpoonClassNotFoundException;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -258,12 +259,17 @@ public class ContextBuilder {
 			if (potentialReferenceToField != null
 					&& potentialReferenceToField instanceof CtTypeReference) {
 				final CtTypeReference typeReference = (CtTypeReference) potentialReferenceToField;
-				final Class classOfType = typeReference.getActualClass();
-				if (classOfType != null) {
-					final CtType declaringTypeOfField = typeReference.isInterface()
-							? interfaceFactory.get(classOfType) : classFactory.get(classOfType);
-					return (U) declaringTypeOfField.getField(name);
-				}
+				try {
+					final Class classOfType = typeReference.getActualClass();
+					if (classOfType != null) {
+						final CtType declaringTypeOfField = typeReference.isInterface()
+								? interfaceFactory.get(classOfType) : classFactory.get(classOfType);
+						final CtField field = declaringTypeOfField.getField(name);
+						if (field != null) {
+							return (U) field;
+						}
+					}
+				} catch (final SpoonClassNotFoundException scnfe) { /* to be expected */ }
 			}
 		}
 
