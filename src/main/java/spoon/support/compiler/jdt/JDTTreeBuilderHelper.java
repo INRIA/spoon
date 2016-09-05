@@ -237,19 +237,7 @@ class JDTTreeBuilderHelper {
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
 					? coreFactory.<T>createVariableWrite() : coreFactory.<T>createVariableRead();
 		} else if (variable instanceof CtField) {
-			final CtField<T> fieldVariable = (CtField<T>) variable;
-			// create variable of concrete type to avoid type casting while calling methods
-			CtFieldReference<T> fieldReference = fieldVariable.getReference();
-			if (fieldReference == null) {
-				// the referenced field is part of an unknown class (noclasspath mode)
-				fieldReference = coreFactory.createFieldReference();
-				final CtReference declaringReference =
-						referenceBuilder.getDeclaringReferenceFromImports(singleNameReference.token);
-				if (declaringReference instanceof CtTypeReference) {
-					fieldReference.setDeclaringType((CtTypeReference) declaringReference);
-				}
-			}
-			variableReference = fieldReference;
+			variableReference = variable.getReference();
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
 					? coreFactory.<T>createFieldWrite() : coreFactory.<T>createFieldRead();
 		} else if (variable instanceof CtLocalVariable) {

@@ -258,10 +258,12 @@ public class ContextBuilder {
 			if (potentialReferenceToField != null
 					&& potentialReferenceToField instanceof CtTypeReference) {
 				final CtTypeReference typeReference = (CtTypeReference) potentialReferenceToField;
-				final CtType declaringTypeOfField = typeReference.isInterface()
-						? interfaceFactory.get(typeReference.getActualClass())
-						: classFactory.get(typeReference.getActualClass());
-				return (U) declaringTypeOfField.getField(name);
+				final Class classOfType = typeReference.getActualClass();
+				if (classOfType != null) {
+					final CtType declaringTypeOfField = typeReference.isInterface()
+							? interfaceFactory.get(classOfType) : classFactory.get(classOfType);
+					return (U) declaringTypeOfField.getField(name);
+				}
 			}
 		}
 
