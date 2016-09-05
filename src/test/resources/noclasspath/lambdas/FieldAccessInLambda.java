@@ -1,23 +1,26 @@
-import static java.io.File.pathSeparator;
+import java.util.List;
 
-private interface InterfaceImplementedByExtendedClass {
-    String iAmToLazyForAnotherFieldName;
+import static java.io.File.pathSeparator;
+import static imported.SeparateInterfaceWithField.fieldInSeparateInterface;
+
+interface InterfaceImplementedByExtendedClass {
+    String iAmToLazyForAnotherFieldName = "spoon";
 }
 
-public class ClassWithFieldBase implements InterfaceImplementedByExtendedClass {
+class ClassWithFieldBase implements InterfaceImplementedByExtendedClass {
     public String fieldInClassBase;
 }
 
-public class ClassWithField extends ClassWithFieldBase {
+class ClassWithField extends ClassWithFieldBase {
     public String fieldInClass;
 }
 
-public interface InterfaceWithFieldBase {
-    String fieldInInterfaceBase;
+interface InterfaceWithFieldBase {
+    String fieldInInterfaceBase = "spoon";
 }
 
-public interface InterfaceWithField extends InterfaceWithFieldBase {
-    String fieldInInterface;
+interface InterfaceWithField extends InterfaceWithFieldBase {
+    String fieldInInterface = "spoon";
 }
 
 public class FieldAccessInLambda extends ClassWithField implements InterfaceWithField {
@@ -29,6 +32,10 @@ public class FieldAccessInLambda extends ClassWithField implements InterfaceWith
 
     public void lambdaStaticallyImportedField(final List<String> strings) {
         strings.forEach(s -> System.out.println(s + pathSeparator));
+    }
+
+    public void lambdaStaticallyImportedFieldInterface(final List<String> strings) {
+        strings.forEach(s -> System.out.println(s + fieldInSeparateInterface));
     }
 
     public void lambdaFieldInClassBase(final List<String> strings) {

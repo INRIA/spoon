@@ -100,6 +100,7 @@ public class LambdaTest {
 		final Launcher runLaunch = new Launcher();
 		runLaunch.getEnvironment().setNoClasspath(true);
 		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/FieldAccessInLambda.java");
+		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/imported/SeparateInterfaceWithField.java");
 		runLaunch.buildModel();
 
 		final List<CtFieldAccess> fieldAccesses =
@@ -109,6 +110,7 @@ public class LambdaTest {
 				final String name = element.getVariable().getSimpleName();
 				return name.equals("localField")
 						|| name.equals("pathSeparator")
+						|| name.equals("fieldInSeparateInterface")
 						|| name.equals("fieldInClassBase")
 						|| name.equals("fieldInClass")
 						|| name.equals("fieldInInterfaceBase")
@@ -116,7 +118,7 @@ public class LambdaTest {
 						|| name.equals("iAmToLazyForAnotherFieldName");
 			}
 		});
-		assertEquals(fieldAccesses.size(), 7);
+		assertEquals(fieldAccesses.size(), 8);
 	}
 
 	@Test
