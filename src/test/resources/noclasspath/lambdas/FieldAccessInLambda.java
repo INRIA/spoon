@@ -2,6 +2,7 @@ import java.util.List;
 
 import static java.io.File.pathSeparator;
 import static imported.SeparateInterfaceWithField.fieldInSeparateInterface;
+import static test.unknown.UnknownClass.unknownField;
 
 interface InterfaceImplementedByExtendedClass {
     String iAmToLazyForAnotherFieldName = "spoon";
@@ -56,5 +57,9 @@ public class FieldAccessInLambda extends ClassWithField implements InterfaceWith
 
     public void lambdaFieldInterfaceImplementedByExtendedClass(final List<String> strings) {
         strings.forEach(s -> System.out.println(s + iAmToLazyForAnotherFieldName));
+    }
+
+    public void lambdaFieldInUnknownClass(final List<String> strings) {
+        strings.forEach(s -> System.out.println(s + unknownField));
     }
 }
