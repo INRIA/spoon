@@ -38,6 +38,7 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.ClassFactory;
 import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.factory.FieldFactory;
 import spoon.reflect.factory.InterfaceFactory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -173,6 +174,7 @@ public class ContextBuilder {
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
 		final ClassFactory classFactory = jdtTreeBuilder.getFactory().Class();
 		final InterfaceFactory interfaceFactory = jdtTreeBuilder.getFactory().Interface();
+		final FieldFactory fieldFactory = jdtTreeBuilder.getFactory().Field();
 		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
 		// there is some extra work to do if we are looking for CtFields (and subclasses)
 		final boolean lookingForFields = clazz == null
@@ -210,14 +212,15 @@ public class ContextBuilder {
 					final ReferenceBinding referenceBinding = referenceBindings.pop();
 					for (final FieldBinding fieldBinding : referenceBinding.fields()) {
 						if (name.equals(new String(fieldBinding.readableName()))) {
+							final String qualifiedNameOfParent =
+									new String(referenceBinding.readableName());
 							final CtType parentOfField = referenceBinding.isClass()
-									? coreFactory.createClass() : coreFactory.createInterface();
-							parentOfField.setSimpleName(new String(referenceBinding.readableName()));
-							final CtField field = coreFactory.createField();
-							field.setParent(parentOfField);
-							field.setSimpleName(name);
-							field.setType(referenceBuilder.getTypeReference(fieldBinding.type));
-							return (U) field;
+									? classFactory.create(qualifiedNameOfParent)
+									: interfaceFactory.create(qualifiedNameOfParent);
+							return (U) fieldFactory.create(parentOfField,
+									JDTTreeBuilderQuery.getModifiers(fieldBinding.modifiers),
+									referenceBuilder.getTypeReference(fieldBinding.type),
+									name);
 						}
 					}
 					// add super class if any
