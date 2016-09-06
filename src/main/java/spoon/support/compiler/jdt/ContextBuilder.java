@@ -23,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import spoon.compiler.Environment;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
@@ -40,6 +41,7 @@ import spoon.reflect.factory.ClassFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.FieldFactory;
 import spoon.reflect.factory.InterfaceFactory;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -172,10 +174,12 @@ public class ContextBuilder {
 	private <T, U extends CtVariable<T>> U getVariableDeclaration(
 			final String name, final Class<U> clazz) {
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
+		final TypeFactory typeFactory = jdtTreeBuilder.getFactory().Type();
 		final ClassFactory classFactory = jdtTreeBuilder.getFactory().Class();
 		final InterfaceFactory interfaceFactory = jdtTreeBuilder.getFactory().Interface();
 		final FieldFactory fieldFactory = jdtTreeBuilder.getFactory().Field();
 		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
+		final Environment environment = jdtTreeBuilder.getFactory().getEnvironment();
 		// there is some extra work to do if we are looking for CtFields (and subclasses)
 		final boolean lookingForFields = clazz == null
 				|| coreFactory.createField().getClass().isAssignableFrom(clazz);
@@ -256,7 +260,29 @@ public class ContextBuilder {
 							return (U) field;
 						}
 					}
-				} catch (final SpoonClassNotFoundException scnfe) { /* to be expected */ }
+				} catch (final SpoonClassNotFoundException scnfe) {
+					// in noclasspath mode we do some heuristics to determine if `name` could be a
+					// field that has been imported statically from another class (or interface).
+					if (environment.getNoClasspath()) {
+						// if `potentialReferenceToField` is a `CtTypeReference` then `name` must
+						// have been imported statically. Otherwise, `potentialReferenceToField`
+						// would be a CtPackageReference!
+
+						// if `name` consists only of upper case characters separated by '_', we
+						// assume a constant value according to JLS.
+						if (name.toUpperCase().equals(name)) {
+							final CtType parentOfField =
+									classFactory.create(typeReference.getQualifiedName());
+							// it is the best thing we can do
+							final CtField field = coreFactory.createField();
+							field.setParent(parentOfField);
+							field.setSimpleName(name);
+							// it is the best thing we can do
+							field.setType(typeFactory.nullType());
+							return (U) field;
+						}
+					}
+				}
 			}
 		}
 
