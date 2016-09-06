@@ -25,15 +25,16 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static java.util.Arrays.asList;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
@@ -104,12 +105,14 @@ public class ExecutableFactory extends SubFactory {
 				refs[i++] = param.getType().clone();
 			}
 		}
+		String executableName = e.getSimpleName();
 		if (e instanceof CtMethod) {
-			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), ((CtMethod<T>) e).getType().clone(), e.getSimpleName(), refs);
+			boolean isStatic = ((CtMethod) e).hasModifier(ModifierKind.STATIC);
+			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), isStatic, ((CtMethod<T>) e).getType().clone(), executableName, refs);
 		} else if (e instanceof CtLambda) {
-			return createReference(e.getParent(CtType.class).getReference(), e.getType(), e.getSimpleName(), refs);
+			return createReference(e.getParent(CtType.class).getReference(), e.getType(), executableName, refs);
 		} else if (e instanceof CtAnonymousExecutable) {
-			return createReference(((CtAnonymousExecutable) e).getDeclaringType().getReference(), e.getType().clone(), e.getSimpleName());
+			return createReference(((CtAnonymousExecutable) e).getDeclaringType().getReference(), e.getType().clone(), executableName);
 		}
 		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), ((CtConstructor<T>) e).getType().clone(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
@@ -127,13 +130,7 @@ public class ExecutableFactory extends SubFactory {
 	 * 		list of parameter's types
 	 */
 	public <T> CtExecutableReference<T> createReference(CtTypeReference<?> declaringType, CtTypeReference<T> type, String methodName, CtTypeReference<?>... parameterTypes) {
-		CtExecutableReference<T> methodRef = factory.Core().createExecutableReference();
-		methodRef.setDeclaringType(declaringType);
-		methodRef.setSimpleName(methodName);
-		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<>(asList(parameterTypes));
-		methodRef.setParameters(l);
-		return methodRef;
+		return createReference(declaringType, false, type, methodName, parameterTypes);
 	}
 
 	/**
@@ -151,14 +148,7 @@ public class ExecutableFactory extends SubFactory {
 	 * 		list of parameter's types
 	 */
 	public <T> CtExecutableReference<T> createReference(CtTypeReference<?> declaringType, boolean isStatic, CtTypeReference<T> type, String methodName, CtTypeReference<?>... parameterTypes) {
-		CtExecutableReference<T> methodRef = factory.Core().createExecutableReference();
-		methodRef.setStatic(isStatic);
-		methodRef.setDeclaringType(declaringType);
-		methodRef.setSimpleName(methodName);
-		methodRef.setType(type);
-		List<CtTypeReference<?>> l = new ArrayList<>(asList(parameterTypes));
-		methodRef.setParameters(l);
-		return methodRef;
+		return createReference(declaringType, isStatic, type, methodName, Arrays.asList(parameterTypes));
 	}
 
 	/**
