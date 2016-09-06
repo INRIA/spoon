@@ -42,7 +42,7 @@ import spoon.reflect.factory.InterfaceFactory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.reflect.reference.SpoonClassNotFoundException;
 
 import java.util.ArrayDeque;
@@ -181,10 +181,11 @@ public class ContextBuilder {
 		// try to find the variable on stack beginning with the most recent element
 		for (final ASTPair astPair : stack) {
 			// the variable may have been declared directly by one of these elements
-			final List<U> variables = astPair.element.getElements(
-					new ScopeRespectingVariableFilter<U>(name, clazz));
-			if (!variables.isEmpty()) {
-				return variables.get(0);
+			final ScopeRespectingVariableScanner<U> scanner =
+					new ScopeRespectingVariableScanner(name, clazz);
+			astPair.element.accept(scanner);
+			if (scanner.getResult() != null) {
+				return scanner.getResult();
 			}
 
 			// the variable may have been declared in a super class/interface
@@ -260,57 +261,79 @@ public class ContextBuilder {
 	}
 
 	/**
-	 * A {@link spoon.reflect.visitor.Filter} that is supposed to find a {@link CtVariable} with
+	 * An {@link EarlyTerminatingScanner} that is supposed to find a {@link CtVariable} with
 	 * specific name respecting the current scope given by {@link ContextBuilder#stack}.
 
-	 * @param <T>	The actual type of the {@link CtVariable} we are looking for.
+	 * @param <T> The actual type of the {@link CtVariable} we are looking for. Examples include
+	 *            {@link CtLocalVariable}, {@link CtField}, and so on.
      */
-	private class ScopeRespectingVariableFilter<T extends CtVariable>
-			extends AbstractFilter<T> {
+	private class ScopeRespectingVariableScanner<T extends CtVariable>
+			extends EarlyTerminatingScanner<T> {
 
 		/**
-		 * The name of the {@link CtVariable} we are looking for ({@link CtVariable#getSimpleName()}).
+		 * The class object of {@link T} that is required to filter particular elements in
+		 * {@link #scan(CtElement)}.
+		 */
+		private final Class<T> clazz;
+
+		/**
+		 * The name of the variable we are looking for ({@link CtVariable#getSimpleName()}).
 		 */
 		final String name;
 
 		/**
-		 * Creates a new {@link spoon.reflect.visitor.Filter} that tries to find a {@link CtVariable}
-		 * with name {@code name} (using {@link CtVariable#getSimpleName()}).
+		 * Creates a new {@link EarlyTerminatingScanner} that tries to find a {@link CtVariable}
+		 * with name {@code pName} (using {@link CtVariable#getSimpleName()}) and upper type bound
+		 * {@code pType}.
 		 *
-		 * @param name	The name of the {@link CtVariable} we are looking for.
-         * @param type	The class object of {@link T}.
+		 * @param pName	The name of the variable we are looking for.
+         * @param pType	{@link T}'s class object ({@link Object#getClass()}). {@link null} values
+		 *              are permitted and indicate that we are looking for any subclass of
+		 *              {@link CtVariable} (including {@link CtVariable} itself).
          */
-		ScopeRespectingVariableFilter(final String name, final Class<? super T> type) {
-			super((Class<? super T>) (type == null ? CtVariable.class : type));
-			this.name = name;
+		ScopeRespectingVariableScanner(final String pName, final Class<T> pType) {
+			clazz =  (Class<T>) (pType == null ? CtVariable.class : pType);
+			name = pName;
 		}
 
 		@Override
-		public boolean matches(final T element) {
-			if (name.equals(element.getSimpleName())) {
-				// Since the AST is not completely available yet, we can not validate if element's
-				// parent (ep) contains the innermost element of `stack` (ie). Therefore, we have to
-				// check if one of the following condition holds:
-				//
-				//    1) Does `stack` contain `ep`?
-				//    2) Is `ep` the body of one of `stack`'s CtExecutable elements?
-				//
-				// The first condition is easy to see. If `stack` contains `ep` then `ep` and all
-				// it's declared variables are in scope of `ie`. Unfortunately, there is a special
-				// case in which a variable (a CtLocalVariable) has been declared in a block
-				// (CtBlock) of, for instance, a method. Such a block is not contained in `stack`.
-				// This peculiarity calls for the second condition.
-				final CtElement parentOfPotentialVariable = element.getParent();
-				for (final ASTPair astPair : stack) {
-					if (astPair.element == parentOfPotentialVariable) {
-						return true;
-					} else if (astPair.element instanceof CtExecutable) {
-						final CtExecutable executable = (CtExecutable) astPair.element;
-						return executable.getBody() == parentOfPotentialVariable;
+		public void scan(final CtElement element) {
+			if (element != null && clazz.isAssignableFrom(element.getClass())) {
+				final T potentialVariable = (T) element;
+				if (name.equals(potentialVariable.getSimpleName())) {
+					// Since the AST is not completely available yet, we can not check if element's
+					// parent (ep) contains the innermost element of `stack` (ie). Therefore, we
+					// have to check if one of the following condition holds:
+					//
+					//    1) Does `stack` contain `ep`?
+					//    2) Is `ep` the body of one of `stack`'s CtExecutable elements?
+					//
+					// The first condition is easy to see. If `stack` contains `ep` then `ep` and
+					// all it's declared variables are in scope of `ie`. Unfortunately, there is a
+					// special case in which a variable (a CtLocalVariable) has been declared in a
+					// block (CtBlock) of, for instance, a method. Such a block is not contained in
+					// `stack`. This peculiarity calls for the second condition.
+					final CtElement parentOfPotentialVariable = potentialVariable.getParent();
+					for (final ASTPair astPair : stack) {
+						if (astPair.element == parentOfPotentialVariable) {
+							finish(potentialVariable);
+							return;
+						} else if (astPair.element instanceof CtExecutable) {
+							final CtExecutable executable = (CtExecutable) astPair.element;
+							if (executable.getBody() == parentOfPotentialVariable) {
+								finish(potentialVariable);
+								return;
+							}
+						}
 					}
 				}
 			}
-			return false;
+			super.scan(element);
+		}
+
+		private void finish(final  T element) {
+			setResult(element);
+			terminate();
 		}
 	}
 }
