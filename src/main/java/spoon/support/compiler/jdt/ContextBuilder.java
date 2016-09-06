@@ -30,6 +30,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -180,26 +181,8 @@ public class ContextBuilder {
 		// try to find the variable on stack beginning with the most recent element
 		for (final ASTPair astPair : stack) {
 			// the variable may have been declared directly by one of these elements
-			final List<U> variables = astPair.element.getElements(new AbstractFilter<U>() {
-				@Override
-				public boolean matches(final U element) {
-					if (name.equals(element.getSimpleName())) {
-						final U castedElement = (U) element;
-						for (CtElement parent = castedElement.getParent();
-								parent != null; parent = parent.getParent()) {
-							if (astPair.element.equals(parent)) {
-								return true;
-							}
-						}
-					}
-					return false;
-				}
-
-				@Override
-				public Class<U> getType() {
-					return clazz != null ? clazz : super.getType();
-				}
-			});
+			final List<U> variables = astPair.element.getElements(
+					new ScopeRespectingVariableFilter<U>(name, clazz));
 			if (!variables.isEmpty()) {
 				return variables.get(0);
 			}
@@ -274,5 +257,60 @@ public class ContextBuilder {
 		}
 
 		return null;
+	}
+
+	/**
+	 * A {@link spoon.reflect.visitor.Filter} that is supposed to find a {@link CtVariable} with
+	 * specific name respecting the current scope given by {@link ContextBuilder#stack}.
+
+	 * @param <T>	The actual type of the {@link CtVariable} we are looking for.
+     */
+	private class ScopeRespectingVariableFilter<T extends CtVariable>
+			extends AbstractFilter<T> {
+
+		/**
+		 * The name of the {@link CtVariable} we are looking for ({@link CtVariable#getSimpleName()}).
+		 */
+		final String name;
+
+		/**
+		 * Creates a new {@link spoon.reflect.visitor.Filter} that tries to find a {@link CtVariable}
+		 * with name {@code name} (using {@link CtVariable#getSimpleName()}).
+		 *
+		 * @param name	The name of the {@link CtVariable} we are looking for.
+         * @param type	The class object of {@link T}.
+         */
+		ScopeRespectingVariableFilter(final String name, final Class<? super T> type) {
+			super((Class<? super T>) (type == null ? CtVariable.class : type));
+			this.name = name;
+		}
+
+		@Override
+		public boolean matches(final T element) {
+			if (name.equals(element.getSimpleName())) {
+				// Since the AST is not completely available yet, we can not validate if element's
+				// parent (ep) contains the innermost element of `stack` (ie). Therefore, we have to
+				// check if one of the following condition holds:
+				//
+				//    1) Does `stack` contain `ep`?
+				//    2) Is `ep` the body of one of `stack`'s CtExecutable elements?
+				//
+				// The first condition is easy to see. If `stack` contains `ep` then `ep` and all
+				// it's declared variables are in scope of `ie`. Unfortunately, there is a special
+				// case in which a variable (a CtLocalVariable) has been declared in a block
+				// (CtBlock) of, for instance, a method. Such a block is not contained in `stack`.
+				// This peculiarity calls for the second condition.
+				final CtElement parentOfPotentialVariable = element.getParent();
+				for (final ASTPair astPair : stack) {
+					if (astPair.element == parentOfPotentialVariable) {
+						return true;
+					} else if (astPair.element instanceof CtExecutable) {
+						final CtExecutable executable = (CtExecutable) astPair.element;
+						return executable.getBody() == parentOfPotentialVariable;
+					}
+				}
+			}
+			return false;
+		}
 	}
 }
