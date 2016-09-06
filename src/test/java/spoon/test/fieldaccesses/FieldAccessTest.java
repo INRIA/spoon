@@ -15,6 +15,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -26,6 +27,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.fieldaccesses.testclasses.B;
 import spoon.test.fieldaccesses.testclasses.Kuu;
 import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
@@ -377,5 +379,20 @@ public class FieldAccessTest {
 		launcher.getFactory().Class().get("FieldAccessRes").accept(scanner);
 
 		assertEquals(1, scanner.visited);
+	}
+
+	@Test
+	public void testGetReference() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/");
+		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.run();
+
+		final CtClass<B> aClass = launcher.getFactory().Class().get(B.class);
+		aClass.getFactory().getEnvironment().setAutoImports(true);
+
+		assertEquals("A.myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).toString());
+		assertEquals("finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
 	}
 }
