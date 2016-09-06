@@ -155,12 +155,16 @@ class JDTTreeBuilderHelper {
 	}
 
 	/**
-	 * In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
-	 * By default, we assume that when we don't have any information, we create a variable access.
+	 * Analyzes if {@code singleNameReference} points to a {@link CtVariable} visible in current
+	 * scope and, if existent, returns it's corresponding {@link CtVariableAccess}. Returns
+	 * {@code null} if {@code singleNameReference} could not be resolved as variable access. Since
+	 * we are in noclasspath mode this function may also returns {@code null} if
+	 * {@code singleNameReference} points to a variable declared by an unknown class.
 	 *
 	 * @param singleNameReference
-	 * 		Used to set the name of the variable reference contained in the variable access.
-	 * @return a variable access.
+	 * 		The potential variable access.
+	 * @return A {@link CtVariableAccess} if {@code singleNameReference} points to a variable
+	 * 		   visible in current scope, {@code null} otherwise.
 	 */
 	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
@@ -240,13 +244,10 @@ class JDTTreeBuilderHelper {
 			variableReference = variable.getReference();
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
 					? coreFactory.<T>createFieldWrite() : coreFactory.<T>createFieldRead();
-		} else if (variable instanceof CtLocalVariable) {
+		} else { // CtLocalVariable, CtCatchVariable, ...
 			variableReference = variable.getReference();
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
 					? coreFactory.<T>createVariableWrite() : coreFactory.<T>createVariableRead();
-		} else {
-			// unknown or currently not implemented variable access
-			return null;
 		}
 		variableReference.setSimpleName(name);
 		variableReference.setPosition(positionBuilder.buildPosition(
