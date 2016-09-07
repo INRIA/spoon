@@ -295,7 +295,7 @@ public class ContextBuilder {
 
 	 * @param <T> The actual type of the {@link CtVariable} we are looking for. Examples include
 	 *            {@link CtLocalVariable}, {@link CtField}, and so on.
-     */
+	 */
 	private class ScopeRespectingVariableScanner<T extends CtVariable>
 			extends EarlyTerminatingScanner<T> {
 
@@ -316,10 +316,10 @@ public class ContextBuilder {
 		 * {@code pType}.
 		 *
 		 * @param pName	The name of the variable we are looking for.
-         * @param pType	{@link T}'s class object ({@link Object#getClass()}). {@link null} values
+		 * @param pType	{@link T}'s class object ({@link Object#getClass()}). {@link null} values
 		 *              are permitted and indicate that we are looking for any subclass of
 		 *              {@link CtVariable} (including {@link CtVariable} itself).
-         */
+		 */
 		ScopeRespectingVariableScanner(final String pName, final Class<T> pType) {
 			clazz =  (Class<T>) (pType == null ? CtVariable.class : pType);
 			name = pName;
