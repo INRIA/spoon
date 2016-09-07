@@ -86,13 +86,13 @@ public class LambdaTest {
 		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/TypeAccessInLambda.java");
 		runLaunch.buildModel();
 
-		assertEquals("The token 'Strings' has not been parsed as CtTypeAccess",
+		assertEquals("The token 'Strings' has not been parsed as CtTypeAccess", 1,
 				runLaunch.getModel().getElements(new Filter<CtTypeAccess>() {
 			@Override
 			public boolean matches(final CtTypeAccess element) {
 				return element.getAccessedType().getSimpleName().equals("Strings");
 			}
-		}).size(), 1);
+		}).size());
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class LambdaTest {
 						|| name.equals("iAmToLazyForAnotherFieldName");
 			}
 		});
-		assertEquals(fieldAccesses.size(), 8);
+		assertEquals(8, fieldAccesses.size());
 	}
 
 	@Test
@@ -128,12 +128,12 @@ public class LambdaTest {
 		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/external1");
 		runLaunch.buildModel();
 
-		assertEquals(runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
+		assertEquals(3, runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
 			@Override
 			public boolean matches(final CtFieldAccess element) {
 				return element.getVariable().getSimpleName().equals("DEFAULT_RATING");
 			}
-		}).size(), 3);
+		}).size());
 	}
 
 	@Test
