@@ -155,7 +155,7 @@ class JDTTreeBuilderHelper {
 
 	/**
 	 * Analyzes if {@code singleNameReference} points to a {@link CtVariable} visible in current
-	 * scope and, if existent, returns it's corresponding {@link CtVariableAccess}. Returns
+	 * scope and, if existent, returns its corresponding {@link CtVariableAccess}. Returns
 	 * {@code null} if {@code singleNameReference} could not be resolved as variable access. Since
 	 * we are in noclasspath mode this function may also returns {@code null} if
 	 * {@code singleNameReference} points to a variable declared by an unknown class.
