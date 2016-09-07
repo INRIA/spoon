@@ -199,6 +199,9 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 				environment, getHandlingPolicy(), compilerOptions,
 				this.jdtCompiler.requestor, getProblemFactory(), this.out,
 				null);
+		if (jdtCompiler.getEnvironment().getNoClasspath()) {
+			treeBuilderCompiler.lookupEnvironment.mayTolerateMissingType = true;
+		}
 		CompilationUnitDeclaration[] units = treeBuilderCompiler
 				.buildUnits(getCompilationUnits(files));
 		for (int i = 0; i < units.length; i++) {
