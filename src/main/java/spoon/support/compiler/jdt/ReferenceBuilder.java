@@ -22,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.ArrayReference;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
@@ -65,9 +66,11 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -418,11 +421,20 @@ public class ReferenceBuilder {
 		ref.setType(this.<T>getTypeReference(messageSend.expectedType()));
 		if (messageSend.receiver.resolvedType == null) {
 			// It is crisis dude! static context, we don't have much more information.
-			if (messageSend.receiver instanceof SingleNameReference) {
-				ref.setDeclaringType(jdtTreeBuilder.getHelper().createTypeAccessNoClasspath((SingleNameReference) messageSend.receiver).getAccessedType());
-			} else if (messageSend.receiver instanceof QualifiedNameReference) {
-				ref.setDeclaringType(jdtTreeBuilder.getHelper().createTypeAccessNoClasspath((QualifiedNameReference) messageSend.receiver).getAccessedType());
-			}
+			try {
+				final JDTTreeBuilderHelper helper = jdtTreeBuilder.getHelper();
+				final CtTypeAccess<T> typeAccess;
+				if (messageSend.receiver instanceof SingleNameReference) {
+					typeAccess = helper.createTypeAccessNoClasspath((SingleNameReference) messageSend.receiver);
+				} else if (messageSend.receiver instanceof QualifiedNameReference) {
+					typeAccess = helper.createTypeAccessNoClasspath((QualifiedNameReference) messageSend.receiver);
+				} else if (messageSend.receiver instanceof ArrayReference) {
+					typeAccess = helper.createTypeAccessNoClasspath((ArrayReference) messageSend.receiver);
+				} else {
+					throw new SpoonException();
+				}
+				ref.setDeclaringType(typeAccess.getAccessedType());
+			} catch (final SpoonException e) { /* ignore */ }
 		} else {
 			ref.setDeclaringType(getTypeReference(messageSend.receiver.resolvedType));
 		}

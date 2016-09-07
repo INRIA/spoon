@@ -18,6 +18,7 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.ArrayReference;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
@@ -35,6 +36,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
@@ -46,6 +48,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -390,6 +393,28 @@ class JDTTreeBuilderHelper {
 		}
 
 		return typeAccess;
+	}
+
+	<T> CtTypeAccess<T> createTypeAccessNoClasspath(ArrayReference arrayReference) {
+		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
+		final CodeFactory codeFactory = jdtTreeBuilder.getFactory().Code();
+
+		final char[] readableName;
+		if (arrayReference.receiver instanceof ArrayReference) {
+			return createTypeAccessNoClasspath((ArrayReference) arrayReference.receiver);
+		} else if (arrayReference.receiver instanceof QualifiedNameReference) {
+			readableName = ((QualifiedNameReference) arrayReference.receiver).binding.readableName();
+		} else if (arrayReference.receiver instanceof SingleNameReference) {
+			readableName = arrayReference.receiver.resolvedType.leafComponentType().readableName();
+		} else {
+			throw new SpoonException("Unable to create CtTypeAccess for: "
+					+ arrayReference.receiver.getClass());
+		}
+		final CtReference declRef = referenceBuilder.getDeclaringReferenceFromImports(readableName);
+		final CtTypeReference<T> typeRef = jdtTreeBuilder.getFactory().Core().createTypeReference();
+		typeRef.setSimpleName(CharOperation.charToString(readableName));
+		referenceBuilder.setPackageOrDeclaringType(typeRef, declRef);
+		return codeFactory.createTypeAccess(typeRef);
 	}
 
 	/**
