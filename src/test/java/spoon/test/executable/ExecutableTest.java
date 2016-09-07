@@ -5,8 +5,10 @@ import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.executable.testclasses.A;
 import spoon.test.executable.testclasses.Pozole;
 import spoon.testing.utils.ModelUtils;
 
@@ -39,5 +41,38 @@ public class ExecutableTest {
 	public void testBlockInExecutable() throws Exception {
 		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
 		assertTrue(aPozole.getMethod("m").getBody().getStatement(1) instanceof CtBlock);
+	}
+
+	@Test
+	public void testGetReference() throws Exception {
+		final CtType<A> aClass = ModelUtils.buildClass(A.class);
+
+		String methodName = "getInt1";
+		CtExecutableReference<?> methodRef = aClass.getMethod(methodName).getReference();
+		assertEquals(false, methodRef.isFinal());
+		assertEquals(true, methodRef.isStatic());
+		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
+		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
+
+		methodName = "getInt2";
+		methodRef = aClass.getMethod(methodName).getReference();
+		assertEquals(true, methodRef.isFinal());
+		assertEquals(true, methodRef.isStatic());
+		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
+		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
+
+		methodName = "getInt3";
+		methodRef = aClass.getMethod(methodName).getReference();
+		assertEquals(true, methodRef.isFinal());
+		assertEquals(false, methodRef.isStatic());
+		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
+		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
+
+		methodName = "getInt4";
+		methodRef = aClass.getMethod(methodName).getReference();
+		assertEquals(false, methodRef.isFinal());
+		assertEquals(false, methodRef.isStatic());
+		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
+		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 	}
 }
