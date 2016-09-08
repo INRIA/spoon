@@ -99,7 +99,9 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public void processWith(Processor<?> processor) {
-		new QueueProcessingManager(rootPackage.getFactory()).process(getRootPackage());
+		QueueProcessingManager processingManager = new QueueProcessingManager(rootPackage.getFactory());
+		processingManager.addProcessor(processor);
+		processingManager.process(getRootPackage());
 	}
 
 	@Override
