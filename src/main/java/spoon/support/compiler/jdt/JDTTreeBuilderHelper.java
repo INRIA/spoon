@@ -19,6 +19,7 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -39,22 +40,28 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.factory.ExecutableFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -147,32 +154,105 @@ class JDTTreeBuilderHelper {
 	}
 
 	/**
-	 * In this case, we are in no classpath so we don't know if the access is a variable, a field or a type.
-	 * By default, we assume that when we don't have any information, we create a variable access.
+	 * Analyzes if {@code singleNameReference} points to a {@link CtVariable} visible in current
+	 * scope and, if existent, returns its corresponding {@link CtVariableAccess}. Returns
+	 * {@code null} if {@code singleNameReference} could not be resolved as variable access. Since
+	 * we are in noclasspath mode this function may also returns {@code null} if
+	 * {@code singleNameReference} points to a variable declared by an unknown class.
 	 *
 	 * @param singleNameReference
-	 * 		Used to set the name of the variable reference contained in the variable access.
-	 * @return a variable access.
+	 * 		The potential variable access.
+	 * @return A {@link CtVariableAccess} if {@code singleNameReference} points to a variable
+	 * 		   visible in current scope, {@code null} otherwise.
 	 */
 	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
-		CtVariableAccess<T> va;
-		if (isLhsAssignment(jdtTreeBuilder.getContextBuilder(), singleNameReference)) {
-			va = jdtTreeBuilder.getFactory().Core().createVariableWrite();
-		} else {
-			va = jdtTreeBuilder.getFactory().Core().createVariableRead();
-		}
+		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
+		final ExecutableFactory executableFactory = jdtTreeBuilder.getFactory().Executable();
+		final ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
+		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
+		final PositionBuilder positionBuilder = jdtTreeBuilder.getPositionBuilder();
+
 		final String name = CharOperation.charToString(singleNameReference.token);
-		CtVariableReference<T> ref;
-		if (jdtTreeBuilder.getContextBuilder().isBuildLambda) {
-			ref = jdtTreeBuilder.getFactory().Core().createParameterReference();
-			((CtParameterReference) ref).setDeclaringExecutable(jdtTreeBuilder.getReferencesBuilder().getLambdaExecutableReference(singleNameReference));
-		} else {
-			ref = jdtTreeBuilder.getFactory().Core().createLocalVariableReference();
-			((CtLocalVariableReference<T>) ref).setDeclaration(jdtTreeBuilder.getContextBuilder().<T>getLocalVariableDeclaration(name));
+		final CtVariable<T> variable = contextBuilder.getVariableDeclaration(name);
+		if (variable == null) {
+			return null;
 		}
-		ref.setSimpleName(name);
-		va.setVariable(ref);
-		return va;
+
+		final CtVariableReference<T> variableReference;
+		final CtVariableAccess<T> variableAccess;
+		if (variable instanceof CtParameter) {
+			// create variable of concrete type to avoid type casting while calling methods
+			final CtParameterReference<T> parameterReference = coreFactory.createParameterReference();
+			if (variable.getParent() instanceof CtLambda) {
+				parameterReference.setDeclaringExecutable(
+						referenceBuilder.getLambdaExecutableReference(singleNameReference));
+			} else {
+				// Unfortunately, we can not use `variable.getReference()` here as some parent
+				// references (in terms of Java objects) have not been set up yet. Thus, we need to
+				// create the required parameter reference by our own.
+
+				// since the given parameter has not been declared in a lambda expression it must
+				// have been declared by a method!
+				final CtMethod method = (CtMethod) variable.getParent();
+
+				// create list of method's parameter types
+				final List<CtTypeReference<?>> parameterTypesOfMethod = new ArrayList<>();
+				final List<CtParameter<?>> parametersOfMethod = method.getParameters();
+				for (CtParameter<?> parameter : parametersOfMethod) {
+					if (parameter.getType() != null) {
+						parameterTypesOfMethod.add(parameter.getType().clone());
+					}
+				}
+
+				// find method's corresponding jdt element
+				MethodDeclaration methodJDT = null;
+				for (final ASTPair astPair : contextBuilder.stack) {
+					if (astPair.element == method) {
+						methodJDT = (MethodDeclaration) astPair.node;
+						break;
+					}
+				}
+				assert methodJDT != null;
+
+				// create a reference to method's declaring class
+				final CtTypeReference declaringReferenceOfMethod =
+						// `binding` may be null for anonymous classes which means we have to
+						// create an 'empty' type reference since we have no further information
+						methodJDT.binding == null ? coreFactory.createTypeReference()
+								: referenceBuilder.getTypeReference(methodJDT.binding.declaringClass);
+
+				// create a reference to the method of the currently processed parameter reference
+				final CtExecutableReference methodReference =
+						executableFactory.createReference(declaringReferenceOfMethod,
+								// we need to clone method's return type (rt) before passing to
+								// `createReference` since this method (indirectly) sets the parent
+								// of the rt and, therefore, may break the AST
+								method.getType().clone(),
+								// no need to clone/copy as Strings are immutable
+								method.getSimpleName(),
+								// no need to clone/copy as we just created this object
+								parameterTypesOfMethod);
+
+				// finally, we can set the method reference...
+				parameterReference.setDeclaringExecutable(methodReference);
+			}
+			variableReference = parameterReference;
+			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
+					? coreFactory.<T>createVariableWrite() : coreFactory.<T>createVariableRead();
+		} else if (variable instanceof CtField) {
+			variableReference = variable.getReference();
+			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
+					? coreFactory.<T>createFieldWrite() : coreFactory.<T>createFieldRead();
+		} else { // CtLocalVariable, CtCatchVariable, ...
+			variableReference = variable.getReference();
+			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
+					? coreFactory.<T>createVariableWrite() : coreFactory.<T>createVariableRead();
+		}
+		variableReference.setSimpleName(name);
+		variableReference.setPosition(positionBuilder.buildPosition(
+				singleNameReference.sourceStart(), singleNameReference.sourceEnd()));
+		variableAccess.setVariable(variableReference);
+		return variableAccess;
 	}
 
 	/**
@@ -421,9 +501,8 @@ class JDTTreeBuilderHelper {
 		}
 		final CtTypeAccess<T> typeAccess = jdtTreeBuilder.getFactory().Code().createTypeAccess(typeReference);
 
-		long[] positions = qualifiedNameReference.sourcePositions;
 		int sourceStart = qualifiedNameReference.sourceStart();
-		int sourceEnd = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32) - 2;
+		int sourceEnd = qualifiedNameReference.sourceEnd();
 		typeAccess.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 
 		return typeAccess;

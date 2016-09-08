@@ -122,6 +122,7 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
@@ -1333,7 +1334,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 				context.enter(helper.createFieldAccessNoClasspath(singleNameReference), singleNameReference);
 			}
 		} else if (singleNameReference.binding == null) {
-			context.enter(helper.createVariableAccessNoClasspath(singleNameReference), singleNameReference);
+			CtExpression access = helper.createVariableAccessNoClasspath(singleNameReference);
+			if (access == null) {
+				access = helper.createTypeAccessNoClasspath(singleNameReference);
+			}
+			context.enter(access, singleNameReference);
 		}
 		return true;
 	}

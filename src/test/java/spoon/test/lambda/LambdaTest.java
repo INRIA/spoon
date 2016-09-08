@@ -5,8 +5,10 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -14,6 +16,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -74,6 +77,63 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted("((spoon.test.lambda.testclasses.Foo.Check) (() -> false))", lambda);
+	}
+
+	@Test
+	public void testTypeAccessInLambdaNoClassPath() {
+		final Launcher runLaunch = new Launcher();
+		runLaunch.getEnvironment().setNoClasspath(true);
+		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/TypeAccessInLambda.java");
+		runLaunch.buildModel();
+
+		assertEquals("The token 'Strings' has not been parsed as CtTypeAccess", 1,
+				runLaunch.getModel().getElements(new Filter<CtTypeAccess>() {
+			@Override
+			public boolean matches(final CtTypeAccess element) {
+				return element.getAccessedType().getSimpleName().equals("Strings");
+			}
+		}).size());
+	}
+
+	@Test
+	public void testFieldAccessInLambdaNoClassPath() {
+		final Launcher runLaunch = new Launcher();
+		runLaunch.getEnvironment().setNoClasspath(true);
+		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/FieldAccessInLambda.java");
+		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/imported/SeparateInterfaceWithField.java");
+		runLaunch.buildModel();
+
+		final List<CtFieldAccess> fieldAccesses =
+				runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
+			@Override
+			public boolean matches(final CtFieldAccess element) {
+				final String name = element.getVariable().getSimpleName();
+				return name.equals("localField")
+						|| name.equals("pathSeparator")
+						|| name.equals("fieldInSeparateInterface")
+						|| name.equals("fieldInClassBase")
+						|| name.equals("fieldInClass")
+						|| name.equals("fieldInInterfaceBase")
+						|| name.equals("fieldInInterface")
+						|| name.equals("iAmToLazyForAnotherFieldName");
+			}
+		});
+		assertEquals(8, fieldAccesses.size());
+	}
+
+	@Test
+	public void testFieldAccessInLambdaNoClassPathExternal1Example() {
+		final Launcher runLaunch = new Launcher();
+		runLaunch.getEnvironment().setNoClasspath(true);
+		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/external1");
+		runLaunch.buildModel();
+
+		assertEquals(3, runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
+			@Override
+			public boolean matches(final CtFieldAccess element) {
+				return element.getVariable().getSimpleName().equals("DEFAULT_RATING");
+			}
+		}).size());
 	}
 
 	@Test
