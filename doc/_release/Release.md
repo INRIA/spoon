@@ -2,16 +2,59 @@
 
 This article is a short summary of the [official documentation of sonatype][ossrh-guide], an [article](yegor) by yegor and [official documentation of maven release plugin](maven-release-plugin).
 
-## Prerequisites
+## Main Workflow
+1. open an account on `https://gforge.inria.fr`, add an SSH key there, check that you are a member of project `spoon`
+1. check that gpg2, keepass are installed
+1. take the latest commit of master (`git pull` on master)
+1. get the GPG credentials of Spoon (on [partage.inria.fr](https://partage.inria.fr/alfresco/webdav/Sites/spirals/documentLibrary/security/), in `Spirals Team >> Document Library >> security >> keepass.kdbx`)
+  1. download the keepass file
+  1. import the keys with `gpg2 --import` (doc in keypass.kdbx)
+  1. check with `gpg2 --list-keys`
+1. update  `~/.m2/settings.xml`  with passphrase and keyname (see below)
+1. clean your project for the release and prepare the release `mvn release:clean release:prepare`
+1. mvn release:perform (sends the new version on Maven Central)
+1. check that the new version is on Maven Central (connect to `oss.sonatype.org`)
+1. push the release commit on Github (git push origin master)
+    - `git push origin master`
+    - `git push origin spoon-core-X.X.X`
+1. update the `stable` branch
+    - `git checkout stable`
+    - `git reset --hard <commit-id-last-master>` # We need two commits from previous release to deploy a hotfix.
+    - `git push origin stable`
+1. update the doc, etc., see checklist below
 
-### Sign with GPG
+## Checklist 
+
+**Before the release**
+
+- Verify that all critical bug fixes from stable to master branch
+
+**After release**
+
+- Uploads archives on Maven Central (see above)
+- Uploads archives on INRIA's forge
+- Prepare changelog
+- Create Pull resuest on Github with
+    - Update of Spoon's website
+	- News section
+	- Jar file link
+	- Maven version and snippets
+    - Updates main README.md
+- Announces release on the mailing list (give credits to the contributors)
+- Announces release on GitHub (if necessary)
+- If necessary, removes all methods deprecated after the release!
+
+
+### How to generate new keys with GPG
 
 To push your archive on Maven Central, you must sign before your jar with GPG, a tool multi platform based on a pair of keys (public/private).
 
 1. Generate your pair of keys: `gpg --gen-key`
 2. Check if your key is generated: `gpg2 --list-keys`
 3. Distributing your public key on a server key (used by maven release plugin): `gpg2 --keyserver hkp://pool.sks-keyservers.net --send-keys <your-public-id-key>`
-4. Update your `settings.xml` of your Maven
+
+###  `settings.xml` of your Maven
+
 ```
 <settings>
   <profiles>
@@ -21,13 +64,20 @@ To push your archive on Maven Central, you must sign before your jar with GPG, a
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <gpg.executable>gpg</gpg.executable>
+        <gpg.executable>gpg2</gpg.executable>
         <gpg.passphrase><!-- password of your pair of keys--></gpg.passphrase>
         <gpg.useagent>true</gpg.useagent>
         <gpg.keyname><!-- your public id key --></gpg.keyname> 
       </properties>
     </profile>
   </profiles>
+  <servers>
+    <server>
+      <id>ossrh</id>
+      <username>monperrus</username>
+      <password><!-- monperrus' password of sonatype --></password>
+    </server>
+  </servers>
 </settings>
 ```
 
@@ -39,17 +89,6 @@ This process may take +/- 48 hours.
 
 After that, you can update your `settings.xml` of your Maven:
 
-```
-<settings>
-  <servers>
-    <server>
-      <id>ossrh</id>
-      <username><!-- your username in JIRA --></username>
-      <password><!-- your password in JIRA --></password>
-    </server>
-  </servers>
-</settings>
-```
 
 ## Initialize his project
 
@@ -61,23 +100,6 @@ All steps in this sections are details in the [official documentation][apache-ma
 5. Specify sonatype as parent of your pom.xml.
 6. Specify a scm about your Sonatype repository.
 
-## Deploy your project
-
-To deploy, we will use maven release plugin :
-
-1. Clean your project for the release and prepare the release :
-
-```
-mvn release:clean release:prepare
-```
-
-2. Perform your release
-
-```
-mvn release:perform
-```
-
-This process push your archive on the repository in Sonatype and on Maven Central. This last may take some hours.
 
 [ossrh-guide]: http://central.sonatype.org/pages/ossrh-guide.html
 [yegor]: http://www.yegor256.com/2014/08/19/how-to-release-to-maven-central.html
