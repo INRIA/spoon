@@ -6,6 +6,8 @@ last_updated: September 9, 2015
 
 # Articles 
 
+[Casper: Automatic Tracking of Null Dereferences to Inception with Causality Traces](https://hal.archives-ouvertes.fr/hal-01354090/document) (Benoit Cornu, Earl T. Barr, Martin Monperrus and Lionel Seinturier), In Journal of Systems and Software, Elsevier, 2016.
+
 [Controlling the granularity of automatic parallel programs](http://www.sciencedirect.com/science/article/pii/S1877750316301065) (Fonseca, A., Cabral, B., Rafael, J., & Correia, I.) Journal of Computational Science, 2016.
 
 [Automatic Parallelization: Executing Sequential Programs on a Task-Based Parallel Runtime](http://arxiv.org/pdf/1604.03211) (Fonseca, A., Cabral, B., Rafael, J., & Correia, I.) International Journal of Parallel Programming, Vol. 44, Issue 6, 2016.
@@ -44,7 +46,11 @@ last_updated: September 9, 2015
 
 # Dissertations
 
+[Automated Grading of Java Assignments](http://dspace.library.uu.nl/bitstream/handle/1874/337629/Master%20Thesis%203700607%20(final%20version).pdf) (Nadia Boudewijn), Universiteit Utrecht, 2016
+
 [Semi-automatic code-to-code transformer for Java: Transformation of library calls](http://liu.diva-portal.org/smash/get/diva2:944700/FULLTEXT01.pdf) (Boije, Niklas and Borg, Kristoffer ), Linköping University, 2016 
+
+[Automatic Analysis and Repair of Exception Bugs for Java Programs](https://tel.archives-ouvertes.fr/tel-01250092v1) (Benoit Cornu), PhD Thesis, University of Lille, 2015.
 
 [AeminiumGPU – A CPU-GPU Hybrid Runtime for the Aeminium Language](http://aeminium.dei.uc.pt/images/7/73/Alcides_fonseca_msc_thesis.pdf) (Fonseca, Alcides), University of Coimbra, 2011 
 
