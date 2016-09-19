@@ -40,6 +40,5 @@ public class ConditionalTest {
 				assertTrue(condition.getElseStatement() instanceof CtBlock);
 			}
 		}
-		System.out.println(aFoo);
 	}
 }

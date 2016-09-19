@@ -139,6 +139,9 @@ public class IntercessionTest {
 		CtBlock<?> r1 = ifStmt.getThenStatement();
 		CtBlock<?> r2 = ifStmt.getElseStatement();
 
+		assertTrue(r1.isImplicit());
+		assertTrue(r2.isImplicit());
+
 		ifStmt.setThenStatement(r2);
 		assertSame(r2, ifStmt.getThenStatement());
 		ifStmt.setElseStatement(r1);
