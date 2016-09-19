@@ -565,29 +565,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
-		if (formalTypeParameter == null) {
-			return (C) this;
-		}
-		if (formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
-			formalTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		formalTypeParameter.setParent(this);
-		formalTypeParameters.add(formalTypeParameter);
-		return (C) this;
-	}
-
-	@Override
-	public boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
-		return formalTypeParameters.contains(formalTypeParameter) && formalTypeParameters.remove(formalTypeParameter);
-	}
-
-	@Override
-	public List<CtTypeParameterReference> getFormalTypeParameters() {
-		return formalTypeParameters;
-	}
-
-	@Override
 	public List<CtTypeParameter> getFormalCtTypeParameters() {
 		return formalCtTypeParameters;
 	}
@@ -762,22 +739,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
 		return interfaces;
-	}
-
-	@Override
-	public <C extends CtFormalTypeDeclarer> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
-		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
-			this.formalTypeParameters = CtElementImpl.emptyList();
-			return (C) this;
-		}
-		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
-			this.formalTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		this.formalTypeParameters.clear();
-		for (CtTypeParameterReference formalTypeParameter : formalTypeParameters) {
-			addFormalTypeParameter(formalTypeParameter);
-		}
-		return (C) this;
 	}
 
 	@Override

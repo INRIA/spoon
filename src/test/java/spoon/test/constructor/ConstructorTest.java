@@ -103,22 +103,13 @@ public class ConstructorTest {
 	public void testTypeAnnotationWithConstructorsOnFormalType() throws Exception {
 		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
 
-		assertEquals(1, aConstructor.getFormalTypeParameters().size());
 		assertEquals(1, aConstructor.getFormalCtTypeParameters().size());
-
-		// Old type parameter declaration.
-		CtTypeParameterReference genericT = aConstructor.getFormalTypeParameters().get(0);
-		assertEquals("T", genericT.getSimpleName());
-		assertEquals(1, genericT.getAnnotations().size());
-		assertIntersectionTypeInConstructor(genericT.getBoundingType());
 
 		// New type parameter declaration.
 		CtTypeParameter typeParameter = aConstructor.getFormalCtTypeParameters().get(0);
 		assertEquals("T", typeParameter.getSimpleName());
 		assertEquals(1, typeParameter.getAnnotations().size());
 		assertIntersectionTypeInConstructor(typeParameter.getSuperclass());
-
-		assertEquals(typeParameter, genericT.getDeclaration());
 	}
 
 	private void assertIntersectionTypeInConstructor(CtTypeReference<?> boundingType1) {

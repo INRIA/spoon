@@ -34,7 +34,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
@@ -92,45 +91,6 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	public <C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod) {
 		this.defaultMethod = defaultMethod;
 		return (C) this;
-	}
-
-	@Override
-	public List<CtTypeParameterReference> getFormalTypeParameters() {
-		return formalTypeParameters;
-	}
-
-	@Override
-	public <T extends CtFormalTypeDeclarer> T addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
-		if (formalTypeParameter == null) {
-			return (T) this;
-		}
-		if (formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
-			formalTypeParameters = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		formalTypeParameter.setParent(this);
-		formalTypeParameters.add(formalTypeParameter);
-		return (T) this;
-	}
-
-	@Override
-	public <T extends CtFormalTypeDeclarer> T setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
-		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
-			this.formalTypeParameters = CtElementImpl.emptyList();
-			return (T) this;
-		}
-		if (this.formalTypeParameters == CtElementImpl.<CtTypeParameterReference>emptyList()) {
-			this.formalTypeParameters = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		this.formalTypeParameters.clear();
-		for (CtTypeParameterReference formalTypeParameter : formalTypeParameters) {
-			addFormalTypeParameter(formalTypeParameter);
-		}
-		return (T) this;
-	}
-
-	@Override
-	public boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
-		return formalTypeParameter != null && formalTypeParameters != CtElementImpl.<CtTypeParameterReference>emptyList() && formalTypeParameters.remove(formalTypeParameter);
 	}
 
 	@Override

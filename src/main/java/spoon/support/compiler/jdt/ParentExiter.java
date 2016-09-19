@@ -180,7 +180,6 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void scanCtFormalTypeDeclarer(CtFormalTypeDeclarer e) {
 		if (childJDT instanceof TypeParameter && child instanceof CtTypeParameter) {
 			e.addFormalCtTypeParameter((CtTypeParameter) child);
-			e.addFormalTypeParameter(((CtTypeParameter) child).getReference());
 		}
 		return;
 	}

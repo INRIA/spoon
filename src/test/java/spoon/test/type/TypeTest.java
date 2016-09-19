@@ -170,19 +170,11 @@ public class TypeTest {
 		final List<CtClass> localTypes = prepare.getElements(new TypeFilter<>(CtClass.class));
 		assertEquals(1, localTypes.size());
 
-		// Old type parameter declaration.
-		final CtTypeParameterReference generic = localTypes.get(0).getFormalTypeParameters().get(0);
-		assertNotNull(generic);
-		assertEquals("T", generic.getSimpleName());
-		assertIntersectionTypeForPozolePrepareMethod(aPozole, generic.getBoundingType());
-
 		// New type parameter declaration.
 		final CtTypeParameter typeParameter = localTypes.get(0).getFormalCtTypeParameters().get(0);
 		assertNotNull(typeParameter);
 		assertEquals("T", typeParameter.getSimpleName());
 		assertIntersectionTypeForPozolePrepareMethod(aPozole, typeParameter.getSuperclass());
-
-		assertEquals(typeParameter, generic.getDeclaration());
 
 		// Intersection type in casts.
 		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
@@ -223,19 +215,11 @@ public class TypeTest {
 		final List<CtClass> localTypes = prepare.getElements(new TypeFilter<>(CtClass.class));
 		assertEquals(1, localTypes.size());
 
-		// Old type parameter declaration.
-		final CtTypeParameterReference generic = localTypes.get(0).getFormalTypeParameters().get(0);
-		assertNotNull(generic);
-		assertEquals("T", generic.getSimpleName());
-		assertIntersectionTypeForPozoleFinishMethod(aPozole, generic.getBoundingType());
-
 		// New type parameter declaration.
 		final CtTypeParameter typeParameter = localTypes.get(0).getFormalCtTypeParameters().get(0);
 		assertNotNull(typeParameter);
 		assertEquals("T", typeParameter.getSimpleName());
 		assertIntersectionTypeForPozoleFinishMethod(aPozole, typeParameter.getSuperclass());
-
-		assertEquals(typeParameter, generic.getDeclaration());
 
 		// Intersection type in casts.
 		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
@@ -258,18 +242,11 @@ public class TypeTest {
 	public void testIntersectionTypeOnTopLevelType() throws Exception {
 		final CtType<Mole> aMole = buildClass(Mole.class);
 
-		assertEquals(1, aMole.getFormalTypeParameters().size());
 		assertEquals(1, aMole.getFormalCtTypeParameters().size());
-
-		// Old type parameter declaration.
-		final CtTypeParameterReference ref = aMole.getFormalTypeParameters().get(0);
-		assertIntersectionTypeForMole(aMole, ref.getBoundingType());
 
 		// New type parameter declaration.
 		final CtTypeParameter typeParameter = aMole.getFormalCtTypeParameters().get(0);
 		assertIntersectionTypeForMole(aMole, typeParameter.getSuperclass());
-
-		assertEquals(typeParameter, ref.getDeclaration());
 	}
 
 	private void assertIntersectionTypeForMole(CtType<Mole> aMole, CtTypeReference<?> boundingType) {

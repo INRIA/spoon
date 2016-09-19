@@ -309,7 +309,6 @@ public class CodeFactory extends SubFactory {
 		CtLocalVariableReference<T> ref = factory.Core().createLocalVariableReference();
 		ref.setType(localVariable.getType() == null ? null : localVariable.getType().clone());
 		ref.setSimpleName(localVariable.getSimpleName());
-		ref.setDeclaration(localVariable);
 		return ref;
 	}
 
@@ -343,8 +342,7 @@ public class CodeFactory extends SubFactory {
 	 * variable (strong referencing).
 	 */
 	public <T> CtCatchVariableReference<T> createCatchVariableReference(CtCatchVariable<T> catchVariable) {
-		return factory.Core().<T>createCatchVariableReference().setType(catchVariable.getType()).<CtCatchVariableReference<T>>setSimpleName(catchVariable.getSimpleName())
-				.setDeclaration(catchVariable);
+		return factory.Core().<T>createCatchVariableReference().setType(catchVariable.getType()).<CtCatchVariableReference<T>>setSimpleName(catchVariable.getSimpleName());
 	}
 
 	/**
