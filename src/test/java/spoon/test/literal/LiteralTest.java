@@ -4,6 +4,8 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.factory.CodeFactory;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import static org.junit.Assert.assertEquals;
@@ -36,5 +38,28 @@ public class LiteralTest {
 		runLaunch.getEnvironment().setNoClasspath(true);
 		runLaunch.addInputResource("./src/test/resources/noclasspath/LiteralInForEach.java");
 		runLaunch.buildModel();
+	}
+
+	@Test
+	public void testFactoryLiternal() {
+		Launcher runLaunch = new Launcher();
+		Factory factory = runLaunch.getFactory();
+		CodeFactory code = factory.Code();
+
+		CtLiteral literal = code.createLiteral(1);
+		assertEquals(1, literal.getValue());
+		assertEquals(factory.Type().integerPrimitiveType(), literal.getType());
+
+		literal = code.createLiteral(new Integer(1));
+		assertEquals(1, literal.getValue());
+		assertEquals(factory.Type().integerPrimitiveType(), literal.getType());
+
+		literal = code.createLiteral(1.0);
+		assertEquals(1.0, literal.getValue());
+		assertEquals(factory.Type().doublePrimitiveType(), literal.getType());
+
+		literal = code.createLiteral("literal");
+		assertEquals("literal", literal.getValue());
+		assertEquals(factory.Type().stringType(), literal.getType());
 	}
 }
