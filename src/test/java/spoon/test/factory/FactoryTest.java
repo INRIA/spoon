@@ -133,6 +133,14 @@ public class FactoryTest {
 			model.getRootPackage().addPackage(p);
 			fail("no exception thrown");
 		} catch (IllegalStateException success) {}
+
+		model.processWith(new AbstractProcessor<CtType>() {
+		    @Override
+		    public void process(CtType element) {
+		        element.delete();
+		    }
+		});
+		assertEquals(0, model.getAllTypes().size());
 	}
 
 	@Test
