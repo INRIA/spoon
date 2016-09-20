@@ -17,6 +17,7 @@
 package spoon.template;
 
 import spoon.Launcher;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -344,7 +345,16 @@ public class TemplateMatcher {
 			}
 
 			return matchCollections(tarMap.values(), temMap.values());
+		}
 
+		if (template instanceof CtBlock<?>) {
+			final List<CtStatement> statements = ((CtBlock) template).getStatements();
+			if (statements.size() == 1 && statements.get(0) instanceof CtInvocation) {
+				final CtInvocation ctStatement = (CtInvocation) statements.get(0);
+				if ("S".equals(ctStatement.getExecutable().getSimpleName()) && CtBlock.class.equals(ctStatement.getType().getActualClass())) {
+					return true;
+				}
+			}
 		}
 
 		if ((target instanceof CtElement) || (target instanceof CtReference)) {

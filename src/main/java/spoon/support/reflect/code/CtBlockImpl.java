@@ -65,14 +65,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public <T extends CtBlock<R>> T insertBegin(CtStatementList statements) {
-		if (getParent() != null
-				&& getParent() instanceof CtConstructor
-				&& getStatements().size() > 0) {
+		if (getParent() != null && getParent() instanceof CtConstructor && getStatements().size() > 0) {
 			CtStatement first = getStatements().get(0);
-			if (first instanceof CtInvocation
-					&& ((CtInvocation<?>) first).getExecutable()
-												.getSimpleName()
-												.startsWith("<init>")) {
+			if (first instanceof CtInvocation && ((CtInvocation<?>) first).getExecutable().isConstructor()) {
 				first.insertAfter(statements);
 				return (T) this;
 			}
@@ -84,20 +79,18 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			statement.setParent(this);
 			this.statements.add(0, statement);
 		}
+		if (isImplicit() && this.statements.size() > 1) {
+			setImplicit(false);
+		}
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtBlock<R>> T insertBegin(CtStatement statement) {
 		try {
-			if (getParent() != null
-					&& getParent() instanceof CtConstructor
-					&& getStatements().size() > 0) {
+			if (getParent() != null && getParent() instanceof CtConstructor && getStatements().size() > 0) {
 				CtStatement first = getStatements().get(0);
-				if (first instanceof CtInvocation
-						&& ((CtInvocation<?>) first)
-						.getExecutable().getSimpleName()
-						.startsWith("<init>")) {
+				if (first instanceof CtInvocation && ((CtInvocation<?>) first).getExecutable().isConstructor()) {
 					first.insertAfter(statement);
 					return (T) this;
 				}
@@ -108,6 +101,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		ensureModifiableStatementsList();
 		statement.setParent(this);
 		this.statements.add(0, statement);
+		if (isImplicit() && this.statements.size() > 1) {
+			setImplicit(false);
+		}
 		return (T) this;
 	}
 
@@ -135,9 +131,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertAfter(
-			Filter<? extends CtStatement> insertionPoints,
-			CtStatementList statements) {
+	public <T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statements);
 		}
@@ -145,9 +139,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertBefore(
-			Filter<? extends CtStatement> insertionPoints,
-			CtStatement statement) {
+	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statement);
 		}
@@ -155,9 +147,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertBefore(
-			Filter<? extends CtStatement> insertionPoints,
-			CtStatementList statements) {
+	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statements);
 		}
@@ -185,6 +175,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		ensureModifiableStatementsList();
 		statement.setParent(this);
 		this.statements.add(statement);
+		if (isImplicit() && this.statements.size() > 1) {
+			setImplicit(false);
+		}
 		return (T) this;
 	}
 
@@ -198,6 +191,9 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	public void removeStatement(CtStatement statement) {
 		if (this.statements != CtElementImpl.<CtStatement>emptyList()) {
 			this.statements.remove(statement);
+			if (isImplicit() && statements.size() == 0) {
+				setImplicit(false);
+			}
 		}
 	}
 

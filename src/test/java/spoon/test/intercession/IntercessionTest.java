@@ -136,8 +136,11 @@ public class IntercessionTest {
 		CtIf ifStmt = (CtIf) foo.getBody().getStatements().get(0);
 		String s = ifStmt.toString().replace("\r", "");
 		assertEquals(ifCode, s);
-		CtReturn<?> r1 = (CtReturn<?>) ifStmt.getThenStatement();
-		CtReturn<?> r2 = (CtReturn<?>) ifStmt.getElseStatement();
+		CtBlock<?> r1 = ifStmt.getThenStatement();
+		CtBlock<?> r2 = ifStmt.getElseStatement();
+
+		assertTrue(r1.isImplicit());
+		assertTrue(r2.isImplicit());
 
 		ifStmt.setThenStatement(r2);
 		assertSame(r2, ifStmt.getThenStatement());
