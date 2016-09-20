@@ -259,7 +259,12 @@ public class CodeFactory extends SubFactory {
 	 * @return a new literal
 	 */
 	public <T> CtLiteral<T> createLiteral(T value) {
-		return factory.Core().<T>createLiteral().setValue(value);
+		CtLiteral<T> literal = factory.Core().<T>createLiteral();
+		literal.setValue(value);
+		if (value != null) {
+			literal.setType((CtTypeReference<T>) factory.Type().<T>createReference((Class<T>) value.getClass()).unbox());
+		}
+		return literal;
 	}
 
 	/**
