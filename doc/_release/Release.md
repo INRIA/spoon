@@ -33,15 +33,15 @@ This article is a short summary of the [official documentation of sonatype][ossr
 
 - Uploads archives on Maven Central (see above)
 - Uploads archives on INRIA's forge
-- Prepare changelog
-- Create Pull resuest on Github with
+- Prepare changelog (see `doc/_release/changelog_generator/`)
+- Create Pull request on Github with
     - Update of Spoon's website
     	- News section in `doc/doc_homepage.md`
     	- Maven version in `doc/_jekyll/_config.yml`
     	- Maven snippets in `doc/doc_homepage.md`
     - Updates main `README.md`
+- Add changelog on release page on GitHub 
 - Announces release on the mailing list (give credits to the contributors)
-- Announces release on GitHub (if necessary)
 - If necessary, removes all methods deprecated after the release!
 
 
