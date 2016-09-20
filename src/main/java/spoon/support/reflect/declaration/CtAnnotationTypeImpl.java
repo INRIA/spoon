@@ -18,17 +18,14 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,21 +59,6 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		return false;
-	}
-
-	@Override
-	public <C extends CtFormalTypeDeclarer> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
-		throw new UnsupportedOperationException("You can't have generics in an annotation.");
-	}
-
-	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
-		throw new UnsupportedOperationException("You can't have generics in an annotation.");
-	}
-
-	@Override
-	public boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
-		throw new UnsupportedOperationException("You can't have generics in an annotation.");
 	}
 
 	@Override

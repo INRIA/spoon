@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -238,21 +237,6 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
-	}
-
-	@Override
-	public boolean removeFormalTypeParameter(CtTypeParameterReference formalTypeParameter) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
-	}
-
-	@Override
-	public List<CtTypeParameterReference> getFormalTypeParameters() {
-		return Collections.emptyList();
-	}
-
-	@Override
 	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>... parameterTypes) {
 		return null;
 	}
@@ -280,11 +264,6 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
 		return Collections.emptySet();
-	}
-
-	@Override
-	public <C extends CtFormalTypeDeclarer> C setFormalTypeParameters(List<CtTypeParameterReference> formalTypeParameters) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
 	}
 
 	@Override

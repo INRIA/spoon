@@ -78,14 +78,6 @@ public class JavaReflectionTreeBuilderTest {
 		final CtType<ComparableComparatorBug> aType = new JavaReflectionTreeBuilder(createFactory()).scan(ComparableComparatorBug.class);
 		assertNotNull(aType);
 
-		// Old type parameter declaration.
-		assertEquals(1, aType.getFormalTypeParameters().size());
-		assertTrue(aType.getFormalTypeParameters().get(0) instanceof CtTypeParameterReference);
-		CtTypeParameterReference ctTypeParameterReference = aType.getFormalTypeParameters().get(0);
-		assertEquals("E extends java.lang.Comparable<? super E>", ctTypeParameterReference.toString());
-		assertEquals(1, ctTypeParameterReference.getBoundingType().getActualTypeArguments().size());
-		assertTrue(ctTypeParameterReference.getBoundingType().getActualTypeArguments().get(0) instanceof CtTypeParameterReference);
-
 		// New type parameter declaration.
 		assertEquals(1, aType.getFormalCtTypeParameters().size());
 		CtTypeParameter ctTypeParameter = aType.getFormalCtTypeParameters().get(0);
@@ -93,8 +85,6 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals(1, ctTypeParameter.getSuperclass().getActualTypeArguments().size());
 		assertTrue(ctTypeParameter.getSuperclass().getActualTypeArguments().get(0) instanceof CtTypeParameterReference);
 		assertEquals("? super E", ctTypeParameter.getSuperclass().getActualTypeArguments().get(0).toString());
-
-		assertEquals(ctTypeParameter, ctTypeParameterReference.getDeclaration());
 	}
 
 	@Test

@@ -67,7 +67,6 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	@Override
 	public void addFormalType(CtTypeParameter parameterRef) {
 		this.type.addFormalCtTypeParameter(parameterRef);
-		this.type.addFormalTypeParameter(parameterRef.getReference());
 	}
 
 	@Override

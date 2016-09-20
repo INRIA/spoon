@@ -27,8 +27,6 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtLocalVariableReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	private CtLocalVariable<T> declaration;
-
 	public CtLocalVariableReferenceImpl() {
 		super();
 	}
@@ -40,35 +38,26 @@ public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 
 	@Override
 	public CtLocalVariable<T> getDeclaration() {
-		if (declaration == null) {
-			CtElement element = this;
-			CtLocalVariable<T> optional = null;
-			String name = getSimpleName();
-			try {
-				do {
-					CtStatementList block = element.getParent(CtStatementList.class);
-					if (block == null) {
-						return null;
+		CtElement element = this;
+		CtLocalVariable<T> optional = null;
+		String name = getSimpleName();
+		try {
+			do {
+				CtStatementList block = element.getParent(CtStatementList.class);
+				if (block == null) {
+					return null;
+				}
+				for (CtStatement ctStatement : block.getStatements()) {
+					if (ctStatement instanceof CtLocalVariable && ((CtLocalVariable) ctStatement).getSimpleName().equals(name)) {
+						optional = (CtLocalVariable) ctStatement;
 					}
-					for (CtStatement ctStatement : block.getStatements()) {
-						if (ctStatement instanceof CtLocalVariable && ((CtLocalVariable) ctStatement).getSimpleName().equals(name)) {
-							optional = (CtLocalVariable) ctStatement;
-						}
-					}
-					element = block;
-				} while (optional == null);
-			} catch (ParentNotInitializedException e) {
-				return null;
-			}
-			return optional;
+				}
+				element = block;
+			} while (optional == null);
+		} catch (ParentNotInitializedException e) {
+			return null;
 		}
-		return declaration;
-	}
-
-	@Override
-	public <C extends CtLocalVariableReference<T>> C setDeclaration(CtLocalVariable<T> declaration) {
-		this.declaration = declaration;
-		return (C) this;
+		return optional;
 	}
 
 	@Override

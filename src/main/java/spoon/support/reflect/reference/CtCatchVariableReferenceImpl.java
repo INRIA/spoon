@@ -26,8 +26,6 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtCatchVariableReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	private CtCatchVariable<T> declaration;
-
 	public CtCatchVariableReferenceImpl() {
 		super();
 	}
@@ -39,31 +37,22 @@ public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 
 	@Override
 	public CtCatchVariable<T> getDeclaration() {
-		if (declaration == null) {
-			CtElement element = this;
-			String name = getSimpleName();
-			CtCatchVariable var;
-			try {
-				do {
-					CtCatch catchBlock = element.getParent(CtCatch.class);
-					if (catchBlock == null) {
-						return null;
-					}
-					var = catchBlock.getParameter();
-					element = catchBlock;
-				} while (!name.equals(var.getSimpleName()));
-			} catch (ParentNotInitializedException e) {
-				return null;
-			}
-			return var;
+		CtElement element = this;
+		String name = getSimpleName();
+		CtCatchVariable var;
+		try {
+			do {
+				CtCatch catchBlock = element.getParent(CtCatch.class);
+				if (catchBlock == null) {
+					return null;
+				}
+				var = catchBlock.getParameter();
+				element = catchBlock;
+			} while (!name.equals(var.getSimpleName()));
+		} catch (ParentNotInitializedException e) {
+			return null;
 		}
-		return declaration;
-	}
-
-	@Override
-	public <C extends CtCatchVariableReference<T>> C setDeclaration(CtCatchVariable<T> declaration) {
-		this.declaration = declaration;
-		return (C) this;
+		return var;
 	}
 
 	@Override

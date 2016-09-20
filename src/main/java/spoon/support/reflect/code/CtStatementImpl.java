@@ -43,18 +43,6 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		insertAfter(target, sts);
 	}
 
-	/**
-	 * @see CtElement#replace(CtElement)
-	 */
-	@Deprecated
-	public static void replace(CtStatement target, CtStatementList statements)
-	throws ParentNotInitializedException {
-		insertAfter(target, statements);
-		CtElement e = target.getParent();
-		CtStatementList parentStatementList = (CtStatementList) e;
-		parentStatementList.removeStatement(target);
-	}
-
 	public static void insertAfter(CtStatement target, CtStatementList statements)
 	throws ParentNotInitializedException {
 		CtElement e = target.getParent();

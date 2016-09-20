@@ -207,29 +207,10 @@ public class IntercessionTest {
 		for (CtMethod<?> setter : setters) {
 			final String methodLog = setter.getSimpleName() + " in " +
 					setter.getDeclaringType().getSimpleName();
-			if (setter.getFormalTypeParameters().size() <= 0) {
-				fail("Your setter " + methodLog + " don't have a generic type for its return type.");
-			}
 			if (setter.getFormalCtTypeParameters().size() <= 0) {
 				fail("Your setter " + methodLog + " don't have a generic type for its return type.");
 			}
 			boolean isMatch = false;
-			// Old type parameter declaration.
-			for (CtTypeParameterReference ctTypeReference : setter.getFormalTypeParameters()) {
-				if (setter.getType().getSimpleName().equals(ctTypeReference.getSimpleName())) {
-					isMatch = true;
-
-					if (setter.getAnnotation(Override.class) != null) {
-						// Override annotation means that the current method come from a super
-						// interface. So the return type can't be the declaring interface.
-						continue;
-					}
-
-					if (!setter.getDeclaringType().getSimpleName().equals(ctTypeReference.getBoundingType().getSimpleName())) {
-						fail("Your setter " + methodLog + " has a type reference who don't extends " + setter.getDeclaringType().getSimpleName());
-					}
-				}
-			}
 			// New type parameter declaration.
 			for (CtTypeParameter typeParameter : setter.getFormalCtTypeParameters()) {
 				if (setter.getType().getSimpleName().equals(typeParameter.getSimpleName())) {

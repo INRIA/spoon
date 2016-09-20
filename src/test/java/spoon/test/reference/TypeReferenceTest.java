@@ -210,20 +210,11 @@ public class TypeReferenceTest {
 
 		Factory factory = launcher.getFactory();
 
-		// Old type parameter declaration.
-		final CtTypeParameterReference firstRef = factory.Type().get(A.Tacos.class).getFormalTypeParameters().get(0);
-		final CtTypeParameterReference secondRef = factory.Type().get(B.Tacos.class).getFormalTypeParameters().get(0);
-		assertNotEquals(firstRef.toString(), secondRef.toString());
-		assertNotEquals(firstRef, secondRef);
-
 		// New type parameter declaration.
 		final CtTypeParameter firstTypeParam = factory.Type().get(A.Tacos.class).getFormalCtTypeParameters().get(0);
 		final CtTypeParameter secondTypeParam = factory.Type().get(B.Tacos.class).getFormalCtTypeParameters().get(0);
 		assertNotEquals(firstTypeParam.toString(), secondTypeParam.toString());
 		assertNotEquals(firstTypeParam, secondTypeParam);
-
-		assertEquals(firstTypeParam, firstRef.getDeclaration());
-		assertEquals(secondTypeParam, secondRef.getDeclaration());
 	}
 
 	@Test
@@ -270,19 +261,12 @@ public class TypeReferenceTest {
 		final CtClass<EnumValue> aClass = launcher.getFactory().Class().get(EnumValue.class);
 		final CtMethod<?> asEnum = aClass.getMethodsByName("asEnum").get(0);
 
-		// Old type parameter declaration.
-		final CtTypeParameterReference genericType = asEnum.getFormalTypeParameters().get(0);
-		assertNotNull(genericType);
-		assertNotNull(genericType.getBoundingType());
-
 		// New type parameter declaration.
 		final CtTypeParameter typeParameter = asEnum.getFormalCtTypeParameters().get(0);
 		assertNotNull(typeParameter);
 		assertNotNull(typeParameter.getSuperclass());
 
-		assertEquals(typeParameter, genericType.getDeclaration());
-
-		final CtTypeReference<?> extendsGeneric = genericType.getBoundingType();
+		final CtTypeReference<?> extendsGeneric = typeParameter.getSuperclass();
 		assertNotNull(extendsGeneric);
 		assertEquals(1, extendsGeneric.getActualTypeArguments().size());
 

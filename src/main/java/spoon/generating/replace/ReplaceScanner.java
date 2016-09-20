@@ -30,6 +30,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -151,15 +152,15 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtTypeReference getTypeFromTypeParameterReference(CtTypeParameterReference ctTypeParameterRef) {
 		final CtMethod parentMethod = ctTypeParameterRef.getParent(CtMethod.class);
-		for (CtTypeReference<?> formal : parentMethod.getFormalTypeParameters()) {
+		for (CtTypeParameter formal : parentMethod.getFormalCtTypeParameters()) {
 			if (formal.getSimpleName().equals(ctTypeParameterRef.getSimpleName())) {
 				return ((CtTypeParameterReference) formal).getBoundingType();
 			}
 		}
 		final CtInterface parentInterface = ctTypeParameterRef.getParent(CtInterface.class);
-		for (CtTypeReference<?> formal : parentInterface.getFormalTypeParameters()) {
+		for (CtTypeParameter formal : parentInterface.getFormalCtTypeParameters()) {
 			if (formal.getSimpleName().equals(ctTypeParameterRef.getSimpleName())) {
-				return ((CtTypeParameterReference) formal).getBoundingType();
+				return formal.getReference().getBoundingType();
 			}
 		}
 		throw new SpoonException("Can't get the type of the CtTypeParameterReference " + ctTypeParameterRef);

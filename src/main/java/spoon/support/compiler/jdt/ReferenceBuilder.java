@@ -65,9 +65,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
-import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -865,14 +863,12 @@ public class ReferenceBuilder {
 				ref.setSimpleName(new String(varbin.name));
 				CtTypeReference<T> ref2 = getTypeReference(varbin.type);
 				ref.setType(ref2);
-				ref.setDeclaration((CtCatchVariable<T>) this.jdtTreeBuilder.getContextBuilder().getCatchVariableDeclaration(ref.getSimpleName()));
 				return ref;
 			} else {
 				CtLocalVariableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createLocalVariableReference();
 				ref.setSimpleName(new String(varbin.name));
 				CtTypeReference<T> ref2 = getTypeReference(varbin.type);
 				ref.setType(ref2);
-				ref.setDeclaration((CtLocalVariable<T>) this.jdtTreeBuilder.getContextBuilder().getLocalVariableDeclaration(ref.getSimpleName()));
 				return ref;
 			}
 		} else {

@@ -26,13 +26,6 @@ public interface CtLocalVariableReference<T> extends CtVariableReference<T> {
 	@Override
 	CtLocalVariable<T> getDeclaration();
 
-	/**
-	 * Sets the local variable declaration that corresponds to this local
-	 * variable reference.
-	 */
-	@Deprecated
-	<C extends CtLocalVariableReference<T>> C setDeclaration(CtLocalVariable<T> declaration);
-
 	@Override
 	CtLocalVariableReference<T> clone();
 }

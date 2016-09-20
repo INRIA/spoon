@@ -75,7 +75,6 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	public void addFormalType(CtTypeParameter parameterRef) {
 		if (ctExecutable instanceof CtFormalTypeDeclarer) {
 			((CtFormalTypeDeclarer) ctExecutable).addFormalCtTypeParameter(parameterRef);
-			((CtFormalTypeDeclarer) ctExecutable).addFormalTypeParameter(parameterRef.getReference());
 			return;
 		}
 		super.addFormalType(parameterRef);
