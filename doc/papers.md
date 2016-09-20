@@ -6,6 +6,9 @@ last_updated: September 9, 2015
 
 # Articles 
 
+[Partitioners Track: Generating Security Vulnerabilities in
+Source Code](https://pdfs.semanticscholar.org/8805/3bf61a22821f25e8ce1f8b446330c6b4f586.pdf) (Felix Schuckert), In Sicherheit 2016. 
+
 [Casper: Automatic Tracking of Null Dereferences to Inception with Causality Traces](https://hal.archives-ouvertes.fr/hal-01354090/document) (Benoit Cornu, Earl T. Barr, Martin Monperrus and Lionel Seinturier), In Journal of Systems and Software, Elsevier, 2016.
 
 [Controlling the granularity of automatic parallel programs](http://www.sciencedirect.com/science/article/pii/S1877750316301065) (Fonseca, A., Cabral, B., Rafael, J., & Correia, I.) Journal of Computational Science, 2016.
