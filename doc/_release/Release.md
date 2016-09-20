@@ -12,7 +12,7 @@ This article is a short summary of the [official documentation of sonatype][ossr
   1. check with `gpg2 --list-keys`
 1. update  `~/.m2/settings.xml`  with passphrase and keyname (see below)
 1. clean your project for the release and prepare the release `mvn release:clean release:prepare`
-1. mvn release:perform (sends the new version on Maven Central)
+1. `mvn release:perform` (sends the new version on Maven Central)
 1. check that the new version is on Maven Central (connect to `oss.sonatype.org`)
 1. push the release commit on Github (git push origin master)
     - `git push origin master`
@@ -23,7 +23,7 @@ This article is a short summary of the [official documentation of sonatype][ossr
     - `git push origin stable`
 1. update the doc, etc., see checklist below
 
-## Checklist 
+### Checklists 
 
 **Before the release**
 
@@ -36,22 +36,14 @@ This article is a short summary of the [official documentation of sonatype][ossr
 - Prepare changelog
 - Create Pull resuest on Github with
     - Update of Spoon's website
-	- News section
-	- Jar file link
-	- Maven version and snippets
-    - Updates main README.md
+    	- News section in `doc/doc_homepage.md`
+    	- Maven version in `doc/_jekyll/_config.yml`
+    	- Maven snippets in `doc/doc_homepage.md`
+    - Updates main `README.md`
 - Announces release on the mailing list (give credits to the contributors)
 - Announces release on GitHub (if necessary)
 - If necessary, removes all methods deprecated after the release!
 
-
-### How to generate new keys with GPG
-
-To push your archive on Maven Central, you must sign before your jar with GPG, a tool multi platform based on a pair of keys (public/private).
-
-1. Generate your pair of keys: `gpg --gen-key`
-2. Check if your key is generated: `gpg2 --list-keys`
-3. Distributing your public key on a server key (used by maven release plugin): `gpg2 --keyserver hkp://pool.sks-keyservers.net --send-keys <your-public-id-key>`
 
 ###  `settings.xml` of your Maven
 
@@ -81,7 +73,16 @@ To push your archive on Maven Central, you must sign before your jar with GPG, a
 </settings>
 ```
 
-### Create a repo for your project in Sonatype
+## How to generate new keys with GPG
+
+To push your archive on Maven Central, you must sign before your jar with GPG, a tool multi platform based on a pair of keys (public/private).
+
+1. Generate your pair of keys: `gpg --gen-key`
+2. Check if your key is generated: `gpg2 --list-keys`
+3. Distributing your public key on a server key (used by maven release plugin): `gpg2 --keyserver hkp://pool.sks-keyservers.net --send-keys <your-public-id-key>`
+
+
+## Create a repo for your project in Sonatype
 
 In the JIRA of Sonatype, create a new ticket to create your repository. You will fill a form with some information about your project like Git repository, scm, etc.
 
@@ -90,7 +91,7 @@ This process may take +/- 48 hours.
 After that, you can update your `settings.xml` of your Maven:
 
 
-## Initialize his project
+## Initialize the project
 
 All steps in this sections are details in the [official documentation][apache-maven] and modify `pom.xml` of the project.
 
