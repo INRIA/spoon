@@ -31,6 +31,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class CtStatementImpl extends CtCodeElementImpl implements CtStatement {
@@ -79,13 +80,8 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 			throw new SpoonException("cannot insert in this context (use insertEnd?)");
 		}
 		if (target.getParent(CtConstructor.class) != null) {
-			if (target instanceof CtInvocation
-					&& ((CtInvocation<?>) target)
-					.getExecutable()
-					.getSimpleName()
-					.startsWith("<init>")) {
-				throw new SpoonException(
-						"cannot insert a statement before a super or this invocation.");
+			if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith("<init>")) {
+				throw new SpoonException("cannot insert a statement before a super or this invocation.");
 			}
 		}
 		new InsertVisitor(target, statementsToBeInserted, InsertType.BEFORE).scan(targetParent);
@@ -144,7 +140,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 				}
 			}
 
-			insertType.insertFromLastStatement(e.getCases(), target, statementsToBeInserted);
+			e.setCases(insertType.insertFromLastStatement(e.getCases(), target, statementsToBeInserted));
 		}
 
 		@Override
@@ -152,7 +148,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 			super.visitCtCase(e);
 
 			target.setParent(e);
-			insertType.insertFromLastStatement(e.getStatements(), target, statementsToBeInserted);
+			e.setStatements(insertType.insertFromLastStatement(e.getStatements(), target, statementsToBeInserted));
 		}
 
 		@Override
@@ -186,26 +182,22 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 
 			@Override
 			void insertFromFirstStatement(CtBlock<?> block, CtStatement target, CtStatementList statementsToBeInserted) {
-				// check the reference not the equality
+				final List<CtStatement> copy = new ArrayList<>(block.getStatements());
 				int indexOfTargetElement = indexOfReference(block.getStatements(), target);
-				for (CtStatement s : statementsToBeInserted) {
-					s.setParent(block);
-					block.getStatements().add(indexOfTargetElement++, s);
+				for (CtStatement ctStatement : statementsToBeInserted) {
+					copy.add(indexOfTargetElement++, ctStatement);
 				}
-				if (block.isImplicit() && block.getStatements().size() > 1) {
-					block.setImplicit(false);
-				}
+				block.setStatements(copy);
 			}
 
 			@Override
-			<T extends CtElement> void insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted) {
-				// check the reference not the equality
+			<T extends CtElement> List<T> insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted) {
+				final List<T> copy = new ArrayList<>(statements);
 				int indexOfTargetElement = indexOfReference(statements, target);
 				for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
-					final CtStatement newStatement = statementsToBeInserted.getStatements().get(j);
-					newStatement.setParent(statements.get(indexOfTargetElement).getParent());
-					statements.add(indexOfTargetElement, (T) newStatement);
+					copy.add(indexOfTargetElement, (T) statementsToBeInserted.getStatements().get(j));
 				}
+				return copy;
 			}
 		},
 		AFTER {
@@ -216,25 +208,22 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 
 			@Override
 			void insertFromFirstStatement(CtBlock<?> block, CtStatement target, CtStatementList statementsToBeInserted) {
-				// check the reference not the equality
+				final List<CtStatement> copy = new ArrayList<>(block.getStatements());
 				int indexOfTargetElement = indexOfReference(block.getStatements(), target);
 				for (CtStatement s : statementsToBeInserted) {
-					s.setParent(block);
-					block.getStatements().add(++indexOfTargetElement, s);
+					copy.add(++indexOfTargetElement, s);
 				}
-				if (block.isImplicit() && block.getStatements().size() > 1) {
-					block.setImplicit(false);
-				}
+				block.setStatements(copy);
 			}
 
 			@Override
-			<T extends CtElement> void insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted) {
-				int indexOfTargetElement = indexOfReference(statements, target) + 1;
+			<T extends CtElement> List<T> insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted) {
+				final List<T> copy = new ArrayList<>(statements);
+				int indexOfTargetElement = indexOfReference(copy, target) + 1;
 				for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
-					final CtStatement newStatement = statementsToBeInserted.getStatements().get(j);
-					newStatement.setParent(target.getParent());
-					statements.add(indexOfTargetElement, (T) newStatement);
+					copy.add(indexOfTargetElement, (T) statementsToBeInserted.getStatements().get(j));
 				}
+				return copy;
 			}
 		};
 
@@ -251,7 +240,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		}
 		abstract void insert(CtBlock<?> block, CtStatementList statementsToBeInserted);
 		abstract void insertFromFirstStatement(CtBlock<?> block, CtStatement target, CtStatementList statementsToBeInserted);
-		abstract <T extends CtElement> void insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted);
+		abstract <T extends CtElement> List<T> insertFromLastStatement(List<T> statements, CtStatement target, CtStatementList statementsToBeInserted);
 	}
 
 	@Override
