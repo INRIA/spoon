@@ -459,9 +459,8 @@
 	</executions>
 	<configuration>
 	  <excludes>
-	    <exclude>src/test/**</exclude>
-	    <exclude>spoon/test/**</exclude>
-	    <exclude>spoon/testing/**</exclude>
+	    <exclude>spoon.test.*</exclude>
+	    <exclude>spoon.testing.*</exclude>
 	  </excludes>
 	</configuration>
       </plugin>
