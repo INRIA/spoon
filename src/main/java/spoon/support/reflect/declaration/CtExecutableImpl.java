@@ -16,19 +16,19 @@
  */
 package spoon.support.reflect.declaration;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtExecutable}.
@@ -114,7 +114,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 			return (T) this;
 		}
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
-			this.thrownTypes = new TreeSet<>();
+			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		this.thrownTypes.clear();
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
@@ -129,7 +129,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 			return (T) this;
 		}
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
-			thrownTypes = new TreeSet<>();
+			thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		throwType.setParent(this);
 		thrownTypes.add(throwType);

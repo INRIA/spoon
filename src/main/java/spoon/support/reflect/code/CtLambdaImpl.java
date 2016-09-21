@@ -27,11 +27,11 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.QualifiedNameBasedSortedSet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -128,7 +128,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			return (C) this;
 		}
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
-			this.thrownTypes = new TreeSet<>();
+			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		this.thrownTypes.clear();
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
@@ -143,7 +143,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			return (C) this;
 		}
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
-			thrownTypes = new TreeSet<>();
+			thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		throwType.setParent(this);
 		thrownTypes.add(throwType);

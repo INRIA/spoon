@@ -11,7 +11,6 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -74,13 +73,15 @@ public class MainTest {
 
 		checkGenericContracts(launcher.getFactory().Package().getRootPackage());
 
-		// shadow
 		checkShadow(launcher.getFactory().Package().getRootPackage());
 
 		checkParentConsistency(launcher.getFactory().Package().getRootPackage());
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
+		// clone
+		checkEqualityBetweenOriginalAndClone(pack);
+
 		// parent
 		ParentTest.checkParentContract(pack);
 
@@ -89,9 +90,6 @@ public class MainTest {
 
 		// scanners
 		checkContractCtScanner(pack);
-
-		// clone
-		checkEqualityBetweenOriginalAndClone(pack);
 
 		// type parameter reference.
 		checkBoundAndUnboundTypeReference(pack);
@@ -213,11 +211,6 @@ public class MainTest {
 
 			private <T> boolean isLanguageExecutable(CtExecutableReference<T> reference) {
 				return "values".equals(reference.getSimpleName());
-			}
-
-			private <T> boolean isDeclaredInAnAnnotation(CtExecutableReference<T> reference) {
-				final CtType<?> declaration = reference.getDeclaringType().getTypeDeclaration();
-				return declaration != null && declaration instanceof CtAnnotationType;
 			}
 
 			@Override

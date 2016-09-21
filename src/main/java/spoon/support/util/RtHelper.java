@@ -23,9 +23,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -129,7 +129,7 @@ public abstract class RtHelper {
 	 * (java.lang.reflect).
 	 */
 	public static Set<ModifierKind> getModifiers(int mod) {
-		Set<ModifierKind> set = new TreeSet<>();
+		Set<ModifierKind> set = new HashSet<>();
 		if (Modifier.isAbstract(mod)) {
 			set.add(ModifierKind.ABSTRACT);
 		}

@@ -64,7 +64,7 @@ public class CtModelImpl implements CtModel {
 
 		@Override
 		public String toString() {
-			return packs.size() + " packages";
+			return TOP_LEVEL_PACKAGE_NAME;
 		}
 
 	}

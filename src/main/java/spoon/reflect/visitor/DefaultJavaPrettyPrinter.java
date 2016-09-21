@@ -16,6 +16,16 @@
  */
 package spoon.reflect.visitor;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -105,16 +115,6 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
 import spoon.reflect.visitor.printer.PrinterHelper;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -811,6 +811,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		switch (comment.getCommentType()) {
 		case FILE:
+			printer.write("/**").writeln();
+			break;
 		case JAVADOC:
 			printer.write("/**").writeln().writeTabs();
 			break;
@@ -823,35 +825,40 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		String content = comment.getContent();
 		switch (comment.getCommentType()) {
-		case FILE:
-		case JAVADOC:
-		case BLOCK:
+		case INLINE:
+			printer.write(content);
+			break;
+		default:
 			String[] lines = content.split("\n");
 			for (int i = 0; i < lines.length; i++) {
 				String com = lines[i];
-				if ("".equals(com) && (i == 0 || i == lines.length - 1)) {
-					continue;
-				}
 				if (comment.getCommentType() == CtComment.CommentType.BLOCK) {
 					printer.write(com);
 					if (lines.length > 1) {
 						printer.writeln().writeTabs();
 					}
 				} else {
-					printer.write(" * " + com).writeln().writeTabs();
+					if (com.length() > 0) {
+						printer.write(" * " + com).writeln().writeTabs();
+					} else {
+						printer.write(" *" /* no trailing space */ + com).writeln().writeTabs();
+					}
 				}
 
 			}
 			break;
-		default:
-			printer.write(content);
 		}
 
 		switch (comment.getCommentType()) {
 		case BLOCK:
+			printer.write(" */");
+			break;
 		case FILE:
+			printer.write(" */");
+			break;
 		case JAVADOC:
 			printer.write(" */");
+			break;
 		}
 	}
 
@@ -963,7 +970,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					elementPrinterHelper.writeComment(comment);
 				}
 			}
-			printer.write("else");
+			printer.write(" else");
 			if (ifElement.getElseStatement() instanceof CtIf) {
 				if (!ifElement.getElseStatement().isImplicit()) {
 					printer.write(" ");

@@ -1,7 +1,15 @@
 package spoon.test.constructorcallnewclass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
@@ -11,13 +19,9 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Panini;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class ConstructorCallTest {
 	private List<CtConstructorCall<?>> constructorCalls;
@@ -32,12 +36,14 @@ public class ConstructorCallTest {
 		launcher.run();
 		final Factory factory = launcher.getFactory();
 		final CtClass<?> foo = (CtClass<?>) factory.Type().get(Foo.class);
-		constructorCalls = foo.getElements(new AbstractFilter<CtConstructorCall<?>>(CtConstructorCall.class) {
+		TreeSet ts = new TreeSet(new DeepRepresentationComparator());
+		ts.addAll(foo.getElements(new AbstractFilter<CtConstructorCall<?>>(CtConstructorCall.class) {
 			@Override
 			public boolean matches(CtConstructorCall<?> element) {
 				return true;
 			}
-		});
+		}));
+		constructorCalls = new ArrayList(ts);
 		final CtType<Panini> panini = factory.Type().get(Panini.class);
 		constructorCallsPanini = panini.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class));
 	}
@@ -45,7 +51,7 @@ public class ConstructorCallTest {
 	@Test
 	public void testConstructorCallStringWithoutParameters() throws Exception {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(0);
-		assertType(String.class, constructorCall);
+		assertConstructorCallWithType(String.class, constructorCall);
 		assertIsConstructor(constructorCall);
 		assertHasParameters(0, constructorCall);
 	}
@@ -53,7 +59,7 @@ public class ConstructorCallTest {
 	@Test
 	public void testConstructorCallStringWithParameters() throws Exception {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(1);
-		assertType(String.class, constructorCall);
+		assertConstructorCallWithType(String.class, constructorCall);
 		assertIsConstructor(constructorCall);
 		assertHasParameters(1, constructorCall);
 	}
@@ -61,7 +67,7 @@ public class ConstructorCallTest {
 	@Test
 	public void testConstructorCallObjectWithoutParameters() throws Exception {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(2);
-		assertType(Foo.class, constructorCall);
+		assertConstructorCallWithType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
 		assertHasParameters(0, constructorCall);
 	}
@@ -69,7 +75,7 @@ public class ConstructorCallTest {
 	@Test
 	public void testConstructorCallObjectWithParameters() throws Exception {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(3);
-		assertType(Foo.class, constructorCall);
+		assertConstructorCallWithType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
 		assertHasParameters(1, constructorCall);
 	}
@@ -101,7 +107,7 @@ public class ConstructorCallTest {
 		assertTrue("Method must be a constructor", constructorCall.getExecutable().isConstructor());
 	}
 
-	private void assertType(Class<?> typeExpected, CtConstructorCall<?> constructorCall) {
+	private void assertConstructorCallWithType(Class<?> typeExpected, CtConstructorCall<?> constructorCall) {
 		assertEquals("Constructor call is typed by the class of the constructor", typeExpected, constructorCall.getType().getActualClass());
 	}
 }

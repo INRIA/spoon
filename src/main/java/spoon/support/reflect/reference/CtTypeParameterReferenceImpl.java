@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.reference;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtType;
@@ -25,11 +28,6 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.lang.reflect.AnnotatedElement;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
@@ -59,9 +57,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			return (T) this;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			getBoundingType().asCtIntersectionTypeReference().setBounds(new TreeSet<>(bounds));
+			getBoundingType().asCtIntersectionTypeReference().setBounds(bounds);
 		} else if (bounds.size() > 1) {
-			final Set<CtTypeReference<?>> refs = new TreeSet<>();
+			final List<CtTypeReference<?>> refs = new ArrayList<>();
 			refs.addAll(bounds);
 			setBoundingType(getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));
 		} else {
@@ -133,7 +131,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
 		} else {
-			final Set<CtTypeReference<?>> refs = new TreeSet<>();
+			final List<CtTypeReference<?>> refs = new ArrayList<>();
 			refs.add(getBoundingType());
 			refs.add(bound);
 			setBoundingType(getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));

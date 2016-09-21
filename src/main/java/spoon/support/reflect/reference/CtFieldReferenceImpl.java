@@ -31,8 +31,8 @@ import spoon.support.util.RtHelper;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import java.util.Collections;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -240,7 +240,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (m != null) {
 			return RtHelper.getModifiers(m.getModifiers());
 		}
-		return new TreeSet<>();
+		return Collections.emptySet();
 	}
 
 	@Override

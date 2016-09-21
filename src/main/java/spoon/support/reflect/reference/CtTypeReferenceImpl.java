@@ -32,6 +32,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
 
 import java.lang.reflect.AnnotatedElement;
@@ -43,7 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -477,14 +477,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			Class<?> c = getActualClass();
 			Class<?>[] sis = c.getInterfaces();
 			if ((sis != null) && (sis.length > 0)) {
-				Set<CtTypeReference<?>> set = new TreeSet<>();
+				Set<CtTypeReference<?>> set = new QualifiedNameBasedSortedSet<CtTypeReference<?>>();
 				for (Class<?> si : sis) {
 					set.add(getFactory().Type().createReference(si));
 				}
 				return set;
 			}
 		}
-		return new TreeSet<>();
+		return Collections.emptySet();
 	}
 
 	@Override

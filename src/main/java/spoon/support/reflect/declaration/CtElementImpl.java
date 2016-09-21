@@ -35,7 +35,6 @@ import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
-import spoon.support.visitor.DeepRepresentationVisitor;
 import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.ShortRepresentationPrinter;
 import spoon.support.visitor.TypeReferenceScanner;
@@ -58,9 +57,8 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTA
 /**
  * Contains the default implementation of most CtElement methods.
  *
- * Implements Comparable for being used in TreeSet
  */
-public abstract class CtElementImpl implements CtElement, Serializable, Comparable<CtElement> {
+public abstract class CtElementImpl implements CtElement, Serializable {
 	private static final long serialVersionUID = 1L;
 	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
@@ -93,19 +91,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		super();
 	}
 
-	/** the ordering  between CtElement is lexicographic,
-	 * based on the deep representation
-	 * which is also used in {@link #equals(Object)}.
-	 */
-	@Override
-	public int compareTo(CtElement o) {
-		String current = getDeepRepresentation(this);
-		String other = getDeepRepresentation(o);
-		if (current.length() <= 0 || other.length() <= 0) {
-			throw new ClassCastException("Unable to compare elements");
-		}
-		return current.compareTo(other);
-	}
 
 	@Override
 	public String getShortRepresentation() {
@@ -114,11 +99,6 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		return printer.getShortRepresentation();
 	}
 
-	private String getDeepRepresentation(CtElement elem) {
-		DeepRepresentationVisitor prThis = new DeepRepresentationVisitor();
-		prThis.scan(elem);
-		return  prThis.getRepresentation();
-	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -128,7 +108,7 @@ public abstract class CtElementImpl implements CtElement, Serializable, Comparab
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
 		if (ret && !factory.getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
-			throw new IllegalStateException("violation of equal/hashcode contract between \n" + getDeepRepresentation(this) + "\nand\n" + getDeepRepresentation((CtElement) o) + "\n");
+			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this.toString() + "\nand\n" + o.toString() + "\n");
 		}
 		return ret;
 	}

@@ -86,7 +86,9 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	public <T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers) {
-		this.modifiers = modifiers;
+		if (modifiers.size() > 0) {
+			this.modifiers = EnumSet.copyOf(modifiers);
+		}
 		return (T) this;
 	}
 

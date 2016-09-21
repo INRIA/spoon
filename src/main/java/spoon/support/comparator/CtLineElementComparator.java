@@ -14,8 +14,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.cu;
+package spoon.support.comparator;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import spoon.reflect.declaration.CtElement;
@@ -24,22 +25,27 @@ import spoon.reflect.declaration.CtElement;
  * Comparator of compile-time elements. Elements are sorted by position in
  * source files.
  */
-public class CtLineElementComparator implements Comparator<CtElement> {
+public class CtLineElementComparator implements Comparator<CtElement>, Serializable {
 
 	/**
 	 * Compares two program elements.
 	 */
 	public int compare(CtElement o1, CtElement o2) {
-		if (o1.getPosition() == null) {
-			return 1;
-		}
-		if (o2.getPosition() == null) {
+
+		if (o1.getPosition() == null || o2.getPosition() == null) {
 			return -1;
 		}
-		if (o1.getPosition().getLine() == o2.getPosition().getLine()) {
-			return ((Integer) o1.getPosition().getColumn()).compareTo(o2.getPosition().getColumn());
+
+		int pos1 = o1.getPosition().getSourceStart();
+		int pos2 = o2.getPosition().getSourceStart();
+
+		if (pos1 == pos2) {
+			int pos3 = o1.getPosition().getSourceEnd();
+			int pos4 = o2.getPosition().getSourceEnd();
+			return (pos3 < pos4) ? -1 : 1;
 		}
-		return ((Integer) o1.getPosition().getLine()).compareTo(o2.getPosition().getLine());
+
+		return (pos1 < pos2) ? -1 : 1;
 	}
 
 }

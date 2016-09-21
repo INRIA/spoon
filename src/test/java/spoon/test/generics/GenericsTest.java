@@ -1,6 +1,20 @@
 package spoon.test.generics;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.buildNoClasspath;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.createFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
@@ -32,24 +46,13 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
+import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.util.SortedList;
 import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
-import static spoon.testing.utils.ModelUtils.buildNoClasspath;
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
-import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class GenericsTest {
 
@@ -470,7 +473,9 @@ public class GenericsTest {
 		final CtClass<Tacos> aTacos = launcher.getFactory().Class().get(Tacos.class);
 		final CtType<?> burritos = aTacos.getNestedType("Burritos");
 
-		final List<CtConstructorCall> elements = burritos.getElements(new TypeFilter<>(CtConstructorCall.class));
+		SortedList<CtConstructorCall> elements = new SortedList<CtConstructorCall>(new CtLineElementComparator());
+		elements.addAll(burritos.getElements(new TypeFilter<>(CtConstructorCall.class)));
+
 		assertEquals(3, elements.size());
 
 		// Constructor call.

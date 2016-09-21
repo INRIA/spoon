@@ -16,17 +16,17 @@
  */
 package spoon.processing;
 
-import spoon.Launcher;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtElement;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
+
+import spoon.Launcher;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * This class defines an abstract annotation processor to be subclassed by the
@@ -112,11 +112,11 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	}
 
 	public final Set<Class<? extends A>> getConsumedAnnotationTypes() {
-		return new TreeSet<>(consumedAnnotationTypes.values());
+		return new HashSet<>(consumedAnnotationTypes.values());
 	}
 
 	public final Set<Class<? extends A>> getProcessedAnnotationTypes() {
-		return new TreeSet<>(processedAnnotationTypes.values());
+		return new HashSet<>(processedAnnotationTypes.values());
 	}
 
 	public boolean inferConsumedAnnotationType() {

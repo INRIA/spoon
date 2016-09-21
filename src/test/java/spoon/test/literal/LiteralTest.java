@@ -1,17 +1,19 @@
 package spoon.test.literal;
 
+import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+
+import java.util.TreeSet;
+
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import spoon.support.comparator.DeepRepresentationComparator;
 
 public class LiteralTest {
 	@Test
@@ -23,15 +25,16 @@ public class LiteralTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.apache.cassandra.index.SecondaryIndexManager");
-		final List<CtLiteral<Character>> elements = aClass.getElements(new TypeFilter<CtLiteral<Character>>(CtLiteral.class) {
+		TreeSet<CtLiteral<?>> ts = new TreeSet<CtLiteral<?>>(new DeepRepresentationComparator());
+
+		ts.addAll(aClass.getElements(new TypeFilter<CtLiteral<Character>>(CtLiteral.class) {
 			@Override
 			public boolean matches(CtLiteral element) {
 				return element.getValue() instanceof Character && super.matches(element);
 			}
-		});
-		final CtLiteral<Character> charLiteral = elements.get(1);
+		}));
 
-		assertEquals(':', (char) charLiteral.getValue());
+		assertEquals(':', ts.last().getValue());
 		canBeBuilt("./target/literal", 8, true);
 	}
 

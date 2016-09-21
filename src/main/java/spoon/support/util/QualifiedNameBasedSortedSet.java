@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2006-2015 INRIA and contributors
+/**
+ * Copyright (C) 2006-2016 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -14,13 +14,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
+package spoon.support.util;
 
-package spoon.test.filters.testclasses;
+import java.util.Collection;
+import java.util.TreeSet;
 
-public class SubTostada extends Tostada {
-	@Override
-	public void prepare() {
-	    	System.out.println("SubTostada");
-		super.prepare();
+import spoon.reflect.declaration.CtElement;
+import spoon.support.comparator.QualifiedNameComparator;
+
+public class QualifiedNameBasedSortedSet<E extends CtElement> extends
+		TreeSet<E> {
+
+	private static final long serialVersionUID = 1L;
+
+	public QualifiedNameBasedSortedSet(Collection<E> elements) {
+		this();
+		addAll(elements);
 	}
+
+	public QualifiedNameBasedSortedSet() {
+		super(new QualifiedNameComparator());
+	}
+
 }

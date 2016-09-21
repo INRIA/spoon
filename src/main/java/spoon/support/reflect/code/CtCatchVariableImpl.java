@@ -127,7 +127,9 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
-		this.modifiers = modifiers;
+		if (modifiers.size() > 0) {
+			this.modifiers = EnumSet.copyOf(modifiers);
+		}
 		return (C) this;
 	}
 

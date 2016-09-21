@@ -16,6 +16,20 @@
  */
 package spoon.support.compiler.jdt;
 
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
@@ -65,6 +79,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
@@ -80,22 +95,6 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
 
 public class ReferenceBuilder {
 
@@ -689,7 +688,7 @@ public class ReferenceBuilder {
 			if (bounds && b.superInterfaces != null && b.superInterfaces != Binding.NO_SUPERINTERFACES) {
 				bounds = false;
 				bindingCache.put(binding, ref);
-				Set<CtTypeReference<?>> bounds = new TreeSet<>();
+				List<CtTypeReference<?>> bounds = new ArrayList<>();
 				if (((CtTypeParameterReference) ref).getBoundingType() != null) {
 					bounds.add(((CtTypeParameterReference) ref).getBoundingType());
 				}
@@ -783,7 +782,7 @@ public class ReferenceBuilder {
 			ref.setSimpleName(new String(binding.sourceName()));
 			ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 		} else if (binding instanceof IntersectionTypeBinding18) {
-			Set<CtTypeReference<?>> bounds = new TreeSet<>();
+			List<CtTypeReference<?>> bounds = new ArrayList<>();
 			for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
 				bounds.add(getTypeReference(superInterface));
 			}

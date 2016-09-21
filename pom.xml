@@ -428,8 +428,13 @@
           <failsOnError>true</failsOnError>
           <configLocation>checkstyle.xml</configLocation>
           <consoleOutput>true</consoleOutput>
-        </configuration>
-        <executions>
+	  <!-- we exclude the generated files, see CtGenerationTest -->
+	  <excludes>spoon/support/visitor/clone/CloneBuilder.java</excludes>
+	  <excludes>spoon/reflect/visitor/CtBiScannerDefault.java</excludes>
+	  <excludes>spoon/support/visitor/equals/EqualsVisitor.java</excludes>
+	  <excludes>spoon/support/visitor/replace/ReplacementVisitor.java</excludes>
+	</configuration>
+	<executions>
           <execution>
             <phase>verify</phase>
             <goals>

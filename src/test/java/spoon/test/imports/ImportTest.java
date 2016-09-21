@@ -1,6 +1,19 @@
 package spoon.test.imports;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
@@ -21,6 +34,8 @@ import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
@@ -29,18 +44,6 @@ import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class ImportTest {
 
@@ -164,12 +167,13 @@ public class ImportTest {
 				"-i", "./src/test/resources/import-static", "-o", "./target/spoon", "--noclasspath"
 		});
 
-		final List<CtInvocation<?>> elements = Query.getElements(launcher.getFactory(), new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
+		final List<CtInvocation<?>> elements = new SortedList(new CtLineElementComparator());
+		elements.addAll(Query.getElements(launcher.getFactory(), new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
 			@Override
 			public boolean matches(CtInvocation<?> element) {
 				return !element.getExecutable().isConstructor() && super.matches(element);
 			}
-		});
+		}));
 
 		// Invocation for a static method with the declaring class specified.
 		assertCorrectInvocation(new Expected().name("staticMethod").target("A").declaringType("A").typeIsNull(true), elements.get(0));

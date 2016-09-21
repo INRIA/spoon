@@ -337,7 +337,7 @@ public class ElementPrinterHelper {
 			}
 			defaultJavaPrettyPrinter.scan((CtStatement) block);
 			if (!block.isImplicit()) {
-				if (!block.isParentInitialized() || (!(block.getParent() instanceof CtFor) && !(block.getParent() instanceof CtForEach))) {
+				if (!block.isParentInitialized() || (!(block.getParent() instanceof CtFor) && !(block.getParent() instanceof CtForEach) && !(block.getParent() instanceof CtIf))) {
 					printer.write(" ");
 				}
 			}

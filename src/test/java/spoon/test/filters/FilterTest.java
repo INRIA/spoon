@@ -1,7 +1,20 @@
 package spoon.test.filters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.build;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeSet;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
@@ -37,6 +50,7 @@ import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.filters.testclasses.AbstractTostada;
 import spoon.test.filters.testclasses.Antojito;
@@ -46,16 +60,6 @@ import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
 import spoon.test.filters.testclasses.Tostada;
 import spoon.testing.utils.ModelUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.build;
 
 public class FilterTest {
 
@@ -234,12 +238,14 @@ public class FilterTest {
 		launcher.run();
 
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
-
-		final List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aClass.getMethodsByName("prepare").get(0)));
-		assertEquals(5, overridingMethods.size());
-		assertEquals("spoon.test.filters.testclasses.AbstractTostada$1", overridingMethods.get(0).getParent(CtClass.class).getQualifiedName());
-		assertEquals(Antojito.class, overridingMethods.get(1).getParent(CtClass.class).getActualClass());
-		assertEquals(SubTostada.class, overridingMethods.get(2).getParent(CtClass.class).getActualClass());
+		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aClass.getMethodsByName("prepare").get(0)));
+		ts.addAll(elements);
+		assertEquals(5, elements.size());
+		final List<CtMethod<?>> overridingMethods = Arrays.asList(ts.toArray(new CtMethod[0]));
+		assertEquals("spoon.test.filters.testclasses.AbstractTostada$1", overridingMethods.get(2).getParent(CtClass.class).getQualifiedName());
+		assertEquals(Antojito.class, overridingMethods.get(0).getParent(CtClass.class).getActualClass());
+		assertEquals(SubTostada.class, overridingMethods.get(1).getParent(CtClass.class).getActualClass());
 		assertEquals("spoon.test.filters.testclasses.Tostada$1", overridingMethods.get(3).getParent(CtClass.class).getQualifiedName());
 		assertEquals(Tostada.class, overridingMethods.get(4).getParent(CtClass.class).getActualClass());
 	}
@@ -255,7 +261,12 @@ public class FilterTest {
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
 
-		final List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aTostada.getMethodsByName("prepare").get(0)));
+		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aTostada.getMethodsByName("prepare").get(0)));
+		ts.addAll(elements);
+
+
+		final List<CtMethod<?>> overridingMethods = Arrays.asList(ts.toArray(new CtMethod[0]));
 		assertEquals(2, overridingMethods.size());
 		assertEquals(SubTostada.class, overridingMethods.get(0).getParent(CtClass.class).getActualClass());
 		assertEquals("spoon.test.filters.testclasses.Tostada$1", overridingMethods.get(1).getParent(CtClass.class).getQualifiedName());
@@ -275,12 +286,15 @@ public class FilterTest {
 
 		final CtInterface<ITostada> aITostada = launcher.getFactory().Interface().get(ITostada.class);
 
-		final List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aITostada.getMethodsByName("make").get(0)));
+		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aITostada.getMethodsByName("make").get(0)));
+		ts.addAll(elements);
+		final List<CtMethod<?>> overridingMethods = Arrays.asList(ts.toArray(new CtMethod[0]));
 		assertEquals(4, overridingMethods.size());
-		assertEquals(AbstractTostada.class, overridingMethods.get(0).getParent(CtClass.class).getActualClass());
-		assertEquals("spoon.test.filters.testclasses.AbstractTostada$1", overridingMethods.get(1).getParent(CtClass.class).getQualifiedName());
-		assertEquals(Tacos.class, overridingMethods.get(2).getParent(CtClass.class).getActualClass());
-		assertEquals(Tostada.class, overridingMethods.get(3).getParent(CtClass.class).getActualClass());
+		assertEquals(AbstractTostada.class, overridingMethods.get(0).getParent(CtType.class).getParent(CtClass.class).getActualClass());
+		assertEquals("spoon.test.filters.testclasses.AbstractTostada", overridingMethods.get(1).getParent(CtClass.class).getQualifiedName());
+		assertEquals(Tostada.class, overridingMethods.get(2).getParent(CtClass.class).getActualClass());
+		assertEquals(Tacos.class, overridingMethods.get(3).getParent(CtClass.class).getActualClass());
 	}
 
 	@Test

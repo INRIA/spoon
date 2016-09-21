@@ -16,6 +16,13 @@
  */
 package spoon.support.compiler.jdt;
 
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
+
+import java.util.Collections;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -114,6 +121,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
@@ -146,14 +154,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
-import spoon.support.reflect.cu.CtLineElementComparator;
-
-import java.util.Collections;
-
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
+import spoon.support.comparator.CtLineElementComparator;
 
 /**
  * A visitor for iterating through the parse tree.

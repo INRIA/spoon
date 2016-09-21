@@ -1,17 +1,17 @@
 package spoon.processing;
 
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.EqualsVisitorGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.Filter;
 import spoon.support.visitor.equals.EqualsVisitor;
-import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.File;
 import java.util.regex.Matcher;
@@ -40,8 +40,11 @@ public class CtGenerationTest {
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
 
-		assertThat(build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class))
-				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get(ReplacementVisitor.class));
+		// cp ./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java ./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java
+		CtClass<Object> actual = build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
+		CtClass<Object> expected = build(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
+		assertThat(actual)
+				.isEqualTo(expected);
 	}
 
 	@Test
@@ -87,8 +90,10 @@ public class CtGenerationTest {
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.equals.EqualsVisitor"));
 		launcher.run();
 
-		assertThat(build(new File("./src/main/java/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class))
-				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class));
+		CtClass<Object> actual = build(new File("./src/main/java/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class);
+		CtClass<Object> expected = build(new File("./target/generated/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class);
+		assertThat(actual)
+				.isEqualTo(expected);
 	}
 
 	@Test
@@ -116,6 +121,7 @@ public class CtGenerationTest {
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.clone.*"));
 		launcher.run();
 
+		// cp ./target/generated/spoon/support/visitor/clone/CloneBuilder.java  ./src/main/java/spoon/support/visitor/clone/CloneBuilder.java
 		assertThat(build(new File("./src/main/java/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone"))
 				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone"));
 	}
@@ -133,10 +139,6 @@ public class CtGenerationTest {
 		public boolean matches(CtType<?> element) {
 			Matcher m = regex.matcher(element.getQualifiedName());
 			return m.matches();
-		}
-
-		public Class<CtElement> getType() {
-			return CtElement.class;
 		}
 	}
 }

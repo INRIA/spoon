@@ -16,17 +16,16 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.Set;
+
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-
-import java.util.Set;
-import java.util.TreeSet;
+import spoon.support.util.QualifiedNameBasedSortedSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.
@@ -36,9 +35,9 @@ import java.util.TreeSet;
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
-	protected Set<CtPackage> packs = new TreeSet<>();
+	protected Set<CtPackage> packs = orderedPackageSet();
 
-	private Set<CtType<?>> types = new TreeSet<>();
+	private Set<CtType<?>> types = orderedTypeSet();
 
 	public CtPackageImpl() {
 		super();
@@ -55,7 +54,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			return (T) this;
 		}
 		if (packs == CtElementImpl.<CtPackage>emptySet()) {
-			this.packs = new TreeSet<>();
+			this.packs = orderedPackageSet();
 		}
 		// they are the same
 		if (this.getQualifiedName().equals(pack.getQualifiedName())) {
@@ -77,6 +76,14 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		this.packs.add(pack);
 
 		return (T) this;
+	}
+
+	private Set<CtPackage> orderedPackageSet() {
+		return new QualifiedNameBasedSortedSet<>();
+	}
+
+	private Set<CtType<?>> orderedTypeSet() {
+		return new QualifiedNameBasedSortedSet<>();
 	}
 
 	/** add all types of "from" in "to" */
@@ -189,7 +196,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			return (T) this;
 		}
 		if (types == CtElementImpl.<CtType<?>>emptySet()) {
-			this.types = new TreeSet<>();
+			this.types = orderedTypeSet();
 		}
 		type.setParent(this);
 		types.add(type);
@@ -242,10 +249,4 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return TOP_LEVEL_PACKAGE_NAME.equals(getSimpleName());
 	}
 
-	@Override public int compareTo(CtElement o) {
-		if (!(o instanceof CtPackage)) {
-			return super.compareTo(o);
-		}
-		return getQualifiedName().compareTo(((CtPackage) o).getQualifiedName());
-	}
 }

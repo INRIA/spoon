@@ -102,10 +102,8 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @SuppressWarnings("unchecked")
 public class ParentExiter extends CtInheritanceScanner {
@@ -469,7 +467,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			} else if (typeParameter.getSuperclass() instanceof CtIntersectionTypeReference) {
 				typeParameter.getSuperclass().asCtIntersectionTypeReference().addBound(((CtTypeAccess) child).getAccessedType());
 			} else {
-				final Set<CtTypeReference<?>> refs = new HashSet<>();
+				final List<CtTypeReference<?>> refs = new ArrayList<>();
 				refs.add(typeParameter.getSuperclass());
 				refs.add(((CtTypeAccess) child).getAccessedType());
 				typeParameter.setSuperclass(jdtTreeBuilder.getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));

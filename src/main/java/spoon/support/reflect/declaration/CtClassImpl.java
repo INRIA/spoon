@@ -16,6 +16,12 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -31,13 +37,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import spoon.support.util.SignatureBasedSortedSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
@@ -87,7 +87,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public Set<CtConstructor<T>> getConstructors() {
-		Set<CtConstructor<T>> constructors = new TreeSet<>();
+		Set<CtConstructor<T>> constructors = new SignatureBasedSortedSet<>();
 		for (CtTypeMember typeMember : typeMembers) {
 			if (typeMember instanceof CtConstructor) {
 				constructors.add((CtConstructor<T>) typeMember);

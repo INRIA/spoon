@@ -75,6 +75,7 @@ public class ReplaceScanner extends CtScanner {
 
 		Factory factory = element.getFactory();
 		CtMethod<T> clone = element.clone();
+		factory.Annotation().annotate(clone, Override.class);
 		clone.getBody().getStatements().clear();
 		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
 			CtInvocation inv = element.getBody().getStatement(i);

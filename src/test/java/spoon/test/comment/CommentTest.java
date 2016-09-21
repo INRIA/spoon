@@ -154,7 +154,7 @@ public class CommentTest {
 				+ "if ((1 % 2) == 0) {" + newLine
 				+ "    // comment unary operator" + newLine
 				+ "    (field)++;" + newLine
-				+ "} ", ctIf.toString());
+				+ "}", ctIf.toString());
 
 		CtConstructorCall ctConstructorCall = m1.getBody().getStatement(3);
 		assertEquals(createFakeComment(f, "comment constructor call"), ctConstructorCall.getComments().get(0));
@@ -334,7 +334,7 @@ public class CommentTest {
 				+ "if ((1 % 2) == 0) {" + newLine
 				+ "    /* comment unary operator */" + newLine
 				+ "    (field)++;" + newLine
-				+ "} ", ctIf.toString());
+				+ "}", ctIf.toString());
 
 		CtConstructorCall ctConstructorCall = m1.getBody().getStatement(3);
 		assertEquals(createFakeBlockComment(f, "comment constructor call"), ctConstructorCall.getComments().get(0));
