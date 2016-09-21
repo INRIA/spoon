@@ -33,7 +33,7 @@ public interface CtActualTypeContainer {
 	/**
 	 * Sets the type arguments.
 	 */
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Adds a type argument.

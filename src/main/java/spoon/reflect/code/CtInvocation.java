@@ -43,7 +43,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Delegate to the executable reference of the invocation.

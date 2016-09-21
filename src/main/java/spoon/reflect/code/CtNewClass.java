@@ -44,7 +44,7 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments);
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Delegate to the executable reference of the new class.
