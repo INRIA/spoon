@@ -1,20 +1,23 @@
 package spoon.test.loop;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
 import org.junit.Test;
+
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.loop.testclasses.Foo;
+import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.assertEquals;
-import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class LoopTest {
 	@Test
 	public void testAnnotationInForLoop() throws Exception {
-		CtType<Foo> aFoo = buildClass(Foo.class);
+		CtType<?> aFoo = ModelUtils.build(new File("./src/test/resources/spoon/test/loop/testclasses/")).Type().get("spoon.test.loop.testclasses.Foo");
 
 		CtFor aFor = aFoo.getMethod("m").getElements(new TypeFilter<>(CtFor.class)).get(0);
 		assertEquals(1, ((CtLocalVariable) aFor.getForInit().get(0)).getType().getAnnotations().size());

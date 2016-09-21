@@ -5,10 +5,20 @@ sudo: required
 jdk:
   - oraclejdk8
 
+# from https://docs.travis-ci.com/user/customizing-the-build
+# A build on Travis CI is made up of two steps: install: (install any dependencies required), script: (run the build script)
+
+install:
+  - # download deps with maven
+  - mvn dependency:resolve
+  
 script:
   # Verify includes checkstyle, license and animal sniffer.
-  - mvn verify javadoc:javadoc site
-  - mvn test jacoco:report coveralls:report -Pcoveralls --fail-never
+  - mvn verify javadoc:javadoc site -DskipTests
+  # the core of continuous integration
+  - mvn test jacoco:report 
+  # now coverage, but not failing
+  - mvn coveralls:report -Pcoveralls --fail-never
 
 cache:
   directories:
