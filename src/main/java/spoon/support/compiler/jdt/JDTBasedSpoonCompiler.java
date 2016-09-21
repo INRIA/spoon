@@ -589,7 +589,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	// this function is used to hack the JDT compiler...
 	protected File createTmpJavaFile(File folder) {
-		File f = new File(folder, "Tmp.java");
+		File f;
+		try {
+			f = File.createTempFile("Tmp", ".java", folder);
+		} catch (IOException e1) {
+			throw new SpoonException(e1);
+		}
 		if (f.exists()) {
 			return f;
 		}
