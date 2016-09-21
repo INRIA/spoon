@@ -357,7 +357,7 @@ public class TemplateMatcher {
 			}
 		}
 
-		if ((target instanceof CtElement) || (target instanceof CtReference)) {
+		if (target instanceof CtElement) {
 			for (Field f : RtHelper.getAllFields(target.getClass())) {
 				f.setAccessible(true);
 				if (Modifier.isStatic(f.getModifiers())) {

@@ -43,7 +43,6 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.util.SortedList;
@@ -162,8 +161,6 @@ public class ElementPrinterHelper {
 		} else if (value instanceof CtFieldReference) {
 			prettyPrinter.scan(((CtFieldReference<?>) value).getDeclaringType());
 			printer.write("." + ((CtFieldReference<?>) value).getSimpleName());
-		} else if (value instanceof CtReference) {
-			prettyPrinter.scan((CtReference) value);
 		} else if (value instanceof CtElement) {
 			prettyPrinter.scan((CtElement) value);
 		} else if (value instanceof String) {
