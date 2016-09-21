@@ -155,7 +155,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		addImport(ctClass.getReference());
-		for (CtTypeMember t : ctClass.getNestedTypes()) {
+		for (CtTypeMember t : ctClass.getTypeMembers()) {
 			if (!(t instanceof CtType)) {
 				continue;
 			}

@@ -67,7 +67,11 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes) {
-		for (CtConstructor<T> c : getConstructors()) {
+		for (CtTypeMember typeMember : getTypeMembers()) {
+			if (!(typeMember instanceof CtConstructor)) {
+				continue;
+			}
+			CtConstructor<T> c = (CtConstructor<T>) typeMember;
 			boolean cont = c.getParameters().size() == parameterTypes.length;
 			for (int i = 0; cont && (i < c.getParameters().size()) && (i < parameterTypes.length); i++) {
 				if (!parameterTypes[i].equals(c.getParameters().get(i).getType())) {
