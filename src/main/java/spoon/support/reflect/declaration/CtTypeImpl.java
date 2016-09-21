@@ -20,6 +20,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -29,6 +30,7 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -55,7 +57,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.FIELDS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
@@ -65,84 +66,101 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	private static final long serialVersionUID = 1L;
 
-	List<CtTypeParameterReference> formalTypeParameters = emptyList();
-
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
 	Set<CtTypeReference<?>> interfaces = emptySet();
 
-	Set<CtMethod<?>> methods = emptySet();
-
-	List<CtField<?>> fields = emptyList();
-
-	Set<CtType<?>> nestedTypes = emptySet();
-
 	Set<ModifierKind> modifiers = emptySet();
+
+	List<CtTypeMember> typeMembers = emptyList();
 
 	public CtTypeImpl() {
 		super();
 	}
 
 	@Override
-	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
-		if (field == null) {
+	public List<CtTypeMember> getTypeMembers() {
+		return typeMembers;
+	}
+
+	@Override
+	public <C extends CtType<T>> C addTypeMember(CtTypeMember member) {
+		if (member == null) {
 			return (C) this;
 		}
-		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
-			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
+		return addTypeMemberAt(typeMembers.size(), member);
+	}
+
+	@Override
+	public <C extends CtType<T>> C addTypeMemberAt(int position, CtTypeMember member) {
+		if (member == null) {
+			return (C) this;
 		}
-		if (!this.fields.contains(field)) {
-			field.setParent(this);
+		if (this.typeMembers == CtElementImpl.<CtTypeMember>emptyList()) {
+			this.typeMembers = new ArrayList<>();
+		}
+		if (!this.typeMembers.contains(member)) {
+			member.setParent(this);
+			this.typeMembers.add(position, member);
+		}
+		return (C) this;
+	}
+
+	@Override
+	public boolean removeTypeMember(CtTypeMember member) {
+		if (typeMembers.size() == 1) {
+			if (typeMembers.contains(member)) {
+				typeMembers = emptyList();
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return typeMembers.remove(member);
+	}
+
+	@Override
+	public <C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members) {
+		if (members == null || members.isEmpty()) {
+			this.typeMembers = emptyList();
+			return (C) this;
+		}
+		typeMembers.clear();
+		for (CtTypeMember typeMember : members) {
+			addTypeMember(typeMember);
+		}
+		return (C) this;
+	}
+
+	@Override
+	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
+		if (field != null && !this.typeMembers.contains(field)) {
 			CompilationUnit compilationUnit = null;
 			if (getPosition() != null) {
 				compilationUnit = getPosition().getCompilationUnit();
 			}
 			field.setPosition(getFactory().Core().createSourcePosition(compilationUnit, -1, -1, -1, new int[0]));
-			this.fields.add(field);
 		}
-
-		// field already exists
-		return (C) this;
+		return addTypeMemberAt(0, field);
 	}
 
 	@Override
 	public <F, C extends CtType<T>> C addField(CtField<F> field) {
-		if (field == null) {
-			return (C) this;
-		}
-		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
-			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		if (!this.fields.contains(field)) {
-			field.setParent(this);
-			this.fields.add(field);
-		}
-
-		// field already exists
-		return (C) this;
+		return addTypeMember(field);
 	}
 
 	@Override
 	public <F, C extends CtType<T>> C addField(int index, CtField<F> field) {
-		if (this.fields == CtElementImpl.<CtField<?>>emptyList()) {
-			this.fields = new ArrayList<>(FIELDS_CONTAINER_DEFAULT_CAPACITY);
-		}
-		if (!this.fields.contains(field)) {
-			field.setParent(this);
-			this.fields.add(index, field);
-		}
-
-		// field already exists
-		return (C) this;
+		return addTypeMemberAt(index, field);
 	}
 
 	@Override
 	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
 		if (fields == null || fields.isEmpty()) {
-			this.fields = CtElementImpl.emptyList();
+			this.typeMembers.removeAll(getFields());
 			return (C) this;
 		}
-		this.fields.clear();
+		typeMembers.removeAll(getFields());
 		for (CtField<?> field : fields) {
 			addField(field);
 		}
@@ -151,14 +169,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <F> boolean removeField(CtField<F> field) {
-		return this.fields.remove(field);
+		return removeTypeMember(field);
 	}
 
 	@Override
 	public CtField<?> getField(String name) {
-		for (CtField<?> f : fields) {
-			if (f.getSimpleName().equals(name)) {
-				return f;
+		for (CtTypeMember typeMember : typeMembers) {
+			if (typeMember instanceof CtField && ((CtField) typeMember).getSimpleName().equals(name)) {
+				return (CtField<?>) typeMember;
 			}
 		}
 		return null;
@@ -166,48 +184,32 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public List<CtField<?>> getFields() {
+		List<CtField<?>> fields = new ArrayList<>();
+		for (CtTypeMember typeMember : typeMembers) {
+			if (typeMember instanceof CtField) {
+				fields.add((CtField<?>) typeMember);
+			}
+		}
 		return fields;
 	}
 
 	@Override
 	public <N, C extends CtType<T>> C addNestedType(CtType<N> nestedType) {
-		if (nestedType == null) {
-			return (C) this;
-		}
-		if (nestedTypes == CtElementImpl.<CtType<?>>emptySet()) {
-			nestedTypes = new TreeSet<>();
-		}
-		nestedType.setParent(this);
-		this.nestedTypes.add(nestedType);
-		return (C) this;
+		return addTypeMember(nestedType);
 	}
 
 	@Override
 	public <N> boolean removeNestedType(CtType<N> nestedType) {
-		if (nestedTypes.isEmpty()) {
-			return false;
-		} else if (nestedTypes.size() == 1) {
-			if (nestedTypes.contains(nestedType)) {
-				nestedTypes = CtElementImpl.<CtType<?>>emptySet();
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return this.nestedTypes.remove(nestedType);
-		}
+		return removeTypeMember(nestedType);
 	}
 
 	@Override
 	public <C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes) {
 		if (nestedTypes == null || nestedTypes.isEmpty()) {
-			this.nestedTypes = CtElementImpl.emptySet();
+			this.typeMembers.removeAll(getNestedTypes());
 			return (C) this;
 		}
-		if (this.nestedTypes == CtElementImpl.<CtType<?>>emptySet()) {
-			this.nestedTypes = new TreeSet<>();
-		}
-		this.nestedTypes.clear();
+		typeMembers.removeAll(getNestedTypes());
 		for (CtType<?> nestedType : nestedTypes) {
 			addNestedType(nestedType);
 		}
@@ -289,26 +291,39 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			@Override
 			public <U> void visitCtClass(spoon.reflect.declaration.CtClass<U> ctClass) {
 				if (!checkType(ctClass)) {
-					scan(ctClass.getNestedTypes());
-					scan(ctClass.getConstructors());
-					scan(ctClass.getMethods());
+					final List<CtTypeMember> typeMembers = new ArrayList<>();
+					for (CtTypeMember typeMember : ctClass.getTypeMembers()) {
+						if (typeMember instanceof CtType || typeMember instanceof CtConstructor || typeMember instanceof CtMethod) {
+							typeMembers.add(typeMember);
+						}
+					}
+					scan(typeMembers);
 				}
 			}
 
 			@Override
 			public <U> void visitCtInterface(spoon.reflect.declaration.CtInterface<U> intrface) {
 				if (!checkType(intrface)) {
-					scan(intrface.getNestedTypes());
-					scan(intrface.getMethods());
+					final List<CtTypeMember> typeMembers = new ArrayList<>();
+					for (CtTypeMember typeMember : intrface.getTypeMembers()) {
+						if (typeMember instanceof CtType || typeMember instanceof CtMethod) {
+							typeMembers.add(typeMember);
+						}
+					}
+					scan(typeMembers);
 				}
 			}
 
 			@Override
 			public <U extends java.lang.Enum<?>> void visitCtEnum(spoon.reflect.declaration.CtEnum<U> ctEnum) {
 				if (!checkType(ctEnum)) {
-					scan(ctEnum.getNestedTypes());
-					scan(ctEnum.getConstructors());
-					scan(ctEnum.getMethods());
+					final List<CtTypeMember> typeMembers = new ArrayList<>();
+					for (CtTypeMember typeMember : ctEnum.getTypeMembers()) {
+						if (typeMember instanceof CtType || typeMember instanceof CtConstructor || typeMember instanceof CtMethod) {
+							typeMembers.add(typeMember);
+						}
+					}
+					scan(typeMembers);
 				}
 			}
 
@@ -326,6 +341,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtType<?>> getNestedTypes() {
+		Set<CtType<?>> nestedTypes = new TreeSet<>();
+		for (CtTypeMember typeMember : typeMembers) {
+			if (typeMember instanceof CtType) {
+				nestedTypes.add((CtType<?>) typeMember);
+			}
+		}
 		return nestedTypes;
 	}
 
@@ -449,29 +470,28 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public List<CtFieldReference<?>> getAllFields() {
-		List<CtFieldReference<?>> l = new ArrayList<>(getFields().size());
-		for (CtField<?> f : getFields()) {
-			l.add(f.getReference());
-		}
+		final List<CtFieldReference<?>> fields = getDeclaredFields();
 		if (this instanceof CtClass) {
 			CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
 			if (st != null) {
-				l.addAll(st.getAllFields());
+				fields.addAll(st.getAllFields());
 			}
 		}
-		return l;
+		return fields;
 	}
 
 	@Override
-	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		if (getFields().isEmpty()) {
+	public List<CtFieldReference<?>> getDeclaredFields() {
+		if (typeMembers.isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<CtFieldReference<?>> l = new ArrayList<>(getFields().size());
-		for (CtField<?> f : getFields()) {
-			l.add(f.getReference());
+		final List<CtFieldReference<?>> fields = new ArrayList<>(typeMembers.size());
+		for (CtTypeMember typeMember : typeMembers) {
+			if (typeMember instanceof CtField) {
+				fields.add(((CtField) typeMember).getReference());
+			}
 		}
-		return Collections.unmodifiableList(l);
+		return fields;
 	}
 
 	/**
@@ -489,49 +509,30 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
-		if (method == null) {
-			return (C) this;
-		}
-		if (methods == CtElementImpl.<CtMethod<?>>emptySet()) {
-			methods = new TreeSet<>();
-		}
-		for (CtMethod m: new ArrayList<>(methods)) {
-			if (m.getSignature().equals(method.getSignature())) {
-				// replace old method by new one (based on signature and not equality)
-				// we have to do it by hand
-				methods.remove(m);
-			} else {
-				// checking contract signature implies equal
-				if (!factory.getEnvironment().checksAreSkipped() && m.equals(method)) {
-					throw new AssertionError("violation of core contract! different signature but same equal");
+		if (method != null) {
+			for (CtTypeMember typeMember: typeMembers) {
+				if (!(typeMember instanceof CtMethod)) {
+					continue;
+				}
+				CtMethod<?> m = (CtMethod<?>) typeMember;
+				if (m.getSignature().equals(method.getSignature())) {
+					// replace old method by new one (based on signature and not equality)
+					// we have to do it by hand
+					typeMembers.remove(m);
+				} else {
+					// checking contract signature implies equal
+					if (!factory.getEnvironment().checksAreSkipped() && m.equals(method)) {
+						throw new AssertionError("violation of core contract! different signature but same equal");
+					}
 				}
 			}
 		}
-		method.setParent(this);
-		methods.add(method);
-		return (C) this;
+		return addTypeMember(method);
 	}
 
 	@Override
 	public <M> boolean removeMethod(CtMethod<M> method) {
-		if (methods.isEmpty()) {
-			return false;
-		} else if (methods.size() == 1) {
-			if (methods.contains(method)) {
-				methods = CtElementImpl.<CtMethod<?>>emptySet();
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			// This contains() is not needed for dealing with empty and
-			// singleton sets (as they are dealt above), but removing contains()
-			// check here might broke someone's code like
-			// type.setMethods(immutableSet(a, b, c));
-			// ...
-			// type.removeMethod(d)
-			return methods.contains(method) && methods.remove(method);
-		}
+		return removeTypeMember(method);
 	}
 
 	@Override
@@ -605,18 +606,19 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>...
-			parameterTypes) {
-		for (CtMethod<?> mm : methods) {
-			CtMethod<R> m = (CtMethod<R>) mm;
+	public <R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>... parameterTypes) {
+		for (CtTypeMember typeMember : typeMembers) {
+			if (!(typeMember instanceof CtMethod)) {
+				continue;
+			}
+			CtMethod<R> m = (CtMethod<R>) typeMember;
 			if (m.getSimpleName().equals(name)) {
 				if (!m.getType().equals(returnType)) {
 					continue;
 				}
 				boolean cont = m.getParameters().size() == parameterTypes.length;
 				for (int i = 0; cont && (i < m.getParameters().size()) && (i < parameterTypes.length); i++) {
-					if (!m.getParameters().get(i).getType().getQualifiedName()
-							.equals(parameterTypes[i].getQualifiedName())) {
+					if (!m.getParameters().get(i).getType().getQualifiedName().equals(parameterTypes[i].getQualifiedName())) {
 						cont = false;
 					}
 				}
@@ -694,13 +696,23 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtMethod<?>> getMethods() {
+		Set<CtMethod<?>> methods = new TreeSet<>();
+		for (CtTypeMember typeMember : typeMembers) {
+			if (typeMember instanceof CtMethod) {
+				methods.add((CtMethod<?>) typeMember);
+			}
+		}
 		return methods;
 	}
 
 	@Override
 	public Set<CtMethod<?>> getMethodsAnnotatedWith(CtTypeReference<?>... annotationTypes) {
 		Set<CtMethod<?>> result = new HashSet<>();
-		for (CtMethod<?> m : methods) {
+		for (CtTypeMember typeMember : typeMembers) {
+			if (!(typeMember instanceof CtMethod)) {
+				continue;
+			}
+			CtMethod<?> m = (CtMethod<?>) typeMember;
 			for (CtAnnotation<?> a : m.getAnnotations()) {
 				if (Arrays.asList(annotationTypes).contains(a.getAnnotationType())) {
 					result.add(m);
@@ -713,7 +725,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public List<CtMethod<?>> getMethodsByName(String name) {
 		List<CtMethod<?>> result = new ArrayList<>(1);
-		for (CtMethod<?> m : methods) {
+		for (CtTypeMember typeMember : typeMembers) {
+			if (!(typeMember instanceof CtMethod)) {
+				continue;
+			}
+			CtMethod<?> m = (CtMethod<?>) typeMember;
 			if (name.equals(m.getSimpleName())) {
 				result.add(m);
 			}
@@ -744,10 +760,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
 		if (methods == null || methods.isEmpty()) {
-			this.methods = CtElementImpl.emptySet();
+			this.typeMembers.removeAll(getMethods());
 			return (C) this;
 		}
-		this.methods.clear();
+		typeMembers.removeAll(getMethods());
 		for (CtMethod<?> meth : methods) {
 			addMethod(meth);
 		}

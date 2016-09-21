@@ -45,6 +45,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -193,7 +194,11 @@ public class SubstitutionVisitor extends CtScanner {
 					it.remove();
 				}
 			}
-			for (CtField<?> field : new TreeSet<>(ctClass.getFields())) {
+			for (CtTypeMember typeMember : ctClass.getTypeMembers()) {
+				if (!(typeMember instanceof CtField)) {
+					continue;
+				}
+				CtField<?> field = (CtField<?>) typeMember;
 				if ((field.getAnnotation(Local.class) != null) || Parameters.isParameterSource(field.getReference())) {
 					ctClass.removeField(field);
 					continue;
@@ -203,15 +208,14 @@ public class SubstitutionVisitor extends CtScanner {
 				for (String pname : parameterNames) {
 					if (name.equals(pname)) {
 						Object value = Parameters.getValue(template, pname, null);
-						int i = ctClass.getFields().indexOf(field);
+						int i = ctClass.getTypeMembers().indexOf(field);
 						if (value instanceof List) {
-							List<?> l = (List<?>) value;
-							for (Object f : l) {
+							List<?> list = (List<?>) value;
+							for (Object f : list) {
 								CtField<?> f2 = ((CtField<?>) f).clone();
-								f2.setParent(ctClass);
-								ctClass.getFields().add(i++, f2);
+								ctClass.addTypeMemberAt(i++, f2);
 							}
-							ctClass.removeField(field);
+							ctClass.removeTypeMember(field);
 						}
 					}
 				}

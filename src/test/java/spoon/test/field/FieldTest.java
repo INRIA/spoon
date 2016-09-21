@@ -19,12 +19,9 @@ package spoon.test.field;
 
 import org.junit.Test;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
-import spoon.support.reflect.cu.CtLineElementComparator;
-import spoon.support.util.SortedList;
 import spoon.test.field.testclasses.AddFieldAtTop;
 
 import java.io.File;
@@ -75,12 +72,9 @@ public class FieldTest {
 
 		assertEquals(3, aClass.getFields().size());
 		// For now, DefaultJavaPrettyPrinter sorts elements according to their position.
-		final SortedList<CtElement> sorted = new SortedList<CtElement>(new CtLineElementComparator());
-		sorted.addAll(aClass.getFields());
-		sorted.addAll(aClass.getAnonymousExecutables());
-		assertEquals(generated, sorted.get(0));
-		assertEquals(generated2, sorted.get(1));
-		assertEquals(aClass.getAnonymousExecutables().get(0), sorted.get(2));
+		assertEquals(generated2, aClass.getTypeMembers().get(0));
+		assertEquals(generated, aClass.getTypeMembers().get(1));
+		assertEquals(aClass.getAnonymousExecutables().get(0), aClass.getTypeMembers().get(3));
 
 		assertThat(aClass).isEqualTo(build(new File("./src/test/resources/expected/AddFieldAtTop.java")).Type().get("AddFieldAtTop"));
 	}

@@ -252,6 +252,32 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 */
 	<S> boolean removeSuperInterface(CtTypeReference<S> interfac);
 
+	/**
+	 * Gets all type members of the type like fields, methods, anonymous block, etc.
+	 */
+	List<CtTypeMember> getTypeMembers();
+
+	/**
+	 * Adds a type member at the end of all type member of the type.
+	 */
+	<C extends CtType<T>> C addTypeMember(CtTypeMember member);
+
+	/**
+	 * Adds a type member at a given position. Think to use this method if the order is
+	 * important for you.
+	 */
+	<C extends CtType<T>> C addTypeMemberAt(int position, CtTypeMember member);
+
+	/**
+	 * Removes the type member.
+	 */
+	boolean removeTypeMember(CtTypeMember member);
+
+	/**
+	 * Removes all types members with these new members.
+	 */
+	<C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members);
+
 	@Override
 	CtType<T> clone();
 }

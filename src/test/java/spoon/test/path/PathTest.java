@@ -18,8 +18,11 @@ import spoon.reflect.path.CtPathStringBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by nicolas on 10/06/2015.
@@ -45,18 +48,24 @@ public class PathTest {
 		assertArrayEquals(elements, result.toArray(new CtElement[0]));
 	}
 
+	private void equalsSet(CtPath path, Set<? extends CtElement> elements) {
+		Collection<CtElement> result = path.evaluateOn(Arrays.asList(factory.Package().getRootPackage()));
+		assertEquals(elements.size(), result.size());
+		assertTrue(result.containsAll(elements));
+	}
+
 	@Test
 	public void testBuilderMethod() throws Exception {
-		equals(
+		equalsSet(
 				new CtPathBuilder().name("spoon").name("test").name("path").name("Foo").type(CtMethod.class).build(),
 
-				factory.Type().get("spoon.test.path.Foo").getMethods().toArray(new CtMethod[0])
+				factory.Type().get("spoon.test.path.Foo").getMethods()
 		);
 
-		equals(
+		equalsSet(
 				new CtPathStringBuilder().fromString(".spoon.test.path.Foo/CtMethod"),
 
-				factory.Type().get("spoon.test.path.Foo").getMethods().toArray(new CtMethod[0])
+				factory.Type().get("spoon.test.path.Foo").getMethods()
 		);
 	}
 

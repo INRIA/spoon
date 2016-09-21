@@ -8,6 +8,8 @@ import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -21,12 +23,13 @@ public class LiteralTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.apache.cassandra.index.SecondaryIndexManager");
-		final CtLiteral<Character> charLiteral = aClass.getElements(new TypeFilter<CtLiteral<Character>>(CtLiteral.class) {
+		final List<CtLiteral<Character>> elements = aClass.getElements(new TypeFilter<CtLiteral<Character>>(CtLiteral.class) {
 			@Override
 			public boolean matches(CtLiteral element) {
 				return element.getValue() instanceof Character && super.matches(element);
 			}
-		}).get(0);
+		});
+		final CtLiteral<Character> charLiteral = elements.get(1);
 
 		assertEquals(':', (char) charLiteral.getValue());
 		canBeBuilt("./target/literal", 8, true);

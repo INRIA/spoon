@@ -81,6 +81,16 @@ public abstract class IntercessionScanner extends CtScanner {
 				&& !(candidate.getSimpleName().equals("addMethod") && candidate.getDeclaringType().getSimpleName().equals("CtAnnotationTypeImpl")) //
 				&& !(candidate.getSimpleName().equals("setBounds") && candidate.getDeclaringType().getSimpleName().equals("CtTypeParameterReferenceImpl")) //
 				&& !(candidate.getSimpleName().equals("setSuperclass") && candidate.getDeclaringType().getSimpleName().equals("CtTypeImpl")) //
+				&& !(candidate.getSimpleName().startsWith("addField") && candidate.getDeclaringType().getSimpleName().equals("CtTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("setFields") && candidate.getDeclaringType().getSimpleName().equals("CtTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("addMethod") && candidate.getDeclaringType().getSimpleName().equals("CtTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("setMethods") && candidate.getDeclaringType().getSimpleName().equals("CtTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("addNestedType") && candidate.getDeclaringType().getSimpleName().equals("CtTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("setNestedTypes") && candidate.getDeclaringType().getSimpleName().equals("CtTypeImpl")) //
+				&& !(candidate.getSimpleName().equals("addConstructor") && candidate.getDeclaringType().getSimpleName().equals("CtClassImpl")) //
+				&& !(candidate.getSimpleName().equals("setConstructors") && candidate.getDeclaringType().getSimpleName().equals("CtClassImpl")) //
+				&& !(candidate.getSimpleName().equals("addAnonymousExecutable") && candidate.getDeclaringType().getSimpleName().equals("CtClassImpl")) //
+				&& !(candidate.getSimpleName().equals("setAnonymousExecutables") && candidate.getDeclaringType().getSimpleName().equals("CtClassImpl")) //
 				&& !candidate.getSimpleName().equals("setDeclaration");
 	}
 }

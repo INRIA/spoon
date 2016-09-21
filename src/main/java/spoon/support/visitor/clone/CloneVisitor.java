@@ -46,8 +46,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotationType(final spoon.reflect.declaration.CtAnnotationType<A> annotationType) {
 		spoon.reflect.declaration.CtAnnotationType<A> aCtAnnotationType = spoon.support.visitor.clone.CloneBuilder.build(this.builder, annotationType, annotationType.getFactory().Core().createAnnotationType());
 		aCtAnnotationType.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(annotationType.getAnnotations()));
-		aCtAnnotationType.setNestedTypes(spoon.support.visitor.equals.CloneHelper.clone(annotationType.getNestedTypes()));
-		aCtAnnotationType.setFields(spoon.support.visitor.equals.CloneHelper.clone(annotationType.getFields()));
+		aCtAnnotationType.setTypeMembers(spoon.support.visitor.equals.CloneHelper.clone(annotationType.getTypeMembers()));
 		aCtAnnotationType.setComments(spoon.support.visitor.equals.CloneHelper.clone(annotationType.getComments()));
 		this.other = aCtAnnotationType;
 	}
@@ -176,11 +175,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtClass.setSuperclass(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getSuperclass()));
 		aCtClass.setSuperInterfaces(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getSuperInterfaces()));
 		aCtClass.setFormalCtTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getFormalCtTypeParameters()));
-		aCtClass.setAnonymousExecutables(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getAnonymousExecutables()));
-		aCtClass.setNestedTypes(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getNestedTypes()));
-		aCtClass.setFields(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getFields()));
-		aCtClass.setConstructors(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getConstructors()));
-		aCtClass.setMethods(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getMethods()));
+		aCtClass.setTypeMembers(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getTypeMembers()));
 		aCtClass.setComments(spoon.support.visitor.equals.CloneHelper.clone(ctClass.getComments()));
 		this.other = aCtClass;
 	}
@@ -243,10 +238,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.declaration.CtEnum<T> aCtEnum = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctEnum, ctEnum.getFactory().Core().createEnum());
 		aCtEnum.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getAnnotations()));
 		aCtEnum.setSuperInterfaces(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getSuperInterfaces()));
-		aCtEnum.setFields(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getFields()));
-		aCtEnum.setConstructors(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getConstructors()));
-		aCtEnum.setMethods(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getMethods()));
-		aCtEnum.setNestedTypes(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getNestedTypes()));
+		aCtEnum.setTypeMembers(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getTypeMembers()));
+		aCtEnum.setEnumValues(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getEnumValues()));
 		aCtEnum.setComments(spoon.support.visitor.equals.CloneHelper.clone(ctEnum.getComments()));
 		this.other = aCtEnum;
 	}
@@ -356,9 +349,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtInterface.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(intrface.getAnnotations()));
 		aCtInterface.setSuperInterfaces(spoon.support.visitor.equals.CloneHelper.clone(intrface.getSuperInterfaces()));
 		aCtInterface.setFormalCtTypeParameters(spoon.support.visitor.equals.CloneHelper.clone(intrface.getFormalCtTypeParameters()));
-		aCtInterface.setNestedTypes(spoon.support.visitor.equals.CloneHelper.clone(intrface.getNestedTypes()));
-		aCtInterface.setFields(spoon.support.visitor.equals.CloneHelper.clone(intrface.getFields()));
-		aCtInterface.setMethods(spoon.support.visitor.equals.CloneHelper.clone(intrface.getMethods()));
+		aCtInterface.setTypeMembers(spoon.support.visitor.equals.CloneHelper.clone(intrface.getTypeMembers()));
 		aCtInterface.setComments(spoon.support.visitor.equals.CloneHelper.clone(intrface.getComments()));
 		this.other = aCtInterface;
 	}

@@ -69,7 +69,7 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	@Override
 	public Set<CtAnnotationMethod<?>> getAnnotationMethods() {
 		Set<CtAnnotationMethod<?>> annotationsMethods = new HashSet<>();
-		for (CtMethod<?> method : methods) {
+		for (CtMethod<?> method : getMethods()) {
 			annotationsMethods.add((CtAnnotationMethod<?>) method);
 		}
 		return annotationsMethods;

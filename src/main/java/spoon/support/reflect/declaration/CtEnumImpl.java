@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -28,12 +29,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import spoon.reflect.declaration.ModifierKind;
 
 public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
 
-	private List<CtEnumValue<?>> enumValues = CtElementImpl.<CtEnumValue<?>>emptyList();
+	private List<CtEnumValue<?>> enumValues = CtElementImpl.emptyList();
 
 	private CtMethod<T[]> valuesMethod;
 
@@ -97,6 +97,19 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	@Override
 	public List<CtEnumValue<?>> getEnumValues() {
 		return Collections.unmodifiableList(enumValues);
+	}
+
+	@Override
+	public <C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues) {
+		if (enumValues == null || enumValues.isEmpty()) {
+			this.enumValues = emptyList();
+			return (C) this;
+		}
+		this.enumValues.clear();
+		for (CtEnumValue<?> enumValue : enumValues) {
+			addEnumValue(enumValue);
+		}
+		return (C) this;
 	}
 
 	@Override

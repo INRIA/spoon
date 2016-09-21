@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
@@ -119,26 +120,27 @@ public abstract class Substitution {
 				((CtClass<?>) targetType).addAnonymousExecutable(substitute(targetType, template, e));
 			}
 		}
-		// insert all the fields
-		for (CtField<?> f : templateClass.getFields()) {
-			if (f.getAnnotation(Local.class) != null) {
-				continue;
-			}
-			if (Parameters.isParameterSource(f.getReference())) {
-				continue;
-			}
+		for (CtTypeMember typeMember : templateClass.getTypeMembers()) {
+			if (typeMember instanceof CtField) {
+				// insert all the fields
+				CtField<?> f = (CtField<?>) typeMember;
+				if (f.getAnnotation(Local.class) != null) {
+					continue;
+				}
+				if (Parameters.isParameterSource(f.getReference())) {
+					continue;
+				}
 
-			insertField(targetType, template, f);
-		}
-		// insert all the inner types
-		for (CtType<?> t : templateClass.getNestedTypes()) {
-			if (t.getAnnotation(Local.class) != null) {
-				continue;
+				insertField(targetType, template, f);
+			} else if (typeMember instanceof CtType) {
+				// insert all the inner types
+				if (typeMember.getAnnotation(Local.class) != null) {
+					continue;
+				}
+				CtType<?> result = substitute(templateClass, template, (CtType) typeMember);
+				targetType.addNestedType(result);
 			}
-			CtType<?> result = substitute(templateClass, template, t);
-			targetType.addNestedType(result);
 		}
-
 	}
 
 	/**
@@ -220,7 +222,11 @@ public abstract class Substitution {
 
 		CtClass<?> sourceClass = targetType.getFactory().Class().get(template.getClass());
 		// insert all the fields
-		for (CtField<?> f : sourceClass.getFields()) {
+		for (CtTypeMember typeMember: sourceClass.getTypeMembers()) {
+			if (!(typeMember instanceof CtField)) {
+				continue;
+			}
+			CtField<?> f = (CtField<?>) typeMember;
 			if (f.getAnnotation(Local.class) != null) {
 				continue;
 			}

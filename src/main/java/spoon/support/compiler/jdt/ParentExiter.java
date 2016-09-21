@@ -204,8 +204,8 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public <T> void scanCtType(CtType<T> type) {
 		if (child instanceof CtType && !(child instanceof CtTypeParameter)) {
-			if (type.getNestedTypes().contains(child)) {
-				type.getNestedTypes().remove(child);
+			if (type.getTypeMembers().contains(child)) {
+				type.removeTypeMember((CtType) child);
 			}
 			type.addNestedType((CtType<?>) child);
 			return;

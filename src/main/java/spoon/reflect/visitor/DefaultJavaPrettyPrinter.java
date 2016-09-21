@@ -105,8 +105,6 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
 import spoon.reflect.visitor.printer.PrinterHelper;
-import spoon.support.reflect.cu.CtLineElementComparator;
-import spoon.support.util.SortedList;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
@@ -347,11 +345,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtType(annotationType);
 		printer.write("@interface " + annotationType.getSimpleName() + " {").incTab();
 
-		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
-		lst.addAll(annotationType.getNestedTypes());
-		lst.addAll(annotationType.getFields());
-		lst.addAll(annotationType.getMethods());
-		elementPrinterHelper.writeElementList(lst);
+		elementPrinterHelper.writeElementList(annotationType.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
 	}
 
@@ -504,7 +498,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
 		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
 			if (ctClass.isLocalType()) {
@@ -516,21 +509,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeFormalTypeParameters(ctClass);
 			elementPrinterHelper.writeExtendsClause(ctClass);
 			elementPrinterHelper.writeImplementsClause(ctClass);
-			for (CtConstructor<T> c : ctClass.getConstructors()) {
-				if (!c.isImplicit()) {
-					lst.add(c);
-				}
-			}
 		}
-		lst.addAll(ctClass.getAnonymousExecutables());
-		lst.addAll(ctClass.getNestedTypes());
-		lst.addAll(ctClass.getFields());
-		lst.addAll(ctClass.getMethods());
-		lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
+		// lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
 
 		context.currentThis.push(ctClass.getReference());
 		printer.write(" {").incTab();
-		elementPrinterHelper.writeElementList(lst);
+		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
 		context.currentThis.pop();
 	}
@@ -650,27 +634,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write(";");
 		}
 
-		for (CtField<?> field : ctEnum.getFields()) {
-			if (!(field instanceof CtEnumValue)) {
-				printer.writeln().writeTabs();
-				scan(field);
-			}
-		}
-
-		for (CtConstructor<?> c : ctEnum.getConstructors()) {
-			if (!c.isImplicit()) {
-				printer.writeln().writeTabs();
-				scan(c);
-			}
-		}
-
-		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
-
-		lst.addAll(ctEnum.getAnonymousExecutables());
-		lst.addAll(ctEnum.getNestedTypes());
-		lst.addAll(ctEnum.getMethods());
-
-		elementPrinterHelper.writeElementList(lst);
+		elementPrinterHelper.writeElementList(ctEnum.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
 		context.currentThis.pop();
 	}
@@ -1057,12 +1021,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.removeLastChar();
 		}
 		printer.write(" {").incTab();
-		SortedList<CtElement> lst = new SortedList<>(new CtLineElementComparator());
-		lst.addAll(intrface.getNestedTypes());
-		lst.addAll(intrface.getFields());
-		lst.addAll(intrface.getMethods());
 		// Content
-		elementPrinterHelper.writeElementList(lst);
+		elementPrinterHelper.writeElementList(intrface.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
 	}
 

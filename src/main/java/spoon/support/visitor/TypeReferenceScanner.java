@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -144,8 +145,10 @@ public class TypeReferenceScanner extends CtScanner {
 	@Override
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
 		addReference(intrface.getReference());
-		for (CtType<?> t : intrface.getNestedTypes()) {
-			addReference(t.getReference());
+		for (CtTypeMember typeMember : intrface.getTypeMembers()) {
+			if (typeMember instanceof CtType) {
+				addReference(((CtType) typeMember).getReference());
+			}
 		}
 		super.visitCtInterface(intrface);
 	}
@@ -153,8 +156,10 @@ public class TypeReferenceScanner extends CtScanner {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		addReference(ctClass.getReference());
-		for (CtType<?> t : ctClass.getNestedTypes()) {
-			addReference(t.getReference());
+		for (CtTypeMember typeMember : ctClass.getTypeMembers()) {
+			if (typeMember instanceof CtType) {
+				addReference(((CtType) typeMember).getReference());
+			}
 		}
 		super.visitCtClass(ctClass);
 	}

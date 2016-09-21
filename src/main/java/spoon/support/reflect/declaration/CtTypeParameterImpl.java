@@ -202,7 +202,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
-	public Collection<CtFieldReference<?>> getDeclaredFields() {
+	public List<CtFieldReference<?>> getDeclaredFields() {
 		return Collections.emptyList();
 	}
 

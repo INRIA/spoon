@@ -25,6 +25,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -38,8 +39,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY;
-
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
  *
@@ -47,10 +46,6 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.ANONYMOUS_EXE
  */
 public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtClass<T> {
 	private static final long serialVersionUID = 1L;
-
-	List<CtAnonymousExecutable> anonymousExecutables = emptyList();
-
-	Set<CtConstructor<T>> constructors = emptySet();
 
 	CtTypeReference<?> superClass;
 
@@ -61,12 +56,18 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public List<CtAnonymousExecutable> getAnonymousExecutables() {
+		List<CtAnonymousExecutable> anonymousExecutables = new ArrayList<>();
+		for (CtTypeMember typeMember : typeMembers) {
+			if (typeMember instanceof CtAnonymousExecutable) {
+				anonymousExecutables.add((CtAnonymousExecutable) typeMember);
+			}
+		}
 		return anonymousExecutables;
 	}
 
 	@Override
 	public CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes) {
-		for (CtConstructor<T> c : constructors) {
+		for (CtConstructor<T> c : getConstructors()) {
 			boolean cont = c.getParameters().size() == parameterTypes.length;
 			for (int i = 0; cont && (i < c.getParameters().size()) && (i < parameterTypes.length); i++) {
 				if (!parameterTypes[i].equals(c.getParameters().get(i).getType())) {
@@ -82,26 +83,23 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public Set<CtConstructor<T>> getConstructors() {
+		Set<CtConstructor<T>> constructors = new TreeSet<>();
+		for (CtTypeMember typeMember : typeMembers) {
+			if (typeMember instanceof CtConstructor) {
+				constructors.add((CtConstructor<T>) typeMember);
+			}
+		}
 		return constructors;
 	}
 
 	@Override
 	public <C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e) {
-		if (e == null) {
-			return (C) this;
-		}
-		if (anonymousExecutables == CtElementImpl.<CtAnonymousExecutable>emptyList()) {
-			anonymousExecutables = new ArrayList<>(ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
-		}
-		e.setParent(this);
-		anonymousExecutables.add(e);
-		return (C) this;
+		return addTypeMember(e);
 	}
 
 	@Override
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
-		return anonymousExecutables != CtElementImpl.<CtAnonymousExecutable>emptyList() && anonymousExecutables
-				.remove(e);
+		return removeTypeMember(e);
 	}
 
 	@Override
@@ -112,13 +110,10 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
 		if (anonymousExecutables == null || anonymousExecutables.isEmpty()) {
-			this.anonymousExecutables = CtElementImpl.emptyList();
+			this.typeMembers.removeAll(getAnonymousExecutables());
 			return (C) this;
 		}
-		if (this.anonymousExecutables == CtElementImpl.<CtAnonymousExecutable>emptyList()) {
-			this.anonymousExecutables = new ArrayList<>(ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY);
-		}
-		this.anonymousExecutables.clear();
+		typeMembers.removeAll(getAnonymousExecutables());
 		for (CtAnonymousExecutable exec : anonymousExecutables) {
 			addAnonymousExecutable(exec);
 		}
@@ -128,13 +123,10 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
 		if (constructors == null || constructors.isEmpty()) {
-			this.constructors = CtElementImpl.emptySet();
+			this.typeMembers.removeAll(getConstructors());
 			return (C) this;
 		}
-		if (this.constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
-			this.constructors = new TreeSet<>();
-		}
-		this.constructors.clear();
+		typeMembers.removeAll(getConstructors());
 		for (CtConstructor<T> constructor : constructors) {
 			addConstructor(constructor);
 		}
@@ -143,31 +135,12 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
-		if (constructor == null) {
-			return (C) this;
-		}
-		if (constructors == CtElementImpl.<CtConstructor<T>>emptySet()) {
-			constructors = new TreeSet<>();
-		}
-		// this needs to be done because of the set that needs the constructor's
-		// signature : we should use lists!!!
-		// TODO: CHANGE SETS TO LIST TO AVOID HAVING TO DO THIS
-		constructor.setParent(this);
-		constructors.add(constructor);
-		return (C) this;
+		return addTypeMember(constructor);
 	}
 
 	@Override
 	public void removeConstructor(CtConstructor<T> constructor) {
-		if (!constructors.isEmpty()) {
-			if (constructors.size() == 1) {
-				if (constructors.contains(constructor)) {
-					constructors = CtElementImpl.<CtConstructor<T>>emptySet();
-				}
-			} else {
-				constructors.remove(constructor);
-			}
-		}
+		removeTypeMember(constructor);
 	}
 
 	@Override

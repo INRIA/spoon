@@ -56,6 +56,11 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 */
 	List<CtEnumValue<?>> getEnumValues();
 
+	/**
+	 *Sets all enum values of the enum.
+	 */
+	<C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues);
+
 	@Override
 	CtEnum<T> clone();
 }
