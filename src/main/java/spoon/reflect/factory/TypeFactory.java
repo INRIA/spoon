@@ -293,6 +293,9 @@ public class TypeFactory extends SubFactory {
 	 * Creates a reference to a simple type
 	 */
 	public <T> CtTypeReference<T> createReference(Class<T> type) {
+		if (type == null) {
+			return null;
+		}
 		if (type.isArray()) {
 			CtArrayTypeReference<T> array = factory.Core().createArrayTypeReference();
 			array.setComponentType(createReference(type.getComponentType()));

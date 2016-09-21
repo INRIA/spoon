@@ -546,4 +546,15 @@ public class TypeReferenceTest {
 
 		assertEquals(1, typeReference.getActualTypeArguments().size());
 	}
+
+	@Test
+	public void testIsSubTypeSuperClassNull() throws Exception {
+		Factory factory = createFactory();
+
+		factory.Class().create("Tacos");
+		CtTypeReference<?> subRef = factory.Type().createReference(AutoCloseable.class);
+		CtTypeReference<?> superRef = factory.Type().createReference("Tacos");
+
+		assertFalse(subRef.isSubtypeOf(superRef));
+	}
 }
