@@ -12,13 +12,13 @@ install:
   - # download deps with maven
   - mvn dependency:resolve
   
-script:
+script: |
   # Verify includes checkstyle, license and animal sniffer.
-  - mvn verify javadoc:javadoc site -DskipTests
+  mvn verify javadoc:javadoc site -DskipTests &&
   # the core of continuous integration
-  - mvn test jacoco:report 
+  mvn test jacoco:report &&
   # now coverage, but not failing
-  - mvn coveralls:report -Pcoveralls --fail-never
+  mvn coveralls:report -Pcoveralls --fail-never
 
 cache:
   directories:
