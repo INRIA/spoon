@@ -86,7 +86,6 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
@@ -163,9 +162,6 @@ public abstract class CtScanner implements CtVisitor {
 	public void scan(Object o) {
 		if (o instanceof CtElement) {
 			scan((CtElement) o);
-		}
-		if (o instanceof CtReference) {
-			scan((CtReference) o);
 		}
 		if (o instanceof Collection<?>) {
 			for (Object obj : (Collection<?>) o) {

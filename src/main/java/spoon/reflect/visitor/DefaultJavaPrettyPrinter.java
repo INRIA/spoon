@@ -1135,8 +1135,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write('\"');
 		} else if (literal.getValue() instanceof Class) {
 			printer.write(((Class<?>) literal.getValue()).getName());
-		} else if (literal.getValue() instanceof CtReference) {
-			scan((CtReference) literal.getValue());
 		} else {
 			printer.write(literal.getValue().toString());
 		}
