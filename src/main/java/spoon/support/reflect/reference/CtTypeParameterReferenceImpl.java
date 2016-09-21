@@ -109,7 +109,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
+	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		throw new UnsupportedOperationException("Type parameter can't have an actual type argument");
 	}
 

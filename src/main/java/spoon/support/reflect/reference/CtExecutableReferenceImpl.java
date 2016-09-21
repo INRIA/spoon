@@ -244,7 +244,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<CtTypeReference<?>> actualTypeArguments) {
+	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
 			this.actualTypeArguments = CtElementImpl.emptyList();
 			return (C) this;

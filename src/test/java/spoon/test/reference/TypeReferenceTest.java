@@ -535,4 +535,15 @@ public class TypeReferenceTest {
 		CtTypeReference correctParent = launcher.getFactory().Type().createReference(java.lang.Enum.class);
 		assertEquals(correctParent, e.getReference().getSuperclass());
 	}
+
+	@Test
+	public void testImproveAPIActualTypeReference() throws Exception {
+		final Factory factory = createFactory();
+		List<CtTypeParameterReference> typeParameterReferences = new ArrayList<>();
+		typeParameterReferences.add(factory.Type().createTypeParameterReference("Foo"));
+		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+		typeReference.setActualTypeArguments(typeParameterReferences);
+
+		assertEquals(1, typeReference.getActualTypeArguments().size());
+	}
 }
