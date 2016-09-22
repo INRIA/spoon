@@ -57,6 +57,7 @@ Here are some projects already using Spoon:
 - [Astor](https://github.com/SpoonLabs/astor): Evolutionary automatic software repair tool for Java. 
 - [Nopol](https://github.com/SpoonLabs/nopol): Automatic repair system developed at the University of Lille and Inria.
 - [Gumtree Spoon AST diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff): Computes the AST difference between two Spoon abstract syntax trees.
+- [c2spoo](https://github.com/SpoonLabs/c2spoon): Loads C code as a Spoon model using srcml.
 - Yours?
 
 # Download
