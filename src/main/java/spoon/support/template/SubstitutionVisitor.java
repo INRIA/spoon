@@ -197,7 +197,7 @@ public class SubstitutionVisitor extends CtScanner {
 				if (!(m instanceof CtField)) {
 					continue;
 				}
-				CtField field = (CtField)m;
+				CtField field = (CtField) m;
 				if ((field.getAnnotation(Local.class) != null) || Parameters.isParameterSource(field.getReference())) {
 					ctClass.removeField(field);
 					continue;
