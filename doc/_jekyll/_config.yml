@@ -12,8 +12,8 @@ google_analytics: UA-24273081-1
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://spoon.gforge.inria.fr/" # the base hostname & protocol for your site
 
-data_dir: ./._jekyll/_data
-include: [_jekyll]
+data_dir: /_data
+include: [_includes]
 
 # variables
 
