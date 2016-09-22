@@ -38,7 +38,6 @@ public class PackageTest {
 
 		CtPackage ctPackage = clazz.getPackage();
 		Assert.assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getPosition());
 		Assert.assertNull(ctPackage.getDocComment());
 		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
@@ -59,7 +58,6 @@ public class PackageTest {
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		Assert.assertEquals("spoon.test", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getPosition());
 		Assert.assertNull(ctPackage.getDocComment());
 	}
 
