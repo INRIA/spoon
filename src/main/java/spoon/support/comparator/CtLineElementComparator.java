@@ -33,7 +33,7 @@ public class CtLineElementComparator implements Comparator<CtElement>, Serializa
 	public int compare(CtElement o1, CtElement o2) {
 
 		if (o1.getPosition() == null || o2.getPosition() == null) {
-			return -1;
+			return o1.hashCode()>o2.hashCode()?1:-1;
 		}
 
 		int pos1 = o1.getPosition().getSourceStart();
