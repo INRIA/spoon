@@ -40,6 +40,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtInheritanceScanner;
@@ -243,10 +244,12 @@ class JDTCommentBuilder {
 					e.addComment(comment);
 					return;
 				}
-				List<CtElement> elements = new ArrayList<>();
-				elements.addAll(e.getFields());
-				elements.addAll(e.getMethods());
-				elements.addAll(e.getConstructors());
+				final List<CtElement> elements = new ArrayList<>();
+				for (CtTypeMember typeMember : e.getTypeMembers()) {
+					if (typeMember instanceof CtField || typeMember instanceof CtMethod || typeMember instanceof CtConstructor) {
+						elements.add(typeMember);
+					}
+				}
 				addCommentToNear(comment, elements);
 
 				try {
@@ -258,9 +261,12 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtInterface(CtInterface<T> e) {
-				List<CtElement> elements = new ArrayList<>();
-				elements.addAll(e.getFields());
-				elements.addAll(e.getMethods());
+				final List<CtElement> elements = new ArrayList<>();
+				for (CtTypeMember typeMember : e.getTypeMembers()) {
+					if (typeMember instanceof CtField || typeMember instanceof CtMethod) {
+						elements.add(typeMember);
+					}
+				}
 				addCommentToNear(comment, elements);
 
 				try {

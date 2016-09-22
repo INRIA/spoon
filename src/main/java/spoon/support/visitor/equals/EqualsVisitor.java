@@ -18,6 +18,7 @@
 
 package spoon.support.visitor.equals;
 
+
 /**
  * Used to check equality between an element and another one.
  *
@@ -30,15 +31,6 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 
 	private final spoon.support.visitor.equals.EqualsChecker checker = new spoon.support.visitor.equals.EqualsChecker();
 
-	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
-		spoon.reflect.declaration.CtAnnotation other = ((spoon.reflect.declaration.CtAnnotation) (stack.peek()));
-		enter(annotation);
-		biScan(annotation.getAnnotationType(), other.getAnnotationType());
-		biScan(annotation.getAnnotations(), other.getAnnotations());
-		biScan(annotation.getValues().values(), other.getValues().values());
-		exit(annotation);
-	}
-
 	@java.lang.Override
 	protected void enter(spoon.reflect.declaration.CtElement e) {
 		super.enter(e);
@@ -49,12 +41,20 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		}
 	}
 
+	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
+		spoon.reflect.declaration.CtAnnotation other = ((spoon.reflect.declaration.CtAnnotation) (stack.peek()));
+		enter(annotation);
+		biScan(annotation.getAnnotationType(), other.getAnnotationType());
+		biScan(annotation.getAnnotations(), other.getAnnotations());
+		biScan(annotation.getValues().values(), other.getValues().values());
+		exit(annotation);
+	}
+
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotationType(final spoon.reflect.declaration.CtAnnotationType<A> annotationType) {
 		spoon.reflect.declaration.CtAnnotationType other = ((spoon.reflect.declaration.CtAnnotationType) (stack.peek()));
 		enter(annotationType);
 		biScan(annotationType.getAnnotations(), other.getAnnotations());
-		biScan(annotationType.getNestedTypes(), other.getNestedTypes());
-		biScan(annotationType.getFields(), other.getFields());
+		biScan(annotationType.getTypeMembers(), other.getTypeMembers());
 		exit(annotationType);
 	}
 
@@ -171,15 +171,11 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		biScan(ctClass.getSuperclass(), other.getSuperclass());
 		biScan(ctClass.getSuperInterfaces(), other.getSuperInterfaces());
 		biScan(ctClass.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
-		biScan(ctClass.getAnonymousExecutables(), other.getAnonymousExecutables());
-		biScan(ctClass.getNestedTypes(), other.getNestedTypes());
-		biScan(ctClass.getFields(), other.getFields());
-		biScan(ctClass.getConstructors(), other.getConstructors());
-		biScan(ctClass.getMethods(), other.getMethods());
+		biScan(ctClass.getTypeMembers(), other.getTypeMembers());
 		exit(ctClass);
 	}
 
-	@Override
+	@java.lang.Override
 	public void visitCtTypeParameter(spoon.reflect.declaration.CtTypeParameter typeParameter) {
 		spoon.reflect.declaration.CtTypeParameter other = ((spoon.reflect.declaration.CtTypeParameter) (stack.peek()));
 		enter(typeParameter);
@@ -232,10 +228,8 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		enter(ctEnum);
 		biScan(ctEnum.getAnnotations(), other.getAnnotations());
 		biScan(ctEnum.getSuperInterfaces(), other.getSuperInterfaces());
-		biScan(ctEnum.getFields(), other.getFields());
-		biScan(ctEnum.getConstructors(), other.getConstructors());
-		biScan(ctEnum.getMethods(), other.getMethods());
-		biScan(ctEnum.getNestedTypes(), other.getNestedTypes());
+		biScan(ctEnum.getTypeMembers(), other.getTypeMembers());
+		biScan(ctEnum.getEnumValues(), other.getEnumValues());
 		exit(ctEnum);
 	}
 
@@ -334,9 +328,7 @@ public class EqualsVisitor extends spoon.reflect.visitor.CtAbstractBiScanner {
 		biScan(intrface.getAnnotations(), other.getAnnotations());
 		biScan(intrface.getSuperInterfaces(), other.getSuperInterfaces());
 		biScan(intrface.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
-		biScan(intrface.getNestedTypes(), other.getNestedTypes());
-		biScan(intrface.getFields(), other.getFields());
-		biScan(intrface.getMethods(), other.getMethods());
+		biScan(intrface.getTypeMembers(), other.getTypeMembers());
 		exit(intrface);
 	}
 

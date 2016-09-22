@@ -52,6 +52,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.visitor.clone.CloneBuilder;
 
 import java.util.ArrayList;
@@ -505,6 +506,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				return ctField.getModifiers().contains(ModifierKind.FINAL) || ctField.getModifiers().contains(ModifierKind.STATIC);
 			}
 		}.scan(getFactory().Class().get(CtInheritanceScanner.class));
+
+		Collections.sort(target.getTypeMembers(), new CtLineElementComparator());
+		Collections.sort(targetBuilder.getTypeMembers(), new CtLineElementComparator());
 	}
 
 	private CtClass<Object> createCloneVisitor() {

@@ -16,20 +16,13 @@
  */
 package spoon.support.template;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -38,6 +31,14 @@ import spoon.support.util.RtHelper;
 import spoon.template.Parameter;
 import spoon.template.Template;
 import spoon.template.TemplateParameter;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class defines an API to manipulate template parameters.
@@ -101,7 +102,11 @@ public abstract class Parameters {
 	static Map<Template<?>, Map<String, Object>> finals = new HashMap<>();
 
 	public static CtField<?> getParameterField(CtClass<? extends Template<?>> templateClass, String parameterName) {
-		for (CtField<?> f : templateClass.getFields()) {
+		for (CtTypeMember typeMember : templateClass.getTypeMembers()) {
+			if (!(typeMember instanceof CtField)) {
+				continue;
+			}
+			CtField<?> f = (CtField<?>) typeMember;
 			Parameter p = f.getAnnotation(Parameter.class);
 			if (p == null) {
 				continue;

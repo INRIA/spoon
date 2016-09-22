@@ -208,12 +208,13 @@ public class DefaultPrettyPrinterTest {
 		expected =
 			"public enum ENUM {" +nl+
 			"E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField,spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" +nl+
-			"    final int NUM;" +nl+
-			"    final Enum<?> e;" +nl+
+			"    final int NUM;" +nl+nl+
+			"    final Enum<?> e;" +nl+nl+
 			"    private ENUM(int num, Enum<?> e) {" +nl+
 			"        NUM = num;" +nl+
 			"        this.e = e;" +nl+
-			"    }}"
+			"    }" +nl+
+			"}"
 		;
 		computed = aClass.getNestedType("ENUM").toString();
 		assertEquals( "Parameters in an enum constructor should be fully typed when they refer to externally defined static field of a class with the same identifier as another locally defined type", expected, computed );

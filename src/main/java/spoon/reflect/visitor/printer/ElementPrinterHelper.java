@@ -31,6 +31,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -38,6 +39,7 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -45,7 +47,6 @@ import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.util.SortedList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -141,8 +142,11 @@ public class ElementPrinterHelper {
 		writeComment(statement, CommentOffset.AFTER);
 	}
 
-	public void writeElementList(SortedList<CtElement> elements) {
-		for (CtElement element : elements) {
+	public void writeElementList(List<CtTypeMember> elements) {
+		for (CtTypeMember element : elements) {
+			if (element instanceof CtConstructor && element.isImplicit()) {
+				continue;
+			}
 			printer.writeln().writeTabs();
 			prettyPrinter.scan(element);
 			if (!env.isPreserveLineNumbers()) {

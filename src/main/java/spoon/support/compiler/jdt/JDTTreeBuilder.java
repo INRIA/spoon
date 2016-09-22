@@ -146,6 +146,9 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.support.reflect.cu.CtLineElementComparator;
+
+import java.util.Collections;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -675,12 +678,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
+		Collections.sort(((CtType) context.stack.peek().element).getTypeMembers(), new CtLineElementComparator());
 		context.exit(localTypeDeclaration);
 	}
 
 	@Override
 	public void endVisit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		while (!context.stack.isEmpty() && context.stack.peek().node == memberTypeDeclaration) {
+			Collections.sort(((CtType) context.stack.peek().element).getTypeMembers(), new CtLineElementComparator());
 			context.exit(memberTypeDeclaration);
 		}
 	}
@@ -688,6 +693,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		while (!context.stack.isEmpty() && context.stack.peek().node == typeDeclaration) {
+			if (context.stack.peek().element instanceof CtType) {
+				Collections.sort(((CtType) context.stack.peek().element).getTypeMembers(), new CtLineElementComparator());
+			}
 			context.exit(typeDeclaration);
 		}
 	}

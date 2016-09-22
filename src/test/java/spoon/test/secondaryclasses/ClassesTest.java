@@ -108,8 +108,8 @@ public class ClassesTest {
 		assertTrue(anonymousClass.get(0).isAnonymous());
 		assertTrue(anonymousClass.get(1).isAnonymous());
 		assertEquals(2, anonymousClass.size());
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2", anonymousClass.get(0).getQualifiedName());
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1", anonymousClass.get(1).getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1", anonymousClass.get(0).getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2", anonymousClass.get(1).getQualifiedName());
 	}
 
 	@Test

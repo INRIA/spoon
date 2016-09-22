@@ -43,8 +43,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		spoon.reflect.declaration.CtAnnotationType other = ((spoon.reflect.declaration.CtAnnotationType) (stack.peek()));
 		enter(annotationType);
 		biScan(annotationType.getAnnotations(), other.getAnnotations());
-		biScan(annotationType.getNestedTypes(), other.getNestedTypes());
-		biScan(annotationType.getFields(), other.getFields());
+		biScan(annotationType.getTypeMembers(), other.getTypeMembers());
 		biScan(annotationType.getComments(), other.getComments());
 		exit(annotationType);
 	}
@@ -173,16 +172,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(ctClass.getSuperclass(), other.getSuperclass());
 		biScan(ctClass.getSuperInterfaces(), other.getSuperInterfaces());
 		biScan(ctClass.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
-		biScan(ctClass.getAnonymousExecutables(), other.getAnonymousExecutables());
-		biScan(ctClass.getNestedTypes(), other.getNestedTypes());
-		biScan(ctClass.getFields(), other.getFields());
-		biScan(ctClass.getConstructors(), other.getConstructors());
-		biScan(ctClass.getMethods(), other.getMethods());
+		biScan(ctClass.getTypeMembers(), other.getTypeMembers());
 		biScan(ctClass.getComments(), other.getComments());
 		exit(ctClass);
 	}
 
-	@Override
+	@java.lang.Override
 	public void visitCtTypeParameter(spoon.reflect.declaration.CtTypeParameter typeParameter) {
 		spoon.reflect.declaration.CtTypeParameter other = ((spoon.reflect.declaration.CtTypeParameter) (stack.peek()));
 		enter(typeParameter);
@@ -240,10 +235,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(ctEnum);
 		biScan(ctEnum.getAnnotations(), other.getAnnotations());
 		biScan(ctEnum.getSuperInterfaces(), other.getSuperInterfaces());
-		biScan(ctEnum.getFields(), other.getFields());
-		biScan(ctEnum.getConstructors(), other.getConstructors());
-		biScan(ctEnum.getMethods(), other.getMethods());
-		biScan(ctEnum.getNestedTypes(), other.getNestedTypes());
+		biScan(ctEnum.getTypeMembers(), other.getTypeMembers());
+		biScan(ctEnum.getEnumValues(), other.getEnumValues());
 		biScan(ctEnum.getComments(), other.getComments());
 		exit(ctEnum);
 	}
@@ -353,9 +346,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(intrface.getAnnotations(), other.getAnnotations());
 		biScan(intrface.getSuperInterfaces(), other.getSuperInterfaces());
 		biScan(intrface.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
-		biScan(intrface.getNestedTypes(), other.getNestedTypes());
-		biScan(intrface.getFields(), other.getFields());
-		biScan(intrface.getMethods(), other.getMethods());
+		biScan(intrface.getTypeMembers(), other.getTypeMembers());
 		biScan(intrface.getComments(), other.getComments());
 		exit(intrface);
 	}

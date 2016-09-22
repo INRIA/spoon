@@ -474,17 +474,17 @@ public class GenericsTest {
 		assertEquals(3, elements.size());
 
 		// Constructor call.
-		assertEquals(0, elements.get(0).getExecutable().getType().getActualTypeArguments().size());
+		assertEquals(0, elements.get(1).getExecutable().getType().getActualTypeArguments().size());
+		assertNotNull(elements.get(1).getType().getDeclaringType());
+		assertEquals("new Pozole()", elements.get(1).toString());
+		assertEquals(2, elements.get(0).getExecutable().getType().getActualTypeArguments().size());
 		assertNotNull(elements.get(0).getType().getDeclaringType());
-		assertEquals("new Pozole()", elements.get(0).toString());
-		assertEquals(2, elements.get(2).getExecutable().getType().getActualTypeArguments().size());
-		assertNotNull(elements.get(2).getType().getDeclaringType());
-		assertEquals("new Burritos<K, V>()", elements.get(2).toString());
+		assertEquals("new Burritos<K, V>()", elements.get(0).toString());
 
 		// New class.
-		assertEquals(2, elements.get(1).getExecutable().getType().getActualTypeArguments().size());
-		assertNotNull(elements.get(1).getType().getDeclaringType());
-		assertEquals("new Burritos<K, V>() {}", elements.get(1).toString());
+		assertEquals(2, elements.get(2).getExecutable().getType().getActualTypeArguments().size());
+		assertNotNull(elements.get(2).getType().getDeclaringType());
+		assertEquals("new Burritos<K, V>() {}", elements.get(2).toString());
 	}
 
 	@Test

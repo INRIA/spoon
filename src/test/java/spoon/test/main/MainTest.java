@@ -313,7 +313,7 @@ public class MainTest {
 	}
 
 	private void checkParentConsistency(CtPackage pack) {
-		Set<CtElement> inconsistentParents = new HashSet<>();
+		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
 			private Deque<CtElement> previous = new ArrayDeque();
 			@Override

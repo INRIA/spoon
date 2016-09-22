@@ -179,8 +179,7 @@ public abstract class CtScanner implements CtVisitor {
 			final CtAnnotationType<A> annotationType) {
 		enter(annotationType);
 		scan(annotationType.getAnnotations());
-		scan(annotationType.getNestedTypes());
-		scan(annotationType.getFields());
+		scan(annotationType.getTypeMembers());
 		scan(annotationType.getComments());
 		exit(annotationType);
 	}
@@ -298,11 +297,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(ctClass.getSuperclass());
 		scan(ctClass.getSuperInterfaces());
 		scan(ctClass.getFormalCtTypeParameters());
-		scan(ctClass.getAnonymousExecutables());
-		scan(ctClass.getNestedTypes());
-		scan(ctClass.getFields());
-		scan(ctClass.getConstructors());
-		scan(ctClass.getMethods());
+		scan(ctClass.getTypeMembers());
 		scan(ctClass.getComments());
 		exit(ctClass);
 	}
@@ -359,10 +354,8 @@ public abstract class CtScanner implements CtVisitor {
 		enter(ctEnum);
 		scan(ctEnum.getAnnotations());
 		scan(ctEnum.getSuperInterfaces());
-		scan(ctEnum.getFields());
-		scan(ctEnum.getConstructors());
-		scan(ctEnum.getMethods());
-		scan(ctEnum.getNestedTypes());
+		scan(ctEnum.getTypeMembers());
+		scan(ctEnum.getEnumValues());
 		scan(ctEnum.getComments());
 		exit(ctEnum);
 	}
@@ -464,9 +457,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(intrface.getAnnotations());
 		scan(intrface.getSuperInterfaces());
 		scan(intrface.getFormalCtTypeParameters());
-		scan(intrface.getNestedTypes());
-		scan(intrface.getFields());
-		scan(intrface.getMethods());
+		scan(intrface.getTypeMembers());
 		scan(intrface.getComments());
 		exit(intrface);
 	}
