@@ -61,8 +61,10 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			bounds = new ArrayList<>();
 		}
-		bound.setParent(this);
-		bounds.add(bound);
+		if (!bounds.contains(bound)) {
+			bound.setParent(this);
+			bounds.add(bound);
+		}
 		return (C) this;
 	}
 

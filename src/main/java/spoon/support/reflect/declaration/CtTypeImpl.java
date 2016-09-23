@@ -709,7 +709,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtMethod<?>> getMethodsAnnotatedWith(CtTypeReference<?>... annotationTypes) {
-		Set<CtMethod<?>> result = new QualifiedNameBasedSortedSet<>();
+		Set<CtMethod<?>> result = new SignatureBasedSortedSet<>();
 		for (CtTypeMember typeMember : typeMembers) {
 			if (!(typeMember instanceof CtMethod)) {
 				continue;
