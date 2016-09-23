@@ -33,6 +33,9 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
+# moving repositories before backup
+ssh $WEBSITE_SERVER "mv ${DESTINATION}/repositories ${HOST_DESTINATION}"
+
 # Back up the old website and create the folder for the new one.
 TIMESTAMP=$(date +%s)
 BACKUP_DESTINATION="${HOST_DESTINATION}${FOLDER_DESTINATION}-${TIMESTAMP}"
@@ -42,7 +45,7 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
-ssh $WEBSITE_SERVER "mkdir ${DESTINATION}"
+ssh $WEBSITE_SERVER "mkdir -p ${DESTINATION}"
 if [ "$?" -ne 0 ]; then
     echo "Error when you tried to create the folder of the new website!"
     exit 1
@@ -55,18 +58,14 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
-# Retrieve repositories folder in the last backup.
-ssh $WEBSITE_SERVER "cp -r ${BACKUP_DESTINATION}/repositories ${DESTINATION}"
-if [ "$?" -ne 0 ]; then
-    echo "Error when you tried to retrieve the repositories folder!"
-    exit 1
-fi
+# moving repositories before backup
+ssh $WEBSITE_SERVER "mv ${HOST_DESTINATION}/repositories ${DESTINATION}"
 
 # Remove backups older than 3 days.
 ssh $WEBSITE_SERVER "find ${HOST_DESTINATION}${FOLDER_DESTINATION}-* -mtime +3 -type d -exec rm -rf {} \;"
 
 # Come back at the root of the temp project.
-cd ../..
+cd ..
 
 # Generate maven site and deploy it.
 mvn site site:deploy
