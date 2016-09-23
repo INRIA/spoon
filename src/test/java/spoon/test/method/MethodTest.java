@@ -26,9 +26,15 @@ import spoon.reflect.factory.Factory;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.method.testclasses.Tacos;
 
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.HashSet;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class MethodTest {
 	@Test
@@ -52,5 +58,17 @@ public class MethodTest {
 		assertEquals("public <T extends java.lang.String> void method1(T t) {" + System.lineSeparator() + "}", method1.toString());
 		method1 = aTacos.getMethod("method1", aTacos.getFactory().Type().objectType());
 		assertEquals("public <T> void method1(T t) {" + System.lineSeparator() + "}", method1.toString());
+	}
+
+	@Test
+	public void testAddSameMethodsTwoTimes() throws Exception {
+		final Factory factory = createFactory();
+		final CtClass<Object> tacos = factory.Class().create("Tacos");
+		final CtMethod<Void> method = factory.Method().create(tacos, new HashSet<>(), factory.Type().voidType(), "m", new ArrayList<>(), new HashSet<>());
+		try {
+			tacos.addMethod(method.clone());
+		} catch (ConcurrentModificationException e) {
+			fail();
+		}
 	}
 }
