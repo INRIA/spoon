@@ -29,6 +29,7 @@ public class InvocationTest {
 				"-i", "./src/test/java/spoon/test/invocations/testclasses/", "-o", "./target/spooned/"
 		});
 		Factory factory = launcher.getFactory();
+
 		CtClass<?> aClass = factory.Class().get(Foo.class);
 
 		final List<CtInvocation<?>> elements = aClass.getElements(new AbstractFilter<CtInvocation<?>>(CtInvocation.class) {

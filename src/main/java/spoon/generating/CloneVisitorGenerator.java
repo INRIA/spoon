@@ -16,6 +16,13 @@
  */
 package spoon.generating;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -52,16 +59,8 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.cu.CtLineElementComparator;
+import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.visitor.clone.CloneBuilder;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private static final String TARGET_CLONE_PACKAGE = "spoon.support.visitor.clone";
@@ -387,15 +386,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * @param getter <code>getX</code>.
 			 */
 			private CtInvocation<?> createSetterInvocation(CtTypeReference<?> type, CtMethod<?> setter, CtInvocation<?> getter) {
-				CtExpression getterArgument;
-				if (getter.getType().equals(SET_REFERENCE)) {
-					getterArgument = factory.Code().createConstructorCall(factory.Type().createReference(TreeSet.class), getter);
-				} else if (getter.getType().equals(COLLECTION_REFERENCE) || getter.getType().equals(LIST_REFERENCE)) {
-					getterArgument = factory.Code().createConstructorCall(factory.Type().createReference(ArrayList.class), getter);
-				} else {
-					getterArgument = getter;
-				}
-				return factory.Code().createInvocation(otherRead.clone().addTypeCast(type), setter.getReference(), getterArgument);
+				return factory.Code().createInvocation(otherRead.clone().addTypeCast(type), setter.getReference(), getter);
 			}
 
 			/**
@@ -424,8 +415,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						return ctMethod;
 					}
 				}
-				// Search with template.
-				final CtBlock<?> templateRoot = SETTER_TEMPLATE_MATCHER_CLASS.getMethod("setElement", factory.Type().BOOLEAN_PRIMITIVE).getBody();
+				SETTER_TEMPLATE_MATCHER_CLASS.getMethod("setElement", factory.Type().BOOLEAN_PRIMITIVE).getBody();
 				final List<CtMethod> matchers = ctField.getDeclaringType().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
 					@Override
 					public boolean matches(CtMethod element) {

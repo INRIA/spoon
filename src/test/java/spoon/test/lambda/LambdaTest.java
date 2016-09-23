@@ -1,7 +1,22 @@
 package spoon.test.lambda;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.getBuildDirectory;
+import static spoon.testing.utils.ModelUtils.getSpoonedDirectory;
+
+import java.io.File;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
@@ -26,20 +41,6 @@ import spoon.test.lambda.testclasses.Kuu;
 import spoon.test.lambda.testclasses.Panini;
 import spoon.test.lambda.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
-import static spoon.testing.utils.ModelUtils.getBuildDirectory;
-import static spoon.testing.utils.ModelUtils.getSpoonedDirectory;
 
 public class LambdaTest {
 	private Factory factory;
@@ -70,7 +71,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithoutParameter() throws Exception {
-		final CtLambda<?> lambda = getLambdaByName("lambda$0");
+		final CtLambda<?> lambda = getLambdaInFooByNumber(0);
 
 		assertTypedBy(Foo.Check.class, lambda.getType());
 		assertParametersSizeIs(0, lambda.getParameters());
@@ -138,7 +139,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithoutTypeForParameter() throws Exception {
-		final CtLambda<?> lambda = getLambdaByName("lambda$1");
+		final CtLambda<?> lambda = getLambdaInFooByNumber(1);
 
 		assertTypedBy(Predicate.class, lambda.getType());
 		assertParametersSizeIs(1, lambda.getParameters());
@@ -154,7 +155,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithMultiParameters() throws Exception {
-		final CtLambda<?> lambda = getLambdaByName("lambda$2");
+		final CtLambda<?> lambda = getLambdaInFooByNumber(2);
 
 		assertTypedBy(Foo.CheckPersons.class, lambda.getType());
 		assertParametersSizeIs(2, lambda.getParameters());
@@ -173,7 +174,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithParameterTyped() throws Exception {
-		final CtLambda<?> lambda = getLambdaByName("lambda$3");
+		final CtLambda<?> lambda = getLambdaInFooByNumber(3);
 
 		assertTypedBy(Predicate.class, lambda.getType());
 		assertParametersSizeIs(1, lambda.getParameters());
@@ -189,7 +190,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaExpressionWithExpressionBodyAndWithMultiParametersTyped() throws Exception {
-		final CtLambda<?> lambda = getLambdaByName("lambda$4");
+		final CtLambda<?> lambda = getLambdaInFooByNumber(4);
 
 		assertTypedBy(Foo.CheckPersons.class, lambda.getType());
 		assertParametersSizeIs(2, lambda.getParameters());
@@ -208,7 +209,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaExpressionWithStatementBodyAndWithoutParameters() throws Exception {
-		final CtLambda<?> lambda = getLambdaByName("lambda$5");
+		final CtLambda<?> lambda = getLambdaInFooByNumber(5);
 
 		assertTypedBy(Foo.Check.class, lambda.getType());
 		assertParametersSizeIs(0, lambda.getParameters());
@@ -222,7 +223,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaExpressionWithStatementBodyAndWithParameter() throws Exception {
-		final CtLambda<?> lambda = getLambdaByName("lambda$6");
+		final CtLambda<?> lambda = getLambdaInFooByNumber(6);
 
 		assertTypedBy(Predicate.class, lambda.getType());
 		assertParametersSizeIs(1, lambda.getParameters());
@@ -241,7 +242,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaExpressionInIfConditional() throws Exception {
-		final CtLambda<?> lambda = getLambdaByName("lambda$7");
+		final CtLambda<?> lambda = getLambdaInFooByNumber(7);
 
 		assertTypedBy(Predicate.class, lambda.getType());
 		assertParametersSizeIs(1, lambda.getParameters());
@@ -262,7 +263,7 @@ public class LambdaTest {
 						+ System.lineSeparator()
 						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");" + System
 						.lineSeparator()
-						+ "} ";
+						+ "}";
 		assertEquals("Condition must be well printed", expected, condition.toString());
 	}
 
@@ -273,15 +274,17 @@ public class LambdaTest {
 
 	@Test
 	public void testTypeParameterOfLambdaWithoutType() throws Exception {
-		final CtLambda<?> lambda1 = bar.getElements(new NameFilter<CtLambda<?>>("lambda$0")).get(0);
+		final CtLambda<?> lambda1 = bar.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(0);
 		assertEquals(1, lambda1.getParameters().size());
 		final CtParameter<?> ctParameterFirstLambda = lambda1.getParameters().get(0);
 		assertEquals("s", ctParameterFirstLambda.getSimpleName());
 		assertTrue(ctParameterFirstLambda.getType().isImplicit());
 		assertEquals("", ctParameterFirstLambda.getType().toString());
 		assertEquals("SingleSubscriber", ctParameterFirstLambda.getType().getSimpleName());
-
-		final CtLambda<?> lambda2 = bar.getElements(new NameFilter<CtLambda<?>>("lambda$1")).get(0);
+	}
+	@Test
+    	public void testTypeParameterOfLambdaWithoutType2() throws Exception {
+		final CtLambda<?> lambda2 = bar.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(1);
 		assertEquals(2, lambda2.getParameters().size());
 		final CtParameter<?> ctParameterSecondLambda = lambda2.getParameters().get(0);
 		assertEquals("v", ctParameterSecondLambda.getSimpleName());
@@ -292,7 +295,7 @@ public class LambdaTest {
 
 	@Test
 	public void testTypeParameterWithImplicitArrayType() throws Exception {
-		final CtLambda<?> lambda = panini.getElements(new NameFilter<CtLambda<?>>("lambda$0")).get(0);
+		final CtLambda<?> lambda = panini.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(0);
 
 		assertEquals(1, lambda.getParameters().size());
 		final CtParameter<?> ctParameter = lambda.getParameters().get(0);
@@ -309,7 +312,7 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaWithPrimitiveParameter() throws Exception {
-		final CtLambda<?> lambda = tacos.getElements(new NameFilter<CtLambda<?>>("lambda$0")).get(0);
+		final CtLambda<?> lambda = tacos.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(0);
 
 		assertEquals(2, lambda.getParameters().size());
 		final CtParameter<?> firstParam = lambda.getParameters().get(0);
@@ -376,7 +379,10 @@ public class LambdaTest {
 		assertEquals("Lambda must be well printed", expected, lambda.toString());
 	}
 
-	private CtLambda<?> getLambdaByName(String name) {
-		return foo.getElements(new NameFilter<CtLambda<?>>(name)).get(0);
+	// note that the lambda number in simple name depends on the classloader
+	// Eclipse the name is one less than in Maven
+	// hence w ehcnage the tests
+	private CtLambda<?> getLambdaInFooByNumber(int number) {
+		return foo.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(number);
 	}
 }

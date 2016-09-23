@@ -16,6 +16,11 @@
  */
 package spoon.support.template;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import spoon.SpoonException;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
@@ -61,12 +66,6 @@ import spoon.template.Local;
 import spoon.template.Parameter;
 import spoon.template.Template;
 import spoon.template.TemplateParameter;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Iterator;
-import java.util.TreeSet;
 
 class SkipException extends SpoonException {
 	private static final long serialVersionUID = 1L;
@@ -183,7 +182,7 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <T> void visitCtClass(CtClass<T> ctClass) {
 			ctClass.removeSuperInterface(factory.Type().createReference(Template.class));
-			for (CtMethod<?> m : new TreeSet<>(ctClass.getMethods())) {
+			for (CtMethod<?> m : new ArrayList<>(ctClass.getMethods())) { // copy is required for removing while iterating
 				if (m.getAnnotation(Local.class) != null) {
 					ctClass.removeMethod(m);
 				}
@@ -194,11 +193,11 @@ public class SubstitutionVisitor extends CtScanner {
 					it.remove();
 				}
 			}
-			for (CtTypeMember typeMember : ctClass.getTypeMembers()) {
-				if (!(typeMember instanceof CtField)) {
+			for (CtTypeMember m : new ArrayList<>(ctClass.getTypeMembers())) { // copy is required for removing while iterating
+				if (!(m instanceof CtField)) {
 					continue;
 				}
-				CtField<?> field = (CtField<?>) typeMember;
+				CtField field = (CtField) m;
 				if ((field.getAnnotation(Local.class) != null) || Parameters.isParameterSource(field.getReference())) {
 					ctClass.removeField(field);
 					continue;

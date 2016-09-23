@@ -67,7 +67,6 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -87,12 +86,10 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.support.reflect.declaration.CtElementImpl;
-
 import java.lang.annotation.Annotation;
 
 /**
- * Responsible for computing a deep representation of the object. Used by {@link CtElementImpl#compareTo(CtElement)} for deep compare.
+ * Responsible for computing a deep representation of the object.
  *
  *  Can also be seen as a super fast toString (without requiring to be valid java code)
  */

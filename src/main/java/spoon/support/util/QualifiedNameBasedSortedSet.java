@@ -14,32 +14,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.cu;
+package spoon.support.util;
 
-import java.util.Comparator;
+import java.util.Collection;
+import java.util.TreeSet;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.support.comparator.QualifiedNameComparator;
 
-/**
- * Comparator of compile-time elements. Elements are sorted by position in
- * source files.
- */
-public class CtLineElementComparator implements Comparator<CtElement> {
+public class QualifiedNameBasedSortedSet<E extends CtElement> extends
+		TreeSet<E> {
 
-	/**
-	 * Compares two program elements.
-	 */
-	public int compare(CtElement o1, CtElement o2) {
-		if (o1.getPosition() == null) {
-			return 1;
-		}
-		if (o2.getPosition() == null) {
-			return -1;
-		}
-		if (o1.getPosition().getLine() == o2.getPosition().getLine()) {
-			return ((Integer) o1.getPosition().getColumn()).compareTo(o2.getPosition().getColumn());
-		}
-		return ((Integer) o1.getPosition().getLine()).compareTo(o2.getPosition().getLine());
+	private static final long serialVersionUID = 1L;
+
+	public QualifiedNameBasedSortedSet(Collection<E> elements) {
+		this();
+		addAll(elements);
+	}
+
+	public QualifiedNameBasedSortedSet() {
+		super(new QualifiedNameComparator());
 	}
 
 }

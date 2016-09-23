@@ -16,12 +16,23 @@
  */
 package spoon.support.reflect.declaration;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -45,19 +56,8 @@ import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import spoon.support.util.QualifiedNameBasedSortedSet;
+import spoon.support.util.SignatureBasedSortedSet;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -218,7 +218,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage) {
-		Set<CtTypeReference<?>> typeRefs = new HashSet<>();
+		Set<CtTypeReference<?>> typeRefs = new QualifiedNameBasedSortedSet<>();
 		for (CtTypeReference<?> typeRef : Query.getReferences(this, new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
 			if (isValidTypeReference(typeRef) && shouldIncludeSamePackage(includeSamePackage, typeRef)) {
 				typeRefs.add(typeRef);
@@ -341,7 +341,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtType<?>> getNestedTypes() {
-		Set<CtType<?>> nestedTypes = new TreeSet<>();
+		Set<CtType<?>> nestedTypes = new QualifiedNameBasedSortedSet<>();
 		for (CtTypeMember typeMember : typeMembers) {
 			if (typeMember instanceof CtType) {
 				nestedTypes.add((CtType<?>) typeMember);
@@ -388,7 +388,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
-		this.modifiers = modifiers;
+		if (modifiers.size() > 0) {
+			this.modifiers = EnumSet.copyOf(modifiers);
+		}
 		return (C) this;
 	}
 
@@ -541,7 +543,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return (C) this;
 		}
 		if (interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			interfaces = new TreeSet<>();
+			interfaces = new QualifiedNameBasedSortedSet<>();
 		}
 		interfac.setParent(this);
 		interfaces.add(interfac);
@@ -696,7 +698,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtMethod<?>> getMethods() {
-		Set<CtMethod<?>> methods = new TreeSet<>();
+		Set<CtMethod<?>> methods = new SignatureBasedSortedSet<>();
 		for (CtTypeMember typeMember : typeMembers) {
 			if (typeMember instanceof CtMethod) {
 				methods.add((CtMethod<?>) typeMember);
@@ -707,7 +709,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtMethod<?>> getMethodsAnnotatedWith(CtTypeReference<?>... annotationTypes) {
-		Set<CtMethod<?>> result = new HashSet<>();
+		Set<CtMethod<?>> result = new SignatureBasedSortedSet<>();
 		for (CtTypeMember typeMember : typeMembers) {
 			if (!(typeMember instanceof CtMethod)) {
 				continue;
@@ -783,7 +785,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return (C) this;
 		}
 		if (this.interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			this.interfaces = new TreeSet<>();
+			this.interfaces = new QualifiedNameBasedSortedSet<>();
 		}
 		this.interfaces.clear();
 		for (CtTypeReference<?> anInterface : interfaces) {
@@ -806,7 +808,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
-		HashSet<CtExecutableReference<?>> l = new HashSet<>(getDeclaredExecutables());
+		Set<CtExecutableReference<?>> l = new HashSet<>(getDeclaredExecutables());
 		if (this instanceof CtClass) {
 			CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
 			if (st != null) {
@@ -832,7 +834,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
-		Set<CtMethod<?>> l = new HashSet<>(getMethods());
+		Set<CtMethod<?>> l = new SignatureBasedSortedSet<>(getMethods());
 		if ((getSuperclass() != null) && (getSuperclass().getTypeDeclaration() != null)) {
 			CtType<?> t = getSuperclass().getTypeDeclaration();
 			addAllBasedOnSignature(t.getAllMethods(), l);
@@ -869,10 +871,4 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return (CtType<T>) super.clone();
 	}
 
-	@Override public int compareTo(CtElement o) {
-		if (!(o instanceof CtType)) {
-			return super.compareTo(o);
-		}
-		return getQualifiedName().compareTo(((CtType) o).getQualifiedName());
-	}
 }

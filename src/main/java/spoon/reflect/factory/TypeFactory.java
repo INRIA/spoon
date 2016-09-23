@@ -555,7 +555,7 @@ public class TypeFactory extends SubFactory {
 	 * @param <T>
 	 * 		Type of the first bound.
 	 */
-	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReferenceWithBounds(Set<CtTypeReference<?>> bounds) {
+	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReferenceWithBounds(List<CtTypeReference<?>> bounds) {
 		final CtIntersectionTypeReference<T> intersectionRef = factory.Core().createIntersectionTypeReference();
 		CtTypeReference<?> firstBound = bounds.toArray(new CtTypeReference<?>[0])[0].clone();
 		intersectionRef.setSimpleName(firstBound.getSimpleName());

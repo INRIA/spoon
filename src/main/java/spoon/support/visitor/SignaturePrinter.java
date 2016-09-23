@@ -28,9 +28,11 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
-/** Responsible for computing signatures for elements where a signature exists (CtType, CtMethod and CtPackage).
- * Otherwise returns the empty string  */
-public class SignaturePrinter extends  CtInheritanceScanner {
+/**
+ * Responsible for computing signatures for elements where a signature exists
+ * (CtType, CtMethod and CtPackage). Otherwise returns the empty string
+ */
+public class SignaturePrinter extends CtInheritanceScanner {
 
 	private final StringBuffer signature = new StringBuffer();
 
@@ -102,7 +104,9 @@ public class SignaturePrinter extends  CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtConstructor(CtConstructor<T> c) {
-		write(c.getDeclaringType().getQualifiedName());
+		if (c.getDeclaringType() != null) {
+			write(c.getDeclaringType().getQualifiedName());
+		}
 		write("(");
 		for (CtParameter<?> p : c.getParameters()) {
 			scan(p.getType());
@@ -118,7 +122,7 @@ public class SignaturePrinter extends  CtInheritanceScanner {
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		if (!m.getFormalCtTypeParameters().isEmpty()) {
 			write("<");
-			for (CtTypeParameter typeParameter: m.getFormalCtTypeParameters()) {
+			for (CtTypeParameter typeParameter : m.getFormalCtTypeParameters()) {
 				scan(typeParameter.getReference());
 				write(",");
 			}

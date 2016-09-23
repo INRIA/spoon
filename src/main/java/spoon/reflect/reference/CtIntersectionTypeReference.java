@@ -16,7 +16,7 @@
  */
 package spoon.reflect.reference;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * This interface defines a reference to an intersection type in generics or in casts.
@@ -28,12 +28,12 @@ public interface CtIntersectionTypeReference<T> extends CtTypeReference<T> {
 	 *     T extends Interface1 &amp; Interface2 // CtTypeParameterReference#getBoundingType == Interface1 and getBounds().get(0) == Interface1
 	 * </pre>
 	 */
-	Set<CtTypeReference<?>> getBounds();
+	List<CtTypeReference<?>> getBounds();
 
 	/**
 	 * Sets the bounds of the intersection type.
 	 */
-	<C extends CtIntersectionTypeReference> C setBounds(Set<CtTypeReference<?>> bounds);
+	<C extends CtIntersectionTypeReference> C setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * Adds a bound.

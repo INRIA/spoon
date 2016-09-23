@@ -1,6 +1,20 @@
 package spoon.test.secondaryclasses;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
+
 import org.junit.Test;
+
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtVariableRead;
@@ -14,19 +28,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.comparator.CtLineElementComparator;
 import spoon.test.secondaryclasses.AnonymousClass.I;
 import spoon.test.secondaryclasses.testclasses.Pozole;
-
-import java.awt.event.ActionListener;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class ClassesTest {
 
@@ -97,17 +101,22 @@ public class ClassesTest {
 	@Test
 	public void testIsAnonymousMethodInCtClass() throws Exception {
 		CtClass<?> type = build("spoon.test.secondaryclasses", "AnonymousClass");
-		final List<CtClass<?>> anonymousClass = type.getElements(new AbstractFilter<CtClass<?>>(CtClass.class) {
+
+		TreeSet<CtClass<?>> ts = new TreeSet<CtClass<?>>(new CtLineElementComparator());
+		ts.addAll(type.getElements(new AbstractFilter<CtClass<?>>(CtClass.class) {
 			@Override
 			public boolean matches(CtClass<?> element) {
 				return element.isAnonymous();
 			}
-		});
-
+		}));
+		List<CtClass<?>> anonymousClass = new ArrayList<CtClass<?>>();
+		anonymousClass.addAll(ts);
 		assertFalse(type.isAnonymous());
-		assertTrue(anonymousClass.get(0).isAnonymous());
+		assertTrue(ts.first().isAnonymous());
 		assertTrue(anonymousClass.get(1).isAnonymous());
 		assertEquals(2, anonymousClass.size());
+		assertEquals(2, ts.size());
+
 		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1", anonymousClass.get(0).getQualifiedName());
 		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2", anonymousClass.get(1).getQualifiedName());
 	}

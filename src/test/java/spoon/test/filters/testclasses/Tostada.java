@@ -23,6 +23,7 @@ public class Tostada extends AbstractTostada {
 		return new Tostada() {
 			@Override
 			public void prepare() {
+			    	int a = 3;
 				super.prepare();
 			}
 		};

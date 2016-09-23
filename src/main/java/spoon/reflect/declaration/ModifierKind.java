@@ -19,6 +19,9 @@ package spoon.reflect.declaration;
 /**
  * Represents a modifier on the declaration of a program element such as a
  * class, method, or field.
+ *
+ * The order is important, because it is always pretty--printed is this order, enabling to have a JLS-compliant,
+ * checkstyle compliant generated code (thanks to EnumSet used for modifiers).
  */
 
 public enum ModifierKind {
@@ -80,4 +83,5 @@ public enum ModifierKind {
 		}
 		return lowercase;
 	}
+
 }

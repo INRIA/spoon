@@ -24,7 +24,6 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -121,7 +120,7 @@ public class IntercessionTest {
 
 	@Test
 	public void testInsertIfIntercession() {
-		String ifCode = "if (1 == 0)\n" + "    return 1;\n" + "else\n"
+		String ifCode = "if (1 == 0)\n" + "    return 1;\n" + " else\n"
 				+ "    return 0;\n" + "";
 		CtClass<?> clazz = factory
 				.Code()
@@ -148,7 +147,7 @@ public class IntercessionTest {
 		assertSame(r1, ifStmt.getElseStatement());
 
 		s = ifStmt.toString().replace("\r", "");
-		String ifCodeNew = "if (1 == 0)\n" + "    return 0;\n" + "else\n"
+		String ifCodeNew = "if (1 == 0)\n" + "    return 0;\n" + " else\n"
 				+ "    return 1;\n" + "";
 		assertEquals(ifCodeNew, s);
 	}

@@ -17,21 +17,22 @@
 
 package spoon.test.field;
 
-import org.junit.Test;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.Factory;
-import spoon.test.field.testclasses.AddFieldAtTop;
-
-import java.io.File;
-import java.util.HashSet;
-
 import static org.junit.Assert.assertEquals;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
+
+import java.io.File;
+import java.util.HashSet;
+
+import org.junit.Test;
+
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.test.field.testclasses.AddFieldAtTop;
 
 public class FieldTest {
 	@Test

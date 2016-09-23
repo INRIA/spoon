@@ -1,7 +1,16 @@
 package spoon.test.targeted;
 
-import com.sun.org.apache.bcel.internal.classfile.InnerClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+
+import java.util.List;
+
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -22,9 +31,11 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.code.CtConstructorCallImpl;
 import spoon.support.reflect.code.CtFieldReadImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
+import spoon.support.util.SortedList;
 import spoon.test.targeted.testclasses.Bar;
 import spoon.test.targeted.testclasses.Foo;
 import spoon.test.targeted.testclasses.InternalSuperCall;
@@ -32,14 +43,8 @@ import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 import spoon.test.targeted.testclasses.Tapas;
 
-import java.util.List;
+import com.sun.org.apache.bcel.internal.classfile.InnerClass;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class TargetedExpressionTest {
 	@Test
@@ -428,7 +433,8 @@ public class TargetedExpressionTest {
 	public void testClassDeclaredInALambda() throws Exception {
 		// contract: A class can be declared in a lambda expression where we use final fields.
 		final CtType<Tapas> type = buildClass(Tapas.class);
-		final List<CtFieldAccess<?>> elements = type.getElements(new TypeFilter<>(CtFieldAccess.class));
+		final List<CtFieldAccess<?>> elements = new SortedList(new CtLineElementComparator());
+		elements.addAll(type.getElements(new TypeFilter<>(CtFieldAccess.class)));
 		assertEquals(3, elements.size());
 
 		final CtTypeReference<Object> firstExpected = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$1$InnerSubscriber");

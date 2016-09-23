@@ -1,5 +1,17 @@
 package spoon.test.signature;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,18 +38,8 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class SignatureTest {
 
@@ -129,7 +131,7 @@ public class SignatureTest {
 		String parameterWithQuotes = ((CtInvocation<?>)sta1).getArguments().get(0).toString();
 		assertEquals("\"hello\"",parameterWithQuotes);
 
-		CtStatement stb1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(20)")
+		(factory).Code().createCodeSnippetStatement("Integer.toBinaryString(20)")
 				.compile();
 	}
 
@@ -205,14 +207,17 @@ public class SignatureTest {
 
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
-		CtMethod<?> methodInteger = (CtMethod<?>) clazz1.getMethods().toArray()[0];
+		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		ts.addAll(clazz1.getMethods());
+		CtMethod[] methodArray = ts.toArray(new CtMethod[0]);
+		CtMethod<?> methodInteger = methodArray[0];
 		assertEquals("java.lang.Object foo(int)", methodInteger.getSignature());
 
 		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodInteger.getBody().getStatement(1);
 		CtExpression<?> argumentToInt1 = invoToInt1.getArguments().get(0);
 
 		//----------From the second method we take the Method Inv
-		CtMethod<?> methodString = (CtMethod<?>) clazz1.getMethods().toArray()[1];
+		CtMethod<?> methodString = (CtMethod<?>) methodArray[1];
 		assertEquals("java.lang.Object foo(java.lang.String)", methodString.getSignature());
 
 		CtInvocation<?> invoToString = (CtInvocation<?>) methodString.getBody().getStatement(1);
