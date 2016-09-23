@@ -555,9 +555,6 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (foreach.getExpression() == null && child instanceof CtExpression) {
 			foreach.setExpression((CtExpression<?>) child);
 			return;
-		} else if (child instanceof CtStatement) {
-			foreach.setBody((CtStatement) child);
-			return;
 		}
 		super.visitCtForEach(foreach);
 	}
