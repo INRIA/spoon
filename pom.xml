@@ -595,7 +595,8 @@
                 <exclude>*.xml</exclude>
                 <exclude>*.txt</exclude>
                 <exclude>*.md</exclude>
-                <exclude>doc/**</exclude>
+		<exclude>chore/**</exclude>
+		<exclude>doc/**</exclude>
                 <exclude>spooned/**</exclude>
                 <exclude>src/main/resources/**</exclude>
                 <exclude>src/main/assembly/**</exclude>
