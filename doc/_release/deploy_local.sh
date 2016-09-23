@@ -1,16 +1,8 @@
 #!/bin/bash
-#
-# Copy all markdown files in the _jekyll directory
-# to generate the website.
-
-# Move all markdown files in the jekyll directory.
-for file in *.md; do
-    yes | cp -rf ${file} _jekyll
-done
-cd _jekyll
+# runs the doc server locally
 
 # Generate the website.
-jekyll serve
+jekyll serve --watch
 if [ "$?" -ne 0 ]; then
     echo "Jekyll cannot build your site!"
     exit 1

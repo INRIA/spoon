@@ -3,6 +3,8 @@
 # Deploys the current Spoon website to the website server.
 # To test the site locally before deploying run `jekyll serve`
 # in the website branch.
+#
+# Copied in the config of job "website deployer" on Jenkins
 
 REPO="https://github.com/INRIA/spoon.git"
 DIR=temp-spoon-clone
@@ -23,12 +25,6 @@ git clone $REPO $DIR
 
 # Move working directory into temp folder.
 cd $DIR_WEBSITE
-
-# Move all markdown files in the jekyll directory.
-for file in *.md; do
-    cp ${file} _jekyll
-done
-cd _jekyll
 
 # Generate the website.
 jekyll build

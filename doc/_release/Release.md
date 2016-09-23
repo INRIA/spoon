@@ -37,7 +37,7 @@ This article is a short summary of the [official documentation of sonatype][ossr
 - Create Pull request on Github with
     - Update of Spoon's website
     	- News section in `doc/doc_homepage.md`
-    	- Maven version in `doc/_jekyll/_config.yml`
+    	- Maven version in `doc/_config.yml`
     	- Maven snippets in `doc/doc_homepage.md`
     - Updates main `README.md`
 - Add changelog on release page on GitHub 
