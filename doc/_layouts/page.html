@@ -1,0 +1,22 @@
+---
+layout: default
+---
+
+<div class="post-header">
+   <h1 class="post-title-main">{% if page.homepage == true %} {{site.homepage_title}} {% else %}{{ page.title }}{% endif %}</h1>
+</div>
+
+<div class="post-content">
+
+   {% if page.summary %}
+    <div class="summary">{{page.summary}}</div>
+   {% endif %}
+
+  {{content}}
+{% include linkrefs.html %}
+
+</div>
+
+{{hr_shaded}}
+
+{% include footer.html %}

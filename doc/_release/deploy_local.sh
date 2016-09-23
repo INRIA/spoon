@@ -1,10 +1,5 @@
 #!/bin/bash
-#
-# Copy all markdown files in the _jekyll directory
-# to generate the website.
-
-# Move all markdown files in the jekyll directory.
-cp `dirname $0`/../*.md `dirname $0`/../_jekyll/
+# runs the doc server locally
 
 # Generate the website.
 jekyll serve --watch
