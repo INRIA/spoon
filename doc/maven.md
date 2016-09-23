@@ -47,7 +47,7 @@ and can be directly inserted in a pom.xml file at the root of a project
 <plugin>
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-maven-plugin</artifactId>
-  <version>2.1</version>
+  <version>2.2</version>
   <executions>
     <execution>
       <phase>generate-sources</phase>
