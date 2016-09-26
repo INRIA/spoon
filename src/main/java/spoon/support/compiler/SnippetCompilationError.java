@@ -33,7 +33,7 @@ public class SnippetCompilationError extends SpoonException {
 	}
 
 	public SnippetCompilationError(String string) {
-		super();
+		super(string);
 		this.problems = new ArrayList<>();
 		this.problems.add(string);
 
