@@ -1,24 +1,28 @@
 package spoon.test.ctClass;
 
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.test.ctClass.testclasses.Foo;
-import spoon.test.ctClass.testclasses.Pozole;
-
-import java.util.Set;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
+
+import java.util.Set;
+
+import org.junit.Test;
+
+import spoon.Launcher;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.test.ctClass.testclasses.Foo;
+import spoon.test.ctClass.testclasses.Pozole;
 
 public class CtClassTest {
 
@@ -102,5 +106,33 @@ public class CtClassTest {
 		final String expectedConstructor = "public Cook() {" + System.lineSeparator() + "}";
 		assertEquals(expectedConstructor, constructors.toArray(new CtConstructor[constructors.size()])[0].toString());
 		assertEquals("final java.lang.Class<Cook> cookClass = Cook.class", cook.getMethod("m").getBody().getStatement(0).toString());
+
+		Factory factory = aPozole.getFactory();
+
+		aPozole.removeModifier(ModifierKind.PUBLIC);
+		factory.Code().createCodeSnippetStatement(aPozole.toString()).compile();
+
+		CtClass internalClass = factory.Core().createClass();
+		internalClass.setSimpleName("Foo");
+		cook.getParent(CtBlock.class).addStatement(internalClass);
+		assertEquals("Foo", internalClass.getSimpleName());
+		assertEquals("spoon.test.ctClass.testclasses.Pozole$Foo", internalClass.getQualifiedName());
+
+		internalClass.addConstructor(factory.Core().createConstructor());
+		CtConstructor cons = (CtConstructor) internalClass.getConstructors().toArray(new CtConstructor[0])[0];
+		cons.setBody(factory.Core().createBlock());
+
+		CtConstructorCall call = cook.getFactory().Core().createConstructorCall();
+		call.setExecutable(cons.getReference());
+		assertEquals(internalClass, internalClass.getReference().getDeclaration());
+		assertEquals("new Foo()", call.toString());
+		internalClass.insertAfter(call);
+
+		factory.getEnvironment().setAutoImports(true);
+		factory.Code().createCodeSnippetStatement(aPozole.toString()).compile();
+
+		factory.getEnvironment().setAutoImports(false);
+		factory.Code().createCodeSnippetStatement(aPozole.toString()).compile();
+
 	}
 }
