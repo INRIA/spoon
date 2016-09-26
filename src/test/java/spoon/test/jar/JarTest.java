@@ -1,6 +1,5 @@
 package spoon.test.jar;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
@@ -43,12 +42,10 @@ public class JarTest {
 	public void testResource() throws Exception {
 		Launcher launcher = new Launcher();
 
-		String foo = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("spoon/test/api/Foo.java"));
-
 		SpoonCompiler compiler = launcher.createCompiler(
 				launcher.getFactory(),
 				Arrays.asList(
-						new VirtualFile(foo, "Foo.java")
+						new VirtualFile("class Foo {}" , "Foo.java")
 				));
 		Assert.assertTrue(compiler.build());
 
