@@ -16,6 +16,18 @@
  */
 package spoon.support.reflect.declaration;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -46,18 +58,6 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -446,7 +446,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public boolean isLocalType() {
-		return getReference().isLocalType();
+		return isParentInitialized() && getParent() instanceof CtBlock;
 	}
 
 	@Override

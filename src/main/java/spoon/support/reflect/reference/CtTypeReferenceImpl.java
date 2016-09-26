@@ -16,6 +16,20 @@
  */
 package spoon.support.reflect.reference;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
@@ -34,20 +48,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -499,6 +499,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean isLocalType() {
+		if (this.getDeclaration() != null) {
+			return (this.getDeclaration().isLocalType());
+		}
 		// A local type doesn't have a fully qualified name but have an identifier
 		// to know which is the local type member wanted by the developer.
 		// Oracle documentation: https://docs.oracle.com/javase/specs/jls/se7/html/jls-6.html#jls-6.7
