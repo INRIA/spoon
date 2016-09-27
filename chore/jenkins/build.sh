@@ -1,34 +1,16 @@
 #!/bin/bash
 #
-# Compiles an open-source project, spoons the project, spoons source code
-# spooned and checks each step if there aren't errors. To execute this
-# script, create a job in jenkins with the dockerfile given in the same
-# repository and launch the jobs. The first part of this script isn't
-# necessary if you use the plugin of git. You can retreives results of
-# this script in the target/spoon-reports/result-spoon.xml file of the
-# current open-source project.
+# Compiles an open-source project, spoons the project, runs the tests
+# and checks at each step if there aren't errors. To execute this
+# script, create a job in jenkins. 
+#
+# is also run in Travis to check this script and the compatibility with Spoon Maven Plugin
+#
+# Typical usage:
+# 
+# $ cd my-maven-project-with-pom
+# $ curl https://raw.githubusercontent.com/INRIA/spoon/master/chore/jenkins/build.sh | bash
 
-# =============================================
-# This part isn't necessary in the jenkins because git plugin make it better!
-# =============================================
-GIT_CLONE="https://github.com/Organization/Repository.git"
-GIT_NAME="repository-jenkins"
-JOB_NAME=$GIT_NAME
-
-# Removes project if it exists yet.
-if [ -d "$GIT_NAME" ]; then
-	rm -rf $GIT_NAME
-fi
-
-# Clones the repository
-git clone $GIT_CLONE $GIT_NAME
-if [ "$?" -ne 0 ]; then
-    echo "Git clone $GIT_CLONE unsuccessful!"
-    exit 1
-fi
-
-# Enters in the repository.
-cd $GIT_NAME/
 
 echo " "
 echo "-------------------------------------------------------"
@@ -36,14 +18,17 @@ echo "Initizalizes project"
 echo "-------------------------------------------------------"
 echo " "
 
+# required if workspace has not been cleaned
+git reset --hard
+
 # Gets some information from pom.xml.
-ARTIFACT_ID=$(xmlstarlet sel -t -v "/_:project/_:artifactId" pom.xml)
-VERSION=$(xmlstarlet sel -t -v "/_:project/_:version" pom.xml)
+ARTIFACT_ID=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:artifactId" pom.xml)
+VERSION=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:version" pom.xml)
 MODULES_JOB=$(cat pom.xml | grep "<modules>")
 if [ -z "$MODULES_JOB" ]; then
 	MODULES_JOB[0]="./"
 else
-	MODULES_JOB=$(xmlstarlet sel -T -t -m "/_:project/_:modules/_:module" -v "." -o "/" -n pom.xml)
+	MODULES_JOB=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -T -t -m "/x:project/x:modules/x:module" -v "." -o "/" -n pom.xml)
 fi
 
 # Gets some information from git.
@@ -52,22 +37,18 @@ VERSION_ID=$(git rev-parse HEAD)
 # Removes checkstyle plugin because spoon don't make beautiful code in output.
 HAS_CHECKSTYLE=$(cat pom.xml | grep "maven-checkstyle-plugin")
 if [ ! -z HAS_CHECKSTYLE ]; then
-	xmlstarlet ed -d "/_:project/_:build/_:plugins/_:plugin[_:artifactId='maven-checkstyle-plugin']" pom.xml > pom.bak.xml
+	xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -d "/x:project/x:build/x:plugins/x:plugin[x:artifactId='maven-checkstyle-plugin']" pom.xml > pom.bak.xml
 	mv pom.bak.xml pom.xml
 fi
 
-# A Java version can be parametrized in Job configuration.
-if [ -z JAVA_VERSION ]; then
-	JAVA_VERSION="8"
-	JAVA_JVM="/usr/lib/jvm/java-8-oracle"
-elif [ "$JAVA_VERSION" = "7" ]; then
-	JAVA_VERSION="7"
-	JAVA_JVM="/usr/lib/jvm/java-7-openjdk-amd64"
-else
-	JAVA_VERSION="8"
-	JAVA_JVM="/usr/lib/jvm/java-8-oracle"
+# Removes enforcer plugin because we would like specify our personnal repository.
+HAS_ENFORCER=$(cat pom.xml | grep "maven-enforcer-plugin")
+if [ ! -z HAS_ENFORCER ]; then
+	xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -d "/x:project/x:build/x:plugins/x:plugin[x:artifactId='maven-enforcer-plugin']" pom.xml > pom.bak.xml
+	mv pom.bak.xml pom.xml
 fi
-export JAVA_HOME=$JAVA_JVM
+
+JAVA_VERSION=`java -version  2>&1`
 
 # Displays variables used in the build.
 echo ""
@@ -79,13 +60,18 @@ for module in ${MODULES_JOB// / }; do
 	if [ "$module" = "./" ]; then
 		echo "- "${JOB_NAME}
 	else
-		echo "- "${module}
+		echo "- "${module}q
 	fi
 done
 if [ ! -z HAS_CHECKSTYLE ]; then
 	echo "Has checkstyle: true"
 else
 	echo "Has checkstyle: false"
+fi
+if [ ! -z HAS_ENFORCER ]; then
+	echo "Has enforcer: true"
+else
+	echo "Has enforcer: false"
 fi
 echo "Git version id: $VERSION_ID"
 echo "Java version: $JAVA_VERSION"
@@ -99,7 +85,7 @@ echo " "
 
 # Compiles project.
 START_COMPILE_PROJECT=$(($(date +%s%N)/1000000))
-mvn clean install -fn
+mvn clean install 
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile original project unsuccessful!"
     exit 1
@@ -113,29 +99,29 @@ for module in ${MODULES_JOB// / }; do
 	module_name=$(echo ${module} | tr -d '/ ')
 
 	if [ -d "$REPORT_DIRECTORY" ]; then
-		NB_TESTS=0
-		NB_ERRORS=0
-		NB_SKIPPED=0
-		NB_FAILURES=0
+		NB_TESTS_COMPILE=0
+		NB_ERRORS_COMPILE=0
+		NB_SKIPPED_COMPILE=0
+		NB_FAILURES_COMPILE=0
 		for i in `ls $REPORT_DIRECTORY/TEST-*.xml`; do
 			tests=$(xmlstarlet sel -t -v "/testsuite/@tests" $i)
 			if [ "$?" -eq 0 ]; then
-				NB_TESTS=$((NB_TESTS+$tests))
+				NB_TESTS_COMPILE=$((NB_TESTS_COMPILE+$tests))
 			fi
 			errors=$(xmlstarlet sel -t -v "/testsuite/@errors" $i)
 			if [ "$?" -eq 0 ]; then
-				NB_ERRORS=$((NB_ERRORS+$errors))
+				NB_ERRORS_COMPILE=$((NB_ERRORS_COMPILE+$errors))
 			fi
 			skip=$(xmlstarlet sel -t -v "/testsuite/@skipped" $i)
 			if [ "$?" -eq 0 ]; then
-				NB_SKIPPED=$((NB_SKIPPED+$skip))
+				NB_SKIPPED_COMPILE=$((NB_SKIPPED_COMPILE+$skip))
 			fi
 			failures=$(xmlstarlet sel -t -v "/testsuite/@failures" $i)
 			if [ "$?" -eq 0 ]; then
-				NB_FAILURES=$((NB_FAILURES+$failures))
+				NB_FAILURES_COMPILE=$((NB_FAILURES_COMPILE+$failures))
 			fi
 		done
-		echo -e "tests: $NB_TESTS\nerrors: $NB_ERRORS\nskipped: $NB_SKIPPED\nfailures: $NB_FAILURES" > result-spoon-tests-${module_name}.txt
+		echo -e "tests: $NB_TESTS_COMPILE\nerrors: $NB_ERRORS_COMPILE\nskipped: $NB_SKIPPED_COMPILE\nfailures: $NB_FAILURES_COMPILE" > result-spoon-tests-${module_name}.txt
 	fi
 done
 
@@ -143,10 +129,10 @@ done
 echo " "
 echo "--- Displays results of the maven compile ---"
 echo "Time to compile: $DIFF_COMPILE_PROJECT"
-echo "Number of tests: $NB_TESTS"
-echo "Number of tests skipped: $NB_SKIPPED"
-echo "Number of failures in tests: $NB_FAILURES"
-echo "Number of errors in tests: $NB_ERRORS"
+echo "Number of tests: $NB_TESTS_COMPILE"
+echo "Number of tests skipped: $NB_SKIPPED_COMPILE"
+echo "Number of failures in tests: $NB_FAILURES_COMPILE"
+echo "Number of errors in tests: $NB_ERRORS_COMPILE"
 
 echo " "
 echo "-------------------------------------------------------"
@@ -155,30 +141,38 @@ echo "-------------------------------------------------------"
 echo " "
 
 # Edits pom xml to prepare project to spoon project.
-xmlstarlet ed -s "/_:project/_:build/_:plugins" --type elem -n plugin -v "" pom.xml > pom.bak.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak.xml > pom.bak2.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]" --type elem -n artifactId -v "spoon-maven-plugin" pom.bak2.xml > pom.bak3.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]" --type elem -n version -v "3.0-SNAPSHOT" pom.bak3.xml > pom.bak4.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]" --type elem -n executions -v "" pom.bak4.xml > pom.bak5.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:executions" --type elem -n execution -v "" pom.bak5.xml > pom.bak6.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:executions/_:execution" --type elem -n phase -v "generate-sources" pom.bak6.xml > pom.bak7.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:executions/_:execution" --type elem -n goals -v "" pom.bak7.xml > pom.bak8.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:executions/_:execution/_:goals" --type elem -n goal -v "generate" pom.bak8.xml > pom.bak9.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]" --type elem -n configuration -v "" pom.bak9.xml > pom.bak10.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:configuration" --type elem -n processors -v "" pom.bak10.xml > pom.bak11.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:configuration/_:processors" --type elem -n processor -v "fr.inria.gforge.spoon.processors.CountStatementProcessor" pom.bak11.xml > pom.bak12.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:configuration" --type elem -n compliance -v "${JAVA_VERSION}" pom.bak12.xml > pom.bak13.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]" --type elem -n dependencies -v "" pom.bak13.xml > pom.bak14.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:dependencies" --type elem -n dependency -v "" pom.bak14.xml > pom.bak15.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:dependencies/_:dependency" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak15.xml > pom.bak16.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:dependencies/_:dependency" --type elem -n artifactId -v "spoon-processors" pom.bak16.xml > pom.bak17.xml
-xmlstarlet ed -s "/_:project/_:build/_:plugins/_:plugin[last()]/_:dependencies/_:dependency" --type elem -n version -v "1.0-SNAPSHOT" pom.bak17.xml > pom.bak18.xml
-mv pom.bak18.xml pom.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project" --type elem -n repositories -v "" pom.xml > pom.bak.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:repositories" --type elem -n repository -v "" pom.bak.xml > pom.bak1.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:repositories/x:repository[last()]" --type elem -n id -v "gforge.inria.fr-snapshot" pom.bak1.xml > pom.bak2.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:repositories/x:repository[last()]" --type elem -n name -v "Maven Repository for Spoon Snapshot" pom.bak2.xml > pom.bak3.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:repositories/x:repository[last()]" --type elem -n url -v "http://spoon.gforge.inria.fr/repositories/snapshots/" pom.bak3.xml > pom.bak4.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:repositories/x:repository[last()]" --type elem -n snapshots -v "" pom.bak4.xml > pom.bak5.xml
+mv pom.bak5.xml pom.xml
+rm pom.bak*.xml
+
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins" --type elem -n plugin -v "" pom.xml > pom.bak.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak.xml > pom.bak2.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n artifactId -v "spoon-maven-plugin" pom.bak2.xml > pom.bak3.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "2.2" pom.bak3.xml > pom.bak4.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n executions -v "" pom.bak4.xml > pom.bak5.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions" --type elem -n execution -v "" pom.bak5.xml > pom.bak6.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n phase -v "generate-sources" pom.bak6.xml > pom.bak7.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n goals -v "" pom.bak7.xml > pom.bak8.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution/x:goals" --type elem -n goal -v "generate" pom.bak8.xml > pom.bak9.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n configuration -v "" pom.bak9.xml > pom.bak10.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:configuration" --type elem -n processors -v "" pom.bak10.xml > pom.bak11.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:configuration/x:processors" --type elem -n processor -v "spoon.processing.SpoonTagger" pom.bak11.xml > pom.bak12.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n dependencies -v "" pom.bak12.xml > pom.bak14.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies" --type elem -n dependency -v "" pom.bak14.xml > pom.bak19.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak19.xml > pom.bak20.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n artifactId -v "spoon-core" pom.bak20.xml > pom.bak21.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n version -v "[5.0.0-SNAPSHOT,)" pom.bak21.xml > pom.bak22.xml
+mv pom.bak22.xml pom.xml
 rm pom.bak*.xml
 
 # Compiles project with spoon configuration.
 START_COMPILE_WITH_SPOON=$(($(date +%s%N)/1000000))
-mvn clean install -fn
+mvn clean install 
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile with spoon unsuccessful!"
     exit 1
@@ -191,30 +185,35 @@ for module in ${MODULES_JOB// / }; do
 	REPORT_DIRECTORY=${module}"target/surefire-reports"
 	module_name=$(echo ${module} | tr -d '/ ')
 
+        if [ ! -f ${module}"target/generated-sources/spoon/spoon/Spoon.java" ]; then 
+            echo "ERROR: no tag class, spoon has failed"
+            exit -1
+        fi
+
 	if [ -d "$REPORT_DIRECTORY" ]; then
-		NB_TESTS=0
-		NB_ERRORS=0
-		NB_SKIPPED=0
-		NB_FAILURES=0
+		NB_TESTS_SPOON=0
+		NB_ERRORS_SPOON=0
+		NB_SKIPPED_SPOON=0
+		NB_FAILURES_SPOON=0
 		for i in `ls $REPORT_DIRECTORY/TEST-*.xml`; do
 			tests=$(xmlstarlet sel -t -v "/testsuite/@tests" $i)
 			if [ "$?" -eq 0 ]; then
-				NB_TESTS=$((NB_TESTS+$tests))
+				NB_TESTS_SPOON=$((NB_TESTS_SPOON+$tests))
 			fi
 			errors=$(xmlstarlet sel -t -v "/testsuite/@errors" $i)
 			if [ "$?" -eq 0 ]; then
-				NB_ERRORS=$((NB_ERRORS+$errors))
+				NB_ERRORS_SPOON=$((NB_ERRORS_SPOON+$errors))
 			fi
 			skip=$(xmlstarlet sel -t -v "/testsuite/@skipped" $i)
 			if [ "$?" -eq 0 ]; then
-				NB_SKIPPED=$((NB_SKIPPED+$skip))
+				NB_SKIPPED_SPOON=$((NB_SKIPPED_SPOON+$skip))
 			fi
 			failures=$(xmlstarlet sel -t -v "/testsuite/@failures" $i)
 			if [ "$?" -eq 0 ]; then
-				NB_FAILURES=$((NB_FAILURES+$failures))
+				NB_FAILURES_SPOON=$((NB_FAILURES_SPOON+$failures))
 			fi
 		done
-		echo -e "tests: $NB_TESTS\nerrors: $NB_ERRORS\nskipped: $NB_SKIPPED\nfailures: $NB_FAILURES" > result-spoon-tests-spooned-${module_name}.txt
+		echo -e "tests: $NB_TESTS_SPOON\nerrors: $NB_ERRORS_SPOON\nskipped: $NB_SKIPPED_SPOON\nfailures: $NB_FAILURES_SPOON" > result-spoon-tests-spooned-${module_name}.txt
 	fi
 done
 
@@ -222,10 +221,30 @@ done
 echo " "
 echo "--- Displays results of the maven compile with spoon ---"
 echo "Time to compile with spoon: $DIFF_WITH_SPOON"
-echo "Number of tests: $NB_TESTS"
-echo "Number of tests skipped: $NB_SKIPPED"
-echo "Number of failures in tests: $NB_FAILURES"
-echo "Number of errors in tests: $NB_ERRORS"
+echo "Number of tests: $NB_TESTS_SPOON"
+echo "Number of tests skipped: $NB_SKIPPED_SPOON"
+echo "Number of failures in tests: $NB_FAILURES_SPOON"
+echo "Number of errors in tests: $NB_ERRORS_SPOON"
+
+if [ ! "$NB_TESTS_SPOON" -eq "$NB_TESTS_COMPILE" ]; then
+    echo "Error: Tests aren't equals between original compile and spoon compile!"
+    exit 1
+fi
+
+if [ ! "$NB_SKIPPED_SPOON" -eq "$NB_SKIPPED_COMPILE" ]; then
+    echo "Error: Tests skipped aren't equals between original compile and spoon compile!"
+    exit 1
+fi
+
+if [ ! "$NB_FAILURES_SPOON" -eq "$NB_FAILURES_COMPILE" ]; then
+    echo "Error: Tests failures aren't equals between original compile and spoon compile!"
+    exit 1
+fi
+
+if [ ! "$NB_ERRORS_SPOON" -eq "$NB_ERRORS_COMPILE" ]; then
+    echo "Error: Tests errors aren't equals between original compile and spoon compile!"
+    exit 1
+fi
 
 echo " "
 echo "-------------------------------------------------------"
@@ -243,13 +262,15 @@ done
 
 # Compiles project with source spooned.
 START_COMPILE_SPOON_SPOON=$(($(date +%s%N)/1000000))
-mvn clean install -fn
+mvn clean install 
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile with spoon(spoon) unsuccessful!"
     exit 1
 fi
 END_COMPILE_SPOON_SPOON=$(($(date +%s%N)/1000000))
 DIFF_SPOON_SPOON=$(echo "$END_COMPILE_SPOON_SPOON - $START_COMPILE_SPOON_SPOON" | bc)
+
+
 
 # Displays results of the maven compile.
 echo " "
@@ -261,6 +282,8 @@ echo "-------------------------------------------------------"
 echo "Retreives all results files in the project (in all sub modules if the project is a multi module project)"
 echo "-------------------------------------------------------"
 echo " "
+
+find . -name "result-spoon-tests-*"
 
 # Moves all results file in target directory.
 for module in ${MODULES_JOB// / }; do
@@ -274,7 +297,7 @@ for module in ${MODULES_JOB// / }; do
 done
 
 if [ ! -d "target/spoon-reports" ]; then
-	mkdir target/spoon-reports
+	mkdir -p target/spoon-reports
 fi
 
 # Creates result file.
@@ -364,5 +387,6 @@ done
 mv result-spoon.bak$((counter-1)).xml result-spoon.xml
 rm result-spoon.bak*.xml
 mv result-spoon.xml target/spoon-reports/result-spoon.xml
+cat target/spoon-reports/result-spoon.xml
 
 exit 0
