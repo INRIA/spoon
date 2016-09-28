@@ -16,17 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
@@ -56,8 +45,21 @@ import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
+import spoon.support.reflect.reference.SpoonClassNotFoundException;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -245,8 +247,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	 * This helper method is meant to deal with package references that are
 	 * <code>null</code> for inner types.
 	 *
-	 * @param tref
-	 * 		the type reference
+	 * @param tref the type reference
 	 * @return the corresponding package reference
 	 * @see CtTypeReference#getPackage()
 	 * @since 4.0
@@ -512,7 +513,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
 		if (method != null) {
-			for (CtTypeMember typeMember: new ArrayList<>(typeMembers)) {
+			for (CtTypeMember typeMember : new ArrayList<>(typeMembers)) {
 				if (!(typeMember instanceof CtMethod)) {
 					continue;
 				}
@@ -818,14 +819,16 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return l;
 	}
 
-	/** puts all methods of from in destination based on signatures only */
+	/**
+	 * puts all methods of from in destination based on signatures only
+	 */
 	private void addAllBasedOnSignature(Set<CtMethod<?>> from, Set<CtMethod<?>> destination) {
 		List<String> signatures = new ArrayList<>();
-		for (CtMethod<?> m: destination) {
+		for (CtMethod<?> m : destination) {
 			signatures.add(m.getSignature());
 		}
 
-		for (CtMethod<?> m: from) {
+		for (CtMethod<?> m : from) {
 			if (!signatures.contains(m.getSignature())) {
 				destination.add(m);
 			}
@@ -835,18 +838,24 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		Set<CtMethod<?>> l = new SignatureBasedSortedSet<>(getMethods());
-		if ((getSuperclass() != null) && (getSuperclass().getTypeDeclaration() != null)) {
-			CtType<?> t = getSuperclass().getTypeDeclaration();
-			addAllBasedOnSignature(t.getAllMethods(), l);
+		if ((getSuperclass() != null)) {
+			try {
+				CtType<?> t = getSuperclass().getTypeDeclaration();
+				addAllBasedOnSignature(t.getAllMethods(), l);
+			} catch (SpoonClassNotFoundException ignored) {
+				// should not be thrown in 'noClasspath' environment (#775)
+			}
 		} else {
 			// this is object
 			addAllBasedOnSignature(getFactory().Type().get(Object.class).getMethods(), l);
 		}
 
 		for (CtTypeReference<?> ref : getSuperInterfaces()) {
-			if (ref.getTypeDeclaration() != null) {
+			try {
 				CtType<?> t = ref.getTypeDeclaration();
 				addAllBasedOnSignature(t.getAllMethods(), l);
+			} catch (SpoonClassNotFoundException ignored) {
+				// should not be thrown in 'noClasspath' environment (#775)
 			}
 		}
 
