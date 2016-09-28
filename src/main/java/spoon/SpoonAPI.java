@@ -127,6 +127,14 @@ public interface SpoonAPI {
 	Factory getFactory();
 
 	/**
+	 * Sets the current factory
+	 *
+	 * @param factory
+	 * 		The {@link Factory} to utilize when calling {@link #buildModel()}.
+	 */
+	void setFactory(Factory factory);
+
+	/**
 	 * Returns the current environment. This environment is modifiable.
 	 */
 	Environment getEnvironment();

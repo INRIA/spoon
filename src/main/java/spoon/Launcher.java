@@ -600,6 +600,11 @@ public class Launcher implements SpoonAPI {
 	}
 
 	@Override
+	public void setFactory(Factory factory) {
+		this.factory = factory;
+	}
+
+	@Override
 	public Environment createEnvironment() {
 		return new StandardEnvironment();
 	}
