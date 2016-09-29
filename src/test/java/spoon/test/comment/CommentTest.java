@@ -434,6 +434,7 @@ public class CommentTest {
 		i.addComment(createFakeComment(f, "comment local variable"));
 		method.getBody().addStatement(i);
 
+
 		assertEquals("// comment method" + newLine
 				+ "void newMethod() {" + newLine
 				+ "    // comment local variable" + newLine

@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * This class represents the position of a Java program element in a source
+ * This immutable class represents the position of a Java program element in a source
  * file.
  */
 public class SourcePositionImpl implements SourcePosition, Serializable {
@@ -33,19 +33,19 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	/**
 	 * Search the line number corresponding to a specific position
 	 */
-	private int searchLineNumber(int[] startLineIndexes, int position) {
-		if (startLineIndexes == null) {
-			return 1;
+	private int searchLineNumber(int position) {
+		if (lineSeparatorPositions == null) {
+			return -1;
 		}
-		int length = startLineIndexes.length;
+		int length = lineSeparatorPositions.length;
 		if (length == 0) {
-			return 1;
+			return -1;
 		}
 		int g = 0, d = length - 1;
 		int m = 0, start;
 		while (g <= d) {
 			m = (g + d) / 2;
-			if (position < (start = startLineIndexes[m])) {
+			if (position < (start = lineSeparatorPositions[m])) {
 				d = m - 1;
 			} else if (position > start) {
 				g = m + 1;
@@ -53,7 +53,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 				return m + 1;
 			}
 		}
-		if (position < startLineIndexes[m]) {
+		if (position < lineSeparatorPositions[m]) {
 			return m + 1;
 		}
 		return m + 2;
@@ -62,18 +62,18 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	/**
 	 * Search the column number
 	 */
-	private int searchColumnNumber(int[] startLineIndexes, int position) {
-		if (startLineIndexes == null) {
-			return 1;
+	private int searchColumnNumber(int position) {
+		if (lineSeparatorPositions == null) {
+			return -1;
 		}
-		int length = startLineIndexes.length;
+		int length = lineSeparatorPositions.length;
 		if (length == 0) {
-			return 1;
+			return -1;
 		}
 		int i = 0;
-		for (i = 0; i < startLineIndexes.length - 1; i++) {
-			if (startLineIndexes[i] < position && (startLineIndexes[i + 1] > position)) {
-				return position - startLineIndexes[i];
+		for (i = 0; i < lineSeparatorPositions.length - 1; i++) {
+			if (lineSeparatorPositions[i] < position && (lineSeparatorPositions[i + 1] > position)) {
+				return position - lineSeparatorPositions[i];
 			}
 		}
 		int tabCount = 0;
@@ -81,34 +81,50 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		if (getCompilationUnit() != null) {
 			tabSize = getCompilationUnit().getFactory().getEnvironment().getTabulationSize();
 			String source = getCompilationUnit().getOriginalSourceCode();
-			for (int j = startLineIndexes[i]; j < position; j++) {
+			for (int j = lineSeparatorPositions[i]; j < position; j++) {
 				if (source.charAt(j) == '\t') {
 					tabCount++;
 				}
 			}
 		}
-		return (position - startLineIndexes[i]) - tabCount + (tabCount * tabSize);
+		return (position - lineSeparatorPositions[i]) - tabCount + (tabCount * tabSize);
 	}
 
+	/** The position of the first byte of this element (incl. documentation and modifiers) */
+	private int sourceStart = -1;
+
+	/** The position of the last byte of this element */
+	private int sourceEnd = -1;
+
+	/** The position of the first byte of the name of the element, if appropriate (eg the method name)  */
+	private int nameSourceStart = 1;
+
+	/** The line number of the start of the element, if appropriate (eg the method name).
+	 * Computed lazily by {@link #getLine()}
+	 */
+	private int sourceStartline = -1;
+
+	/**
+	 * The index of line breaks, as computed by JDT.
+	 * Used to compute line numbers afterwards.
+	 */
 	int[] lineSeparatorPositions;
 
-	private int sourceStart, sourceEnd, line;
-
-	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStartDeclaration, int sourceStartSource, int sourceEnd, int[] lineSeparatorPositions) {
+	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int nameSourceStart, int sourceEnd, int[] lineSeparatorPositions) {
 		super();
 		this.compilationUnit = compilationUnit;
-		this.sourceStart = sourceStartDeclaration;
+		this.nameSourceStart = nameSourceStart;
 		this.sourceEnd = sourceEnd;
+		this.sourceStart = sourceStart;
 		this.lineSeparatorPositions = lineSeparatorPositions;
-		this.line = searchLineNumber(lineSeparatorPositions, sourceStartSource);
 	}
 
 	public int getColumn() {
-		return searchColumnNumber(lineSeparatorPositions, sourceStart);
+		return searchColumnNumber(nameSourceStart);
 	}
 
 	public int getEndColumn() {
-		return searchColumnNumber(lineSeparatorPositions, sourceEnd);
+		return searchColumnNumber(sourceEnd);
 	}
 
 	public File getFile() {
@@ -119,25 +135,29 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	}
 
 	public int getLine() {
-		return line;
+		if (sourceStartline == -1) {
+			this.sourceStartline = searchLineNumber(this.nameSourceStart);
+		}
+		return sourceStartline;
 	}
 
 	public int getEndLine() {
-		return searchLineNumber(lineSeparatorPositions, sourceEnd);
+		return searchLineNumber(sourceEnd);
 	}
 
 	public int getSourceEnd() {
-		return sourceEnd;
+		return this.sourceEnd;
 	}
 
 	public int getSourceStart() {
-		return sourceStart;
+		return this.sourceStart;
 	}
 
 	/**
 	 * Returns a string representation of this position in the form
 	 * "sourcefile:line", or "sourcefile" if no line number is available.
 	 */
+	@Override
 	public String toString() {
 		if (getFile() == null) {
 			return "(unknown file)";
@@ -161,7 +181,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		int result = 1;
 		result = prime * result + getLine();
 		result = prime * result + getColumn();
-		result = prime * result + getFile().hashCode();
+		result = prime * result + (getFile() != null ? getFile().hashCode() : 1);
 		return result;
 	}
 
@@ -171,8 +191,9 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return compilationUnit;
 	}
 
-	public void setCompilationUnit(CompilationUnit compilationUnit) {
-		this.compilationUnit = compilationUnit;
+	@Override
+	public int getNameSourceStart() {
+		return nameSourceStart;
 	}
 
 }

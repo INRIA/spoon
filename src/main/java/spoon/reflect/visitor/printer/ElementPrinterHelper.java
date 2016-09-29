@@ -318,7 +318,7 @@ public class ElementPrinterHelper {
 			final int sourceEnd = element.getPosition().getSourceEnd();
 			if (offset == CommentOffset.BEFORE && (comment.getPosition().getLine() < line || sourceEnd >= comment.getPosition().getSourceEnd())) {
 				commentsToPrint.add(comment);
-			} else if (offset == CommentOffset.AFTER && comment.getPosition().getSourceStart() >= sourceEnd) {
+			} else if (offset == CommentOffset.AFTER && comment.getPosition().getSourceStart() > sourceEnd) {
 				commentsToPrint.add(comment);
 			} else {
 				final int endLine = element.getPosition().getEndLine();

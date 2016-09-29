@@ -1,24 +1,8 @@
 package spoon.test.position;
 
-import org.junit.Test;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.test.position.testclasses.FooClazz;
-import spoon.test.position.testclasses.FooField;
-import spoon.test.position.testclasses.FooMethod;
-import spoon.test.position.testclasses.FooStatement;
-import spoon.testing.utils.ModelUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,14 +11,28 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static spoon.testing.utils.ModelUtils.*;
+import org.junit.Test;
+
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.test.position.testclasses.FooClazz;
+import spoon.test.position.testclasses.FooClazz2;
+import spoon.test.position.testclasses.FooField;
+import spoon.test.position.testclasses.FooMethod;
+import spoon.test.position.testclasses.FooStatement;
 
 public class PositionTest {
 
 	@Test
 	public void testPositionClass() throws Exception {
-		final Factory build = build(FooClazz.class);
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazz> foo = build.Type().get(FooClazz.class);
 		String classContent = getClassContent(foo);
 
@@ -44,11 +42,21 @@ public class PositionTest {
 		assertEquals(6, position.getEndLine());
 
 		assertEquals(42, position.getSourceStart());
+		assertEquals(67, position.getNameSourceStart());
 		assertEquals(79, position.getSourceEnd());
 		assertEquals("@Deprecated\n"
 				+ "public class FooClazz {\n"
 				+ "\n"
 				+ "}", contentAtPosition(classContent, position));
+
+		// this specifies that getLine starts at name (and not at Javadoc or annotation)
+		final CtType<FooClazz> foo2 = build.Type().get(FooClazz2.class);
+		assertEquals(42, foo2.getPosition().getSourceStart());
+		assertEquals(98, foo2.getPosition().getNameSourceStart());
+		assertEquals(4, foo2.getPosition().getLine());
+		assertEquals(4, foo2.getPosition().getEndLine());
+
+
 	}
 
 	@Test
@@ -277,4 +285,16 @@ public class PositionTest {
 	private String contentAtPosition(String content, SourcePosition position) {
 		return content.substring(position.getSourceStart(),  position.getSourceEnd() + 1);
 	}
+
+	@Test
+	public void testSourcePosition() throws Exception {
+		SourcePosition s = new spoon.Launcher().getFactory().Core().createClass().getPosition();
+		assertEquals(-1, s.getSourceStart());
+		assertEquals(-1, s.getSourceEnd());
+		assertEquals(-1, s.getColumn());
+		assertEquals(-1, s.getLine());
+		assertEquals("(unknown file)", s.toString());
+		assertTrue(s.hashCode() > 0); // no NPE
+	}
+
 }

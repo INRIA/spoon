@@ -29,6 +29,7 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
+
 import spoon.Launcher;
 import spoon.compiler.SpoonFile;
 import spoon.reflect.declaration.CtPackage;
@@ -106,7 +107,10 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 				addExistingJavaFile(unitList, unit);
 			}
 			for (CtType<?> ctType : jdtCompiler.getFactory().Type().getAll()) {
-				addVirtualJavaFile(unitList, ctType);
+				// no valid position, probably built with the intercession API
+				if (ctType.getPosition() == null || ctType.getPosition().getFile() == null) {
+					addVirtualJavaFile(unitList, ctType);
+				}
 			}
 			units = unitList.toArray(new CompilationUnit[unitList.size()]);
 		}
@@ -118,8 +122,8 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 	}
 
 	private void addVirtualJavaFile(List<CompilationUnit> unitList, CtType<?> ctType) {
-		if (ctType.getPosition() != null) {
-			return;
+		if (ctType.getPosition() != null && ctType.getPosition().getFile() != null) {
+			throw new IllegalArgumentException("are you sure the type is virtual?");
 		}
 		CtPackage pack = ctType.getPackage();
 		File directory = jdtCompiler.getSourceOutputDirectory();

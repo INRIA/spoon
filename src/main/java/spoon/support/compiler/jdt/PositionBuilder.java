@@ -21,6 +21,7 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -49,7 +50,17 @@ public class PositionBuilder {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
 		int sourceStartDeclaration = node.sourceStart;
 		int sourceStartSource = node.sourceStart;
+		// default value
+		if (!(e instanceof CtNamedElement)) {
+			sourceStartSource = sourceStartDeclaration;
+		}
 		int sourceEnd = node.sourceEnd;
+		if ((node instanceof Expression)) {
+			if (((Expression) node).statementEnd > 0) {
+				sourceEnd = ((Expression) node).statementEnd;
+			}
+		}
+
 		if (node instanceof AbstractVariableDeclaration) {
 			sourceStartDeclaration = ((AbstractVariableDeclaration) node).declarationSourceStart;
 			sourceEnd = ((AbstractVariableDeclaration) node).declarationSourceEnd;
@@ -68,14 +79,6 @@ public class PositionBuilder {
 				sourceStartDeclaration = ((AbstractMethodDeclaration) node).declarationSourceStart;
 				sourceEnd = ((AbstractMethodDeclaration) node).declarationSourceEnd;
 			}
-		}
-		if ((node instanceof Expression)) {
-			if (((Expression) node).statementEnd > 0) {
-				sourceEnd = ((Expression) node).statementEnd;
-			}
-		}
-		if (!(e instanceof CtNamedElement)) {
-			sourceStartSource = sourceStartDeclaration;
 		}
 		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
 		return cf.createSourcePosition(cu, sourceStartDeclaration, sourceStartSource, sourceEnd, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions);

@@ -80,4 +80,8 @@ public interface SourcePosition {
 	 */
 	int getSourceStart();
 
+	/**
+	 * Gets the index at which the name of the element position starts in the source file.
+	 */
+	int getNameSourceStart();
 }
