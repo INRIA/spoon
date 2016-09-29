@@ -70,7 +70,7 @@ public class Launcher implements SpoonAPI {
 
 	public static final String OUTPUTDIR = "spooned";
 
-	private Factory factory = createFactory();
+	private final Factory factory;
 
 	private SpoonCompiler modelBuilder;
 
@@ -125,10 +125,26 @@ public class Launcher implements SpoonAPI {
 	}
 
 	/**
-	 * Constructor with no arguments.
+	 * Creates a {@link Launcher} using the {@link Factory} returned by {@link #createFactory()}.
 	 */
 	public Launcher() {
+		factory = createFactory();
 		processArguments();
+	}
+
+	/**
+	 * Creates a {@link Launcher} with {@link Factory} {@code pFactory}.
+	 *
+	 * @param pFactory
+	 * 		The {@link Factory} that will be utilized in {@link #buildModel()}.
+	 * @throws IllegalArgumentException
+	 * 		If {@code pFactory == null}.
+	 */
+	public Launcher(final Factory pFactory) {
+		if (pFactory == null) {
+			throw new IllegalArgumentException("unable to create launcher with null factory");
+		}
+		factory = pFactory;
 	}
 
 	@Override
@@ -597,11 +613,6 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public Factory getFactory() {
 		return factory;
-	}
-
-	@Override
-	public void setFactory(Factory factory) {
-		this.factory = factory;
 	}
 
 	@Override
