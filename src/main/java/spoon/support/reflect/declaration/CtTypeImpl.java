@@ -16,48 +16,21 @@
  */
 package spoon.support.reflect.declaration;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtShadowable;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtIntersectionTypeReference;
-import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.declaration.*;
+import spoon.reflect.reference.*;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
+
+import java.lang.annotation.Annotation;
+import java.util.*;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -738,6 +711,47 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		return result;
 	}
+
+
+	@Override
+	public boolean hasMethod(CtMethod<?> method) {
+		if(method==null)
+			return false;
+
+		// Checking whether the parent is the calling type.
+		try {
+			if(method.getParent()==this) {
+				return true;
+			}
+		}catch(ParentNotInitializedException ex) {
+			return false;
+		}
+
+		// If the method is not the type and, however, a method with its signature exists, this means
+		// that 'method' is overriden here. So, we ignore this overriden method since only leaf methods are considered.
+		final String over = method.getSignature();
+		for(CtMethod<?> m : getMethods()) {
+			if(m.getSignature().equals(over)) {
+				return false;
+			}
+		}
+
+		// Checking whether a super class has the method.
+		final CtTypeReference<?> superCl = getSuperclass();
+		if(superCl!=null && superCl.getDeclaration().hasMethod(method)) {
+			return true;
+		}
+
+		// Finally, checking whether an interface has the method (a default method).
+		for(CtTypeReference<?> interf : getSuperInterfaces()) {
+			if(interf.getDeclaration().hasMethod(method)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 
 	@Override
 	public String getQualifiedName() {
