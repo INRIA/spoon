@@ -14,7 +14,8 @@ install:
   
 script: |
   # Verify includes checkstyle, license and animal sniffer.
-  mvn verify javadoc:javadoc site -DskipTests &&
+  # site includes javadoc check (eg incorrect links)
+  mvn verify site -DskipTests &&
   # the core of continuous integration
   mvn test jacoco:report &&
   # now coverage, but not failing
