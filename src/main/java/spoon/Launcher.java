@@ -145,6 +145,7 @@ public class Launcher implements SpoonAPI {
 			throw new IllegalArgumentException("unable to create launcher with null factory");
 		}
 		factory = pFactory;
+		processArguments();
 	}
 
 	@Override
