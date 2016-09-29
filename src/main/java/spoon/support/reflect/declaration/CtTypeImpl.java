@@ -754,8 +754,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public boolean hasMethod(CtMethod<?> method) {
-		if (method == null)
+		if (method == null) {
 			return false;
+		}
 
 		// Checking whether the parent is the calling type.
 		try {
