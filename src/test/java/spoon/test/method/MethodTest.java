@@ -18,6 +18,7 @@
 package spoon.test.method;
 
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -29,6 +30,7 @@ import spoon.test.method.testclasses.Tacos;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -71,4 +73,16 @@ public class MethodTest {
 			fail();
 		}
 	}
+
+	@Test
+	public void testGetAllMethods() throws Exception {
+		/* getAllMethods must not throw Exception in no classpath mode */
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.addInputResource("src/test/resources/noclasspath/A3.java");
+		l.buildModel();
+		Set<CtMethod<?>> methods = l.getFactory().Class().get("A3").getAllMethods();
+		assertEquals(1, methods.stream().filter(method -> "foo".equals(method.getSimpleName())).count());
+	}
+
 }
