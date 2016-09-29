@@ -34,7 +34,7 @@ And special thanks for original spooners:
 
 ![Spooners]({{ "/images/spoonTeam.jpg" | prepend: site.baseurl }})
 
-Spoon was originally created by [Renaud Pawlak](https://www.linkedin.com/pub/renaud-pawlak/6/ba8/b8a) (aka Master Yoda), [Nicolas Petitprez](https://www.linkedin.com/pub/nicolas-petitprez/32/26/8a4/en) (aka Little Padawan), and [Carlos Noguera](https://www.linkedin.com/pub/carlos-noguera/11/86a/383) (aka Luke Spoonwalker) in 2005-2006.
+Spoon was originally created by Renaud Pawlak (aka Master Yoda), Nicolas Petitprez (aka Little Padawan), and Carlos Noguera (aka Luke Spoonwalker) in 2005-2006.
 
 ## Logos
 

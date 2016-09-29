@@ -11,7 +11,7 @@ In Spoon there are four different kinds of comments:
 * Block comments (from /* to */) `CtComment.CommentType.BLOCK`
 * Javadoc comments (from /** to */) `CtComment.CommentType.JAVADOC`
 
-The comments are represented in Spoon with a `CtComment` class ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtComment.html)). 
+The comments are represented in Spoon with a `CtComment` class ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtComment.html)). 
 This class exposes API to get the content of the comment `CtComment.getContent()`, the type of the comment `CtComment.getCommentType()` and the position `CtComment.getPosition()`.
 
 We also try to understand to which element they are attached.

@@ -1,12 +1,12 @@
 # How to release Spoon?
 
-This article is a short summary of the [official documentation of sonatype][ossrh-guide], an [article](yegor) by yegor and [official documentation of maven release plugin](maven-release-plugin).
+This article is a short summary of the [official documentation of sonatype](http://central.sonatype.org/pages/ossrh-guide.html), an [article by yegor](http://www.yegor256.com/2014/08/19/how-to-release-to-maven-central.html) and [official documentation of maven release plugin](http://maven.apache.org/maven-release/maven-release-plugin/).
 
 ## Main Workflow
 1. open an account on `https://gforge.inria.fr`, add an SSH key there, check that you are a member of project `spoon`
 1. check that gpg2, keepass are installed
 1. take the latest commit of master (`git pull` on master)
-1. get the GPG credentials of Spoon (on [partage.inria.fr](https://partage.inria.fr/alfresco/webdav/Sites/spirals/documentLibrary/security/), in `Spirals Team >> Document Library >> security >> keepass.kdbx`)
+1. get the GPG credentials of Spoon (on `davs://partage.inria.fr/alfresco/webdav/Sites/spirals/documentLibrary/security/`, in `Spirals Team >> Document Library >> security >> keepass.kdbx`)
   1. download the keepass file
   1. import the keys with `gpg2 --import` (doc in keypass.kdbx)
   1. check with `gpg2 --list-keys`
@@ -93,7 +93,7 @@ After that, you can update your `settings.xml` of your Maven:
 
 ## Initialize the project
 
-All steps in this sections are details in the [official documentation][apache-maven] and modify `pom.xml` of the project.
+All steps in this section are detailed in the [official documentation](http://central.sonatype.org/pages/apache-maven.html) and modify `pom.xml` of the project.
 
 1. Specify sonatype plugin and distributions managements for release and snapshot (if necessary).
 3. Specify GPG plugin to verify and sign your project.
@@ -102,7 +102,3 @@ All steps in this sections are details in the [official documentation][apache-ma
 6. Specify a scm about your Sonatype repository.
 
 
-[ossrh-guide]: http://central.sonatype.org/pages/ossrh-guide.html
-[yegor]: http://www.yegor256.com/2014/08/19/how-to-release-to-maven-central.html
-[maven-release-plugin]: http://maven.apache.org/maven-release/maven-release-plugin/
-[apache-maven]: http://central.sonatype.org/pages/apache-maven.html
