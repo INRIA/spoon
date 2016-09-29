@@ -740,6 +740,47 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return result;
 	}
 
+
+	@Override
+	public boolean hasMethod(CtMethod<?> method) {
+		if(method==null)
+			return false;
+
+		// Checking whether the parent is the calling type.
+		try {
+			if(method.getParent()==this) {
+				return true;
+			}
+		}catch(ParentNotInitializedException ex) {
+			return false;
+		}
+
+		// If the method is not the type and, however, a method with its signature exists, this means
+		// that 'method' is overriden here. So, we ignore this overriden method since only leaf methods are considered.
+		final String over = method.getSignature();
+		for(CtMethod<?> m : getMethods()) {
+			if(m.getSignature().equals(over)) {
+				return false;
+			}
+		}
+
+		// Checking whether a super class has the method.
+		final CtTypeReference<?> superCl = getSuperclass();
+		if(superCl!=null && superCl.getDeclaration().hasMethod(method)) {
+			return true;
+		}
+
+		// Finally, checking whether an interface has the method (a default method).
+		for(CtTypeReference<?> interf : getSuperInterfaces()) {
+			if(interf.getDeclaration().hasMethod(method)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
 	@Override
 	public String getQualifiedName() {
 		if (isTopLevel()) {
