@@ -778,7 +778,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 		// Checking whether a super class has the method.
 		final CtTypeReference<?> superCl = getSuperclass();
-		if (superCl!=null && superCl.getDeclaration().hasMethod(method)) {
+		if (superCl != null && superCl.getDeclaration().hasMethod(method)) {
 			return true;
 		}
 
