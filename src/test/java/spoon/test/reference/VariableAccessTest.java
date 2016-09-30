@@ -154,6 +154,10 @@ public class VariableAccessTest {
 			public <T> void visitCtLocalVariableReference(
 					final CtLocalVariableReference<T> reference) {
 				assertNotNull(reference.getDeclaration());
+				assertEquals(reference.getDeclaration().getSimpleName(),
+						reference.getSimpleName());
+				assertEquals(reference.getDeclaration().getType(),
+						reference.getType());
 				super.visitCtLocalVariableReference(reference);
 			}
 		}
