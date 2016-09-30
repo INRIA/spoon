@@ -11,18 +11,8 @@ class Y extends X {
 }
 
 interface Z {
-	default void foo() {
-
-	}
+	void foo();
 }
 
-class W implements Z {
-
-}
-
-class A implements Z {
-	@Override
-	public void foo() {
-
-	}
+abstract class W implements Z {
 }
