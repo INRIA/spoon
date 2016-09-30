@@ -16,17 +16,31 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.filter.AbstractFilter;
 
-public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtLocalVariableReference<T> {
+import java.util.List;
+
+/**
+ * An implementation for {@link CtLocalVariableReference}.
+ */
+public class CtLocalVariableReferenceImpl<T>
+		extends CtVariableReferenceImpl<T> implements CtLocalVariableReference<T> {
+
+	/**
+	 * Id for serialization.
+	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Default constructor.
+	 */
 	public CtLocalVariableReferenceImpl() {
 		super();
 	}
@@ -38,30 +52,59 @@ public class CtLocalVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 
 	@Override
 	public CtLocalVariable<T> getDeclaration() {
-		CtElement element = this;
-		CtLocalVariable<T> optional = null;
-		String name = getSimpleName();
-		try {
-			do {
-				CtStatementList block = element.getParent(CtStatementList.class);
-				if (block == null) {
-					return null;
-				}
-				for (CtStatement ctStatement : block.getStatements()) {
-					if (ctStatement instanceof CtLocalVariable && ((CtLocalVariable) ctStatement).getSimpleName().equals(name)) {
-						optional = (CtLocalVariable) ctStatement;
-					}
-				}
-				element = block;
-			} while (optional == null);
-		} catch (ParentNotInitializedException e) {
+		// without factory, we are not able to filter for local variables
+		final Factory factory = getFactory();
+		if (factory == null) {
 			return null;
 		}
-		return optional;
+		final SimpleNameFilter filter = new SimpleNameFilter(factory);
+
+		// Successively iterate through all parents of this reference and
+		// return first result (which must be the closest declaration
+		// respecting current visible scope)
+		try {
+			CtElement parent = getParent();
+			while (parent != null) {
+				final List<CtLocalVariable<T>> localVariables =
+						parent.getElements(filter);
+				if (localVariables.size() > 1) {
+					// we are in big trouble
+					throw new SpoonException(String.format(
+							"found more than one declaration for '%s' in visible scope",
+							getSimpleName()));
+				} else if (localVariables.size() == 1) {
+					return localVariables.get(0);
+				}
+				parent = parent.getParent();
+			}
+		} catch (final ParentNotInitializedException e) {
+			// handle this case as 'not found'.
+		}
+		return null;
 	}
 
 	@Override
 	public CtLocalVariableReference<T> clone() {
 		return (CtLocalVariableReference<T>) super.clone();
+	}
+
+	/**
+	 * A {@link spoon.reflect.visitor.Filter} that filters all
+	 * {@link CtLocalVariable}s with simple name equals to
+	 * {@link #getSimpleName()}.
+	 */
+	private final class SimpleNameFilter
+			extends AbstractFilter<CtLocalVariable<T>> {
+
+		@SuppressWarnings("unchecked")
+		SimpleNameFilter(final Factory pFactory) {
+			super((Class<CtLocalVariable<T>>)
+					pFactory.Core().createLocalVariable().getClass());
+		}
+
+		@Override
+		public boolean matches(final CtLocalVariable<T> element) {
+			return element.getSimpleName().equals(getSimpleName());
+		}
 	}
 }
