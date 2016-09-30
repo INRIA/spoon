@@ -19,7 +19,7 @@ package spoon.support.reflect.reference;
 import spoon.SpoonException;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -65,8 +65,8 @@ public class CtLocalVariableReferenceImpl<T>
 		// respecting current visible scope)
 		try {
 			CtElement parent = getParent();
-			// stop at `package` level to avoid lookups to foreign classes
-			while (parent != null && !(parent instanceof CtPackage)) {
+			// stop at `method` level to avoid lookups to invisible scopes
+			while (parent != null && !(parent instanceof CtMethod)) {
 				final List<CtLocalVariable<T>> localVariables =
 						parent.getElements(filter);
 				if (localVariables.size() > 1) {
