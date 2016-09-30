@@ -17,78 +17,36 @@ public class CtTypeTest {
 	public void testHasMethodInDirectMethod() {
 		CtClass<?> clazz = createFactory().Code().createCodeSnippetStatement(
 			"class X { public void foo() {} }").compile();
-		assertTrue(clazz.hasMethod(clazz.getMethods().iterator().next()));
+		assertTrue(clazz.hasMethod());
 	}
 
 	@Test
 	public void testHasMethodNotHasMethod() {
 		Factory factory = createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement(
-			"class X { public void foo() {} }").compile();
-		CtClass<?> clazz2 = factory.Code().createCodeSnippetStatement(
-			"class Y { public void foo2() {} }").compile();
-		assertFalse(clazz.hasMethod(clazz2.getMethods().iterator().next()));
+			"class X { }").compile();
+		assertFalse(clazz.hasMethod());
 	}
 
 	@Test
-	public void testHasMethodOnNull() {
-		CtClass<?> clazz = createFactory().Code().createCodeSnippetStatement(
-			"class X { public void foo() {} }").compile();
-		assertFalse(clazz.hasMethod(null));
-	}
-
-	@Test
-	public void testHasMethodNotLeafMethod() {
-		Factory factory = createFactory();
-		CtBlock<?> block = factory.Code().createCodeSnippetStatement(
-			" { " +
-				"class X { public void foo() { } }" +
-				"class Y extends X { @Override public void foo() { } }" +
-			" }").compile();
-
-		CtMethod<?> superMethod = ((CtClass<?>) block.getStatement(0)).getMethods().iterator().next();
-		CtClass<?> clazz = block.getStatement(1);
-		assertFalse(clazz.hasMethod(superMethod));
-	}
-
-	@Test
-	public void testHasMethodInSuperClass() throws Exception {
+	public void testHasMethodInheritsFromClass() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
 		launcher.run();
 
-		final CtClass<?> xClass = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.X");
 		final CtClass<?> yClass = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.Y");
-		final CtMethod<?> superMethod = xClass.getMethods().iterator().next();
 
-		assertTrue(yClass.hasMethod(superMethod));
+		assertTrue(yClass.hasMethod());
 	}
 
 	@Test
-	public void testHasMethodInDefaultMethod() throws Exception {
+	public void testHasMethodInheritsFromInterface() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
-		launcher.getEnvironment().setComplianceLevel(8);
 		launcher.run();
 
-		final CtClass<?> x = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.W");
-		final CtInterface<?> z = launcher.getFactory().Interface().get("spoon.test.ctType.testclasses.Z");
-		final CtMethod<?> superMethod = z.getMethods().iterator().next();
+		final CtClass<?> yClass = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.W");
 
-		assertTrue(x.hasMethod(superMethod));
-	}
-
-	@Test
-	public void testHasMethodNotLeafDefaultMethod() {
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
-		launcher.getEnvironment().setComplianceLevel(8);
-		launcher.run();
-
-		final CtClass<?> x = launcher.getFactory().Class().get("spoon.test.ctType.testclasses.A");
-		final CtInterface<?> z = launcher.getFactory().Interface().get("spoon.test.ctType.testclasses.Z");
-		final CtMethod<?> superMethod = z.getMethods().iterator().next();
-
-		assertFalse(x.hasMethod(superMethod));
+		assertTrue(yClass.hasMethod());
 	}
 }
