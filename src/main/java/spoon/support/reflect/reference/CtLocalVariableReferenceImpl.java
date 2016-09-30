@@ -16,10 +16,9 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.SpoonException;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -53,34 +52,36 @@ public class CtLocalVariableReferenceImpl<T>
 
 	@Override
 	public CtLocalVariable<T> getDeclaration() {
-		// without factory, we are not able to filter for local variables
+		// without a factory, we are not able to filter for local variables
 		final Factory factory = getFactory();
 		if (factory == null) {
 			return null;
 		}
 		final SimpleNameFilter filter = new SimpleNameFilter(factory);
 
-		// Successively iterate through all parents of this reference and
+		// successively iterate through all parents of this reference and
 		// return first result (which must be the closest declaration
-		// respecting current visible scope)
+		// respecting visible scope)
 		try {
 			CtElement parent = getParent();
-			// stop at `method` level to avoid lookups to invisible scopes
-			while (parent != null && !(parent instanceof CtMethod)) {
+			// stop at `package` level to avoid lookups to foreign Java files
+			while (parent != null && !(parent instanceof CtPackage)) {
 				final List<CtLocalVariable<T>> localVariables =
 						parent.getElements(filter);
-				if (localVariables.size() > 1) {
-					// we are in big trouble
-					throw new SpoonException(String.format(
-							"found more than one declaration for '%s' in visible scope",
-							getSimpleName()));
-				} else if (localVariables.size() == 1) {
-					return localVariables.get(0);
+				// since `parent` may be a class declaring multiple local
+				// variables with same name in different methods, we have to
+				// check if any of the findings is visible in current scope by
+				// validating that the parent of a finding is parent of this
+				// reference as well
+				for (final CtLocalVariable<T> lv : localVariables) {
+					if (hasParent(lv.getParent())) {
+						return lv;
+					}
 				}
 				parent = parent.getParent();
 			}
 		} catch (final ParentNotInitializedException e) {
-			// handle this case as 'not found'.
+			// handle this case as 'not found'
 		}
 		return null;
 	}
