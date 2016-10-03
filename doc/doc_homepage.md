@@ -27,7 +27,7 @@ You have different options:
 
 * Open an issue on [Github](https://github.com/INRIA/spoon/issues) (preferred).
 * Send an email to the mailing list: <a href="mailto:{{ site.email }}">{{ site.email }}</a> 
-* Post a question to [StackOverflow with tag inria-spoon](stackoverflow.com/tags/inria-spoon)
+* Post a question to [StackOverflow with tag inria-spoon](http://stackoverflow.com/tags/inria-spoon)
 
 ## News
 
@@ -96,7 +96,7 @@ Snapshot version:
 </repositories>
 ```
 
-To know more about the usage of Spoon, you can read the documentation in the ["Usage" section](http://spoon.gforge.inria.fr/command_line.html#).
+To know more about the usage of Spoon, you can read the documentation in the ["Usage" section](/command_line.html).
 
 ## Contributing
 

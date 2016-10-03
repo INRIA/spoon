@@ -11,7 +11,8 @@ jdk:
 install:
   - # download deps with maven
   - mvn dependency:resolve
-  
+  - pip install --user CommonMark requests
+
 script: |
   # Verify includes checkstyle, license and animal sniffer.
   # site includes javadoc check (eg incorrect links)
@@ -19,7 +20,10 @@ script: |
   # the core of continuous integration
   mvn test jacoco:report &&
   # now coverage, but not failing
-  mvn coveralls:report -Pcoveralls --fail-never
+  mvn coveralls:report -Pcoveralls --fail-never &&
+  # documentation
+  python chore/check-links-in-doc.py
+
 
 cache:
   directories:
