@@ -16,6 +16,19 @@
  */
 package spoon.support.reflect.declaration;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
@@ -49,17 +62,6 @@ import spoon.support.reflect.reference.SpoonClassNotFoundException;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -739,6 +741,48 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		return result;
 	}
+
+
+	@Override
+	public boolean hasMethod(CtMethod<?> method) {
+		if (method == null) {
+			return false;
+		}
+
+		// Checking whether the parent is the calling type.
+		try {
+			if (method.getParent() == this) {
+				return true;
+			}
+		} catch (ParentNotInitializedException ex) {
+			// No matter, trying something else.
+		}
+
+		// Checking whether a super class has the method.
+		final CtTypeReference<?> superCl = getSuperclass();
+
+		try {
+			if (superCl != null && superCl.getTypeDeclaration().hasMethod(method)) {
+				return true;
+			}
+		} catch (SpoonException ex) {
+			// No matter, trying something else.
+		}
+
+		// Finally, checking whether an interface has the method.
+		for (CtTypeReference<?> interf : getSuperInterfaces()) {
+			try {
+				if (interf.getTypeDeclaration().hasMethod(method)) {
+					return true;
+				}
+			} catch (SpoonException ex) {
+				// No matter, trying something else.
+			}
+		}
+
+		return false;
+	}
+
 
 	@Override
 	public String getQualifiedName() {
