@@ -3,6 +3,7 @@ package spoon.test.reference;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
@@ -165,6 +166,29 @@ public class VariableAccessTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("src/test/resources/reference-test/ChangeScanner.java");
+		launcher.buildModel();
+		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
+	}
+
+	@Test
+	public void testMultipleDeclarationsOfLocalVariable() {
+		final class CtLocalVariableReferenceScanner extends CtScanner {
+			@Override
+			public <T> void visitCtLocalVariableReference(
+					final CtLocalVariableReference<T> reference) {
+				assertNotNull(reference.getDeclaration());
+				final CtLocalVariable decl = reference.getDeclaration();
+				assertEquals(decl.getPosition().getLine(), 7);
+				assertTrue(decl.getDefaultExpression() instanceof CtLiteral);
+				final CtLiteral literal = (CtLiteral) decl.getDefaultExpression();
+				assertEquals(literal.getValue(), 42);
+				super.visitCtLocalVariableReference(reference);
+			}
+		}
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("src/test/resources/reference-test/MultipleDeclarationsOfLocalVariable.java");
 		launcher.buildModel();
 		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
 	}
