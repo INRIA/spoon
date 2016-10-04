@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
@@ -739,6 +740,48 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		return result;
 	}
+
+
+	@Override
+	public boolean hasMethod(CtMethod<?> method) {
+		if (method == null) {
+			return false;
+		}
+
+		// Checking whether the parent is the calling type.
+		try {
+			if (method.getParent() == this) {
+				return true;
+			}
+		} catch (ParentNotInitializedException ex) {
+			// No matter, trying something else.
+		}
+
+		// Checking whether a super class has the method.
+		final CtTypeReference<?> superCl = getSuperclass();
+
+		try {
+			if (superCl != null && superCl.getTypeDeclaration().hasMethod(method)) {
+				return true;
+			}
+		} catch (SpoonException ex) {
+			// No matter, trying something else.
+		}
+
+		// Finally, checking whether an interface has the method.
+		for (CtTypeReference<?> interf : getSuperInterfaces()) {
+			try {
+				if (interf.getTypeDeclaration().hasMethod(method)) {
+					return true;
+				}
+			} catch (SpoonException ex) {
+				// No matter, trying something else.
+			}
+		}
+
+		return false;
+	}
+
 
 	@Override
 	public String getQualifiedName() {

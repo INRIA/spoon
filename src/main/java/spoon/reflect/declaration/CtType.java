@@ -216,6 +216,14 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	List<CtMethod<?>> getMethodsByName(String name);
 
 	/**
+	 * Searches in the type for the given method.
+	 * Super classes and implemented interfaces are considered.
+	 * @param method The method to search for in the class.
+	 * @return True: the type has the given method. False otherwise.
+	 */
+	boolean hasMethod(CtMethod<?> method);
+
+	/**
 	 * Sets the methods of this type.
 	 */
 	<C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods);
