@@ -11,15 +11,8 @@ last_updated: October 1, 2015
 compile 'fr.inria.gforge.spoon:spoon-core:{{site.spoon_release}}'
 ```
 
-Think to specify repository of eclipse for JDT dependency:
+You may also have to add our repository, see below.
 
-```groovy
-repositories {
-  maven {
-    url 'http://spoon.gforge.inria.fr/repositories/releases/'
-  }
-}
-```
 
 ## Plugin
 
@@ -36,6 +29,9 @@ the root directory of the plugin project. After that, use it in your
 buildscript {
     repositories {
         mavenLocal()
+        maven {
+          url 'http://spoon.gforge.inria.fr/repositories/'
+        }
     }
     dependencies {
         classpath group: 'fr.inria.gforge.spoon', 
