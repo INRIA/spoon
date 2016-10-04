@@ -755,7 +755,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				return true;
 			}
 		} catch (ParentNotInitializedException ex) {
-			// No matter, trying something else
+			// No matter, trying something else.
 		}
 
 		// Checking whether a super class has the method.
@@ -766,7 +766,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				return true;
 			}
 		} catch (SpoonException ex) {
-			// No matter, trying something else
+			// No matter, trying something else.
 		}
 
 		// Finally, checking whether an interface has the method.
@@ -776,7 +776,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					return true;
 				}
 			} catch (SpoonException ex) {
-				// No matter, trying something else
+				// No matter, trying something else.
 			}
 		}
 
