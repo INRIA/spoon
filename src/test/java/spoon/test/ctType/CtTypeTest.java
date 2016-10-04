@@ -2,7 +2,6 @@ package spoon.test.ctType;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
