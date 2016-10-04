@@ -3,6 +3,7 @@ package spoon.test.reference;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
@@ -13,6 +14,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
@@ -144,6 +146,51 @@ public class VariableAccessTest {
 		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
 		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
 		System.out.println(make);
+	}
+
+	@Test
+	public void testReferenceToLocalVariableDeclaredInLoop() {
+		final class CtLocalVariableReferenceScanner extends CtScanner {
+			@Override
+			public <T> void visitCtLocalVariableReference(
+					final CtLocalVariableReference<T> reference) {
+				assertNotNull(reference.getDeclaration());
+				assertEquals(reference.getDeclaration().getSimpleName(),
+						reference.getSimpleName());
+				assertEquals(reference.getDeclaration().getType(),
+						reference.getType());
+				super.visitCtLocalVariableReference(reference);
+			}
+		}
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("src/test/resources/reference-test/ChangeScanner.java");
+		launcher.buildModel();
+		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
+	}
+
+	@Test
+	public void testMultipleDeclarationsOfLocalVariable() {
+		final class CtLocalVariableReferenceScanner extends CtScanner {
+			@Override
+			public <T> void visitCtLocalVariableReference(
+					final CtLocalVariableReference<T> reference) {
+				assertNotNull(reference.getDeclaration());
+				final CtLocalVariable decl = reference.getDeclaration();
+				assertEquals(decl.getPosition().getLine(), 7);
+				assertTrue(decl.getDefaultExpression() instanceof CtLiteral);
+				final CtLiteral literal = (CtLiteral) decl.getDefaultExpression();
+				assertEquals(literal.getValue(), 42);
+				super.visitCtLocalVariableReference(reference);
+			}
+		}
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("src/test/resources/reference-test/MultipleDeclarationsOfLocalVariable.java");
+		launcher.buildModel();
+		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
 	}
 
 	private CtMethod<Object> getMethod(Launcher launcher, CtClass<Object> a2) {
