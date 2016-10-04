@@ -2,7 +2,7 @@
 
 ## Spoon
 
-Spoon is an open-source library that enables you to transform (see below) and analyze Java source code (see example) . Spoon provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification. Spoon takes as input source code and produces transformed source code ready to be compiled.
+Spoon is an open-source library that enables you to transform (see [example](/first_analysis_processor.html)) and analyze Java source code (see [example](/first_transformation.html)) . Spoon provides a complete and fine-grained Java metamodel where any program element (classes, methods, fields, statements, expressions...) can be accessed both for reading and modification. Spoon takes as input source code and produces transformed source code ready to be compiled. Spoon can be integrated in [Maven](/maven.html) and [Gradle](/gradle.html).
 
 - If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact Martin Monperrus for this).
 
