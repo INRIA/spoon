@@ -753,21 +753,29 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 
 	@Override
-	public boolean hasMethod() {
-		// Checking the type.
-		if (!getMethods().isEmpty()) {
-			return true;
+	public boolean hasMethod(CtMethod<?> method) {
+		if (method == null) {
+			return false;
 		}
 
-		// Checking whether a super class has a method.
+		// Checking whether the parent is the calling type.
+		try {
+			if (method.getParent() == this) {
+				return true;
+			}
+		} catch (ParentNotInitializedException ex) {
+			return false;
+		}
+
+		// Checking whether a super class has the method.
 		final CtTypeReference<?> superCl = getSuperclass();
-		if (superCl != null && superCl.getTypeDeclaration().hasMethod()) {
+		if (superCl != null && superCl.getTypeDeclaration().hasMethod(method)) {
 			return true;
 		}
 
-		// Finally, checking whether an interface has a method;
+		// Finally, checking whether an interface has the method.
 		for (CtTypeReference<?> interf : getSuperInterfaces()) {
-			if (interf.getTypeDeclaration().hasMethod()) {
+			if (interf.getDeclaration().hasMethod(method)) {
 				return true;
 			}
 		}
