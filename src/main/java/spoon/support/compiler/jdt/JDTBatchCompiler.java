@@ -32,13 +32,8 @@ import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonFile;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -103,63 +98,14 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 		}
 		if (useFactory) {
 			List<CompilationUnit> unitList = new ArrayList<>();
-			for (CompilationUnit unit : units) {
-				addExistingJavaFile(unitList, unit);
-			}
 			for (CtType<?> ctType : jdtCompiler.getFactory().Type().getAll()) {
-				// no valid position, probably built with the intercession API
-				if (ctType.getPosition() == null || ctType.getPosition().getFile() == null) {
-					addVirtualJavaFile(unitList, ctType);
+				if (ctType.isTopLevel()) {
+					unitList.add(new CompilationUnitWrapper(this.jdtCompiler, ctType));
 				}
 			}
 			units = unitList.toArray(new CompilationUnit[unitList.size()]);
 		}
 		return units;
-	}
-
-	private void addExistingJavaFile(List<CompilationUnit> unitList, CompilationUnit unit) {
-		unitList.add(new CompilationUnitWrapper(this.jdtCompiler, unit));
-	}
-
-	private void addVirtualJavaFile(List<CompilationUnit> unitList, CtType<?> ctType) {
-		if (ctType.getPosition() != null && ctType.getPosition().getFile() != null) {
-			throw new IllegalArgumentException("are you sure the type is virtual?");
-		}
-		CtPackage pack = ctType.getPackage();
-		File directory = jdtCompiler.getSourceOutputDirectory();
-
-		// create package directory
-		File packageDir;
-		if (pack.isUnnamedPackage()) {
-			packageDir = new File(directory.getAbsolutePath());
-		} else {
-			packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
-		}
-		if (!packageDir.exists()) {
-			if (!packageDir.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
-			}
-		}
-
-		// print type
-		File file = new File(packageDir.getAbsolutePath() + File.separatorChar + ctType.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
-		FileWriter writer = null;
-		try {
-			writer = new FileWriter(file);
-			writer.write(ctType.toString());
-		} catch (IOException e) {
-			throw new RuntimeException("Error during writing the virtual java file.");
-		} finally {
-			if (writer != null) {
-				try {
-					writer.close();
-				} catch (IOException e) {
-					throw new RuntimeException("Error during writing the virtual java file.");
-				}
-			}
-		}
-
-		addExistingJavaFile(unitList, new CompilationUnit(null, file.getAbsolutePath(), "UTF-8"));
 	}
 
 	public CompilationUnit[] getCompilationUnits(List<SpoonFile> files) {
