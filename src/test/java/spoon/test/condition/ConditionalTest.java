@@ -4,6 +4,8 @@ import org.junit.Test;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.condition.testclasses.Foo;
@@ -40,5 +42,33 @@ public class ConditionalTest {
 				assertTrue(condition.getElseStatement() instanceof CtBlock);
 			}
 		}
+	}
+
+	@Test
+	public void testNoBlockInConditionAndLoop() throws Exception {
+		String newLine = System.getProperty("line.separator");
+		
+		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
+		CtMethod<Object> method = aFoo.getMethod("m3");
+		final List<CtIf> conditions = method.getElements(new TypeFilter<CtIf>(CtIf.class));
+		for (int i = 0; i < conditions.size(); i++) {
+			CtIf ctIf = conditions.get(i);
+
+			// replace the block to a statement
+			CtStatement then = ((CtBlock) ctIf.getThenStatement()).getStatement(0);
+			ctIf.setThenStatement(then);
+			if (ctIf.getElseStatement() != null) {
+				CtStatement elseStatement = ((CtBlock) ctIf.getElseStatement()).getStatement(0);
+				ctIf.setElseStatement(elseStatement);
+			}
+		}
+
+		assertEquals("if (true)" + newLine
+				+ "    java.lang.System.out.println();" + newLine
+				+ "else if (true)" + newLine
+				+ "    java.lang.System.out.println();" + newLine
+				+ "else" + newLine
+				+ "    java.lang.System.out.println();" + newLine,
+				method.getBody().getStatement(0).toString());
 	}
 }

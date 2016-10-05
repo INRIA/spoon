@@ -330,12 +330,19 @@ public class ElementPrinterHelper {
 		return commentsToPrint;
 	}
 
-	public void writeIfOrLoopBlock(CtStatement block, DefaultJavaPrettyPrinter defaultJavaPrettyPrinter) {
+	public void writeIfOrLoopBlock(CtStatement block) {
 		if (block != null) {
-			if (!block.isImplicit()) {
+			if (!block.isImplicit() && (block instanceof CtBlock || block instanceof CtIf)) {
 				printer.write(" ");
 			}
-			defaultJavaPrettyPrinter.scan((CtStatement) block);
+			if (!(block instanceof CtBlock) && !(block instanceof CtIf)) {
+				printer.incTab();
+				printer.writeln().writeTabs();
+			}
+			writeStatement(block);
+			if (!(block instanceof CtBlock) && !(block instanceof CtIf)) {
+				printer.decTab().writeln().writeTabs();
+			}
 			if (!block.isImplicit()) {
 				if (!block.isParentInitialized() || (!(block.getParent() instanceof CtFor) && !(block.getParent() instanceof CtForEach) && !(block.getParent() instanceof CtIf))) {
 					printer.write(" ");
