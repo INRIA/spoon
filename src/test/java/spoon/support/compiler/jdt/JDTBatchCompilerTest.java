@@ -19,6 +19,6 @@ public class JDTBatchCompilerTest {
 
 		launcher.getFactory().Class().create("spoon.Test");
 		assertTrue(launcher.getModelBuilder().compile());
-		assertTrue(new File("./target/binaries/Test.class").exists());
+		assertTrue(new File("./target/binaries/spoon/Test.class").exists());
 	}
 }

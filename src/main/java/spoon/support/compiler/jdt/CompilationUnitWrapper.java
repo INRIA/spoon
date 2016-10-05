@@ -16,57 +16,42 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-import spoon.Launcher;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 class CompilationUnitWrapper extends CompilationUnit {
 
 	private final JDTBasedSpoonCompiler jdtCompiler;
+	private CtType type;
 
-	CompilationUnitWrapper(JDTBasedSpoonCompiler jdtCompiler, CompilationUnit wrappedUnit) {
-		super(null, wrappedUnit.fileName != null ? new String(
-				wrappedUnit.fileName) : null, null,
-				wrappedUnit.destinationPath != null ? new String(
-						wrappedUnit.destinationPath) : null, false);
+	CompilationUnitWrapper(JDTBasedSpoonCompiler jdtCompiler, CtType type) {
+		super(null, type.getPosition().getFile() != null ? type.getPosition().getFile().getAbsolutePath() : "",
+				null,
+				null,
+				false);
 		this.jdtCompiler = jdtCompiler;
+		this.type = type;
 	}
 
 	@Override
 	public char[] getContents() {
-		String s = new String(getFileName());
-		if (jdtCompiler.loadedContent.containsKey(s)) {
-			return jdtCompiler.loadedContent.get(s);
+		if (jdtCompiler.loadedContent.containsKey(type.getQualifiedName())) {
+			return jdtCompiler.loadedContent.get(type.getQualifiedName());
 		}
 
-		InputStream stream = null;
-		if (jdtCompiler.factory != null && jdtCompiler.factory.CompilationUnit().getMap().containsKey(s)) {
-			stream = jdtCompiler.getCompilationUnitInputStream(s);
-		} else {
-			try {
-				stream = new FileInputStream(s);
-			} catch (FileNotFoundException e) {
-				Launcher.LOGGER.error(e.getMessage(), e);
-			}
-		}
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
+		List<CtType<?>> types = new ArrayList<>();
+		types.add(type);
+		printer.calculate(type.getPosition().getCompilationUnit(), types);
 
-		if (stream == null) {
-			return super.getContents();
-		}
-
-		try {
-			char[] content = IOUtils.toCharArray(stream);
-			this.jdtCompiler.loadedContent.put(s, content);
-			return content;
-		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
-		}
-
-		return super.getContents();
+		String result = printer.getResult();
+		char[] content = result.toCharArray();
+		this.jdtCompiler.loadedContent.put(type.getQualifiedName(), content);
+		return content;
 	}
 
 }
