@@ -18,6 +18,7 @@ package spoon.template;
 
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.support.template.SubstitutionVisitor;
@@ -51,6 +52,12 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 		} else {
 			// else we have at least one template parameter with a factory
 			factory = getFactory();
+		}
+
+		if(factory.Class().get(this.getClass()) == null) {
+			CtType templateClass = getTemplateClass();
+			CtPackage orCreate = factory.Package().getOrCreate(templateClass.getPackage().getQualifiedName());
+			orCreate.addType(templateClass);
 		}
 
 		c = factory.Class().get(this.getClass());

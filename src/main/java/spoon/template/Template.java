@@ -85,5 +85,4 @@ public interface Template<T extends CtElement> {
 	 * 		It may be null for templates with no context.
 	 */
 	T apply(CtType<?> targetType);
-
 }

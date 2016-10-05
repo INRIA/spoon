@@ -16,6 +16,7 @@
  */
 package spoon.template;
 
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -28,6 +29,12 @@ import spoon.reflect.declaration.CtType;
 public class ExtensionTemplate extends AbstractTemplate<CtType<?>> {
 	@Override
 	public CtType<?> apply(CtType<?> target) {
+		if(target.getFactory().Class().get(this.getClass()) == null) {
+			CtType templateClass = getTemplateClass();
+			CtPackage orCreate = target.getFactory().Package().getOrCreate(templateClass.getPackage().getQualifiedName());
+			orCreate.addType(templateClass);
+		}
+
 		Substitution.insertAll(target, this);
 		return target;
 	}

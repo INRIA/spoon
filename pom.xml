@@ -177,6 +177,10 @@
       <name>Maven Repository for JDT Compiler release</name>
       <url>http://spoon.gforge.inria.fr/repositories/releases</url>
     </repository>
+    <repository>
+      <id>clojars.org</id>
+      <url>http://clojars.org/repo</url>
+    </repository>
   </repositories>
 
   <distributionManagement>
@@ -240,6 +244,11 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojars.razum2um</groupId>
+      <artifactId>jd-core-java</artifactId>
+      <version>1.2</version>
     </dependency>
   </dependencies>
 
