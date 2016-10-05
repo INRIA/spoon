@@ -748,18 +748,15 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return false;
 		}
 
-		// Checking whether the parent is the calling type.
-		try {
-			if (method.getParent() == this) {
+		final String over = method.getSignature();
+		for (CtMethod<?> m : getMethods()) {
+			if (m.getSignature().equals(over)) {
 				return true;
 			}
-		} catch (ParentNotInitializedException ex) {
-			// No matter, trying something else.
 		}
 
 		// Checking whether a super class has the method.
 		final CtTypeReference<?> superCl = getSuperclass();
-
 		try {
 			if (superCl != null && superCl.getTypeDeclaration().hasMethod(method)) {
 				return true;
