@@ -142,13 +142,6 @@ public class VariableAccessTest {
 	}
 
 	@Test
-	public void testReferences() throws Exception {
-		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
-		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
-		System.out.println(make);
-	}
-
-	@Test
 	public void testReferenceToLocalVariableDeclaredInLoop() {
 		final class CtLocalVariableReferenceScanner extends CtScanner {
 			@Override
