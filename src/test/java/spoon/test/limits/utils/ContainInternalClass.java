@@ -2,6 +2,10 @@ package spoon.test.limits.utils;
 
 public class ContainInternalClass {
 
+	void method() {
+
+	}
+
 	public class InternalClass {
 		public class InsideInternalClass {
 
