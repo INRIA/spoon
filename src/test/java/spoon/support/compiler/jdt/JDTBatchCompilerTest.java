@@ -1,8 +1,8 @@
 package spoon.support.compiler.jdt;
 
 import org.junit.Test;
-import spoon.Launcher;
 
+import spoon.Launcher;
 import java.io.File;
 
 import static org.junit.Assert.assertTrue;

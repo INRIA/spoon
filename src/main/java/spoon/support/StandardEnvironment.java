@@ -33,6 +33,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
+import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
@@ -95,7 +96,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Level level = Level.OFF;
 
-	private boolean shouldCompile;
+	private boolean shouldCompile = false;
 
 	private boolean skipSelfChecks;
 
@@ -504,5 +505,18 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setCommentEnabled(boolean commentEnabled) {
 		this.enableComments = commentEnabled;
+	}
+
+	private String binaryOutputDirectory = Launcher.SPOONED_CLASSES;
+
+	@Override
+	public void setBinaryOutputDirectory(String s) {
+		this.binaryOutputDirectory = s;
+
+	}
+
+	@Override
+	public String getBinaryOutputDirectory() {
+		return binaryOutputDirectory;
 	}
 }

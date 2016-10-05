@@ -22,4 +22,5 @@ package spoon.compiler;
  *
  * Will soon be deprecated.
  */
+@Deprecated
 public interface SpoonCompiler extends spoon.SpoonModelBuilder { }

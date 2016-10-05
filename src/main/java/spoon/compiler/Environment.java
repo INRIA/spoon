@@ -17,6 +17,7 @@
 package spoon.compiler;
 
 import org.apache.log4j.Level;
+
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -335,4 +336,10 @@ public interface Environment {
 	 * true means that no self checks are made.
 	 */
 	void setSelfChecks(boolean skip);
+
+	/** Return the directory where binary .class files are created */
+	void setBinaryOutputDirectory(String directory);
+
+	/** Set the directory where binary .class files are created */
+	String getBinaryOutputDirectory();
 }

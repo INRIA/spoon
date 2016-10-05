@@ -34,6 +34,7 @@ import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -46,11 +47,11 @@ import static spoon.testing.utils.ModelUtils.createFactory;
  */
 public class TypeFactory extends SubFactory {
 
-	private static final Set<String> NULL_PACKAGE_CLASSES = new HashSet<String>(
+	private static final Set<String> NULL_PACKAGE_CLASSES = Collections.unmodifiableSet(new HashSet<String>(
 			Arrays.asList("void", "boolean", "byte", "short", "char", "int", "float", "long",
 					"double",
 					// TODO (leventov) it is questionable to me that nulltype should also be here
-					CtTypeReference.NULL_TYPE_NAME));
+					CtTypeReference.NULL_TYPE_NAME)));
 
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
 	public final CtTypeReference<Void> VOID = createReference(Void.class);

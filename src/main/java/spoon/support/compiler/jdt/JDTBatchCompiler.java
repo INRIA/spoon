@@ -16,6 +16,13 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -30,38 +37,33 @@ import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
 
-import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.compiler.SpoonFile;
-import spoon.reflect.declaration.CtType;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+/*
+ * Overrides the getCompilationUnits() from JDT's class to pass the ones we want.
+ *
+ * (we use a fully qualified name in inheritance to make it clear we are extending jdt)
+ */
+abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 
-// we use a fully qualified name to make it clear we are extending jdt
-class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
-
-	/**
-	 *
-	 */
 	protected JDTBasedSpoonCompiler jdtCompiler;
-	private boolean useFactory;
 
-	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, boolean useFactory) {
-		this(jdtCompiler, useFactory, System.out, System.err);
+	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler) {
+		this(jdtCompiler, System.out, System.err);
 	}
 
-	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, boolean useFactory, OutputStream outWriter, OutputStream errWriter) {
+	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, OutputStream outWriter, OutputStream errWriter) {
 		super(new PrintWriter(outWriter), new PrintWriter(errWriter), false, null, null);
 		this.jdtCompiler = jdtCompiler;
-		this.useFactory = useFactory;
-		this.jdtCompiler.loadedContent.clear();
-		this.jdtCompiler.probs.clear();
+		if (jdtCompiler != null) {
+			this.jdtCompiler.probs.clear();
+		}
 	}
+
+	/** we force this method of JDT to be re-implemented, see subclasses */
+	@Override
+	public abstract CompilationUnit[] getCompilationUnits();
 
 	@Override
 	public ICompilerRequestor getBatchRequestor() {
@@ -70,73 +72,28 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 			public void acceptResult(CompilationResult compilationResult) {
 				if (compilationResult.hasErrors()) {
 					for (CategorizedProblem problem:compilationResult.problems) {
-						JDTBatchCompiler.this.jdtCompiler.reportProblem(problem);
+						if (JDTBatchCompiler.this.jdtCompiler != null) {
+							JDTBatchCompiler.this.jdtCompiler.reportProblem(problem);
+						} else {
+							throw new SpoonException(problem.toString());
+						}
 					}
 				}
-				r.acceptResult(compilationResult);
+				r.acceptResult(compilationResult); // this is required to complete the compilation and produce the class files
 			}
 		};
 	}
 
-	private Set<String> ignoredFiles = new HashSet<>();
+	protected Set<String> filesToBeIgnored = new HashSet<>();
 
 	public void ignoreFile(String filePath) {
-		ignoredFiles.add(filePath);
+		filesToBeIgnored.add(filePath);
 	}
 
-	@Override
-	public CompilationUnit[] getCompilationUnits() {
-		CompilationUnit[] units = super.getCompilationUnits();
-		if (!ignoredFiles.isEmpty()) {
-			List<CompilationUnit> l = new ArrayList<>();
-			for (CompilationUnit unit : units) {
-				if (!ignoredFiles.contains(new String(unit.getFileName()))) {
-					l.add(unit);
-				}
-			}
-			units = l.toArray(new CompilationUnit[0]);
-		}
-		if (useFactory) {
-			List<CompilationUnit> unitList = new ArrayList<>();
-			for (CtType<?> ctType : jdtCompiler.getFactory().Type().getAll()) {
-				if (ctType.isTopLevel()) {
-					unitList.add(new CompilationUnitWrapper(this.jdtCompiler, ctType));
-				}
-			}
-			units = unitList.toArray(new CompilationUnit[unitList.size()]);
-		}
-		return units;
-	}
 
-	public CompilationUnit[] getCompilationUnits(List<SpoonFile> files) {
-		Set<String> fileNames = new HashSet<>();
-		List<SpoonFile> virtualFiles = new ArrayList<>();
-		for (SpoonFile f : files) {
-			if (!f.isActualFile()) {
-				virtualFiles.add(f);
-			} else {
-				fileNames.add(f.getPath());
-			}
-		}
-
-		List<CompilationUnit> culist = new ArrayList<>();
-		CompilationUnit[] units = getCompilationUnits();
-		for (CompilationUnit unit : units) {
-			if (fileNames.contains(new String(unit.getFileName()))) {
-				culist.add(unit);
-			}
-		}
-		for (SpoonFile f : virtualFiles) {
-			try {
-				culist.add(new CompilationUnit(IOUtils.toCharArray(f
-						.getContent()), f.getName(), null));
-			} catch (Exception e) {
-				Launcher.LOGGER.error(e.getMessage(), e);
-			}
-		}
-		return culist.toArray(new CompilationUnit[0]);
-	}
-
+	/** Calls JDT to retrieve the list of compilation unit declarations.
+	 * Depends on the actual implementation of {@link #getCompilationUnits()}
+	 */
 	public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files) {
 		startTime = System.currentTimeMillis();
 		INameEnvironment environment = this.jdtCompiler.environment;
@@ -152,10 +109,13 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 		if (jdtCompiler.getEnvironment().getNoClasspath()) {
 			treeBuilderCompiler.lookupEnvironment.mayTolerateMissingType = true;
 		}
-		CompilationUnitDeclaration[] units = treeBuilderCompiler
-				.buildUnits(getCompilationUnits(files));
-		for (int i = 0; i < units.length; i++) {
-			CompilationUnitDeclaration unit = units[i];
+
+		// they have to be done all at once
+		final CompilationUnitDeclaration[] result = treeBuilderCompiler.buildUnits(getCompilationUnits());
+
+		// now adding the doc
+		for (int i = 0; i < result.length; i++) {
+			CompilationUnitDeclaration unit = result[i];
 			CommentRecorderParser parser =
 					new CommentRecorderParser(
 							new ProblemReporter(
@@ -163,18 +123,32 @@ class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 									compilerOptions,
 									new DefaultProblemFactory(Locale.getDefault())),
 							false);
+
+			// finding the corresponding content
+			// works for both real files and virtual files
+			char[] content = null;
+			String unitFileName = new String(unit.getFileName());
+			for (SpoonFile f : files) {
+				if (f.getName().equals(unitFileName)) {
+					try {
+						content = IOUtils.toCharArray(f.getContent());
+					} catch (Exception e) {
+						throw new SpoonException(e);
+					}
+				}
+			}
 			ICompilationUnit sourceUnit =
 					new CompilationUnit(
-							getCompilationUnits()[i].getContents(),
+							content,
+							unitFileName,
 							"", //$NON-NLS-1$
 							compilerOptions.defaultEncoding);
+
 			final CompilationResult compilationResult = new CompilationResult(sourceUnit, 0, 0, compilerOptions.maxProblemsPerUnit);
-			CompilationUnitDeclaration compilationUnitDeclaration = parser.dietParse(sourceUnit, compilationResult);
-			unit.comments = compilationUnitDeclaration.comments;
+			CompilationUnitDeclaration tmpDeclForComment = parser.dietParse(sourceUnit, compilationResult);
+			unit.comments = tmpDeclForComment.comments;
 		}
-
-
-		return units;
+		return result;
 	}
 
 }
