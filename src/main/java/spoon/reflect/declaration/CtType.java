@@ -218,6 +218,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Searches in the type for the given method.
 	 * Super classes and implemented interfaces are considered.
+	 * The matching criterion is that the signatures are identical.
 	 * @param method The method to search for in the class.
 	 * @return True: the type has the given method. False otherwise.
 	 */
