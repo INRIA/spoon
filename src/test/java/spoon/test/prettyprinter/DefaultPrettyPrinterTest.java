@@ -11,8 +11,11 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.JavaOutputProcessor;
 import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.File;
@@ -233,5 +236,23 @@ public class DefaultPrettyPrinterTest {
 			  "}"
 		;
 		assertEquals( "the toString method of CtElementImpl should not shorten type names as it has no context or import statements", expected, computed );
+	}
+
+	@Test
+	public void printClassCreatedWithSpoon() throws Exception {
+
+		/* test that spoon is able to print a class that he created without setting manually the output (default configuration) */
+
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.buildModel();
+		Factory factory = l.getFactory();
+		CtClass<Object> ctClass = factory.Class().create("foo.Bar");
+		PrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
+		JavaOutputProcessor jop =
+				new JavaOutputProcessor(File.createTempFile("foo","").getParentFile(),pp);
+		jop.setFactory(factory);
+		jop.createJavaFile(ctClass);
+		assertTrue(new File("/tmp/foo/Bar.java").exists());
 	}
 }
