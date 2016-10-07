@@ -131,6 +131,9 @@ class JDTTreeBuilderQuery {
 	static ImportReference searchPackage(char[][] packageName, CompilationUnitDeclaration[] unitsToProcess) {
 		for (CompilationUnitDeclaration unit : unitsToProcess) {
 			final ImportReference currentPackage = unit.currentPackage;
+			if (currentPackage == null) {
+				continue;
+			}
 			final char[][] tokens = currentPackage.tokens;
 			if (packageName.length > tokens.length) {
 				continue;
