@@ -51,8 +51,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	/**
 	 * Creates a new processor for generating Java source files.
 	 *
-	 * @param outputDirectory
-	 * 		the root output directory
+	 * @param outputDirectory the root output directory
 	 */
 	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
 		this.directory = outputDirectory;
@@ -118,15 +117,15 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		if (!element.isTopLevel()) {
 			throw new IllegalArgumentException();
 		}
-		;
 
 		CompilationUnit cu = null;
 		if (element.getPosition() != null) {
 			cu = element.getPosition().getCompilationUnit();
 			// this is a top level type (see check above)
-			// the compilation unit must be correctly set
+			// if the compilation unit is not set, we use a default one
 			if (cu == null) {
-				throw new IllegalStateException();
+				cu = element.getFactory().CompilationUnit().create(element.getQualifiedName());
+				cu.setDeclaredPackage(element.getPackage());
 			}
 		}
 		List<CtType<?>> toBePrinted = new ArrayList<>();

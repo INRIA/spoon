@@ -277,9 +277,6 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		CtClass<T> e = new CtClassImpl<>();
 		e.setFactory(getMainFactory());
 		e.setParent(getMainFactory().Package().getRootPackage());
-		CompilationUnit cu = e.getFactory().CompilationUnit().create(e.getQualifiedName());
-		cu.setDeclaredPackage(e.getPackage());
-		e.setPosition(new SourcePositionImpl(cu, -1, -1, -1, new int[0]));
 		return e;
 	}
 
