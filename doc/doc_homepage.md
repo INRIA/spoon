@@ -14,7 +14,9 @@ Spoon is an open-source library that enables you to transform (see [example](/fi
   AUTHOR = {Pawlak, Renaud and Monperrus, Martin and Petitprez, Nicolas and Noguera, Carlos and Seinturier, Lionel},
   JOURNAL = {Software: Practice and Experience},
   PUBLISHER = {Wiley-Blackwell},
-  PAGES = {na},
+  PAGES = {1155-1179},
+  VOLUME = {46},
+  URL = {https://hal.archives-ouvertes.fr/hal-01078532/document},
   YEAR = {2015},
   doi = {10.1002/spe.2346},
   url = {https://hal.archives-ouvertes.fr/hal-01078532/document}
