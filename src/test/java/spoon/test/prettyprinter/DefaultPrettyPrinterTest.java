@@ -1,5 +1,6 @@
 package spoon.test.prettyprinter;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
@@ -11,11 +12,15 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.JavaOutputProcessor;
 import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -233,5 +238,32 @@ public class DefaultPrettyPrinterTest {
 			  "}"
 		;
 		assertEquals( "the toString method of CtElementImpl should not shorten type names as it has no context or import statements", expected, computed );
+	}
+
+	@Test
+	public void printClassCreatedWithSpoon() throws Exception {
+
+		/* test that spoon is able to print a class that it created without setting manually the output (default configuration) */
+
+		final String nl = System.getProperty("line.separator");
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtClass<Object> ctClass = factory.Class().create("foo.Bar");
+		PrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
+		JavaOutputProcessor jop =
+				new JavaOutputProcessor(File.createTempFile("foo","").getParentFile(),pp);
+		jop.setFactory(factory);
+
+		jop.createJavaFile(ctClass);//JavaOutputProcessor is able to create the file even if we do not set the cu manually
+
+		String pathname = System.getProperty("java.io.tmpdir") + "/foo/Bar.java";
+		File javaFile = new File(pathname);
+		assertTrue(javaFile.exists());
+
+		assertEquals(nl + nl + "package foo;" + nl + nl + nl + "class Bar {}" + nl + nl,
+				IOUtils.toString(new FileInputStream(javaFile), "UTF-8"));
 	}
 }
