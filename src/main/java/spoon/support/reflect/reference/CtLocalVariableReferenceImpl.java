@@ -74,7 +74,8 @@ public class CtLocalVariableReferenceImpl<T>
 				// validating that the parent of a finding is parent of this
 				// reference as well
 				for (final CtLocalVariable<T> lv : localVariables) {
-					if (hasParent(lv.getParent())) {
+					// Since the getReference() is setting the LocalVariable as parent
+					if (getParent().equals(lv) || hasParent(lv.getParent())) {
 						return lv;
 					}
 				}

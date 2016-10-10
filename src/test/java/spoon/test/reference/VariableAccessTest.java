@@ -53,7 +53,7 @@ public class VariableAccessTest {
 	}
 
 	@Test
-	public void name() throws Exception {
+	public void testDeclarationArray() throws Exception {
 		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
 		final CtMethod<Object> m2 = aPozole.getMethod("m2");
 		final CtArrayWrite<?> ctArrayWrite = m2.getElements(new TypeFilter<CtArrayWrite<?>>(CtArrayWrite.class)).get(0);
@@ -143,9 +143,13 @@ public class VariableAccessTest {
 
 	@Test
 	public void testReferences() throws Exception {
+
+		/* test getReference on local variable
+		*  getReference().getDeclaration() must be circular
+		*/
+
 		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
 		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
-		System.out.println(make);
 
 		final CtLocalVariable localVar = make.getBody().getStatement(0);
 		final CtLocalVariable localVarCloned = localVar.clone();
@@ -155,10 +159,15 @@ public class VariableAccessTest {
 
 		assertEquals(localVarRef.getDeclaration(), localVar);
 		assertTrue(localVarRef.getDeclaration() == localVar);
+		assertEquals(localVar.getReference().getDeclaration(), localVar);
+		assertTrue(localVar.getReference().getDeclaration() == localVar);
+
 		assertEquals(localVarRefCloned.getDeclaration(), localVarCloned);
 		assertTrue(localVarRefCloned.getDeclaration() == localVarCloned);
+		assertEquals(localVarCloned.getReference().getDeclaration(), localVarCloned);
+		assertTrue(localVarCloned.getReference().getDeclaration() == localVarCloned);
 	}
-	
+
 	@Test
 	public void testReferenceToLocalVariableDeclaredInLoop() {
 		final class CtLocalVariableReferenceScanner extends CtScanner {
@@ -178,6 +187,7 @@ public class VariableAccessTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("src/test/resources/reference-test/ChangeScanner.java");
 		launcher.buildModel();
+
 		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
 	}
 
@@ -201,6 +211,7 @@ public class VariableAccessTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("src/test/resources/reference-test/MultipleDeclarationsOfLocalVariable.java");
 		launcher.buildModel();
+
 		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
 	}
 

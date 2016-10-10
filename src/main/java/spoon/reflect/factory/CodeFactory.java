@@ -314,6 +314,7 @@ public class CodeFactory extends SubFactory {
 		CtLocalVariableReference<T> ref = factory.Core().createLocalVariableReference();
 		ref.setType(localVariable.getType() == null ? null : localVariable.getType().clone());
 		ref.setSimpleName(localVariable.getSimpleName());
+		ref.setParent(localVariable);
 		return ref;
 	}
 
