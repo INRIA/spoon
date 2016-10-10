@@ -18,7 +18,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.prettyprinter.testclasses.AClass;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -243,16 +245,27 @@ public class DefaultPrettyPrinterTest {
 
 		/* test that spoon is able to print a class that he created without setting manually the output (default configuration) */
 
-		Launcher l = new Launcher();
-		l.getEnvironment().setNoClasspath(true);
-		l.buildModel();
-		Factory factory = l.getFactory();
+		final String nl = System.getProperty("line.separator");
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
 		CtClass<Object> ctClass = factory.Class().create("foo.Bar");
 		PrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 		JavaOutputProcessor jop =
 				new JavaOutputProcessor(File.createTempFile("foo","").getParentFile(),pp);
 		jop.setFactory(factory);
 		jop.createJavaFile(ctClass);
-		assertTrue(new File("/tmp/foo/Bar.java").exists());
+		String tmpPath = System.getProperty("java.io.tmpdir");
+		assertTrue(new File(tmpPath + "/foo/Bar.java").exists());
+
+		BufferedReader reader = new BufferedReader(new FileReader("/tmp/foo/Bar.java"));
+		String fileAsStr = "";
+		String line;
+		while ( (line = reader.readLine()) != null)
+			fileAsStr += line + nl;
+
+		assertEquals(nl + nl + "package foo;" + nl + nl + nl + "class Bar {}" + nl + nl, fileAsStr);
 	}
 }
