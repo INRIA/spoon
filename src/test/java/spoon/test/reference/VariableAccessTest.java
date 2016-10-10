@@ -142,6 +142,24 @@ public class VariableAccessTest {
 	}
 
 	@Test
+	public void testReferences() throws Exception {
+		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
+		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
+		System.out.println(make);
+
+		final CtLocalVariable localVar = make.getBody().getStatement(0);
+		final CtLocalVariable localVarCloned = localVar.clone();
+
+		final CtLocalVariableReference localVarRef = localVar.getReference();
+		final CtLocalVariableReference localVarRefCloned = localVarCloned.getReference();
+
+		assertEquals(localVarRef.getDeclaration(), localVar);
+		assertTrue(localVarRef.getDeclaration() == localVar);
+		assertEquals(localVarRefCloned.getDeclaration(), localVarCloned);
+		assertTrue(localVarRefCloned.getDeclaration() == localVarCloned);
+	}
+	
+	@Test
 	public void testReferenceToLocalVariableDeclaredInLoop() {
 		final class CtLocalVariableReferenceScanner extends CtScanner {
 			@Override
