@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -53,7 +54,7 @@ public class VariableAccessTest {
 	}
 
 	@Test
-	public void name() throws Exception {
+	public void testDeclarationArray() throws Exception {
 		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
 		final CtMethod<Object> m2 = aPozole.getMethod("m2");
 		final CtArrayWrite<?> ctArrayWrite = m2.getElements(new TypeFilter<CtArrayWrite<?>>(CtArrayWrite.class)).get(0);
@@ -136,16 +137,36 @@ public class VariableAccessTest {
 		final CtLocalVariableReference localVarRefCloned = getLocalVariableRefF1(methodA2Cloned);
 
 		assertEquals(localVarRef.getDeclaration(), declaration);
-		assertTrue(localVarRef.getDeclaration() == declaration);
+		assertSame(localVarRef.getDeclaration(), declaration);
 		assertEquals(localVarRefCloned.getDeclaration(), declarationCloned);
-		assertTrue(localVarRefCloned.getDeclaration() == declarationCloned);
+		assertSame(localVarRefCloned.getDeclaration(), declarationCloned);
 	}
 
 	@Test
 	public void testReferences() throws Exception {
+
+		/* test getReference on local variable
+		*  getReference().getDeclaration() must be circular
+		*/
+
 		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
 		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
-		System.out.println(make);
+
+		final CtLocalVariable localVar = make.getBody().getStatement(0);
+		final CtLocalVariable localVarCloned = localVar.clone();
+
+		final CtLocalVariableReference localVarRef = localVar.getReference();
+		final CtLocalVariableReference localVarRefCloned = localVarCloned.getReference();
+
+		assertEquals(localVarRef.getDeclaration(), localVar);
+		assertSame(localVarRef.getDeclaration(), localVar);
+		assertEquals(localVar.getReference().getDeclaration(), localVar);
+		assertSame(localVar.getReference().getDeclaration(), localVar);
+
+		assertEquals(localVarRefCloned.getDeclaration(), localVarCloned);
+		assertSame(localVarRefCloned.getDeclaration(), localVarCloned);
+		assertEquals(localVarCloned.getReference().getDeclaration(), localVarCloned);
+		assertSame(localVarCloned.getReference().getDeclaration(), localVarCloned);
 	}
 
 	@Test
@@ -167,6 +188,7 @@ public class VariableAccessTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("src/test/resources/reference-test/ChangeScanner.java");
 		launcher.buildModel();
+
 		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
 	}
 
@@ -190,6 +212,7 @@ public class VariableAccessTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("src/test/resources/reference-test/MultipleDeclarationsOfLocalVariable.java");
 		launcher.buildModel();
+
 		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
 	}
 
