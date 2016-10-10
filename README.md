@@ -20,7 +20,9 @@ The mission of Spoon is to provide a high-quality library for analyzing and tran
   AUTHOR = {Pawlak, Renaud and Monperrus, Martin and Petitprez, Nicolas and Noguera, Carlos and Seinturier, Lionel},
   JOURNAL = {{Software: Practice and Experience}},
   PUBLISHER = {{Wiley-Blackwell}},
-  PAGES = {na},
+  PAGES = {1155-1179},
+  VOLUME = {46},
+  URL = {https://hal.archives-ouvertes.fr/hal-01078532/document},
   YEAR = {2015},
   doi = {10.1002/spe.2346},
 }
