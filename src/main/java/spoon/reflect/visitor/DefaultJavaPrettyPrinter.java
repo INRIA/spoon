@@ -16,16 +16,6 @@
  */
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -115,6 +105,16 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
 import spoon.reflect.visitor.printer.PrinterHelper;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -618,7 +618,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtDo(CtDo doLoop) {
 		enterCtStatement(doLoop);
 		printer.write("do");
-		elementPrinterHelper.writeIfOrLoopBlock(doLoop.getBody(), this);
+		elementPrinterHelper.writeIfOrLoopBlock(doLoop.getBody());
 		printer.write("while (");
 		scan(doLoop.getLoopingExpression());
 		printer.write(" )");
@@ -940,7 +940,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.removeLastChar();
 		}
 		printer.write(")");
-		elementPrinterHelper.writeIfOrLoopBlock(forLoop.getBody(), this);
+		elementPrinterHelper.writeIfOrLoopBlock(forLoop.getBody());
 	}
 
 	@Override
@@ -951,7 +951,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write(" : ");
 		scan(foreach.getExpression());
 		printer.write(")");
-		elementPrinterHelper.writeIfOrLoopBlock(foreach.getBody(), this);
+		elementPrinterHelper.writeIfOrLoopBlock(foreach.getBody());
 	}
 
 	@Override
@@ -960,7 +960,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write("if (");
 		scan(ifElement.getCondition());
 		printer.write(")");
-		elementPrinterHelper.writeIfOrLoopBlock(ifElement.getThenStatement(), this);
+		elementPrinterHelper.writeIfOrLoopBlock(ifElement.getThenStatement());
 		if (ifElement.getElseStatement() != null) {
 			List<CtComment> comments = elementPrinterHelper.getComments(ifElement, CommentOffset.INSIDE);
 			for (CtComment comment : comments) {
@@ -970,18 +970,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					elementPrinterHelper.writeComment(comment);
 				}
 			}
-			printer.write(" else");
-			if (ifElement.getElseStatement() instanceof CtIf) {
-				if (!ifElement.getElseStatement().isImplicit()) {
-					printer.write(" ");
-				}
-				scan((CtStatement) ifElement.getElseStatement());
-			} else if (ifElement.getElseStatement() instanceof CtBlock) {
-				if (!ifElement.getElseStatement().isImplicit()) {
-					printer.write(" ");
-				}
-				scan((CtStatement) ifElement.getElseStatement());
-			}
+			printer.write("else");
+			elementPrinterHelper.writeIfOrLoopBlock(ifElement.getElseStatement());
 		}
 	}
 
@@ -1673,7 +1663,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(whileLoop.getLoopingExpression());
 		printer.write(")");
 
-		elementPrinterHelper.writeIfOrLoopBlock(whileLoop.getBody(), this);
+		elementPrinterHelper.writeIfOrLoopBlock(whileLoop.getBody());
 	}
 
 	@Override
