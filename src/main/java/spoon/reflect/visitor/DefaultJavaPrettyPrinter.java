@@ -507,6 +507,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
+		context.currentThis.push(ctClass.getReference());
+
 		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
 			if (ctClass.isLocalType()) {
@@ -521,7 +523,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		// lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
 
-		context.currentThis.push(ctClass.getReference());
 		printer.write(" {").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		printer.decTab().writeTabs().write("}");

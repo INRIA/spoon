@@ -1,19 +1,6 @@
 package spoon.test.imports;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
@@ -36,6 +23,7 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
+import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
@@ -44,6 +32,19 @@ import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
+import spoon.testing.utils.ModelUtils;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ImportTest {
 
@@ -280,6 +281,19 @@ public class ImportTest {
 		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
 		assertEquals("spoon.test.imports.testclasses.internal4.Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
+	}
+
+	@Test
+	public void testFullQualifiedNameImport() throws Exception {
+		String newLine = System.getProperty("line.separator");
+
+		Factory factory = ModelUtils.build(A.class);
+		factory.getEnvironment().setAutoImports(true);
+
+		CtClass<Object> aClass = factory.Class().get(A.class);
+		assertEquals("public class A {" + newLine
+				+ "    public class ArrayList extends java.util.ArrayList {    }" + newLine
+				+ "}", aClass.toString());
 	}
 
 	private Factory getFactory(String...inputs) {
