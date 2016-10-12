@@ -263,6 +263,8 @@ public class CodeFactory extends SubFactory {
 		literal.setValue(value);
 		if (value != null) {
 			literal.setType((CtTypeReference<T>) factory.Type().<T>createReference((Class<T>) value.getClass()).unbox());
+		} else {
+			literal.setType((CtTypeReference<T>) factory.Type().nullType());
 		}
 		return literal;
 	}

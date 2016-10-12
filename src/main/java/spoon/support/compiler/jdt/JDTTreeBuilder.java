@@ -1112,7 +1112,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(IntLiteral intLiteral, BlockScope scope) {
 		intLiteral.computeConstant();
 		CtLiteral<Integer> l = factory.Code().createLiteral(intLiteral.constant.intValue());
-		l.setType(getFactory().Type().integerType());
 		context.enter(l, intLiteral);
 		return true;
 	}
@@ -1135,7 +1134,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(LongLiteral longLiteral, BlockScope scope) {
 		longLiteral.computeConstant();
-		context.enter(factory.Code().createLiteral(longLiteral.constant.longValue()).<CtLiteral<Long>>setType(getFactory().Type().longType()), longLiteral);
+		context.enter(factory.Code().createLiteral(longLiteral.constant.longValue()), longLiteral);
 		return true;
 	}
 
@@ -1209,7 +1208,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(NullLiteral nullLiteral, BlockScope scope) {
-		context.enter(factory.Code().createLiteral(null).setType((CtTypeReference<Object>) factory.Type().nullType()), nullLiteral);
+		context.enter(factory.Code().createLiteral(null), nullLiteral);
 		return true;
 	}
 
@@ -1426,7 +1425,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(StringLiteral stringLiteral, BlockScope scope) {
-		context.enter(factory.Code().createLiteral(CharOperation.charToString(stringLiteral.source())).setType(factory.Type().stringType()), stringLiteral);
+		context.enter(factory.Code().createLiteral(CharOperation.charToString(stringLiteral.source())), stringLiteral);
 		return true;
 	}
 
