@@ -40,6 +40,10 @@ public class FileSystemFolder implements SpoonFolder {
 		this.file = file;
 	}
 
+	public FileSystemFolder(String path) {
+		this(new File(path));
+	}
+
 	public List<SpoonFile> getAllFiles() {
 		List<SpoonFile> all = new ArrayList<>(getFiles());
 		for (SpoonFolder f : getSubFolders()) {

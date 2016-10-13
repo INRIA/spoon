@@ -2,6 +2,7 @@ package spoon;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import spoon.compiler.Environment;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LauncherTest {
 
@@ -61,7 +63,7 @@ public class LauncherTest {
 
 		// the input directories
 		List<File> inputSources = new ArrayList<>(builder.getInputSources());
-		assertEquals(new File("src/main/java").toURI(), inputSources.get(0).toURI());
+		assertTrue(inputSources.get(0).getPath().contains("src/main/java"));
 		assertEquals("UTF-16", builder.getEncoding());
 
 	}
