@@ -111,10 +111,12 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A visitor for generating Java code from the program compile-time model.
@@ -1729,9 +1731,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
-		Collection<CtTypeReference<?>> imports = Collections.emptyList();
+		Set<CtTypeReference<?>> imports = new HashSet<>();
 		for (CtType<?> t : types) {
-			imports = computeImports(t);
+			imports.addAll(computeImports(t));
 		}
 		elementPrinterHelper.writeHeader(types, imports);
 		for (CtType<?> t : types) {

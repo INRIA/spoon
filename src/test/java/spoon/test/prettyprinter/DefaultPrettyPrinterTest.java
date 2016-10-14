@@ -3,12 +3,14 @@ package spoon.test.prettyprinter;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
@@ -21,6 +23,8 @@ import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -265,5 +269,20 @@ public class DefaultPrettyPrinterTest {
 
 		assertEquals(nl + nl + "package foo;" + nl + nl + nl + "class Bar {}" + nl + nl,
 				IOUtils.toString(new FileInputStream(javaFile), "UTF-8"));
+	}
+
+	@Test
+	public void importsFromMultipleTypesSupported() {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/A.java");
+		launcher.run();
+		Environment env = launcher.getEnvironment();
+		env.setAutoImports(true);
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
+		printer.calculate(null, Arrays.asList(
+			launcher.getFactory().Class().get("spoon.test.prettyprinter.testclasses.A"),
+			launcher.getFactory().Class().get("spoon.test.prettyprinter.testclasses.B")
+		));
+		assertTrue(printer.getResult().contains("import java.util.ArrayList;"));
 	}
 }
