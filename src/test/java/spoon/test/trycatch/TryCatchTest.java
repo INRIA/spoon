@@ -186,9 +186,7 @@ public class TryCatchTest {
 	public void testCompileMultiTryCatchWithCustomExceptions() throws Exception {
 		spoon.Launcher.main(new String[] {
 				"-i", "src/test/java/spoon/test/trycatch/testclasses",
-				"-o", "target/spooned",
-				"--destination","target/spooned-build",
-				"--compile"
+				"-o", "target/spooned"
 		});
 
 		final Launcher launcher = new Launcher();

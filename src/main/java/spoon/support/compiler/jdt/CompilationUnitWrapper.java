@@ -17,6 +17,7 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
@@ -25,24 +26,20 @@ import java.util.List;
 
 class CompilationUnitWrapper extends CompilationUnit {
 
-	private final JDTBasedSpoonCompiler jdtCompiler;
 	private CtType type;
 
-	CompilationUnitWrapper(JDTBasedSpoonCompiler jdtCompiler, CtType type) {
-		super(null, type.getPosition().getFile() != null ? type.getPosition().getFile().getAbsolutePath() : "",
-				null,
-				null,
+	CompilationUnitWrapper(CtType type) {
+		// char[] contents, String fileName, String encoding, String destinationPath, boolean ignoreOptionalProblems
+		super(null,
+				type.getSimpleName() + ".java",
+				"UTF-8",
+				type.getFactory().getEnvironment().getBinaryOutputDirectory(),
 				false);
-		this.jdtCompiler = jdtCompiler;
 		this.type = type;
 	}
 
 	@Override
 	public char[] getContents() {
-		if (jdtCompiler.loadedContent.containsKey(type.getQualifiedName())) {
-			return jdtCompiler.loadedContent.get(type.getQualifiedName());
-		}
-
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
 		List<CtType<?>> types = new ArrayList<>();
 		types.add(type);
@@ -50,8 +47,8 @@ class CompilationUnitWrapper extends CompilationUnit {
 
 		String result = printer.getResult();
 		char[] content = result.toCharArray();
-		this.jdtCompiler.loadedContent.put(type.getQualifiedName(), content);
 		return content;
 	}
+
 
 }

@@ -26,8 +26,8 @@ public class ExtendedStringLiteralTest {
 			public SpoonCompiler createCompiler() {
 				return new JDTBasedSpoonCompiler(getFactory()) {
 					@Override
-					protected JDTBatchCompiler createBatchCompiler(boolean useFactory) {
-						return new JDTBatchCompiler(this, useFactory) {
+					protected JDTBatchCompiler createBatchCompiler(InputType... types) {
+						return new FileCompiler(this) {
 							@Override
 							public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files) {
 								startTime = System.currentTimeMillis();
@@ -42,13 +42,13 @@ public class ExtendedStringLiteralTest {
 								// the test not succeeds since this was not the case before the pull request
 								// and since visit(ExtendedStringLiteral,BlockScope) was throwing a RuntimeException
 								compilerOptions.parseLiteralExpressionsAsConstants = true;
-								
+
 								TreeBuilderCompiler treeBuilderCompiler = new TreeBuilderCompiler(
 										environment, getHandlingPolicy(), compilerOptions,
 										this.jdtCompiler.requestor, getProblemFactory(), this.out,
 										null);
 								CompilationUnitDeclaration[] units = treeBuilderCompiler
-										.buildUnits(getCompilationUnits(files));
+										.buildUnits(getCompilationUnits());
 								return units;
 							}
 						};
@@ -60,7 +60,7 @@ public class ExtendedStringLiteralTest {
 		comp.addInputSources(SpoonResourceHelper.resources(
 				"./src/test/java/spoon/support/compiler/jdt/ExtendedStringLiteralClass.java"));
 		comp.build();
-		
+
 		CtClass<?> cl =
 			comp.getFactory().Package().get("spoon.support.compiler.jdt").
 			getType("ExtendedStringLiteralClass");

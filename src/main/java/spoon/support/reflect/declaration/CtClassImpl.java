@@ -16,12 +16,16 @@
  */
 package spoon.support.reflect.declaration;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import spoon.SpoonException;
+import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -35,6 +39,7 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.support.util.SignatureBasedSortedSet;
@@ -239,5 +244,17 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public CtClass<T> clone() {
 		return (CtClass<T>) super.clone();
+	}
+
+	@Override
+	public T newInstance() {
+		try {
+			JDTBasedSpoonCompiler spooner = new JDTBasedSpoonCompiler(getFactory());
+			spooner.compile(InputType.CTTYPES); // compiling the types of the factory
+			Class<?> klass = new URLClassLoader(new URL[] { spooner.getBinaryOutputDirectory().toURL() }).loadClass(getQualifiedName());
+			return (T) klass.newInstance();
+		} catch (Exception e) {
+			throw new SpoonException(e);
+		}
 	}
 }

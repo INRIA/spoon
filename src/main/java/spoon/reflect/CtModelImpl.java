@@ -69,7 +69,7 @@ public class CtModelImpl implements CtModel {
 
 	}
 
-	private CtPackage rootPackage = new CtRootPackage();
+	private final CtPackage rootPackage = new CtRootPackage();
 
 	public CtModelImpl(Factory f) {
 		rootPackage.setFactory(f);

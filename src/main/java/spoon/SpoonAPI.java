@@ -19,7 +19,6 @@ package spoon;
 import java.io.File;
 
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
@@ -144,7 +143,7 @@ public interface SpoonAPI {
 	/**
 	 * Creates a new Spoon compiler (for building the model)
 	 */
-	SpoonCompiler createCompiler();
+	SpoonModelBuilder createCompiler();
 
 	/** Returns the model built from the sources given via {@link #addInputResource(String)} */
 	CtModel getModel();

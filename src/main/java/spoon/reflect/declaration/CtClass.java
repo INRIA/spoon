@@ -18,7 +18,6 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
-
 import java.util.List;
 import java.util.Set;
 
@@ -93,4 +92,20 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 
 	@Override
 	CtClass<T> clone();
+
+	/**
+	 * Creates an instance of this class.
+	 *
+	 * Requirements:
+	 * - the class must have a default constructor.
+	 * - All dependencies (superclass, super-interfaces, imports) must be in the classpath,
+	 * because the code is actually compiled (otherwise an exception is thrown)
+	 *
+	 * If the class has super-interfaces, the object can be cast to one of them.
+	 * Otherwise, if the class has no super-interfaces, the methods can only be called with reflection.
+	 *
+	 * This instance is meant to be used for quick-testing, it uses a throwable classloader that
+	 * will be garbage-collected with the instance.
+	 */
+	T newInstance();
 }

@@ -18,12 +18,10 @@ package spoon.support.compiler.jdt;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
 import org.apache.log4j.Level;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -66,17 +64,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+/**
+ * Main class of Spoon to build the model.
+ * Highly depends on {@link JDTBatchCompiler} for performing the job.
+ */
 public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected INameEnvironment environment = null;
 	protected final List<CategorizedProblem> probs = new ArrayList<>();
 	protected final TreeBuilderRequestor requestor = new TreeBuilderRequestor(this);
-	protected Map<String, char[]> loadedContent = new HashMap<>();
 	protected Factory factory;
 	protected int javaCompliance = 7;
 	protected boolean build = false;
@@ -85,7 +84,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected String[] templateClasspath = new String[0];
 	protected boolean buildOnlyOutdatedFiles = false;
 	protected File outputDirectory = new File(Launcher.OUTPUTDIR);
-	protected File binaryOutputDirectory;
 	protected List<SpoonResource> forceBuildList = new ArrayList<>();
 	protected String encoding;
 
@@ -94,18 +92,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	 */
 	public JDTBasedSpoonCompiler(Factory factory) {
 		this.factory = factory;
-	}
-
-	protected JDTBatchCompiler createBatchCompiler() {
-		return createBatchCompiler(false);
-	}
-
-	protected JDTBatchCompiler createBatchCompiler(boolean useFactory) {
-		if (factory != null && factory.getEnvironment().getLevel() == Level.OFF) {
-			return new JDTBatchCompiler(this, useFactory, new NullOutputStream(), new NullOutputStream());
-		} else {
-			return new JDTBatchCompiler(this, useFactory);
-		}
 	}
 
 	@Override
@@ -147,48 +133,21 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public boolean compile() {
+	public boolean compile(InputType... types) {
 		initInputClassLoader();
 		factory.getEnvironment().debugMessage("compiling sources: " + factory.CompilationUnit().getMap().keySet());
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
 
-		JDTBatchCompiler batchCompiler = createBatchCompiler(true);
-		final SourceOptions sourcesOptions = new SourceOptions();
-		if (buildOnlyOutdatedFiles) {
-			// ignore the files that are not outdated
-			if (outputDirectory.exists()) {
-				@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
-				int offset = outputDirectory.getAbsolutePath().length() + 1;
-				Collection<String> relativeOutputPaths = new ArrayList<>();
-				for (File f : outputFiles) {
-					relativeOutputPaths.add(f.getAbsolutePath().substring(offset));
-				}
-				for (SpoonFile sf : sources.getAllJavaFiles()) {
-					if (factory.CompilationUnit().getMap().containsKey(sf.getPath())) {
-						continue;
-					}
-					File source = sf.toFile();
-					for (String out : relativeOutputPaths) {
-						if (source.getAbsolutePath().endsWith(out)) {
-							if (source.lastModified() <= new File(outputDirectory, out).lastModified()) {
-								batchCompiler.ignoreFile(new File(outputDirectory, out).getAbsolutePath());
-							}
-						}
-					}
-				}
-			}
-			sourcesOptions.sources(getBinaryOutputDirectory().getAbsolutePath());
-		} else {
-			sourcesOptions.sources(this.sources.getAllJavaFiles());
-		}
+		JDTBatchCompiler batchCompiler = createBatchCompiler(types);
+
 
 		final String[] args = new JDTBuilderImpl() //
 				.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
 				.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 				.annotationProcessingOptions(new AnnotationProcessingOptions().compileProcessors()) //
 				.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-				.sources(sourcesOptions) //
+				.sources(new SourceOptions().sources()) // no sources, handled by the JDTBatchCompiler
 				.build();
 
 		getFactory().getEnvironment().debugMessage("compile args: " + Arrays.toString(args));
@@ -196,29 +155,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		batchCompiler.compile(args);
 
 		reportProblems(factory.getEnvironment());
-		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
-		return probs.size() == 0;
-	}
-
-	@Override
-	public boolean compileInputSources() {
-		initInputClassLoader();
-		factory.getEnvironment().debugMessage("compiling input sources: " + sources.getAllJavaFiles());
-		long t = System.currentTimeMillis();
-		javaCompliance = factory.getEnvironment().getComplianceLevel();
-
-		Main batchCompiler = createBatchCompiler(false);
-
-		final String[] args = new JDTBuilderImpl() //
-				.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
-				.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
-				.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-				.annotationProcessingOptions(new AnnotationProcessingOptions().compileProcessors()) //
-				.sources(new SourceOptions().sources(sources.getAllJavaFiles())) //
-				.build();
-
-		batchCompiler.compile(args);
-
 		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
 		return probs.size() == 0;
 	}
@@ -358,12 +294,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public void setBinaryOutputDirectory(File binaryOutputDirectory) {
-		this.binaryOutputDirectory = binaryOutputDirectory;
+		this.getEnvironment().setBinaryOutputDirectory(binaryOutputDirectory.getAbsolutePath());
 	}
 
 	@Override
 	public File getBinaryOutputDirectory() {
-		return binaryOutputDirectory;
+		return new File(getEnvironment().getBinaryOutputDirectory());
 	}
 
 	@Override
@@ -416,7 +352,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			return true;
 		}
 		initInputClassLoader();
-		JDTBatchCompiler batchCompiler = createBatchCompiler();
+		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
 		String[] args;
 		if (jdtBuilder == null) {
 			args = new JDTBuilderImpl() //
@@ -455,11 +391,21 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		return probs.size() == 0;
 	}
 
+	protected JDTBatchCompiler createBatchCompiler(InputType... types) {
+		// backward compatible
+		if (types.length == 0 || types[0] == InputType.CTTYPES) {
+			return new FactoryCompiler(this);
+		} else {
+			return new FileCompiler(this);
+		}
+	}
+
 	protected boolean buildTemplates(JDTBuilder jdtBuilder) {
 		if (templates.getAllJavaFiles().isEmpty()) {
 			return true;
 		}
-		JDTBatchCompiler batchCompiler = createBatchCompiler();
+
+		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
 
 		File f = null;
 		String[] templateClasspath = new String[0];
@@ -750,5 +696,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	protected Environment getEnvironment() {
 		return getFactory().getEnvironment();
+	}
+
+	@Override
+	public boolean compileInputSources() {
+		return compile(InputType.FILES);
 	}
 }

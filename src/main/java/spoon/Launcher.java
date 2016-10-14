@@ -28,6 +28,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
@@ -68,11 +69,13 @@ import java.util.ResourceBundle;
  */
 public class Launcher implements SpoonAPI {
 
+	public static final String SPOONED_CLASSES = "spooned-classes";
+
 	public static final String OUTPUTDIR = "spooned";
 
 	private final Factory factory;
 
-	private SpoonCompiler modelBuilder;
+	private SpoonModelBuilder modelBuilder;
 
 	private String[] commandLineArgs = new String[0];
 
@@ -311,7 +314,7 @@ public class Launcher implements SpoonAPI {
 			opt2 = new FlaggedOption("destination");
 			opt2.setShortFlag('d');
 			opt2.setLongFlag("destination");
-			opt2.setDefault("spooned-classes");
+			opt2.setDefault(SPOONED_CLASSES);
 			opt2.setHelp("An optional destination directory for the generated class files.");
 			opt2.setStringParser(FileStringParser.getParser());
 			opt2.setRequired(false);
@@ -337,7 +340,7 @@ public class Launcher implements SpoonAPI {
 			// Enable compilation
 			sw1 = new Switch("compile");
 			sw1.setLongFlag(sw1.getUsageName());
-			sw1.setHelp("Enable compilation and output class files.");
+			sw1.setHelp("Compiles the resulting classes (after transformation) to bytecode.");
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
@@ -568,7 +571,7 @@ public class Launcher implements SpoonAPI {
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
 
 		if (jsapActualArgs.getBoolean("precompile")) {
-			comp.compileInputSources();
+			comp.compile(InputType.FILES);
 		}
 
 		return comp;
@@ -584,8 +587,8 @@ public class Launcher implements SpoonAPI {
 	 * Creates a new Spoon Java compiler in order to process and compile Java
 	 * source code.
 	 */
-	public SpoonCompiler createCompiler(Factory factory, List<SpoonResource> inputSources, List<SpoonResource> templateSources) {
-		SpoonCompiler c = createCompiler(factory);
+	public SpoonModelBuilder createCompiler(Factory factory, List<SpoonResource> inputSources, List<SpoonResource> templateSources) {
+		SpoonModelBuilder c = createCompiler(factory);
 		c.addInputSources(inputSources);
 		c.addTemplateSources(templateSources);
 		return c;
@@ -634,19 +637,16 @@ public class Launcher implements SpoonAPI {
 	 * run will perform the following tasks:
 	 *
 	 * <ol>
-	 * <li>Pre-compilation (optional):
-	 * {@link SpoonCompiler#compileInputSources()}.</li>
 	 * <li>Source model building in the given compiler:
-	 * {@link SpoonCompiler#build()}.</li>
+	 * {@link SpoonModelBuilder#build()}.</li>
 	 * <li>Template model building in the given factory (if any template source
-	 * is given): {@link SpoonCompiler#build()}.</li>
+	 * is given): {@link SpoonModelBuilder#build()}.</li>
 	 * <li>Model processing with the list of given processors if any:
-	 * {@link SpoonCompiler#instantiateAndProcess(List)}.</li>
+	 * {@link SpoonModelBuilder#instantiateAndProcess(List)}.</li>
 	 * <li>Processed Source code printing and generation (can be disabled with
 	 * {@link OutputType#NO_OUTPUT}):
-	 * {@link SpoonCompiler#generateProcessedSourceFiles(OutputType)}.</li>
+	 * {@link SpoonModelBuilder#generateProcessedSourceFiles(OutputType)}.</li>
 	 * <li>Processed source code compilation (optional):
-	 * {@link SpoonCompiler#compile()}.</li>
 	 * </ol>
 	 */
 	@Override
@@ -667,7 +667,8 @@ public class Launcher implements SpoonAPI {
 		prettyprint();
 
 		if (env.shouldCompile()) {
-			modelBuilder.compile();
+			// we compile the types from the factory, they may have been modified by some processors
+			modelBuilder.compile(InputType.CTTYPES);
 		}
 
 		t = System.currentTimeMillis();
@@ -788,12 +789,12 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void setBinaryOutputDirectory(String path) {
-		setBinaryOutputDirectory(new File(path));
+		getFactory().getEnvironment().setBinaryOutputDirectory(path);
 	}
 
 	@Override
 	public void setBinaryOutputDirectory(File outputDirectory) {
-		modelBuilder.setBinaryOutputDirectory(outputDirectory);
+		setBinaryOutputDirectory(outputDirectory.getPath());
 	}
 
 	@Override

@@ -16,8 +16,12 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.io.File;
+import java.util.Arrays;
+
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.builder.AdvancedOptions;
@@ -29,9 +33,6 @@ import spoon.compiler.builder.SourceOptions;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.VirtualFile;
-
-import java.io.File;
-import java.util.Arrays;
 
 public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
@@ -66,13 +67,14 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		if (sources.getAllJavaFiles().isEmpty()) {
 			return true;
 		}
-		JDTBatchCompiler batchCompiler = createBatchCompiler();
+		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
 
 		File source = createTmpJavaFile(new File("."));
 		String[] args;
 		if (jdtBuilder == null) {
+			String[] sourceClasspath = getSourceClasspath();
 			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(getSourceClasspath())) //
+					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(sourceClasspath)) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
 					.sources(new SourceOptions().sources(source.getPath())) //
