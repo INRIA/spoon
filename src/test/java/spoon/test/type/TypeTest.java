@@ -40,12 +40,15 @@ import spoon.test.type.testclasses.Mole;
 import spoon.test.type.testclasses.Pozole;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -293,5 +296,62 @@ public class TypeTest {
 			}
 		}).get(0);
 		assertEquals(launcher.getFactory().Type().objectType(), ctConstructorCall.getExecutable().getParameters().get(9));
+	}
+
+	@Test
+	public void testShadowType() throws Exception {
+
+		/* Objects and factory have to be the sames */
+
+		Launcher launcher = new Launcher();
+		launcher.buildModel();
+
+		final CtClass<Object> objectCtClass = launcher.getFactory().Class().get(Object.class);
+		final CtClass<Object> objectCtClass1 = launcher.getFactory().Class().get(Object.class);
+
+		assertSame(objectCtClass, objectCtClass1);
+
+		assertSame(launcher.getFactory().Class(), objectCtClass.getFactory().Class());
+		assertSame(launcher.getFactory(), objectCtClass.getFactory());
+
+		assertSame(launcher.getFactory().Class(), objectCtClass1.getFactory().Class());
+		assertSame(launcher.getFactory(), objectCtClass1.getFactory());
+
+		assertSame(objectCtClass.getFactory().Class().get(objectCtClass.getActualClass()), objectCtClass);
+		assertSame(objectCtClass.getFactory().Class().get(Object.class), objectCtClass);
+
+		assertSame(objectCtClass1.getFactory().Class().get(objectCtClass1.getActualClass()), objectCtClass1);
+		assertSame(objectCtClass1.getFactory().Class().get(Object.class), objectCtClass1);
+
+		assertTrue(objectCtClass.isShadow());
+		assertEquals("java.lang.Object", objectCtClass.getQualifiedName());
+
+		final CtType<Object> objectCtType = launcher.getFactory().Type().get(Object.class);
+		final CtType<Object> objectCtType1 = launcher.getFactory().Type().get(Object.class);
+
+		assertSame(objectCtType, objectCtType1);
+
+		assertSame(launcher.getFactory().Type(), objectCtType.getFactory().Type());
+		assertSame(launcher.getFactory(), objectCtType.getFactory());
+
+		assertSame(launcher.getFactory().Type(), objectCtType1.getFactory().Type());
+		assertSame(launcher.getFactory(), objectCtType1.getFactory());
+
+		assertSame(objectCtType.getFactory().Type().get(objectCtType.getActualClass()), objectCtType);
+		assertSame(objectCtType.getFactory().Type().get(Object.class), objectCtType);
+
+		assertSame(objectCtType1.getFactory().Type().get(objectCtType1.getActualClass()), objectCtType1);
+		assertSame(objectCtType1.getFactory().Type().get(Object.class), objectCtType1);
+
+		assertTrue(objectCtClass.isShadow());
+		assertEquals("java.lang.Object", objectCtClass.getQualifiedName());
+
+		final List<String> methodNameList = Arrays.asList(Object.class.getDeclaredMethods()).stream().map(Method::getName).collect(Collectors.toList());
+
+		for (CtMethod<?> ctMethod : objectCtClass.getMethods()) {
+			assertTrue(methodNameList.contains(ctMethod.getSimpleName()));
+			assertTrue(ctMethod.getBody().getStatements().isEmpty());
+		}
+
 	}
 }
