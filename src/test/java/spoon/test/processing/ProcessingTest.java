@@ -1,16 +1,23 @@
 package spoon.test.processing;
 
+import org.apache.log4j.Level;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -97,11 +104,41 @@ public class ProcessingTest {
 	@Test
 	public void testProcessorNotFoundThrowAnException() throws Exception {
 		try {
-			new Launcher().run(new String[] {
+			new Launcher().run(new String[]{
 					"-p", "fr.inria.gforge.spoon.MakeAnAwesomeTacosProcessor"
 			});
 			fail("The processor doesn't exist. We must throw an exception.");
 		} catch (SpoonException ignore) {
+		}
+	}
+
+	//toy class for the next test
+	class WrongProcessor extends AbstractProcessor<CtElement> {
+		public WrongProcessor(int myParameter) {
+
+		}
+
+		@Override
+		public void process(CtElement element) {
+			System.out.println(element);
+		}
+	}
+
+	@Test
+	public void testProcessorWithNoArgumentsInConstructor() throws Exception {
+
+		/* throw correctly an exception when trying to use a processor with constructor with args */
+
+		Launcher l = new Launcher();
+		l.getEnvironment().setLevel(Level.ERROR.toString());
+		l.buildModel();
+		try {
+			new JDTBasedSpoonCompiler(l.getFactory()).instantiateAndProcess(Collections.singletonList("spoon.test.processing.ProcessingTest$WrongProcessor"));
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().startsWith("Unable to instantiate processor"));
+			assertTrue(e.getMessage().endsWith("Your processor should have a constructor with no arguments"));
+			assertTrue(e.getCause() instanceof java.lang.InstantiationException);// we are able to retrieve the exception parent
 		}
 	}
 }
