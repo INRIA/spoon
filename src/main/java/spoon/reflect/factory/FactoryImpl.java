@@ -255,6 +255,16 @@ public class FactoryImpl implements Factory, Serializable {
 		return type;
 	}
 
+	private transient ShadowFactory shadow;
+
+	@Override
+	public ShadowFactory Shadow() {
+		if (shadow == null) {
+			shadow = new ShadowFactory(this);
+		}
+		return shadow;
+	}
+
 	/**
 	 * A constructor that takes the parent factory
 	 */

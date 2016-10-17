@@ -29,7 +29,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -39,8 +38,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static spoon.testing.utils.ModelUtils.createFactory;
 
 /**
  * The {@link CtType} sub-factory.
@@ -465,10 +462,11 @@ public class TypeFactory extends SubFactory {
 	public <T> CtType<T> get(Class<?> cl) {
 		final CtType<T> aType = get(cl.getName());
 		if (aType == null) {
-			return new JavaReflectionTreeBuilder(createFactory()).scan((Class<T>) cl);
+			return factory.Shadow().get(cl);
 		}
 		return aType;
 	}
+
 
 	/**
 	 * Gets the declaring type name for a given Java qualified name.
