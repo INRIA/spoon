@@ -16,7 +16,6 @@
  */
 package spoon.support;
 
-import org.apache.log4j.Level;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessInterruption;
@@ -63,7 +62,7 @@ public class QueueProcessingManager implements ProcessingManager {
 			Processor<?> p = type.newInstance();
 			addProcessor(p);
 		} catch (Exception e) {
-			factory.getEnvironment().report(null, Level.ERROR, "Unable to instantiate processor \"" + type.getName() + "\" - Your processor should have a constructor with no arguments");
+			throw new SpoonException("Unable to instantiate processor \"" + type.getName() + "\" - Your processor should have a constructor with no arguments", e);
 		}
 	}
 
