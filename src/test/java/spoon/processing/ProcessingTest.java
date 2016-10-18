@@ -21,7 +21,10 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.processing.processors.MyProcessor;
 
+import java.io.File;
+
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ProcessingTest {
@@ -39,5 +42,13 @@ public class ProcessingTest {
 			fail("ProcessInterrupt exception must be catch in the ProcessingManager.");
 		}
 		assertFalse(processor.isShouldStayAtFalse());
+	}
+
+	@Test
+	public void testSpoonTagger() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addProcessor("spoon.processing.SpoonTagger");
+		launcher.run();
+		assertTrue(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/Spoon.java").exists());
 	}
 }

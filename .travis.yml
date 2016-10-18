@@ -12,19 +12,29 @@ install:
   - # download deps with maven
   - mvn dependency:resolve
   - pip install --user CommonMark requests
-
+  - sudo apt-get install xmlstarlet
+  
 script: |
-  # Verify includes checkstyle, license and animal sniffer.
-  # site includes javadoc check (eg incorrect links)
+  # compiles and install
+  mvn install -DskipTests &&
+
+  # checks that it works with spoon-maven-pluging
+  git clone https://github.com/square/javawriter.git &&
+  cd javawriter &&  
+  git checkout d39761f9ec25ca5bf3b7bf15d34fa2b831fed9c1 &&
+  bash ../chore/jenkins/build.sh &&
+  cd .. &&
+  rm -rf javawriter &&
+
+  # checkstyle, license, javadoc, animal sniffer.
   mvn verify site -DskipTests &&
-  # the core of continuous integration
-  mvn test jacoco:report &&
-  # now coverage, but not failing
+
+  # the unit tests
+  mvn test jacoco:report  &&
+
+  # uploading coverage, but not failing
   mvn coveralls:report -Pcoveralls --fail-never &&
+
   # documentation
   python chore/check-links-in-doc.py
 
-
-cache:
-  directories:
-    - $HOME/.m2
