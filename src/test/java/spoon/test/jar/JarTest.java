@@ -1,15 +1,18 @@
 package spoon.test.jar;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.VirtualFile;
-
-import java.io.File;
-import java.util.Arrays;
 
 public class JarTest {
 
@@ -23,6 +26,8 @@ public class JarTest {
 				factory,
 				SpoonResourceHelper.resources("./src/test/resources/sourceJar/test.jar"));
 		Assert.assertTrue(compiler.build());
+		assertEquals(1, factory.getModel().getAllTypes().size());
+		assertEquals("spoon.test.strings.Main", factory.getModel().getAllTypes().iterator().next().getQualifiedName());
 	}
 
 	@Test
