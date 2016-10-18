@@ -27,8 +27,7 @@ import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 
 public class VirtualFolder implements SpoonFolder {
-	private final Set<SpoonFile> files = new HashSet<>();
-	private final Set<SpoonFolder> folders = new HashSet<>();
+	protected final Set<SpoonFile> files = new HashSet<>();
 
 	@Override
 	public void addFile(SpoonFile o) {
@@ -37,15 +36,16 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public void addFolder(SpoonFolder o) {
-		folders.add(o);
+		for (SpoonFile f : o.getAllFiles()) {
+			if (f.isFile()) {
+				files.add(f);
+			}
+		}
 	}
 
 	@Override
 	public List<SpoonFile> getAllFiles() {
 		List<SpoonFile> result = new ArrayList<>();
-		for (SpoonFolder f : folders) {
-			result.addAll(f.getAllFiles());
-		}
 
 		for (SpoonFile f : getFiles()) {
 			// we take care not to add a file that was already found in a folder
@@ -86,7 +86,14 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFolder> getSubFolders() {
-		return Collections.unmodifiableList(new ArrayList<>(folders));
+		List<SpoonFolder> result = new ArrayList<>();
+		for (SpoonFile f : getAllFiles()) {
+			SpoonFolder folder = f.getParent();
+			if (!result.contains(folder)) {
+				result.add(folder);
+			}
+		}
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override
