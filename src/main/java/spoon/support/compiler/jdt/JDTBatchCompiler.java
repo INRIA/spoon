@@ -16,14 +16,8 @@
  */
 package spoon.support.compiler.jdt;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
@@ -36,9 +30,15 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
-
 import spoon.SpoonException;
 import spoon.compiler.SpoonFile;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /*
  * Overrides the getCompilationUnits() from JDT's class to pass the ones we want.
@@ -50,7 +50,10 @@ abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.
 	protected JDTBasedSpoonCompiler jdtCompiler;
 
 	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler) {
-		this(jdtCompiler, System.out, System.err);
+		// by default we don't want anything from JDT
+		// the reports are sent with callbakcs to the reporter
+		// for debuggging, you may use System.out/err instead
+		this(jdtCompiler, new NullOutputStream(), new NullOutputStream());
 	}
 
 	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, OutputStream outWriter, OutputStream errWriter) {
