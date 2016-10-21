@@ -22,7 +22,7 @@ script: |
   git clone https://github.com/square/javawriter.git &&
   cd javawriter &&  
   git checkout d39761f9ec25ca5bf3b7bf15d34fa2b831fed9c1 &&
-  bash ../chore/jenkins/build.sh &&
+  bash ../doc/jenkins/build.sh &&
   cd .. &&
   rm -rf javawriter &&
 

@@ -9,7 +9,7 @@
 # Typical usage:
 # 
 # $ cd my-maven-project-with-pom
-# $ curl https://raw.githubusercontent.com/INRIA/spoon/master/chore/jenkins/build.sh | bash
+# $ curl http://spoon.gforge.inria.fr/jenkins/build.sh | bash
 
 
 echo " "
