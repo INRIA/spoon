@@ -1,19 +1,8 @@
 package spoon.test.compilation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -30,6 +19,16 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.FileCompiler;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CompilationTest {
 
@@ -104,6 +103,45 @@ public class CompilationTest {
 		Class<?> aClass = urlClassLoader.loadClass("Simple");
 		Method m = aClass.getMethod("m");
 		Assert.assertEquals(42, m.invoke(aClass.newInstance()));
+	}
+
+	@Test
+	public void modifyCLassTest() throws Exception {
+		// contract: one can modify classes that are both in the Java classpath and in the Spoon model
+		// bug found with F. Fouquet during the Spirals seminar
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/compilation/Simple.java");
+		launcher.buildModel();
+
+		Factory factory = launcher.getFactory();
+		CoreFactory core = factory.Core();
+		CodeFactory code = factory.Code();
+
+		CtClass simple = factory.Class().get("spoon.test.compilation.Simple");
+
+		// adding a new method
+		CtMethod method = core.createMethod();
+		method.addModifier(ModifierKind.PUBLIC);
+		method.setType(factory.Type().integerPrimitiveType());
+		method.setSimpleName("m");
+		CtBlock block = core.createBlock();
+		CtReturn aReturn = core.createReturn();
+		CtBinaryOperator binaryOperator = code.createBinaryOperator(
+				code.createLiteral(10),
+				code.createLiteral(32),
+				BinaryOperatorKind.PLUS);
+		aReturn.setReturnedExpression(binaryOperator);
+		// return 10 + 32;
+		block.addStatement(aReturn);
+		method.setBody(block);
+		simple.addMethod(method);
+
+		// checking the new behavior
+		Class<?> aClass2 = simple.newInstance().getClass();
+		Method m2 = aClass2.getMethod("m");
+		Assert.assertEquals(42, m2.invoke(aClass2.newInstance()));
+
 	}
 
 	@Test
