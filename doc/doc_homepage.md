@@ -36,6 +36,7 @@ You have different options:
 Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/spoon). :-)
 
 <!-- .* Marker comment. -->
+- October 27, 2016: Spoon 5.4.0 is release.
 - September 19, 2016: Spoon 5.3.0 is released.
 - June 30, 2016: Spoon 5.2.0 is released.
 - June 22, 2016: Spoon 5.1.1 is released.
