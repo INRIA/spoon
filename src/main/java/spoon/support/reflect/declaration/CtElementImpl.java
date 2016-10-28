@@ -109,6 +109,12 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		if (this == o) {
 			return true;
 		}
+		if (o == null) {
+			return false;
+		}
+		if (getClass().equals(o.getClass()) == false) {
+			return false;
+		}
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
 		if (ret && !factory.getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
