@@ -16,14 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.code.CtCodeElement;
@@ -43,6 +35,14 @@ import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.support.util.SignatureBasedSortedSet;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
@@ -251,7 +251,21 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		try {
 			JDTBasedSpoonCompiler spooner = new JDTBasedSpoonCompiler(getFactory());
 			spooner.compile(InputType.CTTYPES); // compiling the types of the factory
-			Class<?> klass = new URLClassLoader(new URL[] { spooner.getBinaryOutputDirectory().toURL() }).loadClass(getQualifiedName());
+			Class<?> klass = new URLClassLoader(new URL[] { spooner.getBinaryOutputDirectory().toURL() }) {
+				protected Class<?> loadClass(String name, boolean resolve)
+						throws ClassNotFoundException {
+					try {
+						// we first take the one that we have just compiled
+						// which is in this classloader
+						// for the other ones, it throws an exception
+						return findClass(name);
+					} catch (NoClassDefFoundError | ClassNotFoundException e) {
+						// taking the one of the upper class loader
+						return super.loadClass(name, resolve);
+					}
+				}
+
+			}.loadClass(getQualifiedName());
 			return (T) klass.newInstance();
 		} catch (Exception e) {
 			throw new SpoonException(e);
