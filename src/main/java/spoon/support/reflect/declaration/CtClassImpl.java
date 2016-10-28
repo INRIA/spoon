@@ -16,14 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.code.CtCodeElement;
@@ -43,6 +35,16 @@ import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.support.util.SignatureBasedSortedSet;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
@@ -251,10 +253,29 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		try {
 			JDTBasedSpoonCompiler spooner = new JDTBasedSpoonCompiler(getFactory());
 			spooner.compile(InputType.CTTYPES); // compiling the types of the factory
-			Class<?> klass = new URLClassLoader(new URL[] { spooner.getBinaryOutputDirectory().toURL() }).loadClass(getQualifiedName());
+			Class<?> klass = new NewInstanceClassloader(this.getQualifiedName(), spooner.getBinaryOutputDirectory()).loadClass(getQualifiedName());
 			return (T) klass.newInstance();
 		} catch (Exception e) {
 			throw new SpoonException(e);
+		}
+	}
+
+	private class NewInstanceClassloader extends URLClassLoader {
+
+		private String qualifiedName;
+
+		NewInstanceClassloader(String qualifiedName,
+				File binaryOutputDirectory) throws MalformedURLException {
+			super(new URL[] { binaryOutputDirectory.toURL()});
+			this.qualifiedName = qualifiedName;
+		}
+
+		@Override
+		public Class<?> loadClass(String s) throws ClassNotFoundException {
+			if (s.equals(qualifiedName)) {
+				return findClass(s);
+			}
+			return super.loadClass(s);
 		}
 	}
 }

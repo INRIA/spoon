@@ -1,19 +1,8 @@
 package spoon.test.compilation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -30,6 +19,19 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.FileCompiler;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.test.compilation.testclasses.Bar;
+import spoon.test.compilation.testclasses.IBar;
+import spoon.testing.utils.ModelUtils;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CompilationTest {
 
@@ -104,6 +106,23 @@ public class CompilationTest {
 		Class<?> aClass = urlClassLoader.loadClass("Simple");
 		Method m = aClass.getMethod("m");
 		Assert.assertEquals(42, m.invoke(aClass.newInstance()));
+	}
+
+	@Test
+	public void testNewInstanceFromExistingClass() throws Exception {
+		CtClass<Bar> barCtType = (CtClass<Bar>) ModelUtils.buildClass(Bar.class);
+		CtReturn<Integer> m = barCtType.getMethod("m").getBody().getStatement(0);
+		// we cannot use Bar because it causes a runtime cast exception (2 different Bar from different classloader)
+		IBar bar = barCtType.newInstance();
+		int value = bar.m();
+		assertEquals(1, value);
+
+		// change the return value
+		m.setReturnedExpression(m.getFactory().Code().createLiteral(2));
+
+		bar = barCtType.newInstance();
+		value = bar.m();
+		assertEquals(2, value);
 	}
 
 	@Test
