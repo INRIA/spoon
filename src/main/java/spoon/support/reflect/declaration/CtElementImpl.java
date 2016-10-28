@@ -112,7 +112,14 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		if (o == null) {
 			return false;
 		}
-		if (getClass().equals(o.getClass()) == false) {
+		Class<?> thisClass = getClass();
+		Class<?> thatClass = o.getClass();
+
+		if (thisClass != thatClass && thisClass.isAssignableFrom(thatClass) == false && thatClass.isAssignableFrom(thisClass) == false) {
+			/*
+			 * the classes are different. And they are not assignable to the other
+			 * Note: it must not return false for CtModelImpl$CtRootPackage and CtPackageImpl
+			 */
 			return false;
 		}
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
