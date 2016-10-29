@@ -17,8 +17,6 @@
 package spoon.compiler.builder;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 public class ClasspathOptions<T extends ClasspathOptions<T>> extends Options<T> {
 	public ClasspathOptions() {
@@ -39,25 +37,6 @@ public class ClasspathOptions<T extends ClasspathOptions<T>> extends Options<T> 
 			return myself;
 		}
 		return classpath(join(File.pathSeparator, classpaths));
-	}
-
-	public T classpathFromListOrClassLoader(String... classpaths) {
-		return (classpaths != null && classpaths.length > 0) ? classpath(classpaths) : classpathFromCurrentClassLoader();
-	}
-
-	public T classpathFromCurrentClassLoader() {
-		ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-		if (currentClassLoader instanceof URLClassLoader) {
-			final URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
-			if (urls != null && urls.length > 0) {
-				String classpath = ".";
-				for (URL url : urls) {
-					classpath += File.pathSeparator + url.getFile();
-				}
-				classpath(classpath);
-			}
-		}
-		return myself;
 	}
 
 	public T bootclasspath(String bootclasspath) {

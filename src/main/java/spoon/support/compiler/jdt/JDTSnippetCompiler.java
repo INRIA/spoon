@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonFile;
@@ -94,7 +93,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		if (jdtBuilder == null) {
 			String[] sourceClasspath = getSourceClasspath();
 			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(sourceClasspath)) //
+					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(sourceClasspath)) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
 					.sources(new SourceOptions().sources(source.getPath())) //
