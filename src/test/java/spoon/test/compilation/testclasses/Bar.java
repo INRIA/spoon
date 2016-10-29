@@ -7,3 +7,5 @@ public class Bar implements IBar {
 		return 1;
 	}
 }
+
+class FooEx extends RuntimeException {}

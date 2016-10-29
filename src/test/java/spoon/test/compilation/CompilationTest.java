@@ -32,6 +32,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CompilationTest {
 
@@ -123,6 +124,14 @@ public class CompilationTest {
 		bar = barCtType.newInstance();
 		value = bar.m();
 		assertEquals(2, value);
+
+		m.replace(m.getFactory().Code().createCodeSnippetStatement("throw new FooEx()"));
+		try {
+			bar = barCtType.newInstance();
+			value = bar.m();
+			fail();
+		} catch (Exception ignore) {}
+
 	}
 
 	@Test
