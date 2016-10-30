@@ -19,7 +19,10 @@ package spoon.reflect.code;
 /**
  * This code element defines a literal value (an int, a string, etc).
  *
- * A null literal, as in "s = null", is represented by a CtLiteral whose value is null.
+ * <pre>
+ *     int x = 4; // 4 is a literal
+ * </pre>
+ * A null literal, as in s = null", is represented by a CtLiteral whose value is null.
  *
  * @param <T>
  * 		type of literal's value

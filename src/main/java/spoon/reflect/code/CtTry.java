@@ -22,6 +22,13 @@ import java.util.List;
 
 /**
  * This code element defines a <code>try</code> statement.
+ *
+ * Example:
+ * <pre>
+ *     try {
+ *     	System.out.println("foo");
+ *     } catch (Exception ignore) {}
+ * </pre>
  */
 public interface CtTry extends CtStatement, TemplateParameter<Void> {
 

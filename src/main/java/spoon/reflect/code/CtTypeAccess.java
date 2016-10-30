@@ -22,11 +22,25 @@ import spoon.reflect.reference.CtTypeReference;
  * This code element represents a type reference usable as an expression.
  * It is used in particular for static accesses, Java 8 method references, instanceof binary expressions and ".class".
  * <pre>
- *     Type.staticField
- *     Type.staticMethod()
- *     Type::method
- *     t instanceof Type
- *     Type.class
+ *     // access to static field
+ *     java.io.PrintStream ps = System.out;
+ * </pre>
+ * <pre>
+ *     // call to static method
+ *     Class.forName("Foo")
+ * </pre>
+ * <pre>
+ *     // method reference
+ *     java.util.function.Supplier p =
+ *       Object::new;
+ * </pre>
+ * <pre>
+ *     // instanceof test
+ *     boolean x = new Object() instanceof Integer // Integer is represented as an access to type Integer
+ * </pre>
+ * <pre>
+ *     // fake field "class"
+ *     Class x = Number.class
  * </pre>
  *
  * @param <A>

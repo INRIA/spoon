@@ -20,7 +20,12 @@ package spoon.reflect.code;
  * This code element defines an read access to a variable.
  *
  * In Java, it is a usage of a variable outside an assignment. For example,
- * <code>System.out.println(variable);</code>
+ * <pre>
+ *     String variable = "";
+ *     System.out.println(
+ *       variable // <-- a variable read
+ *     );
+ * </pre>
  *
  * @param <T>
  * 		type of the variable

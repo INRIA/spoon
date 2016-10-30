@@ -24,6 +24,12 @@ import java.util.Set;
 /**
  * This element represents a class declaration.
  *
+ * <pre>
+ *     // a class definition
+ *     class Foo {
+ *        int x;
+ *     }
+ * </pre>
  * @author Renaud Pawlak
  */
 public interface CtClass<T extends Object> extends CtType<T>, CtStatement {

@@ -17,7 +17,14 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines conditional expressions using the ?.
+ * This code element defines conditional expressions using the ? (ternary expressions).
+ *
+ * Example:
+ * <pre>
+ *     System.out.println(
+ *        1==0 ? "foo" : "bar" // <-- ternary conditional
+ *     );
+ * </pre>
  */
 public interface CtConditional<T> extends CtExpression<T> {
 

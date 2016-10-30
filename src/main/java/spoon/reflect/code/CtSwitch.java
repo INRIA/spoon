@@ -19,8 +19,15 @@ package spoon.reflect.code;
 import java.util.List;
 
 /**
- * This code element defines a <code>switch</code> statement.
+ * This code element defines a switch statement.
  *
+ * Example: <pre>
+ * int x = 0;
+ * switch(x) { // <-- switch statement
+ *     case 1:
+ *       System.out.println("foo");
+ * }</pre>
+
  * @param <S>
  * 		the type of the selector expression (it would be better to be able
  * 		to define an upper bound, but it is not possible because of Java's

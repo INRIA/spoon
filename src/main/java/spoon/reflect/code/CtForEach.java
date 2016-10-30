@@ -17,8 +17,14 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines a <code>foreach</code> loop (enhanced
- * <code>for</code>).
+ * This code element defines a foreach statement.
+ * Example:
+ * <pre>
+ *     java.util.List l = new java.util.ArrayList();
+ *     for(Object o : l) { // <-- foreach loop
+ *     	System.out.println(o);
+ *     }
+ * </pre>
  */
 public interface CtForEach extends CtLoop {
 	/**

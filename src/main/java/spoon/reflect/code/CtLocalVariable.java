@@ -23,6 +23,12 @@ import spoon.reflect.reference.CtLocalVariableReference;
  * This code element defines a local variable definition (within an executable
  * body).
  *
+ * Example:
+ * <pre>
+ *     // defines a local variable x
+ *     int x = 0;
+ * </pre>
+ *
  * @param <T>
  * 		type of the variable
  * @see spoon.reflect.declaration.CtExecutable

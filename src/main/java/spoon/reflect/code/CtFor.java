@@ -19,7 +19,14 @@ package spoon.reflect.code;
 import java.util.List;
 
 /**
- * This code element defines a <code>for</code> loop.
+ * This code element defines a for loop.
+ * Example:
+ * <pre>
+ *     // a for statement
+ *     for(int i=0; i<10; i++) {
+ *     	System.out.println("foo");
+ *     }
+ * </pre>
  */
 public interface CtFor extends CtLoop {
 

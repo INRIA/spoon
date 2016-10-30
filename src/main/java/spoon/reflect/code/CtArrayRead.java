@@ -20,7 +20,12 @@ package spoon.reflect.code;
  * This code element defines an read access to an array.
  *
  * In Java, it is a usage of a array outside an assignment. For example,
- * <code>System.out.println(array[0]);</code>
+ * <pre>
+ *     int[] array = new int[10];
+ *     System.out.println(
+ *     array[0] // <-- array read
+ *     );
+ * </pre>
  *
  * If you process this element, keep in mind that you will process array[0]++ too.
  *

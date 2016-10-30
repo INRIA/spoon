@@ -17,7 +17,8 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines an <code>assert</code> clause.
+ * This code element defines an assert clause.
+ * Example: <pre>assert 1+1==2</pre>
  */
 public interface CtAssert<T> extends CtStatement {
 	/**

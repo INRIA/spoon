@@ -18,6 +18,15 @@ package spoon.reflect.code;
 
 /**
  * This code element defines a <code>do</code> loop.
+ *
+ * Example:
+ * <pre>
+ *     int x = 0;
+ *     do {
+ *         x=x+1;
+ *     } while (x<10);
+ * </pre>
+ *
  */
 public interface CtDo extends CtLoop {
 	/**

@@ -21,9 +21,17 @@ import spoon.template.TemplateParameter;
 
 /**
  * This code element represents a block of code, that is to say a list of
- * statements enclosed in curly brackets. When the context calls for a return
+ * statements enclosed in curly brackets.
+ *
+ * Example: <pre>
+ *  { // <-- block start
+ *   System.out.println("foo");
+ *  }
+ *	</pre>
+ *
+ * When the context calls for a return
  * value, the block should contain a return statement as a lastly reachable
- * statement. The returned type if any is given by <code>R</code>.
+ * statement. The returned type if any is given by R.
  */
 public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParameter<R> {
 

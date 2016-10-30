@@ -1,17 +1,20 @@
 package spoon.test.comment;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTry;
@@ -20,10 +23,14 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -31,8 +38,13 @@ import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.InlineComment;
 
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import static org.apache.commons.io.IOUtils.write;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -41,9 +53,9 @@ public class CommentTest {
 
 	private String newLine = System.getProperty("line.separator");
 
-	private Factory getSpoonFactory()  {
+	private Factory getSpoonFactory() {
 		final Launcher launcher = new Launcher();
-		launcher.run(new String[] {
+		launcher.run(new String[]{
 				"-i", "./src/test/java/spoon/test/comment/testclasses/",
 				"-o", "./target/spooned/",
 				"-c"
@@ -51,11 +63,11 @@ public class CommentTest {
 		return launcher.getFactory();
 	}
 
-	private CtComment createFakeComment(Factory factory,  String content) {
+	private CtComment createFakeComment(Factory factory, String content) {
 		return factory.Code().createInlineComment(content);
 	}
 
-	private CtComment createFakeBlockComment(Factory factory,  String content) {
+	private CtComment createFakeBlockComment(Factory factory, String content) {
 		return factory.Code().createComment(content, CtComment.CommentType.BLOCK);
 	}
 
@@ -95,14 +107,14 @@ public class CommentTest {
 
 		CtField<?> field = type.getField("field");
 		assertEquals(2, field.getComments().size());
-		assertEquals(createFakeComment(f, "Comment Field"),  field.getComments().get(0));
+		assertEquals(createFakeComment(f, "Comment Field"), field.getComments().get(0));
 		assertEquals("// Comment Field" + newLine
 				+ "// comment in field" + newLine
 				+ "private int field = 10;", field.toString());
 
 		CtAnonymousExecutable ctAnonymousExecutable = type.getAnonymousExecutables().get(0);
 		assertEquals(1, ctAnonymousExecutable.getComments().size());
-		assertEquals(createFakeComment(f, "comment static block"),  ctAnonymousExecutable.getComments().get(0));
+		assertEquals(createFakeComment(f, "comment static block"), ctAnonymousExecutable.getComments().get(0));
 		assertEquals(createFakeComment(f, "comment inside static"), ctAnonymousExecutable.getBody().getStatement(0));
 		assertEquals("// comment static block" + newLine
 				+ "static {" + newLine
@@ -111,7 +123,7 @@ public class CommentTest {
 
 		CtConstructor constructor = type.getConstructor();
 		assertEquals(1, constructor.getComments().size());
-		assertEquals(createFakeComment(f, "comment constructor"),  constructor.getComments().get(0));
+		assertEquals(createFakeComment(f, "comment constructor"), constructor.getComments().get(0));
 		// index 0 is the implicit super call
 		assertEquals(createFakeComment(f, "Comment in constructor"), constructor.getBody().getStatement(1));
 		assertEquals("// comment constructor" + newLine
@@ -121,7 +133,7 @@ public class CommentTest {
 
 		CtMethod<Object> m = type.getMethod("m");
 		assertEquals(1, m.getComments().size());
-		assertEquals(createFakeComment(f, "comment method"),  m.getComments().get(0));
+		assertEquals(createFakeComment(f, "comment method"), m.getComments().get(0));
 		assertEquals(createFakeComment(f, "comment empty method block"), m.getBody().getStatement(0));
 		assertEquals("// comment method" + newLine
 				+ "public void m() {" + newLine
@@ -275,14 +287,14 @@ public class CommentTest {
 
 		CtField<?> field = type.getField("field");
 		assertEquals(2, field.getComments().size());
-		assertEquals(createFakeBlockComment(f, "Comment Field"),  field.getComments().get(0));
+		assertEquals(createFakeBlockComment(f, "Comment Field"), field.getComments().get(0));
 		assertEquals("/* Comment Field */" + newLine
 				+ "/* comment in field */" + newLine
 				+ "private int field = 10;", field.toString());
 
 		CtAnonymousExecutable ctAnonymousExecutable = type.getAnonymousExecutables().get(0);
 		assertEquals(1, ctAnonymousExecutable.getComments().size());
-		assertEquals(createFakeBlockComment(f, "comment static block"),  ctAnonymousExecutable.getComments().get(0));
+		assertEquals(createFakeBlockComment(f, "comment static block"), ctAnonymousExecutable.getComments().get(0));
 		assertEquals(createFakeBlockComment(f, "comment inside static"), ctAnonymousExecutable.getBody().getStatement(0));
 		assertEquals("/* comment static block */" + newLine
 				+ "static {" + newLine
@@ -291,7 +303,7 @@ public class CommentTest {
 
 		CtConstructor constructor = type.getConstructor();
 		assertEquals(1, constructor.getComments().size());
-		assertEquals(createFakeBlockComment(f, "comment constructor"),  constructor.getComments().get(0));
+		assertEquals(createFakeBlockComment(f, "comment constructor"), constructor.getComments().get(0));
 		// index 0 is the implicit super call
 		assertEquals(createFakeBlockComment(f, "Comment in constructor"), constructor.getBody().getStatement(1));
 		assertEquals("/* comment constructor */" + newLine
@@ -301,7 +313,7 @@ public class CommentTest {
 
 		CtMethod<Object> m = type.getMethod("m");
 		assertEquals(1, m.getComments().size());
-		assertEquals(createFakeBlockComment(f, "comment method"),  m.getComments().get(0));
+		assertEquals(createFakeBlockComment(f, "comment method"), m.getComments().get(0));
 		assertEquals(createFakeBlockComment(f, "comment empty method block"), m.getBody().getStatement(0));
 		assertEquals("/* comment method */" + newLine
 				+ "public void m() {" + newLine
@@ -413,7 +425,7 @@ public class CommentTest {
 	}
 
 	@Test
-	public void testInsertNewComment () {
+	public void testInsertNewComment() {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 
@@ -476,6 +488,7 @@ public class CommentTest {
 		assertEquals("// comment", comment.toString());
 		assertEquals(CtComment.CommentType.INLINE, comment.getCommentType());
 	}
+
 	@Test
 	public void testSnippedWithComments(){
 
@@ -516,7 +529,75 @@ public class CommentTest {
 		assertEquals(2, returnSt.getComments().size());
 		assertEquals("method body comment", returnSt.getComments().get(0).getContent());
 		assertEquals("inline comment", returnSt.getComments().get(1).getContent());
+	}
 
-		
+	@Test
+	public void testDocumentationContract() throws Exception {
+		// contract: all metamodel classes must be commented with an example.
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setCommentEnabled(true);
+		// interfaces.
+		launcher.addInputResource("./src/main/java/spoon/reflect/");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/");
+		launcher.buildModel();
+
+		StringBuffer codeElementsDocumentationPage = new StringBuffer();
+		codeElementsDocumentationPage.append(IOUtils.toString(new FileReader("doc/code_elements_header.md")));
+		codeElementsDocumentationPage.append("\n\n");
+		launcher.getModel().getElements(new TypeFilter<>(CtInterface.class)).stream().forEach(x -> {
+
+			assertTrue(x.getSimpleName()+ " has no documentation", x.getDocComment() != null);
+			assertTrue(x.getSimpleName()+ " has no documentation", x.getDocComment().length() > 0);
+
+			// we only consider instantiable interfaces
+			if (launcher.getModel().getElements(new AbstractFilter<CtElement>() {
+				@Override
+				public boolean matches(CtElement element) {
+					return (element instanceof CtNamedElement) && ((CtNamedElement)element).getSimpleName().equals(x.getSimpleName()+"Impl") && (element instanceof CtClass) && !((CtClass)element).hasModifier(ModifierKind.ABSTRACT);
+				}
+			}).size() == 0 ) { return; }
+
+			// we don't consider references
+			if (x.getSimpleName().endsWith("Reference")) { return; }
+
+			if (x.isAssignableFrom(launcher.getFactory().Type().get(CtStatement.class).getReference())
+					|| x.isAssignableFrom(launcher.getFactory().Type().get(CtExpression.class).getReference())
+					) {
+				if (x.getSimpleName().equals("CtCodeSnippetStatement")) { return; } // no meaningful snippet
+				if (x.getSimpleName().equals("CtCodeSnippetExpression")) { return; } // no meaningful snippet
+				if (x.getSimpleName().equals("CtComment")) { return; } // no comment in snippet mode
+				if (x.getSimpleName().equals("CtEnum")) { return; } // a statement in really rare cases
+				if (x.getSimpleName().equals("CtAnnotationFieldAccess")) { return; } // too hard to snippetize
+
+				codeElementsDocumentationPage.append("### "+x.getSimpleName()+"\n");
+				codeElementsDocumentationPage.append("[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/"+x.getQualifiedName().replace('.', '/')+".html)\n");
+				codeElementsDocumentationPage.append("```java"+"\n");
+				Pattern p = Pattern.compile("<pre>(.*?)</pre>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE | Pattern.UNIX_LINES);
+				Matcher m = p.matcher(x.getDocComment());
+				m.find();
+				do {
+					String snippet = m.group(1);
+
+					// it must compile
+					CtElement el = launcher.getFactory().Code().createCodeSnippetStatement(snippet).compile();
+
+					// the snippet contains this element
+					assertTrue(snippet + " does not contain a " + x.getSimpleName(), el.getElements(new TypeFilter<>(x.getActualClass())).size() > 0);
+
+					codeElementsDocumentationPage.append(snippet+"\n");
+
+				} while (m.find()) ;
+				codeElementsDocumentationPage.append("```"+"\n");
+			}
+
+		}
+		);
+
+		try {
+			assertEquals("doc outdated, please commit doc/code_elements.md", codeElementsDocumentationPage.toString(), IOUtils.toString(new FileReader("doc/code_elements.md")));
+		} finally {
+			write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
+		}
 	}
 }

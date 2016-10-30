@@ -18,6 +18,15 @@ package spoon.reflect.code;
 
 /**
  * This code element defines a <code>while</code> loop.
+ *
+ * Example:
+ * <pre>
+ *     int x = 0;
+ *     while (x!=10) {
+ *         x=x+1;
+ *     };
+ * </pre>
+ *
  */
 public interface CtWhile extends CtLoop {
 	/**

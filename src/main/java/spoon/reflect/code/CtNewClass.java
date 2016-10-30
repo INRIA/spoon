@@ -26,6 +26,16 @@ import java.util.List;
 /**
  * This code element represents the creation of a anonymous class.
  *
+* Example:
+ * <pre>
+ *    // an anonymous class creation
+ *    Runnable r = new Runnable() {
+ *     	@Override
+ *     	public void run() {
+ *     	  System.out.println("foo");
+ *     	}
+ *    };
+ * </pre>
  * @param <T>
  * 		created type
  */

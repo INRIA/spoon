@@ -20,6 +20,14 @@ import java.util.List;
 
 /**
  * This code element defines a <code>try</code> with resource statement.
+ *
+ * Example:
+ * <pre>
+ *    // br is the resource
+ *    try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("/foo"))) {
+ *    	br.readLine();
+ *   }
+ * </pre>
  */
 public interface CtTryWithResource extends CtTry {
 

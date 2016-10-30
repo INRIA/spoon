@@ -19,6 +19,18 @@ package spoon.reflect.code;
 /**
  * This code element defines an access to super.
  *
+ * Example:
+ * <pre>
+ *     class Foo { int foo() { return 42;}};
+ *     class Bar extends Foo {
+ *     int foo() {
+ *       return super.foo(); // <-- access to super
+ *     }
+ *     };
+ * </pre>
+ *
+ * The target is used when one writes `SuperClass.super.foo()`.
+ *
  * @param <T>
  * 		Type of super
  */

@@ -23,8 +23,9 @@ package spoon.reflect.code;
  *
  * For example:
  * <pre>
+ *     Object[] array = new Object[10];
+ *     // array write
  *     array[0] = "new value";
- *     array[0] += "";
  * </pre>
  *
  * If you process this element, keep in mind that you won't process array[0]++.

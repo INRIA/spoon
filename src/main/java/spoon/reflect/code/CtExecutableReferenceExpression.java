@@ -21,7 +21,11 @@ import spoon.reflect.reference.CtExecutableReference;
 /**
  * This abstract code element defines an expression which represents an executable reference.
  *
- * In Java, it is generally of the form: <code>Type::method</code>.
+ * * Example:
+ * <pre>
+ *     java.util.function.Supplier p =
+ *       Object::new;
+ * </pre>
  *
  * @param <T>
  * 		Each executable references are typed by an interface with one method. This generic type

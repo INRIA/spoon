@@ -18,6 +18,14 @@ package spoon.reflect.code;
 
 /**
  * This code element defines a <code>synchronized</code> statement.
+ *
+ * Example:
+ * <pre>
+ *    java.util.List l = new java.util.ArrayList();
+ *    synchronized(l) {
+ *     	System.out.println("foo");
+ *    }
+ * </pre>
  */
 public interface CtSynchronized extends CtStatement {
 	/**

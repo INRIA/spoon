@@ -19,6 +19,11 @@ package spoon.reflect.code;
 /**
  * This code element defines a comment
  *
+ * Example:
+ * <code>
+ * int x = 0;
+ * // a comment
+ * </code>
  */
 public interface CtComment extends CtStatement {
 	enum CommentType {

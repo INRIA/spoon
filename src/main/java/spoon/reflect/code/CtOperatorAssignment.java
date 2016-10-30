@@ -18,6 +18,13 @@ package spoon.reflect.code;
 
 /**
  * This code element defines an self-operated assignment such as += or *=.
+ *
+ * Example:
+ * <pre>
+ *     int x = 0;
+ *     x *= 3; // <-- a CtOperatorAssignment
+ * </pre>
+ *
  */
 public interface CtOperatorAssignment<T, A extends T> extends CtAssignment<T, A> {
 	/**

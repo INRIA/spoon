@@ -19,8 +19,13 @@ package spoon.reflect.code;
 import java.util.List;
 
 /**
- * This code element defines the creation of a new array.
+ * This code element defines the inline creation of a new array.
  *
+ * Example:
+ * <pre>
+ *     // inline creation of array content
+ *     int[] x = new int[] { 0, 1, 42}
+ * </pre>
  * @param <T>
  * 		type of this array (should be a array...)
  */
