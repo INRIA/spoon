@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -1556,18 +1557,49 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private boolean printQualified(CtTypeReference<?> ref) {
 		if (importsContext.isImported(ref)) {
-			// If my.pkg.Something is imported, but we are in the context of a class which is
-			// also called "Something", we should still use qualified version my.pkg.Something
+			// If my.pkg.Something is imported, but
+			//A) we are in the context of a class which is also called "Something",
+			//B) we are in the context of a class which defines field which is also called "Something",
+			//	we should still use qualified version my.pkg.Something
 			for (CtTypeReference<?> enclosingClassRef : context.currentThis) {
 				if (enclosingClassRef.getSimpleName().equals(ref.getSimpleName())
 						&& !Objects.equals(enclosingClassRef.getPackage(), ref.getPackage())) {
 					return true;
+				}
+				CtType<?> enclosingClass = enclosingClassRef.getDeclaration();
+				if (enclosingClass != null) {
+					CtField<?> field = getDeclareddOrInheritedField(enclosingClass, ref.getSimpleName());
+					if (field != null) {
+						return true;
+					}
 				}
 			}
 			return false;
 		} else {
 			return true;
 		}
+	}
+
+	private static CtField<?> getDeclareddOrInheritedField(CtType<?> type, String fieldName) {
+		if (type == null) {
+			return null;
+		}
+		CtField<?> field = type.getField(fieldName);
+		if (field != null) {
+			return field;
+		}
+		CtTypeReference<?> str = type.getSuperclass();
+		if (str != null) {
+			CtType<?> st;
+			try {
+				st = str.getTypeDeclaration();
+			} catch (Throwable e) {
+				Launcher.LOGGER.error("cannot determine runtime type for (" + type.getQualifiedName() + ")", e);
+				return null;
+			}
+			return getDeclareddOrInheritedField(st, fieldName);
+		}
+		return null;
 	}
 
 	@Override
