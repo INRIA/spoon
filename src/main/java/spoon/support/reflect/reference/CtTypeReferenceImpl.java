@@ -223,7 +223,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				Class<?> actualSuperType = type.getActualClass();
 				return actualSuperType.isAssignableFrom(actualSubType);
 			} catch (Exception e) {
-				Launcher.LOGGER.error("cannot determine runtime types for '" + this + "' (" + getActualClass() + ") and '" + type + "' (" + type.getActualClass() + ")", e);
+				Launcher.LOGGER.error("cannot determine runtime types for '" + this + "' (" + getQualifiedName() + ") and '" + type + "' (" + type.getQualifiedName() + ")", e);
 				return false;
 			}
 		}
