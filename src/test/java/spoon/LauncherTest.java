@@ -63,7 +63,7 @@ public class LauncherTest {
 
 		// the input directories
 		List<File> inputSources = new ArrayList<>(builder.getInputSources());
-		assertTrue(inputSources.get(0).getPath().contains("src/main/java"));
+		assertTrue(inputSources.get(0).getPath().replace('\\', '/').contains("src/main/java"));
 		assertEquals("UTF-16", builder.getEncoding());
 
 	}
