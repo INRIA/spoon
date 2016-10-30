@@ -1240,23 +1240,31 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		if (newArray.getDimensionExpressions().size() == 0) {
 			printer.write("{ ");
-			for (CtExpression e : newArray.getElements()) {
+			List<CtExpression<?>> l_elements = newArray.getElements();
+			for (int i = 0; i < l_elements.size(); i++) {
+				CtExpression e = l_elements.get(i);
 				if (!(e instanceof CtStatement)) {
 					elementPrinterHelper.writeComment(e, CommentOffset.BEFORE);
 				}
 				scan(e);
 				printer.write(" , ");
+				if (i + 1 == l_elements.size()) {
+					/*
+					 * we have to remove last char before we writeComment.
+					 * We cannot simply skip adding of " , ",
+					 * because it influences formatting and EOL too
+					 */
+					printer.removeLastChar();
+				}
 				if (!(e instanceof CtStatement)) {
 					elementPrinterHelper.writeComment(e, CommentOffset.AFTER);
 				}
-			}
-			if (newArray.getElements().size() > 0) {
-				printer.removeLastChar();
 			}
 			printer.write(" }");
 		}
 		exitCtExpression(newArray);
 	}
+
 
 	@Override
 	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
