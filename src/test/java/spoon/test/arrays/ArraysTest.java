@@ -76,4 +76,19 @@ public class ArraysTest {
 			fail(e.getMessage());
 		}
 	}
+
+	@Test
+	public void testCtNewArrayWitComments() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/NewArrayWithComment.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.setSourceOutputDirectory("target/foo2");
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }
