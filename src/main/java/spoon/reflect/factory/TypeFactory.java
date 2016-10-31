@@ -19,6 +19,7 @@ package spoon.reflect.factory;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -26,6 +27,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -36,8 +38,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -75,6 +79,8 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Short> SHORT_PRIMITIVE = createReference(short.class);
 	public final CtTypeReference<Date> DATE = createReference(Date.class);
 	public final CtTypeReference<Object> OBJECT = createReference(Object.class);
+
+	private final Map<Class<?>, CtType<?>> shadowCache = new HashMap<>();
 
 	/**
 	 * Returns a reference on the null type (type of null).
@@ -465,7 +471,23 @@ public class TypeFactory extends SubFactory {
 	public <T> CtType<T> get(Class<?> cl) {
 		final CtType<T> aType = get(cl.getName());
 		if (aType == null) {
-			return new JavaReflectionTreeBuilder(createFactory()).scan((Class<T>) cl);
+			final CtType<T> shadowClass = (CtType<T>) this.shadowCache.get(cl);
+			if (shadowClass == null) {
+				final CtType<T> newShadowClass = new JavaReflectionTreeBuilder(createFactory()).scan((Class<T>) cl);
+				newShadowClass.setFactory(factory);
+				newShadowClass.accept(new CtScanner() {
+					@Override
+					public void scan(CtElement element) {
+						if (element != null) {
+							element.setFactory(factory);
+						}
+					}
+				});
+				this.shadowCache.put(cl, newShadowClass);
+				return newShadowClass;
+			} else {
+				return shadowClass;
+			}
 		}
 		return aType;
 	}
