@@ -253,7 +253,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		try {
 			JDTBasedSpoonCompiler spooner = new JDTBasedSpoonCompiler(getFactory());
 			spooner.compile(InputType.CTTYPES); // compiling the types of the factory
-			Class<?> klass = new NewInstanceClassloader(this.getQualifiedName(), spooner.getBinaryOutputDirectory()).loadClass(getQualifiedName());
+			Class<?> klass = new NewInstanceClassloader(spooner.getBinaryOutputDirectory()).loadClass(getQualifiedName());
 			return (T) klass.newInstance();
 		} catch (Exception e) {
 			throw new SpoonException(e);
@@ -261,21 +261,17 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	private class NewInstanceClassloader extends URLClassLoader {
-
-		private String qualifiedName;
-
-		NewInstanceClassloader(String qualifiedName,
-				File binaryOutputDirectory) throws MalformedURLException {
+		NewInstanceClassloader(File binaryOutputDirectory) throws MalformedURLException {
 			super(new URL[] { binaryOutputDirectory.toURL()});
-			this.qualifiedName = qualifiedName;
 		}
 
 		@Override
 		public Class<?> loadClass(String s) throws ClassNotFoundException {
-			if (s.equals(qualifiedName)) {
+			try {
 				return findClass(s);
+			} catch (Exception e) {
+				return super.loadClass(s);
 			}
-			return super.loadClass(s);
 		}
 	}
 }
