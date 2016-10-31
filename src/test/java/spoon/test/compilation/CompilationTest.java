@@ -16,9 +16,11 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.FileCompiler;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.support.reflect.reference.SpoonClassNotFoundException;
 import spoon.test.compilation.testclasses.Bar;
 import spoon.test.compilation.testclasses.IBar;
 import spoon.testing.utils.ModelUtils;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -228,5 +231,35 @@ public class CompilationTest {
 		}
 
 	}
+
+	@Test
+	public void testPrecompile() {
+		// without precompile
+		Launcher l = new Launcher();
+		l.setArgs(new String[] {"--noclasspath", "-i", "src/test/resources/compilation/"});
+		l.buildModel();
+		CtClass klass = l.getFactory().Class().get("compilation.Bar");
+		// without precompile, actualClass does not exist (an exception is thrown)
+		try {
+			klass.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualClass();
+			fail();
+		} catch (SpoonClassNotFoundException ignore) {}
+
+		// with precompile
+		Launcher l2 = new Launcher();
+		l2.setArgs(new String[] {"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/"});
+		l2.buildModel();
+		CtClass klass2 = l2.getFactory().Class().get("compilation.Bar");
+		// with precompile, actualClass is not null
+		Class actualClass = klass2.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualClass();
+		assertNotNull(actualClass);
+		assertEquals("IBar", actualClass.getSimpleName());
+
+		// precompile can be used to compile processors on the fly
+		Launcher l3 = new Launcher();
+		l3.setArgs(new String[] {"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/", "-p", "compilation.SimpleProcessor"});
+		l3.run();
+	}
+
 
 }

@@ -89,21 +89,6 @@ Options :
   [--compile]
         Enable compilation and output class files.
 
-  [--precompile]
-        Enable pre-compilation of input source files before processing. Compiled
-        classes will be added to the classpath so that they are accessible to
-        the processing manager (typically, processors, annotations, and
-        templates should be pre-compiled most of the time).
-
-  [--buildOnlyOutdatedFiles]
-        Set Spoon to build only the source files that have been modified since
-        the latest source code generation, for performance purpose. Note that
-        this option requires to have the --ouput-type option not set to none.
-        This option is not appropriate to all kinds of processing. In particular
-        processings that implement or rely on a global analysis should avoid
-        this option because the processor will only have access to the outdated
-        source code (the files modified since the latest processing).
-
   [--lines]
         Set Spoon to try to preserve the original line numbers when generating
         the source code (may lead to human-unfriendly formatting).

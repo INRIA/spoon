@@ -347,8 +347,7 @@ public class Launcher implements SpoonAPI {
 			// Enable pre-compilation
 			sw1 = new Switch("precompile");
 			sw1.setLongFlag("precompile");
-			sw1.setHelp("Enable pre-compilation of input source files " + "before processing. Compiled classes " + "will be added to the classpath so that " + "they are accessible to the processing "
-					+ "manager (typically, processors, " + "annotations, and templates should be " + "pre-compiled most of the time).");
+			sw1.setHelp("[experimental] Enable pre-compilation of input source files " + "before processing. The compiled classes " + "will be added to the classpath.");
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
@@ -468,6 +467,11 @@ public class Launcher implements SpoonAPI {
 			}
 		}
 
+		if (jsapActualArgs.getBoolean("precompile")) {
+			modelBuilder.compile(InputType.FILES);
+			getEnvironment().setSourceClasspath(new String[]{getEnvironment().getBinaryOutputDirectory()});
+		}
+
 		if (getArguments().getFile("output") != null) {
 			setSourceOutputDirectory(getArguments().getFile("output"));
 		}
@@ -569,10 +573,6 @@ public class Launcher implements SpoonAPI {
 		env.debugMessage("destination: " + comp.getBinaryOutputDirectory());
 		env.debugMessage("source classpath: " + Arrays.toString(comp.getSourceClasspath()));
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
-
-		if (jsapActualArgs.getBoolean("precompile")) {
-			comp.compile(InputType.FILES);
-		}
 
 		return comp;
 	}
