@@ -35,7 +35,11 @@ public class FileSystemFile implements SpoonFile {
 
 	public FileSystemFile(File file) {
 		super();
-		this.file = file;
+		try {
+			this.file = file.getCanonicalFile();
+		} catch (IOException e) {
+			throw new SpoonException(e);
+		}
 	}
 
 	public InputStream getContent() {
@@ -94,11 +98,7 @@ public class FileSystemFile implements SpoonFile {
 
 	@Override
 	public File toFile() {
-		try {
-		return file.getCanonicalFile();
-		} catch (IOException e) {
-			throw new SpoonException(e);
-		}
+		return file;
 	}
 
 	@Override

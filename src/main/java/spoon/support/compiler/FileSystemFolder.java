@@ -18,7 +18,6 @@ package spoon.support.compiler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,11 @@ public class FileSystemFolder implements SpoonFolder {
 		if (!file.isDirectory()) {
 			throw new SpoonException("Not a directory " + file);
 		}
-		this.file = file;
+		try {
+			this.file = file.getCanonicalFile();
+		} catch (Exception e) {
+			throw new SpoonException(e);
+		}
 	}
 
 	public FileSystemFolder(String path) {
@@ -114,13 +117,8 @@ public class FileSystemFolder implements SpoonFolder {
 	}
 
 	public String getPath() {
-		try {
-			return file.getCanonicalPath();
-		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
 			return file.getPath();
 		}
-	}
 
 	@Override
 	public boolean isArchive() {
@@ -134,11 +132,7 @@ public class FileSystemFolder implements SpoonFolder {
 
 	@Override
 	public File toFile() {
-		try {
-			return file.getCanonicalFile();
-		} catch (IOException e) {
-			throw new SpoonException(e);
-		}
+		return file;
 	}
 
 	@Override
