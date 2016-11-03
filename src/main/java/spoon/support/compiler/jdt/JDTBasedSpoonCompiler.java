@@ -621,7 +621,12 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 				throw new ModelBuildingException(message);
 			} else {
 				// in noclasspath mode, errors are only reported
-				environment.report(null, problem.isError() ? Level.ERROR : Level.WARN, message);
+				// but undefined import, type, and name errors are irrelevant
+				int problemId = problem.getID();
+				if (problemId != IProblem.UndefinedType && problemId != IProblem.UndefinedName
+						&& problemId != IProblem.ImportNotFound) {
+					environment.report(null, Level.WARN, message);
+				}
 			}
 		}
 
