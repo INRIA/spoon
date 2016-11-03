@@ -296,7 +296,6 @@ public class DefaultPrettyPrinterTest {
 		CtStatement compile = snippet.compile();
 
 		// Pretty-printing the Spooned code snippet and compiling the resulting code.
-		launcher = new Launcher();
 		snippet = launcher.getFactory().Code().createCodeSnippetStatement(compile.toString());
 		// If it throws an exception, the printed code is not valid.
 		snippet.compile();
