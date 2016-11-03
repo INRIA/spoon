@@ -127,25 +127,8 @@ abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.
 									new DefaultProblemFactory(Locale.getDefault())),
 							false);
 
-			// finding the corresponding content
-			// works for both real files and virtual files
-			char[] content = null;
-			String unitFileName = new String(unit.getFileName());
-			for (SpoonFile f : files) {
-				if (f.getName().equals(unitFileName)) {
-					try {
-						content = IOUtils.toCharArray(f.getContent());
-					} catch (Exception e) {
-						throw new SpoonException(e);
-					}
-				}
-			}
-			ICompilationUnit sourceUnit =
-					new CompilationUnit(
-							content,
-							unitFileName,
-							"", //$NON-NLS-1$
-							compilerOptions.defaultEncoding);
+			//reuse the source compilation unit
+			ICompilationUnit sourceUnit = unit.compilationResult.compilationUnit;
 
 			final CompilationResult compilationResult = new CompilationResult(sourceUnit, 0, 0, compilerOptions.maxProblemsPerUnit);
 			CompilationUnitDeclaration tmpDeclForComment = parser.dietParse(sourceUnit, compilationResult);
