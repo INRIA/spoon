@@ -288,16 +288,14 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void testTernaryParenthesesOnLocalVariable() throws SnippetCompilationError {
+	public void testTernaryParenthesesOnLocalVariable() {
 		// Spooning the code snippet
 		Launcher launcher = new Launcher();
 		CtCodeSnippetStatement snippet = launcher.getFactory().Code().createCodeSnippetStatement(
 			"final int foo = (new Object() instanceof Object ? new Object().equals(null) : new Object().equals(new Object())) ? 0 : new Object().hashCode();");
 		CtStatement compile = snippet.compile();
-
 		// Pretty-printing the Spooned code snippet and compiling the resulting code.
 		snippet = launcher.getFactory().Code().createCodeSnippetStatement(compile.toString());
-		// If it throws an exception, the printed code is not valid.
-		snippet.compile();
+		assertEquals(compile, snippet.compile());
 	}
 }
