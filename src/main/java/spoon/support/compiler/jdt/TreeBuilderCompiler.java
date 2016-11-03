@@ -17,6 +17,7 @@
 package spoon.support.compiler.jdt;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import org.eclipse.jdt.core.compiler.CompilationProgress;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
@@ -72,6 +73,12 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 			requestor.acceptResult(unit.compilationResult);
 		}
 
-		return this.unitsToProcess;
+		ArrayList<CompilationUnitDeclaration> unitsToReturn = new ArrayList<CompilationUnitDeclaration>();
+		for (CompilationUnitDeclaration cud : this.unitsToProcess) {
+			if (cud != null) {
+				unitsToReturn.add(cud);
+			}
+		}
+		return unitsToReturn.toArray(new CompilationUnitDeclaration[unitsToReturn.size()]);
 	}
 }
