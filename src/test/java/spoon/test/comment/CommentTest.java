@@ -209,7 +209,7 @@ public class CommentTest {
 		assertEquals(createFakeComment(f, "comment after then CtConditional"), ctConditional.getThenExpression().getComments().get(1));
 		assertEquals(createFakeComment(f, "comment before else CtConditional"), ctConditional.getElseExpression().getComments().get(0));
 		assertEquals(createFakeComment(f, "comment after else CtConditional"), ctLocalVariable1.getComments().get(0));
-		assertEquals("java.lang.Double dou = i == 1// comment after condition CtConditional" + newLine
+		assertEquals("java.lang.Double dou = (i == 1)// comment after condition CtConditional" + newLine
 				+ " ? // comment before then CtConditional" + newLine
 				+ "null// comment after then CtConditional" + newLine
 				+ " : // comment before else CtConditional" + newLine

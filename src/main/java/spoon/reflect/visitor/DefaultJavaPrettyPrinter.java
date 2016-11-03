@@ -87,6 +87,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -543,11 +544,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!(condition instanceof CtStatement)) {
 			elementPrinterHelper.writeComment(condition, CommentOffset.BEFORE);
 		}
-		boolean parent = false;
+		boolean parent;
 		try {
-			parent = (conditional.getParent() instanceof CtAssignment);
+			parent = conditional.getParent() instanceof CtAssignment || conditional.getParent() instanceof CtVariable;
 		} catch (ParentNotInitializedException ex) {
 			// nothing if we have no parent
+			parent = false;
 		}
 		if (parent) {
 			printer.write("(");
