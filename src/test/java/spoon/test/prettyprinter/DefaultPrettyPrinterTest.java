@@ -7,10 +7,11 @@ import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
@@ -19,11 +20,11 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.compiler.SnippetCompilationError;
 import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -284,5 +285,17 @@ public class DefaultPrettyPrinterTest {
 			launcher.getFactory().Class().get("spoon.test.prettyprinter.testclasses.B")
 		));
 		assertTrue(printer.getResult().contains("import java.util.ArrayList;"));
+	}
+
+	@Test
+	public void testTernaryParenthesesOnLocalVariable() {
+		// Spooning the code snippet
+		Launcher launcher = new Launcher();
+		CtCodeSnippetStatement snippet = launcher.getFactory().Code().createCodeSnippetStatement(
+			"final int foo = (new Object() instanceof Object ? new Object().equals(null) : new Object().equals(new Object())) ? 0 : new Object().hashCode();");
+		CtStatement compile = snippet.compile();
+		// Pretty-printing the Spooned code snippet and compiling the resulting code.
+		snippet = launcher.getFactory().Code().createCodeSnippetStatement(compile.toString());
+		assertEquals(compile, snippet.compile());
 	}
 }
