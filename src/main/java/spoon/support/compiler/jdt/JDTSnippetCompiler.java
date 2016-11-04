@@ -32,8 +32,14 @@ import spoon.compiler.builder.JDTBuilderImpl;
 import spoon.compiler.builder.SourceOptions;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationError;
+import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
+/**
+ * Compiles provided java code fragment and adds the compilation result into model of the provided factory
+ * By default uses classpath from Thread contextClassLoader, but classpath can be configured by {@link #setSourceClasspath(String...)}
+ * @see SnippetCompilationHelper
+ */
 public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	public JDTSnippetCompiler(Factory factory, String contents) {
@@ -67,7 +73,8 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		if (sources.getAllJavaFiles().isEmpty()) {
 			return true;
 		}
-		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
+		FileCompiler batchCompiler = (FileCompiler) createBatchCompiler(InputType.FILES);
+		batchCompiler.setInpuFiles(sources.getAllJavaFiles());
 
 		File source = createTmpJavaFile(new File("."));
 		String[] args;
@@ -94,10 +101,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		}
 
 		// here we build the model
-		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
-		for (CompilationUnitDeclaration unit : units) {
-			unit.traverse(builder, unit.scope);
-		}
+		buildModel(units);
 
 		return getProblems().size() == 0;
 	}

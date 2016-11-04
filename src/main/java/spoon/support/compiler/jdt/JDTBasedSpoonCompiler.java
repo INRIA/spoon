@@ -26,6 +26,7 @@ import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
+import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
@@ -64,8 +65,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -79,8 +82,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected Factory factory;
 	protected int javaCompliance = 7;
 	protected boolean build = false;
+	//list of java files or folders with java files which has to be build into CtModel
 	protected SpoonFolder sources = new VirtualFolder();
+	//list of java files or folders with java files which represents model refactoring templates
 	protected SpoonFolder templates = new VirtualFolder();
+	//The classpath used to build templates
 	protected String[] templateClasspath = new String[0];
 	protected boolean buildOnlyOutdatedFiles = false;
 	protected File outputDirectory = new File(Launcher.OUTPUTDIR);
@@ -109,6 +115,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 		build = true;
 
+		//Initialize input class loader always. Not only when sources.getAllJavaFiles() is not empty
+		initInputClassLoader();
+
 		boolean srcSuccess, templateSuccess;
 		factory.getEnvironment().debugMessage("building sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
@@ -132,6 +141,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		}
 	}
 
+	/**
+	 * Produces classes in directory specified by {@link #getBinaryOutputDirectory()}. It does not produce any CtModel. The CtModel is build by {@link #build()}
+	 * @param types - Defines whether origin java sources has to be compiled {@link InputType#FILES} or top level Types of current model CtModel {@link InputType#CTTYPES}
+	 */
 	@Override
 	public boolean compile(InputType... types) {
 		initInputClassLoader();
@@ -348,45 +361,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	protected boolean buildSources(JDTBuilder jdtBuilder) {
-		if (sources.getAllJavaFiles().isEmpty()) {
-			return true;
-		}
-		initInputClassLoader();
-		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
-		String[] args;
-		if (jdtBuilder == null) {
-			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(getSourceClasspath())) //
-					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
-					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					.sources(new SourceOptions().sources(sources.getAllJavaFiles())) //
-					.build();
-		} else {
-			args = jdtBuilder.build();
-		}
-		getFactory().getEnvironment().debugMessage("build args: " + Arrays.toString(args));
 
-		batchCompiler.configure(args);
+		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, sources, ClasspathOptions.getClasspathFromListOrCurrentClassloader(getSourceClasspath()), "", buildOnlyOutdatedFiles);
 
-		List<SpoonFile> filesToBuild = sources.getAllJavaFiles();
-		if (buildOnlyOutdatedFiles) {
-			if (outputDirectory.exists()) {
-				@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
-				keepOutdatedFiles(filesToBuild, outputFiles);
-			} else {
-				keepOutdatedFiles(filesToBuild, new ArrayList<File>());
-			}
-		}
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits(filesToBuild);
 		// here we build the model
-		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
-		for (int i = 0; i < units.length; i++) {
-			CompilationUnitDeclaration unit = units[i];
-			unit.traverse(builder, unit.scope);
-			if (getFactory().getEnvironment().isCommentsEnabled()) {
-				new JDTCommentBuilder(unit, factory).build();
-			}
-		}
+		buildModel(units);
 
 		return probs.size() == 0;
 	}
@@ -401,55 +380,90 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	protected boolean buildTemplates(JDTBuilder jdtBuilder) {
-		if (templates.getAllJavaFiles().isEmpty()) {
-			return true;
+		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, templates, getTemplateClasspath(), "template ", false);
+
+		// here we build the model in the template factory
+		buildModel(units);
+
+		return probs.size() == 0;
+	}
+
+	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
+
+	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
+		List<SpoonFile> sourceFiles = sourcesFolder.getAllJavaFiles();
+		if (sourceFiles.isEmpty()) {
+			return EMPTY_RESULT;
 		}
+		FileCompiler batchCompiler = (FileCompiler) createBatchCompiler(InputType.FILES);
+		//tell the compiler which files it should build
+		batchCompiler.setInpuFiles(sourceFiles);
 
-		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
+		Map<File, File> dirToTmpFile = new HashMap<>();
+		try {
+			if (classpath != null && classpath.length > 0) {
+				//TODO Why we do this hack only when there is classpath??? Should not it be outside of parent if statement?
+				for (SpoonFolder file : sourcesFolder.getSubFolders()) {
+					if (file.isArchive()) {
+						// JDT bug HACK
+						File parentDir = file.getFileSystemParent();
+						//TODO can it happen that more folders has same parent file? If yes, then we need to create only one tmp file per folder
+						if (dirToTmpFile.containsKey(parentDir) == false) {
+							//create tmp file in parent directory only if it there is no one yet
+							dirToTmpFile.put(parentDir, createTmpJavaFile(parentDir));
+						}
+					}
+				}
+			} else {
+				classpath = new String[0];
+			}
 
-		File f = null;
-		String[] templateClasspath = new String[0];
-		if (getTemplateClasspath() != null && getTemplateClasspath().length > 0) {
-			templateClasspath = getTemplateClasspath();
-			for (SpoonFolder file : templates.getSubFolders()) {
-				if (file.isArchive()) {
-					// JDT bug HACK
-					f = createTmpJavaFile(file.getFileSystemParent());
+			String[] args;
+			if (jdtBuilder == null) {
+				args = new JDTBuilderImpl() //
+						.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(classpath)) //
+						.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
+						.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
+						.sources(new SourceOptions().sources(sourceFiles)) //
+						.build();
+			} else {
+				args = jdtBuilder.build();
+			}
+
+			getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
+
+			batchCompiler.configure(args);
+
+			if (buildOnlyOutdatedFiles && outputDirectory.exists()) {
+				@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
+				keepOutdatedFiles(sourceFiles, outputFiles);
+			}
+
+			CompilationUnitDeclaration[] units = batchCompiler.getUnits(sourceFiles);
+
+			return units;
+		} finally {
+			for (File f : dirToTmpFile.values()) {
+				try {
+					if (f.exists()) {
+						f.delete();
+					}
+				} catch (Throwable e) {
+					//TODO how to report error? If I do not want print Exception, which might hide another exception in try block
+					e.printStackTrace();
 				}
 			}
 		}
+	}
 
-		String[] args;
-		if (jdtBuilder == null) {
-			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(templateClasspath)) //
-					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
-					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					.sources(new SourceOptions().sources(templates.getAllJavaFiles())) //
-					.build();
-		} else {
-			args = jdtBuilder.build();
-		}
-
-		getFactory().getEnvironment().debugMessage("template build args: " + Arrays.toString(args));
-		batchCompiler.configure(args);
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits(templates.getAllJavaFiles());
-
-		if (f != null && f.exists()) {
-			f.delete();
-		}
-
-		// here we build the model in the template factory
+	protected void buildModel(CompilationUnitDeclaration[] units) {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
-		for (int i = 0; i < units.length; i++) {
-			CompilationUnitDeclaration unit = units[i];
+		for (CompilationUnitDeclaration unit : units) {
 			unit.traverse(builder, unit.scope);
 			if (getFactory().getEnvironment().isCommentsEnabled()) {
 				new JDTCommentBuilder(unit, factory).build();
 			}
 		}
-
-		return probs.size() == 0;
 	}
 
 	protected void generateProcessedSourceFilesUsingTypes(Filter<CtType<?>> typeFilter) {
@@ -663,6 +677,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		return null;
 	}
 
+	/**
+	 * @param initialClassLoader
+	 * @param classLoader
+	 * @return true if classloader is already part of class loading chain of the initialClassLoader
+	 */
 	private boolean hasClassLoader(ClassLoader initialClassLoader, ClassLoader classLoader) {
 		while (initialClassLoader != null) {
 			if (initialClassLoader == classLoader) {
@@ -673,6 +692,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		return false;
 	}
 
+	/**
+	 * Assures that factory.getEnvironment().getInputClassLoader() is used in Java Thread contextClassLoader
+	 * If the buildOnlyOutdatedFiles==true then it assures that Java Thread contextClassLoader is able to load already built classes in getBinaryOutputDirectory()
+	 */
 	protected void initInputClassLoader() {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		if (buildOnlyOutdatedFiles && getBinaryOutputDirectory() != null) {

@@ -76,7 +76,10 @@ public interface SpoonModelBuilder {
 	 */
 	boolean build(JDTBuilder builder);
 
-	/** The types of compilable elements */
+	/** The types of compilable elements
+	 * FILES - compiles the java files from the file system, which were registered by {@see SpoonModelBuilder#addInputSource()}
+	 * CTTYPES - compiles virtual java files, which are dynamically generated from the all top level classes of the CtModel by {@see DefaultJavaPrettyPrinter}
+	 */
 	enum InputType {
 		FILES, CTTYPES
 	}

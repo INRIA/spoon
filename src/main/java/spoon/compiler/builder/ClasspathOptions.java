@@ -19,6 +19,8 @@ package spoon.compiler.builder;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClasspathOptions<T extends ClasspathOptions<T>> extends Options<T> {
 	public ClasspathOptions() {
@@ -42,22 +44,26 @@ public class ClasspathOptions<T extends ClasspathOptions<T>> extends Options<T> 
 	}
 
 	public T classpathFromListOrClassLoader(String... classpaths) {
-		return (classpaths != null && classpaths.length > 0) ? classpath(classpaths) : classpathFromCurrentClassLoader();
+		return classpath(getClasspathFromListOrCurrentClassloader(classpaths));
 	}
 
-	public T classpathFromCurrentClassLoader() {
+	public static String[] getClasspathFromListOrCurrentClassloader(String... classpaths) {
+		return (classpaths != null && classpaths.length > 0) ? classpaths : getClasspathFromCurrentClassloader();
+	}
+	public static String[] getClasspathFromCurrentClassloader() {
 		ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
 		if (currentClassLoader instanceof URLClassLoader) {
 			final URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
 			if (urls != null && urls.length > 0) {
-				String classpath = ".";
+				List<String> classpaths = new ArrayList<>(urls.length + 1);
+				classpaths.add(".");
 				for (URL url : urls) {
-					classpath += File.pathSeparator + url.getFile();
+					classpaths.add(url.getFile());
 				}
-				classpath(classpath);
+				return classpaths.toArray(new String[classpaths.size()]);
 			}
 		}
-		return myself;
+		return null;
 	}
 
 	public T bootclasspath(String bootclasspath) {

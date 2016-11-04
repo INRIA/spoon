@@ -24,11 +24,19 @@ import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 
 import spoon.SpoonException;
 import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
 
 public class FileCompiler extends JDTBatchCompiler {
 
+	protected List<SpoonFile> inputFiles;
+
 	public FileCompiler(JDTBasedSpoonCompiler jdtCompiler) {
 		super(jdtCompiler);
+	}
+
+	public FileCompiler(JDTBasedSpoonCompiler jdtCompiler, List<SpoonFile> files) {
+		super(jdtCompiler);
+		inputFiles = files;
 	}
 
 	/**
@@ -36,11 +44,12 @@ public class FileCompiler extends JDTBatchCompiler {
 	 */
 	@Override
 	public CompilationUnit[] getCompilationUnits() {
-		List<SpoonFile> files = new ArrayList<>();
-		files.addAll(jdtCompiler.sources.getAllJavaFiles());
-		files.addAll(jdtCompiler.templates.getAllJavaFiles());
+		if (inputFiles == null) {
+			setInpuFiles(jdtCompiler.sources, jdtCompiler.templates);
+		}
+
 		List<CompilationUnit> culist = new ArrayList<>();
-		for (SpoonFile f : files) {
+		for (SpoonFile f : inputFiles) {
 			if (filesToBeIgnored.contains(f.getPath())) {
 				continue;
 			}
@@ -52,12 +61,27 @@ public class FileCompiler extends JDTBatchCompiler {
 					fName = f.getName();
 				}
 				culist.add(new CompilationUnit(IOUtils.toCharArray(f
-						.getContent()), fName, null));
+						.getContent(), jdtCompiler.getEncoding()), fName, null));
 			} catch (Exception e) {
 				throw new SpoonException(e);
 			}
 		}
 		return culist.toArray(new CompilationUnit[0]);
+	}
+
+	public List<SpoonFile> getInpuFiles() {
+		return inputFiles;
+	}
+
+	public void setInpuFiles(List<SpoonFile> p_inpuFiles) {
+		inputFiles = p_inpuFiles;
+	}
+
+	public void setInpuFiles(SpoonFolder... folders) {
+		inputFiles = new ArrayList<>();
+		for (SpoonFolder folder : folders) {
+			inputFiles.addAll(folder.getAllJavaFiles());
+		}
 	}
 
 }

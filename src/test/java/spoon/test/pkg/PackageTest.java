@@ -2,8 +2,10 @@ package spoon.test.pkg;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtComment;
@@ -20,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.Assert.assertThat;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class PackageTest {
 	@Test
@@ -100,5 +103,21 @@ public class PackageTest {
 		assertEquals(CtComment.CommentType.INLINE, aPackage.getComments().get(2).getCommentType());
 
 		assertThat(aPackage).isEqualTo(ModelUtils.build(new File("./target/spooned/package/spoon/test/pkg/testclasses/internal")).Package().get("spoon.test.pkg.testclasses.internal"));
+	}
+	
+	@Test
+	public void testAnnotationInPackageInfoWhenTemplatesCompiled() throws Exception {
+		final Launcher launcher = new Launcher();
+		Environment environment = launcher.getEnvironment();
+		
+		environment.setAutoImports(true);
+		environment.setCommentEnabled(true);
+		launcher.addInputResource("./src/test/java/spoon/test/pkg/package-info.java");
+		launcher.setSourceOutputDirectory("./target/spooned/packageAndTemplate");
+//		SpoonResourceHelper.resources("./src/test/java/spoon/test/pkg/test_templates").forEach(r->launcher.addTemplateResource(r));
+		launcher.addTemplateResource(SpoonResourceHelper.createResource(new File("./src/test/java/spoon/test/pkg/test_templates/FakeTemplate.java")));
+		launcher.buildModel();
+		launcher.prettyprint();
+		canBeBuilt("./target/spooned/packageAndTemplate/spoon/test/pkg/package-info.java", 8);
 	}
 }
