@@ -55,7 +55,7 @@ public class ClasspathOptions<T extends ClasspathOptions<T>> extends Options<T> 
 		if (currentClassLoader instanceof URLClassLoader) {
 			final URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
 			if (urls != null && urls.length > 0) {
-				List<String> classpaths = new ArrayList<>(urls.length+1);
+				List<String> classpaths = new ArrayList<>(urls.length + 1);
 				classpaths.add(".");
 				for (URL url : urls) {
 					classpaths.add(url.getFile());

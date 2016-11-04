@@ -18,14 +18,12 @@ package spoon.support.compiler.jdt;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
 import spoon.SpoonException;
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonFile;
 import spoon.compiler.builder.AdvancedOptions;
 import spoon.compiler.builder.ClasspathOptions;
 import spoon.compiler.builder.ComplianceOptions;
@@ -75,7 +73,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		if (sources.getAllJavaFiles().isEmpty()) {
 			return true;
 		}
-		FileCompiler batchCompiler = (FileCompiler)createBatchCompiler(InputType.FILES);
+		FileCompiler batchCompiler = (FileCompiler) createBatchCompiler(InputType.FILES);
 		batchCompiler.setInpuFiles(sources.getAllJavaFiles());
 
 		File source = createTmpJavaFile(new File("."));

@@ -114,7 +114,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			throw new SpoonException("Model already built");
 		}
 		build = true;
-		
+
 		//Initialize input class loader always. Not only when sources.getAllJavaFiles() is not empty
 		initInputClassLoader();
 
@@ -363,7 +363,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected boolean buildSources(JDTBuilder jdtBuilder) {
 
 		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, sources, ClasspathOptions.getClasspathFromListOrCurrentClassloader(getSourceClasspath()), "", buildOnlyOutdatedFiles);
-		
+
 		// here we build the model
 		buildModel(units);
 
@@ -389,17 +389,16 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
-	
-	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles)
-	{
+
+	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
 		List<SpoonFile> sourceFiles = sourcesFolder.getAllJavaFiles();
 		if (sourceFiles.isEmpty()) {
 			return EMPTY_RESULT;
 		}
-		FileCompiler batchCompiler = (FileCompiler)createBatchCompiler(InputType.FILES);
+		FileCompiler batchCompiler = (FileCompiler) createBatchCompiler(InputType.FILES);
 		//tell the compiler which files it should build
 		batchCompiler.setInpuFiles(sourceFiles);
-		
+
 		Map<File, File> dirToTmpFile = new HashMap<>();
 		try {
 			if (classpath != null && classpath.length > 0) {
@@ -409,7 +408,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 						// JDT bug HACK
 						File parentDir = file.getFileSystemParent();
 						//TODO can it happen that more folders has same parent file? If yes, then we need to create only one tmp file per folder
-						if(dirToTmpFile.containsKey(parentDir)==false) {
+						if (dirToTmpFile.containsKey(parentDir) == false) {
 							//create tmp file in parent directory only if it there is no one yet
 							dirToTmpFile.put(parentDir, createTmpJavaFile(parentDir));
 						}
@@ -418,7 +417,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			} else {
 				classpath = new String[0];
 			}
-			
+
 			String[] args;
 			if (jdtBuilder == null) {
 				args = new JDTBuilderImpl() //
@@ -430,36 +429,34 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			} else {
 				args = jdtBuilder.build();
 			}
-			
-			getFactory().getEnvironment().debugMessage(debugMessagePrefix+"build args: " + Arrays.toString(args));
+
+			getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
 
 			batchCompiler.configure(args);
-			
+
 			if (buildOnlyOutdatedFiles && outputDirectory.exists()) {
 				@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
 				keepOutdatedFiles(sourceFiles, outputFiles);
 			}
-			
+
 			CompilationUnitDeclaration[] units = batchCompiler.getUnits(sourceFiles);
-			
+
 			return units;
-		}
-		finally {
+		} finally {
 			for (File f : dirToTmpFile.values()) {
 				try {
 					if (f.exists()) {
 						f.delete();
 					}
-				} catch(Throwable e) {
-					//TODO how to report error? If I do not want print Exception, which might hide another exception in try block 
+				} catch (Throwable e) {
+					//TODO how to report error? If I do not want print Exception, which might hide another exception in try block
 					e.printStackTrace();
 				}
 			}
 		}
 	}
-	
-	protected void buildModel(CompilationUnitDeclaration[] units)
-	{
+
+	protected void buildModel(CompilationUnitDeclaration[] units) {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		for (CompilationUnitDeclaration unit : units) {
 			unit.traverse(builder, unit.scope);

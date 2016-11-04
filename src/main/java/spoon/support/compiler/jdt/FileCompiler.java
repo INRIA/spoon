@@ -27,7 +27,7 @@ import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 
 public class FileCompiler extends JDTBatchCompiler {
-	
+
 	protected List<SpoonFile> inputFiles;
 
 	public FileCompiler(JDTBasedSpoonCompiler jdtCompiler) {
@@ -44,10 +44,10 @@ public class FileCompiler extends JDTBatchCompiler {
 	 */
 	@Override
 	public CompilationUnit[] getCompilationUnits() {
-		if(inputFiles==null) {
+		if (inputFiles == null) {
 			setInpuFiles(jdtCompiler.sources, jdtCompiler.templates);
 		}
-		
+
 		List<CompilationUnit> culist = new ArrayList<>();
 		for (SpoonFile f : inputFiles) {
 			if (filesToBeIgnored.contains(f.getPath())) {
@@ -76,11 +76,10 @@ public class FileCompiler extends JDTBatchCompiler {
 	public void setInpuFiles(List<SpoonFile> p_inpuFiles) {
 		inputFiles = p_inpuFiles;
 	}
-	
+
 	public void setInpuFiles(SpoonFolder... folders) {
 		inputFiles = new ArrayList<>();
-		for (SpoonFolder folder : folders)
-		{
+		for (SpoonFolder folder : folders) {
 			inputFiles.addAll(folder.getAllJavaFiles());
 		}
 	}
