@@ -445,16 +445,16 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			return units;
 		}
 		finally {
-			dirToTmpFile.values().forEach(f->{
+			for (File f : dirToTmpFile.values()) {
 				try {
 					if (f.exists()) {
 						f.delete();
 					}
 				} catch(Throwable e) {
-					//TODO how to report error? 
+					//TODO how to report error? If I do not want print Exception, which might hide another exception in try block 
 					e.printStackTrace();
 				}
-			});
+			}
 		}
 	}
 	
