@@ -73,7 +73,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 			//remove snippet compilation unit from the cache (to clear memory) and remember it so client can use it
 			for (SpoonFile spoonFile : allFiles) {
 				if (spoonFile.getName().startsWith(SNIPPET_FILENAME_PREFIX)) {
-					snippetCompilationUnit = factory.CompilationUnit().remove(spoonFile.getName());
+					snippetCompilationUnit = factory.CompilationUnit().removeFromCache(spoonFile.getName());
 				}
 			}
 		}

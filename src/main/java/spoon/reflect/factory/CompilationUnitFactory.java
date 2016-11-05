@@ -84,7 +84,7 @@ public class CompilationUnitFactory extends SubFactory {
 	 * @param filePath
 	 * @return a cached compilation unit or null
 	 */
-	public CompilationUnit remove(String filePath) {
+	public CompilationUnit removeFromCache(String filePath) {
 		return cachedCompilationUnits.remove(filePath);
 	}
 
