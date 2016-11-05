@@ -114,14 +114,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		}
 
 		// here we build the model
-		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
-		for (CompilationUnitDeclaration unit : units) {
-			unit.traverse(builder, unit.scope);
-			//process comments too
-			if (getFactory().getEnvironment().isCommentsEnabled()) {
-				new JDTCommentBuilder(unit, factory).build();
-			}
-		}
+		buildModel(units);
 
 		return getProblems().size() == 0;
 	}
