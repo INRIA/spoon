@@ -47,6 +47,7 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -174,7 +175,8 @@ class JDTCommentBuilder {
 	private void insertCommentInAST(final CtComment comment) {
 		CtElement commentParent = findCommentParent(comment);
 		if (commentParent == null) {
-			if (spoonUnit.getFile().getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
+			File file = spoonUnit.getFile();
+			if (file != null && file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
 				spoonUnit.getDeclaredPackage().addComment(comment);
 			} else {
 				comment.setCommentType(CtComment.CommentType.FILE);

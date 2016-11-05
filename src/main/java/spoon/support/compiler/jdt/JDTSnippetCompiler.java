@@ -18,27 +18,37 @@ package spoon.support.compiler.jdt;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
 import spoon.SpoonException;
 import spoon.compiler.Environment;
+import spoon.compiler.SpoonFile;
 import spoon.compiler.builder.AdvancedOptions;
 import spoon.compiler.builder.ClasspathOptions;
 import spoon.compiler.builder.ComplianceOptions;
 import spoon.compiler.builder.JDTBuilder;
 import spoon.compiler.builder.JDTBuilderImpl;
 import spoon.compiler.builder.SourceOptions;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.VirtualFile;
 
 public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
+	private final AtomicLong snippetNumber = new AtomicLong(0);
+	public static final String SNIPPET_FILENAME_PREFIX = JDTSnippetCompiler.class.getName() + "_spoonSnippet_";
+
+	private CompilationUnit snippetCompilationUnit;
+
 	public JDTSnippetCompiler(Factory factory, String contents) {
 		super(factory);
-		addInputSource(new VirtualFile(contents, ""));
+		//give the Virtual file the unique name so JDTCommentBuilder.spoonUnit can be correctly initialized
+		addInputSource(new VirtualFile(contents, SNIPPET_FILENAME_PREFIX + (snippetNumber.incrementAndGet())));
 	}
 
 	@Override
@@ -53,10 +63,20 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		}
 
 		boolean srcSuccess;
-		factory.getEnvironment().debugMessage("compiling sources: " + sources.getAllJavaFiles());
+		List<SpoonFile> allFiles = sources.getAllJavaFiles();
+		factory.getEnvironment().debugMessage("compiling sources: " + allFiles);
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
-		srcSuccess = buildSources(builder);
+		try {
+			srcSuccess = buildSources(builder);
+		} finally {
+			//remove snippet compilation unit from the cache (to clear memory) and remember it so client can use it
+			for (SpoonFile spoonFile : allFiles) {
+				if (spoonFile.getName().startsWith(SNIPPET_FILENAME_PREFIX)) {
+					snippetCompilationUnit = factory.CompilationUnit().remove(spoonFile.getName());
+				}
+			}
+		}
 		reportProblems(factory.getEnvironment());
 		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
 		return srcSuccess;
@@ -97,6 +117,10 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		for (CompilationUnitDeclaration unit : units) {
 			unit.traverse(builder, unit.scope);
+			//process comments too
+			if (getFactory().getEnvironment().isCommentsEnabled()) {
+				new JDTCommentBuilder(unit, factory).build();
+			}
 		}
 
 		return getProblems().size() == 0;
@@ -105,5 +129,12 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 	@Override
 	protected void report(Environment environment, CategorizedProblem problem) {
 		throw new SnippetCompilationError(problem.getMessage() + "at line " + problem.getSourceLineNumber());
+	}
+
+	/**
+	 * @return CompilationUnit which was produced by compiling of this snippet
+	 */
+	public CompilationUnit getSnippetCompilationUnit() {
+		return snippetCompilationUnit;
 	}
 }

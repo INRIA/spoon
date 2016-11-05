@@ -25,6 +25,7 @@ import spoon.reflect.cu.Import;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.cu.ImportImpl;
 
 /**
@@ -64,8 +65,10 @@ public class CompilationUnitFactory extends SubFactory {
 	public CompilationUnit create(String filePath) {
 		CompilationUnit cu = cachedCompilationUnits.get(filePath);
 		if (cu == null) {
-			if ("".equals(filePath)) {
+			if (filePath.startsWith(JDTSnippetCompiler.SNIPPET_FILENAME_PREFIX)) {
 				cu = factory.Core().createVirtualCompilationUnit();
+				//put the virtual compilation unit of code snippet into cache too, so the JDTCommentBuilder can found it
+				cachedCompilationUnits.put(filePath, cu);
 				return cu;
 			}
 			cu = factory.Core().createCompilationUnit();
@@ -73,6 +76,16 @@ public class CompilationUnitFactory extends SubFactory {
 			cachedCompilationUnits.put(filePath, cu);
 		}
 		return cu;
+	}
+
+	/**
+	 * Removes compilation unit from the cache and returns it
+	 * Used by JDTSnippetCompiler to remove processed snippet from the cache
+	 * @param filePath
+	 * @return a cached compilation unit or null
+	 */
+	public CompilationUnit remove(String filePath) {
+		return cachedCompilationUnits.remove(filePath);
 	}
 
 	/**

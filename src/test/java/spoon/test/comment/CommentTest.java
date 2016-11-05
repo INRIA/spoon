@@ -23,7 +23,11 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
+import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.InlineComment;
 
@@ -471,5 +475,48 @@ public class CommentTest {
 		comment = spoonFactory.Code().createInlineComment("comment");
 		assertEquals("// comment", comment.toString());
 		assertEquals(CtComment.CommentType.INLINE, comment.getCommentType());
+	}
+	@Test
+	public void testSnippedWithComments(){
+
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
+				new StandardEnvironment());
+		factory.getEnvironment().setNoClasspath(true);
+		factory.getEnvironment().setCommentEnabled(true);
+
+
+		String content = "//class comment\n" + "class PR {\n"
+				+ "/**\n * method javadoc comment */\n"
+				+ "public java.io.File foo(String p) {\n"
+				+ "/* method body comment*/\n"
+				+ " return /*inline comment*/ null;"
+				+ "}"
+				+ "};\n"
+				+ "// after class comment";
+
+		JDTSnippetCompiler builder = new JDTSnippetCompiler(factory, content);
+
+		builder.build();
+
+		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
+		assertNotNull(clazz1);
+		assertEquals(1, clazz1.getComments().size());
+		assertEquals("class comment", clazz1.getComments().get(0).getContent());
+		
+		assertEquals(1, builder.getSnippetCompilationUnit().getDeclaredTypes().size());
+		assertTrue(clazz1==builder.getSnippetCompilationUnit().getDeclaredTypes().get(0));
+
+		CtMethod<?> methodString = (CtMethod<?>) clazz1.getMethods().toArray()[0];
+		assertEquals("java.io.File foo(java.lang.String)", methodString.getSignature());
+		assertEquals(1, methodString.getComments().size());
+		assertEquals("method javadoc comment", methodString.getComments().get(0).getContent());
+
+		CtReturn<?> returnSt = methodString.getBody().getStatement(0);
+
+		assertEquals(2, returnSt.getComments().size());
+		assertEquals("method body comment", returnSt.getComments().get(0).getContent());
+		assertEquals("inline comment", returnSt.getComments().get(1).getContent());
+
+		
 	}
 }
