@@ -20,7 +20,6 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
-import spoon.support.compiler.SnippetCompilationError;
 import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.File;

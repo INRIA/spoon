@@ -1,7 +1,5 @@
 package spoon.test.generics.testclasses;
 
-import java.util.ArrayList;
-
 @SuppressWarnings(value = { "unchecked" , "unused" , "rawtypes" })
 public class Spaghetti<B> {
     public interface This<K, V> {    }
