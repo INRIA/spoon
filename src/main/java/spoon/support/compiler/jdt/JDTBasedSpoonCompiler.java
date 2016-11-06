@@ -26,6 +26,7 @@ import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
+import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
@@ -134,6 +135,10 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public boolean compile(InputType... types) {
+		if (types.length > 0 && types[0] == InputType.UNITS) {
+			throw new SpoonException("InputType.UNITS cannot be used with compile");
+		}
+
 		initInputClassLoader();
 		factory.getEnvironment().debugMessage("compiling sources: " + factory.CompilationUnit().getMap().keySet());
 		long t = System.currentTimeMillis();
@@ -352,7 +357,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			return true;
 		}
 		initInputClassLoader();
-		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
+		JDTBatchCompiler batchCompiler = createBatchCompiler(sources.getAllJavaFiles());
 		String[] args;
 		if (jdtBuilder == null) {
 			args = new JDTBuilderImpl() //
@@ -395,9 +400,17 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		// backward compatible
 		if (types.length == 0 || types[0] == InputType.CTTYPES) {
 			return new FactoryCompiler(this);
-		} else {
+		} else if (types[0] == InputType.FILES) {
 			return new FileCompiler(this);
+		} else {
+			return new ConfigurableCompiler(this);
 		}
+	}
+
+	protected JDTBatchCompiler createBatchCompiler(List<SpoonFile> files) {
+		ConfigurableCompiler bc = (ConfigurableCompiler) createBatchCompiler(InputType.UNITS);
+		bc.setInputFiles(files);
+		return bc;
 	}
 
 	protected boolean buildTemplates(JDTBuilder jdtBuilder) {
@@ -405,7 +418,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			return true;
 		}
 
-		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
+		JDTBatchCompiler batchCompiler = createBatchCompiler(templates.getAllJavaFiles());
 
 		File f = null;
 		String[] templateClasspath = new String[0];
