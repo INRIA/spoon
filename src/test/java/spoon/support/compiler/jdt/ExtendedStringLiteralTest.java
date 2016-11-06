@@ -26,8 +26,8 @@ public class ExtendedStringLiteralTest {
 			public SpoonCompiler createCompiler() {
 				return new JDTBasedSpoonCompiler(getFactory()) {
 					@Override
-					protected JDTBatchCompiler createBatchCompiler(InputType... types) {
-						return new FileCompiler(this) {
+					protected JDTBatchCompiler createBatchCompiler() {
+						return new JDTBatchCompiler(this) {
 							@Override
 							public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files) {
 								startTime = System.currentTimeMillis();

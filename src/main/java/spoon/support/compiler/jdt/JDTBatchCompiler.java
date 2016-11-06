@@ -16,6 +16,7 @@
  */
 package spoon.support.compiler.jdt;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -34,6 +35,7 @@ import spoon.compiler.SpoonFile;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -44,9 +46,10 @@ import java.util.Set;
  *
  * (we use a fully qualified name in inheritance to make it clear we are extending jdt)
  */
-abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
+public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 
-	protected JDTBasedSpoonCompiler jdtCompiler;
+	protected final JDTBasedSpoonCompiler jdtCompiler;
+	protected CompilationUnit[] compilationUnits;
 
 	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler) {
 		// by default we don't want anything from JDT
@@ -63,9 +66,36 @@ abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.
 		}
 	}
 
-	/** we force this method of JDT to be re-implemented, see subclasses */
 	@Override
-	public abstract CompilationUnit[] getCompilationUnits();
+	public CompilationUnit[] getCompilationUnits() {
+		return compilationUnits;
+	}
+
+	public void setCompilationUnits(CompilationUnit[] compilationUnits) {
+		this.compilationUnits = compilationUnits;
+	}
+
+	public void setInputFiles(List<SpoonFile> files) {
+		List<CompilationUnit> culist = new ArrayList<>(files.size());
+		for (SpoonFile f : files) {
+			if (filesToBeIgnored.contains(f.getPath())) {
+				continue;
+			}
+			try {
+				String fName = "";
+				if (f.isActualFile()) {
+					fName = f.getPath();
+				} else {
+					fName = f.getName();
+				}
+				culist.add(new CompilationUnit(IOUtils.toCharArray(f
+						.getContent(), jdtCompiler.encoding), fName, null));
+			} catch (Exception e) {
+				throw new SpoonException(e);
+			}
+		}
+		this.compilationUnits = culist.toArray(new CompilationUnit[0]);
+	}
 
 	@Override
 	public ICompilerRequestor getBatchRequestor() {
@@ -134,6 +164,10 @@ abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.
 			unit.comments = tmpDeclForComment.comments;
 		}
 		return result;
+	}
+
+	public JDTBasedSpoonCompiler getJdtCompiler() {
+		return jdtCompiler;
 	}
 
 }
