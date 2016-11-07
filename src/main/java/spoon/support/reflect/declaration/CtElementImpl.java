@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
-
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -37,8 +36,8 @@ import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.reflect.cu.SourcePositionImpl;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
+import spoon.support.visitor.DeepRepresentationVisitor;
 import spoon.support.visitor.HashcodeVisitor;
-import spoon.support.visitor.ShortRepresentationPrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 import spoon.support.visitor.equals.CloneHelper;
 import spoon.support.visitor.equals.EqualsVisitor;
@@ -98,9 +97,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public String getShortRepresentation() {
-		final ShortRepresentationPrinter printer = new ShortRepresentationPrinter();
+		final DeepRepresentationVisitor printer = new DeepRepresentationVisitor();
 		printer.scan(this);
-		return printer.getShortRepresentation();
+		return printer.getRepresentation();
 	}
 
 
