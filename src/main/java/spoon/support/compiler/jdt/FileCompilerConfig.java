@@ -19,9 +19,13 @@ package spoon.support.compiler.jdt;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 
 public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 
@@ -51,7 +55,26 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 
 	@Override
 	public void initializeCompiler(JDTBatchCompiler compiler) {
-		compiler.setInputFiles(getFiles(compiler));
+		JDTBasedSpoonCompiler jdtCompiler = compiler.getJdtCompiler();
+		List<CompilationUnit> culist = new ArrayList<>();
+		for (SpoonFile f : getFiles(compiler)) {
+			if (compiler.filesToBeIgnored.contains(f.getPath())) {
+				continue;
+			}
+			try {
+				String fName = "";
+				if (f.isActualFile()) {
+					fName = f.getPath();
+				} else {
+					fName = f.getName();
+				}
+				culist.add(new CompilationUnit(IOUtils.toCharArray(f
+						.getContent(), jdtCompiler.encoding), fName, null));
+			} catch (Exception e) {
+				throw new SpoonException(e);
+			}
+		}
+		compiler.setCompilationUnits(culist.toArray(new CompilationUnit[0]));
 	}
 
 	protected List<SpoonFile> getFiles(JDTBatchCompiler compiler) {
