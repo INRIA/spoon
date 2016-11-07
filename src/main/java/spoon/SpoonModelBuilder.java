@@ -86,7 +86,9 @@ public interface SpoonModelBuilder {
 	interface InputType {
 		InputType FILES = FileCompilerConfig.INSTANCE;
 		InputType CTTYPES = FactoryCompilerConfig.INSTANCE;
-
+		/**
+		 * responsible for setting the parameters of JDTBatchCompiler, must call setCompilationUnits()
+		 */
 		void initializeCompiler(JDTBatchCompiler compiler);
 	}
 
