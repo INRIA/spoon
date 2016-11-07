@@ -2,8 +2,6 @@ package spoon.support.compiler.jdt;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -11,7 +9,6 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
-import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
@@ -29,7 +26,7 @@ public class ExtendedStringLiteralTest {
 					protected JDTBatchCompiler createBatchCompiler() {
 						return new JDTBatchCompiler(this) {
 							@Override
-							public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files) {
+							public CompilationUnitDeclaration[] getUnits() {
 								startTime = System.currentTimeMillis();
 								INameEnvironment environment = this.jdtCompiler.environment;
 								if (environment == null) {
