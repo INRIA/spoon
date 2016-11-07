@@ -87,8 +87,6 @@ public class SpoonTask extends Java {
 
 	List<ProcessorType> processorTypes = new ArrayList<>();
 
-	File properties;
-
 	Vector<FileSet> sourcefilesets = new Vector<>();
 
 	boolean stats = false;
@@ -258,17 +256,6 @@ public class SpoonTask extends Java {
 			createArg().setValue(f);
 		}
 
-		// properties directory
-		if (properties != null) {
-			createArg().setValue("--properties");
-			if (!properties.exists()) {
-				throw new BuildException(
-						"properties directory does not exist ("
-								+ properties.getAbsolutePath() + ")");
-			}
-			createArg().setValue(properties.getAbsolutePath());
-		}
-
 		// processors
 		if ((processorTypes != null) && (processorTypes.size() > 0)) {
 			createArg().setValue("-p");
@@ -353,14 +340,6 @@ public class SpoonTask extends Java {
 	 */
 	public void setDestination(File destination) {
 		this.destination = destination;
-	}
-
-	/**
-	 * Sets the root directory where the processors' properties XML
-	 * configuration files are located.
-	 */
-	public void setProperties(File properties) {
-		this.properties = properties;
 	}
 
 	/**

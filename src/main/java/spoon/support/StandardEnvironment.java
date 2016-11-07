@@ -18,7 +18,6 @@ package spoon.support;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -37,13 +36,8 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
-import spoon.support.processing.XmlProcessorProperties;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,11 +52,6 @@ import java.util.TreeMap;
  * standard output stream (Java-compliant).
  */
 public class StandardEnvironment implements Serializable, Environment {
-
-	/**
-	 * The processors' properties files extension (.xml)
-	 */
-	public static final String PROPERTIES_EXT = ".xml";
 
 	private static final long serialVersionUID = 1L;
 
@@ -80,8 +69,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private int warningCount = 0;
 
-	private File xmlRootFolder;
-
 	private String[] sourceClasspath = null;
 
 	private boolean preserveLineNumbers = false;
@@ -90,7 +77,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean enableComments = false;
 
-	private Logger logger = Logger.getLogger(StandardEnvironment.class);
+	private Logger logger = Launcher.LOGGER;
 
 	private Level level = Level.OFF;
 
@@ -176,43 +163,11 @@ public class StandardEnvironment implements Serializable, Environment {
 	Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
 
 	@Override
-	public ProcessorProperties getProcessorProperties(String processorName) throws FileNotFoundException, IOException, SAXException {
+	public ProcessorProperties getProcessorProperties(String processorName) throws Exception {
 		if (processorProperties.containsKey(processorName)) {
 			return processorProperties.get(processorName);
 		}
-
-		InputStream in = getPropertyStream(processorName);
-		XmlProcessorProperties prop;
-		try {
-			prop = new XmlProcessorProperties(getFactory(), processorName, in);
-		} catch (SAXException e) {
-			throw new RuntimeException(e);
-		}
-		processorProperties.put(processorName, prop);
-		return prop;
-	}
-
-	private InputStream getPropertyStream(String processorName) throws FileNotFoundException {
-		File[] listFiles = getXmlRootFolder().listFiles();
-		if (listFiles != null) {
-			for (File child : listFiles) {
-				if (child.getName().equals(processorName + PROPERTIES_EXT)) {
-					return new FileInputStream(child);
-				}
-			}
-		}
-		throw new FileNotFoundException();
-	}
-
-	/**
-	 * Gets the root folder where the processors' XML configuration files are
-	 * located.
-	 */
-	public File getXmlRootFolder() {
-		if (xmlRootFolder == null) {
-			xmlRootFolder = new File(".");
-		}
-		return xmlRootFolder;
+		return null;
 	}
 
 	/**
@@ -341,10 +296,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	public void setVerbose(boolean verbose) {
-	}
-
-	public void setXmlRootFolder(File xmlRootFolder) {
-		this.xmlRootFolder = xmlRootFolder;
 	}
 
 	int complianceLevel = 7;

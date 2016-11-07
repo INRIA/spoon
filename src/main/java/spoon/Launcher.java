@@ -286,14 +286,6 @@ public class Launcher implements SpoonAPI {
 			opt2.setRequired(false);
 			jsap.registerParameter(opt2);
 
-			// Location of properties files
-			opt2 = new FlaggedOption("properties");
-			opt2.setLongFlag("properties");
-			opt2.setStringParser(FileStringParser.getParser());
-			opt2.setRequired(false);
-			opt2.setHelp("Directory to search for spoon properties files.");
-			jsap.registerParameter(opt2);
-
 			// Source classpath
 			opt2 = new FlaggedOption("source-classpath");
 			opt2.setLongFlag("source-classpath");
@@ -435,18 +427,13 @@ public class Launcher implements SpoonAPI {
 		// environment initialization
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
-		LOGGER.setLevel(environment.getLevel());
-		environment.setXmlRootFolder(jsapActualArgs.getFile("properties"));
-
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
 		environment.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
-
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
 		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
-
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
 		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
 
