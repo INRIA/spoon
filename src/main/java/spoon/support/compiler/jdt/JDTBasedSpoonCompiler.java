@@ -369,7 +369,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 				keepOutdatedFiles(filesToBuild, new ArrayList<File>());
 			}
 		}
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits(filesToBuild);
+		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
 		// here we build the model
 		buildModel(units);
 
@@ -425,7 +425,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		getFactory().getEnvironment().debugMessage("template build args: " + Arrays.toString(args));
 		batchCompiler.configure(args);
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits(templates.getAllJavaFiles());
+		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
 
 		if (f != null && f.exists()) {
 			f.delete();

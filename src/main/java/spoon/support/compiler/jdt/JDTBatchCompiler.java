@@ -30,12 +30,10 @@ import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
 import spoon.SpoonException;
-import spoon.compiler.SpoonFile;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -102,7 +100,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 	/** Calls JDT to retrieve the list of compilation unit declarations.
 	 * Depends on the actual implementation of {@link #getCompilationUnits()}
 	 */
-	public CompilationUnitDeclaration[] getUnits(List<SpoonFile> files) {
+	public CompilationUnitDeclaration[] getUnits() {
 		startTime = System.currentTimeMillis();
 		INameEnvironment environment = this.jdtCompiler.environment;
 		if (environment == null) {

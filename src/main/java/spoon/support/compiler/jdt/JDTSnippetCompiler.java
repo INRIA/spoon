@@ -106,7 +106,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 		batchCompiler.configure(args);
 
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits(sources.getAllJavaFiles());
+		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
 
 		if (source.exists()) {
 			source.delete();
