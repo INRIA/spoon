@@ -19,6 +19,11 @@ package spoon.reflect.code;
 /**
  * This interface defines a binary operator.
  *
+ * Example:
+ * <pre>
+ *     // 3+4 is the binary expression
+ *     int x = 3 + 4;
+ * </pre>
  * @param <T>
  * 		Type of this expression
  */

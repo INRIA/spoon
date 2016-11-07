@@ -26,8 +26,13 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
- * This element defines an annotation, declared on a given annotated element.
+ * This element represents an annotation on an element.
  *
+ * <pre>
+ *     // statement annotated by annotation @SuppressWarnings
+ *     @SuppressWarnings("unchecked")
+ *     java.util.List<?> x = new java.util.ArrayList<>()
+ * </pre>
  * @param <A>
  * 		type of represented annotation
  */

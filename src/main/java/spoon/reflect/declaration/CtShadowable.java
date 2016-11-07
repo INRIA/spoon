@@ -18,6 +18,9 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
 
+/** A shadow element is an element that is in the Spoon model, but does not exist in the actual source code.
+ * The goal of shadow elements is to simplify transformations.
+ */
 public interface CtShadowable {
 	/**
 	 * When an element isn't present in the factory (created in another factory),

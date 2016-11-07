@@ -20,6 +20,14 @@ import spoon.template.TemplateParameter;
 
 /**
  * This code element represents an <code>if</code> statement.
+ * Example:
+ * <pre>
+ *     if (1==0) {
+ *     	System.out.println("foo");
+ *     } else {
+ *     	System.out.println("bar");
+ *     }
+ * </pre>
  */
 public interface CtIf extends CtStatement, TemplateParameter<Void> {
 

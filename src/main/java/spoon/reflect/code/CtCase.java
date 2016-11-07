@@ -17,7 +17,14 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines a <code>case</code> within a <code>switch</code>.
+ * This code element defines a case within a switch-case.
+ *
+ * Example: <pre>
+ * int x = 0;
+ * switch(x) {
+ *     case 1: // <-- case statement
+ *       System.out.println("foo");
+ * }</pre>
  *
  * @param <S>
  * 		This type must be assignable from the switch type

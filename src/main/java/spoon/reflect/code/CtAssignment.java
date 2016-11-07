@@ -19,6 +19,11 @@ package spoon.reflect.code;
 /**
  * This code element defines an assignment.
  *
+ * Example:
+ * <pre>
+ *     int x;
+ *     x = 4; // <-- an assignment
+ * </pre>
  * @param <T>
  * 		type of assigned expression
  * @param <A>

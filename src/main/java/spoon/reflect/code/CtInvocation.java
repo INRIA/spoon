@@ -25,6 +25,13 @@ import java.util.List;
 /**
  * This code element defines a concrete invocation.
  *
+ * Example:
+ * <pre>
+ *     // invocation of method println
+ *     // the target is "System.out"
+ *     System.out.println("foo");
+ * </pre>
+ *
  * @param <T>
  * 		Return type of this invocation
  */

@@ -23,8 +23,9 @@ package spoon.reflect.code;
  *
  * For example:
  * <pre>
- *     this.field = "new value";
- *     this.field += "";
+ *     class Foo { int field; }
+ *     Foo x = new Foo();
+ *     x.field = 0;
  * </pre>
  *
  * If you process this element, keep in mind that you won't process field++.

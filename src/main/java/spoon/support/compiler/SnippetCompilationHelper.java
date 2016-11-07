@@ -16,9 +16,6 @@
  */
 package spoon.support.compiler;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBlock;
@@ -37,6 +34,11 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SnippetCompilationHelper {
 
@@ -76,7 +78,8 @@ public class SnippetCompilationHelper {
 
 		CtMethod<?> wrapper = c.getMethod(WRAPPER_METHOD_NAME);
 
-		CtStatement ret = wrapper.getBody().getStatements().get(0);
+		List<CtStatement> statements = wrapper.getBody().getStatements();
+		CtStatement ret = statements.get(statements.size() - 1);
 
 		// Clean up
 		c.getPackage().getTypes().remove(c);
@@ -134,15 +137,17 @@ public class SnippetCompilationHelper {
 			returnType = f.Type().OBJECT;
 		}
 
-		Set<ModifierKind> modifiers = EnumSet.noneOf(ModifierKind.class);
+		Set<ModifierKind> modifiers = EnumSet.of(ModifierKind.STATIC);
 
+		Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
+		thrownTypes.add(f.Class().<Throwable>get(Throwable.class).getReference());
 		f.Method().create(
 				w,
 				modifiers,
 				returnType,
 				WRAPPER_METHOD_NAME,
 				CtElementImpl.<CtParameter<?>>emptyList(),
-				CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet(),
+				thrownTypes,
 				body);
 
 		return w;

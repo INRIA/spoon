@@ -17,8 +17,12 @@
 package spoon.reflect.code;
 
 /**
- * This code element represents a unary operator. For example :
- * <code>!(true)</code>, <code>-4</code>
+ * This code element represents a unary operator.
+ * For example :
+ * <pre>
+ *     int x=3;
+ *     --x; // <-- unary --
+ * </pre>
  *
  * @param <T>
  * 		"Return" type of this expression

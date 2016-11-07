@@ -17,7 +17,15 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines the <code>continue</code> statement.
+ * This code element defines the continue statement.
+ * Example:
+ * <pre>
+ *     for(int i=0; i<10; i++) {
+ *         if (i>3) {
+ *				continue; // <-- continue statement
+ *         }
+ *     }
+ * </pre>
  */
 public interface CtContinue extends CtCFlowBreak {
 	/**

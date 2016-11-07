@@ -20,7 +20,11 @@ package spoon.reflect.code;
  * This code element defines an read access to a field.
  *
  * In Java, it is a usage of a field outside an assignment. For example,
- * <code>System.out.println(this.field);</code>
+ * <pre>
+ *     class Foo { int field; }
+ *     Foo x = new Foo();
+ *     System.out.println(x.field);
+ * </pre>
  *
  * If you process this element, keep in mind that you will process field++ too.
  *

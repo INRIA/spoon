@@ -17,7 +17,15 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines a <code>break</code> statement.
+ * This code element defines a break statement.
+ * Example:
+ * <pre>
+ *     for(int i=0; i<10; i++) {
+ *         if (i>3) {
+ *				break; // <-- break statement
+ *         }
+ *     }
+ * </pre>
  */
 public interface CtBreak extends CtCFlowBreak {
 	/**

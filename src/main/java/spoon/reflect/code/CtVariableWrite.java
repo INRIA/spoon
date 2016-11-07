@@ -23,7 +23,11 @@ package spoon.reflect.code;
  *
  * For example:
  * <pre>
- *     variable = "new value";
+ *     String variable = "";
+ *     variable = "new value"; // variable write
+ * </pre>
+ * <pre>
+ *     String variable = "";
  *     variable += "";
  * </pre>
  *

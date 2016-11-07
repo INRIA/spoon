@@ -20,6 +20,12 @@ import java.util.List;
 
 /**
  * This element represents an enumeration declaration.
+ *
+ * Example:
+ * <pre>
+ *    enum Boolean { TRUE, FALSE }
+ * </pre>
+
  */
 public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	/**

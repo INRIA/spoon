@@ -20,6 +20,11 @@ import spoon.template.TemplateParameter;
 
 /**
  * This code element defines a <code>throw</code> statement.
+ *
+ * Example:
+ * <pre>
+ *     throw new RuntimeException("oops")
+ * </pre>
  */
 public interface CtThrow extends CtCFlowBreak, TemplateParameter<Void> {
 

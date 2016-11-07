@@ -23,6 +23,13 @@ import spoon.reflect.declaration.CtExecutable;
  * can have two sorts of body : an simple expression or a block of
  * statements. The usage of this concept in this class is:
  *
+ * <pre>
+ *     java.util.List l = new java.util.ArrayList();
+ *     l.stream().map(
+ *       x -> { return x.toString(); } // a lambda
+ *     );
+ * </pre>
+ *
  * <ul>
  * <li>
  * If your lambda has an expression, getBody method will

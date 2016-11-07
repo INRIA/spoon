@@ -25,6 +25,9 @@ import java.util.List;
 /**
  * This code element represents a constructor call.
  *
+ * Example:<pre>
+ *     new Object();
+ * </pre>
  * @param <T>
  * 		created type
  */

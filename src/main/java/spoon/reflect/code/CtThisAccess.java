@@ -19,6 +19,16 @@ package spoon.reflect.code;
 /**
  * This code element defines an access to this.
  *
+ * Example:
+ * <pre>
+ *     class Foo {
+ *     int value = 42;
+ *     int foo() {
+ *       return this.value; // <-- access to this
+ *     }
+ *     };
+
+ * </pre>
  * @param <T>
  * 		Type of this
  */

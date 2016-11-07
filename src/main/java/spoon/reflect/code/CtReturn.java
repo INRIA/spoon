@@ -20,6 +20,17 @@ import spoon.template.TemplateParameter;
 
 /**
  * This code element represents a <code>return</code> statement.
+ *
+ * Example:
+ * <pre>
+ *    Runnable r = new Runnable() {
+ *     	@Override
+ *     	public void run() {
+ *     	  return; // <-- CtReturn statement
+ *     	}
+ *    };
+ * </pre>
+
  */
 public interface CtReturn<R> extends CtCFlowBreak, TemplateParameter<Void> {
 

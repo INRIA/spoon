@@ -22,6 +22,9 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Collection;
 
+/**
+ * Used to compute the imports required to write readable code with no fully qualified names.
+ */
 public interface ImportScanner {
 	/**
 	 * Computes import of a {@link spoon.reflect.declaration.CtType}
