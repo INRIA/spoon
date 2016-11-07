@@ -35,7 +35,6 @@ import spoon.test.replace.testclasses.Tacos;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Stack;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
