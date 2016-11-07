@@ -49,7 +49,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 	protected final JDTBasedSpoonCompiler jdtCompiler;
 	protected CompilationUnit[] compilationUnits;
 
-	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler) {
+	public JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler) {
 		// by default we don't want anything from JDT
 		// the reports are sent with callbakcs to the reporter
 		// for debuggging, you may use System.out/err instead

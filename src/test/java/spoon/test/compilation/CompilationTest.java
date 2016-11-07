@@ -1,14 +1,17 @@
 package spoon.test.compilation;
 
+import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
@@ -16,6 +19,8 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.support.compiler.jdt.JDTBatchCompiler;
 import spoon.support.reflect.reference.SpoonClassNotFoundException;
 import spoon.test.compilation.testclasses.Bar;
 import spoon.test.compilation.testclasses.IBar;
@@ -153,7 +158,7 @@ public class CompilationTest {
 		}
 
 	}
-/*
+
 	@Test
 	public void testFilterResourcesFile() throws Exception {
 		// shows how to filter input java files, for https://github.com/INRIA/spoon/issues/877
@@ -162,8 +167,8 @@ public class CompilationTest {
 			public SpoonCompiler createCompiler() {
 				return new JDTBasedSpoonCompiler(getFactory()) {
 					@Override
-					protected FileCompiler createBatchCompiler(InputType... args) {
-						return new FileCompiler(this) {
+					protected JDTBatchCompiler createBatchCompiler() {
+						return new JDTBatchCompiler(this) {
 							@Override
 							public CompilationUnit[] getCompilationUnits() {
 								List<CompilationUnit> units = new ArrayList<>();
@@ -200,8 +205,8 @@ public class CompilationTest {
 			public SpoonCompiler createCompiler() {
 				return new JDTBasedSpoonCompiler(getFactory()) {
 					@Override
-					protected FileCompiler createBatchCompiler(InputType... args) {
-						return new FileCompiler(this) {
+					protected JDTBatchCompiler createBatchCompiler() {
+						return new JDTBatchCompiler(this) {
 							@Override
 							public CompilationUnit[] getCompilationUnits() {
 								List<CompilationUnit> units = new ArrayList<>();
@@ -227,7 +232,7 @@ public class CompilationTest {
 		}
 
 	}
- */
+
 	@Test
 	public void testPrecompile() {
 		// without precompile
