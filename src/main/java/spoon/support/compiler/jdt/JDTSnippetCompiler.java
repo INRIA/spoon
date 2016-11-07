@@ -87,7 +87,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		if (sources.getAllJavaFiles().isEmpty()) {
 			return true;
 		}
-		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
+		JDTBatchCompiler batchCompiler = createBatchCompiler(sources.getAllJavaFiles());
 
 		File source = createTmpJavaFile(new File("."));
 		String[] args;
