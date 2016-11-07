@@ -23,6 +23,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
+import spoon.support.compiler.jdt.FactoryCompilerConfig;
+import spoon.support.compiler.jdt.FileCompilerConfig;
+import spoon.support.compiler.jdt.JDTBatchCompiler;
 
 import java.io.File;
 import java.util.Collection;
@@ -76,9 +79,17 @@ public interface SpoonModelBuilder {
 	 */
 	boolean build(JDTBuilder builder);
 
-	/** The types of compilable elements */
-	enum InputType {
-		FILES, CTTYPES
+	/** The types of compilable elements
+	 * FILES - compiles the java files from the file system, which were registered by {@see SpoonModelBuilder#addInputSource()} and {@see SpoonModelBuilder#addTemplateSource(File)}
+	 * CTTYPES - compiles virtual java files, which are dynamically generated from the all top level classes of the CtModel by {@see DefaultJavaPrettyPrinter}
+	 */
+	interface InputType {
+		InputType FILES = FileCompilerConfig.INSTANCE;
+		InputType CTTYPES = FactoryCompilerConfig.INSTANCE;
+		/**
+		 * responsible for setting the parameters of JDTBatchCompiler, must call setCompilationUnits()
+		 */
+		void initializeCompiler(JDTBatchCompiler compiler);
 	}
 
 

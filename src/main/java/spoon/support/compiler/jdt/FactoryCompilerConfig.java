@@ -21,27 +21,29 @@ import java.util.List;
 
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 
+import spoon.SpoonModelBuilder;
 import spoon.reflect.declaration.CtType;
 
-class FactoryCompiler extends JDTBatchCompiler {
+public class FactoryCompilerConfig implements SpoonModelBuilder.InputType {
 
-	FactoryCompiler(JDTBasedSpoonCompiler jdtCompiler) {
-		super(jdtCompiler);
-	}
+	public static final SpoonModelBuilder.InputType INSTANCE = new FactoryCompilerConfig();
+
+	//avoid direct instantiation. But somebody can inherit
+	protected FactoryCompilerConfig() {
+	};
 
 	/**
 	 * returns the compilation units corresponding to the types in the factory.
 	 */
 	@Override
-	public CompilationUnit[] getCompilationUnits() {
-		// gets the one that are in factory (when compiling the model to bytecode )
-		List<CompilationUnit> unitList = new ArrayList();
+	public void initializeCompiler(JDTBatchCompiler compiler) {
+		JDTBasedSpoonCompiler jdtCompiler = compiler.getJdtCompiler();
+		List<CompilationUnit> unitList = new ArrayList<>();
 		for (CtType<?> ctType : jdtCompiler.getFactory().Type().getAll()) {
 			if (ctType.isTopLevel()) {
 				unitList.add(new CompilationUnitWrapper(ctType));
 			}
 		}
-		return unitList.toArray(new CompilationUnit[unitList.size()]);
+		compiler.setCompilationUnits(unitList.toArray(new CompilationUnit[unitList.size()]));
 	}
-
 }

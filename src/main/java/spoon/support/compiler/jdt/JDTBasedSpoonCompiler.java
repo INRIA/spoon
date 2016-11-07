@@ -344,7 +344,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		if (sources.getAllJavaFiles().isEmpty()) {
 			return true;
 		}
-		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
+		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sources));
 		String[] args;
 		if (jdtBuilder == null) {
 			args = new JDTBuilderImpl() //
@@ -376,13 +376,20 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		return probs.size() == 0;
 	}
 
+	protected JDTBatchCompiler createBatchCompiler() {
+		return new JDTBatchCompiler(this);
+	}
+
 	protected JDTBatchCompiler createBatchCompiler(InputType... types) {
+		JDTBatchCompiler batchCompiler = createBatchCompiler();
 		// backward compatible
-		if (types.length == 0 || types[0] == InputType.CTTYPES) {
-			return new FactoryCompiler(this);
-		} else {
-			return new FileCompiler(this);
+		if (types.length == 0) {
+			types = new InputType[]{InputType.CTTYPES};
 		}
+		for (InputType inputType : types) {
+			inputType.initializeCompiler(batchCompiler);
+		}
+		return batchCompiler;
 	}
 
 	protected boolean buildTemplates(JDTBuilder jdtBuilder) {
@@ -390,7 +397,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			return true;
 		}
 
-		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
+		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(templates));
 
 		File f = null;
 		String[] templateClasspath = new String[0];

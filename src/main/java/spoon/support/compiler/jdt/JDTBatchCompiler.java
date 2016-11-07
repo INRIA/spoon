@@ -44,9 +44,10 @@ import java.util.Set;
  *
  * (we use a fully qualified name in inheritance to make it clear we are extending jdt)
  */
-abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
+public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Main {
 
-	protected JDTBasedSpoonCompiler jdtCompiler;
+	protected final JDTBasedSpoonCompiler jdtCompiler;
+	protected CompilationUnit[] compilationUnits;
 
 	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler) {
 		// by default we don't want anything from JDT
@@ -63,9 +64,14 @@ abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.
 		}
 	}
 
-	/** we force this method of JDT to be re-implemented, see subclasses */
 	@Override
-	public abstract CompilationUnit[] getCompilationUnits();
+	public CompilationUnit[] getCompilationUnits() {
+		return compilationUnits;
+	}
+
+	public void setCompilationUnits(CompilationUnit[] compilationUnits) {
+		this.compilationUnits = compilationUnits;
+	}
 
 	@Override
 	public ICompilerRequestor getBatchRequestor() {
@@ -134,6 +140,10 @@ abstract class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.
 			unit.comments = tmpDeclForComment.comments;
 		}
 		return result;
+	}
+
+	public JDTBasedSpoonCompiler getJdtCompiler() {
+		return jdtCompiler;
 	}
 
 }
