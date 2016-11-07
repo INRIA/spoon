@@ -21,7 +21,7 @@ import spoon.template.TemplateParameter;
 /**
  * This abstract code element defines a loop.
  */
-public interface CtLoop extends CtStatement, TemplateParameter<Void> {
+public interface CtLoop extends CtStatement, TemplateParameter<Void>, CtBodyHolder {
 
 	/**
 	 * Gets the body of this loop.

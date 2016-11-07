@@ -16,33 +16,15 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.declaration.CtElement;
+
 /**
- * This code element defines a <code>catch</code> of a <code>try</code>.
- *
- * @see spoon.reflect.code.CtTry
+ * This abstract code element defines an element, which contains a body
  */
-public interface CtCatch extends CtCodeElement, CtBodyHolder {
+public interface CtBodyHolder extends CtElement {
 
 	/**
-	 * Gets the catch's parameter (a throwable).
+	 * Gets the body of this element
 	 */
-	CtCatchVariable<? extends Throwable> getParameter();
-
-	/**
-	 * Sets the catch's parameter (a throwable).
-	 */
-	<T extends CtCatch> T setParameter(CtCatchVariable<? extends Throwable> parameter);
-
-	/**
-	 * Gets the catch's body.
-	 */
-	CtBlock<?> getBody();
-
-	/**
-	 * Sets the catch's body.
-	 */
-	<T extends CtCatch> T setBody(CtBlock<?> body);
-
-	@Override
-	CtCatch clone();
+	CtStatement getBody();
 }

@@ -30,7 +30,7 @@ import java.util.List;
  *     } catch (Exception ignore) {}
  * </pre>
  */
-public interface CtTry extends CtStatement, TemplateParameter<Void> {
+public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolder {
 
 	/**
 	 * Gets the <i>catchers</i> of this <code>try</code>.

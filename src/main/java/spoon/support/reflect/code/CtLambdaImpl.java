@@ -60,8 +60,8 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <B extends T> CtBlock<B> getBody() {
-		return (CtBlock<B>) body;
+	public CtBlock<T> getBody() {
+		return (CtBlock<T>) body;
 	}
 
 	@Override

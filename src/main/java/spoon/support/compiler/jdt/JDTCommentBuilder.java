@@ -22,24 +22,21 @@ import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
-import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -436,14 +433,8 @@ class JDTCommentBuilder {
 	 * @return body of element or null if this element has no body
 	 */
 	static CtElement getBody(CtElement e) {
-		if (e instanceof CtLoop) {
-			return ((CtLoop) e).getBody();
-		} else if (e instanceof CtExecutable) {
-			return ((CtExecutable<?>) e).getBody();
-		} else if (e instanceof CtTry) {
-			return ((CtTry) e).getBody();
-		} else if (e instanceof CtCatch) {
-			return ((CtCatch) e).getBody();
+		if (e instanceof CtBodyHolder) {
+			return ((CtBodyHolder) e).getBody();
 		}
 		return null;
 	}

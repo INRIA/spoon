@@ -50,8 +50,8 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <B extends R> CtBlock<B> getBody() {
-		return (CtBlock<B>) body;
+	public CtBlock<R> getBody() {
+		return (CtBlock<R>) body;
 	}
 
 	@Override

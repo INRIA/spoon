@@ -17,6 +17,7 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
@@ -28,7 +29,7 @@ import java.util.Set;
  * This element represents an executable element such as a method, a
  * constructor, or an anonymous block.
  */
-public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
+public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBodyHolder {
 
 	/**
 	 * The separator for a string representation of an executable.
@@ -46,7 +47,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 	/**
 	 * Gets the body expression.
 	 */
-	<B extends R> CtBlock<B> getBody();
+	CtBlock<R> getBody();
 
 	/**
 	 * Sets the body expression.
