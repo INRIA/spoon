@@ -16,16 +16,16 @@
  */
 package spoon;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This class implements an Ant task for Spoon that encapsulates

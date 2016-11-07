@@ -46,9 +46,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.AstParentConsistencyChecker;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.AstParentConsistencyChecker;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.support.QueueProcessingManager;
@@ -59,7 +59,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -134,7 +133,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public boolean compile(InputType... types) {
-		initInputClassLoader();
 		factory.getEnvironment().debugMessage("compiling sources: " + factory.CompilationUnit().getMap().keySet());
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
@@ -143,7 +141,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 
 		final String[] args = new JDTBuilderImpl() //
-				.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
+				.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
 				.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 				.annotationProcessingOptions(new AnnotationProcessingOptions().compileProcessors()) //
 				.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
@@ -161,8 +159,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public void instantiateAndProcess(List<String> processors) {
-		initInputClassLoader();
-
 		// processing (consume all the processors)
 		ProcessingManager processing = new QueueProcessingManager(factory);
 		for (String processorName : processors) {
@@ -175,8 +171,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public void process(Collection<Processor<? extends CtElement>> processors) {
-		initInputClassLoader();
-
 		// processing (consume all the processors)
 		ProcessingManager processing = new QueueProcessingManager(factory);
 		for (Processor<? extends CtElement> processorName : processors) {
@@ -194,7 +188,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	@Override
 	public void generateProcessedSourceFiles(OutputType outputType, Filter<CtType<?>> typeFilter) {
-		initInputClassLoader();
 		switch (outputType) {
 		case CLASSES:
 			generateProcessedSourceFilesUsingTypes(typeFilter);
@@ -351,12 +344,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		if (sources.getAllJavaFiles().isEmpty()) {
 			return true;
 		}
-		initInputClassLoader();
 		JDTBatchCompiler batchCompiler = createBatchCompiler(InputType.FILES);
 		String[] args;
 		if (jdtBuilder == null) {
 			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpathFromListOrClassLoader(getSourceClasspath())) //
+					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(getSourceClasspath())) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
 					.sources(new SourceOptions().sources(sources.getAllJavaFiles())) //
@@ -647,47 +639,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		printer.calculate(cu, toBePrinted);
 
 		return new ByteArrayInputStream(printer.getResult().toString().getBytes());
-	}
-
-	private CompilerClassLoader getCompilerClassLoader(ClassLoader initialClassLoader) {
-		while (initialClassLoader != null) {
-			if (initialClassLoader instanceof CompilerClassLoader) {
-				return (CompilerClassLoader) initialClassLoader;
-			}
-			initialClassLoader = initialClassLoader.getParent();
-		}
-		return null;
-	}
-
-	private boolean hasClassLoader(ClassLoader initialClassLoader, ClassLoader classLoader) {
-		while (initialClassLoader != null) {
-			if (initialClassLoader == classLoader) {
-				return true;
-			}
-			initialClassLoader = initialClassLoader.getParent();
-		}
-		return false;
-	}
-
-	protected void initInputClassLoader() {
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		if (buildOnlyOutdatedFiles && getBinaryOutputDirectory() != null) {
-			CompilerClassLoader ccl = getCompilerClassLoader(cl);
-			if (ccl == null) {
-				try {
-					Launcher.LOGGER.debug("setting classloader for " + getBinaryOutputDirectory().toURI().toURL());
-					Thread.currentThread().setContextClassLoader(new CompilerClassLoader(new URL[] {
-									getBinaryOutputDirectory().toURI().toURL()
-							}, factory.getEnvironment().getInputClassLoader()));
-				} catch (Exception e) {
-					Launcher.LOGGER.error(e.getMessage(), e);
-				}
-			}
-		} else {
-			if (!hasClassLoader(Thread.currentThread().getContextClassLoader(), factory.getEnvironment().getInputClassLoader())) {
-				Thread.currentThread().setContextClassLoader(factory.getEnvironment().getInputClassLoader());
-			}
-		}
 	}
 
 	protected Environment getEnvironment() {

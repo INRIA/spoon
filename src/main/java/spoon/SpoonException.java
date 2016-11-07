@@ -28,7 +28,7 @@ public class SpoonException extends RuntimeException {
 	public SpoonException(Throwable e) {
 		super(e);
 	}
-	public SpoonException(String msg, Exception e) {
+	public SpoonException(String msg, Throwable e) {
 		super(msg, e);
 	}
 }

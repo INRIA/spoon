@@ -17,6 +17,7 @@ import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.FileCompiler;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
@@ -51,7 +52,7 @@ public class CompilationTest {
 
 		Launcher launcher = new Launcher();
 
-		launcher.run(new String[] {
+		launcher.run(new String[]{
 				"-i", sourceFile,
 				"-o", "target/spooned",
 				"--compile",
@@ -92,9 +93,9 @@ public class CompilationTest {
 		CtReturn aReturn = core.createReturn();
 
 		CtBinaryOperator binaryOperator = code.createBinaryOperator(
-						code.createLiteral(10),
-						code.createLiteral(32),
-						BinaryOperatorKind.PLUS);
+				code.createLiteral(10),
+				code.createLiteral(32),
+				BinaryOperatorKind.PLUS);
 		aReturn.setReturnedExpression(binaryOperator);
 
 		// return 10 + 32;
@@ -105,7 +106,7 @@ public class CompilationTest {
 
 		launcher.getModelBuilder().compile();
 
-		final URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { outputBinDirectory.toURL() });
+		final URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{outputBinDirectory.toURL()});
 
 		Class<?> aClass = urlClassLoader.loadClass("Simple");
 		Method m = aClass.getMethod("m");
@@ -142,14 +143,14 @@ public class CompilationTest {
 		// contract: a ctclass can be instantiated, and each modification results in a new valid object
 		Factory factory = new Launcher().getFactory();
 		CtClass<Ifoo> c = factory.Code().createCodeSnippetStatement(
-							"class X implements spoon.test.compilation.Ifoo { public int foo() {int i=0; return i;} }").compile();
+				"class X implements spoon.test.compilation.Ifoo { public int foo() {int i=0; return i;} }").compile();
 		c.addModifier(ModifierKind.PUBLIC); // required otherwise java.lang.IllegalAccessException at runtime when instantiating
 
 		CtBlock body = c.getElements(new TypeFilter<>(CtBlock.class)).get(1);
 		Ifoo o = c.newInstance();
 		assertEquals(0, o.foo());
-		for (int i=1; i<=10; i++) {
-			body.getStatement(0).replace(factory.Code().createCodeSnippetStatement("int i = "+i+";"));
+		for (int i = 1; i <= 10; i++) {
+			body.getStatement(0).replace(factory.Code().createCodeSnippetStatement("int i = " + i + ";"));
 			o = c.newInstance();
 			// each time this is a new class
 			// each time the behavior has changed!
@@ -188,7 +189,7 @@ public class CompilationTest {
 		launcher.buildModel();
 
 		// we indeed only have types declared in a file called *Foo*
-		for(CtType<?> t : launcher.getFactory().getModel().getAllTypes()) {
+		for (CtType<?> t : launcher.getFactory().getModel().getAllTypes()) {
 
 			assertTrue(t.getPosition().getFile().getAbsolutePath().contains("Foo"));
 		}
@@ -226,7 +227,7 @@ public class CompilationTest {
 		launcher.buildModel();
 
 		// we indeed only have types declared in a file in package reference
-		for(CtType<?> t : launcher.getFactory().getModel().getAllTypes()) {
+		for (CtType<?> t : launcher.getFactory().getModel().getAllTypes()) {
 			assertTrue(t.getQualifiedName().contains("reference"));
 		}
 
@@ -262,4 +263,59 @@ public class CompilationTest {
 	}
 
 
+	public void testClassLoader() throws Exception {
+		// contract: the environment exposes a classloader configured by the spoonclass path
+		Launcher launcher = new Launcher();
+
+		// not in the classpath
+		try {
+			Class.forName("spoontest.a.ClassA");
+			fail();
+		} catch (ClassNotFoundException expected) {
+		}
+
+		// not in the spoon classpath before setting it
+		try {
+			launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.a.ClassA");
+			fail();
+		} catch (ClassNotFoundException expected) {
+		}
+
+		launcher.getEnvironment().setSourceClasspath(new String[]{"src/test/resources/reference-test-2/ReferenceTest2.jar"});
+
+		Class c = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.a.ClassA");
+		assertEquals("spoontest.a.ClassA", c.getName());
+	}
+
+	@Test
+	public void testExoticClassLoader() throws Exception {
+		// contract: Spoon uses the exotic class loader
+
+		final List<String> l = new ArrayList<>();
+		class MyClassLoader extends ClassLoader {
+			@Override
+			protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+				l.add(name);
+				return super.loadClass(name, resolve);
+			}
+		}
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setInputClassLoader(new MyClassLoader());
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("src/test/resources/reference-test/Foo.java");
+		launcher.buildModel();
+		launcher.getModel().getRootPackage().accept(new CtScanner() {
+			@Override
+			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
+				try {
+					// forcing loading it
+					reference.getTypeDeclaration();
+				} catch (SpoonClassNotFoundException ignore) {}
+			}
+		});
+
+		assertEquals(3, l.size());
+		assertTrue(l.contains("KJHKY"));
+	}
 }

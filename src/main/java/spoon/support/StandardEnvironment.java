@@ -16,23 +16,9 @@
  */
 package spoon.support;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -52,6 +38,20 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.processing.XmlProcessorProperties;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * This class implements a simple Spoon environment that reports messages in the
@@ -83,8 +83,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	private File xmlRootFolder;
 
 	private String[] sourceClasspath = null;
-
-	private URLClassLoader classLoader = null;
 
 	private boolean preserveLineNumbers = false;
 
@@ -383,12 +381,35 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.tabulationSize = tabulationSize;
 	}
 
+	private ClassLoader classloader;
+
+	@Override
+	public void setInputClassLoader(ClassLoader aClassLoader) {
+		if (aClassLoader instanceof URLClassLoader) {
+			final URL[] urls = ((URLClassLoader) aClassLoader).getURLs();
+			if (urls != null && urls.length > 0) {
+				List<String> classpath = new ArrayList<>();
+				for (URL url : urls) {
+					classpath.add(url.toString());
+				}
+				setSourceClasspath(classpath.toArray(new String[0]));
+			}
+			return;
+		}
+		this.classloader = aClassLoader;
+	}
+
+	@Override
+	public ClassLoader getInputClassLoader() {
+		if (classloader != null) {
+			return classloader;
+		}
+		return new URLClassLoader(urlClasspath(), Thread.currentThread().getContextClassLoader());
+	}
+
 	@Override
 	public ClassLoader getClassLoader() {
-		if (classLoader == null) {
-			classLoader = new URLClassLoader(urlClasspath(), Thread.currentThread().getContextClassLoader());
-		}
-		return classLoader;
+		return getInputClassLoader();
 	}
 
 	/**
@@ -417,7 +438,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setSourceClasspath(String[] sourceClasspath) {
 		verifySourceClasspath(sourceClasspath);
 		this.sourceClasspath = sourceClasspath;
-		this.classLoader = null;
 	}
 
 	private void verifySourceClasspath(String[] sourceClasspath) throws InvalidClassPathException {
@@ -447,22 +467,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public int getWarningCount() {
 		return warningCount;
-	}
-
-	private ClassLoader inputClassLoader;
-
-	@Override
-	public ClassLoader getInputClassLoader() {
-		if (inputClassLoader == null) {
-			return Thread.currentThread().getContextClassLoader();
-		} else {
-			return this.inputClassLoader;
-		}
-	}
-
-	@Override
-	public void setInputClassLoader(ClassLoader classLoader) {
-		this.inputClassLoader = classLoader;
 	}
 
 	@Override

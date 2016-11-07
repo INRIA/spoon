@@ -16,20 +16,6 @@
  */
 package spoon.support.reflect.reference;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
@@ -48,6 +34,20 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -131,16 +131,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	/**
-	 * Finds the class requested in {@link #getActualClass()}, using the
-	 * {@code ClassLoader} of the {@code Environment}
+	 * Finds the class requested in {@link #getActualClass()}.
+	 *
+	 * Looks for the class in the standard Java classpath, but also in the sourceClassPath given as option.
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
 		try {
+			// creating a classloader on the fly is not the most efficient
+			// but it decreases the amount of state to maintain
+			// since getActualClass is only used in rare cases, that's OK.
 			return (Class<T>) getFactory().getEnvironment().getClassLoader().loadClass(getQualifiedName());
-		} catch (java.lang.ClassNotFoundException cnfe) {
-			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName() + " with class loader "
-					+ Thread.currentThread().getContextClassLoader(), cnfe);
+		} catch (Throwable e) {
+			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
 		}
 	}
 
