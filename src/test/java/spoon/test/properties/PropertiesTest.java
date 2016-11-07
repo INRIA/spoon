@@ -20,7 +20,6 @@ public class PropertiesTest {
 
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
-		factory.getEnvironment().setXmlRootFolder(tempFile);
 		SpoonCompiler compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper

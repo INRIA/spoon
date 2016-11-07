@@ -67,9 +67,6 @@ Options :
   [(-o|--output) <output>]
         Specify where to place generated java files. (default: spooned)
 
-  [--properties <properties>]
-        Directory to search for spoon properties files.
-
   [--source-classpath <source-classpath>]
         An optional classpath to be passed to the internal Java compiler when
         building or compiling the input sources.
