@@ -399,16 +399,9 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(templates));
 
-		File f = null;
 		String[] templateClasspath = new String[0];
 		if (getTemplateClasspath() != null && getTemplateClasspath().length > 0) {
 			templateClasspath = getTemplateClasspath();
-			for (SpoonFolder file : templates.getSubFolders()) {
-				if (file.isArchive()) {
-					// JDT bug HACK
-					f = createTmpJavaFile(file.getFileSystemParent());
-				}
-			}
 		}
 
 		String[] args;
@@ -426,10 +419,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		getFactory().getEnvironment().debugMessage("template build args: " + Arrays.toString(args));
 		batchCompiler.configure(args);
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
-
-		if (f != null && f.exists()) {
-			f.delete();
-		}
 
 		// here we build the model in the template factory
 		buildModel(units);
@@ -526,26 +515,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		}
-	}
-
-	// this function is used to hack the JDT compiler...
-	protected File createTmpJavaFile(File folder) {
-		File f;
-		try {
-			f = File.createTempFile("Tmp", ".java", folder);
-		} catch (IOException e1) {
-			throw new SpoonException(e1);
-		}
-		if (f.exists()) {
-			return f;
-		}
-		try {
-			FileUtils.writeStringToFile(f, "class Tmp {}");
-			f.deleteOnExit();
-		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
-		}
-		return f;
 	}
 
 	protected void keepOutdatedFiles(List<SpoonFile> files, Collection<File> outputFiles) {
