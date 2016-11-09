@@ -141,7 +141,6 @@ import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.SourcePositionImpl;
-import spoon.support.reflect.declaration.CompilationUnitVirtualImpl;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
 import spoon.support.reflect.declaration.CtAnnotationMethodImpl;
 import spoon.support.reflect.declaration.CtAnnotationTypeImpl;
@@ -644,12 +643,6 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	public CompilationUnit createCompilationUnit() {
 		CompilationUnit cu = new CompilationUnitImpl();
-		cu.setFactory(getMainFactory());
-		return cu;
-	}
-
-	public CompilationUnit createVirtualCompilationUnit() {
-		CompilationUnit cu = new CompilationUnitVirtualImpl();
 		cu.setFactory(getMainFactory());
 		return cu;
 	}

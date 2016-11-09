@@ -22,7 +22,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.reference.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.test.api.testclasses.Bar;
 

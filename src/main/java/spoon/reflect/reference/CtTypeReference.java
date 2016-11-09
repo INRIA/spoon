@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
+import spoon.support.SpoonClassNotFoundException;
 
 /**
  * This interface defines a reference to a
@@ -49,7 +50,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the Java class or null if the class is not found (not in
 	 * classpath)
-	 * @throws spoon.support.reflect.reference.SpoonClassNotFoundException
+	 * @throws SpoonClassNotFoundException
 	 * 		if the class is not in the classpath
 	 */
 	Class<T> getActualClass();

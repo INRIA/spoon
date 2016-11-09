@@ -1,12 +1,6 @@
 package spoon.test.architecture;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.util.TreeSet;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtConstructorCall;
@@ -14,6 +8,12 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.filter.AbstractFilter;
+
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SpoonArchitectureEnforcer {
 
@@ -55,6 +55,28 @@ public class SpoonArchitectureEnforcer {
 				return element.getType().getActualClass().equals(TreeSet.class);
 			};
 		}).size());
+	}
+
+	@Test
+	public void metamodelPackageRule() throws Exception {
+		// all implementations of the metamodel classes have a corresponding interface in the appropriate package
+		SpoonAPI implementations = new Launcher();
+		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
+		implementations.addInputResource("src/main/java/spoon/support/reflect/code");
+		implementations.addInputResource("src/main/java/spoon/support/reflect/reference");
+		implementations.buildModel();
+
+		SpoonAPI interfaces = new Launcher();
+		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.buildModel();
+
+		for(CtType<?> t : implementations.getModel().getAllTypes()) {
+			String impl = t.getQualifiedName().replace(".support", "").replace("Impl", "");
+			CtType itf = interfaces.getFactory().Type().get(impl);
+			assertTrue(t.isAssignableFrom(itf.getReference()));
+		}
 	}
 
 }

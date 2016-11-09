@@ -46,7 +46,7 @@ import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
-import spoon.support.reflect.reference.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
 
