@@ -120,7 +120,9 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	@Override
 	protected void report(Environment environment, CategorizedProblem problem) {
-		throw new SnippetCompilationError(problem.getMessage() + "at line " + problem.getSourceLineNumber());
+		if (problem.isError()) {
+			throw new SnippetCompilationError(problem.getMessage() + "at line " + problem.getSourceLineNumber());
+		}
 	}
 
 	/**
