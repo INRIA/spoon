@@ -486,11 +486,6 @@ public interface CoreFactory {
 	CompilationUnit createCompilationUnit();
 
 	/**
-	 * Creates a virtual compilation unit.
-	 */
-	CompilationUnit createVirtualCompilationUnit();
-
-	/**
 	 * Create an access to annotation value
 	 *
 	 * @return

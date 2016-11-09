@@ -16,10 +16,6 @@
  */
 package spoon.reflect.factory;
 
-import java.io.File;
-import java.util.Map;
-import java.util.TreeMap;
-
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.Import;
 import spoon.reflect.reference.CtFieldReference;
@@ -27,6 +23,10 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.cu.ImportImpl;
+
+import java.io.File;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A factory to create some evaluation utilities on the Spoon metamodel.
@@ -66,7 +66,7 @@ public class CompilationUnitFactory extends SubFactory {
 		CompilationUnit cu = cachedCompilationUnits.get(filePath);
 		if (cu == null) {
 			if (filePath.startsWith(JDTSnippetCompiler.SNIPPET_FILENAME_PREFIX)) {
-				cu = factory.Core().createVirtualCompilationUnit();
+				cu = factory.Core().createCompilationUnit();
 				//put the virtual compilation unit of code snippet into cache too, so the JDTCommentBuilder can found it
 				cachedCompilationUnits.put(filePath, cu);
 				return cu;

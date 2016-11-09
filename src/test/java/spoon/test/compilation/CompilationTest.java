@@ -21,7 +21,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
-import spoon.support.reflect.reference.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.test.compilation.testclasses.Bar;
 import spoon.test.compilation.testclasses.IBar;
 import spoon.testing.utils.ModelUtils;
