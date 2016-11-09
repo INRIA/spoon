@@ -78,8 +78,11 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected Factory factory;
 	protected int javaCompliance = 7;
 	protected boolean build = false;
+	//list of java files or folders with java files which represents source of the CtModel
 	protected SpoonFolder sources = new VirtualFolder();
+	//list of java files or folders with java files which represents templates. Templates are added to CtModel too.
 	protected SpoonFolder templates = new VirtualFolder();
+	//The classpath used to build templates
 	protected String[] templateClasspath = new String[0];
 	protected boolean buildOnlyOutdatedFiles = false;
 	protected File outputDirectory = new File(Launcher.OUTPUTDIR);
@@ -341,39 +344,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	protected boolean buildSources(JDTBuilder jdtBuilder) {
-		if (sources.getAllJavaFiles().isEmpty()) {
-			return true;
-		}
-		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sources));
-		String[] args;
-		if (jdtBuilder == null) {
-			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(getSourceClasspath())) //
-					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
-					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					.sources(new SourceOptions().sources(sources.getAllJavaFiles())) //
-					.build();
-		} else {
-			args = jdtBuilder.build();
-		}
-		getFactory().getEnvironment().debugMessage("build args: " + Arrays.toString(args));
-
-		batchCompiler.configure(args);
-
-		List<SpoonFile> filesToBuild = sources.getAllJavaFiles();
-		if (buildOnlyOutdatedFiles) {
-			if (outputDirectory.exists()) {
-				@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
-				keepOutdatedFiles(filesToBuild, outputFiles);
-			} else {
-				keepOutdatedFiles(filesToBuild, new ArrayList<File>());
-			}
-		}
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
-		// here we build the model
-		buildModel(units);
-
-		return probs.size() == 0;
+		return buildUnitsAndModel(jdtBuilder, sources, getSourceClasspath(), "", buildOnlyOutdatedFiles);
 	}
 
 	protected JDTBatchCompiler createBatchCompiler() {
@@ -393,37 +364,51 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	protected boolean buildTemplates(JDTBuilder jdtBuilder) {
-		if (templates.getAllJavaFiles().isEmpty()) {
-			return true;
-		}
+		return buildUnitsAndModel(jdtBuilder, templates, getTemplateClasspath(), "template ", false);
+	}
 
-		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(templates));
-
-		String[] templateClasspath = new String[0];
-		if (getTemplateClasspath() != null && getTemplateClasspath().length > 0) {
-			templateClasspath = getTemplateClasspath();
-		}
-
-		String[] args;
-		if (jdtBuilder == null) {
-			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(templateClasspath)) //
-					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
-					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					.sources(new SourceOptions().sources(templates.getAllJavaFiles())) //
-					.build();
-		} else {
-			args = jdtBuilder.build();
-		}
-
-		getFactory().getEnvironment().debugMessage("template build args: " + Arrays.toString(args));
-		batchCompiler.configure(args);
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
+	protected boolean buildUnitsAndModel(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
+		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix, buildOnlyOutdatedFiles);
 
 		// here we build the model in the template factory
 		buildModel(units);
 
 		return probs.size() == 0;
+	}
+
+	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
+
+	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
+		List<SpoonFile> sourceFiles = sourcesFolder.getAllJavaFiles();
+		if (sourceFiles.isEmpty()) {
+			return EMPTY_RESULT;
+		}
+
+		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sourcesFolder));
+
+		String[] args;
+		if (jdtBuilder == null) {
+			args = new JDTBuilderImpl() //
+					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(classpath)) //
+					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
+					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
+					.sources(new SourceOptions().sources(sourceFiles)) //
+					.build();
+		} else {
+			args = jdtBuilder.build();
+		}
+
+		getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
+		batchCompiler.configure(args);
+
+		if (buildOnlyOutdatedFiles && outputDirectory.exists()) {
+			@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
+			keepOutdatedFiles(sourceFiles, outputFiles);
+		}
+
+		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
+
+		return units;
 	}
 
 	protected void buildModel(CompilationUnitDeclaration[] units) {
