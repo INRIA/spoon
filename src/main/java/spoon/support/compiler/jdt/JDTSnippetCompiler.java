@@ -16,7 +16,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -88,7 +87,6 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		}
 		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sources));
 
-		File source = createTmpJavaFile(new File("."));
 		String[] args;
 		if (jdtBuilder == null) {
 			String[] sourceClasspath = getSourceClasspath();
@@ -96,7 +94,13 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(sourceClasspath)) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					.sources(new SourceOptions().sources(source.getPath())) //
+					/*
+					 * compiler requires some sources, otherwise it does not pass batchCompiler.configure(args) well
+					 * But it does not checks if the file really exists.
+					 * The CompilationUnits are delivered to compiler in different way,
+					 * so it is just a trick to initialize other Compiler configurations well
+					 */
+					.sources(new SourceOptions().sources("./Tmp.java")) //
 					.build();
 		} else {
 			args = jdtBuilder.build();
@@ -107,10 +111,6 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 		batchCompiler.configure(args);
 
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
-
-		if (source.exists()) {
-			source.delete();
-		}
 
 		// here we build the model
 		buildModel(units);
