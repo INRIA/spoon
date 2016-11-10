@@ -6,6 +6,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.TypeFactory;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -61,5 +62,24 @@ public class CtTypeTest {
 		final CtMethod<?> superMethod = z.getMethods().iterator().next();
 
 		assertTrue(x.hasMethod(superMethod));
+	}
+
+
+	@Test
+	public void testIsAssignableFrom() throws Exception {
+		final Factory factory = new Launcher().getFactory();
+		TypeFactory type = factory.Type();
+
+		assertTrue(type.DOUBLE_PRIMITIVE.isAssignableFrom(type.OBJECT));
+		assertFalse(type.OBJECT.isAssignableFrom(type.DOUBLE_PRIMITIVE));
+		assertFalse(factory.Class().get(Object.class).isAssignableFrom(type.DOUBLE_PRIMITIVE));
+
+		assertTrue(type.INTEGER_PRIMITIVE.isAssignableFrom(type.INTEGER));
+		assertFalse(type.INTEGER.isAssignableFrom(type.INTEGER_PRIMITIVE));
+
+		assertTrue(type.INTEGER_PRIMITIVE.isAssignableFrom(type.createReference(Number.class)));
+		assertFalse(type.createReference(Number.class).isAssignableFrom(type.INTEGER_PRIMITIVE));
+
+		assertFalse(type.BOOLEAN_PRIMITIVE.isAssignableFrom(type.createReference(Number.class)));
 	}
 }

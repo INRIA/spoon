@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -191,8 +192,53 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	public boolean isAssignableFrom(CtTypeReference<?> type) {
-		return type != null && type.isSubtypeOf(this);
+	public boolean isAssignableFrom(CtTypeReference<?> target) {
+		if (target == null) {
+			return false;
+		}
+		TypeFactory type = target.getFactory().Type();
+		// in java all types is assignable to Object
+		if (target.equals(type.OBJECT)) {
+			return true;
+		}
+		// handle implicit cast
+		if (isPrimitive()) {
+			if (equals(type.BOOLEAN_PRIMITIVE) && target.equals(type.BOOLEAN)) {
+				return true;
+			}
+			if (equals(type.INTEGER_PRIMITIVE) && target.equals(type.INTEGER)) {
+				return true;
+			}
+			if (equals(type.BYTE_PRIMITIVE) && target.equals(type.BYTE)) {
+				return true;
+			}
+			if (equals(type.LONG_PRIMITIVE) && target.equals(type.LONG)) {
+				return true;
+			}
+			if (equals(type.FLOAT_PRIMITIVE) && target.equals(type.FLOAT)) {
+				return true;
+			}
+			if (equals(type.DOUBLE_PRIMITIVE) && target.equals(type.DOUBLE)) {
+				return true;
+			}
+			if (equals(type.CHARACTER_PRIMITIVE) && target.equals(type.CHARACTER)) {
+				return true;
+			}
+			if (equals(type.SHORT_PRIMITIVE) && target.equals(type.SHORT)) {
+				return true;
+			}
+			if (equals(type.VOID_PRIMITIVE) && target.equals(type.VOID)) {
+				return true;
+			}
+			if (target.equals(type.createReference(Number.class))
+					&& !(equals(type.VOID_PRIMITIVE)
+					|| equals(type.CHARACTER_PRIMITIVE)
+					|| equals(type.BOOLEAN_PRIMITIVE))) {
+				return true;
+			}
+		}
+		// if args is a subtype of target
+		return isSubtypeOf(target);
 	}
 
 	@Override
