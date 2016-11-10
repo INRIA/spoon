@@ -5,6 +5,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Collection;
@@ -61,5 +62,40 @@ public class TypeTest {
 	public void testGetUsedTypesForTypeInRootPackage() throws Exception {
 		CtClass<?> cl = createFactory().Code().createCodeSnippetStatement("class X { X x; }").compile();
 		assertEquals(0, cl.getUsedTypes(false).size());
+	}
+
+	@Test
+	public void testGetDeclaredOrIheritedFieldOnType() throws Exception {
+		CtType<?> type = build("spoon.test.model", "ClassWithSuperAndIFace");
+
+		assertEquals("classField", type.getDeclaredOrInheritedField("classField").getSimpleName());
+		assertEquals("i", type.getDeclaredOrInheritedField("i").getSimpleName());
+		assertNull(type.getDeclaredOrInheritedField("fooMethod"));
+		assertEquals("j", type.getDeclaredOrInheritedField("j").getSimpleName());
+		assertEquals("IFACE_FIELD_1", type.getDeclaredOrInheritedField("IFACE_FIELD_1").getSimpleName());
+		assertEquals("IFACE_FIELD_2", type.getDeclaredOrInheritedField("IFACE_FIELD_2").getSimpleName());
+		assertNull(type.getDeclaredOrInheritedField("notExists"));
+	}
+
+	@Test
+	public void testGetDeclaredOrIheritedFieldOnTypeRef() throws Exception {
+		CtTypeReference<?> type = build("spoon.test.model", "ClassWithSuperAndIFace").getReference();
+
+		assertEquals("classField", type.getDeclaredOrInheritedField("classField").getSimpleName());
+		assertEquals("i", type.getDeclaredOrInheritedField("i").getSimpleName());
+		assertNull(type.getDeclaredOrInheritedField("fooMethod"));
+		assertEquals("j", type.getDeclaredOrInheritedField("j").getSimpleName());
+		assertEquals("IFACE_FIELD_1", type.getDeclaredOrInheritedField("IFACE_FIELD_1").getSimpleName());
+		assertEquals("IFACE_FIELD_2", type.getDeclaredOrInheritedField("IFACE_FIELD_2").getSimpleName());
+		assertNull(type.getDeclaredOrInheritedField("notExists"));
+	}
+	@Test
+
+	public void testGetDeclaredOrIheritedFieldByReflection() throws Exception {
+		CtTypeReference<?> type = build("spoon.test.model", "ClassWithSuperOutOfModel").getReference();
+
+		assertEquals("buf", type.getDeclaredOrInheritedField("buf").getSimpleName());
+		assertEquals("count", type.getDeclaredOrInheritedField("count").getSimpleName());
+		
 	}
 }
