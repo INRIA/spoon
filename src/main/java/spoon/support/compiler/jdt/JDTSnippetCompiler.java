@@ -23,12 +23,7 @@ import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonFile;
-import spoon.compiler.builder.AdvancedOptions;
-import spoon.compiler.builder.ClasspathOptions;
-import spoon.compiler.builder.ComplianceOptions;
 import spoon.compiler.builder.JDTBuilder;
-import spoon.compiler.builder.JDTBuilderImpl;
-import spoon.compiler.builder.SourceOptions;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationError;
@@ -80,19 +75,6 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	@Override
 	protected boolean buildSources(JDTBuilder jdtBuilder) {
-		if (jdtBuilder == null) {
-			jdtBuilder = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(getSourceClasspath())) //
-					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
-					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					/*
-					 * compiler requires some sources, otherwise it does not pass batchCompiler.configure(args) well
-					 * But it does not checks if the file really exists.
-					 * The CompilationUnits are delivered to compiler in different way,
-					 * so it is just a trick to initialize other Compiler configurations well
-					 */
-					.sources(new SourceOptions().sources("./Tmp.java"));
-		}
 		return buildUnitsAndModel(jdtBuilder, sources, getSourceClasspath(), "snippet ", false);
 	}
 
