@@ -43,6 +43,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 	public void save(Factory f, OutputStream out) throws IOException {
 		ObjectOutputStream oos = new ObjectOutputStream(out);
 		oos.writeObject(f);
+		oos.flush();
 		oos.close();
 	}
 
