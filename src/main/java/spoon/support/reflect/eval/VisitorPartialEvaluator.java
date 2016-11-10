@@ -438,7 +438,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			}
 		}
 		if (fieldAccess.getFactory().Type().createReference(Enum.class)
-				.isAssignableFrom(fieldAccess.getVariable().getDeclaringType())) {
+				.isSubtypeOf(fieldAccess.getVariable().getDeclaringType())) {
 			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
 			l.setValue(fieldAccess.getVariable());
 			setResult(l);
@@ -561,7 +561,7 @@ public class VisitorPartialEvaluator implements CtVisitor, PartialEvaluator {
 			// try to inline partial evaluation results for local calls
 			// (including to superclasses)
 			if ((executable != null) && (invocation.getType() != null) && invocation.getExecutable().getDeclaringType()
-					.isAssignableFrom(((CtType<?>) invocation.getParent(CtType.class)).getReference())) {
+					.isSubtypeOf(((CtType<?>) invocation.getParent(CtType.class)).getReference())) {
 				CtBlock<?> b = evaluate(invocation.getParent(), executable.getBody());
 				flowEnded = false;
 				CtStatement last = b.getStatements().get(b.getStatements().size() - 1);

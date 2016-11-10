@@ -4,10 +4,13 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.compiler.SnippetCompilationHelper;
 
 import java.util.TreeSet;
 
@@ -70,13 +73,13 @@ public class SpoonArchitectureEnforcer {
 		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
 		interfaces.addInputResource("src/main/java/spoon/reflect/code");
 		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.addInputResource("src/main/java/spoon/support/DefaultCoreFactory.java");
 		interfaces.buildModel();
 
-		for(CtType<?> t : implementations.getModel().getAllTypes()) {
+		for (CtType<?> t : implementations.getModel().getAllTypes()) {
 			String impl = t.getQualifiedName().replace(".support", "").replace("Impl", "");
 			CtType itf = interfaces.getFactory().Type().get(impl);
-			assertTrue(t.isAssignableFrom(itf.getReference()));
+			assertTrue(itf.isSubtypeOf(t.getReference()));
 		}
 	}
-
 }

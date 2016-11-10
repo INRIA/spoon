@@ -561,8 +561,8 @@ public class CommentTest {
 			// we don't consider references
 			if (x.getSimpleName().endsWith("Reference")) { return; }
 
-			if (x.isAssignableFrom(launcher.getFactory().Type().get(CtStatement.class).getReference())
-					|| x.isAssignableFrom(launcher.getFactory().Type().get(CtExpression.class).getReference())
+			if (x.isSubtypeOf(launcher.getFactory().Type().get(CtStatement.class).getReference())
+					|| x.isSubtypeOf(launcher.getFactory().Type().get(CtExpression.class).getReference())
 					) {
 				if (x.getSimpleName().equals("CtCodeSnippetStatement")) { return; } // no meaningful snippet
 				if (x.getSimpleName().equals("CtCodeSnippetExpression")) { return; } // no meaningful snippet

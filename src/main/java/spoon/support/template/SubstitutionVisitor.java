@@ -474,7 +474,7 @@ public class SubstitutionVisitor extends CtScanner {
 				reference.setPackage(t.getPackage());
 				reference.setSimpleName(t.getSimpleName());
 				reference.setDeclaringType(t.getDeclaringType());
-			} else if (templateTypeRef.isAssignableFrom(reference)) {
+			} else if (templateTypeRef.isSubtypeOf(reference)) {
 				// this can only be a template inheritance case (to be verified)
 				CtTypeReference<?> sc = targetRef.getSuperclass();
 				if (sc != null) {
