@@ -209,10 +209,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (NULL_TYPE_NAME.equals(getSimpleName()) || NULL_TYPE_NAME.equals(type.getSimpleName())) {
 			return false;
 		}
-		// anonymous types cannot be resolved
-		if (isAnonymous() || type.isAnonymous()) {
-			return false;
-		}
 		if (isPrimitive() || type.isPrimitive()) {
 			return equals(type);
 		}
