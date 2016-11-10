@@ -5,10 +5,13 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.test.ctType.testclasses.X;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class CtTypeTest {
@@ -61,5 +64,13 @@ public class CtTypeTest {
 		final CtMethod<?> superMethod = z.getMethods().iterator().next();
 
 		assertTrue(x.hasMethod(superMethod));
+	}
+
+	@Test
+	public void testIsSubTypeOf() throws Exception {
+		CtType<X> xCtType = buildClass(X.class);
+
+		assertFalse(xCtType.isSubtypeOf(xCtType.getFactory().Type().createReference("spoon.test.ctType.testclasses.Y")));
+		assertTrue(xCtType.getFactory().Type().get("spoon.test.ctType.testclasses.Y").isSubtypeOf(xCtType.getReference()));
 	}
 }

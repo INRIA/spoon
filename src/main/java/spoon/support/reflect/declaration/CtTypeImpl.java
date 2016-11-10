@@ -498,14 +498,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return fields;
 	}
 
-	/**
-	 * Tells if this type is a subtype of the given type.
-	 */
-	@Override
-	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		return type.isSubtypeOf(getReference());
-	}
-
 	@Override
 	public boolean isAssignableFrom(CtTypeReference<?> type) {
 		return isSubtypeOf(type);
