@@ -58,6 +58,7 @@ public class ResourceTest {
 		assertEquals(2, folder.getAllJavaFiles().size());
 	}
 
+	@Test
 	public void testFilteringFolder() throws Exception {
 		// contract: one can filter input files
 		// the core of this test is the removeIfMatches at the end
