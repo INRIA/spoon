@@ -557,4 +557,15 @@ public class TypeReferenceTest {
 
 		assertFalse(subRef.isSubtypeOf(superRef));
 	}
+
+	@Test
+	public void testSubTypeAnonymous() throws Exception {
+		CtType<Panini> paniniCtType = buildClass(Panini.class);
+
+		CtClass anonymousClass = ((CtNewClass) ((CtReturn) paniniCtType
+				.getMethod("entryIterator").getBody().getStatement(0))
+				.getReturnedExpression()).getAnonymousClass();
+
+		assertTrue(anonymousClass.getReference().isSubtypeOf(paniniCtType.getFactory().Type().createReference("spoon.test.reference.testclasses.Panini$Itr")));
+	}
 }
