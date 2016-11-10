@@ -16,12 +16,10 @@
  */
 package spoon.support.compiler.jdt;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonFile;
@@ -82,16 +80,9 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	@Override
 	protected boolean buildSources(JDTBuilder jdtBuilder) {
-		if (sources.getAllJavaFiles().isEmpty()) {
-			return true;
-		}
-		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sources));
-
-		String[] args;
 		if (jdtBuilder == null) {
-			String[] sourceClasspath = getSourceClasspath();
-			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(sourceClasspath)) //
+			jdtBuilder = new JDTBuilderImpl() //
+					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(getSourceClasspath())) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
 					/*
@@ -100,22 +91,9 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 					 * The CompilationUnits are delivered to compiler in different way,
 					 * so it is just a trick to initialize other Compiler configurations well
 					 */
-					.sources(new SourceOptions().sources("./Tmp.java")) //
-					.build();
-		} else {
-			args = jdtBuilder.build();
+					.sources(new SourceOptions().sources("./Tmp.java"));
 		}
-
-		getFactory().getEnvironment().debugMessage("build args: " + Arrays.toString(args));
-
-		batchCompiler.configure(args);
-
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
-
-		// here we build the model
-		buildModel(units);
-
-		return getProblems().size() == 0;
+		return buildUnitsAndModel(jdtBuilder, sources, getSourceClasspath(), "snippet ", false);
 	}
 
 	@Override
