@@ -17,6 +17,7 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtCodeSnippet;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.SnippetCompilationError;
 
 /**
@@ -30,6 +31,9 @@ public interface CtCodeSnippetStatement extends CtStatement, CtCodeSnippet {
 	/**
 	 * Compiles this statement code snippet to produce the corresponding AST
 	 * statement.
+	 *
+	 * If you want to compile a non-void return or a snippet that uses a non-void  return,
+	 * use, {@link spoon.support.compiler.SnippetCompilationHelper#compileStatement(CtCodeSnippetStatement, CtTypeReference)}
 	 *
 	 * @return a statement
 	 * @throws SnippetCompilationError

@@ -62,13 +62,18 @@ public class SnippetCompilationHelper {
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st)
 			throws SnippetCompilationError {
-		return internalCompileStatement(st);
+		return internalCompileStatement(st, st.getFactory().Type().VOID_PRIMITIVE);
 	}
 
-	private static CtStatement internalCompileStatement(CtElement st) {
+	public static CtStatement compileStatement(CtCodeSnippetStatement st, CtTypeReference returnType)
+			throws SnippetCompilationError {
+		return internalCompileStatement(st, returnType);
+	}
+
+	private static CtStatement internalCompileStatement(CtElement st, CtTypeReference returnType) {
 		Factory f = st.getFactory();
 
-		CtClass<?> w = createWrapper(st, f);
+		CtClass<?> w = createWrapper(st, f, returnType);
 
 		build(f, w);
 
@@ -97,7 +102,7 @@ public class SnippetCompilationHelper {
 	public static <T> CtExpression<T> compileExpression(
 			CtCodeSnippetExpression<T> expr) throws SnippetCompilationError {
 
-		CtReturn<T> ret = (CtReturn<T>) internalCompileStatement(expr);
+		CtReturn<T> ret = (CtReturn<T>) internalCompileStatement(expr, expr.getFactory().Type().OBJECT);
 
 		return ret.getReturnedExpression();
 	}
@@ -119,22 +124,20 @@ public class SnippetCompilationHelper {
 		}
 	}
 
-	private static CtClass<?> createWrapper(CtElement element, Factory f) {
+	private static CtClass<?> createWrapper(final CtElement element, final Factory f, final CtTypeReference returnType) {
 		CtClass<?> w = f.Class().create(WRAPPER_CLASS_NAME);
 
 		// Clean up (delete wrapper from factory)
 		w.getPackage().getTypes().remove(w);
 
 		CtBlock body = f.Core().createBlock();
-
-		CtTypeReference returnType = f.Type().VOID_PRIMITIVE;
+;
 		if (element instanceof CtStatement) {
 			body.addStatement((CtStatement) element);
 		} else if (element instanceof CtExpression) {
 			CtReturn ret = f.Core().createReturn();
 			ret.setReturnedExpression((CtExpression) element);
 			body.addStatement(ret);
-			returnType = f.Type().OBJECT;
 		}
 
 		Set<ModifierKind> modifiers = EnumSet.of(ModifierKind.STATIC);
