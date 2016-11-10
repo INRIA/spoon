@@ -40,7 +40,7 @@ public class OverridingMethodFilter implements Filter<CtMethod<?>> {
 	public boolean matches(CtMethod<?> element) {
 		final CtType expectedParent = method.getParent(CtType.class);
 		final CtType<?> currentParent = element.getParent(CtType.class);
-		return currentParent.isAssignableFrom(expectedParent.getReference()) //
+		return currentParent.isSubtypeOf(expectedParent.getReference()) //
 				&& !currentParent.equals(expectedParent) //
 				&& element.getReference().isOverriding(method.getReference());
 	}

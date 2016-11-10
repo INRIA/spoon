@@ -154,7 +154,7 @@ public class TemplateMatcher {
 		for (Object tem : teList) {
 			if (variables.contains(tem) && (tem instanceof CtInvocation)) {
 				CtInvocation<?> listCand = (CtInvocation<?>) tem;
-				boolean ok = listCand.getFactory().Type().createReference(TemplateParameter.class).isAssignableFrom(listCand.getTarget().getType());
+				boolean ok = listCand.getFactory().Type().createReference(TemplateParameter.class).isSubtypeOf(listCand.getTarget().getType());
 				return ok ? listCand : null;
 			}
 			if (tem instanceof CtVariable) {

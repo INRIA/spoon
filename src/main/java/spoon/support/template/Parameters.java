@@ -204,7 +204,7 @@ public abstract class Parameters {
 			return (ref.getDeclaration() != null // we must have the source of
 					// this fieldref
 					&& ref.getDeclaration().getAnnotation(Parameter.class) != null) || (!((ref.getType() instanceof CtTypeParameterReference) || ref.getSimpleName().equals("this"))
-					&& getTemplateParameterType(ref.getFactory()).isAssignableFrom(ref.getType()));
+					&& getTemplateParameterType(ref.getFactory()).isSubtypeOf(ref.getType()));
 		} catch (RuntimeException e) {
 			// if (e.getCause() instanceof ClassNotFoundException) {
 			// return false;
