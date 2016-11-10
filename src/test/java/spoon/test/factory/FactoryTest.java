@@ -8,10 +8,12 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -20,10 +22,12 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.reflect.declaration.CtMethodImpl;
+import spoon.test.SpoonTestHelpers;
 import spoon.test.factory.testclasses.Foo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -183,6 +187,16 @@ public class FactoryTest {
 				return "spoon.test.factory.testclasses2".equals(element.getQualifiedName());
 			}
 		}).size());
+	}
+
+	@Test
+	public void specificationCoreFactoryCreate() throws Exception {
+		// contract: all concrete metamodel classes must be instantiable by CoreFactory.create
+		for(CtType<? extends CtElement> itf : SpoonTestHelpers.getAllInstantiableMetamodelInterfaces()) {
+			CtElement o = itf.getFactory().Core().create(itf.getActualClass());
+			assertNotNull(o);
+			assertTrue(itf.getActualClass().isInstance(o));
+		}
 	}
 
 }

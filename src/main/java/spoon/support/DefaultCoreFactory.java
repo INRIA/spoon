@@ -659,4 +659,221 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		return e;
 	}
 
+	public CtElement create(Class<? extends CtElement> klass) {
+		if (klass.equals(spoon.reflect.code.CtAnnotationFieldAccess.class)) {
+			return createAnnotationFieldAccess();
+		}
+		if (klass.equals(spoon.reflect.code.CtArrayRead.class)) {
+			return createArrayRead();
+		}
+		if (klass.equals(spoon.reflect.code.CtArrayWrite.class)) {
+			return createArrayWrite();
+		}
+		if (klass.equals(spoon.reflect.code.CtAssert.class)) {
+			return createAssert();
+		}
+		if (klass.equals(spoon.reflect.code.CtAssignment.class)) {
+			return createAssignment();
+		}
+		if (klass.equals(spoon.reflect.code.CtBinaryOperator.class)) {
+			return createBinaryOperator();
+		}
+		if (klass.equals(spoon.reflect.code.CtBlock.class)) {
+			return createBlock();
+		}
+		if (klass.equals(spoon.reflect.code.CtBreak.class)) {
+			return createBreak();
+		}
+		if (klass.equals(spoon.reflect.code.CtCase.class)) {
+			return createCase();
+		}
+		if (klass.equals(spoon.reflect.code.CtCatch.class)) {
+			return createCatch();
+		}
+		if (klass.equals(spoon.reflect.code.CtCatchVariable.class)) {
+			return createCatchVariable();
+		}
+		if (klass.equals(spoon.reflect.code.CtCodeSnippetExpression.class)) {
+			return createCodeSnippetExpression();
+		}
+		if (klass.equals(spoon.reflect.code.CtCodeSnippetStatement.class)) {
+			return createCodeSnippetStatement();
+		}
+		if (klass.equals(spoon.reflect.code.CtComment.class)) {
+			return createComment();
+		}
+		if (klass.equals(spoon.reflect.code.CtConditional.class)) {
+			return createConditional();
+		}
+		if (klass.equals(spoon.reflect.code.CtConstructorCall.class)) {
+			return createConstructorCall();
+		}
+		if (klass.equals(spoon.reflect.code.CtContinue.class)) {
+			return createContinue();
+		}
+		if (klass.equals(spoon.reflect.code.CtDo.class)) {
+			return createDo();
+		}
+		if (klass.equals(spoon.reflect.code.CtExecutableReferenceExpression.class)) {
+			return createExecutableReferenceExpression();
+		}
+		if (klass.equals(spoon.reflect.code.CtFieldRead.class)) {
+			return createFieldRead();
+		}
+		if (klass.equals(spoon.reflect.code.CtFieldWrite.class)) {
+			return createFieldWrite();
+		}
+		if (klass.equals(spoon.reflect.code.CtForEach.class)) {
+			return createForEach();
+		}
+		if (klass.equals(spoon.reflect.code.CtFor.class)) {
+			return createFor();
+		}
+		if (klass.equals(spoon.reflect.code.CtIf.class)) {
+			return createIf();
+		}
+		if (klass.equals(spoon.reflect.code.CtInvocation.class)) {
+			return createInvocation();
+		}
+		if (klass.equals(spoon.reflect.code.CtLambda.class)) {
+			return createLambda();
+		}
+		if (klass.equals(spoon.reflect.code.CtLiteral.class)) {
+			return createLiteral();
+		}
+		if (klass.equals(spoon.reflect.code.CtLocalVariable.class)) {
+			return createLocalVariable();
+		}
+		if (klass.equals(spoon.reflect.code.CtNewArray.class)) {
+			return createNewArray();
+		}
+		if (klass.equals(spoon.reflect.code.CtNewClass.class)) {
+			return createNewClass();
+		}
+		if (klass.equals(spoon.reflect.code.CtOperatorAssignment.class)) {
+			return createOperatorAssignment();
+		}
+		if (klass.equals(spoon.reflect.code.CtReturn.class)) {
+			return createReturn();
+		}
+		if (klass.equals(spoon.reflect.code.CtStatementList.class)) {
+			return createStatementList();
+		}
+		if (klass.equals(spoon.reflect.code.CtSuperAccess.class)) {
+			return createSuperAccess();
+		}
+		if (klass.equals(spoon.reflect.code.CtSwitch.class)) {
+			return createSwitch();
+		}
+		if (klass.equals(spoon.reflect.code.CtSynchronized.class)) {
+			return createSynchronized();
+		}
+		if (klass.equals(spoon.reflect.code.CtThisAccess.class)) {
+			return createThisAccess();
+		}
+		if (klass.equals(spoon.reflect.code.CtThrow.class)) {
+			return createThrow();
+		}
+		if (klass.equals(spoon.reflect.code.CtTry.class)) {
+			return createTry();
+		}
+		if (klass.equals(spoon.reflect.code.CtTryWithResource.class)) {
+			return createTryWithResource();
+		}
+		if (klass.equals(spoon.reflect.code.CtTypeAccess.class)) {
+			return createTypeAccess();
+		}
+		if (klass.equals(spoon.reflect.code.CtUnaryOperator.class)) {
+			return createUnaryOperator();
+		}
+		if (klass.equals(spoon.reflect.code.CtVariableRead.class)) {
+			return createVariableRead();
+		}
+		if (klass.equals(spoon.reflect.code.CtVariableWrite.class)) {
+			return createVariableWrite();
+		}
+		if (klass.equals(spoon.reflect.code.CtWhile.class)) {
+			return createWhile();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtAnnotation.class)) {
+			return createAnnotation();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtAnnotationMethod.class)) {
+			return createAnnotationMethod();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtAnnotationType.class)) {
+			return createAnnotationType();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtAnonymousExecutable.class)) {
+			return createAnonymousExecutable();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtClass.class)) {
+			return createClass();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtConstructor.class)) {
+			return createConstructor();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtEnum.class)) {
+			return createEnum();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtEnumValue.class)) {
+			return createEnumValue();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtField.class)) {
+			return createField();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtInterface.class)) {
+			return createInterface();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtMethod.class)) {
+			return createMethod();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtPackage.class)) {
+			return createPackage();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtParameter.class)) {
+			return createParameter();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtTypeParameter.class)) {
+			return createTypeParameter();
+		}
+		if (klass.equals(spoon.reflect.reference.CtArrayTypeReference.class)) {
+			return createArrayTypeReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtCatchVariableReference.class)) {
+			return createCatchVariableReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtExecutableReference.class)) {
+			return createExecutableReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtFieldReference.class)) {
+			return createFieldReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtIntersectionTypeReference.class)) {
+			return createIntersectionTypeReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtLocalVariableReference.class)) {
+			return createLocalVariableReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtPackageReference.class)) {
+			return createPackageReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtParameterReference.class)) {
+			return createParameterReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtTypeParameterReference.class)) {
+			return createTypeParameterReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtTypeReference.class)) {
+			return createTypeReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtUnboundVariableReference.class)) {
+			return createUnboundVariableReference();
+		}
+		if (klass.equals(spoon.reflect.reference.CtWildcardReference.class)) {
+			return createWildcardReference();
+		}
+		throw new IllegalArgumentException("not instantiable by CoreFactory()");
+	}
+
 }

@@ -41,6 +41,7 @@ public class ParentContractTest<T extends CtVisitable> {
 		List<Object[]> values = new ArrayList<>();
 		for (Method method : CoreFactory.class.getDeclaredMethods()) {
 			if (method.getName().startsWith("create")
+					&& method.getParameterCount() == 0
 					&& method.getReturnType().getSimpleName().startsWith("Ct")
 					&& !CtReference.class.isAssignableFrom(method.getReturnType())
 					){

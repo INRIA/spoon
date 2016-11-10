@@ -109,10 +109,8 @@ public interface CoreFactory {
 	 * Recursively clones a given element of the metamodel and all its child
 	 * elements.
 	 *
-	 * @param <T>
-	 * 		the element's type
-	 * @param element
-	 * 		the element
+	 * @param <T>     the element's type
+	 * @param element the element
 	 * @return a clone of <code>element</code>
 	 * @see spoon.reflect.declaration.CtElement#clone()
 	 */
@@ -496,4 +494,11 @@ public interface CoreFactory {
 	 * Creates an unbound variable used in noclasspath.
 	 */
 	<T> CtUnboundVariableReference<T> createUnboundVariableReference();
+
+	/**
+	 * Creates an instance of the concrete metamodel class given as parameter.
+	 *
+	 * This is in particular useful when one uses reflection.
+	 */
+	CtElement create(Class<? extends CtElement> klass);
 }

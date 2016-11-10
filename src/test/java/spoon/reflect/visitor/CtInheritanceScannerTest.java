@@ -39,7 +39,9 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 	public static Collection<Object[]> data() throws Exception {
 		List<Object[]> values = new ArrayList<>();
 		for (Method method : CoreFactory.class.getDeclaredMethods()) {
-			if (method.getName().startsWith("create") && method.getReturnType().getSimpleName().startsWith("Ct")) {
+			if (method.getName().startsWith("create")
+					&& method.getParameterCount() == 0
+					&& method.getReturnType().getSimpleName().startsWith("Ct")) {
 				values.add(new Object[] { method.getReturnType(), method.invoke(factory.Core()) });
 			}
 		}
