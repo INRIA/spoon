@@ -295,6 +295,23 @@ public class ImportTest {
 				+ "    public class ArrayList extends java.util.ArrayList {    }" + newLine
 				+ "}", aClass.toString());
 	}
+	
+	@Test
+	public void testAccessToNestedClass() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
+		});
+		launcher.buildModel();
+		final CtClass<ImportTest> aClass = launcher.getFactory().Class().get(ClientClass.class.getName()+"$InnerClass");
+		assertEquals(ClientClass.class.getName()+"$InnerClass", aClass.getQualifiedName()); 
+		final CtTypeReference<?> parentClass = aClass.getSuperclass();
+		//comment next line and parentClass.getActualClass(); will fail anyway
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", parentClass.getQualifiedName()); 
+		Class<?> actualClass = parentClass.getActualClass();
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", actualClass.getName()); 
+	}
+	
 
 	private Factory getFactory(String...inputs) {
 		final Launcher launcher = new Launcher();
