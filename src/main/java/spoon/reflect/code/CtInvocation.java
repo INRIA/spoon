@@ -19,6 +19,7 @@ package spoon.reflect.code;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
 import java.util.List;
 
@@ -42,6 +43,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@DerivedProperty
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
@@ -66,6 +68,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 * the actual type bound to this particular invocation.
 	 */
 	@Override
+	@DerivedProperty
 	CtTypeReference<T> getType();
 
 	@Override

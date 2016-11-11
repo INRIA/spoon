@@ -16,7 +16,10 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 /**
  * This element defines an executable parameter declaration.
@@ -28,7 +31,11 @@ public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 	/**
 	 * Gets the executable that is the parent declaration of this parameter
 	 * declaration.
+	 *
+	 * (Overriding the return type)
 	 */
+	@Override
+	@DerivedProperty
 	CtExecutable<?> getParent();
 
 	/**
@@ -43,8 +50,15 @@ public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 	 */
 	<C extends CtParameter<T>> C setVarArgs(boolean varArgs);
 
+	/** overriding the return type */
+	@Override
+	@DerivedProperty
 	CtParameterReference<T> getReference();
 
 	@Override
 	CtParameter<T> clone();
+
+	@Override
+	@UnsettableProperty
+	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 }

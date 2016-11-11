@@ -17,6 +17,7 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtPackageReference;
+import spoon.support.DerivedProperty;
 
 import java.util.Set;
 
@@ -39,6 +40,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	/**
 	 * Gets the declaring package of the current one. Returns null if the package is not yet in another one.
 	 */
+	@DerivedProperty
 	CtPackage getDeclaringPackage();
 
 	/**
@@ -69,6 +71,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@DerivedProperty
 	CtPackageReference getReference();
 
 	/**

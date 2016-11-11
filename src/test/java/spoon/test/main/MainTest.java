@@ -109,20 +109,7 @@ public class MainTest {
 	}
 
 	private void checkEqualityBetweenOriginalAndClone(CtPackage pack) {
-		class ExpectedCounterScanner extends CtScanner {
-			private int expectedCounter = 0;
-
-			@Override
-			public void scan(CtElement element) {
-				if (element != null) {
-					expectedCounter++;
-				}
-				super.scan(element);
-			}
-		}
 		class ActualCounterScanner extends CtBiScannerDefault {
-			private int counter = 0;
-
 			@Override
 			public boolean biScan(CtElement element, CtElement other) {
 				if (element == null) {
@@ -132,18 +119,14 @@ public class MainTest {
 				} else if (other == null) {
 					Assert.fail("other can't be null if element isn't null.");
 				} else {
-					counter++;
 					assertEquals(element, other);
 					assertFalse(element == other);
 				}
 				return super.biScan(element, other);
 			}
 		}
-		final ExpectedCounterScanner expected = new ExpectedCounterScanner();
-		expected.scan(pack);
 		final ActualCounterScanner actual = new ActualCounterScanner();
 		actual.biScan(pack, pack.clone());
-		assertEquals(expected.expectedCounter, actual.counter);
 	}
 
 	private void checkShadow(CtPackage pack) {

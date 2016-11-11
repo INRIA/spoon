@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R> {
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@DerivedProperty
 	CtExecutableReference<R> getReference();
 
 	/**

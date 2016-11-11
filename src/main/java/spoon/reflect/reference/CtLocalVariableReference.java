@@ -17,6 +17,7 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.code.CtLocalVariable;
+import spoon.support.DerivedProperty;
 
 /**
  * This interface defines a reference to
@@ -24,6 +25,7 @@ import spoon.reflect.code.CtLocalVariable;
  */
 public interface CtLocalVariableReference<T> extends CtVariableReference<T> {
 	@Override
+	@DerivedProperty
 	CtLocalVariable<T> getDeclaration();
 
 	@Override

@@ -17,6 +17,7 @@
 package spoon.reflect.code;
 
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
 /**
  * This code element represents a type reference usable as an expression.
@@ -68,6 +69,7 @@ public interface CtTypeAccess<A> extends CtExpression<Void> {
 	 * @see #getAccessedType() to get the accessed type.
 	 */
 	@Override
+	@DerivedProperty
 	CtTypeReference<Void> getType();
 
 	@Override

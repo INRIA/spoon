@@ -17,6 +17,7 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtExecutable;
+import spoon.support.DerivedProperty;
 import spoon.support.visitor.equals.IgnoredByEquals;
 
 import java.lang.reflect.Constructor;
@@ -57,6 +58,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	Constructor<?> getActualConstructor();
 
 	@Override
+	@DerivedProperty
 	CtExecutable<T> getDeclaration();
 
 	/**
@@ -66,11 +68,13 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	 *
 	 * @return the executable declaration that corresponds to the reference.
 	 */
+	@DerivedProperty
 	CtExecutable<T> getExecutableDeclaration();
 
 	/**
 	 * Gets the reference to the type that declares this executable.
 	 */
+	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
 	/**
@@ -98,6 +102,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Returns the executable overridden by this one, if exists (null otherwise).
 	 */
+	@DerivedProperty
 	CtExecutableReference<?> getOverridingExecutable();
 
 	/**

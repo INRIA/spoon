@@ -17,6 +17,7 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtParameter;
+import spoon.support.DerivedProperty;
 
 /**
  * This interface defines a reference to a
@@ -35,6 +36,7 @@ public interface CtParameterReference<T> extends CtVariableReference<T> {
 	<C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable);
 
 	@Override
+	@DerivedProperty
 	CtParameter<T> getDeclaration();
 
 	@Override

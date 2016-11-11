@@ -16,6 +16,8 @@
  */
 package spoon.reflect.reference;
 
+import spoon.support.DerivedProperty;
+
 /**
  * This interface defines a reference to an array.
  */
@@ -33,6 +35,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * e.g., if you have the array <code>int[][][]</code>,
 	 * this method returns a type reference to "int".
 	 */
+	@DerivedProperty
 	CtTypeReference<?> getArrayType();
 
 	/**

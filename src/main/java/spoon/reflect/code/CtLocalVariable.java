@@ -18,6 +18,7 @@ package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.support.DerivedProperty;
 
 /**
  * This code element defines a local variable definition (within an executable
@@ -39,7 +40,15 @@ public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSRec
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@DerivedProperty
 	CtLocalVariableReference<T> getReference();
+
+	/**
+	 * Useful proxy to {@link #getDefaultExpression()}.
+	 */
+	@Override
+	@DerivedProperty
+	CtExpression<T> getAssignment();
 
 	@Override
 	CtLocalVariable<T> clone();

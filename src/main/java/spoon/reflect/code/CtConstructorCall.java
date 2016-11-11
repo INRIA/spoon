@@ -19,6 +19,7 @@ package spoon.reflect.code;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@DerivedProperty
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**

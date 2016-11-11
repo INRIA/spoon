@@ -17,6 +17,7 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
 /**
  * This abstract element defines a typed element.
@@ -25,6 +26,7 @@ public interface CtTypedElement<T> extends CtElement {
 	/**
 	 * Gets this element's type.
 	 */
+	@DerivedProperty
 	CtTypeReference<T> getType();
 
 	/**

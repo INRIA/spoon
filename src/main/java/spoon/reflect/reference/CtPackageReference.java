@@ -17,6 +17,7 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtPackage;
+import spoon.support.DerivedProperty;
 
 /**
  * This interface defines a reference to a
@@ -26,6 +27,7 @@ public interface CtPackageReference extends CtReference {
 	/**
 	 * Gets the package element when available in the source code.
 	 */
+	@DerivedProperty
 	CtPackage getDeclaration();
 
 	/**

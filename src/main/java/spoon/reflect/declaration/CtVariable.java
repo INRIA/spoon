@@ -18,6 +18,7 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.support.DerivedProperty;
 
 /**
  * This abstract element defines a variable declaration.
@@ -34,6 +35,7 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModi
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@DerivedProperty
 	CtVariableReference<T> getReference();
 
 	/**

@@ -20,7 +20,10 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
+import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
+
+import java.util.Set;
 
 /**
  * This interface defines a reference to a
@@ -64,6 +67,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return the referenced element or <code>null</code> if the type
 	 * declaration is not the analyzed source files.
 	 */
+	@DerivedProperty
 	CtType<T> getDeclaration();
 
 	/**
@@ -73,6 +77,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the type declaration that corresponds to the reference.
 	 */
+	@DerivedProperty
 	CtType<T> getTypeDeclaration();
 
 	/**
@@ -81,6 +86,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return the declaring type if this references an inner class; null in
 	 * other cases
 	 */
+	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
 	/**
@@ -88,6 +94,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the declaring package or null if this if a inner class
 	 */
+	@DerivedProperty
 	CtPackageReference getPackage();
 
 	/**
@@ -125,4 +132,12 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 
 	@Override
 	CtTypeReference<T> clone();
+
+	@Override
+	@DerivedProperty
+	Set<CtTypeReference<?>> getSuperInterfaces();
+
+	@Override
+	@DerivedProperty
+	CtTypeReference<?> getSuperclass();
 }

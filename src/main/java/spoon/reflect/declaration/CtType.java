@@ -17,6 +17,7 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
 import java.util.List;
 import java.util.Set;
@@ -71,7 +72,10 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Returns the fields that are directly declared by this class or interface.
 	 * Includes enum constants.
+	 *
+	 * Derived from {@link #getTypeMembers()}
 	 */
+	@DerivedProperty
 	List<CtField<?>> getFields();
 
 	/**
@@ -83,11 +87,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Returns the declarations of the nested classes and interfaces that are
 	 * directly declared by this class or interface.
 	 */
+	@DerivedProperty
 	Set<CtType<?>> getNestedTypes();
 
 	/**
 	 * Gets the package where this type is declared.
 	 */
+	@DerivedProperty
 	CtPackage getPackage();
 
 	/**
@@ -95,6 +101,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * Overrides the return type.
 	 */
+	@DerivedProperty
 	CtTypeReference<T> getReference();
 
 	/**
@@ -181,6 +188,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Up to 5.2: The recursion stops when the super-type/super-interface is not in the model,
 	 * which means that no method of library super-classes, or of Object are present.
 	 */
+	@DerivedProperty
 	Set<CtMethod<?>> getAllMethods();
 
 	/**
@@ -200,7 +208,11 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Returns the methods that are directly declared by this class or
 	 * interface.
+	 *
+	 * Derived from {@link #getTypeMembers()}
+	 *
 	 */
+	@DerivedProperty
 	Set<CtMethod<?>> getMethods();
 
 	/**

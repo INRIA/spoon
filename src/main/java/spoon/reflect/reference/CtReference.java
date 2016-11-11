@@ -16,7 +16,12 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
+
+import java.util.List;
 
 /**
  * This is the root interface for named program element references. References
@@ -42,10 +47,17 @@ public interface CtReference extends CtElement {
 	/**
 	 * Tries to get the declaration that corresponds to the referenced element.
 	 *
+	 * Consider using the more robust {@link CtTypeReference#getTypeDeclaration()} and {@link CtExecutableReference#getExecutableDeclaration()}.
 	 * @return referenced element or null if element does not exist
 	 */
+	@DerivedProperty
 	CtElement getDeclaration();
 
 	@Override
 	CtReference clone();
+
+	/** comments are not possible for references */
+	@Override
+	@UnsettableProperty
+	<E extends CtElement> E setComments(List<CtComment> comments);
 }

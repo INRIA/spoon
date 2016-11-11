@@ -21,8 +21,11 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -102,6 +105,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 *
 	 * @return annotated {@link spoon.reflect.declaration.CtElement}
 	 */
+	@DerivedProperty // the annotation is contained by the element not the other way around
 	CtElement getAnnotatedElement();
 
 	/**
@@ -138,4 +142,8 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 
 	@Override
 	CtAnnotation<A> clone();
+
+	@Override
+	@UnsettableProperty
+	<C extends CtExpression<A>> C setTypeCasts(List<CtTypeReference<?>> types);
 }

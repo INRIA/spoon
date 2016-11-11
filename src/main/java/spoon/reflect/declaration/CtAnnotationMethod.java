@@ -16,7 +16,13 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * This element defines an annotation method declared in an annotation type.
@@ -34,4 +40,20 @@ public interface CtAnnotationMethod<T> extends CtMethod<T> {
 
 	@Override
 	CtAnnotationMethod<T> clone();
+
+	@Override
+	@UnsettableProperty
+	<B extends T, T1 extends CtExecutable<T>> T1 setBody(CtBlock<B> body);
+
+	@Override
+	@UnsettableProperty
+	<T1 extends CtExecutable<T>> T1 setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+
+	@Override
+	@UnsettableProperty
+	<T extends CtFormalTypeDeclarer> T setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
+
+	@Override
+	@UnsettableProperty
+	<T1 extends CtExecutable<T>> T1 setParameters(List<CtParameter<?>> parameters);
 }

@@ -16,10 +16,17 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
+
 /**
  * This element defines an interface declaration.
  */
 public interface CtInterface<T> extends CtType<T> {
 	@Override
 	CtInterface<T> clone();
+
+	@Override
+	@UnsettableProperty
+	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
 }

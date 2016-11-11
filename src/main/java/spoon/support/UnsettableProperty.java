@@ -14,35 +14,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.declaration;
+package spoon.support;
 
-import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.support.DerivedProperty;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This element defines a field declaration.
+ * Tells that a metamodel property (ie a getter in metamodel interface) is unsettable because it does not make sense for a certain metamodel element.
+ * This is used when the Java static type system cannot express this contract.
+ * For instance, a catch variable cannot have a default expression.
  */
-public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T>, CtShadowable {
-
-	/**
-	 * The separator for a string representation of a field.
-	 */
-	String FIELD_SEPARATOR = "#";
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
-	 */
-	@DerivedProperty
-	CtFieldReference<T> getReference();
-
-	/**
-	 * Replaces this element by another one.
-	 */
-	<R extends T> void replace(CtField<R> element);
-
-	@Override
-	CtField<T> clone();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface UnsettableProperty {
 }

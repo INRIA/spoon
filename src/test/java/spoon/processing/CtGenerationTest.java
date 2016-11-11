@@ -1,5 +1,6 @@
 package spoon.processing;
 
+import org.junit.ComparisonFailure;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -11,6 +12,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.support.visitor.equals.EqualsVisitor;
 
 import java.io.File;
@@ -43,8 +45,12 @@ public class CtGenerationTest {
 		// cp ./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java ./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java
 		CtClass<Object> actual = build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
 		CtClass<Object> expected = build(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
-		assertThat(actual)
+		try {
+			assertThat(actual)
 				.isEqualTo(expected);
+		} catch (AssertionError e) {
+			throw new ComparisonFailure("EqualsVisitor different", expected.toString(), actual.toString());
+		}
 	}
 
 	@Test
@@ -66,8 +72,12 @@ public class CtGenerationTest {
 		launcher.setOutputFilter(new RegexFilter("spoon.reflect.visitor.CtBiScannerDefault"));
 		launcher.run();
 
-		assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class))
-				.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class));
+		// we don't necessarily want to hard-wired the relation bewteen CtScanner and CtBiScannerDefault.java
+		// this can be done on an informed basis when important changes are made in the metamodel/scanner
+		// and then we can have smaller clean tested pull requests to see the impact of the change
+		// cp ./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java ./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java
+		//assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class))
+		//		.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class));
 	}
 
 	@Test
@@ -92,12 +102,17 @@ public class CtGenerationTest {
 
 		CtClass<Object> actual = build(new File("./src/main/java/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class);
 		CtClass<Object> expected = build(new File("./target/generated/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class);
-		assertThat(actual)
-				.isEqualTo(expected);
+		try {
+			assertThat(actual)
+					.isEqualTo(expected);
+		} catch (AssertionError e) {
+			throw new ComparisonFailure("EqualsVisitor different", expected.toString(), actual.toString());
+		}
 	}
 
 	@Test
 	public void testGenerateCloneVisitor() throws Exception {
+		// contract: generates CloneBuilder.java and CloneBuilder.java
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -122,6 +137,7 @@ public class CtGenerationTest {
 		launcher.run();
 
 		// cp ./target/generated/spoon/support/visitor/clone/CloneBuilder.java  ./src/main/java/spoon/support/visitor/clone/CloneBuilder.java
+		// cp ./target/generated/spoon/support/visitor/clone/CloneVisitor.java  ./src/main/java/spoon/support/visitor/clone/CloneVisitor.java
 		assertThat(build(new File("./src/main/java/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone"))
 				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone"));
 	}

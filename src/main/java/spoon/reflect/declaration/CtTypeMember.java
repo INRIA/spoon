@@ -16,6 +16,8 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.support.DerivedProperty;
+
 /**
  * This interface represents a member of a class (field, method,
  * nested class or static/instance initializer).
@@ -27,6 +29,7 @@ public interface CtTypeMember extends CtModifiable {
 	 *
 	 * @return declaring class
 	 */
+	@DerivedProperty
 	CtType<?> getDeclaringType();
 
 }
