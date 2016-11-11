@@ -1133,11 +1133,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (env.isPreserveLineNumbers()) {
 			printer.adjustPosition(catchVariable, sourceCompilationUnit);
 		}
-		if (!context.noTypeDecl) {
-			elementPrinterHelper.writeModifiers(catchVariable);
-			scan(catchVariable.getType());
-			printer.write(" ");
-		}
+		elementPrinterHelper.writeModifiers(catchVariable);
+		scan(catchVariable.getType());
+		printer.write(" ");
 		printer.write(catchVariable.getSimpleName());
 	}
 
