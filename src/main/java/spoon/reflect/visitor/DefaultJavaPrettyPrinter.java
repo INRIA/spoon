@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -140,10 +139,56 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+	protected static class TypeContext {
+		CtTypeReference<?> type;
+		Set<String> memberNames;
+
+		TypeContext(CtTypeReference<?> p_type) {
+			type = p_type;
+		}
+
+		public boolean isNameConflict(String name) {
+			if (memberNames == null) {
+				Collection<CtFieldReference<?>> allFields = type.getAllFields();
+				memberNames = new HashSet<>(allFields.size());
+				for (CtFieldReference<?> field : allFields) {
+					memberNames.add(field.getSimpleName());
+				}
+			}
+			return memberNames.contains(name);
+		}
+
+		public String getSimpleName() {
+			return type.getSimpleName();
+		}
+
+		public CtPackageReference getPackage() {
+			return type.getPackage();
+		}
+	}
+
 	public class PrintingContext {
 		boolean noTypeDecl = false;
 
-		Deque<CtTypeReference<?>> currentThis = new ArrayDeque<>();
+		Deque<TypeContext> currentThis = new ArrayDeque<>();
+
+		public CtTypeReference<?> getCurrentTypeReference() {
+			if (context.currentTopLevel != null) {
+				if (currentThis != null && currentThis.size() > 0) {
+					return currentThis.peekFirst().type;
+				}
+				return context.currentTopLevel.getReference();
+			}
+			return null;
+		}
+
+		public void pushCurrentThis(CtTypeReference<?> type) {
+			currentThis.push(new TypeContext(type));
+		}
+		public void popCurrentThis() {
+			currentThis.pop();
+		}
+
 
 		Deque<CtElement> elementStack = new ArrayDeque<>();
 
@@ -511,7 +556,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		context.currentThis.push(ctClass.getReference());
+		context.pushCurrentThis(ctClass.getReference());
 
 		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
@@ -530,7 +575,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write(" {").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
-		context.currentThis.pop();
+		context.popCurrentThis();
 	}
 
 	@Override
@@ -635,7 +680,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtType(ctEnum);
 		printer.write("enum " + ctEnum.getSimpleName());
 		elementPrinterHelper.writeImplementsClause(ctEnum);
-		context.currentThis.push(ctEnum.getReference());
+		context.pushCurrentThis(ctEnum.getReference());
 		printer.write(" {").incTab().writeln();
 
 		if (ctEnum.getEnumValues().size() == 0) {
@@ -651,7 +696,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		elementPrinterHelper.writeElementList(ctEnum.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
-		context.currentThis.pop();
+		context.popCurrentThis();
 	}
 
 	@Override
@@ -892,13 +937,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if (reference.isFinal() && reference.isStatic()) {
 			CtTypeReference<?> declTypeRef = reference.getDeclaringType();
-			if (context.currentTopLevel != null) {
-				CtTypeReference<?> ref2;
-				if (context.currentThis != null && context.currentThis.size() > 0) {
-					ref2 = context.currentThis.peekFirst();
-				} else {
-					ref2 = context.currentTopLevel.getReference();
-				}
+			CtTypeReference<?> ref2 = context.getCurrentTypeReference();
+			if (ref2 != null) {
 				// print type if not anonymous class ref and not within the
 				// current scope
 				printType = !"".equals(declTypeRef.getSimpleName()) && !(declTypeRef.equals(ref2));
@@ -1561,17 +1601,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			//A) we are in the context of a class which is also called "Something",
 			//B) we are in the context of a class which defines field which is also called "Something",
 			//	we should still use qualified version my.pkg.Something
-			for (CtTypeReference<?> enclosingClassRef : context.currentThis) {
-				if (enclosingClassRef.getSimpleName().equals(ref.getSimpleName())
-						&& !Objects.equals(enclosingClassRef.getPackage(), ref.getPackage())) {
+			for (TypeContext typeContext : context.currentThis) {
+				if (typeContext.getSimpleName().equals(ref.getSimpleName())
+						&& !Objects.equals(typeContext.getPackage(), ref.getPackage())) {
 					return true;
 				}
-				CtType<?> enclosingClass = enclosingClassRef.getDeclaration();
-				if (enclosingClass != null) {
-					CtField<?> field = getDeclareddOrInheritedField(enclosingClass, ref.getSimpleName());
-					if (field != null) {
-						return true;
-					}
+				if (typeContext.isNameConflict(ref.getSimpleName())) {
+					return true;
 				}
 			}
 			return false;
@@ -1580,27 +1616,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	private static CtField<?> getDeclareddOrInheritedField(CtType<?> type, String fieldName) {
-		if (type == null) {
-			return null;
-		}
-		CtField<?> field = type.getField(fieldName);
-		if (field != null) {
-			return field;
-		}
-		CtTypeReference<?> str = type.getSuperclass();
-		if (str != null) {
-			CtType<?> st;
-			try {
-				st = str.getTypeDeclaration();
-			} catch (Throwable e) {
-				Launcher.LOGGER.error("cannot determine runtime type for (" + type.getQualifiedName() + ")", e);
-				return null;
-			}
-			return getDeclareddOrInheritedField(st, fieldName);
-		}
-		return null;
-	}
 
 	@Override
 	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
