@@ -510,6 +510,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			if (st != null) {
 				fields.addAll(st.getAllFields());
 			}
+			Set<CtTypeReference<?>> superIFaces = ((CtClass<?>) this).getSuperInterfaces();
+			for (CtTypeReference<?> superIFace : superIFaces) {
+				fields.addAll(superIFace.getAllFields());
+			}
 		}
 		return fields;
 	}
