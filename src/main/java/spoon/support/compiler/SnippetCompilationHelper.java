@@ -73,9 +73,9 @@ public class SnippetCompilationHelper {
 	private static CtStatement internalCompileStatement(CtElement st, CtTypeReference returnType) {
 		Factory f = st.getFactory();
 
-		CtClass<?> w = createWrapper(st, f, returnType);
+		String contents = createWrapperContent(st, f, returnType);
 
-		build(f, w);
+		build(f, contents);
 
 		CtType<?> c = f.Type().get(WRAPPER_CLASS_NAME);
 
@@ -107,13 +107,6 @@ public class SnippetCompilationHelper {
 		return ret.getReturnedExpression();
 	}
 
-	private static void build(Factory f, CtType<?> w) {
-
-		String contents = w.toString();
-
-		build(f, contents);
-	}
-
 	private static void build(Factory f, String contents) {
 		// Build contents
 		SpoonCompiler builder = new JDTSnippetCompiler(f, contents);
@@ -124,14 +117,11 @@ public class SnippetCompilationHelper {
 		}
 	}
 
-	private static CtClass<?> createWrapper(final CtElement element, final Factory f, final CtTypeReference returnType) {
+	private static String createWrapperContent(final CtElement element, final Factory f, final CtTypeReference returnType) {
 		CtClass<?> w = f.Class().create(WRAPPER_CLASS_NAME);
 
-		// Clean up (delete wrapper from factory)
-		w.getPackage().getTypes().remove(w);
-
 		CtBlock body = f.Core().createBlock();
-;
+
 		if (element instanceof CtStatement) {
 			body.addStatement((CtStatement) element);
 		} else if (element instanceof CtExpression) {
@@ -153,7 +143,11 @@ public class SnippetCompilationHelper {
 				thrownTypes,
 				body);
 
-		return w;
+		String contents = w.toString();
+		// Clean up (delete wrapper from factory) after it is printed. The DefaultJavaPrettyPrinter needs w in model to be able to print it correctly
+		w.getPackage().getTypes().remove(w);
+
+		return contents;
 	}
 
 }
