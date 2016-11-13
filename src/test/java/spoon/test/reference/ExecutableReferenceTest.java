@@ -30,7 +30,7 @@ public class ExecutableReferenceTest {
 	public void testCallMethodOfClassNotPresent() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
-				"-i", "./src/test/resources/executable-reference", "-o", "./target/spooned/test/resources", "--noclasspath"
+				"-i", "./src/test/resources/executable-reference", "--output-type", "nooutput", "--noclasspath"
 		});
 		final List<CtExecutableReference<?>> references = Query.getReferences(launcher.getFactory(), new ReferenceTypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
@@ -106,8 +106,8 @@ public class ExecutableReferenceTest {
 	@Test
 	public void testSpecifyGetAllExecutablesMethod() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtInterface<spoon.test.reference.testclasses.Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);

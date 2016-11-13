@@ -33,6 +33,10 @@ public class FileSystemFile implements SpoonFile {
 
 	File file;
 
+	public FileSystemFile(String path) {
+		this(new File(path));
+	}
+
 	public FileSystemFile(File file) {
 		super();
 		try {

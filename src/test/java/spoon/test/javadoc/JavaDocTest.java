@@ -44,11 +44,11 @@ public class JavaDocTest {
 
 	@Test
 	public void testJavadocNotPresentInAST() throws Exception {
-		SpoonAPI launcher = new Launcher();
+		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setCommentEnabled(false);
 		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/");
-		launcher.setSourceOutputDirectory("./target/trash/");
 		launcher.run();
 
 		new CtScanner() {

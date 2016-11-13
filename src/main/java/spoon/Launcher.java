@@ -710,15 +710,15 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void prettyprint() {
+		OutputType outputType = OutputType.fromString(jsapActualArgs.getString("output-type"));
 		long tstart = System.currentTimeMillis();
 		try {
-			OutputType outputType = OutputType.fromString(jsapActualArgs.getString("output-type"));
 			modelBuilder.generateProcessedSourceFiles(outputType, typeFilter);
 		} catch (Exception e) {
 			throw new SpoonException(e);
 		}
 
-		if (getEnvironment().isCopyResources()) {
+		if (!outputType.equals(OutputType.NO_OUTPUT) && getEnvironment().isCopyResources()) {
 			for (File dirInputSource : modelBuilder.getInputSources()) {
 				if (dirInputSource.isDirectory()) {
 					final Collection<?> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);

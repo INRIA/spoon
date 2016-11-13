@@ -26,9 +26,9 @@ public class CtInheritanceScannerMethodsTest {
 	public void testMethodsInInheritanceScanner() throws Exception {
 		// contract: CtInheritanceScanner must declare all scanner and visitor methods.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addProcessor(new CheckVisitorProcessor(CtInheritanceScanner.class).withScanners().withVisitors());
-		launcher.setSourceOutputDirectory("./target/trash");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");

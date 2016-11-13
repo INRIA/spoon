@@ -32,8 +32,8 @@ public class ProcessingTest {
 	public void testInterruptAProcessor() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/processing/");
-		launcher.setSourceOutputDirectory("./target/trash");
 		final MyProcessor processor = new MyProcessor();
 		launcher.addProcessor(processor);
 		try {

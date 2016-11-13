@@ -21,8 +21,8 @@ public class ExecutableTest {
 	@Test
 	public void testInfoInsideAnonymousExecutable() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/executable/testclasses/AnonymousExecutableSample.java");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<CtAnonymousExecutable>(CtAnonymousExecutable.class));

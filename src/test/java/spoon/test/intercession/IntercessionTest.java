@@ -191,7 +191,7 @@ public class IntercessionTest {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/main/java",
-				"-o", "./target/spooned",
+				"--output-type", "nooutput",
 				"--source-classpath", systemClassPath
 		});
 		final Factory factory = launcher.getFactory();
@@ -236,6 +236,7 @@ public class IntercessionTest {
 	@Test
 	public void testResetCollectionInSetters() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		final Factory factory = launcher.getFactory();
 		launcher.getEnvironment().setNoClasspath(true);
 		// interfaces.

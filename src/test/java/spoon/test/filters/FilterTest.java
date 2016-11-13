@@ -233,8 +233,8 @@ public class FilterTest {
 		// contract: When we declare an abstract method on an abstract class, we must return all overriding
 		// methods in sub classes and anonymous classes.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
@@ -255,8 +255,8 @@ public class FilterTest {
 		// contract: When we ask all overriding methods from an overriding method, we must returns all methods
 		// below and not above (including the declaration).
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
@@ -280,8 +280,8 @@ public class FilterTest {
 		// contract: When we declare a method in an interface, we must return all overriding
 		// methods in sub classes and anonymous classes.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtInterface<ITostada> aITostada = launcher.getFactory().Interface().get(ITostada.class);
@@ -302,8 +302,8 @@ public class FilterTest {
 		// contract: When we ask all overriding methods from an overriding method, we must returns all methods
 		// below and not above (including the declaration).
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtClass<AbstractTostada> anAbstractTostada = launcher.getFactory().Class().get(AbstractTostada.class);
@@ -322,8 +322,8 @@ public class FilterTest {
 		// contract: When we declare an abstract method on an abstract class, we must return an empty list
 		// when we ask all overriden methods from this declaration.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
@@ -336,8 +336,8 @@ public class FilterTest {
 		// contract: When we ask all overridden methods from an overriding method, we must returns all methods
 		// above and not below.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
@@ -358,8 +358,8 @@ public class FilterTest {
 		// contract: When we declare a method in an interface, we must return an empty list
 		// when we ask all overridden methods from this declaration.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtInterface<ITostada> aITostada = launcher.getFactory().Interface().get(ITostada.class);
@@ -373,8 +373,8 @@ public class FilterTest {
 		// contract: When we ask all overridden methods from an overriding method, we must returns all methods
 		// above and not below.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtClass<AbstractTostada> anAbstractTostada = launcher.getFactory().Class().get(AbstractTostada.class);
@@ -395,8 +395,8 @@ public class FilterTest {
 		// contract: When we have an invocation of an executable declared in a library,
 		// we can filter it and get the executable of the invocation.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtClass<Tacos> aTacos = launcher.getFactory().Class().get(Tacos.class);

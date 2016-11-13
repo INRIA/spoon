@@ -51,6 +51,7 @@ public class ImportTest {
 	@Test
 	public void testImportOfAnInnerClassInASuperClassPackage() throws Exception {
 		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
 
 		SpoonCompiler compiler = spoon.createCompiler(factory, SpoonResourceHelper
@@ -93,6 +94,7 @@ public class ImportTest {
 	@Test
 	public void testImportOfAnInnerClassInAClassPackage() throws Exception {
 		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
 
 		SpoonCompiler compiler = spoon.createCompiler(factory, SpoonResourceHelper
@@ -110,6 +112,7 @@ public class ImportTest {
 	@Test
 	public void testNewInnerClassDefinesInItsClassAndSuperClass() throws Exception {
 		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
 
 		SpoonCompiler compiler = spoon.createCompiler(factory,
@@ -130,6 +133,7 @@ public class ImportTest {
 	@Test
 	public void testMissingImport() throws Exception {
 		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
 		factory.getEnvironment().setNoClasspath(true);
 		factory.getEnvironment().setLevel("OFF");
@@ -146,7 +150,7 @@ public class ImportTest {
 	public void testSpoonWithImports() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses", "-o", "./target/spooned", "--with-imports"
+				"-i", "./src/test/java/spoon/test/imports/testclasses", "--output-type", "nooutput", "--with-imports"
 		});
 		final CtClass<ImportTest> aClass = launcher.getFactory().Class().get(ChildClass.class);
 		final CtClass<ImportTest> anotherClass = launcher.getFactory().Class().get(ClientClass.class);
@@ -165,7 +169,7 @@ public class ImportTest {
 	public void testStaticImportForInvocationInNoClasspath() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
-				"-i", "./src/test/resources/import-static", "-o", "./target/spoon", "--noclasspath"
+				"-i", "./src/test/resources/import-static", "--output-type", "nooutput", "--noclasspath"
 		});
 
 		final List<CtInvocation<?>> elements = new SortedList(new CtLineElementComparator());
@@ -273,6 +277,7 @@ public class ImportTest {
 	public void testImportStaticAndFieldAccess() throws Exception {
 		// contract: Qualified field access and an import static should rewrite in fully qualified mode.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/");
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Tacos.java");
 		launcher.buildModel();
@@ -298,10 +303,10 @@ public class ImportTest {
 
 	private Factory getFactory(String...inputs) {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		for (String input : inputs) {
 			launcher.addInputResource(input);
 		}
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 		return launcher.getFactory();
 	}

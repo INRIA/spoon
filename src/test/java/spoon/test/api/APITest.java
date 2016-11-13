@@ -51,9 +51,9 @@ public class APITest {
 	public void testBasicAPIUsage() throws Exception {
 		// this test shows a basic usage of the Launcher API without command line
 		// and asserts there is no exception
-		SpoonAPI spoon = new Launcher();
+		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		spoon.addInputResource("src/test/resources/spoon/test/api");
-		spoon.setSourceOutputDirectory("target/spooned");
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		for (CtPackage p : factory.Package().getAll()) {
@@ -87,7 +87,7 @@ public class APITest {
 		};
 		spoon.run(new String[] {
 				"-i", "src/test/resources/spoon/test/api/",
-				"-o", "target/spooned/apitest"
+				"-o", "fancy/fake/apitest" // we shouldn't write anything anyway
 		});
 		Assert.assertEquals(2, l.size());
 	}
@@ -338,8 +338,8 @@ public class APITest {
 		}
 
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.setSourceOutputDirectory("./target/trash/");
 		// Implementations
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
