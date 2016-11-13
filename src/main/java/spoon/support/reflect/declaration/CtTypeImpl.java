@@ -363,6 +363,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 	}
 
+
 	@Override
 	public CtTypeReference<T> getReference() {
 		return getFactory().Type().createReference(this);
@@ -470,6 +471,36 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public boolean isGenerics() {
 		return false;
+	}
+
+	@Override
+	public boolean isVisibleIn(CtTypeReference<?> type) {
+		if (modifiers.contains(ModifierKind.PUBLIC)) {
+			return true;
+		}
+		if (modifiers.contains(ModifierKind.PROTECTED)) {
+			if (type.isSubtypeOf(this.getReference())) {
+				//is visible in subtypes
+				return true;
+			} //else it is visible in same package, like package protected
+		}
+		if (modifiers.contains(ModifierKind.PRIVATE)) {
+			//it is visible in scope of the same class only
+			return getTopLevelType(this.getReference()).getQualifiedName().equals(type.getQualifiedName());
+		}
+		//package protected
+		if (getTopLevelType(this.getReference()).getPackage().getSimpleName().equals(getTopLevelType(type).getPackage().getSimpleName())) {
+			//visible only in scope of the same package
+			return true;
+		}
+		return false;
+	}
+	//TODO we should move it into some better place
+	public static CtTypeReference<?> getTopLevelType(CtTypeReference<?> type) {
+		if (type.getDeclaringType() != null) {
+			type = type.getDeclaringType();
+		}
+		return type;
 	}
 
 	@Override

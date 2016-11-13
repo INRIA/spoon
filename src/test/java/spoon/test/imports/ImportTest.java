@@ -65,7 +65,7 @@ public class ImportTest {
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
 		assertEquals(expected, innerClass.getReference().toString());
 
-		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
+		expected = "spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 	}
 
@@ -86,7 +86,7 @@ public class ImportTest {
 		String expected = "visibility.YamlRepresenter.RepresentConfigurationSection";
 		assertEquals(expected, innerClass.getReference().toString());
 
-		expected = "org.yaml.snakeyaml.representer.Representer.RepresentMap";
+		expected = "org.yaml.snakeyaml.representer.SafeRepresenter.RepresentMap";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 	}
 
@@ -157,6 +157,7 @@ public class ImportTest {
 		assertEquals(2, imports.size());
 		final Collection<CtTypeReference<?>> imports1 = importScanner.computeImports(anotherClass);
 		assertEquals(1, imports1.size());
+		assertTrue(anotherClass.toString().indexOf("InnerClass extends InnerClassProtected")>0);
 		final Collection<CtTypeReference<?>> imports2 = importScanner.computeImports(classWithInvocation);
 		assertEquals("Spoon ignores the arguments of CtInvocations", 1, imports2.size());
 	}
