@@ -49,18 +49,50 @@ import static org.junit.Assert.assertTrue;
 public class ImportTest {
 
 	@Test
-	public void testImportOfAnInnerClassInASuperClassPackage() throws Exception {
+	public void testImportOfAnInnerClassInASuperClassPackageAutoImport() throws Exception {
 		Launcher spoon = new Launcher();
-		spoon.setArgs(new String[] {"--output-type", "nooutput" });
-		Factory factory = spoon.createFactory();
+		spoon.getEnvironment().setShouldCompile(true);
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java");
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java");
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClientClass.java");
+		spoon.setBinaryOutputDirectory("./target/spoon/super_imports/bin");
+		spoon.setSourceOutputDirectory("./target/spoon/super_imports/src");
+		spoon.run();
 
-		SpoonCompiler compiler = spoon.createCompiler(factory, SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java", "./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java",
-								"./src/test/java/spoon/test/imports/testclasses/ClientClass.java"));
+		final List<CtClass<?>> classes = Query.getElements(spoon.getFactory(), new NameFilter<CtClass<?>>("ClientClass"));
 
-		compiler.build();
+		final CtClass<?> innerClass = classes.get(0).getNestedType("InnerClass");
+		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
+		assertEquals(expected, innerClass.getReference().toString());
 
-		final List<CtClass<?>> classes = Query.getElements(factory, new NameFilter<CtClass<?>>("ClientClass"));
+
+		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
+		assertEquals(expected, innerClass.getSuperclass().toString());
+		assertEquals("InnerClassProtected", innerClass.getSuperclass().getSimpleName());
+
+		// here we specify a bug. This correct value should be SuperClass
+		// however; for this we would need to introduce a new property in CtTypeReference related to access path (which is a major change)
+		// the current behavior:
+		// - works in 99% of the cases
+		// - enables Spoon to pretty-print correct compilable code (checked by shouldCompileTrue above)
+		assertEquals("ChildClass", innerClass.getSuperclass().getDeclaringType().getSimpleName());
+		assertEquals(null, innerClass.getSuperclass().getDeclaration());
+	}
+
+	@Test
+	public void testImportOfAnInnerClassInASuperClassPackageFullQualified() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setShouldCompile(true);
+		spoon.getEnvironment().setAutoImports(false);
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java");
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java");
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClientClass.java");
+		spoon.setBinaryOutputDirectory("./target/spoon/super_imports/bin");
+		spoon.setSourceOutputDirectory("./target/spoon/super_imports/src");
+		spoon.run();
+
+		final List<CtClass<?>> classes = Query.getElements(spoon.getFactory(), new NameFilter<CtClass<?>>("ClientClass"));
 
 		final CtClass<?> innerClass = classes.get(0).getNestedType("InnerClass");
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
@@ -68,6 +100,14 @@ public class ImportTest {
 
 		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
 		assertEquals(expected, innerClass.getSuperclass().toString());
+
+		// here we specify a bug. This correct value should be SuperClass
+		// however; for this we would need to introduce a new property in CtTypeReference related to access path (which is a major change)
+		// the current behavior:
+		// - works in 99% of the cases
+		// - enables Spoon to pretty-print correct compilable code (checked by shouldCompileTrue above)
+		assertEquals("ChildClass", innerClass.getSuperclass().getDeclaringType().getSimpleName());
+		assertEquals(null, innerClass.getSuperclass().getDeclaration());
 	}
 
 	@Test
