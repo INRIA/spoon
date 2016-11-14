@@ -16,6 +16,9 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
+
 import java.util.List;
 
 /**
@@ -69,4 +72,12 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 
 	@Override
 	CtEnum<T> clone();
+
+	@Override
+	@UnsettableProperty
+	<T extends CtFormalTypeDeclarer> T setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
+
+	@Override
+	@UnsettableProperty
+	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
 }

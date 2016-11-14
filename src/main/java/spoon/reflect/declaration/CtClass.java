@@ -18,6 +18,8 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
+
 import java.util.List;
 import java.util.Set;
 
@@ -33,15 +35,11 @@ import java.util.Set;
  * @author Renaud Pawlak
  */
 public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
-
-	/**
-	 * Gets the fields defined by this class.
-	 */
-	List<CtField<?>> getFields();
-
 	/**
 	 * Returns the anonymous blocks of this class.
+	 * Derived from {@link #getTypeMembers()}
 	 */
+	@DerivedProperty
 	List<CtAnonymousExecutable> getAnonymousExecutables();
 
 	/**
@@ -52,7 +50,10 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Returns the constructors of this class. This includes the default
 	 * constructor if this class has no constructors explicitly declared.
+	 *
+	 * Derived from {@link #getTypeMembers()}
 	 */
+	@DerivedProperty
 	Set<CtConstructor<T>> getConstructors();
 
 	/**

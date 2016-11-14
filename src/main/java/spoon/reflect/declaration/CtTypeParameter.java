@@ -17,17 +17,37 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * This element defines a declaration of a type parameter (aka generics).
  * For example, in class A&lt;E&gt; { ... }, the "E" is modeled as an instance of CtTypeParameter.
  */
 public interface CtTypeParameter extends CtType<Object> {
-	// override the return type
+	/** override the return type */
 	@Override
+	@DerivedProperty
 	CtTypeParameterReference getReference();
 
 	// override the return type
 	@Override
 	CtTypeParameter clone();
+
+	@Override
+	@UnsettableProperty
+	<T extends CtFormalTypeDeclarer> T setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
+
+	@Override
+	@UnsettableProperty
+	<C extends CtType<Object>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
+
+	@Override
+	@UnsettableProperty
+	<C extends CtType<Object>> C setTypeMembers(List<CtTypeMember> members);
+
 }

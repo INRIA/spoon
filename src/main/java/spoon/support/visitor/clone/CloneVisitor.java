@@ -36,6 +36,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
 		spoon.reflect.declaration.CtAnnotation<A> aCtAnnotation = spoon.support.visitor.clone.CloneBuilder.build(this.builder, annotation, annotation.getFactory().Core().createAnnotation());
+		aCtAnnotation.setComments(spoon.support.visitor.equals.CloneHelper.clone(annotation.getComments()));
 		aCtAnnotation.setAnnotationType(spoon.support.visitor.equals.CloneHelper.clone(annotation.getAnnotationType()));
 		aCtAnnotation.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(annotation.getAnnotations()));
 		aCtAnnotation.setValues(spoon.support.visitor.equals.CloneHelper.clone(annotation.getValues()));
@@ -89,8 +90,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtArrayTypeReference(final spoon.reflect.reference.CtArrayTypeReference<T> reference) {
 		spoon.reflect.reference.CtArrayTypeReference<T> aCtArrayTypeReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createArrayTypeReference());
+		aCtArrayTypeReference.setComments(spoon.support.visitor.equals.CloneHelper.clone(reference.getComments()));
 		aCtArrayTypeReference.setDeclaringType(spoon.support.visitor.equals.CloneHelper.clone(reference.getDeclaringType()));
-		aCtArrayTypeReference.setPackage(spoon.support.visitor.equals.CloneHelper.clone(reference.getPackage()));
 		aCtArrayTypeReference.setComponentType(spoon.support.visitor.equals.CloneHelper.clone(reference.getComponentType()));
 		aCtArrayTypeReference.setActualTypeArguments(spoon.support.visitor.equals.CloneHelper.clone(reference.getActualTypeArguments()));
 		aCtArrayTypeReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(reference.getAnnotations()));
@@ -281,16 +282,18 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <T> void visitCtThisAccess(final spoon.reflect.code.CtThisAccess<T> thisAccess) {
 		spoon.reflect.code.CtThisAccess<T> aCtThisAccess = spoon.support.visitor.clone.CloneBuilder.build(this.builder, thisAccess, thisAccess.getFactory().Core().createThisAccess());
+		aCtThisAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(thisAccess.getComments()));
+		aCtThisAccess.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(thisAccess.getAnnotations()));
 		aCtThisAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(thisAccess.getType()));
 		aCtThisAccess.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(thisAccess.getTypeCasts()));
 		aCtThisAccess.setTarget(spoon.support.visitor.equals.CloneHelper.clone(thisAccess.getTarget()));
-		aCtThisAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(thisAccess.getComments()));
 		this.other = aCtThisAccess;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtAnnotationFieldAccess(final spoon.reflect.code.CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		spoon.reflect.code.CtAnnotationFieldAccess<T> aCtAnnotationFieldAccess = spoon.support.visitor.clone.CloneBuilder.build(this.builder, annotationFieldAccess, annotationFieldAccess.getFactory().Core().createAnnotationFieldAccess());
+		aCtAnnotationFieldAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getComments()));
 		aCtAnnotationFieldAccess.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getAnnotations()));
 		aCtAnnotationFieldAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getType()));
 		aCtAnnotationFieldAccess.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getTypeCasts()));
@@ -397,15 +400,17 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtCatchVariable(final spoon.reflect.code.CtCatchVariable<T> catchVariable) {
 		spoon.reflect.code.CtCatchVariable<T> aCtCatchVariable = spoon.support.visitor.clone.CloneBuilder.build(this.builder, catchVariable, catchVariable.getFactory().Core().createCatchVariable());
+		aCtCatchVariable.setComments(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getComments()));
 		aCtCatchVariable.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getAnnotations()));
 		aCtCatchVariable.setType(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getType()));
-		aCtCatchVariable.setComments(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getComments()));
+		aCtCatchVariable.setMultiTypes(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getMultiTypes()));
 		this.other = aCtCatchVariable;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtCatchVariableReference(final spoon.reflect.reference.CtCatchVariableReference<T> reference) {
 		spoon.reflect.reference.CtCatchVariableReference<T> aCtCatchVariableReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createCatchVariableReference());
+		aCtCatchVariableReference.setComments(spoon.support.visitor.equals.CloneHelper.clone(reference.getComments()));
 		aCtCatchVariableReference.setType(spoon.support.visitor.equals.CloneHelper.clone(reference.getType()));
 		aCtCatchVariableReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(reference.getAnnotations()));
 		this.other = aCtCatchVariableReference;
@@ -491,6 +496,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <T, E extends spoon.reflect.code.CtExpression<?>> void visitCtExecutableReferenceExpression(final spoon.reflect.code.CtExecutableReferenceExpression<T, E> expression) {
 		spoon.reflect.code.CtExecutableReferenceExpression<T, E> aCtExecutableReferenceExpression = spoon.support.visitor.clone.CloneBuilder.build(this.builder, expression, expression.getFactory().Core().createExecutableReferenceExpression());
+		aCtExecutableReferenceExpression.setComments(spoon.support.visitor.equals.CloneHelper.clone(expression.getComments()));
+		aCtExecutableReferenceExpression.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(expression.getAnnotations()));
 		aCtExecutableReferenceExpression.setType(spoon.support.visitor.equals.CloneHelper.clone(expression.getType()));
 		aCtExecutableReferenceExpression.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(expression.getTypeCasts()));
 		aCtExecutableReferenceExpression.setExecutable(spoon.support.visitor.equals.CloneHelper.clone(expression.getExecutable()));
@@ -523,6 +530,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void visitCtPackageReference(final spoon.reflect.reference.CtPackageReference reference) {
 		spoon.reflect.reference.CtPackageReference aCtPackageReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createPackageReference());
+		aCtPackageReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(reference.getAnnotations()));
 		this.other = aCtPackageReference;
 	}
 
@@ -638,6 +646,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
 		spoon.reflect.reference.CtIntersectionTypeReference<T> aCtIntersectionTypeReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createIntersectionTypeReference());
+		aCtIntersectionTypeReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(reference.getAnnotations()));
 		aCtIntersectionTypeReference.setBounds(spoon.support.visitor.equals.CloneHelper.clone(reference.getBounds()));
 		this.other = aCtIntersectionTypeReference;
 	}
@@ -710,12 +719,17 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtCodeSnippetExpression(final spoon.reflect.code.CtCodeSnippetExpression<T> expression) {
 		spoon.reflect.code.CtCodeSnippetExpression<T> aCtCodeSnippetExpression = spoon.support.visitor.clone.CloneBuilder.build(this.builder, expression, expression.getFactory().Core().createCodeSnippetExpression());
+		aCtCodeSnippetExpression.setComments(spoon.support.visitor.equals.CloneHelper.clone(expression.getComments()));
+		aCtCodeSnippetExpression.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(expression.getAnnotations()));
+		aCtCodeSnippetExpression.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(expression.getTypeCasts()));
 		this.other = aCtCodeSnippetExpression;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void visitCtCodeSnippetStatement(final spoon.reflect.code.CtCodeSnippetStatement statement) {
 		spoon.reflect.code.CtCodeSnippetStatement aCtCodeSnippetStatement = spoon.support.visitor.clone.CloneBuilder.build(this.builder, statement, statement.getFactory().Core().createCodeSnippetStatement());
+		aCtCodeSnippetStatement.setComments(spoon.support.visitor.equals.CloneHelper.clone(statement.getComments()));
+		aCtCodeSnippetStatement.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(statement.getAnnotations()));
 		this.other = aCtCodeSnippetStatement;
 	}
 
@@ -753,11 +767,12 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <T> void visitCtSuperAccess(final spoon.reflect.code.CtSuperAccess<T> f) {
 		spoon.reflect.code.CtSuperAccess<T> aCtSuperAccess = spoon.support.visitor.clone.CloneBuilder.build(this.builder, f, f.getFactory().Core().createSuperAccess());
+		aCtSuperAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(f.getComments()));
 		aCtSuperAccess.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(f.getAnnotations()));
 		aCtSuperAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(f.getType()));
 		aCtSuperAccess.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(f.getTypeCasts()));
 		aCtSuperAccess.setTarget(spoon.support.visitor.equals.CloneHelper.clone(f.getTarget()));
-		aCtSuperAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(f.getComments()));
+		aCtSuperAccess.setVariable(spoon.support.visitor.equals.CloneHelper.clone(f.getVariable()));
 		this.other = aCtSuperAccess;
 	}
 
@@ -765,6 +780,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public void visitCtComment(final spoon.reflect.code.CtComment comment) {
 		spoon.reflect.code.CtComment aCtComment = spoon.support.visitor.clone.CloneBuilder.build(this.builder, comment, comment.getFactory().Core().createComment());
+		aCtComment.setComments(spoon.support.visitor.equals.CloneHelper.clone(comment.getComments()));
+		aCtComment.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(comment.getAnnotations()));
 		this.other = aCtComment;
 	}
 }

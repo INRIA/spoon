@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
 import java.util.Collection;
 import java.util.Set;
@@ -128,12 +129,14 @@ public interface CtTypeInformation {
 	/**
 	 * Gets the fields declared by this type.
 	 */
+	@DerivedProperty
 	Collection<CtFieldReference<?>> getDeclaredFields();
 
 	/**
 	 * Gets the fields declared by this type and by all its supertypes if
 	 * applicable.
 	 */
+	@DerivedProperty
 	Collection<CtFieldReference<?>> getAllFields();
 
 	/**
@@ -153,6 +156,7 @@ public interface CtTypeInformation {
 	/**
 	 * Gets the executables declared by this type if applicable.
 	 */
+	@DerivedProperty
 	Collection<CtExecutableReference<?>> getDeclaredExecutables();
 
 	/**
@@ -168,6 +172,7 @@ public interface CtTypeInformation {
 	 * If a method is overridden twice in the hierarchy, it counts for two different elements.
 	 * If a method is declared in an interface in the hierarchy and implemented in the current type or in a super type, it counts for two (or n different elements).
 	 */
+	@DerivedProperty
 	Collection<CtExecutableReference<?>> getAllExecutables();
 
 }

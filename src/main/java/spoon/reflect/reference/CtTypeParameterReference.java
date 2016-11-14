@@ -17,6 +17,8 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
@@ -70,11 +72,16 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 */
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 
-	// override the return
+	// overriding the return type
 	@Override
+	@DerivedProperty
 	CtTypeParameter getDeclaration();
 
-	// override the return
+	// overriding the return type
 	@Override
 	CtTypeParameterReference clone();
+
+	@Override
+	@UnsettableProperty
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 }

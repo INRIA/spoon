@@ -26,12 +26,6 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 	 */
 	String getSimpleName();
 
-	/**
-	 * Returns the declaring type of this constructor (always the same as the
-	 * constructor's type).
-	 */
-	CtType<T> getDeclaringType();
-
 	@Override
 	CtConstructor<T> clone();
 }

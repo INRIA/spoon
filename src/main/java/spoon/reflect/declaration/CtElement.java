@@ -25,6 +25,7 @@ import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.Root;
+import spoon.support.DerivedProperty;
 import spoon.support.visitor.equals.IgnoredByEquals;
 
 import java.lang.annotation.Annotation;
@@ -161,6 +162,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	 * Calculates and returns the set of all the types referenced by this
 	 * element (and sub-elements in the AST).
 	 */
+	@DerivedProperty
 	Set<CtTypeReference<?>> getReferencedTypes();
 
 	/**
@@ -196,6 +198,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	 * @throws ParentNotInitializedException
 	 * 		when the parent of this element is not initialized
 	 */
+	@DerivedProperty
 	CtElement getParent() throws ParentNotInitializedException;
 
 	/**

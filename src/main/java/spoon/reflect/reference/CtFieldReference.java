@@ -17,6 +17,7 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtField;
+import spoon.support.DerivedProperty;
 
 import java.lang.reflect.Member;
 
@@ -33,6 +34,7 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	Member getActualField();
 
 	@Override
+	@DerivedProperty
 	CtField<T> getDeclaration();
 
 	/**
@@ -42,11 +44,13 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	 *
 	 * @return the field declaration that corresponds to the reference.
 	 */
+	@DerivedProperty
 	CtField<T> getFieldDeclaration();
 
 	/**
 	 * Gets the type in which the field is declared.
 	 */
+	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
 	/**

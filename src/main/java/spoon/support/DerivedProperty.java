@@ -14,35 +14,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.declaration;
+package spoon.support;
 
-import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.support.DerivedProperty;
+import spoon.reflect.declaration.CtType;
 
-/**
- * This element defines a field declaration.
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/** Tells that a metamodel property is derived, ie computed from the value of another property.
+ * For instance {@link CtType#getFields()}  is derived from {@link CtType#getTypeMembers()}
+ *
+ * This annotation is used for specifying CtScanner: derived properties are never scanned.
  */
-public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T>, CtShadowable {
-
-	/**
-	 * The separator for a string representation of a field.
-	 */
-	String FIELD_SEPARATOR = "#";
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
-	 */
-	@DerivedProperty
-	CtFieldReference<T> getReference();
-
-	/**
-	 * Replaces this element by another one.
-	 */
-	<R extends T> void replace(CtField<R> element);
-
-	@Override
-	CtField<T> clone();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface DerivedProperty {
 }

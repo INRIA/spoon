@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
 import java.util.List;
 
@@ -46,6 +47,7 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@DerivedProperty
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**

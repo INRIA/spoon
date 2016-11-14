@@ -116,6 +116,22 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
+	public <T extends CtMultiTypedElement> T setMultiTypes(List<CtTypeReference<?>> types) {
+		if (types == null || types.isEmpty()) {
+			this.types = CtElementImpl.emptyList();
+			return (T) this;
+		}
+		if (this.types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			this.types = new ArrayList<>();
+		}
+		this.types.clear();
+		for (CtTypeReference<?> t : types) {
+			addMultiType(t);
+		}
+		return (T) this;
+	}
+
+	@Override
 	public Set<ModifierKind> getModifiers() {
 		return modifiers;
 	}

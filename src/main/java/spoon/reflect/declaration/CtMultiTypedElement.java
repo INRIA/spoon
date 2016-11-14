@@ -38,4 +38,9 @@ public interface CtMultiTypedElement extends CtElement {
 	 * Gets all types of the element.
 	 */
 	List<CtTypeReference<?>> getMultiTypes();
+
+	/**
+	 * Adds a type for the element.
+	 */
+	<T extends CtMultiTypedElement> T setMultiTypes(List<CtTypeReference<?>> types);
 }

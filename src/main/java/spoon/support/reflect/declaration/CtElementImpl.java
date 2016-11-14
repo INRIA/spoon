@@ -36,7 +36,6 @@ import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.reflect.cu.SourcePositionImpl;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
-import spoon.support.visitor.DeepRepresentationVisitor;
 import spoon.support.visitor.HashcodeVisitor;
 import spoon.support.visitor.TypeReferenceScanner;
 import spoon.support.visitor.equals.CloneHelper;
@@ -97,11 +96,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public String getShortRepresentation() {
-		final DeepRepresentationVisitor printer = new DeepRepresentationVisitor();
-		printer.scan(this);
-		return printer.getRepresentation();
+		return super.toString();
 	}
-
 
 	@Override
 	public boolean equals(Object o) {

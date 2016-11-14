@@ -16,6 +16,8 @@
  */
 package spoon.reflect.reference;
 
+import spoon.support.UnsettableProperty;
+
 import java.util.List;
 
 /**
@@ -47,4 +49,8 @@ public interface CtIntersectionTypeReference<T> extends CtTypeReference<T> {
 
 	@Override
 	CtIntersectionTypeReference<T> clone();
+
+	@Override
+	@UnsettableProperty
+	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 }

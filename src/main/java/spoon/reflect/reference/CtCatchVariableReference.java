@@ -17,12 +17,15 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.code.CtCatchVariable;
+import spoon.support.DerivedProperty;
 
 /**
  * This interface defines a reference to {@link spoon.reflect.code.CtCatchVariable}.
  */
 public interface CtCatchVariableReference<T> extends CtVariableReference<T> {
+	// overriding the return type
 	@Override
+	@DerivedProperty
 	CtCatchVariable<T> getDeclaration();
 
 	@Override

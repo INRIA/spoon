@@ -16,6 +16,12 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
+
+import java.util.List;
+import java.util.Set;
+
 /**
  * This element defines an anonymous executable block declaration in a class.
  *
@@ -24,4 +30,12 @@ package spoon.reflect.declaration;
 public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember {
 	@Override
 	CtAnonymousExecutable clone();
+
+	@Override
+	@UnsettableProperty
+	<T extends CtExecutable<Void>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+
+	@Override
+	@UnsettableProperty
+	<T extends CtExecutable<Void>> T setParameters(List<CtParameter<?>> parameters);
 }

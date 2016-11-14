@@ -17,6 +17,7 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtField;
+import spoon.support.DerivedProperty;
 
 /**
  * Represents the right hand side of an assignment
@@ -27,6 +28,7 @@ public interface CtRHSReceiver<A> {
 	/**
 	 * Returns the right-hand side of the "=" operator.
 	 */
+	@DerivedProperty
 	CtExpression<A> getAssignment();
 
 	/**

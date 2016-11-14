@@ -17,6 +17,7 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtReference;
+import spoon.support.DerivedProperty;
 
 /**
  * This element defines a simple (relative) name.
@@ -35,6 +36,7 @@ public interface CtNamedElement extends CtElement {
 	/**
 	 * Returns the corresponding reference.
 	 */
+	@DerivedProperty
 	CtReference getReference();
 
 	@Override

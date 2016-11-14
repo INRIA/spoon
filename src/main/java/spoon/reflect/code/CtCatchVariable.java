@@ -19,6 +19,8 @@ package spoon.reflect.code;
 import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 /**
  * This code element defines an exception variable in a catch.
@@ -33,8 +35,13 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@DerivedProperty
 	CtCatchVariableReference<T> getReference();
 
 	@Override
 	CtCatchVariable<T> clone();
+
+	@Override
+	@UnsettableProperty
+	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 }

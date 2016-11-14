@@ -149,6 +149,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <A extends Annotation> void visitCtAnnotation(
 			final CtAnnotation<A> annotation) {
 		enter(annotation);
+		scan(annotation.getComments());
 		scan(annotation.getAnnotationType());
 		scan(annotation.getAnnotations());
 		scan(annotation.getValues());
@@ -218,8 +219,8 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtArrayTypeReference(final CtArrayTypeReference<T> reference) {
 		enter(reference);
+		scan(reference.getComments());
 		scan(reference.getDeclaringType());
-		scan(reference.getPackage());
 		scan(reference.getComponentType());
 		scan(reference.getActualTypeArguments());
 		scan(reference.getAnnotations());
@@ -394,16 +395,18 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public <T> void visitCtThisAccess(final CtThisAccess<T> thisAccess) {
 		enter(thisAccess);
+		scan(thisAccess.getComments());
+		scan(thisAccess.getAnnotations());
 		scan(thisAccess.getType());
 		scan(thisAccess.getTypeCasts());
 		scan(thisAccess.getTarget());
-		scan(thisAccess.getComments());
 		exit(thisAccess);
 	}
 
 	public <T> void visitCtAnnotationFieldAccess(
 			final CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		enter(annotationFieldAccess);
+		scan(annotationFieldAccess.getComments());
 		scan(annotationFieldAccess.getAnnotations());
 		scan(annotationFieldAccess.getType());
 		scan(annotationFieldAccess.getTypeCasts());
@@ -502,14 +505,16 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtCatchVariable(final CtCatchVariable<T> catchVariable) {
 		enter(catchVariable);
+		scan(catchVariable.getComments());
 		scan(catchVariable.getAnnotations());
 		scan(catchVariable.getType());
-		scan(catchVariable.getComments());
+		scan(catchVariable.getMultiTypes());
 		exit(catchVariable);
 	}
 
 	public <T> void visitCtCatchVariableReference(final CtCatchVariableReference<T> reference) {
 		enter(reference);
+		scan(reference.getComments());
 		scan(reference.getType());
 		scan(reference.getAnnotations());
 		exit(reference);
@@ -589,6 +594,8 @@ public abstract class CtScanner implements CtVisitor {
 	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
 			final CtExecutableReferenceExpression<T, E> expression) {
 		enter(expression);
+		scan(expression.getComments());
+		scan(expression.getAnnotations());
 		scan(expression.getType());
 		scan(expression.getTypeCasts());
 		scan(expression.getExecutable());
@@ -619,6 +626,7 @@ public abstract class CtScanner implements CtVisitor {
 
 	public void visitCtPackageReference(final CtPackageReference reference) {
 		enter(reference);
+		scan(reference.getAnnotations());
 		exit(reference);
 	}
 
@@ -722,6 +730,7 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public <T> void visitCtIntersectionTypeReference(final CtIntersectionTypeReference<T> reference) {
 		enter(reference);
+		scan(reference.getAnnotations());
 		scan(reference.getBounds());
 		exit(reference);
 	}
@@ -787,11 +796,16 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtCodeSnippetExpression(final CtCodeSnippetExpression<T> expression) {
 		enter(expression);
+		scan(expression.getComments());
+		scan(expression.getAnnotations());
+		scan(expression.getTypeCasts());
 		exit(expression);
 	}
 
 	public void visitCtCodeSnippetStatement(final CtCodeSnippetStatement statement) {
 		enter(statement);
+		scan(statement.getComments());
+		scan(statement.getAnnotations());
 		exit(statement);
 	}
 
@@ -825,17 +839,20 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public <T> void visitCtSuperAccess(final CtSuperAccess<T> f) {
 		enter(f);
+		scan(f.getComments());
 		scan(f.getAnnotations());
 		scan(f.getType());
 		scan(f.getTypeCasts());
 		scan(f.getTarget());
-		scan(f.getComments());
+		scan(f.getVariable());
 		exit(f);
 	}
 
 	@Override
 	public void visitCtComment(final CtComment comment) {
 		enter(comment);
+		scan(comment.getComments());
+		scan(comment.getAnnotations());
 		exit(comment);
 	}
 }
