@@ -508,6 +508,25 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
+	 * Accepts instance of CtStatement or CtBlock.
+	 * If element is CtStatement, then it creates wrapping CtBlock, which contains the element
+	 * If element is CtBlock, then it directly returns that element
+	 * If element is null, then it returns null.
+	 * note: It must not create empty CtBlock - as expected in CtCatch, CtExecutable, CtLoop and CtTry setBody implementations
+	 * @param element
+	 * @return CtBlock instance
+	 */
+	public <T extends CtStatement> CtBlock<?> getOrCreateCtBlock(T element) {
+		if (element == null) {
+			return null;
+		}
+		if (element instanceof CtBlock<?>) {
+			return (CtBlock<?>) element;
+		}
+		return this.createCtBlock(element);
+	}
+
+	/**
 	 * Creates a throw.
 	 *
 	 * @param thrownExp

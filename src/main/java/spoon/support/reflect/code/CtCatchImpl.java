@@ -17,8 +17,10 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
@@ -44,7 +46,8 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 	}
 
 	@Override
-	public <T extends CtCatch> T setBody(CtBlock<?> body) {
+	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
+		CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
 		if (body != null) {
 			body.setParent(this);
 		}

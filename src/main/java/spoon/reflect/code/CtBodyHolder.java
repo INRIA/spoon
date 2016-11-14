@@ -27,4 +27,9 @@ public interface CtBodyHolder extends CtElement {
 	 * Gets the body of this element
 	 */
 	CtStatement getBody();
+
+	/**
+	 * Sets the body of this element.
+	 */
+	<T extends CtBodyHolder> T setBody(CtStatement body);
 }

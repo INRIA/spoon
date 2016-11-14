@@ -36,12 +36,14 @@ public interface CtCatch extends CtCodeElement, CtBodyHolder {
 	/**
 	 * Gets the catch's body.
 	 */
+	@Override
 	CtBlock<?> getBody();
 
 	/**
-	 * Sets the catch's body.
+	 * Sets the catch's body. The instance of CtBlock makes sense too
 	 */
-	<T extends CtCatch> T setBody(CtBlock<?> body);
+	@Override
+	<T extends CtBodyHolder> T setBody(CtStatement body);
 
 	@Override
 	CtCatch clone();

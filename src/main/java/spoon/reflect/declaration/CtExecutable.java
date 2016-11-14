@@ -18,6 +18,7 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
@@ -47,12 +48,14 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	/**
 	 * Gets the body expression.
 	 */
+	@Override
 	CtBlock<R> getBody();
 
 	/**
-	 * Sets the body expression.
+	 * Sets the body expression. The instance of CtBlock makes sense too
 	 */
-	<B extends R, T extends CtExecutable<R>> T setBody(CtBlock<B> body);
+	@Override
+	<T extends CtBodyHolder> T setBody(CtStatement body);
 
 	/**
 	 * Gets the parameters list.

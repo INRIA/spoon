@@ -16,8 +16,9 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
 
@@ -43,7 +44,7 @@ public interface CtAnnotationMethod<T> extends CtMethod<T> {
 
 	@Override
 	@UnsettableProperty
-	<B extends T, T1 extends CtExecutable<T>> T1 setBody(CtBlock<B> body);
+	<T1 extends CtBodyHolder> T1 setBody(CtStatement body);
 
 	@Override
 	@UnsettableProperty

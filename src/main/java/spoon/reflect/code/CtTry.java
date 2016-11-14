@@ -55,12 +55,14 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	/**
 	 * Sets the tried body.
 	 */
+	@Override
 	CtBlock<?> getBody();
 
 	/**
-	 * Sets the tried body.
+	 * Sets the tried body. The instance of CtBlock makes sense too
 	 */
-	<T extends CtTry> T setBody(CtBlock<?> body);
+	@Override
+	<T extends CtBodyHolder> T setBody(CtStatement body);
 
 	/**
 	 * Gets the <i>finalizer</i> block of this <code>try</code> (
