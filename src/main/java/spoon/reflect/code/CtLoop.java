@@ -29,12 +29,6 @@ public interface CtLoop extends CtStatement, TemplateParameter<Void>, CtBodyHold
 	@Override
 	CtStatement getBody();
 
-	/**
-	 * Sets the body of this loop. The instance of CtBlock makes sense too
-	 */
-	@Override
-	<T extends CtBodyHolder> T setBody(CtStatement body);
-
 	@Override
 	CtLoop clone();
 }

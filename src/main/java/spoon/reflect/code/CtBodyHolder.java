@@ -30,6 +30,7 @@ public interface CtBodyHolder extends CtElement {
 
 	/**
 	 * Sets the body of this element.
+	 * If body is not a block, it is wrapped in a CtBlock which is semantically equivalent and eases transformation afterwards if required.
 	 */
 	<T extends CtBodyHolder> T setBody(CtStatement body);
 }

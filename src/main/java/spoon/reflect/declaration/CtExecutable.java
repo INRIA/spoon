@@ -52,12 +52,6 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	CtBlock<R> getBody();
 
 	/**
-	 * Sets the body expression. The instance of CtBlock makes sense too
-	 */
-	@Override
-	<T extends CtBodyHolder> T setBody(CtStatement body);
-
-	/**
 	 * Gets the parameters list.
 	 */
 	List<CtParameter<?>> getParameters();

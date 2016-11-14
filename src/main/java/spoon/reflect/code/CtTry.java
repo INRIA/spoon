@@ -53,16 +53,10 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	boolean removeCatcher(CtCatch catcher);
 
 	/**
-	 * Sets the tried body.
+	 * Gets the tried body.
 	 */
 	@Override
 	CtBlock<?> getBody();
-
-	/**
-	 * Sets the tried body. The instance of CtBlock makes sense too
-	 */
-	@Override
-	<T extends CtBodyHolder> T setBody(CtStatement body);
 
 	/**
 	 * Gets the <i>finalizer</i> block of this <code>try</code> (
