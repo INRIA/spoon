@@ -9,6 +9,7 @@ import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.EqualsVisitorGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 import spoon.support.visitor.equals.EqualsVisitor;
@@ -144,8 +145,14 @@ public class CtGenerationTest {
 
 		// cp ./target/generated/spoon/support/visitor/clone/CloneBuilder.java  ./src/main/java/spoon/support/visitor/clone/CloneBuilder.java
 		// cp ./target/generated/spoon/support/visitor/clone/CloneVisitor.java  ./src/main/java/spoon/support/visitor/clone/CloneVisitor.java
-		assertThat(build(new File("./src/main/java/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone"))
-				.isEqualTo(build(new File("./target/generated/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone"));
+		CtElement expected = build(new File("./target/generated/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone");
+		CtElement actual = build(new File("./src/main/java/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone");
+		try {
+			assertThat(actual)
+					.isEqualTo(expected);
+		} catch (AssertionError e) {
+			throw new ComparisonFailure("Generated clone classes different", expected.toString(), actual.toString());
+		}
 	}
 
 	private class RegexFilter implements Filter<CtType<?>> {

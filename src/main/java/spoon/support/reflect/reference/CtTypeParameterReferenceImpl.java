@@ -28,6 +28,9 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
+
+import static javafx.scene.input.KeyCode.T;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
@@ -107,18 +110,20 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
-		throw new UnsupportedOperationException("Type parameter can't have an actual type argument");
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		throw new UnsupportedOperationException("Type parameter can't have an actual type argument");
+		return (C) this;
 	}
 
 	@Override
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		throw new UnsupportedOperationException("Type parameter can't have an actual type argument");
+		return false;
 	}
 
 	@Override

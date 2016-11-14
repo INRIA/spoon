@@ -31,6 +31,7 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
@@ -216,8 +217,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtStatement> C setLabel(String label) {
-		throw new UnsupportedOperationException("cannot set a label on a class declaration");
+		return (C) this;
 	}
 
 	@SuppressWarnings("unchecked")

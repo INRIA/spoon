@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -52,8 +53,15 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	}
 
 	@Override
+	@UnsettableProperty
+	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
+		return (C) this;
+	}
+
+	@Override
+	@UnsettableProperty
 	public <C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
-		throw new UnsupportedOperationException("You can't have super interfaces in an annotation.");
+		return (C) this;
 	}
 
 	@Override

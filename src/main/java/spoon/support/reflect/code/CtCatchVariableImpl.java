@@ -27,6 +27,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -73,8 +74,10 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> defaultExpression) {
-		throw new UnsupportedOperationException();
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override

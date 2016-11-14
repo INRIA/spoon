@@ -28,6 +28,8 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -77,28 +79,38 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@UnsettableProperty
 	public <F, C extends CtType<Object>> C addFieldAtTop(CtField<F> field) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <F, C extends CtType<Object>> C addField(CtField<F> field) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <F, C extends CtType<Object>> C addField(int index, CtField<F> field) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtType<Object>> C setFields(List<CtField<?>> fields) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@DerivedProperty
 	public <F> boolean removeField(CtField<F> field) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return false;
 	}
 
 	@Override
@@ -112,18 +124,24 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@UnsettableProperty
 	public <N, C extends CtType<Object>> C addNestedType(CtType<N> nestedType) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <N> boolean removeNestedType(CtType<N> nestedType) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return false;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtType<Object>> C setNestedTypes(Set<CtType<?>> nestedTypes) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
@@ -157,23 +175,31 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public boolean removeModifier(ModifierKind modifier) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return true;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
@@ -217,23 +243,31 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@UnsettableProperty
 	public <M, C extends CtType<Object>> C addMethod(CtMethod<M> method) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <M> boolean removeMethod(CtMethod<M> method) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return false;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <S, C extends CtType<Object>> C addSuperInterface(CtTypeReference<S> interfac) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <S> boolean removeSuperInterface(CtTypeReference<S> interfac) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return false;
 	}
 
 	@Override
@@ -267,13 +301,17 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtType<Object>> C setMethods(Set<CtMethod<?>> methods) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtType<Object>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
-		throw new UnsupportedOperationException("Can't be used for a type parameter");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override

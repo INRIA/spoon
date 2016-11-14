@@ -16,6 +16,9 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
+
 /**
  * This element defines a constructor declaration.
  */
@@ -28,4 +31,8 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 
 	@Override
 	CtConstructor<T> clone();
+
+	@Override
+	@UnsettableProperty
+	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
 }

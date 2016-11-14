@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
+import spoon.support.visitor.SignaturePrinter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,7 +161,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public String getSignature() {
-		throw new UnsupportedOperationException();
+		final SignaturePrinter pr = new SignaturePrinter();
+		pr.scan(this);
+		return pr.getSignature();
 	}
 
 	@Override

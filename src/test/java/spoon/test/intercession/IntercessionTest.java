@@ -27,6 +27,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.support.UnsettableProperty;
 
 import java.io.File;
 import java.util.Collection;
@@ -269,6 +270,10 @@ public class IntercessionTest {
 
 			@Override
 			protected void process(CtMethod<?> element) {
+				if (element.getAnnotation(UnsettableProperty.class) != null) {
+					// we don't check the contracts for unsettable setters
+					return;
+				}
 				final CtStatement statement = element.getBody().getStatement(0);
 				if (!(statement instanceof CtIf)) {
 					fail(log(element, "First statement should be an if to check the parameter of the setter"));

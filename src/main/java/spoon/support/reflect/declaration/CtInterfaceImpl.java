@@ -17,9 +17,11 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,5 +68,12 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 	@Override
 	public CtInterface<T> clone() {
 		return (CtInterface<T>) super.clone();
+	}
+
+	@Override
+	@UnsettableProperty
+	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
+		// unsettable property
+		return (C) this;
 	}
 }

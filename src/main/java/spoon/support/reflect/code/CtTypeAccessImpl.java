@@ -20,6 +20,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 
 public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTypeAccess<A> {
 	private CtTypeReference<Void> voidType;
@@ -54,6 +55,7 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
 		// type is used in setAccessedType now.
 		return (C) this;

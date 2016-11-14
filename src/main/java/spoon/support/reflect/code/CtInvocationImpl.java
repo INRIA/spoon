@@ -75,6 +75,10 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	public CtExecutableReference<T> getExecutable() {
+		if (executable == null) {
+			// default reference
+			executable = getFactory().Core().createExecutableReference();
+		}
 		return executable;
 	}
 
@@ -150,6 +154,9 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
 		if (getExecutable() != null) {
 			getExecutable().setType(type);
 		}
