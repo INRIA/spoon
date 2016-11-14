@@ -472,27 +472,23 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getAllFields() {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				return RtHelper.getAllFields(getActualClass(), getFactory());
-			} catch (SpoonClassNotFoundException cnfe) {
-				//START OF Hack of Hack in JDTTreeBuilderHelper.createType(...)
-				CtTypeReference<?> declaringTypeRef = this.getDeclaringType();
-				if (declaringTypeRef != null) {
-					CtType<?> declaringType = declaringTypeRef.getDeclaration();
-					if (declaringType != null && declaringType.getNestedType(getSimpleName()) == null) {
-						//this type does not know it's real fully qualified name, so we cannot access it's java class.
-						//See the spoon.test.imports.ImportTest, whose class spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected is this case
-						Launcher.LOGGER.warn("cannot load class with access path: " + getQualifiedName());
-						return Collections.emptyList();
-					}
-				}
-				//END OF Hack
-				return handleParentNotFound(cnfe);
-			}
-		} else {
+		try {
+			CtType<?> t = getTypeDeclaration();
 			return t.getAllFields();
+		} catch (SpoonClassNotFoundException cnfe) {
+			//START OF Hack of Hack in JDTTreeBuilderHelper.createType(...)
+			CtTypeReference<?> declaringTypeRef = this.getDeclaringType();
+			if (declaringTypeRef != null) {
+				CtType<?> declaringType = declaringTypeRef.getDeclaration();
+				if (declaringType != null && declaringType.getNestedType(getSimpleName()) == null) {
+					//this type does not know it's real fully qualified name, so we cannot access it's java class.
+					//See the spoon.test.imports.ImportTest, whose class spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected is this case
+					Launcher.LOGGER.warn("cannot load class with access path: " + getQualifiedName());
+					return Collections.emptyList();
+				}
+			}
+			//END OF Hack
+			return handleParentNotFound(cnfe);
 		}
 	}
 
