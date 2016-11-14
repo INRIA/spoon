@@ -225,7 +225,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	/**
 	 * Tells if the given element is a direct or indirect parent.
 	 */
-	boolean hasParent(CtElement candidate) throws ParentNotInitializedException;
+	boolean hasParent(CtElement candidate);
 
 	/**
 	 * Calculates and sets all the parents below this element. This function can
