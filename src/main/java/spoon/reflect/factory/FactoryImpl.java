@@ -33,6 +33,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +118,9 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CoreFactory Core() {
 		if (core == null) {
+			//During deserialization, the transient field core, is null
 			core = new DefaultCoreFactory();
+			core.setMainFactory(this);
 		}
 		return core;
 	}
@@ -310,6 +313,19 @@ public class FactoryImpl implements Factory, Serializable {
 			}
 			return symbol;
 		}
+	}
+
+	/**
+	 * Needed to restore state of transient fields during reading from stream
+	 */
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		threadLocalDedup = new ThreadLocal<Dedup>() {
+			@Override
+			protected Dedup initialValue() {
+				return new Dedup();
+			}
+		};
+		in.defaultReadObject();
 	}
 
 	private final CtModel model = new CtModelImpl(this);

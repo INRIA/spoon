@@ -16,11 +16,6 @@
  */
 package spoon.reflect;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -34,7 +29,14 @@ import spoon.support.QueueProcessingManager;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 public class CtModelImpl implements CtModel {
+
+	private static final long serialVersionUID = 1L;
 
 	private static class CtRootPackage extends CtPackageImpl {
 		{

@@ -16,19 +16,20 @@
  */
 package spoon.reflect;
 
-import java.util.Collection;
-import java.util.List;
-
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+
 /** represents a Java program, modeled by a set of compile-time (Ct) objects
  * where each objects is a program element (for instance, a CtClass represents a class).
  */
-public interface CtModel {
+public interface CtModel extends Serializable {
 
 	/** returns the root package */
 	CtPackage getRootPackage();
