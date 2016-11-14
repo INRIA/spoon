@@ -18,7 +18,6 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
