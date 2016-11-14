@@ -166,6 +166,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtType<T> getTypeDeclaration() {
+		CtType<T> t = getFactory().Type().get(getQualifiedName());
+		if (t != null) {
+			return t;
+		}
 		return getFactory().Type().get(getActualClass());
 	}
 

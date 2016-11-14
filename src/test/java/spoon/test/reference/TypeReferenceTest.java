@@ -568,4 +568,15 @@ public class TypeReferenceTest {
 
 		assertTrue(anonymousClass.getReference().isSubtypeOf(paniniCtType.getFactory().Type().createReference("spoon.test.reference.testclasses.Panini$Itr")));
 	}
+
+	@Test
+	public void testGetTypeDeclaration() throws Exception {
+		Launcher l = new Launcher();
+		l.addInputResource("src/test/resources/compilation/compilation-tests/");
+		l.buildModel();
+		CtType<?> bar = l.getFactory().Type().get("compilation.Bar");
+		CtType iBar = bar.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getTypeDeclaration();
+		assertNotNull(iBar);
+		assertEquals("compilation.IBar", iBar.getQualifiedName());
+	}
 }
