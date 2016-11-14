@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -39,4 +40,10 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 	public CtWildcardReference clone() {
 		return (CtWildcardReference) super.clone();
 	}
+
+	@Override
+	public CtType<Object> getTypeDeclaration() {
+		return getFactory().Type().get(Object.class);
+	}
+
 }
