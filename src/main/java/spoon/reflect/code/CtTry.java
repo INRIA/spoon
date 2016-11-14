@@ -53,7 +53,7 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	boolean removeCatcher(CtCatch catcher);
 
 	/**
-	 * Gets the tried body.
+	 * Gets the try body.
 	 */
 	@Override
 	CtBlock<?> getBody();
