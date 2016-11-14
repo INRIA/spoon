@@ -51,6 +51,7 @@ public class ParentTest {
 	@Before
 	public void setup() throws Exception {
 		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		factory = spoon.createFactory();
 		spoon.createCompiler(
 				factory,
@@ -116,9 +117,9 @@ public class ParentTest {
 	public void testParentOfCtPackageReference() throws Exception {
 		// contract: a parent at a top level must be the root package and in the code, the element which call getParent().
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/reference-package");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtType<Object> panini = launcher.getFactory().Type().get("Panini");
@@ -284,8 +285,8 @@ public class ParentTest {
 	@Test
 	public void testHasParent() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/reference-package/Panini.java");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
 

@@ -3,6 +3,7 @@ package spoon.test.annotation;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.processing.AbstractAnnotationProcessor;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtBlock;
@@ -73,14 +74,14 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class AnnotationTest {
+	private Launcher launcher;
 	private Factory factory;
-
 	@Before
 	public void setUp() throws Exception {
-		final Launcher launcher = new Launcher();
+		launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/annotation/testclasses/",
-				"-o", "./target/spooned/"
+				"--output-type", "nooutput"
 		});
 		factory = launcher.getFactory();
 	}
@@ -633,6 +634,9 @@ public class AnnotationTest {
 
 	@Test
 	public void testOutputGeneratedByTypeAnnotation() throws Exception {
+		// we only write to disk here
+		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
+		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 		canBeBuilt(new File("./target/spooned/spoon/test/annotation/testclasses/"), 8);
 	}
 

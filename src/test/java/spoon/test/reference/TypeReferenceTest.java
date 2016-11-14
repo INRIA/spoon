@@ -63,6 +63,7 @@ public class TypeReferenceTest {
 		 */
 
 		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
 		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/java/spoon/test/reference/Foo.java")).build();
 
@@ -454,8 +455,8 @@ public class TypeReferenceTest {
 	@Test
 	public void testConstructorCallInNoClasspath() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/noclasspath/Demo5.java");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
 

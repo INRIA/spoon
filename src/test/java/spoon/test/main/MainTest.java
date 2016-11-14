@@ -246,9 +246,9 @@ public class MainTest {
 	@Test
 	public void test() throws Exception {
 		final Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		spoon.addInputResource("./src/test/java/spoon/test/main/testclasses");
 		spoon.addInputResource("./src/main/java/spoon/template/Parameter.java");
-		spoon.setSourceOutputDirectory("./target/trash");
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.run();
 

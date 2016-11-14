@@ -292,8 +292,8 @@ public class SignatureTest {
 	@Test
 	public void testArgumentNotNullForExecutableReference() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/variable/PropPanelUseCase_1.40.java");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
 

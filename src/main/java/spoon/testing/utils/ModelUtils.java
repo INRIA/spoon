@@ -106,7 +106,7 @@ public final class ModelUtils {
 
 	public static void canBeBuilt(File outputDirectoryFile, int complianceLevel, boolean noClasspath) {
 		final Launcher launcher = new Launcher();
-		final Factory factory = launcher.createFactory();
+		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setComplianceLevel(complianceLevel);
 		factory.getEnvironment().setNoClasspath(noClasspath);
 		final SpoonCompiler compiler = launcher.createCompiler(factory);
@@ -124,13 +124,4 @@ public final class ModelUtils {
 		canBeBuilt(new File(outputDirectory), complianceLevel, noClasspath);
 	}
 
-	public static File getSpoonedDirectory(Class testClass) {
-		String file = testClass.getName().replaceAll("\\.", "/");
-		return new File("./target/spooned/" + file);
-	}
-
-	public static File getBuildDirectory(Class testClass) {
-		String file = testClass.getName().replaceAll("\\.", "/");
-		return new File("./target/spooned-build/" + file);
-	}
 }

@@ -40,8 +40,8 @@ public class ArraysTest {
 	@Test
 	public void testInitializeWithNewArray() throws Exception {
 		Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/noclasspath/Foo.java");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
 

@@ -26,9 +26,9 @@ public class CtScannerTest {
 	public void testScannerContract() throws Exception {
 		// contract: CtScanner must call enter and exit methods in each visit methods.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addProcessor(new CheckScannerProcessor());
-		launcher.setSourceOutputDirectory("./target/trash");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");

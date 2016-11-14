@@ -273,9 +273,9 @@ public class ReplaceTest {
 	public void testReplaceAPackageReferenceByAnotherOne() throws Exception {
 		// contract: replace a package reference of a reference to another package.
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/reference-package");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtType<Object> panini = launcher.getFactory().Type().get("Panini");

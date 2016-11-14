@@ -1,22 +1,7 @@
 package spoon.test.lambda;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
-import static spoon.testing.utils.ModelUtils.getBuildDirectory;
-import static spoon.testing.utils.ModelUtils.getSpoonedDirectory;
-
-import java.io.File;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
@@ -42,7 +27,20 @@ import spoon.test.lambda.testclasses.Panini;
 import spoon.test.lambda.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.File;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+
 public class LambdaTest {
+	private Launcher launcher;
 	private Factory factory;
 	private CtType<Foo> foo;
 	private CtType<Bar> bar;
@@ -52,16 +50,14 @@ public class LambdaTest {
 
 	@Before
 	public void setUp() throws Exception {
-		final Launcher launcher = new Launcher();
-		this.factory = launcher.createFactory();
+		launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		this.factory = launcher.getFactory();
 		factory.getEnvironment().setComplianceLevel(8);
 		compiler = launcher.createCompiler(this.factory);
 
-		compiler.setSourceOutputDirectory(getSpoonedDirectory(getClass()));
-		compiler.setBinaryOutputDirectory(getBuildDirectory(getClass()));
 		compiler.addInputSource(new File("./src/test/java/spoon/test/lambda/testclasses/"));
 		compiler.build();
-		compiler.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 
 		foo = factory.Type().get(Foo.class);
 		bar = factory.Type().get(Bar.class);
@@ -269,7 +265,9 @@ public class LambdaTest {
 
 	@Test
 	public void testCompileLambdaGeneratedBySpoon() throws Exception {
-		canBeBuilt(getSpoonedDirectory(getClass()), 8);
+		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
+		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
+		canBeBuilt(new File("./target/spooned/spoon/test/lambda/testclasses/"), 8);
 	}
 
 	@Test

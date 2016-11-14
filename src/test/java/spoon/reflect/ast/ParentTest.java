@@ -28,8 +28,8 @@ public class ParentTest {
 		// contract: Check that all setters protect their parameter.
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.setSourceOutputDirectory("./target/trash");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");

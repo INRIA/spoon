@@ -292,10 +292,10 @@ public class FieldAccessTest {
 	@Test
 	public void testFieldAccessDeclaredInADefaultClass() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Tacos.java");
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/internal/Foo.java");
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/internal/Bar.java");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
@@ -344,9 +344,9 @@ public class FieldAccessTest {
 	@Test
 	public void testFieldAccessWithoutAnyImport() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Kuu.java");
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Mole.java");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtType<Kuu> aType = launcher.getFactory().Type().get(Kuu.class);
@@ -385,8 +385,8 @@ public class FieldAccessTest {
 	public void testGetReference() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setShouldCompile(true);
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/");
-		launcher.setSourceOutputDirectory("./target/trash");
 		launcher.run();
 
 		final CtClass<B> aClass = launcher.getFactory().Class().get(B.class);

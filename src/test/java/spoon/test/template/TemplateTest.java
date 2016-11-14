@@ -14,6 +14,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
@@ -227,9 +228,9 @@ public class TemplateTest {
 	@Test
 	public void testExtensionBlock() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/template/Logger.java");
-		launcher.addInputResource("./src/test/java/spoon/test/template/LoggerTemplate.java");
-		launcher.setSourceOutputDirectory("./target/trash");
+		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/LoggerTemplate.java"));
 		launcher.addProcessor(new LoggerTemplateProcessor());
 		launcher.getEnvironment().setSourceClasspath(System.getProperty("java.class.path").split(File.pathSeparator));
 		try {
