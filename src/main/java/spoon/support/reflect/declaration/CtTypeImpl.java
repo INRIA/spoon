@@ -186,6 +186,36 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public CtFieldReference<?> getDeclaredField(String name) {
+		CtField<?> field = getField(name);
+		return field != null ? getFactory().Field().createReference(field) : null;
+	}
+
+	@Override
+	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
+		CtFieldReference<?> field = getDeclaredField(fieldName);
+		if (field != null) {
+			return field;
+		}
+		CtTypeReference<?> typeRef = getSuperclass();
+		if (typeRef != null) {
+			field = typeRef.getDeclaredOrInheritedField(fieldName);
+			if (field != null) {
+				return field;
+			}
+		}
+		Set<CtTypeReference<?>> ifaces = getSuperInterfaces();
+		for (CtTypeReference<?> iface : ifaces) {
+			field = iface.getDeclaredOrInheritedField(fieldName);
+			if (field != null) {
+				return field;
+			}
+		}
+		return field;
+	}
+
+
+	@Override
 	public List<CtField<?>> getFields() {
 		List<CtField<?>> fields = new ArrayList<>();
 		for (CtTypeMember typeMember : typeMembers) {

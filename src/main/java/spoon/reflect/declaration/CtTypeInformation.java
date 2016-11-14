@@ -132,6 +132,20 @@ public interface CtTypeInformation {
 	Collection<CtFieldReference<?>> getAllFields();
 
 	/**
+	 * Gets a field from its name.
+	 *
+	 * @return null if does not exit
+	 */
+	CtFieldReference<?> getDeclaredField(String name);
+
+	/**
+	 * Gets a field from this type or any super type or any implemented interface by field name.
+	 *
+	 * @return null if does not exit
+	 */
+	CtFieldReference<?> getDeclaredOrInheritedField(String fieldName);
+
+	/**
 	 * Gets the executables declared by this type if applicable.
 	 */
 	Collection<CtExecutableReference<?>> getDeclaredExecutables();
