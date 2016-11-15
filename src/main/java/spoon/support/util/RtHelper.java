@@ -46,19 +46,25 @@ public abstract class RtHelper {
 
 	/**
 	 * Gets all the runtime fields for a given class (including the
-	 * superclasses').
+	 * superclasses and superinterfaces).
 	 */
 	public static Field[] getAllFields(Class<?> c) {
 		List<Field> fields = new ArrayList<>();
-		while (c != null && c != Object.class) {
+		addAllFields(c, fields);
+		Field[] result = new Field[fields.size()];
+		return fields.toArray(result);
+	}
+
+	private static void addAllFields(Class<?> c, List<Field> fields) {
+		if (c != null && c != Object.class) {
 			for (Field f : c.getDeclaredFields()) {
 				fields.add(f);
 			}
-			// fields.addAll(Arrays.asList(c.getDeclaredFields()));
-			c = c.getSuperclass();
+			addAllFields(c.getSuperclass(), fields);
+			for (Class<?> iface : c.getInterfaces()) {
+				addAllFields(iface, fields);
+			}
 		}
-		Field[] result = new Field[fields.size()];
-		return fields.toArray(result);
 	}
 
 	/**
