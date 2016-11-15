@@ -202,9 +202,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtExecutableBodyReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
-		private final spoon.reflect.declaration.CtExecutable element;
+		private final spoon.reflect.code.CtBodyHolder element;
 
-		CtExecutableBodyReplaceListener(spoon.reflect.declaration.CtExecutable element) {
+		CtExecutableBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
 			this.element = element;
 		}
 
@@ -535,9 +535,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtCatchBodyReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
-		private final spoon.reflect.code.CtCatch element;
+		private final spoon.reflect.code.CtBodyHolder element;
 
-		CtCatchBodyReplaceListener(spoon.reflect.code.CtCatch element) {
+		CtCatchBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
 			this.element = element;
 		}
 
@@ -747,9 +747,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtLoopBodyReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
-		private final spoon.reflect.code.CtLoop element;
+		private final spoon.reflect.code.CtBodyHolder element;
 
-		CtLoopBodyReplaceListener(spoon.reflect.code.CtLoop element) {
+		CtLoopBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
 			this.element = element;
 		}
 
@@ -1571,9 +1571,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtTryBodyReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
-		private final spoon.reflect.code.CtTry element;
+		private final spoon.reflect.code.CtBodyHolder element;
 
-		CtTryBodyReplaceListener(spoon.reflect.code.CtTry element) {
+		CtTryBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
 			this.element = element;
 		}
 
