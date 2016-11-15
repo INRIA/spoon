@@ -10,9 +10,7 @@ import spoon.generating.EqualsVisitorGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.support.visitor.equals.EqualsVisitor;
 
 import java.io.File;
@@ -25,6 +23,8 @@ import static spoon.testing.utils.ModelUtils.build;
 public class CtGenerationTest {
 	@Test
 	public void testGenerateReplacementVisitor() throws Exception {
+		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
+		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -55,6 +55,8 @@ public class CtGenerationTest {
 
 	@Test
 	public void testGenerateCtBiScanner() throws Exception {
+		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
+		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -82,6 +84,8 @@ public class CtGenerationTest {
 
 	@Test
 	public void testGenerateEqualsVisitor() throws Exception {
+		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
+		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -112,6 +116,8 @@ public class CtGenerationTest {
 
 	@Test
 	public void testGenerateCloneVisitor() throws Exception {
+		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
+		System.setProperty("line.separator", "\n");
 		// contract: generates CloneBuilder.java and CloneBuilder.java
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
