@@ -16,6 +16,7 @@
  */
 package spoon.template;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -54,6 +55,9 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 		}
 
 		c = factory.Class().get(this.getClass());
+		if (c.isShadow()) {
+			throw new SpoonException("The template " + this.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
+		}
 		// we substitute the first statement of method statement
 		CtStatement result = c.getMethod("statement").getBody().getStatements().get(0).clone();
 		new SubstitutionVisitor(factory, targetType, this).scan(result);
