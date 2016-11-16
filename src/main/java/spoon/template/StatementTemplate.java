@@ -16,11 +16,9 @@
  */
 package spoon.template;
 
-import spoon.SpoonException;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
 import spoon.support.template.SubstitutionVisitor;
 
 /**
@@ -42,25 +40,10 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 	}
 
 	public CtStatement apply(CtType<?> targetType) {
-		CtClass<?> c;
-		Factory factory;
-
-		// we first need a factory
-		if (targetType != null) {
-			// if it's template with reference replacement
-			factory = targetType.getFactory();
-		} else {
-			// else we have at least one template parameter with a factory
-			factory = getFactory();
-		}
-
-		c = factory.Class().get(this.getClass());
-		if (c.isShadow()) {
-			throw new SpoonException("The template " + this.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
-		}
+		CtClass<?> c = Substitution.getTemplateCtClass(targetType, this);
 		// we substitute the first statement of method statement
 		CtStatement result = c.getMethod("statement").getBody().getStatements().get(0).clone();
-		new SubstitutionVisitor(factory, targetType, this).scan(result);
+		new SubstitutionVisitor(c.getFactory(), targetType, this).scan(result);
 		return result;
 	}
 

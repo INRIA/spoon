@@ -19,7 +19,6 @@ package spoon.template;
 import java.lang.reflect.Field;
 
 import spoon.SpoonException;
-import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.template.Parameters;
@@ -56,16 +55,6 @@ public abstract class AbstractTemplate<T extends CtElement> implements Template<
 	 * returns a Spoon factory object from the first template parameter that contains one
 	 */
 	public Factory getFactory() {
-		try {
-			for (Field f : Parameters.getAllTemplateParameterFields(this.getClass())) {
-				if (f.get(this) != null && f.get(this) instanceof FactoryAccessor) {
-					return ((FactoryAccessor) f.get(this)).getFactory();
-				}
-			}
-		} catch (Exception e) {
-			throw new SpoonException(e);
-		}
-		throw new TemplateException("no factory found in this template");
+		return Substitution.getFactory(this);
 	}
-
 }
