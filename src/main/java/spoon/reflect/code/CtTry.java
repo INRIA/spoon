@@ -30,7 +30,7 @@ import java.util.List;
  *     } catch (Exception ignore) {}
  * </pre>
  */
-public interface CtTry extends CtStatement, TemplateParameter<Void> {
+public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolder {
 
 	/**
 	 * Gets the <i>catchers</i> of this <code>try</code>.
@@ -53,14 +53,10 @@ public interface CtTry extends CtStatement, TemplateParameter<Void> {
 	boolean removeCatcher(CtCatch catcher);
 
 	/**
-	 * Sets the tried body.
+	 * Gets the try body.
 	 */
+	@Override
 	CtBlock<?> getBody();
-
-	/**
-	 * Sets the tried body.
-	 */
-	<T extends CtTry> T setBody(CtBlock<?> body);
 
 	/**
 	 * Gets the <i>finalizer</i> block of this <code>try</code> (

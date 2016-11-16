@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.Launcher;
+import spoon.processing.FactoryAccessor;
 import spoon.reflect.ast.IntercessionScanner;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -11,9 +12,12 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -120,17 +124,22 @@ public class IntercessionContractTest {
 
 	@Test
 	public void testContract() throws Throwable {
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(),new StandardEnvironment());
 		try {
+			Object element = declaringClass.newInstance();
+			if (element instanceof FactoryAccessor) {
+				((FactoryAccessor) element).setFactory(factory);
+			}
 			// we invoke the setter
-			toTest.invoke(declaringClass.newInstance(), new Object[] { null });
+			toTest.invoke(element, new Object[] { null });
 		} catch (NullPointerException e) {
 			fail("Shouldn't throw NPE.");
 		} catch (InvocationTargetException e) {
 			if (!(e.getTargetException() instanceof UnsupportedOperationException)) {
-				fail("Unexpected exception happened with " + toTest.getName() + " in " + declaringClass.getName());
+				throw new RuntimeException("Unexpected exception happened with " + toTest.getName() + " in " + declaringClass.getName(), e.getTargetException());
 			}
 		} catch (Exception e) {
-			fail("Unexpected exception happened with " + toTest.getName() + " in " + declaringClass.getName());
+			throw new RuntimeException("Unexpected exception happened with " + toTest.getName() + " in " + declaringClass.getName(), e);
 		}
 	}
 

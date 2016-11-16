@@ -21,7 +21,7 @@ package spoon.reflect.code;
  *
  * @see spoon.reflect.code.CtTry
  */
-public interface CtCatch extends CtCodeElement {
+public interface CtCatch extends CtCodeElement, CtBodyHolder {
 
 	/**
 	 * Gets the catch's parameter (a throwable).
@@ -36,12 +36,8 @@ public interface CtCatch extends CtCodeElement {
 	/**
 	 * Gets the catch's body.
 	 */
+	@Override
 	CtBlock<?> getBody();
-
-	/**
-	 * Sets the catch's body.
-	 */
-	<T extends CtCatch> T setBody(CtBlock<?> body);
 
 	@Override
 	CtCatch clone();

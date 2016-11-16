@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Set;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtExecutableReference;
@@ -50,12 +52,13 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <B extends R> CtBlock<B> getBody() {
-		return (CtBlock<B>) body;
+	public CtBlock<R> getBody() {
+		return (CtBlock<R>) body;
 	}
 
 	@Override
-	public <B extends R, T extends CtExecutable<R>> T setBody(CtBlock<B> body) {
+	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
+		CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
 		if (body != null) {
 			body.setParent(this);
 		}

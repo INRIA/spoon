@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
@@ -31,8 +33,10 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 		return body;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends CtLoop> T setBody(CtStatement body) {
+	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
+		CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
 		if (body != null) {
 			body.setParent(this);
 		}

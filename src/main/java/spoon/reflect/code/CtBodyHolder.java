@@ -16,19 +16,21 @@
  */
 package spoon.reflect.code;
 
-import spoon.template.TemplateParameter;
+import spoon.reflect.declaration.CtElement;
 
 /**
- * This abstract code element defines a loop.
+ * This abstract code element defines an element, which contains a body
  */
-public interface CtLoop extends CtStatement, TemplateParameter<Void>, CtBodyHolder {
+public interface CtBodyHolder extends CtElement {
 
 	/**
-	 * Gets the body of this loop.
+	 * Gets the body of this element
 	 */
-	@Override
 	CtStatement getBody();
 
-	@Override
-	CtLoop clone();
+	/**
+	 * Sets the body of this element.
+	 * If body is not a block, it is wrapped in a CtBlock which is semantically equivalent and eases transformation afterwards if required.
+	 */
+	<T extends CtBodyHolder> T setBody(CtStatement body);
 }

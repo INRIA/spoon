@@ -18,8 +18,10 @@ package spoon.support.reflect.code;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
@@ -60,12 +62,13 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <B extends T> CtBlock<B> getBody() {
-		return (CtBlock<B>) body;
+	public CtBlock<T> getBody() {
+		return (CtBlock<T>) body;
 	}
 
 	@Override
-	public <B extends T, C extends CtExecutable<T>> C setBody(CtBlock<B> body) {
+	public <C extends CtBodyHolder> C setBody(CtStatement statement) {
+		CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
 		if (expression != null && body != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
 		}
