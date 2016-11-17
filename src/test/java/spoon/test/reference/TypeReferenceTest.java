@@ -10,6 +10,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -25,9 +26,11 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
 import spoon.testing.utils.ModelUtils;
@@ -579,5 +582,21 @@ public class TypeReferenceTest {
 		CtType iBar = bar.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getTypeDeclaration();
 		assertNotNull(iBar);
 		assertEquals("compilation.IBar", iBar.getQualifiedName());
+	}
+
+	@Test
+	public void testTypeDeclarationWildcard() throws Exception {
+		// contract1: getTypeDeclaration nevers returns null, even for wilddards
+		// contract2: getTypeDeclaration returns a CtTYpe representing Object as the compiler does
+		CtLocalVariable<?> s = new Launcher().getFactory().Code().createCodeSnippetStatement("java.util.List<?> l = null").compile();
+		assertEquals("?", s.getType().getActualTypeArguments().get(0).getSimpleName());
+		assertTrue(CtWildcardReference.class.isInstance(s.getType().getActualTypeArguments().get(0)));
+		assertEquals("Object", s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getSimpleName());
+		assertEquals(Object.class, s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
+
+		// some additional tests
+		CtLocalVariable<?> s2 = new Launcher().getFactory().Code().createCodeSnippetStatement("java.util.List<String> l = null").compile();
+		assertEquals("String", s2.getType().getActualTypeArguments().get(0).getSimpleName());
+		assertEquals(String.class, s2.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
 	}
 }
