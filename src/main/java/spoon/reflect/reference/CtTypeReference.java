@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtTypeInformation;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -138,4 +139,46 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	@Override
 	@DerivedProperty
 	CtTypeReference<?> getSuperclass();
+
+	/**
+	 * Checks visibility based on public, protected, package protected and private modifiers of type
+	 * @param type
+	 * @return true if this can access that type
+	 */
+	boolean canAccess(CtTypeReference<?> type);
+
+	/**
+	 * Returns this or top level type of this if this is an inner type
+	 */
+	CtTypeReference<?> getTopLevelType();
+
+	/**
+	 * Computes shortest access path from this type to nestedType.
+	 *
+	 * Normally the declaring type can be used as access path. For example in this class hierarchy
+	 * <pre>
+	 * class A {
+	 *    class B {
+	 *       class C {}
+	 *    }
+	 * }
+	 * </pre>
+	 *
+	 * The C.getAccessPathFrom(null) will return [A,B]<br>
+	 * But when some class (A or B) on the access path is not visible in type X, then we must found an alternative path.
+	 * For example in case like:
+	 * <pre>
+	 * class D extends B {
+	 * }
+	 * class X extends D {
+	 * 	 class F extends C
+	 * }
+	 * </pre>
+	 * The C.getAccessPathFrom(X) will return D
+	 *
+	 * @param startType - the type where the access path should be visible or null if we do not care about visibility
+	 * @return list of type references. The first is top level type and next are nested types, which can be used to access nestedType.
+	 * The nestedType is not included in returned list.
+	 */
+	List<CtTypeReference<?>> getAccessPathFrom(CtTypeReference<?> startType);
 }

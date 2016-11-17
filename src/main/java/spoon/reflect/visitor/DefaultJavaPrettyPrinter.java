@@ -109,6 +109,7 @@ import spoon.reflect.visitor.printer.PrinterHelper;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -142,6 +143,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected static class TypeContext {
 		CtTypeReference<?> type;
 		Set<String> memberNames;
+		boolean inBody = false;
 
 		TypeContext(CtTypeReference<?> p_type) {
 			type = p_type;
@@ -170,12 +172,32 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public class PrintingContext {
 		boolean noTypeDecl = false;
 
-		Deque<TypeContext> currentThis = new ArrayDeque<>();
+		List<TypeContext> currentThis = new ArrayList<>();
 
+		/**
+		 * @return top level type
+		 */
 		public CtTypeReference<?> getCurrentTypeReference() {
 			if (context.currentTopLevel != null) {
 				if (currentThis != null && currentThis.size() > 0) {
-					return currentThis.peekFirst().type;
+					return currentThis.get(0).type;
+				}
+				return context.currentTopLevel.getReference();
+			}
+			return null;
+		}
+		/**
+		 * @return actually printed type, which already entered it's body. It can be nested type too
+		 */
+		public CtTypeReference<?> getCurrentTypeOrInnerTypeReferenceInBody() {
+			if (context.currentTopLevel != null) {
+				if (currentThis != null && currentThis.size() > 0) {
+					TypeContext tc = currentThis.get(currentThis.size() - 1);
+					if (tc.inBody) {
+						return tc.type;
+					} else if (currentThis.size() > 1) {
+						return currentThis.get(currentThis.size() - 2).type;
+					}
 				}
 				return context.currentTopLevel.getReference();
 			}
@@ -183,10 +205,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 
 		public void pushCurrentThis(CtTypeReference<?> type) {
-			currentThis.push(new TypeContext(type));
+			currentThis.add(new TypeContext(type));
+		}
+		public void markCurrentThisInBody() {
+			currentThis.get(currentThis.size() - 1).inBody = true;
 		}
 		public void popCurrentThis() {
-			currentThis.pop();
+			currentThis.remove(currentThis.size() - 1);
 		}
 
 
@@ -571,7 +596,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeImplementsClause(ctClass);
 		}
 		// lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
-
+		//mark currentThis that we are in body of the class.
+		context.markCurrentThisInBody();
 		printer.write(" {").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
@@ -1037,10 +1063,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			printer.removeLastChar();
 		}
+		context.pushCurrentThis(intrface.getReference());
 		printer.write(" {").incTab();
 		// Content
 		elementPrinterHelper.writeElementList(intrface.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
+		context.popCurrentThis();
 	}
 
 	@Override
@@ -1661,12 +1689,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (!withGenerics) {
 					context.ignoreGenerics = true;
 				}
-				scan(ref.getDeclaringType());
+				printAccessPath(ref.getAccessPathFrom(context.getCurrentTypeOrInnerTypeReferenceInBody()));
 				if (!withGenerics) {
 					context.ignoreGenerics = ign;
 				}
-				printer.write(".");
 			}
+			//?? are these annotations on correct place ??
 			elementPrinterHelper.writeAnnotations(ref);
 			if (ref.isLocalType()) {
 				printer.write(ref.getSimpleName().replaceAll("^[0-9]*", ""));
@@ -1688,6 +1716,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			context.ignoreEnclosingClass = false;
 			elementPrinterHelper.writeActualTypeArguments(ref);
 			context.ignoreEnclosingClass = old;
+		}
+	}
+
+	private void printAccessPath(List<CtTypeReference<?>> accessPath) {
+		for (int i = 0; i < accessPath.size(); i++) {
+			if (i == 0) {
+				scan(accessPath.get(i));
+			} else {
+				printer.write(accessPath.get(i).getSimpleName());
+			}
+			printer.write(".");
 		}
 	}
 

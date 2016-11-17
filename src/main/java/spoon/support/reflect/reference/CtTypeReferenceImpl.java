@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
@@ -624,6 +625,106 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean isGenerics() {
 		return false;
+	}
+
+	@Override
+	public boolean canAccess(CtTypeReference<?> type) {
+		Set<ModifierKind> modifiers = type.getModifiers();
+
+		if (modifiers.contains(ModifierKind.PUBLIC)) {
+			return true;
+		}
+		if (modifiers.contains(ModifierKind.PROTECTED)) {
+			if (isSubtypeOf(type)) {
+				//is visible in subtypes
+				return true;
+			} //else it is visible in same package, like package protected
+		}
+		if (modifiers.contains(ModifierKind.PRIVATE)) {
+			//it is visible in scope of the same class only
+			return type.getTopLevelType().getQualifiedName().equals(this.getQualifiedName());
+		}
+		//package protected
+		if (type.getTopLevelType().getPackage().getSimpleName().equals(this.getTopLevelType().getPackage().getSimpleName())) {
+			//visible only in scope of the same package
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public CtTypeReference<?> getTopLevelType() {
+		CtTypeReference<?> type = this;
+		while (true) {
+			CtTypeReference<?> parentType = type.getDeclaringType();
+			if (parentType == null) {
+				return type;
+			}
+		}
+	}
+
+	@Override
+	public List<CtTypeReference<?>> getAccessPathFrom(CtTypeReference<?> startType) {
+		CtTypeReference<?> declType = this.getDeclaringType();
+		if (declType == null) {
+			throw new SpoonException("The nestedType is expected, but it is: " + getQualifiedName());
+		}
+		if (startType != null && startType.canAccess(declType) == false) {
+			//search for visible declaring type
+			CtTypeReference<?> visibleDeclType = null;
+			CtTypeReference<?> type = startType;
+			//search which type or declaring type of startType extends from nestedType
+			while (visibleDeclType == null && type != null) {
+				visibleDeclType = getLastVisibleSuperClassExtendingFrom(type, declType);
+				if (visibleDeclType != null) {
+					//found one!
+					break;
+				}
+				//try class hierarchy of declaring type
+				type = type.getDeclaringType();
+			}
+			declType = visibleDeclType;
+		}
+		//now we have declType which is visible in startType type
+		List<CtTypeReference<?>> accessPath = new ArrayList();
+		//collect access path from top to the may be nested declType
+		addAccessPathTo(accessPath, declType);
+		return accessPath;
+	}
+
+	/**
+	 *
+	 * @param p_declType
+	 * @return last super class which extends from p_declType and which is visible from this or null if  this does not extends from targetType
+	 */
+	private static CtTypeReference<?> getLastVisibleSuperClassExtendingFrom(CtTypeReference<?> sourceType, CtTypeReference<?> targetType) {
+		String targetQN = targetType.getQualifiedName();
+		CtTypeReference<?> adept = sourceType;
+		CtTypeReference<?> type = sourceType;
+		while (true) {
+			if (targetQN.equals(type.getQualifiedName())) {
+				return adept;
+			}
+			type = type.getSuperclass();
+			if (type == null) {
+				//there is no super type which extends from targetType
+				return null;
+			}
+			if (sourceType.canAccess(type)) {
+				//this super type is still visible. It is adept for returning
+				adept = type;
+			}
+		}
+	}
+
+	private void addAccessPathTo(List<CtTypeReference<?>> accessPath, CtTypeReference<?> type) {
+		CtTypeReference<?> declType = type.getDeclaringType();
+		if (declType != null) {
+			//there is a declaring type. Add its access path
+			addAccessPathTo(accessPath, declType);
+		}
+		//then add itself
+		accessPath.add(type);
 	}
 
 	boolean isShadow;
