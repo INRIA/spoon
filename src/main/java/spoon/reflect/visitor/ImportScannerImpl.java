@@ -115,7 +115,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			if (reference.getDeclaringType() == null) {
 				addImport(reference);
 			} else {
-				addImport(reference.getDeclaringType());
+				addImport(reference.getAccessType(targetType));
 			}
 		}
 		super.visitCtTypeReference(reference);
