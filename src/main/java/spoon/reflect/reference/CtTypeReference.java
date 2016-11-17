@@ -148,7 +148,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	boolean canAccess(CtTypeReference<?> type);
 
 	/**
-	 * Returns this or top level type of this if this is an inner type
+	 * Returns this, or top level type of this, if this is an inner type
 	 */
 	CtTypeReference<?> getTopLevelType();
 
