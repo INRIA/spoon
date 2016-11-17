@@ -537,6 +537,14 @@ public abstract class Substitution {
 		}
 	}
 
+	/**
+	 * @param targetType - the element which is going to receive the model produced by the template.
+	 * It is needed here just to provide the spoon factory, which contains the model of the template
+	 *
+	 * @param template - java instance of the template
+	 *
+	 * @return - CtClass from the already built spoon model, which represents the template
+	 */
 	static <T> CtClass<T> getTemplateCtClass(CtType<?> targetType, Template<?> template) {
 		Factory factory;
 		// we first need a factory
@@ -550,6 +558,13 @@ public abstract class Substitution {
 		return getTemplateCtClass(factory, template);
 	}
 
+	/**
+	 * @param factory - the factory, which contains the model of the template
+	 *
+	 * @param template - java instance of the template
+	 *
+	 * @return - CtClass from the already built spoon model, which represents the template
+	 */
 	static <T> CtClass<T> getTemplateCtClass(Factory factory, Template<?> template) {
 		CtClass<T> c = factory.Class().get(template.getClass());
 		if (c.isShadow()) {
