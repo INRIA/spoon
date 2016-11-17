@@ -357,6 +357,32 @@ public class ImportTest {
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", actualClass.getName()); 
 	}
 	
+	@Test
+	public void testAccessType() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
+		});
+		launcher.buildModel();
+		final CtClass<ImportTest> aInnerClass = launcher.getFactory().Class().get(ClientClass.class.getName()+"$InnerClass");
+		final CtClass<ImportTest> aSuperClass = launcher.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass");
+		assertEquals(ClientClass.class.getName()+"$InnerClass", aInnerClass.getQualifiedName());
+		
+		//Check that access type of ClientClass$InnerClass in undefined context is ClientClass
+		assertEquals(ClientClass.class.getName(), aInnerClass.getReference().getAccessType(null).getQualifiedName());
+		//Check that access type of ClientClass$InnerClass in package protected class is still ClientClass
+		assertEquals(ClientClass.class.getName(), aInnerClass.getReference().getAccessType(aSuperClass.getReference()).getQualifiedName());
+		
+		final CtTypeReference<?> innerClassProtected = aInnerClass.getSuperclass();
+		//check that parentClass is SuperClass$InnerClassProtected
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtected.getQualifiedName()); 
+		//Check that access type of SuperClass$InnerClassProtected in undefined context is SuperClass
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtected.getAccessType(null).getQualifiedName());
+		//Check that access type of SuperClass$InnerClassProtected in ClientClass context is ChildClass
+		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtected.getAccessType(launcher.getFactory().Class().createReference(ClientClass.class)).getQualifiedName());
+		//Check that access type of SuperClass$InnerClassProtected in ClientClass$InnerClass context is ChildClass
+		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtected.getAccessType(aInnerClass.getReference()).getQualifiedName());
+	}
 
 	private Factory getFactory(String...inputs) {
 		final Launcher launcher = new Launcher();
