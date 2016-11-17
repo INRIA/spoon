@@ -16,14 +16,13 @@
  */
 package spoon.support.comparator;
 
+import spoon.reflect.declaration.CtElement;
+
 import java.io.Serializable;
 import java.util.Comparator;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.support.visitor.DeepRepresentationVisitor;
-
 /**
- * Compares based on a toString representation. Used for backward compatibility.
+ * Compares based on a toString representation.
  */
 public class DeepRepresentationComparator implements Comparator<CtElement>, Serializable {
 
@@ -45,9 +44,7 @@ public class DeepRepresentationComparator implements Comparator<CtElement>, Seri
 	}
 
 	private String getDeepRepresentation(CtElement elem) {
-		DeepRepresentationVisitor prThis = new DeepRepresentationVisitor();
-		prThis.scan(elem);
-		return prThis.getRepresentation();
+		return elem.toString();
 	}
 
 }
