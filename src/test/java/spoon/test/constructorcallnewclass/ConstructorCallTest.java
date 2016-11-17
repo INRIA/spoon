@@ -50,7 +50,7 @@ public class ConstructorCallTest {
 
 	@Test
 	public void testConstructorCallStringWithoutParameters() throws Exception {
-		final CtConstructorCall<?> constructorCall = constructorCalls.get(0);
+		final CtConstructorCall<?> constructorCall = constructorCalls.get(2);
 		assertConstructorCallWithType(String.class, constructorCall);
 		assertIsConstructor(constructorCall);
 		assertHasParameters(0, constructorCall);
@@ -66,7 +66,7 @@ public class ConstructorCallTest {
 
 	@Test
 	public void testConstructorCallObjectWithoutParameters() throws Exception {
-		final CtConstructorCall<?> constructorCall = constructorCalls.get(2);
+		final CtConstructorCall<?> constructorCall = constructorCalls.get(3);
 		assertConstructorCallWithType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
 		assertHasParameters(0, constructorCall);
@@ -74,7 +74,7 @@ public class ConstructorCallTest {
 
 	@Test
 	public void testConstructorCallObjectWithParameters() throws Exception {
-		final CtConstructorCall<?> constructorCall = constructorCalls.get(3);
+		final CtConstructorCall<?> constructorCall = constructorCalls.get(4);
 		assertConstructorCallWithType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
 		assertHasParameters(1, constructorCall);
