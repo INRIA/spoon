@@ -1689,10 +1689,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (!withGenerics) {
 					context.ignoreGenerics = true;
 				}
-				printAccessPath(ref.getAccessPathFrom(context.getCurrentTypeOrInnerTypeReferenceInBody()));
+				scan(ref.getAccessType(context.getCurrentTypeOrInnerTypeReferenceInBody()));
 				if (!withGenerics) {
 					context.ignoreGenerics = ign;
 				}
+				printer.write(".");
 			}
 			//?? are these annotations on correct place ??
 			elementPrinterHelper.writeAnnotations(ref);
@@ -1716,17 +1717,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			context.ignoreEnclosingClass = false;
 			elementPrinterHelper.writeActualTypeArguments(ref);
 			context.ignoreEnclosingClass = old;
-		}
-	}
-
-	private void printAccessPath(List<CtTypeReference<?>> accessPath) {
-		for (int i = 0; i < accessPath.size(); i++) {
-			if (i == 0) {
-				scan(accessPath.get(i));
-			} else {
-				printer.write(accessPath.get(i).getSimpleName());
-			}
-			printer.write(".");
 		}
 	}
 

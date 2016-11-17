@@ -661,15 +661,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	public List<CtTypeReference<?>> getAccessPathFrom(CtTypeReference<?> startType) {
+	public CtTypeReference<?> getAccessType(CtTypeReference<?> contextType) {
 		CtTypeReference<?> declType = this.getDeclaringType();
 		if (declType == null) {
 			throw new SpoonException("The nestedType is expected, but it is: " + getQualifiedName());
 		}
-		if (startType != null && startType.canAccess(declType) == false) {
+		if (contextType != null && contextType.canAccess(declType) == false) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
-			CtTypeReference<?> type = startType;
+			CtTypeReference<?> type = contextType;
 			//search which type or declaring type of startType extends from nestedType
 			while (visibleDeclType == null && type != null) {
 				visibleDeclType = getLastVisibleSuperClassExtendingFrom(type, declType);
@@ -682,11 +682,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			}
 			declType = visibleDeclType;
 		}
-		//now we have declType which is visible in startType type
-		List<CtTypeReference<?>> accessPath = new ArrayList();
-		//collect access path from top to the may be nested declType
-		addAccessPathTo(accessPath, declType);
-		return accessPath;
+		return declType;
 	}
 
 	/**
@@ -712,16 +708,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				adept = type;
 			}
 		}
-	}
-
-	private void addAccessPathTo(List<CtTypeReference<?>> accessPath, CtTypeReference<?> type) {
-		CtTypeReference<?> declType = type.getDeclaringType();
-		if (declType != null) {
-			//there is a declaring type. Add its access path
-			addAccessPathTo(accessPath, declType);
-		}
-		//then add itself
-		accessPath.add(type);
 	}
 
 	boolean isShadow;

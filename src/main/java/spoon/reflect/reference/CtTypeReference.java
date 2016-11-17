@@ -23,7 +23,6 @@ import spoon.reflect.declaration.CtTypeInformation;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -154,7 +153,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	CtTypeReference<?> getTopLevelType();
 
 	/**
-	 * Computes shortest access path from this type to nestedType.
+	 * Computes nearest access path parent from this type to nestedType.
 	 *
 	 * Normally the declaring type can be used as access path. For example in this class hierarchy
 	 * <pre>
@@ -165,9 +164,9 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * }
 	 * </pre>
 	 *
-	 * The C.getAccessPathFrom(null) will return [A,B]<br>
+	 * The C.getAccessParentFrom(null) will return B, because B can be used to access C, using code like <code>B.C</code><br>
 	 * But when some class (A or B) on the access path is not visible in type X, then we must found an alternative path.
-	 * For example in case like:
+	 * For example in case like, when A and B are invisible, e.g because of modifier <code>protected</code>:
 	 * <pre>
 	 * class D extends B {
 	 * }
@@ -175,11 +174,10 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * 	 class F extends C
 	 * }
 	 * </pre>
-	 * The C.getAccessPathFrom(X) will return D
+	 * The C.getAccessParentFrom(X) will return D, because D can be used to access C in scope of X.
 	 *
-	 * @param startType - the type where the access path should be visible or null if we do not care about visibility
-	 * @return list of type references. The first is top level type and next are nested types, which can be used to access nestedType.
-	 * The nestedType is not included in returned list.
+	 * @param contextType - the type where the access path should be visible or null if we do not care about visibility
+	 * @return type reference which can be used to access nestedType.
 	 */
-	List<CtTypeReference<?>> getAccessPathFrom(CtTypeReference<?> startType);
+	CtTypeReference<?> getAccessType(CtTypeReference<?> contextType);
 }
