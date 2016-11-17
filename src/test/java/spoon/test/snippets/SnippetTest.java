@@ -1,6 +1,8 @@
 package spoon.test.snippets;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.compiler.SpoonResource;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
@@ -10,11 +12,11 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationHelper;
+import spoon.support.compiler.VirtualFile;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.support.compiler.SnippetCompilationHelper.compileStatement;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class SnippetTest {
@@ -90,6 +92,17 @@ public class SnippetTest {
 		);
 		assertTrue(CtReturn.class.isAssignableFrom(el.getClass()));
 		assertEquals("return 3", el.toString());
+	}
+
+	@Test
+	public void testIssue981() throws Exception {
+		// contract: one can get the package of a string
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setNoClasspath(true);
+		SpoonResource input = new VirtualFile("package foo.bar; class X {}");
+		spoon.addInputResource(input);
+		spoon.buildModel();
+		assertEquals("foo.bar", spoon.getFactory().Type().get("foo.bar.X").getPackage().getQualifiedName());
 	}
 
 }

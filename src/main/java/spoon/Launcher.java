@@ -161,7 +161,8 @@ public class Launcher implements SpoonAPI {
 		}
 	}
 
-	private void addInputResource(SpoonResource resource) {
+	/** adds a resource to be parsed to build the spoon model */
+	public void addInputResource(SpoonResource resource) {
 		modelBuilder.addInputSource(resource);
 	}
 
