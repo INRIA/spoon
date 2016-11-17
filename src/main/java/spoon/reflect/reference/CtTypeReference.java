@@ -153,7 +153,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	CtTypeReference<?> getTopLevelType();
 
 	/**
-	 * Computes nearest access path parent from this type to nestedType.
+	 * Computes nearest access path parent from contextType to this type.
 	 *
 	 * Normally the declaring type can be used as access path. For example in this class hierarchy
 	 * <pre>
@@ -177,7 +177,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * The C.getAccessParentFrom(X) will return D, because D can be used to access C in scope of X.
 	 *
 	 * @param contextType - the type where the access path should be visible or null if we do not care about visibility
-	 * @return type reference which can be used to access nestedType.
+	 * @return type reference which can be used to access this type in scope of contextType.
 	 */
 	CtTypeReference<?> getAccessType(CtTypeReference<?> contextType);
 }
