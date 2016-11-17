@@ -175,31 +175,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		List<TypeContext> currentThis = new ArrayList<>();
 
 		/**
+		 * @param inBody if false then it returns the nearest wrapping class which is actually printed.
+		 * if true then it returns nearest wrapping class whose body we are printing
 		 * @return top level type
 		 */
-		public CtTypeReference<?> getCurrentTypeReference() {
-			if (context.currentTopLevel != null) {
-				if (currentThis != null && currentThis.size() > 0) {
-					return currentThis.get(0).type;
-				}
-				return context.currentTopLevel.getReference();
-			}
-			return null;
-		}
-		/**
-		 * @return actually printed type, which already entered it's body. It can be nested type too
-		 */
-		public CtTypeReference<?> getCurrentTypeOrInnerTypeReferenceInBody() {
-			if (context.currentTopLevel != null) {
+		public CtTypeReference<?> getCurrentTypeReference(boolean inBody) {
+			if (currentTopLevel != null) {
 				if (currentThis != null && currentThis.size() > 0) {
 					TypeContext tc = currentThis.get(currentThis.size() - 1);
-					if (tc.inBody) {
+					if (!inBody || tc.inBody) {
 						return tc.type;
 					} else if (currentThis.size() > 1) {
 						return currentThis.get(currentThis.size() - 2).type;
 					}
 				}
-				return context.currentTopLevel.getReference();
+				return currentTopLevel.getReference();
 			}
 			return null;
 		}
@@ -963,7 +953,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if (reference.isFinal() && reference.isStatic()) {
 			CtTypeReference<?> declTypeRef = reference.getDeclaringType();
-			CtTypeReference<?> ref2 = context.getCurrentTypeReference();
+			CtTypeReference<?> ref2 = context.getCurrentTypeReference(false);
 			if (ref2 != null) {
 				// print type if not anonymous class ref and not within the
 				// current scope
@@ -1684,16 +1674,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		boolean isInner = ref.getDeclaringType() != null;
 		if (isInner) {
-			if (!context.ignoreEnclosingClass && !ref.isLocalType() && !ref.getDeclaringType().isAnonymous()) {
-				boolean ign = context.ignoreGenerics;
-				if (!withGenerics) {
-					context.ignoreGenerics = true;
+			if (!context.ignoreEnclosingClass && !ref.isLocalType()) {
+				//compute visible type which can be used to print access path to ref
+				CtTypeReference<?> accessType = ref.getAccessType(context.getCurrentTypeReference(true));
+				if (!accessType.isAnonymous()) {
+					boolean ign = context.ignoreGenerics;
+					if (!withGenerics) {
+						context.ignoreGenerics = true;
+					}
+					scan(accessType);
+					if (!withGenerics) {
+						context.ignoreGenerics = ign;
+					}
+					printer.write(".");
 				}
-				scan(ref.getAccessType(context.getCurrentTypeOrInnerTypeReferenceInBody()));
-				if (!withGenerics) {
-					context.ignoreGenerics = ign;
-				}
-				printer.write(".");
 			}
 			//?? are these annotations on correct place ??
 			elementPrinterHelper.writeAnnotations(ref);
