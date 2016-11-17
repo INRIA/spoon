@@ -149,6 +149,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <A extends Annotation> void visitCtAnnotation(
 			final CtAnnotation<A> annotation) {
 		enter(annotation);
+		scan(annotation.getType());
 		scan(annotation.getComments());
 		scan(annotation.getAnnotationType());
 		scan(annotation.getAnnotations());
@@ -220,6 +221,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <T> void visitCtArrayTypeReference(final CtArrayTypeReference<T> reference) {
 		enter(reference);
 		scan(reference.getComments());
+		scan(reference.getPackage());
 		scan(reference.getDeclaringType());
 		scan(reference.getComponentType());
 		scan(reference.getActualTypeArguments());
@@ -314,6 +316,7 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtConditional(final CtConditional<T> conditional) {
 		enter(conditional);
+		scan(conditional.getType());
 		scan(conditional.getAnnotations());
 		scan(conditional.getCondition());
 		scan(conditional.getThenExpression());
@@ -408,11 +411,9 @@ public abstract class CtScanner implements CtVisitor {
 		enter(annotationFieldAccess);
 		scan(annotationFieldAccess.getComments());
 		scan(annotationFieldAccess.getAnnotations());
-		scan(annotationFieldAccess.getType());
 		scan(annotationFieldAccess.getTypeCasts());
-		scan(annotationFieldAccess.getTarget());
+		scan(annotationFieldAccess.getType());
 		scan(annotationFieldAccess.getVariable());
-		scan(annotationFieldAccess.getComments());
 		exit(annotationFieldAccess);
 	}
 
@@ -480,7 +481,6 @@ public abstract class CtScanner implements CtVisitor {
 		enter(literal);
 		scan(literal.getAnnotations());
 		scan(literal.getType());
-		scan(literal.getValue());
 		scan(literal.getTypeCasts());
 		scan(literal.getComments());
 		exit(literal);
@@ -507,6 +507,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(catchVariable);
 		scan(catchVariable.getComments());
 		scan(catchVariable.getAnnotations());
+		scan(catchVariable.getDefaultExpression());
 		scan(catchVariable.getType());
 		scan(catchVariable.getMultiTypes());
 		exit(catchVariable);
@@ -584,6 +585,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(lambda.getType());
 		scan(lambda.getTypeCasts());
 		scan(lambda.getParameters());
+		scan(lambda.getThrownTypes());
 		scan(lambda.getBody());
 		scan(lambda.getExpression());
 		scan(lambda.getComments());
@@ -722,6 +724,8 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
 		enter(wildcardReference);
+		scan(wildcardReference.getPackage());
+		scan(wildcardReference.getDeclaringType());
 		scan(wildcardReference.getAnnotations());
 		scan(wildcardReference.getBoundingType());
 		exit(wildcardReference);
@@ -730,6 +734,8 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public <T> void visitCtIntersectionTypeReference(final CtIntersectionTypeReference<T> reference) {
 		enter(reference);
+		scan(reference.getPackage());
+		scan(reference.getDeclaringType());
 		scan(reference.getAnnotations());
 		scan(reference.getBounds());
 		exit(reference);
@@ -796,6 +802,7 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtCodeSnippetExpression(final CtCodeSnippetExpression<T> expression) {
 		enter(expression);
+		scan(expression.getType());
 		scan(expression.getComments());
 		scan(expression.getAnnotations());
 		scan(expression.getTypeCasts());
@@ -811,6 +818,7 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtUnboundVariableReference(final CtUnboundVariableReference<T> reference) {
 		enter(reference);
+		scan(reference.getType());
 		exit(reference);
 	}
 
@@ -839,9 +847,9 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public <T> void visitCtSuperAccess(final CtSuperAccess<T> f) {
 		enter(f);
+		scan(f.getType());
 		scan(f.getComments());
 		scan(f.getAnnotations());
-		scan(f.getType());
 		scan(f.getTypeCasts());
 		scan(f.getTarget());
 		scan(f.getVariable());

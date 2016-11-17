@@ -16,6 +16,9 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
+
 /**
  * This code element defines an access to super.
  *
@@ -37,4 +40,8 @@ package spoon.reflect.code;
 public interface CtSuperAccess<T> extends CtVariableRead<T>, CtTargetedExpression<T, CtExpression<?>> {
 	@Override
 	CtSuperAccess<T> clone();
+
+	@Override
+	@DerivedProperty
+	CtTypeReference<T> getType();
 }

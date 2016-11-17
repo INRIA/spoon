@@ -50,7 +50,7 @@ public class CtGenerationTest {
 			assertThat(actual)
 				.isEqualTo(expected);
 		} catch (AssertionError e) {
-			throw new ComparisonFailure("EqualsVisitor different", expected.toString(), actual.toString());
+			throw new ComparisonFailure("ReplacementVisitor different", expected.toString(), actual.toString());
 		}
 	}
 

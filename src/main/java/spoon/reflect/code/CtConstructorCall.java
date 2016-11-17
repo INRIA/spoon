@@ -60,4 +60,8 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 
 	@Override
 	CtConstructorCall<T> clone();
+
+	@Override
+	@DerivedProperty
+	CtTypeReference<T> getType();
 }

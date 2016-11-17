@@ -34,6 +34,7 @@ import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static spoon.test.SpoonTestHelpers.isMetamodelProperty;
 
 public class CtScannerTest {
@@ -43,7 +44,6 @@ public class CtScannerTest {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addProcessor(new CheckScannerProcessor());
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
@@ -53,9 +53,9 @@ public class CtScannerTest {
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
-		launcher.run();
+		launcher.buildModel();
 
-		// All assertions are in the processor.
+		launcher.getModel().processWith(new CheckScannerProcessor());
 	}
 
 	class SimpleSignature extends CtScanner {
@@ -97,26 +97,18 @@ public class CtScannerTest {
 		CtClass<?> scanner = (CtClass<?>)launcher.getFactory().Type().get(CtScanner.class);
 
 		for (CtType<?> t : SpoonTestHelpers.getAllInstantiableMetamodelInterfaces()) {
-			Set<String> t1 = new TreeSet<>();
-			for (CtMethod<?> m : t.getAllMethods()) {
+			CtMethod<?> visitMethod = scanner.getMethodsByName("visit"+t.getSimpleName()).get(0);
+			for (CtMethod<?> m : SpoonTestHelpers.getAllMetamodelMethods(t)) {
 				if (isMetamodelProperty(t, m)) {
-					t1.add(computeSimpleSignature(m));
+					//System.out.println("checking "+m.getSignature() +" in "+visitMethod.getSignature());
+					assertTrue("no "+m.getSignature() +" in "+visitMethod, visitMethod.getElements(new TypeFilter<CtInvocation>(CtInvocation.class) {
+						@Override
+						public boolean matches(CtInvocation element) {
+							return super.matches(element) && element.getExecutable().getSimpleName().equals(m.getSimpleName());
+						}
+					}).size()>0);
 				}
 			}
-
-			Set<String> t2 = new TreeSet<>();
-			CtMethod<?> visitMethod = scanner.getMethodsByName("visit"+t.getSimpleName()).get(0);
-			for (CtInvocation<?> invoc : visitMethod.getElements(new TypeFilter<CtInvocation>(CtInvocation.class) {
-					@Override
-					public boolean matches(CtInvocation element) {
-						CtMethod<?> method = (CtMethod<?>) element.getExecutable().getExecutableDeclaration();
-						assertFalse(method.isShadow());
-						return super.matches(element) && isMetamodelProperty(t, method);
-					}
-				})) {
-				t2.add(computeSimpleSignature((CtMethod<?>) invoc.getExecutable().getExecutableDeclaration()));
-			}
-		assertEquals("CtScanner contract violated for "+t.getSimpleName(), t1, t2);
 		}
 	}
 

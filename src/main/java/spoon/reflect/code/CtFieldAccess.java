@@ -24,7 +24,7 @@ import spoon.reflect.reference.CtFieldReference;
  * @param <T>
  * 		Type of this field
  */
-public interface CtFieldAccess<T> extends CtVariableRead<T>, CtTargetedExpression<T, CtExpression<?>> {
+public interface CtFieldAccess<T> extends CtVariableAccess<T>, CtTargetedExpression<T, CtExpression<?>> {
 	CtFieldReference<T> getVariable();
 
 	@Override

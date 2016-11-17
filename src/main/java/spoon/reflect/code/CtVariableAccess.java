@@ -16,7 +16,9 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.support.DerivedProperty;
 
 /**
  * This code element defines an access to a variable (read and write).
@@ -39,4 +41,8 @@ public interface CtVariableAccess<T> extends CtExpression<T> {
 
 	@Override
 	CtVariableAccess<T> clone();
+
+	@Override
+	@DerivedProperty
+	CtTypeReference<T> getType();
 }

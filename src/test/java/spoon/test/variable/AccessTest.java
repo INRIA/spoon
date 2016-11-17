@@ -50,7 +50,7 @@ public class AccessTest {
 									  }
 								  });
 
-		assertEquals(2, variablesRead.size());
+		assertEquals(2, variablesRead.size());// System.out and s
 
 		final List<CtVariableWrite<?>> variablesWrite =
 				Query.getElements(factory,

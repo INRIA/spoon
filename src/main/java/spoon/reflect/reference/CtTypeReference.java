@@ -86,7 +86,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return the declaring type if this references an inner class; null in
 	 * other cases
 	 */
-	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
 	/**
@@ -94,7 +93,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the declaring package or null if this if a inner class
 	 */
-	@DerivedProperty
 	CtPackageReference getPackage();
 
 	/**
