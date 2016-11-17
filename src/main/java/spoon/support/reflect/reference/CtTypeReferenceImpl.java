@@ -656,6 +656,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			if (parentType == null) {
 				return type;
 			}
+			type = parentType;
 		}
 	}
 
