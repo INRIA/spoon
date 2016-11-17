@@ -31,7 +31,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	private static final long serialVersionUID = 1L;
 
-	protected String simplename;
+	protected String simplename = "";
 
 	public CtReferenceImpl() {
 		super();
@@ -66,9 +66,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	}
 
 	@Override
-	public void accept(CtVisitor visitor) {
-		throw new UnsupportedOperationException("Must be implemented in subclasses.");
-	}
+	public abstract void accept(CtVisitor visitor);
 
 	@Override
 	public CtReference clone() {

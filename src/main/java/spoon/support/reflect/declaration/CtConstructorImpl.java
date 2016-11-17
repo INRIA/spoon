@@ -28,6 +28,8 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -51,8 +53,9 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		throw new UnsupportedOperationException();
+		return (C) this;
 	}
 
 	@Override
@@ -67,6 +70,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
+	@DerivedProperty
 	public CtTypeReference<T> getType() {
 		if (getDeclaringType() == null) {
 			return null;
@@ -75,8 +79,10 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
-		throw new UnsupportedOperationException();
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override

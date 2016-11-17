@@ -256,7 +256,10 @@ public class ElementPrinterHelper {
 				writeComment(ctType, CommentOffset.TOP_FILE);
 				printer.writeln().writeln().writeTabs();
 			}
-			prettyPrinter.scan(types.get(0).getPackage());
+			// writing the header package
+			if (!types.get(0).getPackage().isUnnamedPackage()) {
+				printer.write("package " + types.get(0).getPackage().getQualifiedName() + ";");
+			}
 			printer.writeln().writeln().writeTabs();
 			if (env.isAutoImports()) {
 				for (CtTypeReference<?> ref : imports) {

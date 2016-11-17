@@ -4,29 +4,31 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
 import spoon.SpoonException;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
+import spoon.support.UnsettableProperty;
 import spoon.test.SpoonTestHelpers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
-// check that all setters of the metamodel call setParent
+// check that all setters of the metamodel call setParent in a correct manner
 @RunWith(Parameterized.class)
 public class ParentContractTest<T extends CtVisitable> {
 
@@ -46,108 +48,106 @@ public class ParentContractTest<T extends CtVisitable> {
 		List<Object[]> values = new ArrayList<>();
 		for (CtType t : allInstantiableMetamodelInterfaces) {
 			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {
-				values.add(new Object[] { t.getActualClass(), factory.Core().create(t.getActualClass()) });
+				values.add(new Object[] { t });
 			}
 		}
 		return values;
 	}
 
 	@Parameterized.Parameter(0)
-	public Class<T> toTest;
-
-	@Parameterized.Parameter(1)
-	public T instance;
+	public CtType<?> toTest;
 
 	/**
-	 * Create the list of method we have to call for a class
-	 *
-	 * @param entry
-	 * @return
-	 * @throws Exception
+	 * The default contains based on Method.equals takes into account the return type
+	 * And we don't want this, because we need to capture
+	 * the annotation of the implementation method.
 	 */
-	private List<Method> getMethodsToInvoke(Class<?> entry) throws Exception {
-		Queue<Class<?>> tocheck = new LinkedList<>();
-		tocheck.add(entry);
-
-		List<Method> toInvoke = new ArrayList<>();
-		while (!tocheck.isEmpty()) {
-			Class<?> intf = tocheck.poll();
-
-			assertTrue(intf.isInterface());
-			if (!intf.getSimpleName().startsWith("Ct")) {
-				continue;
-			}
-
-			if (intf.getSimpleName().equals("CtElement")) {
-				continue;
-			}
-
-			// get all setters with take a CtElement as parameter
-			for(Method mth : intf.getDeclaredMethods()) {
-				if ((mth.getName().startsWith("set")
-						|| mth.getName().startsWith("add"))
-						&& mth.getParameterTypes().length==1
-						&& CtElement.class.isAssignableFrom(mth.getParameterTypes()[0])
-						) {
-					if (!toInvoke.contains(mth)) {
-						toInvoke.add(mth);
-					}
-				}
-			}
-
-			for (Class<?> aClass : intf.getInterfaces()) {
-				tocheck.add(aClass);
+	private boolean containsMethod(List<Method> l, Method setter) {
+		for(Method m : l ) {
+			if (m.getName().equals(setter.getName())) {
+				return true;
 			}
 		}
-		return toInvoke;
+		return false;
 	}
 
-	private CtElement createCompatibleObject(Class c) {
+	private Object createCompatibleObject(CtTypeReference<?> parameterType) {
+		Class<?> c = parameterType.getActualClass();
 		for(CtType t : allInstantiableMetamodelInterfaces) {
 			if (c.isAssignableFrom(t.getActualClass())) {
-				return factory.Core().create(t.getActualClass());
+				CtElement argument = factory.Core().create(t.getActualClass());
+				// an empty package is merged with the existing one
+				// we have to give it a name
+				if (argument instanceof CtPackage) {
+					((CtPackage) argument).setSimpleName(argument.getShortRepresentation());
+				}
+				return argument;
+
 			}
 		}
-		throw new IllegalArgumentException();
+		if (Set.class.isAssignableFrom(c)) {
+			// we create one set with one element
+			HashSet<Object> objects = new HashSet<>();
+			objects.add(createCompatibleObject(parameterType.getActualTypeArguments().get(0)));
+			return objects;
+		}
+		if (Collection.class.isAssignableFrom(c)) {
+			// we create one list with one element
+			ArrayList<Object> objects = new ArrayList<>();
+			objects.add(createCompatibleObject(parameterType.getActualTypeArguments().get(0)));
+			return objects;
+		}
+		throw new IllegalArgumentException("cannot instantiate "+parameterType);
 	}
+	static int nTotalSetterCalls= 0;
+
 	@Test
 	public void testContract() throws Throwable {
+		int nSetterCalls= 0;
+		int nAssertsOnParent = 0;
+		int nAssertsOnParentInList = 0;
 		// contract: all setters/adders must set the parent (not necessarily the direct parent, can be upper in the parent tree, for instance when injecting blocks
-		Object o = instance;
-		List<Method> methodsToInvoke = getMethodsToInvoke(toTest);
-		for (Method setter : methodsToInvoke) {
+		Object o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
+		for (CtMethod<?> setter : SpoonTestHelpers.getAllSetters(toTest)) {
 
-			// special case: impossible methods on some objects (they throw an UnsupportedOperationException)
-			if (setter.getAnnotation(Deprecated.class) != null) continue;
-			if (o instanceof CtAnnotationType && "addMethod".equals(setter.getName())) continue;
-			if (CtActualTypeContainer.class.isAssignableFrom(o.getClass())) {
-				if ("setActualTypeArguments".equals(setter.getName())) continue;
-				if ("addActualTypeArgument".equals(setter.getName())) continue;
-			}
-			if (o instanceof CtInvocation && "setType".equals(setter.getName())) continue;
-			if ((o instanceof CtConstructorCall || CtConstructorCall.class.isAssignableFrom(o.getClass())) && "setType".equals(setter.getName())) continue;
-			if (o instanceof CtTypeAccess && "setType".equals(setter.getName())) continue;
-			if (o instanceof CtType && "setSuperclass".equals(setter.getName())) continue;
+			Object argument = createCompatibleObject(setter.getParameters().get(0).getType());
 
-
-			CtElement argument = createCompatibleObject((Class<? extends CtElement>) setter.getParameters()[0].getType());
-			// an empty package is merged with the existing one
-			// we have to give it a name
-			if (argument instanceof CtPackage) {
-				((CtPackage)argument).setSimpleName("foobar");
-			}
 			try {
 				// we create a fresh object
 				CtElement receiver = ((CtElement) o).clone();
+
 				// we invoke the setter
-				setter.invoke(receiver, new Object[] { argument });
+				Method actualMethod = setter.getReference().getActualMethod();
+				actualMethod.invoke(receiver, new Object[] { argument });
+				nSetterCalls++;
+				nTotalSetterCalls++;
+				// if it's a settable property
 				// we check that setParent has been called
-				assertTrue(argument.hasParent(receiver));
+
+				// directly the element
+				if (CtElement.class.isInstance(argument)
+				  && setter.getAnnotation(UnsettableProperty.class) == null) {
+					nAssertsOnParent++;
+					assertTrue(((CtElement)argument).hasParent(receiver));
+				}
+
+				// the element is in a list
+				if (Collection.class.isInstance(argument)
+						&& setter.getAnnotation(UnsettableProperty.class) == null) {
+					nAssertsOnParentInList++;
+					assertTrue(((CtElement)((Collection)argument).iterator().next()).hasParent(receiver));
+				}
+
+
 			} catch (AssertionError e) {
 				Assert.fail("call setParent contract failed for " + setter.toString() + " " + e.toString());
 			} catch (InvocationTargetException e) {
 				if (e.getCause() instanceof UnsupportedOperationException) {
-					// ignore
+					// fail-safe contract: we can always call a setter
+					// this simplifies client code which does not have to write defensive if/then or try/catch
+					// if the setter does nothing
+					// this is now documented by @UnsettableProperty
+					throw e;
 				} else if (e.getCause() instanceof RuntimeException) {
 					throw e.getCause();
 				} else {
@@ -155,6 +155,8 @@ public class ParentContractTest<T extends CtVisitable> {
 				}
 			}
 		}
+		assertTrue(nSetterCalls > 0);
+		assertTrue(nAssertsOnParent > 0 || nAssertsOnParentInList > 0);
 	}
 
 }

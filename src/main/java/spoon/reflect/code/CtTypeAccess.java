@@ -16,8 +16,10 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 /**
  * This code element represents a type reference usable as an expression.
@@ -71,6 +73,10 @@ public interface CtTypeAccess<A> extends CtExpression<Void> {
 	@Override
 	@DerivedProperty
 	CtTypeReference<Void> getType();
+
+	@Override
+	@UnsettableProperty
+	<C extends CtTypedElement> C setType(CtTypeReference<Void> type);
 
 	@Override
 	CtTypeAccess<A> clone();

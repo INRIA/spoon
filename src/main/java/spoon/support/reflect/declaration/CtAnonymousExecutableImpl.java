@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -110,18 +111,23 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtExecutable setParameters(List list) {
-		throw new UnsupportedOperationException("You can't have parameters in a anonymous executable");
+		// unsettable property
+		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtExecutable addParameter(CtParameter parameter) {
-		throw new UnsupportedOperationException("You can't have parameters in a anonymous executable");
+		// unsettable property
+		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public boolean removeParameter(CtParameter parameter) {
-		throw new UnsupportedOperationException("You can't have parameters in a anonymous executable");
+		return false;
 	}
 
 	@Override
@@ -130,18 +136,24 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtExecutable setThrownTypes(Set thrownTypes) {
-		throw new UnsupportedOperationException("You can't have throw types in a anonymous executable");
+		// unsettable property
+		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtExecutable addThrownType(CtTypeReference throwType) {
-		throw new UnsupportedOperationException("You can't have throw types in a anonymous executable");
+		// unsettable property
+		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public boolean removeThrownType(CtTypeReference throwType) {
-		throw new UnsupportedOperationException("You can't have throw types in a anonymous executable");
+		// unsettable property
+		return false;
 	}
 
 	@Override
@@ -150,8 +162,10 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
+	@UnsettableProperty
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
-		throw new UnsupportedOperationException("You can't have a name in a anonymous executable");
+		// unsettable property
+		return (T) this;
 	}
 
 	@Override
@@ -160,8 +174,10 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
-		throw new UnsupportedOperationException("An anonymous executable isn't typed");
+		// unsettable property
+		return (C) this;
 	}
 
 	@Override

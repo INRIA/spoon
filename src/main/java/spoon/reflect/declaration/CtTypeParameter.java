@@ -50,4 +50,15 @@ public interface CtTypeParameter extends CtType<Object> {
 	@UnsettableProperty
 	<C extends CtType<Object>> C setTypeMembers(List<CtTypeMember> members);
 
+	@Override
+	@UnsettableProperty
+	<C extends CtType<Object>> C setFields(List<CtField<?>> fields);
+
+	@Override
+	@UnsettableProperty
+	<C extends CtType<Object>> C setMethods(Set<CtMethod<?>> methods);
+
+	@Override
+	@UnsettableProperty
+	<C extends CtType<Object>> C setNestedTypes(Set<CtType<?>> nestedTypes);
 }

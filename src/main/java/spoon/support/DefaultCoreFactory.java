@@ -873,7 +873,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		if (klass.equals(spoon.reflect.reference.CtWildcardReference.class)) {
 			return createWildcardReference();
 		}
-		throw new IllegalArgumentException("not instantiable by CoreFactory()");
+		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
 }
