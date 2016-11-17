@@ -63,10 +63,8 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 
 	@SuppressWarnings("unchecked")
 	public CtExpression<T> apply(CtType<?> targetType) {
-		CtClass<? extends ExpressionTemplate<?>> c;
-		CtBlock<?> b;
-		c = targetType.getFactory().Class().get(this.getClass());
-		b = Substitution.substitute(targetType, this, getExpressionBlock(c));
+		CtClass<? extends ExpressionTemplate<?>> c = Substitution.getTemplateCtClass(targetType, this);
+		CtBlock<?> b = Substitution.substitute(targetType, this, getExpressionBlock(c));
 		return ((CtReturn<T>) b.getStatements().get(0)).getReturnedExpression();
 	}
 

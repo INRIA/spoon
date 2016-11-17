@@ -16,6 +16,8 @@
  */
 package spoon.template;
 
+import spoon.SpoonException;
+import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
@@ -29,6 +31,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
@@ -36,6 +39,7 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -60,7 +64,7 @@ public abstract class Substitution {
 	 */
 	public static <T extends Template<?>> void insertAll(CtType<?> targetType, T template) {
 
-		CtClass<T> templateClass = targetType.getFactory().Class().get(template.getClass());
+		CtClass<T> templateClass = getTemplateCtClass(targetType, template);
 		// insert all the interfaces
 		for (CtTypeReference<?> t : templateClass.getSuperInterfaces()) {
 			if (!t.equals(targetType.getFactory().Type().createReference(Template.class))) {
@@ -154,7 +158,7 @@ public abstract class Substitution {
 	 */
 	public static void insertAllSuperInterfaces(CtType<?> targetType, Template<?> template) {
 
-		CtClass<? extends Template<?>> sourceClass = targetType.getFactory().Class().get(template.getClass());
+		CtClass<? extends Template<?>> sourceClass = getTemplateCtClass(targetType, template);
 		// insert all the interfaces
 		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
 			if (!t.equals(targetType.getFactory().Type().createReference(Template.class))) {
@@ -195,7 +199,7 @@ public abstract class Substitution {
 	 */
 	public static void insertAllMethods(CtType<?> targetType, Template<?> template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Class().get(template.getClass());
+		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
 			if (m.getAnnotation(Local.class) != null) {
@@ -220,7 +224,7 @@ public abstract class Substitution {
 	 */
 	public static void insertAllFields(CtType<?> targetType, Template<?> template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Class().get(template.getClass());
+		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
 		// insert all the fields
 		for (CtTypeMember typeMember: sourceClass.getTypeMembers()) {
 			if (!(typeMember instanceof CtField)) {
@@ -251,7 +255,7 @@ public abstract class Substitution {
 	 */
 	public static void insertAllConstructors(CtType<?> targetType, Template<?> template) {
 
-		CtClass<?> sourceClass = targetType.getFactory().Class().get(template.getClass());
+		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
 		// insert all the constructors
 		if (targetType instanceof CtClass) {
 			for (CtConstructor<?> c : sourceClass.getConstructors()) {
@@ -368,7 +372,7 @@ public abstract class Substitution {
 	 * the template parameters substituted
 	 */
 	public static CtBlock<?> substituteMethodBody(CtClass<?> targetClass, Template<?> template, String executableName, CtTypeReference<?>... parameterTypes) {
-		CtClass<?> sourceClass = targetClass.getFactory().Class().get(template.getClass());
+		CtClass<?> sourceClass = getTemplateCtClass(targetClass, template);
 		CtExecutable<?> sourceExecutable = executableName.equals(template.getClass().getSimpleName())
 				? sourceClass.getConstructor(parameterTypes)
 				: sourceClass.getMethod(executableName, parameterTypes);
@@ -393,7 +397,7 @@ public abstract class Substitution {
 	 * the template parameters substituted
 	 */
 	public static CtStatement substituteStatement(CtClass<?> targetClass, Template<?> template, int statementIndex, String executableName, CtTypeReference<?>... parameterTypes) {
-		CtClass<?> sourceClass = targetClass.getFactory().Class().get(template.getClass());
+		CtClass<?> sourceClass = getTemplateCtClass(targetClass, template);
 		CtExecutable<?> sourceExecutable = executableName.equals(template.getClass().getSimpleName())
 				? sourceClass.getConstructor(parameterTypes)
 				: sourceClass.getMethod(executableName, parameterTypes);
@@ -415,7 +419,7 @@ public abstract class Substitution {
 	 */
 
 	public static CtExpression<?> substituteFieldDefaultExpression(CtType<?> targetType, Template<?> template, String fieldName) {
-		CtClass<?> sourceClass = targetType.getFactory().Class().get(template.getClass());
+		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
 		CtField<?> sourceField = sourceClass.getField(fieldName);
 		return substitute(targetType, template, sourceField.getDefaultExpression());
 	}
@@ -533,4 +537,55 @@ public abstract class Substitution {
 		}
 	}
 
+	/**
+	 * @param targetType - the element which is going to receive the model produced by the template.
+	 * It is needed here just to provide the spoon factory, which contains the model of the template
+	 *
+	 * @param template - java instance of the template
+	 *
+	 * @return - CtClass from the already built spoon model, which represents the template
+	 */
+	static <T> CtClass<T> getTemplateCtClass(CtType<?> targetType, Template<?> template) {
+		Factory factory;
+		// we first need a factory
+		if (targetType != null) {
+			// if it's template with reference replacement
+			factory = targetType.getFactory();
+		} else {
+			// else we have at least one template parameter with a factory
+			factory = getFactory(template);
+		}
+		return getTemplateCtClass(factory, template);
+	}
+
+	/**
+	 * @param factory - the factory, which contains the model of the template
+	 *
+	 * @param template - java instance of the template
+	 *
+	 * @return - CtClass from the already built spoon model, which represents the template
+	 */
+	static <T> CtClass<T> getTemplateCtClass(Factory factory, Template<?> template) {
+		CtClass<T> c = factory.Class().get(template.getClass());
+		if (c.isShadow()) {
+			throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
+		}
+		return c;
+	}
+
+	/**
+	 * returns a Spoon factory object from the first template parameter that contains one
+	 */
+	static Factory getFactory(Template<?> template) {
+		try {
+			for (Field f : Parameters.getAllTemplateParameterFields(template.getClass())) {
+				if (f.get(template) != null && f.get(template) instanceof FactoryAccessor) {
+					return ((FactoryAccessor) f.get(template)).getFactory();
+				}
+			}
+		} catch (Exception e) {
+			throw new SpoonException(e);
+		}
+		throw new TemplateException("no factory found in template " + template.getClass().getName());
+	}
 }
