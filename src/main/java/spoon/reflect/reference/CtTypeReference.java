@@ -150,6 +150,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	/**
 	 * Returns this, or top level type of this, if this is an inner type
 	 */
+	@DerivedProperty
 	CtTypeReference<?> getTopLevelType();
 
 	/**
