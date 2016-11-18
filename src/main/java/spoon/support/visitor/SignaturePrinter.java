@@ -30,7 +30,8 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 
 /**
  * Responsible for computing signatures for elements where a signature exists
- * (CtType, CtMethod and CtPackage). Otherwise returns the empty string
+ * (CtType, CtMethod and CtPackage). Otherwise returns the empty string.
+ *
  */
 public class SignaturePrinter extends CtInheritanceScanner {
 
@@ -118,6 +119,12 @@ public class SignaturePrinter extends CtInheritanceScanner {
 		write(")");
 	}
 
+	/**
+	* For methods, this implementation of signature contains the return type, which corresponds
+	* to what the Java compile and virtual machine call a "descriptor".
+	*
+	* See chapter "8.4.2 Method Signature" of the Java specification
+	*/
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		if (!m.getFormalCtTypeParameters().isEmpty()) {
@@ -131,6 +138,7 @@ public class SignaturePrinter extends CtInheritanceScanner {
 			}
 			write("> ");
 		}
+		// the return type is required, see example in SimilarSignatureMethodes in test code (name and arguments are identical)
 		if (m.getType() != null) {
 			write(m.getType().getQualifiedName());
 		}
