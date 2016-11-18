@@ -16,9 +16,6 @@
  */
 package spoon.support.reflect.reference;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
-import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtType;
@@ -30,7 +27,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
 
-import static javafx.scene.input.KeyCode.T;
+import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
