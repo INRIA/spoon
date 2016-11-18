@@ -88,6 +88,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected File outputDirectory = new File(Launcher.OUTPUTDIR);
 	protected List<SpoonResource> forceBuildList = new ArrayList<>();
 	protected String encoding;
+	protected List<CompilationUnitFilter> compilationUnitFilters = new ArrayList<>();
 
 	/**
 	 * Default constructor
@@ -414,9 +415,14 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	protected void buildModel(CompilationUnitDeclaration[] units) {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		for (CompilationUnitDeclaration unit : units) {
-			unit.traverse(builder, unit.scope);
-			if (getFactory().getEnvironment().isCommentsEnabled()) {
-				new JDTCommentBuilder(unit, factory).build();
+			final String unitPath = new String(unit.getFileName());
+			for (final CompilationUnitFilter cuf : compilationUnitFilters) {
+				if (cuf.accept(unit, unitPath)) {
+					unit.traverse(builder, unit.scope);
+					if (getFactory().getEnvironment().isCommentsEnabled()) {
+						new JDTCommentBuilder(unit, factory).build();
+					}
+				}
 			}
 		}
 	}
@@ -614,5 +620,20 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	@Override
 	public boolean compileInputSources() {
 		return compile(InputType.FILES);
+	}
+
+	@Override
+	public void addCompilationUnitFilter(final CompilationUnitFilter filter) {
+		compilationUnitFilters.add(filter);
+	}
+
+	@Override
+	public void removeCompilationUnitFilter(CompilationUnitFilter filter) {
+		compilationUnitFilters.remove(filter);
+	}
+
+	@Override
+	public List<CompilationUnitFilter> getCompilationUnitFilter() {
+		return new ArrayList<>(compilationUnitFilters);
 	}
 }
