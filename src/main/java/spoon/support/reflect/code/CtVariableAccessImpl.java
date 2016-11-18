@@ -17,8 +17,10 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.support.DerivedProperty;
 
 public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements CtVariableAccess<T> {
 	private static final long serialVersionUID = 1L;
@@ -27,7 +29,15 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 
 	@Override
 	public CtVariableReference<T> getVariable() {
-		return variable;
+		if (variable != null) {
+			return (CtVariableReference<T>) variable;
+		}
+		if (getFactory() != null) {
+			CtVariableReference<Object> ref = getFactory().Core().createLocalVariableReference();
+			ref.setParent(this);
+			return (CtVariableReference<T>) ref;
+		}
+		return null;
 	}
 
 	@Override
@@ -40,8 +50,17 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 	}
 
 	@Override
+	@DerivedProperty
 	public CtTypeReference<T> getType() {
-		return getVariable() == null ? null : getVariable().getType();
+		return getVariable().getType();
+	}
+
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			getVariable().setType(type);
+		}
+		return (C) this;
 	}
 
 	@Override

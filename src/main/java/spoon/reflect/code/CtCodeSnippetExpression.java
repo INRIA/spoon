@@ -36,4 +36,5 @@ public interface CtCodeSnippetExpression<T> extends CtExpression<T>, CtCodeSnipp
 
 	@Override
 	CtCodeSnippetExpression<T> clone();
+
 }

@@ -27,6 +27,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -40,7 +41,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABL
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
 
-	String name;
+	String name = "";
 
 	CtTypeReference<T> type;
 
@@ -54,6 +55,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
+	@DerivedProperty
 	public CtExpression<T> getDefaultExpression() {
 		return null;
 	}

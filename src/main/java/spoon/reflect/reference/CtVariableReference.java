@@ -31,7 +31,6 @@ public interface CtVariableReference<T> extends CtReference {
 	/**
 	 * Gets the type of the variable.
 	 */
-	@DerivedProperty
 	CtTypeReference<T> getType();
 
 	/**

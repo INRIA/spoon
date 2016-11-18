@@ -39,7 +39,7 @@ import java.util.Set;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
-	String simpleName;
+	String simpleName = "";
 	CtExpression<T> expression;
 	CtBlock<?> body;
 	List<CtParameter<?>> parameters = emptyList();

@@ -2,7 +2,6 @@ package spoon.test;
 
 import spoon.Launcher;
 import spoon.SpoonAPI;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -10,13 +9,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.support.DerivedProperty;
-import spoon.support.UnsettableProperty;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class SpoonTestHelpers {
 	// only static methods
@@ -69,19 +64,53 @@ public class SpoonTestHelpers {
 				;
 	}
 
+	/**
+	 * The default contains based on Method.equals takes into account the return type
+	 * And we don't want this, because we need to capture
+	 * the annotation of the implementation method.
+	 */
+	private static boolean containsMethodBasedOnName(List<CtMethod<?>> l, CtMethod setter) {
+		for(CtMethod<?> m : l ) {
+			if (m.getSimpleName().equals(setter.getSimpleName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** returns all possible methods in the order class then interface, and up again */
+	public static List<CtMethod<?>> getAllMetamodelMethods(CtType<?> baseType) {
+		List<CtMethod<?>> result = new ArrayList<>();
+		for (CtMethod<?> m : baseType.getMethods()) {
+			if (!containsMethodBasedOnName(result, m)) {
+				result.add(m);
+			}
+		}
+		for (CtTypeReference<?> itf : baseType.getSuperInterfaces()) {
+			for (CtMethod<?> up : getAllSetters(itf.getTypeDeclaration())) {
+				if (!containsMethodBasedOnName(result, up)) {
+					result.add(up);
+				}
+			}
+		}
+		return result;
+	}
+
+
 	/** returns all possible setters related to CtElement */
 	public static List<CtMethod<?>> getAllSetters(CtType<?> baseType) {
 		List<CtMethod<?>> result = new ArrayList<>();
-		for (CtMethod<?> m : baseType.getAllMethods()) {
+		for (CtMethod<?> m : getAllMetamodelMethods(baseType)) {
 			if (!m.getSimpleName().startsWith("set") && !m.getSimpleName().startsWith("set")) {
 				continue;
 			}
 			if (m.getParameters().size()!=1) {
 				continue;
 			}
-			if (isMetamodelRelatedType(m.getParameters().get(0).getType())) {
-				result.add(m);
+			if (!isMetamodelRelatedType(m.getParameters().get(0).getType())) {
+				continue;
 			}
+			result.add(m);
 		}
 		return result;
 	}
@@ -108,12 +137,10 @@ public class SpoonTestHelpers {
 
 	/** specifies what a metamodel property is: a getter than returns a metamodel-related class and that is not derived */
 	public static boolean isMetamodelProperty(CtType<?> baseType, CtMethod<?> m) {
-		CtMethod<?> correspondingSetter = getSetterOf(baseType, m);
 		return
 				m.getSimpleName().startsWith("get")
 						&& m.getParameters().size() == 0 // a getter has no parameter
 						&& m.getAnnotation(DerivedProperty.class) == null
-						&& (correspondingSetter == null || correspondingSetter.getAnnotation(UnsettableProperty.class) == null)
 						&&
 						// return type
 						isMetamodelRelatedType(m.getType());

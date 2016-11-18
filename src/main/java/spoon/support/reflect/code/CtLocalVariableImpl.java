@@ -37,7 +37,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	CtExpression<T> defaultExpression;
 
-	String name;
+	String name = "";
 
 	CtTypeReference<T> type;
 

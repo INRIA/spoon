@@ -304,15 +304,15 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
-		scanCtFieldAccess(fieldRead);
 		visitCtVariableRead(fieldRead);
+		scanCtFieldAccess(fieldRead);
 		scanCtTargetedExpression(fieldRead);
 	}
 
 	@Override
 	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visitCtVariableWrite(fieldWrite);
 		scanCtFieldAccess(fieldWrite);
-		visitCtVariableRead(fieldWrite);
 		scanCtTargetedExpression(fieldWrite);
 	}
 

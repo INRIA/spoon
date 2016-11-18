@@ -36,6 +36,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
 		spoon.reflect.declaration.CtAnnotation<A> aCtAnnotation = spoon.support.visitor.clone.CloneBuilder.build(this.builder, annotation, annotation.getFactory().Core().createAnnotation());
+		aCtAnnotation.setType(spoon.support.visitor.equals.CloneHelper.clone(annotation.getType()));
 		aCtAnnotation.setComments(spoon.support.visitor.equals.CloneHelper.clone(annotation.getComments()));
 		aCtAnnotation.setAnnotationType(spoon.support.visitor.equals.CloneHelper.clone(annotation.getAnnotationType()));
 		aCtAnnotation.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(annotation.getAnnotations()));
@@ -91,6 +92,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtArrayTypeReference(final spoon.reflect.reference.CtArrayTypeReference<T> reference) {
 		spoon.reflect.reference.CtArrayTypeReference<T> aCtArrayTypeReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createArrayTypeReference());
 		aCtArrayTypeReference.setComments(spoon.support.visitor.equals.CloneHelper.clone(reference.getComments()));
+		aCtArrayTypeReference.setPackage(spoon.support.visitor.equals.CloneHelper.clone(reference.getPackage()));
 		aCtArrayTypeReference.setDeclaringType(spoon.support.visitor.equals.CloneHelper.clone(reference.getDeclaringType()));
 		aCtArrayTypeReference.setComponentType(spoon.support.visitor.equals.CloneHelper.clone(reference.getComponentType()));
 		aCtArrayTypeReference.setActualTypeArguments(spoon.support.visitor.equals.CloneHelper.clone(reference.getActualTypeArguments()));
@@ -194,6 +196,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtConditional(final spoon.reflect.code.CtConditional<T> conditional) {
 		spoon.reflect.code.CtConditional<T> aCtConditional = spoon.support.visitor.clone.CloneBuilder.build(this.builder, conditional, conditional.getFactory().Core().createConditional());
+		aCtConditional.setType(spoon.support.visitor.equals.CloneHelper.clone(conditional.getType()));
 		aCtConditional.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(conditional.getAnnotations()));
 		aCtConditional.setCondition(spoon.support.visitor.equals.CloneHelper.clone(conditional.getCondition()));
 		aCtConditional.setThenExpression(spoon.support.visitor.equals.CloneHelper.clone(conditional.getThenExpression()));
@@ -295,11 +298,9 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.code.CtAnnotationFieldAccess<T> aCtAnnotationFieldAccess = spoon.support.visitor.clone.CloneBuilder.build(this.builder, annotationFieldAccess, annotationFieldAccess.getFactory().Core().createAnnotationFieldAccess());
 		aCtAnnotationFieldAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getComments()));
 		aCtAnnotationFieldAccess.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getAnnotations()));
-		aCtAnnotationFieldAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getType()));
 		aCtAnnotationFieldAccess.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getTypeCasts()));
-		aCtAnnotationFieldAccess.setTarget(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getTarget()));
+		aCtAnnotationFieldAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getType()));
 		aCtAnnotationFieldAccess.setVariable(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getVariable()));
-		aCtAnnotationFieldAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getComments()));
 		this.other = aCtAnnotationFieldAccess;
 	}
 
@@ -402,6 +403,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.code.CtCatchVariable<T> aCtCatchVariable = spoon.support.visitor.clone.CloneBuilder.build(this.builder, catchVariable, catchVariable.getFactory().Core().createCatchVariable());
 		aCtCatchVariable.setComments(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getComments()));
 		aCtCatchVariable.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getAnnotations()));
+		aCtCatchVariable.setDefaultExpression(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getDefaultExpression()));
 		aCtCatchVariable.setType(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getType()));
 		aCtCatchVariable.setMultiTypes(spoon.support.visitor.equals.CloneHelper.clone(catchVariable.getMultiTypes()));
 		this.other = aCtCatchVariable;
@@ -486,6 +488,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtLambda.setType(spoon.support.visitor.equals.CloneHelper.clone(lambda.getType()));
 		aCtLambda.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(lambda.getTypeCasts()));
 		aCtLambda.setParameters(spoon.support.visitor.equals.CloneHelper.clone(lambda.getParameters()));
+		aCtLambda.setThrownTypes(spoon.support.visitor.equals.CloneHelper.clone(lambda.getThrownTypes()));
 		aCtLambda.setBody(spoon.support.visitor.equals.CloneHelper.clone(lambda.getBody()));
 		aCtLambda.setExpression(spoon.support.visitor.equals.CloneHelper.clone(lambda.getExpression()));
 		aCtLambda.setComments(spoon.support.visitor.equals.CloneHelper.clone(lambda.getComments()));
@@ -637,6 +640,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public void visitCtWildcardReference(spoon.reflect.reference.CtWildcardReference wildcardReference) {
 		spoon.reflect.reference.CtWildcardReference aCtWildcardReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, wildcardReference, wildcardReference.getFactory().Core().createWildcardReference());
+		aCtWildcardReference.setPackage(spoon.support.visitor.equals.CloneHelper.clone(wildcardReference.getPackage()));
+		aCtWildcardReference.setDeclaringType(spoon.support.visitor.equals.CloneHelper.clone(wildcardReference.getDeclaringType()));
 		aCtWildcardReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(wildcardReference.getAnnotations()));
 		aCtWildcardReference.setBoundingType(spoon.support.visitor.equals.CloneHelper.clone(wildcardReference.getBoundingType()));
 		this.other = aCtWildcardReference;
@@ -646,6 +651,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
 		spoon.reflect.reference.CtIntersectionTypeReference<T> aCtIntersectionTypeReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createIntersectionTypeReference());
+		aCtIntersectionTypeReference.setPackage(spoon.support.visitor.equals.CloneHelper.clone(reference.getPackage()));
+		aCtIntersectionTypeReference.setDeclaringType(spoon.support.visitor.equals.CloneHelper.clone(reference.getDeclaringType()));
 		aCtIntersectionTypeReference.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(reference.getAnnotations()));
 		aCtIntersectionTypeReference.setBounds(spoon.support.visitor.equals.CloneHelper.clone(reference.getBounds()));
 		this.other = aCtIntersectionTypeReference;
@@ -719,6 +726,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtCodeSnippetExpression(final spoon.reflect.code.CtCodeSnippetExpression<T> expression) {
 		spoon.reflect.code.CtCodeSnippetExpression<T> aCtCodeSnippetExpression = spoon.support.visitor.clone.CloneBuilder.build(this.builder, expression, expression.getFactory().Core().createCodeSnippetExpression());
+		aCtCodeSnippetExpression.setType(spoon.support.visitor.equals.CloneHelper.clone(expression.getType()));
 		aCtCodeSnippetExpression.setComments(spoon.support.visitor.equals.CloneHelper.clone(expression.getComments()));
 		aCtCodeSnippetExpression.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(expression.getAnnotations()));
 		aCtCodeSnippetExpression.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(expression.getTypeCasts()));
@@ -736,6 +744,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtUnboundVariableReference(final spoon.reflect.reference.CtUnboundVariableReference<T> reference) {
 		spoon.reflect.reference.CtUnboundVariableReference<T> aCtUnboundVariableReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createUnboundVariableReference());
+		aCtUnboundVariableReference.setType(spoon.support.visitor.equals.CloneHelper.clone(reference.getType()));
 		this.other = aCtUnboundVariableReference;
 	}
 
@@ -767,9 +776,9 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <T> void visitCtSuperAccess(final spoon.reflect.code.CtSuperAccess<T> f) {
 		spoon.reflect.code.CtSuperAccess<T> aCtSuperAccess = spoon.support.visitor.clone.CloneBuilder.build(this.builder, f, f.getFactory().Core().createSuperAccess());
+		aCtSuperAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(f.getType()));
 		aCtSuperAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(f.getComments()));
 		aCtSuperAccess.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(f.getAnnotations()));
-		aCtSuperAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(f.getType()));
 		aCtSuperAccess.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(f.getTypeCasts()));
 		aCtSuperAccess.setTarget(spoon.support.visitor.equals.CloneHelper.clone(f.getTarget()));
 		aCtSuperAccess.setVariable(spoon.support.visitor.equals.CloneHelper.clone(f.getVariable()));
