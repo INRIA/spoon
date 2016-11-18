@@ -3,6 +3,7 @@ package spoon.test.fieldaccesses;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
@@ -30,6 +31,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.fieldaccesses.testclasses.B;
 import spoon.test.fieldaccesses.testclasses.Kuu;
 import spoon.test.fieldaccesses.testclasses.Panini;
+import spoon.test.fieldaccesses.testclasses.Pizza;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
@@ -394,5 +396,22 @@ public class FieldAccessTest {
 
 		assertEquals("A.myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).toString());
 		assertEquals("finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
+	}
+	
+	@Test
+	public void testThisDotFieldAccess() throws Exception {
+		Factory factory = build(Pizza.class);
+		CtClass<?> pizza = factory.Class().get(Pizza.class);
+
+		assertEquals("this.size = size", pizza.getElements(new TypeFilter<>(CtAssignment.class)).get(0).toString());
+	}
+
+	@Test
+	public void testThisDotFieldAccessWithAutoImport() throws Exception {
+		Factory factory = build(Pizza.class);
+		CtClass<?> pizza = factory.Class().get(Pizza.class);
+		factory.getEnvironment().setAutoImports(true);
+
+		assertEquals("this.size = size", pizza.getElements(new TypeFilter<>(CtAssignment.class)).get(0).toString());
 	}
 }
