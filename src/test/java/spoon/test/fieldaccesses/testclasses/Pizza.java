@@ -7,4 +7,12 @@ public class Pizza
 	void setSize(int size) {
 		this.size = size;
 	}
+
+	int getSize(int size) {
+		return size;
+	}
+
+	void addSize(int plus) {
+		size = size + plus;
+	}
 }
