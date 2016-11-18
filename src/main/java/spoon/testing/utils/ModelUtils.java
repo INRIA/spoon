@@ -85,7 +85,7 @@ public final class ModelUtils {
 			try {
 				comp.addInputSource(SpoonResourceHelper.createResource(fileToBuild));
 			} catch (FileNotFoundException e) {
-				throw new RuntimeException("File not found");
+				throw new RuntimeException("File not found", e);
 			}
 		}
 		comp.build();

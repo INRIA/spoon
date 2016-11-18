@@ -300,9 +300,12 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Query to get all methods which throw an UnsupportedOperationException. We must avoid to call these methods during a clone process.
 			 */
 			private List<CtMethod<?>> getCtMethodThrowUnsupportedOperation(CtMethod<?> method) {
-				final CtInterface<?> ctInterface = getInterfaceOf(method.getDeclaringType());
-				final CtMethod<?> declarationMethod = getMethodByCtMethod(ctInterface, method);
 				final List<CtMethod<?>> avoid = new ArrayList<>();
+				final CtInterface<?> ctInterface = getInterfaceOf(method.getDeclaringType());
+				if (ctInterface == null) {
+					return avoid;
+				}
+				final CtMethod<?> declarationMethod = getMethodByCtMethod(ctInterface, method);
 				for (CtMethod<?> ctMethod : Query.getElements(factory, new OverridingMethodFilter(declarationMethod))) {
 					if (!avoidThrowUnsupportedOperationException(ctMethod)) {
 						avoid.add(ctMethod);

@@ -412,6 +412,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(annotationFieldAccess.getComments());
 		scan(annotationFieldAccess.getAnnotations());
 		scan(annotationFieldAccess.getTypeCasts());
+		scan(annotationFieldAccess.getTarget());
 		scan(annotationFieldAccess.getType());
 		scan(annotationFieldAccess.getVariable());
 		exit(annotationFieldAccess);

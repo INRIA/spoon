@@ -58,4 +58,5 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 
 	@Override
 	CtArrayTypeReference<T> clone();
+
 }
