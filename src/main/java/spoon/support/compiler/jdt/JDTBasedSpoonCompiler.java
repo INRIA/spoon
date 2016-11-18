@@ -414,16 +414,19 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	protected void buildModel(CompilationUnitDeclaration[] units) {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
+        units:
 		for (CompilationUnitDeclaration unit : units) {
 			final String unitPath = new String(unit.getFileName());
 			for (final CompilationUnitFilter cuf : compilationUnitFilters) {
-				if (cuf.accept(unit, unitPath)) {
-					unit.traverse(builder, unit.scope);
-					if (getFactory().getEnvironment().isCommentsEnabled()) {
-						new JDTCommentBuilder(unit, factory).build();
-					}
+				if (cuf.exclude(unit, unitPath)) {
+                    // do not traverse this unit
+					continue units;
 				}
 			}
+            unit.traverse(builder, unit.scope);
+            if (getFactory().getEnvironment().isCommentsEnabled()) {
+                new JDTCommentBuilder(unit, factory).build();
+            }
 		}
 	}
 
