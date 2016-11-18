@@ -265,7 +265,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	 * The list of comments
 	 * @return the list of comment
 	 */
-	@IgnoredByEquals
 	List<CtComment> getComments();
 
 	/**
