@@ -66,11 +66,55 @@ public abstract class Substitution {
 
 		CtClass<T> templateClass = getTemplateCtClass(targetType, template);
 		// insert all the interfaces
-		for (CtTypeReference<?> t : templateClass.getSuperInterfaces()) {
+		insertAllSuperInterfaces(targetType, template, templateClass);
+		// insert all the methods
+		insertAllMethods(targetType, template, templateClass);
+		// insert all the constructors and all the initialization blocks (only for classes)
+		insertAllConstructors(targetType, template, templateClass);
+		for (CtTypeMember typeMember : templateClass.getTypeMembers()) {
+			if (typeMember instanceof CtField) {
+				// insert all the fields
+				insertGeneratedField(targetType, template, (CtField<?>) typeMember);
+			} else if (typeMember instanceof CtType) {
+				// insert all the inner types
+				insertGeneratedNestedType(targetType, template, (CtType) typeMember, templateClass);
+			}
+		}
+	}
+
+	/**
+	 * Inserts all the super interfaces (except {@link Template}) from a given
+	 * template by substituting all the template parameters by their values.
+	 *
+	 * @param targetType
+	 * 		the target type
+	 * @param template
+	 * 		the source template
+	 */
+	public static void insertAllSuperInterfaces(CtType<?> targetType, Template<?> template) {
+
+		CtClass<? extends Template<?>> sourceClass = getTemplateCtClass(targetType, template);
+		insertAllSuperInterfaces(targetType, template, sourceClass);
+	}
+	/**
+	 * Inserts all the super interfaces (except {@link Template}) from a given
+	 * template by substituting all the template parameters by their values.
+	 *
+	 * @param targetType
+	 * 		the target type
+	 * @param template
+	 * 		the source template
+	 * @param sourceClass
+	 * 		the model of source template
+	 */
+	static void insertAllSuperInterfaces(CtType<?> targetType, Template<?> template, CtClass<? extends Template<?>> sourceClass) {
+
+		// insert all the interfaces
+		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
 			if (!t.equals(targetType.getFactory().Type().createReference(Template.class))) {
 				CtTypeReference<?> t1 = t;
 				// substitute ref if needed
-				if (Parameters.getNames(templateClass).contains(t.getSimpleName())) {
+				if (Parameters.getNames(sourceClass).contains(t.getSimpleName())) {
 					Object o = Parameters.getValue(template, t.getSimpleName(), null);
 					if (o instanceof CtTypeReference) {
 						t1 = (CtTypeReference<?>) o;
@@ -96,95 +140,6 @@ public abstract class Substitution {
 				}
 			}
 		}
-		// insert all the methods
-		for (CtMethod<?> m : templateClass.getMethods()) {
-			if (m.getAnnotation(Local.class) != null) {
-				continue;
-			}
-			if (m.getAnnotation(Parameter.class) != null) {
-				continue;
-			}
-			insertMethod(targetType, template, m);
-		}
-		// insert all the constructors
-		if (targetType instanceof CtClass) {
-			for (CtConstructor<?> c : templateClass.getConstructors()) {
-				if (c.isImplicit()) {
-					continue;
-				}
-				if (c.getAnnotation(Local.class) != null) {
-					continue;
-				}
-				insertConstructor((CtClass<?>) targetType, template, c);
-			}
-		}
-		// insert all the initialization blocks (only for classes)
-		if (targetType instanceof CtClass) {
-			for (CtAnonymousExecutable e : templateClass.getAnonymousExecutables()) {
-				((CtClass<?>) targetType).addAnonymousExecutable(substitute(targetType, template, e));
-			}
-		}
-		for (CtTypeMember typeMember : templateClass.getTypeMembers()) {
-			if (typeMember instanceof CtField) {
-				// insert all the fields
-				CtField<?> f = (CtField<?>) typeMember;
-				if (f.getAnnotation(Local.class) != null) {
-					continue;
-				}
-				if (Parameters.isParameterSource(f.getReference())) {
-					continue;
-				}
-
-				insertField(targetType, template, f);
-			} else if (typeMember instanceof CtType) {
-				// insert all the inner types
-				if (typeMember.getAnnotation(Local.class) != null) {
-					continue;
-				}
-				CtType<?> result = substitute(templateClass, template, (CtType) typeMember);
-				targetType.addNestedType(result);
-			}
-		}
-	}
-
-	/**
-	 * Inserts all the super interfaces (except {@link Template}) from a given
-	 * template by substituting all the template parameters by their values.
-	 *
-	 * @param targetType
-	 * 		the target type
-	 * @param template
-	 * 		the source template
-	 */
-	public static void insertAllSuperInterfaces(CtType<?> targetType, Template<?> template) {
-
-		CtClass<? extends Template<?>> sourceClass = getTemplateCtClass(targetType, template);
-		// insert all the interfaces
-		for (CtTypeReference<?> t : sourceClass.getSuperInterfaces()) {
-			if (!t.equals(targetType.getFactory().Type().createReference(Template.class))) {
-				CtTypeReference<?> t1 = t;
-				// substitute ref if needed
-				if (Parameters.getNames(sourceClass).contains(t.getSimpleName())) {
-					Object o = Parameters.getValue(template, t.getSimpleName(), null);
-					if (o instanceof CtTypeReference) {
-						t1 = (CtTypeReference<?>) o;
-					} else if (o instanceof Class) {
-						t1 = targetType.getFactory().Type().createReference((Class<?>) o);
-					} else if (o instanceof String) {
-						t1 = targetType.getFactory().Type().createReference((String) o);
-					}
-				}
-				if (!t1.equals(targetType.getReference())) {
-					Class<?> c = t1.getActualClass();
-					if (c != null && c.isInterface()) {
-						targetType.addSuperInterface(t1);
-					}
-					if (c == null) {
-						targetType.addSuperInterface(t1);
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -200,6 +155,22 @@ public abstract class Substitution {
 	public static void insertAllMethods(CtType<?> targetType, Template<?> template) {
 
 		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
+		insertAllMethods(targetType, template, sourceClass);
+	}
+	/**
+	 * Inserts all the methods from a given template by substituting all the
+	 * template parameters by their values. Members annotated with
+	 * {@link spoon.template.Local} or {@link Parameter} are not inserted.
+	 *
+	 * @param targetType
+	 * 		the target type
+	 * @param template
+	 * 		the source template
+	 * @param sourceClass
+	 * 		the model of source template
+	 */
+	static void insertAllMethods(CtType<?> targetType, Template<?> template, CtClass<?> sourceClass) {
+
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
 			if (m.getAnnotation(Local.class) != null) {
@@ -227,19 +198,75 @@ public abstract class Substitution {
 		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
 		// insert all the fields
 		for (CtTypeMember typeMember: sourceClass.getTypeMembers()) {
-			if (!(typeMember instanceof CtField)) {
-				continue;
+			if (typeMember instanceof CtField) {
+				insertGeneratedField(targetType, template, (CtField<?>) typeMember);
 			}
-			CtField<?> f = (CtField<?>) typeMember;
-			if (f.getAnnotation(Local.class) != null) {
-				continue;
-			}
-			if (Parameters.isParameterSource(f.getReference())) {
-				continue;
-			}
-
-			insertField(targetType, template, f);
 		}
+	}
+
+	/**
+	 * Inserts the field by substituting all the
+	 * template parameters by their values. Field annotated with
+	 * {@link spoon.template.Local} or {@link Parameter} is not inserted.
+
+	 * @param targetType
+	 * @param template
+	 * @param field
+	 */
+	static void insertGeneratedField(CtType<?> targetType, Template<?> template, CtField<?> field) {
+
+		if (field.getAnnotation(Local.class) != null) {
+			return;
+		}
+		if (Parameters.isParameterSource(field.getReference())) {
+			return;
+		}
+
+		insertField(targetType, template, field);
+	}
+
+	/**
+	 * Inserts all the nested types from a given template by substituting all the
+	 * template parameters by their values. Members annotated with
+	 * {@link spoon.template.Local} are not inserted.
+	 *
+	 * @param targetType
+	 * 		the target type
+	 * @param template
+	 * 		the source template
+	 */
+	public static void insertAllNestedTypes(CtType<?> targetType, Template<?> template) {
+
+		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
+		// insert all the fields
+		for (CtTypeMember typeMember: sourceClass.getTypeMembers()) {
+			if (typeMember instanceof CtType) {
+				insertGeneratedNestedType(targetType, template, (CtType<?>) typeMember, sourceClass);
+			}
+		}
+	}
+
+	/**
+	 * Inserts the nestedType by substituting all the
+	 * template parameters by their values. Nested type annotated with
+	 * {@link spoon.template.Local} is not inserted.
+	 *
+	 * @param targetType
+	 * 		the target type
+	 * @param template
+	 * 		the source template
+	 * @param nestedType
+	 * 		to be insterted nested type
+	 * @param sourceClass
+	 * 		the model of source template
+	 */
+	static void insertGeneratedNestedType(CtType<?> targetType, Template<?> template, CtType<?> nestedType, CtClass<?> sourceClass) {
+
+		if (nestedType.getAnnotation(Local.class) != null) {
+			return;
+		}
+		CtType<?> result = substitute(sourceClass, template, (CtType) nestedType);
+		targetType.addNestedType(result);
 	}
 
 	/**
@@ -256,6 +283,23 @@ public abstract class Substitution {
 	public static void insertAllConstructors(CtType<?> targetType, Template<?> template) {
 
 		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
+		insertAllConstructors(targetType, template, sourceClass);
+	}
+	/**
+	 * Inserts all constructors and initialization blocks from a given template
+	 * by substituting all the template parameters by their values. Members
+	 * annotated with {@link spoon.template.Local} or {@link Parameter} are not
+	 * inserted.
+	 *
+	 * @param targetType
+	 * 		the target type
+	 * @param template
+	 * 		the source template
+	 * @param sourceClass
+	 * 		the model of source template
+	 */
+	static void insertAllConstructors(CtType<?> targetType, Template<?> template, CtClass<?> sourceClass) {
+
 		// insert all the constructors
 		if (targetType instanceof CtClass) {
 			for (CtConstructor<?> c : sourceClass.getConstructors()) {
@@ -271,9 +315,7 @@ public abstract class Substitution {
 		// insert all the initialization blocks (only for classes)
 		if (targetType instanceof CtClass) {
 			for (CtAnonymousExecutable e : sourceClass.getAnonymousExecutables()) {
-				CtAnonymousExecutable e2 = substitute(targetType, template, e);
-				((CtClass<?>) targetType).addAnonymousExecutable(e2);
-				// e2.setParent(targetType);
+				((CtClass<?>) targetType).addAnonymousExecutable(substitute(targetType, template, e));
 			}
 		}
 	}
