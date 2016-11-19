@@ -78,7 +78,8 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	CtTypeReference<?> getDeclaringType();
 
 	/**
-	 * Gets the return type of the executable (may be null in noclasspath mode).
+	 * For methods, gets the return type of the executable (may be null in noclasspath mode).
+	 * For constructors, gets the constructor class (which is also the return type of the contructor calls).
 	 */
 	@IgnoredByEquals
 	CtTypeReference<T> getType();
