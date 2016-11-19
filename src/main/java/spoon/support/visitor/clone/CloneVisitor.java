@@ -25,14 +25,6 @@ package spoon.support.visitor.clone;
  * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
  */
 public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
-	private final spoon.support.visitor.clone.CloneBuilder builder = new spoon.support.visitor.clone.CloneBuilder();
-
-	private spoon.reflect.declaration.CtElement other;
-
-	public <T extends spoon.reflect.declaration.CtElement> T getClone() {
-		return ((T) (other));
-	}
-
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
 		spoon.reflect.declaration.CtAnnotation<A> aCtAnnotation = spoon.support.visitor.clone.CloneBuilder.build(this.builder, annotation, annotation.getFactory().Core().createAnnotation());
@@ -793,6 +785,14 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtComment.setComments(spoon.support.visitor.equals.CloneHelper.clone(comment.getComments()));
 		aCtComment.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(comment.getAnnotations()));
 		this.other = aCtComment;
+	}
+
+	private final spoon.support.visitor.clone.CloneBuilder builder = new spoon.support.visitor.clone.CloneBuilder();
+
+	private spoon.reflect.declaration.CtElement other;
+
+	public <T extends spoon.reflect.declaration.CtElement> T getClone() {
+		return ((T) (other));
 	}
 }
 

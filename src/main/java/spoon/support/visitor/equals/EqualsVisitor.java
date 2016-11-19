@@ -42,50 +42,5 @@ public class EqualsVisitor extends CtBiScannerDefault {
 			fail();
 		}
 	}
-
-	@Override
-	public <T> void visitCtTypeReference(final spoon.reflect.reference.CtTypeReference<T> reference) {
-		spoon.reflect.reference.CtTypeReference other = ((spoon.reflect.reference.CtTypeReference) (stack.peek()));
-		enter(reference);
-		biScan(reference.getPackage(), other.getPackage());
-		biScan(reference.getDeclaringType(), other.getDeclaringType());
-
-		//biScan(reference.getActualTypeArguments(), other.getActualTypeArguments()); // required to be commented
-
-		biScan(reference.getAnnotations(), other.getAnnotations());
-		biScan(reference.getComments(), other.getComments());
-		exit(reference);
-	}
-
-	@Override
-	public <T> void visitCtArrayTypeReference(final spoon.reflect.reference.CtArrayTypeReference<T> reference) {
-		spoon.reflect.reference.CtArrayTypeReference other = ((spoon.reflect.reference.CtArrayTypeReference) (stack.peek()));
-		enter(reference);
-		biScan(reference.getComments(), other.getComments());
-		biScan(reference.getPackage(), other.getPackage());
-		biScan(reference.getDeclaringType(), other.getDeclaringType());
-		biScan(reference.getComponentType(), other.getComponentType());
-
-		//biScan(reference.getActualTypeArguments(), other.getActualTypeArguments()); // required to be commented
-
-		biScan(reference.getAnnotations(), other.getAnnotations());
-		exit(reference);
-	}
-
-	@Override
-	public <T> void visitCtExecutableReference(final spoon.reflect.reference.CtExecutableReference<T> reference) {
-		spoon.reflect.reference.CtExecutableReference other = ((spoon.reflect.reference.CtExecutableReference) (stack.peek()));
-		enter(reference);
-		biScan(reference.getDeclaringType(), other.getDeclaringType());
-		biScan(reference.getParameters(), other.getParameters());
-
-		//biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());  // required to be commented
-
-		biScan(reference.getAnnotations(), other.getAnnotations());
-		biScan(reference.getComments(), other.getComments());
-		exit(reference);
-	}
-
-
 }
 

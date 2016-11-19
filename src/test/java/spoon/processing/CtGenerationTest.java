@@ -113,14 +113,23 @@ public class CtGenerationTest {
 		launcher.run();
 
 		// cp ./target/generated/spoon/support/visitor/clone/CloneBuilder.java  ./src/main/java/spoon/support/visitor/clone/CloneBuilder.java
-		// cp ./target/generated/spoon/support/visitor/clone/CloneVisitor.java  ./src/main/java/spoon/support/visitor/clone/CloneVisitor.java
-		CtElement expected = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone");
-		CtElement actual = build(new File("./src/main/java/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone");
+		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/clone/CloneBuilder.java")).Class().get("spoon.support.visitor.clone.CloneBuilder");
+		CtClass<Object> expected = build(new File("./src/main/java/spoon/support/visitor/clone/CloneBuilder.java")).Class().get("spoon.support.visitor.clone.CloneBuilder");
 		try {
 			assertThat(actual)
 					.isEqualTo(expected);
 		} catch (AssertionError e) {
-			throw new ComparisonFailure("Generated clone classes different", expected.toString(), actual.toString());
+			throw new ComparisonFailure("CloneBuilder different", expected.toString(), actual.toString());
+		}
+
+		// cp ./target/generated/spoon/support/visitor/clone/CloneVisitor.java  ./src/main/java/spoon/support/visitor/clone/CloneVisitor.java
+		actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/clone/CloneVisitor.java")).Class().get("spoon.support.visitor.clone.CloneVisitor");
+		expected = build(new File("./src/main/java/spoon/support/visitor/clone/CloneVisitor.java")).Class().get("spoon.support.visitor.clone.CloneVisitor");
+		try {
+			assertThat(actual)
+					.isEqualTo(expected);
+		} catch (AssertionError e) {
+			throw new ComparisonFailure("CloneVisitor different", expected.toString(), actual.toString());
 		}
 	}
 

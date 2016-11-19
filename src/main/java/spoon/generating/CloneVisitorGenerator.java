@@ -80,7 +80,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 		final CtTypeAccess<Object> cloneBuilderType = factory.Code().createTypeAccess(cloneBuilder);
 		final CtVariableAccess<Object> builderFieldAccess = factory.Code().createVariableRead(factory.Field().createReference(target.getReference(), cloneBuilder, "builder"), false);
 		final CtFieldReference<Object> other = factory.Field().createReference((CtField) target.getField("other"));
-		final CtVariableAccess<Object> otherRead = factory.Code().createVariableRead(other, false);
+		final CtVariableAccess<Object> otherRead = factory.Code().createVariableRead(other, true);
 
 		new CtScanner() {
 			private final List<String> internals = Collections.singletonList("CtCircularTypeReference");
@@ -199,7 +199,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					"spoon.support.reflect.declaration.CtCodeSnippetImpl", "spoon.support.reflect.declaration.CtFormalTypeDeclarerImpl", //
 					"spoon.support.reflect.declaration.CtGenericElementImpl", "spoon.support.reflect.reference.CtGenericElementReferenceImpl", //
 					"spoon.support.reflect.declaration.CtModifiableImpl", "spoon.support.reflect.declaration.CtMultiTypedElementImpl", //
-					"spoon.support.reflect.declaration.CtTypeMemberImpl");
+					"spoon.support.reflect.declaration.CtTypeMemberImpl", "spoon.support.reflect.declaration.CtElementImpl");
 			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "metadata");
 			private final CtTypeReference<List> LIST_REFERENCE = factory.Type().createReference(List.class);
 			private final CtTypeReference<Collection> COLLECTION_REFERENCE = factory.Type().createReference(Collection.class);
@@ -216,13 +216,13 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				if ("scanCtVisitable".equals(element.getSimpleName())) {
 					return;
 				}
-				final String qualifiedName = "spoon.support" + element.getParameters().get(0).getType().getQualifiedName().substring(5) + "Impl";
-				if (excludesAST.contains(qualifiedName)) {
+				final String qualifiedNameOfImplClass = "spoon.support" + element.getParameters().get(0).getType().getQualifiedName().substring(5) + "Impl";
+				if (excludesAST.contains(qualifiedNameOfImplClass)) {
 					return;
 				}
-				final CtType<?> declaration = factory.Class().get(qualifiedName);
+				final CtType<?> declaration = factory.Class().get(qualifiedNameOfImplClass);
 				if (declaration == null) {
-					throw new SpoonException(qualifiedName + " doesn't have declaration in the source path for " + element.getSignature());
+					throw new SpoonException(qualifiedNameOfImplClass + " doesn't have declaration in the source path for " + element.getSignature());
 				}
 
 				CtMethod<T> clone = element.clone();
@@ -486,7 +486,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					if (type.isSubtypeOf(factory.Type().createReference(CtElement.class))) {
 						return true;
 					}
-					if (type.equals(LIST_REFERENCE) || type.equals(COLLECTION_REFERENCE) || type.equals(SET_REFERENCE)) {
+					if (type.getQualifiedName().equals(LIST_REFERENCE.getQualifiedName()) || type.getQualifiedName().equals(COLLECTION_REFERENCE.getQualifiedName()) || type.getQualifiedName().equals(SET_REFERENCE.getQualifiedName())) {
 						if (type.getActualTypeArguments().get(0).isSubtypeOf(CTELEMENT_REFERENCE)) {
 							return true;
 						}
