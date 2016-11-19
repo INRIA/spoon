@@ -25,7 +25,8 @@ public class VarArgsTest {
 		CtParameter<?> param1 = m.getParameters().get(1);
 		assertEquals(true, param1.isVarArgs());
 		assertEquals("java.lang.String[]", param1.getType().toString());
-		assertEquals("Array", param1.getType().getSimpleName());
+		assertEquals("String[]", param1.getType().getSimpleName());
+		assertEquals("java.lang.String[]", param1.getType().getQualifiedName());
 		assertEquals("java.lang.String", ((CtArrayTypeReference<?>)param1.getType()).getComponentType().toString());
 		// we can even rewrite the vararg
 		assertEquals("void foo(int arg0, java.lang.String... args) {"
