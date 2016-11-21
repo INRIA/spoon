@@ -201,12 +201,13 @@ public abstract class Parameters {
 	 */
 	public static boolean isParameterSource(CtFieldReference<?> ref) {
 		CtField<?> field = ref.getDeclaration();
-		if (field != null) {
-			// we must have the source of this fieldref
-			if (ref.getDeclaration().getAnnotation(Parameter.class) != null) {
-				//it is the template field which represents template parameter, because of "Parameter" annotation
-				return true;
-			}
+		if (field == null) {
+			// we must have the source of this fieldref, otherwise we cannot use it as template parameter
+			return false;
+		}
+		if (field.getAnnotation(Parameter.class) != null) {
+			//it is the template field which represents template parameter, because of "Parameter" annotation
+			return true;
 		}
 		if (ref.getType() instanceof CtTypeParameterReference) {
 			//the template fields, which are using generic type like <T>, are not template parameters
