@@ -16,7 +16,7 @@
  */
 package spoon.support.template;
 
-import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
@@ -191,7 +191,7 @@ public abstract class Parameters {
 				}
 			}
 		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
+			throw new SpoonException("Getting of template parameters failed", e);
 		}
 		return params;
 	}
