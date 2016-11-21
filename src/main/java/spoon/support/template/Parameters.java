@@ -35,7 +35,6 @@ import spoon.template.TemplateParameter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,8 +181,8 @@ public abstract class Parameters {
 	 * Gets the names of all the template parameters of a given template type
 	 * (including the ones defined by the super types).
 	 */
-	public static Collection<String> getNames(CtClass<? extends Template<?>> templateType) {
-		Collection<String> params = new ArrayList<>();
+	public static List<String> getNames(CtClass<? extends Template<?>> templateType) {
+		List<String> params = new ArrayList<>();
 		try {
 			for (CtFieldReference<?> f : templateType.getReference().getAllFields()) {
 				if (isParameterSource(f)) {
