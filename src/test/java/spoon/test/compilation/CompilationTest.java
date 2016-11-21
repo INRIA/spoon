@@ -4,6 +4,7 @@ import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -19,6 +20,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
 import spoon.support.SpoonClassNotFoundException;
@@ -263,6 +265,7 @@ public class CompilationTest {
 	}
 
 
+	@Test
 	public void testClassLoader() throws Exception {
 		// contract: the environment exposes a classloader configured by the spoonclass path
 		Launcher launcher = new Launcher();
@@ -286,6 +289,62 @@ public class CompilationTest {
 		Class c = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.a.ClassA");
 		assertEquals("spoontest.a.ClassA", c.getName());
 	}
+	
+	@Test
+	public void testSingleClassLoader() throws Exception {
+		/*
+		 *  contract: the environment exposes a classloader configured by the spoonclass path, 
+		 *  there is one class loader, so the loaded classes are compatible
+		 */
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new FileSystemFolder("./src/test/resources/classloader-test"));
+		File outputBinDirectory = new File("./target/classloader-test");
+		if (!outputBinDirectory.exists()) {
+			outputBinDirectory.mkdirs();
+		}
+		launcher.setBinaryOutputDirectory(outputBinDirectory);
+		launcher.getModelBuilder().build();
+		
+		CtTypeReference<?> mIFoo = launcher.getFactory().Type().createReference("spoontest.IFoo");
+		CtTypeReference<?> mFoo = launcher.getFactory().Type().createReference("spoontest.Foo");
+		assertTrue("Foo subtype of IFoo", mFoo.isSubtypeOf(mIFoo));
+
+		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
+		
+		//Create new launcher which uses classes compiled by previous launcher.
+		//It simulates the classes without sources, which has to be accessed using reflection
+		launcher = new Launcher();
+		
+		// not in the classpath
+		try {
+			Class.forName("spoontest.IFoo");
+			fail();
+		} catch (ClassNotFoundException expected) {
+		}
+
+		// not in the spoon classpath before setting it
+		try {
+			launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.IFoo");
+			fail();
+		} catch (ClassNotFoundException expected) {
+		}
+		
+		launcher.getEnvironment().setSourceClasspath(new String[]{outputBinDirectory.getAbsolutePath()});
+		
+		mIFoo = launcher.getFactory().Type().createReference("spoontest.IFoo");
+		mFoo = launcher.getFactory().Type().createReference("spoontest.Foo");
+		//if it fails then it is because each class is loaded by different class loader
+		assertTrue("Foo subtype of IFoo", mFoo.isSubtypeOf(mIFoo));
+		
+
+		// not in the spoon classpath before setting it
+		Class<?> ifoo = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.IFoo");
+		Class<?> foo = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.Foo");
+
+		assertTrue(ifoo.isAssignableFrom(foo));
+		assertTrue(ifoo.getClassLoader()==foo.getClassLoader());
+	}
+	
 
 	@Test
 	public void testExoticClassLoader() throws Exception {
