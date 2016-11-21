@@ -68,10 +68,7 @@ public class TemplateMatcher {
 	}
 
 	private List<String> getTemplateNameParameters(CtClass<? extends Template<?>> templateType) {
-		final List<String> ts = new ArrayList<>();
-		final Collection<String> c = Parameters.getNames(templateType);
-		ts.addAll(c);
-		return ts;
+		return Parameters.getNames(templateType);
 	}
 
 	private List<CtTypeReference<?>> getTemplateTypeParameters(final CtClass<? extends Template<?>> templateType) {
