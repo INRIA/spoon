@@ -333,6 +333,12 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	private ClassLoader classloader;
+	/*
+	 * cache class loader which loads classes from source class path
+	 * we must cache it to make all the loaded classes compatible
+	 * The cache is reset when setSourceClasspath(...) is called
+	 */
+	private ClassLoader inputClassloader;
 
 	@Override
 	public void setInputClassLoader(ClassLoader aClassLoader) {
@@ -355,7 +361,10 @@ public class StandardEnvironment implements Serializable, Environment {
 		if (classloader != null) {
 			return classloader;
 		}
-		return new URLClassLoader(urlClasspath(), Thread.currentThread().getContextClassLoader());
+		if (inputClassloader == null) {
+			inputClassloader = new URLClassLoader(urlClasspath(), Thread.currentThread().getContextClassLoader());
+		}
+		return inputClassloader;
 	}
 
 	@Override
@@ -389,6 +398,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setSourceClasspath(String[] sourceClasspath) {
 		verifySourceClasspath(sourceClasspath);
 		this.sourceClasspath = sourceClasspath;
+		this.inputClassloader = null;
 	}
 
 	private void verifySourceClasspath(String[] sourceClasspath) throws InvalidClassPathException {
