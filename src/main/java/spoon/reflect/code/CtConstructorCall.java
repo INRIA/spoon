@@ -19,6 +19,7 @@ package spoon.reflect.code;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
 
 import java.util.List;
@@ -29,6 +30,9 @@ import java.util.List;
  * Example:<pre>
  *     new Object();
  * </pre>
+ *
+ * To build a constructor call, see {@link DefaultCoreFactory#createConstructorCall()}.
+ *
  * @param <T>
  * 		created type
  */

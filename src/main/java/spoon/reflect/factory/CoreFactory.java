@@ -323,6 +323,12 @@ public interface CoreFactory {
 
 	/**
 	 * Creates a constructor call expression.
+	 *
+	 * Example to build "new Foo()":
+	 * <pre>
+	 *     CtConstructorCall call = spoon.getFactory().Core().createConstructorCall();
+	 *     call.setType(spoon.getFactory().Core().createTypeReference().setSimpleName("Foo"));
+	 * </pre>
 	 */
 	<T> CtConstructorCall<T> createConstructorCall();
 
