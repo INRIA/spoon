@@ -137,6 +137,9 @@ public class FileSystemFolder implements SpoonFolder {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
 		return toString().equals(obj.toString());
 	}
 

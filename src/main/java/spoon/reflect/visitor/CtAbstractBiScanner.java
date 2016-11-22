@@ -26,7 +26,7 @@ import java.util.Iterator;
 /**
  * This abstract bi scanner class declares all scan methods useful for CtBiScannerDefault
  */
-public abstract class CtAbstractBiScanner implements CtVisitor {
+public abstract class CtAbstractBiScanner extends CtAbstractVisitor {
 	protected Deque<CtElement> stack = new ArrayDeque<>();
 
 	protected void enter(CtElement e) {

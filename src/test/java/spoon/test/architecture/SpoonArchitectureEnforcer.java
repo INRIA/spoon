@@ -76,10 +76,11 @@ public class SpoonArchitectureEnforcer {
 		interfaces.addInputResource("src/main/java/spoon/support/DefaultCoreFactory.java");
 		interfaces.buildModel();
 
-		for (CtType<?> t : implementations.getModel().getAllTypes()) {
-			String impl = t.getQualifiedName().replace(".support", "").replace("Impl", "");
-			CtType itf = interfaces.getFactory().Type().get(impl);
-			assertTrue(itf.isSubtypeOf(t.getReference()));
+		for (CtType<?> implType : implementations.getModel().getAllTypes()) {
+			String impl = implType.getQualifiedName().replace(".support", "").replace("Impl", "");
+			CtType interfaceType = interfaces.getFactory().Type().get(impl);
+			// the implementation is a subtype of the superinterface
+			assertTrue(implType.getReference().isSubtypeOf(interfaceType.getReference()));
 		}
 	}
 }

@@ -105,7 +105,7 @@ public class VariableAccessTest {
 				exec.getBody().getElements(new TypeFilter<CtParameterReference<?>>(CtParameterReference.class) {
 					@Override
 					public boolean matches(CtParameterReference<?> p) {
-						assertEquals(p, param);
+						assertEquals(p.getSimpleName(), param.getSimpleName());
 						return super.matches(p);
 					}
 				});

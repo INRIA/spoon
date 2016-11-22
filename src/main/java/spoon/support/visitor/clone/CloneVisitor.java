@@ -299,6 +299,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtAnnotationFieldAccess.setComments(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getComments()));
 		aCtAnnotationFieldAccess.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getAnnotations()));
 		aCtAnnotationFieldAccess.setTypeCasts(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getTypeCasts()));
+		aCtAnnotationFieldAccess.setTarget(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getTarget()));
 		aCtAnnotationFieldAccess.setType(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getType()));
 		aCtAnnotationFieldAccess.setVariable(spoon.support.visitor.equals.CloneHelper.clone(annotationFieldAccess.getVariable()));
 		this.other = aCtAnnotationFieldAccess;

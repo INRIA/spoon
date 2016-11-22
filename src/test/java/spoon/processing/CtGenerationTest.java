@@ -2,17 +2,14 @@ package spoon.processing;
 
 import org.junit.ComparisonFailure;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
-import spoon.generating.EqualsVisitorGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
-import spoon.support.visitor.equals.EqualsVisitor;
 
 import java.io.File;
 import java.util.regex.Matcher;
@@ -30,6 +27,7 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
+		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -44,8 +42,8 @@ public class CtGenerationTest {
 		launcher.run();
 
 		// cp ./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java ./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java
-		CtClass<Object> actual = build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
-		CtClass<Object> expected = build(new File("./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
+		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
+		CtClass<Object> expected = build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
 		try {
 			assertThat(actual)
 				.isEqualTo(expected);
@@ -56,6 +54,7 @@ public class CtGenerationTest {
 
 	@Test
 	public void testGenerateCtBiScanner() throws Exception {
+		// contract: generates the biscanner that is used for equality checking
 		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
 		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
@@ -75,44 +74,13 @@ public class CtGenerationTest {
 		launcher.setOutputFilter(new RegexFilter("spoon.reflect.visitor.CtBiScannerDefault"));
 		launcher.run();
 
+		// cp ./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java ./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java
 		// we don't necessarily want to hard-wired the relation bewteen CtScanner and CtBiScannerDefault.java
 		// this can be done on an informed basis when important changes are made in the metamodel/scanner
 		// and then we can have smaller clean tested pull requests to see the impact of the change
 		// cp ./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java ./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java
 		//assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class))
 		//		.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class));
-	}
-
-	@Test
-	public void testGenerateEqualsVisitor() throws Exception {
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
-		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().useTabulations(true);
-		launcher.setSourceOutputDirectory("./target/generated/");
-		// interfaces.
-		launcher.addInputResource("./src/main/java/spoon/reflect/code");
-		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
-		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
-		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
-		// Utils.
-		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtAbstractBiScanner.java");
-		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java");
-		launcher.addInputResource("./src/main/java/spoon/generating/equals/");
-		launcher.addProcessor(new EqualsVisitorGenerator());
-		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.equals.EqualsVisitor"));
-		launcher.run();
-
-		CtClass<Object> actual = build(new File("./src/main/java/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class);
-		CtClass<Object> expected = build(new File("./target/generated/spoon/support/visitor/equals/EqualsVisitor.java")).Class().get(EqualsVisitor.class);
-		try {
-			assertThat(actual)
-					.isEqualTo(expected);
-		} catch (AssertionError e) {
-			throw new ComparisonFailure("EqualsVisitor different", expected.toString(), actual.toString());
-		}
 	}
 
 	@Test
@@ -124,6 +92,7 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
+		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -145,7 +114,7 @@ public class CtGenerationTest {
 
 		// cp ./target/generated/spoon/support/visitor/clone/CloneBuilder.java  ./src/main/java/spoon/support/visitor/clone/CloneBuilder.java
 		// cp ./target/generated/spoon/support/visitor/clone/CloneVisitor.java  ./src/main/java/spoon/support/visitor/clone/CloneVisitor.java
-		CtElement expected = build(new File("./target/generated/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone");
+		CtElement expected = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone");
 		CtElement actual = build(new File("./src/main/java/spoon/support/visitor/clone/")).Package().get("spoon.support.visitor.clone");
 		try {
 			assertThat(actual)
