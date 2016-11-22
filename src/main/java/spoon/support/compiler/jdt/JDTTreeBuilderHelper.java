@@ -26,10 +26,8 @@ import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
-import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.MemberTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
@@ -62,8 +60,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -618,21 +614,6 @@ class JDTTreeBuilderHelper {
 		}
 
 		if (type instanceof CtClass) {
-			if (typeDeclaration.superclass != null && typeDeclaration.superclass.resolvedType != null && typeDeclaration.enclosingType != null && !new String(
-					typeDeclaration.superclass.resolvedType.qualifiedPackageName()).equals(new String(typeDeclaration.binding.qualifiedPackageName()))) {
-
-				// Sorry for this hack but see the test case ImportTest#testImportOfAnInnerClassInASuperClassPackage.
-				// JDT isn't smart enough to return me a super class available. So, I modify their AST when
-				// superclasses aren't in the same package and when their visibilities are "default".
-				List<ModifierKind> modifiers = Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED);
-				final TypeBinding resolvedType = typeDeclaration.superclass.resolvedType;
-				if ((resolvedType instanceof MemberTypeBinding || resolvedType instanceof BinaryTypeBinding)//
-						&& resolvedType.enclosingType() != null && typeDeclaration.enclosingType.superclass != null//
-						&& Collections.disjoint(modifiers, getModifiers(resolvedType.enclosingType().modifiers))) {
-					typeDeclaration.superclass.resolvedType = jdtTreeBuilder.new SpoonReferenceBinding(typeDeclaration.superclass.resolvedType.sourceName(),
-							(ReferenceBinding) typeDeclaration.enclosingType.superclass.resolvedType);
-				}
-			}
 			if (typeDeclaration.superclass != null) {
 				((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 			}

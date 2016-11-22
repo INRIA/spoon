@@ -433,7 +433,7 @@ public class TargetedExpressionTest {
 	public void testClassDeclaredInALambda() throws Exception {
 		// contract: A class can be declared in a lambda expression where we use final fields.
 		final CtType<Tapas> type = buildClass(Tapas.class);
-		final List<CtFieldAccess<?>> elements = new SortedList(new CtLineElementComparator());
+		final List<CtFieldAccess> elements = new SortedList(new CtLineElementComparator());
 		elements.addAll(type.getElements(new TypeFilter<>(CtFieldAccess.class)));
 		assertEquals(3, elements.size());
 

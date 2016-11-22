@@ -118,9 +118,6 @@ public interface CtTypeInformation {
 	 *
 	 * getSuperClass().getDeclaration()/getTypeDeclaration() returns the corresponding CtType (if in the source folder of Spoon).
 	 *
-	 * However, getSuperClass().getDeclaration() returns null in very rare cases if the superclass does not use a simple name or a fully-qualified
-	 * name based on packages, but rather an access path.
-	 *
 	 * @return the class type directly extended by this class, or null if there
 	 *         is none
 	 */

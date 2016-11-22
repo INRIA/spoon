@@ -109,6 +109,7 @@ import spoon.reflect.visitor.printer.PrinterHelper;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -142,6 +143,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected static class TypeContext {
 		CtTypeReference<?> type;
 		Set<String> memberNames;
+		boolean inBody = false;
 
 		TypeContext(CtTypeReference<?> p_type) {
 			type = p_type;
@@ -170,23 +172,36 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public class PrintingContext {
 		boolean noTypeDecl = false;
 
-		Deque<TypeContext> currentThis = new ArrayDeque<>();
+		List<TypeContext> currentThis = new ArrayList<>();
 
-		public CtTypeReference<?> getCurrentTypeReference() {
-			if (context.currentTopLevel != null) {
+		/**
+		 * @param inBody if false then it returns the nearest wrapping class which is actually printed.
+		 * if true then it returns nearest wrapping class whose body we are printing
+		 * @return top level type
+		 */
+		public CtTypeReference<?> getCurrentTypeReference(boolean inBody) {
+			if (currentTopLevel != null) {
 				if (currentThis != null && currentThis.size() > 0) {
-					return currentThis.peekFirst().type;
+					TypeContext tc = currentThis.get(currentThis.size() - 1);
+					if (!inBody || tc.inBody) {
+						return tc.type;
+					} else if (currentThis.size() > 1) {
+						return currentThis.get(currentThis.size() - 2).type;
+					}
 				}
-				return context.currentTopLevel.getReference();
+				return currentTopLevel.getReference();
 			}
 			return null;
 		}
 
 		public void pushCurrentThis(CtTypeReference<?> type) {
-			currentThis.push(new TypeContext(type));
+			currentThis.add(new TypeContext(type));
+		}
+		public void markCurrentThisInBody() {
+			currentThis.get(currentThis.size() - 1).inBody = true;
 		}
 		public void popCurrentThis() {
-			currentThis.pop();
+			currentThis.remove(currentThis.size() - 1);
 		}
 
 
@@ -571,7 +586,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeImplementsClause(ctClass);
 		}
 		// lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
-
+		//mark currentThis that we are in body of the class.
+		context.markCurrentThisInBody();
 		printer.write(" {").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
@@ -937,7 +953,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if (reference.isFinal() && reference.isStatic()) {
 			CtTypeReference<?> declTypeRef = reference.getDeclaringType();
-			CtTypeReference<?> ref2 = context.getCurrentTypeReference();
+			CtTypeReference<?> ref2 = context.getCurrentTypeReference(false);
 			if (ref2 != null) {
 				// print type if not anonymous class ref and not within the
 				// current scope
@@ -1037,10 +1053,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			printer.removeLastChar();
 		}
+		context.pushCurrentThis(intrface.getReference());
 		printer.write(" {").incTab();
 		// Content
 		elementPrinterHelper.writeElementList(intrface.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
+		context.popCurrentThis();
 	}
 
 	@Override
@@ -1656,17 +1674,22 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		boolean isInner = ref.getDeclaringType() != null;
 		if (isInner) {
-			if (!context.ignoreEnclosingClass && !ref.isLocalType() && !ref.getDeclaringType().isAnonymous()) {
-				boolean ign = context.ignoreGenerics;
-				if (!withGenerics) {
-					context.ignoreGenerics = true;
+			if (!context.ignoreEnclosingClass && !ref.isLocalType()) {
+				//compute visible type which can be used to print access path to ref
+				CtTypeReference<?> accessType = ref.getAccessType(context.getCurrentTypeReference(true));
+				if (!accessType.isAnonymous()) {
+					boolean ign = context.ignoreGenerics;
+					if (!withGenerics) {
+						context.ignoreGenerics = true;
+					}
+					scan(accessType);
+					if (!withGenerics) {
+						context.ignoreGenerics = ign;
+					}
+					printer.write(".");
 				}
-				scan(ref.getDeclaringType());
-				if (!withGenerics) {
-					context.ignoreGenerics = ign;
-				}
-				printer.write(".");
 			}
+			//?? are these annotations on correct place ??
 			elementPrinterHelper.writeAnnotations(ref);
 			if (ref.isLocalType()) {
 				printer.write(ref.getSimpleName().replaceAll("^[0-9]*", ""));
