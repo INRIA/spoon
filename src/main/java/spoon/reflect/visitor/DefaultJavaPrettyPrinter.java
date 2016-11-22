@@ -103,16 +103,14 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
 import spoon.reflect.visitor.printer.PrinterHelper;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -139,99 +137,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Line separator which is used by the system
 	 */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
-	protected static class TypeContext {
-		CtTypeReference<?> type;
-		Set<String> memberNames;
-		boolean inBody = false;
-
-		TypeContext(CtTypeReference<?> p_type) {
-			type = p_type;
-		}
-
-		public boolean isNameConflict(String name) {
-			if (memberNames == null) {
-				Collection<CtFieldReference<?>> allFields = type.getAllFields();
-				memberNames = new HashSet<>(allFields.size());
-				for (CtFieldReference<?> field : allFields) {
-					memberNames.add(field.getSimpleName());
-				}
-			}
-			return memberNames.contains(name);
-		}
-
-		public String getSimpleName() {
-			return type.getSimpleName();
-		}
-
-		public CtPackageReference getPackage() {
-			return type.getPackage();
-		}
-	}
-
-	public class PrintingContext {
-		boolean noTypeDecl = false;
-
-		List<TypeContext> currentThis = new ArrayList<>();
-
-		/**
-		 * @param inBody if false then it returns the nearest wrapping class which is actually printed.
-		 * if true then it returns nearest wrapping class whose body we are printing
-		 * @return top level type
-		 */
-		public CtTypeReference<?> getCurrentTypeReference(boolean inBody) {
-			if (currentTopLevel != null) {
-				if (currentThis != null && currentThis.size() > 0) {
-					TypeContext tc = currentThis.get(currentThis.size() - 1);
-					if (!inBody || tc.inBody) {
-						return tc.type;
-					} else if (currentThis.size() > 1) {
-						return currentThis.get(currentThis.size() - 2).type;
-					}
-				}
-				return currentTopLevel.getReference();
-			}
-			return null;
-		}
-
-		public void pushCurrentThis(CtTypeReference<?> type) {
-			currentThis.add(new TypeContext(type));
-		}
-		public void markCurrentThisInBody() {
-			currentThis.get(currentThis.size() - 1).inBody = true;
-		}
-		public void popCurrentThis() {
-			currentThis.remove(currentThis.size() - 1);
-		}
-
-
-		Deque<CtElement> elementStack = new ArrayDeque<>();
-
-		Deque<CtExpression<?>> parenthesedExpression = new ArrayDeque<>();
-
-		CtType<?> currentTopLevel;
-
-		boolean ignoreGenerics = false;
-
-		boolean skipArray = false;
-
-		boolean ignoreStaticAccess = false;
-
-		boolean ignoreEnclosingClass = false;
-
-		public void enterIgnoreGenerics() {
-			ignoreGenerics = true;
-		}
-
-		public void exitIgnoreGenerics() {
-			ignoreGenerics = false;
-		}
-
-		@Override
-		public String toString() {
-			return "context.ignoreGenerics: " + context.ignoreGenerics + "\n";
-		}
-	}
 
 	/**
 	 * The printing context.
@@ -446,7 +351,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return;
 		}
 		scan(reference.getComponentType());
-		if (!context.skipArray) {
+		if (!context.skipArray()) {
 			printer.write("[]");
 		}
 	}
@@ -773,22 +678,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
-		if (f.getVariable().isStatic() && f.getTarget() instanceof CtTypeAccess) {
-			context.ignoreGenerics = true;
-		}
-		if (f.getTarget() != null) {
-			if (!isInitializeStaticFinalField(f.getTarget())) {
-				scan(f.getTarget());
-				if (!f.getTarget().isImplicit()) {
-					printer.write(".");
-				}
+		try (Writable _context = context.modify()) {
+			if (f.getVariable().isStatic() && f.getTarget() instanceof CtTypeAccess) {
+				_context.ignoreGenerics(true);
 			}
-			context.ignoreStaticAccess = true;
+			if (f.getTarget() != null) {
+				if (!isInitializeStaticFinalField(f.getTarget())) {
+					scan(f.getTarget());
+					if (!f.getTarget().isImplicit()) {
+						printer.write(".");
+					}
+				}
+				_context.ignoreStaticAccess(true);
+			}
+			scan(f.getVariable());
 		}
-		scan(f.getVariable());
-
-		context.ignoreGenerics = false;
-		context.ignoreStaticAccess = false;
 		exitCtExpression(f);
 	}
 
@@ -932,16 +836,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		enterCtExpression(annotationFieldAccess);
-		if (annotationFieldAccess.getTarget() != null) {
-			scan(annotationFieldAccess.getTarget());
-			printer.write(".");
-			context.ignoreStaticAccess = true;
+		try (Writable _context = context.modify()) {
+			if (annotationFieldAccess.getTarget() != null) {
+				scan(annotationFieldAccess.getTarget());
+				printer.write(".");
+				_context.ignoreStaticAccess(true);
+			}
+			_context.ignoreGenerics(true);
+			scan(annotationFieldAccess.getVariable());
+			printer.write("()");
 		}
-		context.ignoreGenerics = true;
-		scan(annotationFieldAccess.getVariable());
-		printer.write("()");
-		context.ignoreGenerics = false;
-		context.ignoreStaticAccess = false;
 		exitCtExpression(annotationFieldAccess);
 	}
 
@@ -963,10 +867,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 
-		if (isStatic && printType && !context.ignoreStaticAccess) {
-			context.ignoreGenerics = true;
-			scan(reference.getDeclaringType());
-			context.ignoreGenerics = false;
+		if (isStatic && printType && !context.ignoreStaticAccess()) {
+			try (Writable _context = context.modify().ignoreGenerics(true)) {
+				scan(reference.getDeclaringType());
+			}
 			printer.write(".");
 		}
 		printer.write(reference.getSimpleName());
@@ -981,12 +885,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(st.get(0));
 		}
 		if (st.size() > 1) {
-			context.noTypeDecl = true;
-			for (int i = 1; i < st.size(); i++) {
-				printer.write(", ");
-				scan(st.get(i));
+			try (Writable _context = context.modify().noTypeDecl(true)) {
+				for (int i = 1; i < st.size(); i++) {
+					printer.write(", ");
+					scan(st.get(i));
+				}
 			}
-			context.noTypeDecl = false;
 		}
 		printer.write("; ");
 		scan(forLoop.getExpression());
@@ -1086,11 +990,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			// It's a method invocation
 			if (invocation.getTarget() != null) {
-				if (invocation.getTarget() instanceof CtTypeAccess) {
-					context.ignoreGenerics = true;
+				try (Writable _context = context.modify()) {
+					if (invocation.getTarget() instanceof CtTypeAccess) {
+						_context.ignoreGenerics(true);
+					}
+					scan(invocation.getTarget());
 				}
-				scan(invocation.getTarget());
-				context.ignoreGenerics = false;
 				if (!invocation.getTarget().isImplicit()) {
 					printer.write(".");
 				}
@@ -1164,13 +1069,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-		if (!context.noTypeDecl) {
+		if (!context.noTypeDecl()) {
 			enterCtStatement(localVariable);
 		}
 		if (env.isPreserveLineNumbers()) {
 			printer.adjustPosition(localVariable, sourceCompilationUnit);
 		}
-		if (!context.noTypeDecl) {
+		if (!context.noTypeDecl()) {
 			elementPrinterHelper.writeModifiers(localVariable);
 			scan(localVariable.getType());
 			printer.write(" ");
@@ -1215,10 +1120,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (m.getFormalCtTypeParameters().size() > 0) {
 			printer.write(' ');
 		}
-		final boolean old = context.ignoreGenerics;
-		context.ignoreGenerics = false;
-		scan(m.getType());
-		context.ignoreGenerics = old;
+		try (Writable _context = context.modify().ignoreGenerics(false)) {
+			scan(m.getType());
+		}
 		printer.write(" ");
 		printer.write(m.getSimpleName());
 		elementPrinterHelper.writeExecutableParameters(m);
@@ -1278,9 +1182,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.write("new ");
 			}
 
-			context.skipArray = true;
-			scan(ref);
-			context.skipArray = false;
+			try (Writable _context = context.modify().skipArray(true)) {
+				scan(ref);
+			}
 			for (int i = 0; ref instanceof CtArrayTypeReference; i++) {
 				printer.write("[");
 				if (newArray.getDimensionExpressions().size() > i) {
@@ -1347,24 +1251,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private <T> void printConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-		if (ctConstructorCall.getTarget() != null) {
-			scan(ctConstructorCall.getTarget());
-			printer.write(".");
-			context.ignoreEnclosingClass = true;
+		try (Writable _context = context.modify()) {
+			if (ctConstructorCall.getTarget() != null) {
+				scan(ctConstructorCall.getTarget());
+				printer.write(".");
+				_context.ignoreEnclosingClass(true);
+			}
+
+			if (hasDeclaringTypeWithGenerics(ctConstructorCall.getType())) {
+				_context.ignoreEnclosingClass(true);
+			}
+
+			printer.write("new ");
+
+			if (ctConstructorCall.getActualTypeArguments().size() > 0) {
+				elementPrinterHelper.writeActualTypeArguments(ctConstructorCall);
+			}
+
+			scan(ctConstructorCall.getType());
 		}
-
-		if (hasDeclaringTypeWithGenerics(ctConstructorCall.getType())) {
-			context.ignoreEnclosingClass = true;
-		}
-
-		printer.write("new ");
-
-		if (ctConstructorCall.getActualTypeArguments().size() > 0) {
-			elementPrinterHelper.writeActualTypeArguments(ctConstructorCall);
-		}
-
-		scan(ctConstructorCall.getType());
-		context.ignoreEnclosingClass = false;
 
 		printer.write("(");
 		for (CtCodeElement exp : ctConstructorCall.getArguments()) {
@@ -1674,17 +1579,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		boolean isInner = ref.getDeclaringType() != null;
 		if (isInner) {
-			if (!context.ignoreEnclosingClass && !ref.isLocalType()) {
+			if (!context.ignoreEnclosingClass() && !ref.isLocalType()) {
 				//compute visible type which can be used to print access path to ref
 				CtTypeReference<?> accessType = ref.getAccessType(context.getCurrentTypeReference(true));
 				if (!accessType.isAnonymous()) {
-					boolean ign = context.ignoreGenerics;
-					if (!withGenerics) {
-						context.ignoreGenerics = true;
-					}
-					scan(accessType);
-					if (!withGenerics) {
-						context.ignoreGenerics = ign;
+					try (Writable _context = context.modify()) {
+						if (!withGenerics) {
+							_context.ignoreGenerics(true);
+						}
+						scan(accessType);
 					}
 					printer.write(".");
 				}
@@ -1706,11 +1609,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeAnnotations(ref);
 			printer.write(ref.getSimpleName());
 		}
-		if (withGenerics && !context.ignoreGenerics) {
-			final boolean old = context.ignoreEnclosingClass;
-			context.ignoreEnclosingClass = false;
-			elementPrinterHelper.writeActualTypeArguments(ref);
-			context.ignoreEnclosingClass = old;
+		if (withGenerics && !context.ignoreGenerics()) {
+			try (Writable _context = context.modify().ignoreEnclosingClass(false)) {
+				elementPrinterHelper.writeActualTypeArguments(ref);
+			}
 		}
 	}
 
