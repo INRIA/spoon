@@ -16,14 +16,18 @@
  */
 package spoon.reflect.cu;
 
-import java.io.File;
-
 import spoon.compiler.Environment;
+import spoon.reflect.cu.position.NoSourcePosition;
+
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * This interface represents the position of a program element in a source file.
  */
-public interface SourcePosition {
+public interface SourcePosition extends Serializable {
+
+	SourcePosition NOPOSITION = new NoSourcePosition();
 
 	/**
 	 * Returns a string representation of this position in the form
@@ -79,9 +83,4 @@ public interface SourcePosition {
 	 * Gets the index at which the position starts in the source file.
 	 */
 	int getSourceStart();
-
-	/**
-	 * Gets the index at which the name of the element position starts in the source file.
-	 */
-	int getNameSourceStart();
 }

@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.cu;
+package spoon.support.reflect.cu.position;
 
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -33,9 +33,9 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	/**
 	 * Search the line number corresponding to a specific position
 	 */
-	private int searchLineNumber(int position) {
+	protected int searchLineNumber(int position) {
 		if (lineSeparatorPositions == null) {
-			return -1;
+			return 1;
 		}
 		int length = lineSeparatorPositions.length;
 		if (length == 0) {
@@ -96,9 +96,6 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	/** The position of the last byte of this element */
 	private int sourceEnd = -1;
 
-	/** The position of the first byte of the name of the element, if appropriate (eg the method name)  */
-	private int nameSourceStart = 1;
-
 	/** The line number of the start of the element, if appropriate (eg the method name).
 	 * Computed lazily by {@link #getLine()}
 	 */
@@ -110,17 +107,16 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	 */
 	int[] lineSeparatorPositions;
 
-	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int nameSourceStart, int sourceEnd, int[] lineSeparatorPositions) {
+	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
 		super();
 		this.compilationUnit = compilationUnit;
-		this.nameSourceStart = nameSourceStart;
 		this.sourceEnd = sourceEnd;
 		this.sourceStart = sourceStart;
 		this.lineSeparatorPositions = lineSeparatorPositions;
 	}
 
 	public int getColumn() {
-		return searchColumnNumber(nameSourceStart);
+		return searchColumnNumber(sourceStart);
 	}
 
 	public int getEndColumn() {
@@ -136,7 +132,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	public int getLine() {
 		if (sourceStartline == -1) {
-			this.sourceStartline = searchLineNumber(this.nameSourceStart);
+			this.sourceStartline = searchLineNumber(this.sourceStart);
 		}
 		return sourceStartline;
 	}
@@ -189,11 +185,6 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;
-	}
-
-	@Override
-	public int getNameSourceStart() {
-		return nameSourceStart;
 	}
 
 }

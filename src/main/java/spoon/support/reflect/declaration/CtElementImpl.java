@@ -33,7 +33,6 @@ import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.support.reflect.cu.SourcePositionImpl;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.HashcodeVisitor;
@@ -83,9 +82,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	private List<CtComment> comments = emptyList();
 
-	public final SourcePosition DEFAULT_POSITION = new SourcePositionImpl(null, -1, -1, -1, null);
-
-	SourcePosition position = DEFAULT_POSITION;
+	SourcePosition position = SourcePosition.NOPOSITION;
 
 	Map<String, Object> metadata;
 

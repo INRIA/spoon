@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import java.util.Set;
-
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
