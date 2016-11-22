@@ -300,7 +300,7 @@ public class LambdaTest {
 		assertEquals("a", ctParameter.getSimpleName());
 		assertTrue(ctParameter.getType().isImplicit());
 		assertEquals("", ctParameter.getType().toString());
-		assertEquals("Array", ctParameter.getType().getSimpleName());
+		assertEquals("Object[]", ctParameter.getType().getSimpleName());
 
 		final CtArrayTypeReference typeParameter = (CtArrayTypeReference) ctParameter.getType();
 		assertTrue(typeParameter.getComponentType().isImplicit());

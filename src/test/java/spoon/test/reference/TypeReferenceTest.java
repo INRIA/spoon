@@ -503,13 +503,6 @@ public class TypeReferenceTest {
 		assertNull(reference.getBoundingType());
 	}
 
-	@Test(expected = SpoonException.class)
-	public void testReferenceName() throws Exception {
-		final Factory factory = createFactory();
-		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-		typeReference.setSimpleName("?");
-	}
-
 	@Test
 	public void testIgnoreEnclosingClassInActualTypes() throws Exception {
 		final CtType<Panini> aPanini = buildClass(Panini.class);

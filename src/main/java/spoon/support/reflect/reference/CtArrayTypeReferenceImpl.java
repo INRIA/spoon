@@ -25,12 +25,6 @@ import java.lang.reflect.Array;
 public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	public static final String ARRAY_SIMPLE_NAME = Array.class.getSimpleName();
-	/**
-	 * getCanonicalName() is an _expensive_ operation, result should be cached
-	 */
-	public static final String ARRAY_CANONICAL_NAME = Array.class.getCanonicalName();
-
 	CtTypeReference<?> componentType;
 
 	public CtArrayTypeReferenceImpl() {
@@ -44,6 +38,10 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 
 	@Override
 	public CtTypeReference<?> getComponentType() {
+		if (componentType == null) {
+			// a sensible default component type to facilitate object creation and testing
+			componentType = getFactory().Type().get(Object.class).getReference();
+		}
 		return componentType;
 	}
 
@@ -67,12 +65,12 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 
 	@Override
 	public String getSimpleName() {
-		return ARRAY_SIMPLE_NAME;
+		return getComponentType().getSimpleName() + "[]";
 	}
 
 	@Override
 	public String getQualifiedName() {
-		return ARRAY_CANONICAL_NAME;
+		return getComponentType().getQualifiedName() + "[]";
 	}
 
 	@SuppressWarnings("unchecked")
