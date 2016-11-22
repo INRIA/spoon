@@ -33,6 +33,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.reflect.declaration.CtTypeImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
 
@@ -623,6 +624,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean isGenerics() {
+		return false;
+	}
+
+	@Override
+	public boolean isVisibleIn(CtTypeReference<?> type) {
+		Set<ModifierKind> modifiers = getModifiers();
+
+		if (modifiers.contains(ModifierKind.PUBLIC)) {
+			return true;
+		}
+		if (modifiers.contains(ModifierKind.PROTECTED)) {
+			if (type.isSubtypeOf(this)) {
+				//is visible in subtypes
+				return true;
+			} //else it is visible in same package, like package protected
+		}
+		if (modifiers.contains(ModifierKind.PRIVATE)) {
+			//it is visible in scope of the same class only
+			return CtTypeImpl.getTopLevelType(this).getQualifiedName().equals(type.getQualifiedName());
+		}
+		//package protected
+		if (CtTypeImpl.getTopLevelType(this).getPackage().getSimpleName().equals(CtTypeImpl.getTopLevelType(type).getPackage().getSimpleName())) {
+			//visible only in scope of the same package
+			return true;
+		}
 		return false;
 	}
 

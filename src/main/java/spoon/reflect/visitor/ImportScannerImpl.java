@@ -27,6 +27,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -39,8 +40,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -54,6 +57,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			"ProcessHandle", "StackWalker", "StackFramePermission");
 
 	private Map<String, CtTypeReference<?>> imports = new TreeMap<>();
+	private String myPackage;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 
 	@Override
@@ -175,6 +179,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
 		imports.clear();
+		myPackage = simpleType.getPackage().getQualifiedName();
 		addImport(simpleType.getReference());
 		scan(simpleType);
 		return getImports(simpleType);
@@ -183,6 +188,16 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void computeImports(CtElement element) {
 		imports.clear();
+		//look for top level type
+		CtType<?> type = element.getParent(CtType.class);
+		if (type != null) {
+			while (type.getDeclaringType() != null) {
+				type = type.getDeclaringType();
+			}
+			myPackage = type.getPackage().getQualifiedName();
+		} else {
+			myPackage = null;
+		}
 		scan(element);
 	}
 
@@ -226,6 +241,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return Collections.unmodifiableList(refs);
 	}
 
+
+	private static final Set<ModifierKind> MODIFIERS_PUBLIC_PROTECTED = new HashSet<>();
+	static {
+		MODIFIERS_PUBLIC_PROTECTED.add(ModifierKind.PUBLIC);
+		MODIFIERS_PUBLIC_PROTECTED.add(ModifierKind.PROTECTED);
+	}
+
 	/**
 	 * Adds a type to the imports.
 	 */
@@ -242,6 +264,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				// Don't import class with names clashing with some classes present in java.lang,
 				// because it leads to undecidability and compilation errors. I. e. always leave
 				// com.mycompany.String fully-qualified.
+				return false;
+			}
+		}
+		if (Collections.disjoint(MODIFIERS_PUBLIC_PROTECTED, ref.getModifiers())) {
+			//type is not public and not protected, so it is package protected or private.
+			if (myPackage != null && !myPackage.equals(ref.getPackage().getSimpleName())) {
+				//do not add import if class comes from different package, because java compiler will fail that class is not visible
 				return false;
 			}
 		}

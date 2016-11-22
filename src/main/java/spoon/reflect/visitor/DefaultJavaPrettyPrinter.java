@@ -106,6 +106,7 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
 import spoon.reflect.visitor.printer.PrinterHelper;
+import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
@@ -1661,11 +1662,30 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (!withGenerics) {
 					context.ignoreGenerics = true;
 				}
-				scan(ref.getDeclaringType());
-				if (!withGenerics) {
-					context.ignoreGenerics = ign;
+				CtTypeReference<?> declTypeRef = ref.getDeclaringType();
+				boolean isVisible = true;
+				try {
+					if (context.currentTopLevel != null && declTypeRef.isVisibleIn(context.currentTopLevel.getReference()) == false) {
+						//the declTypeRef is not visible in actually printed class
+						isVisible = false;
+					}
+				} catch (SpoonClassNotFoundException e) {
+					//ignore that we cannot detect visibility of the referred class. It is more probable that it is visible so
+					isVisible = true;
 				}
-				printer.write(".");
+
+				if (isVisible) {
+					/*
+					 * add scope of declaring class only if it is visible here. If it is not visible,
+					 * then we should continue, because the nested class might still be visible.
+					 * See ImportTest.testSpoonWithImports() class InnerClassProtected, which is visible in ClientClass
+					 */
+					scan(ref.getDeclaringType());
+					if (!withGenerics) {
+						context.ignoreGenerics = ign;
+					}
+					printer.write(".");
+				}
 			}
 			elementPrinterHelper.writeAnnotations(ref);
 			if (ref.isLocalType()) {
