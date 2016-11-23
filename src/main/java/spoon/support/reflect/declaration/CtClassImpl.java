@@ -226,7 +226,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <R extends CtCodeElement> R partiallyEvaluate() {
 		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
-		return eval.evaluate(getParent(), (R) this);
+		return eval.evaluate((R) this);
 	}
 
 	@Override
