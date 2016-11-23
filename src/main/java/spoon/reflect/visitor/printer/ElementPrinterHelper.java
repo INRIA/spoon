@@ -47,6 +47,7 @@ import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrintingContext.Writable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -190,9 +191,9 @@ public class ElementPrinterHelper {
 			}
 			printer.write("}");
 		} else if (value instanceof Enum) {
-			prettyPrinter.getContext().enterIgnoreGenerics();
-			prettyPrinter.scan(factory.Type().createReference(((Enum<?>) value).getDeclaringClass()));
-			prettyPrinter.getContext().exitIgnoreGenerics();
+			try (Writable c = prettyPrinter.getContext().modify().ignoreGenerics(true)) {
+				prettyPrinter.scan(factory.Type().createReference(((Enum<?>) value).getDeclaringClass()));
+			}
 			printer.write(".");
 			printer.write(value.toString());
 		} else {
