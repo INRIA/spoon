@@ -291,8 +291,8 @@ public class TargetedExpressionTest {
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedFuuType).target(CtFieldReadImpl.class).result("fuu.method()"), elements.get(5));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedSuperThisAccess).result("superMethod()"), elements.get(6));
 
-		assertEquals(fooTypeAccess, ((CtThisAccess) elements.get(2).getTarget()).getTarget());
-		assertEquals(fooTypeAccess, ((CtThisAccess) elements.get(3).getTarget()).getTarget());
+		assertEquals(fooTypeAccess.getType().getQualifiedName(), ((CtThisAccess) elements.get(2).getTarget()).getTarget().getType().getQualifiedName());
+		assertEquals(fooTypeAccess.getType().getQualifiedName(), ((CtThisAccess) elements.get(3).getTarget()).getTarget().getType().getQualifiedName());
 		assertEquals(superClassTypeAccess, ((CtThisAccess) elements.get(6).getTarget()).getTarget());
 	}
 
@@ -455,14 +455,12 @@ public class TargetedExpressionTest {
 			assertNull(fieldAccess.getVariable().getDeclaringType());
 		} else {
 			assertEquals(expected.isLocal, fieldAccess.getVariable().getDeclaringType().isLocalType());
-			assertEquals(expected.declaringType, fieldAccess.getVariable().getDeclaringType());
+			assertEquals(expected.declaringType.getQualifiedName(), fieldAccess.getVariable().getDeclaringType().getQualifiedName());
 		}
 		if (expected.targetClass != null) {
 			assertEquals(expected.targetClass, fieldAccess.getTarget().getClass());
 		} else if (expected.targetString != null) {
 			assertEquals(expected.targetString, fieldAccess.getTarget().toString());
-		} else {
-			assertEquals(expected.target, fieldAccess.getTarget());
 		}
 		assertEquals(expected.result, fieldAccess.toString());
 		if (expected.type != null) {
@@ -470,16 +468,18 @@ public class TargetedExpressionTest {
 		}
 	}
 
+
 	private void assertEqualsInvocation(ExpectedTargetedExpression expected, CtInvocation<?> invocation) {
-		assertEquals("declaring type not identical", expected.declaringType, invocation.getExecutable().getDeclaringType());
+		// two required parts: toString and declaringType (type containing the method to be called)
+		assertEquals(expected.result, invocation.toString());
+		assertEquals(expected.declaringType, invocation.getExecutable().getDeclaringType());
+
+		// + two optional parts
 		if (expected.targetClass != null) {
 			assertEquals(expected.targetClass, invocation.getTarget().getClass());
 		} else if (expected.targetString != null) {
 			assertEquals(expected.targetString, invocation.getTarget().toString());
-		} else {
-			assertEquals("target is not equal ", expected.target, invocation.getTarget());
 		}
-		assertEquals(expected.result, invocation.toString());
 	}
 
 	private class ExpectedTargetedExpression {

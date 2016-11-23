@@ -266,7 +266,7 @@ public class ReplaceTest {
 
 		final CtTypeReference<Object> expected = factory.Type().createReference("spoon.test.replace.testclasses.Tacos");
 		assertEquals(expected, aMethod.getType());
-		assertEquals(expected, aMethod.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0).getType());
+		assertEquals(expected.getTypeDeclaration(), aMethod.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0).getType().getTypeDeclaration());
 	}
 
 	@Test

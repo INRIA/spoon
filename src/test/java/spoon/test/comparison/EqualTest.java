@@ -87,4 +87,13 @@ public class EqualTest {
 		assertEquals(1, var2.getCatchers().get(0).getParameter().getMultiTypes().size());
 		assertNotEquals(var2, var);
 	}
+
+	@Test
+	public void testEqualsActualTypeRef() throws Exception {
+		// contract: actual type refs are part of the identity
+		Factory factory = new Launcher().createFactory();
+		CtLocalVariable var = factory.Code().createCodeSnippetStatement("java.util.List<String> l ").compile();
+		CtLocalVariable var2 = factory.Code().createCodeSnippetStatement("java.util.List<Object> l ").compile();
+		assertNotEquals(var2, var);
+	}
 }

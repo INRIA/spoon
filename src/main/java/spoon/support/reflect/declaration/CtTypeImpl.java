@@ -710,7 +710,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			} else {
 				return getFactory().Type().objectType().equals(expectedType);
 			}
-		} else if (!expectedType.equals(ctParameterType)) {
+		} else if (!expectedType.getQualifiedName().equals(ctParameterType.getQualifiedName())) {
 			return false;
 		}
 		return true;
