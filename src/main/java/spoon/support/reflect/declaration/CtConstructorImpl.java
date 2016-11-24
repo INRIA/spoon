@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtShadowable;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
@@ -63,12 +64,18 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public CtType<T> getDeclaringType() {
+		return (CtType<T>) parent;
+	}
+
+	@Override
 	@DerivedProperty
 	public CtTypeReference<T> getType() {
 		if (getDeclaringType() == null) {
 			return null;
 		}
-		return this.<T>getDeclaringType().getReference();
+		return getDeclaringType().getReference();
 	}
 
 	@Override

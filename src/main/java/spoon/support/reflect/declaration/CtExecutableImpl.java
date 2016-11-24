@@ -52,10 +52,9 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		super();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> CtType<T> getDeclaringType() {
-		return (CtType<T>) parent;
+	public CtType<?> getDeclaringType() {
+		return (CtType<?>) parent;
 	}
 
 	@Override

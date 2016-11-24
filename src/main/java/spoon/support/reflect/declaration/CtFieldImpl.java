@@ -62,6 +62,11 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	@Override
+	public <T> CtType<T> getTopLevelType() {
+		return getDeclaringType().getTopLevelType();
+	}
+
+	@Override
 	public CtExpression<T> getDefaultExpression() {
 		return defaultExpression;
 	}
