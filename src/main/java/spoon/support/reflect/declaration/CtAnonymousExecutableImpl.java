@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
@@ -59,11 +58,6 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	@Override
 	public Set<ModifierKind> getModifiers() {
 		return modifiers;
-	}
-
-	@Override
-	public CtClass<?> getDeclaringType() {
-		return (CtClass<?>) parent;
 	}
 
 	@Override

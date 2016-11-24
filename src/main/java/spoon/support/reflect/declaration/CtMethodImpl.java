@@ -21,7 +21,6 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtShadowable;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
@@ -75,11 +74,6 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		}
 		this.returnType = type;
 		return (C) this;
-	}
-
-	@Override
-	public CtType<?> getDeclaringType() {
-		return (CtType<?>) parent;
 	}
 
 	@Override

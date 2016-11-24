@@ -30,6 +30,11 @@ public interface CtTypeMember extends CtModifiable {
 	 * @return declaring class
 	 */
 	@DerivedProperty
-	CtType<?> getDeclaringType();
+	<T> CtType<T> getDeclaringType();
 
+	/**
+	 * Returns top level declaring type of this. If this is already a TopLevelType, then it returns this
+	 */
+	@DerivedProperty
+	<T> CtType<T> getTopLevelType();
 }
