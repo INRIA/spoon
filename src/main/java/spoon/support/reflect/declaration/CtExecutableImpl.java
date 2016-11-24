@@ -28,7 +28,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.QualifiedNameBasedSortedSet;
@@ -39,7 +38,7 @@ import spoon.support.visitor.SignaturePrinter;
  *
  * @author Renaud Pawlak
  */
-public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements CtExecutable<R>, CtTypeMember {
+public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements CtExecutable<R> {
 	private static final long serialVersionUID = 1L;
 
 	CtBlock<?> body;
@@ -52,12 +51,10 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		super();
 	}
 
-	@Override
 	public CtType<?> getDeclaringType() {
 		return (CtType<?>) parent;
 	}
 
-	@Override
 	public <T> CtType<T> getTopLevelType() {
 		return getDeclaringType().getTopLevelType();
 	}
