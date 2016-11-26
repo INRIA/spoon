@@ -107,7 +107,13 @@ public class CodeFactory extends SubFactory {
 	 * @return a accessed type expression.
 	 */
 	public <T> CtTypeAccess<T> createTypeAccess(CtTypeReference<T> accessedType) {
-		return createTypeAccessWithoutCloningReference(accessedType == null ? null : accessedType.clone());
+		if (accessedType == null) {
+			return factory.Core().createTypeAccess();
+		}
+		CtTypeReference<T> access = accessedType.clone();
+		// a type access doesn't contain actual type parameters
+		access.setActualTypeArguments(null);
+		return createTypeAccessWithoutCloningReference(access);
 	}
 
 	/**
@@ -365,7 +371,7 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates an access to a <code>this</code> variable (of the form
+	 * Creates an explicit access to a <code>this</code> variable (of the form
 	 * <code>type.this</code>).
 	 *
 	 * @param <T>
@@ -376,12 +382,7 @@ public class CodeFactory extends SubFactory {
 	 * @return a <code>type.this</code> expression
 	 */
 	public <T> CtThisAccess<T> createThisAccess(CtTypeReference<T> type) {
-		CtThisAccess<T> thisAccess = factory.Core().<T>createThisAccess();
-		thisAccess.setType(type);
-		CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(type);
-		typeAccess.setImplicit(true);
-		thisAccess.setTarget(typeAccess);
-		return thisAccess;
+		return createThisAccess(type, false);
 	}
 
 	/**
@@ -402,7 +403,6 @@ public class CodeFactory extends SubFactory {
 		thisAccess.setImplicit(isImplicit);
 		thisAccess.setType(type);
 		CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(type);
-		typeAccess.setImplicit(isImplicit);
 		thisAccess.setTarget(typeAccess);
 		return thisAccess;
 	}
