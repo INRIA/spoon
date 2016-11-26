@@ -298,6 +298,20 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> CtType<T> getTopLevelType() {
+		CtType<?> top = this;
+
+		while (true) {
+			CtType<?> nextTop = top.getDeclaringType();
+			if (nextTop == null) {
+				return (CtType<T>) top;
+			}
+			top = nextTop;
+		}
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public <N extends CtType<?>> N getNestedType(final String name) {

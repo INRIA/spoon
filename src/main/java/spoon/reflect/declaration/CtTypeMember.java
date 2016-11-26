@@ -32,4 +32,10 @@ public interface CtTypeMember extends CtModifiable {
 	@DerivedProperty
 	CtType<?> getDeclaringType();
 
+	/**
+	 * Returns the top level type declaring this type if an inner type or type member.
+	 * If this is already a top-level type, then returns itself.
+	 */
+	@DerivedProperty
+	<T> CtType<T> getTopLevelType();
 }

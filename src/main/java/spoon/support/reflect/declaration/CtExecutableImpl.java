@@ -27,6 +27,7 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.QualifiedNameBasedSortedSet;
@@ -48,6 +49,14 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	public CtExecutableImpl() {
 		super();
+	}
+
+	public CtType<?> getDeclaringType() {
+		return (CtType<?>) parent;
+	}
+
+	public <T> CtType<T> getTopLevelType() {
+		return getDeclaringType().getTopLevelType();
 	}
 
 	@Override
