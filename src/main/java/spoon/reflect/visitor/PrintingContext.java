@@ -101,20 +101,27 @@ public class PrintingContext {
 	 */
 	public CtTypeReference<?> getCurrentTypeReference(boolean inBody) {
 		if (currentTopLevel != null) {
-			if (currentThis != null && currentThis.size() > 0) {
-				TypeContext tc = currentThis.get(currentThis.size() - 1);
-				if (!inBody || tc.inBody) {
-					return tc.type;
-				} else if (currentThis.size() > 1) {
-					return currentThis.get(currentThis.size() - 2).type;
-				}
+			TypeContext tc = getCurrentTypeContext(inBody);
+			if (tc != null) {
+				return tc.typeRef;
 			}
 			return currentTopLevel.getReference();
 		}
 		return null;
 	}
+	private TypeContext getCurrentTypeContext(boolean inBody) {
+		if (currentThis != null && currentThis.size() > 0) {
+			TypeContext tc = currentThis.get(currentThis.size() - 1);
+			if (!inBody || tc.inBody) {
+				return tc;
+			} else if (currentThis.size() > 1) {
+				return currentThis.get(currentThis.size() - 2);
+			}
+		}
+		return null;
+	}
 
-	public void pushCurrentThis(CtTypeReference<?> type) {
+	public void pushCurrentThis(CtType<?> type) {
 		currentThis.add(new TypeContext(type));
 	}
 	public void markCurrentThisInBody() {
@@ -134,5 +141,13 @@ public class PrintingContext {
 	@Override
 	public String toString() {
 		return "context.ignoreGenerics: " + ignoreGenerics() + "\n";
+	}
+	/**
+	 * @param typeRef
+	 * @return true if typeRef is equal to current (actually printed) Type (currentThis)
+	 */
+	public boolean isInCurrentScope(CtTypeReference<?> typeRef) {
+		CtTypeReference<?> currentTypeRef = getCurrentTypeReference(false /*try true there */);
+		return currentTypeRef != null && typeRef.equals(currentTypeRef);
 	}
 }

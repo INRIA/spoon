@@ -20,17 +20,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class TypeContext {
-	CtTypeReference<?> type;
+	CtType<?> type;
+	CtTypeReference<?> typeRef;
 	Set<String> memberNames;
 	boolean inBody = false;
 
-	TypeContext(CtTypeReference<?> p_type) {
+	TypeContext(CtType<?> p_type) {
 		type = p_type;
+		typeRef = type.getReference();
 	}
 
 	public boolean isNameConflict(String name) {
@@ -45,10 +48,10 @@ public class TypeContext {
 	}
 
 	public String getSimpleName() {
-		return type.getSimpleName();
+		return typeRef.getSimpleName();
 	}
 
 	public CtPackageReference getPackage() {
-		return type.getPackage();
+		return typeRef.getPackage();
 	}
 }
