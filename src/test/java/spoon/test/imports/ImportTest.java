@@ -45,6 +45,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ImportTest {
 
@@ -382,6 +383,118 @@ public class ImportTest {
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtected.getAccessType(launcher.getFactory().Class().createReference(ClientClass.class)).getQualifiedName());
 		//Check that access type of SuperClass$InnerClassProtected in ClientClass$InnerClass context is ChildClass
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtected.getAccessType(aInnerClass.getReference()).getQualifiedName());
+	}
+
+	@Test
+	public void testNestedAccessPathWithTypedParameter() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
+		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
+		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		 								  
+	}
+
+	@Test
+	public void testNestedAccessPathWithTypedParameterWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java", "--with-imports"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
+		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
+		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		 								  
+	}
+
+	@Test
+	public void testNestedStaticPathWithTypedParameter() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/Interners.java"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
+		assertTrue(mm.toString().indexOf("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;")>=0);
+		 								  
+	}
+
+	@Test
+	public void testNestedStaticPathWithTypedParameterWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
+		assertTrue(mm.toString().indexOf("List<Interners.WeakInterner.Dummy> list;")>=0);
+		 								  
+	}
+
+	@Test
+	public void testDeepNestedStaticPathWithTypedParameter() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/StaticWithNested.java"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
+		assertTrue("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
+		 								  
+	}
+	@Test
+	public void testDeepNestedStaticPathWithTypedParameterWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/StaticWithNested.java", "--with-imports"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
+		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
+		 								  
 	}
 
 	private Factory getFactory(String...inputs) {
