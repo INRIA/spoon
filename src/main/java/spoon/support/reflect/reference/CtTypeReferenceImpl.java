@@ -661,15 +661,20 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	public CtTypeReference<?> getAccessType(CtTypeReference<?> contextType) {
+	public CtTypeReference<?> getAccessType() {
 		CtTypeReference<?> declType = this.getDeclaringType();
 		if (declType == null) {
 			throw new SpoonException("The nestedType is expected, but it is: " + getQualifiedName());
 		}
-		if (contextType != null && contextType.canAccess(declType) == false) {
+		CtType<?> contextType = getParent(CtType.class);
+		if (contextType == null) {
+			return declType;
+		}
+		CtTypeReference<?> contextTypeRef = contextType.getReference();
+		if (contextType != null && contextTypeRef.canAccess(declType) == false) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
-			CtTypeReference<?> type = contextType;
+			CtTypeReference<?> type = contextTypeRef;
 			//search which type or declaring type of startType extends from nestedType
 			while (visibleDeclType == null && type != null) {
 				visibleDeclType = getLastVisibleSuperClassExtendingFrom(type, declType);

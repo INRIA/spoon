@@ -67,12 +67,13 @@ public class ImportTest {
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
 		assertEquals(expected, innerClass.getReference().toString());
 
-		//this access path is correct even in case when SuperClass is package protected, because
-		//CtTypeReference returned by innerClass.getSuperclass() is independent on original innerClass.
-		//And if it is independent then it must return values independent on the way where we have got this reference from.
-		expected = "spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected";
-		assertEquals(expected, innerClass.getSuperclass().toString());
+		//test that acces path depends on the context
+		//this checks the access path in context of innerClass. The context is defined by CtTypeReference.getParent(CtType.class). 
+		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
+		//this checks the access path in context of SuperClass. The context is defined by CtTypeReference.getParent(CtType.class) 
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClass.getSuperclass().getTypeDeclaration().getReference().toString());
 		assertEquals("InnerClassProtected", innerClass.getSuperclass().getSimpleName());
+
 
 		assertEquals("SuperClass", innerClass.getSuperclass().getDeclaringType().getSimpleName());
 		assertEquals(spoon.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected"), innerClass.getSuperclass().getDeclaration());
@@ -102,7 +103,7 @@ public class ImportTest {
 
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClass.getSuperclass().getQualifiedName());
 		
-		expected = "spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected";
+		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 
 		assertEquals("SuperClass", innerClass.getSuperclass().getDeclaringType().getSimpleName());
@@ -126,7 +127,7 @@ public class ImportTest {
 		String expected = "visibility.YamlRepresenter.RepresentConfigurationSection";
 		assertEquals(expected, innerClass.getReference().toString());
 
-		expected = "org.yaml.snakeyaml.representer.SafeRepresenter.RepresentMap";
+		expected = "org.yaml.snakeyaml.representer.Representer.RepresentMap";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 	}
 
@@ -369,20 +370,18 @@ public class ImportTest {
 		final CtClass<ImportTest> aSuperClass = launcher.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass");
 		assertEquals(ClientClass.class.getName()+"$InnerClass", aInnerClass.getQualifiedName());
 		
-		//Check that access type of ClientClass$InnerClass in undefined context is ClientClass
-		assertEquals(ClientClass.class.getName(), aInnerClass.getReference().getAccessType(null).getQualifiedName());
 		//Check that access type of ClientClass$InnerClass in package protected class is still ClientClass
-		assertEquals(ClientClass.class.getName(), aInnerClass.getReference().getAccessType(aSuperClass.getReference()).getQualifiedName());
+		assertEquals(ClientClass.class.getName(), aInnerClass.getReference().getAccessType().getQualifiedName());
 		
-		final CtTypeReference<?> innerClassProtected = aInnerClass.getSuperclass();
-		//check that parentClass is SuperClass$InnerClassProtected
-		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtected.getQualifiedName()); 
-		//Check that access type of SuperClass$InnerClassProtected in undefined context is SuperClass
-		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtected.getAccessType(null).getQualifiedName());
-		//Check that access type of SuperClass$InnerClassProtected in ClientClass context is ChildClass
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtected.getAccessType(launcher.getFactory().Class().createReference(ClientClass.class)).getQualifiedName());
-		//Check that access type of SuperClass$InnerClassProtected in ClientClass$InnerClass context is ChildClass
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtected.getAccessType(aInnerClass.getReference()).getQualifiedName());
+		final CtTypeReference<?> innerClassProtectedByGetSuperClass = aInnerClass.getSuperclass();
+		final CtTypeReference<?> innerClassProtectedByQualifiedName = launcher.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected").getReference();
+
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByGetSuperClass.getQualifiedName()); 
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByQualifiedName.getQualifiedName()); 
+		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtectedByGetSuperClass.getAccessType().getQualifiedName());
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtectedByQualifiedName.getAccessType().getQualifiedName());
+		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClassProtectedByQualifiedName.toString());
 	}
 
 	@Test

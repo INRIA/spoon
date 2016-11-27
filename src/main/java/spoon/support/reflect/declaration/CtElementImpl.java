@@ -292,7 +292,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException {
-		if (getParent() == null) {
+		if (parent == null) {
 			return null;
 		}
 		if (parentType.isAssignableFrom(getParent().getClass())) {
