@@ -680,6 +680,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				visibleDeclType = getLastVisibleSuperClassExtendingFrom(type, declType);
 				if (visibleDeclType != null) {
 					//found one!
+					applyActualTypeArguments(visibleDeclType, declType);
 					break;
 				}
 				//try class hierarchy of declaring type
@@ -691,9 +692,44 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	/**
+	 * adds the actualTypeArguments of sourceTypeRef to targetTypeRef. Type of targetTypeRef extends from type of sourceTypeRef
+	 * @param targetTypeRef
+	 * @param sourceTypeRef
+	 */
+	private static void applyActualTypeArguments(CtTypeReference<?> targetTypeRef, CtTypeReference<?> sourceTypeRef) {
+		CtTypeReference<?> targetDeclType = targetTypeRef.getDeclaringType();
+		CtTypeReference<?> sourceDeclType = sourceTypeRef.getDeclaringType();
+		if (targetDeclType != null && sourceDeclType != null && targetDeclType.isSubtypeOf(sourceDeclType)) {
+			applyActualTypeArguments(targetDeclType, sourceDeclType);
+		}
+		if (targetTypeRef.isSubtypeOf(sourceTypeRef) == false) {
+			throw new SpoonException("Invalid arguments. targetTypeRef " + targetTypeRef.getQualifiedName() + " must be a sub type of sourceTypeRef " + sourceTypeRef.getQualifiedName());
+		}
+		List<CtTypeReference<?>> newTypeArgs = new ArrayList<>();
+		/*
+		 * for now simply copy the type arguments, to have it fixed fast. But it is not correct!
+		 *
+		 * For example in this case
+		 *
+		 * class A<T,K>{}
+		 *
+		 * class B<U,T> extends A<T,Integer>
+		 *
+		 * The sourceTypeRef: A<T,K>
+		 * has to be applied to
+		 * targetTypeRef: B<?,T>
+		 */
+		for (CtTypeReference<?> l_tr : sourceTypeRef.getActualTypeArguments()) {
+			newTypeArgs.add(l_tr.clone());
+		}
+		targetTypeRef.setActualTypeArguments(newTypeArgs);
+	}
+
+	/**
 	 *
-	 * @param p_declType
-	 * @return last super class which extends from p_declType and which is visible from this or null if  this does not extends from targetType
+	 * @param sourceType
+	 * @param targetType
+	 * @return sourceType or last super class of sourceType, which extends from targetType and which is visible from sourceType or null if sourceType does not extends from targetType
 	 */
 	private static CtTypeReference<?> getLastVisibleSuperClassExtendingFrom(CtTypeReference<?> sourceType, CtTypeReference<?> targetType) {
 		String targetQN = targetType.getQualifiedName();
