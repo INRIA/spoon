@@ -29,7 +29,6 @@ public class TypeContext {
 	CtType<?> type;
 	CtTypeReference<?> typeRef;
 	Set<String> memberNames;
-	boolean inBody = false;
 
 	TypeContext(CtType<?> p_type) {
 		type = p_type;

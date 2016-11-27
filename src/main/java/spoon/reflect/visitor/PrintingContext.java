@@ -95,13 +95,11 @@ public class PrintingContext {
 	List<TypeContext> currentThis = new ArrayList<>();
 
 	/**
-	 * @param inBody if false then it returns the nearest wrapping class which is actually printed.
-	 * if true then it returns nearest wrapping class whose body we are printing
 	 * @return top level type
 	 */
-	public CtTypeReference<?> getCurrentTypeReference(boolean inBody) {
+	public CtTypeReference<?> getCurrentTypeReference() {
 		if (currentTopLevel != null) {
-			TypeContext tc = getCurrentTypeContext(inBody);
+			TypeContext tc = getCurrentTypeContext();
 			if (tc != null) {
 				return tc.typeRef;
 			}
@@ -109,23 +107,16 @@ public class PrintingContext {
 		}
 		return null;
 	}
-	private TypeContext getCurrentTypeContext(boolean inBody) {
+	private TypeContext getCurrentTypeContext() {
 		if (currentThis != null && currentThis.size() > 0) {
 			TypeContext tc = currentThis.get(currentThis.size() - 1);
-			if (!inBody || tc.inBody) {
-				return tc;
-			} else if (currentThis.size() > 1) {
-				return currentThis.get(currentThis.size() - 2);
-			}
+			return tc;
 		}
 		return null;
 	}
 
 	public void pushCurrentThis(CtType<?> type) {
 		currentThis.add(new TypeContext(type));
-	}
-	public void markCurrentThisInBody() {
-		currentThis.get(currentThis.size() - 1).inBody = true;
 	}
 	public void popCurrentThis() {
 		currentThis.remove(currentThis.size() - 1);
@@ -147,7 +138,7 @@ public class PrintingContext {
 	 * @return true if typeRef is equal to current (actually printed) Type (currentThis)
 	 */
 	public boolean isInCurrentScope(CtTypeReference<?> typeRef) {
-		CtTypeReference<?> currentTypeRef = getCurrentTypeReference(false /*try true there */);
+		CtTypeReference<?> currentTypeRef = getCurrentTypeReference();
 		return currentTypeRef != null && typeRef.equals(currentTypeRef);
 	}
 }
