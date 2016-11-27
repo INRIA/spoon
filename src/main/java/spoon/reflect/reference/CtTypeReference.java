@@ -179,5 +179,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return type reference which can be used to access this type in scope of contextType.
 	 */
+	@DerivedProperty
 	CtTypeReference<?> getAccessType();
 }
