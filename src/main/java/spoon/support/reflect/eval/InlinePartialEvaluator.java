@@ -14,28 +14,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.code;
+package spoon.support.reflect.eval;
 
-import spoon.reflect.code.CtCodeElement;
-import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.reflect.eval.VisitorPartialEvaluator;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.eval.PartialEvaluator;
+import spoon.reflect.visitor.CtScanner;
 
-public abstract class CtCodeElementImpl extends CtElementImpl implements CtCodeElement {
-	private static final long serialVersionUID = 1L;
+/**
+ * Simplifies an AST inline based on {@link VisitorPartialEvaluator} (wanring: the nodes are changed).
+ */
+public class InlinePartialEvaluator extends CtScanner {
+	private final PartialEvaluator eval;
 
-	public CtCodeElementImpl() {
-		super();
+	public InlinePartialEvaluator(PartialEvaluator eval) {
+		this.eval = eval;
 	}
-
-	@SuppressWarnings("unchecked")
 	@Override
-	public <R extends CtCodeElement> R partiallyEvaluate() {
-		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
-		return eval.evaluate((R) this);
-	}
-
-	@Override
-	public CtCodeElement clone() {
-		return (CtCodeElement) super.clone();
+	protected void exit(CtElement e) {
+		CtElement simplified = eval.evaluate(e);
+		if (simplified != null) {
+			e.replace(simplified);
+		}
 	}
 }

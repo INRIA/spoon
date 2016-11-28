@@ -92,6 +92,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -130,7 +131,9 @@ public abstract class CtScanner implements CtVisitor {
 	 */
 	public void scan(Collection<? extends CtElement> elements) {
 		if ((elements != null)) {
-			for (CtElement e : elements) {
+			// we use defensive copy so as to be able to change the class while scanning
+			// otherwise one gets a ConcurrentModificationException
+			for (CtElement e : new ArrayList<>(elements)) {
 				scan(e);
 			}
 		}
