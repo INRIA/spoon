@@ -24,7 +24,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.ReferenceFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
 
@@ -47,15 +47,10 @@ public class ReplacementVisitorGenerator extends AbstractProcessor<CtType<?>> {
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_REPLACE_VISITOR);
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
-		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
+		final List<CtTypeReference> references = target.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference != null && GENERATING_REPLACE_VISITOR.equals(reference.getQualifiedName());
-			}
-
-			@Override
-			public Class<CtTypeReference> getType() {
-				return CtTypeReference.class;
+				return GENERATING_REPLACE_VISITOR.equals(reference.getQualifiedName());
 			}
 		});
 		for (CtTypeReference reference : references) {

@@ -23,9 +23,11 @@ import spoon.reflect.reference.CtReference;
  *
  * @param <T>
  * 		the type of the reference to be matched
+ *
+ * @deprecated use {@link TypeFilter} instead.
  */
-public class ReferenceTypeFilter<T extends CtReference> extends
-														AbstractReferenceFilter<T> {
+@Deprecated
+public class ReferenceTypeFilter<T extends CtReference> extends TypeFilter<T> {
 
 	/**
 	 * Creates the filter.
@@ -33,11 +35,7 @@ public class ReferenceTypeFilter<T extends CtReference> extends
 	 * @param type
 	 * 		the type that matches
 	 */
-	public ReferenceTypeFilter(Class<?> type) {
+	public ReferenceTypeFilter(Class<? super T> type) {
 		super(type);
-	}
-
-	public boolean matches(T reference) {
-		return true;
 	}
 }

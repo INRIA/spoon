@@ -56,7 +56,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
@@ -510,15 +509,10 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 		target.setSimpleName(TARGET_CLONE_TYPE);
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
-		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
+		final List<CtTypeReference> references = target.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference != null && GENERATING_CLONE.equals(reference.getQualifiedName());
-			}
-
-			@Override
-			public Class<CtTypeReference> getType() {
-				return CtTypeReference.class;
+				return GENERATING_CLONE.equals(reference.getQualifiedName());
 			}
 		});
 		for (CtTypeReference reference : references) {
@@ -534,15 +528,10 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 		target.setSimpleName(TARGET_BUILDER_CLONE_TYPE);
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
-		final List<CtTypeReference> references = target.getReferences(new ReferenceFilter<CtTypeReference>() {
+		final List<CtTypeReference> references = target.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference != null && GENERATING_BUILDER_CLONE.equals(reference.getQualifiedName());
-			}
-
-			@Override
-			public Class<CtTypeReference> getType() {
-				return CtTypeReference.class;
+				return GENERATING_BUILDER_CLONE.equals(reference.getQualifiedName());
 			}
 		});
 		for (CtTypeReference reference : references) {

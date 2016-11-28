@@ -36,7 +36,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.ReferenceFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -168,15 +168,10 @@ public class ReplaceScanner extends CtScanner {
 		listener = factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener").clone();
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
-		final List<CtTypeReference> references = listener.getReferences(new ReferenceFilter<CtTypeReference>() {
+		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference != null && (GENERATING_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
-			}
-
-			@Override
-			public Class<CtTypeReference> getType() {
-				return CtTypeReference.class;
+				return (GENERATING_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
 			}
 		});
 		for (CtTypeReference reference : references) {
