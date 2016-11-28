@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -33,6 +34,7 @@ import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
+import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.comment.testclasses.BlockComment;
@@ -52,7 +54,7 @@ import static org.junit.Assert.assertTrue;
 public class CommentTest {
 
 	private String newLine = System.getProperty("line.separator");
-
+	
 	private Factory getSpoonFactory() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[]{
@@ -70,6 +72,22 @@ public class CommentTest {
 	private CtComment createFakeBlockComment(Factory factory, String content) {
 		return factory.Code().createComment(content, CtComment.CommentType.BLOCK);
 	}
+	
+	@Test
+	public void testCombinedPackageInfoComment() {
+		Factory f = getSpoonFactory();
+		CtPackage p = f.Package().get("spoon.test.comment.testclasses");
+		String l_content = ((JavaOutputProcessor)f.getEnvironment().getDefaultFileGenerator()).getPrinter().printPackageInfo(p);
+		String EOL = System.getProperty("line.separator");
+		assertEquals("/* comment1 */"+EOL+
+				"// comment2"+EOL+
+				"/**"+EOL+
+				" * Comment3"+EOL+
+				" */"+EOL+
+				"@java.lang.Deprecated"+EOL+
+				"package spoon.test.comment.testclasses;",l_content);
+	}
+	
 
 	@Test
 	public void testRemoveComment() {

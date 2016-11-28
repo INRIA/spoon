@@ -1680,7 +1680,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public String printPackageInfo(CtPackage pack) {
 		PrinterHelper bck = printer;
+		ElementPrinterHelper bck2 = elementPrinterHelper;
 		printer = new PrinterHelper(env);
+		elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
 
 		elementPrinterHelper.writeComment(pack);
 
@@ -1692,6 +1694,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write("package " + pack.getQualifiedName() + ";");
 		}
 		String ret = printer.toString();
+		elementPrinterHelper = bck2;
 		printer = bck;
 
 		return ret;
