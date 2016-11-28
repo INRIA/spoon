@@ -103,7 +103,7 @@ public class TargetedExpressionTest {
 		CtFieldAccess<?> fieldAccess = factory.Core().createFieldRead();
 		fieldAccess.setVariable((CtFieldReference) iField.getReference());
 		fieldAccess.setTarget(factory.Code().createThisAccess(fooClass.getReference()));
-		assertEquals("this.i", fieldAccess.toString());
+		assertEquals("spoon.test.targeted.testclasses.Foo.this.i", fieldAccess.toString());
 		// this test is made for this line. Check that we can setTarget(null)
 		// without NPE
 		fieldAccess.setTarget(null);
@@ -293,7 +293,7 @@ public class TargetedExpressionTest {
 
 		assertEquals(fooTypeAccess.getType().getQualifiedName(), ((CtThisAccess) elements.get(2).getTarget()).getTarget().getType().getQualifiedName());
 		assertEquals(fooTypeAccess.getType().getQualifiedName(), ((CtThisAccess) elements.get(3).getTarget()).getTarget().getType().getQualifiedName());
-		assertEquals(superClassTypeAccess, ((CtThisAccess) elements.get(6).getTarget()).getTarget());
+		assertEquals(fooTypeAccess, ((CtThisAccess) elements.get(6).getTarget()).getTarget());
 	}
 
 	@Test

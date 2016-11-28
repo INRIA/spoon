@@ -18,7 +18,8 @@ public class Foo<T> extends SuperClass {
 
 	public void m() {
 		int x;
-		x= this.k;
+		// checking that this is correct Java and is correctly parsed
+		x= spoon.test.targeted.testclasses.Foo.this.k;
 		x= Foo.k;
 		x= k;
 		this.k = x;

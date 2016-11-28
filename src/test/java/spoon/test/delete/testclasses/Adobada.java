@@ -50,4 +50,8 @@ public class Adobada {
 		int k;
 		j = i = k = 3;
 	}
+
+	public void methodUsingjlObjectMethods() {
+		notify();
+	}
 }
