@@ -95,30 +95,28 @@ public class PrintingContext {
 	List<TypeContext> currentThis = new ArrayList<>();
 
 	/**
-	 * @param inBody if false then it returns the nearest wrapping class which is actually printed.
-	 * if true then it returns nearest wrapping class whose body we are printing
 	 * @return top level type
 	 */
-	public CtTypeReference<?> getCurrentTypeReference(boolean inBody) {
+	public CtTypeReference<?> getCurrentTypeReference() {
 		if (currentTopLevel != null) {
-			if (currentThis != null && currentThis.size() > 0) {
-				TypeContext tc = currentThis.get(currentThis.size() - 1);
-				if (!inBody || tc.inBody) {
-					return tc.type;
-				} else if (currentThis.size() > 1) {
-					return currentThis.get(currentThis.size() - 2).type;
-				}
+			TypeContext tc = getCurrentTypeContext();
+			if (tc != null) {
+				return tc.typeRef;
 			}
 			return currentTopLevel.getReference();
 		}
 		return null;
 	}
-
-	public void pushCurrentThis(CtTypeReference<?> type) {
-		currentThis.add(new TypeContext(type));
+	private TypeContext getCurrentTypeContext() {
+		if (currentThis != null && currentThis.size() > 0) {
+			TypeContext tc = currentThis.get(currentThis.size() - 1);
+			return tc;
+		}
+		return null;
 	}
-	public void markCurrentThisInBody() {
-		currentThis.get(currentThis.size() - 1).inBody = true;
+
+	public void pushCurrentThis(CtType<?> type) {
+		currentThis.add(new TypeContext(type));
 	}
 	public void popCurrentThis() {
 		currentThis.remove(currentThis.size() - 1);
@@ -134,5 +132,13 @@ public class PrintingContext {
 	@Override
 	public String toString() {
 		return "context.ignoreGenerics: " + ignoreGenerics() + "\n";
+	}
+	/**
+	 * @param typeRef
+	 * @return true if typeRef is equal to current (actually printed) Type (currentThis)
+	 */
+	public boolean isInCurrentScope(CtTypeReference<?> typeRef) {
+		CtTypeReference<?> currentTypeRef = getCurrentTypeReference();
+		return currentTypeRef != null && typeRef.equals(currentTypeRef);
 	}
 }

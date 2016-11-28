@@ -476,7 +476,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		context.pushCurrentThis(ctClass.getReference());
+		context.pushCurrentThis(ctClass);
 
 		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
@@ -491,8 +491,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeImplementsClause(ctClass);
 		}
 		// lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
-		//mark currentThis that we are in body of the class.
-		context.markCurrentThisInBody();
 		printer.write(" {").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		printer.decTab().writeTabs().write("}");
@@ -601,7 +599,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtType(ctEnum);
 		printer.write("enum " + ctEnum.getSimpleName());
 		elementPrinterHelper.writeImplementsClause(ctEnum);
-		context.pushCurrentThis(ctEnum.getReference());
+		context.pushCurrentThis(ctEnum);
 		printer.write(" {").incTab().writeln();
 
 		if (ctEnum.getEnumValues().size() == 0) {
@@ -857,13 +855,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if (reference.isFinal() && reference.isStatic()) {
 			CtTypeReference<?> declTypeRef = reference.getDeclaringType();
-			CtTypeReference<?> ref2 = context.getCurrentTypeReference(false);
-			if (ref2 != null) {
-				// print type if not anonymous class ref and not within the
-				// current scope
-				printType = !"".equals(declTypeRef.getSimpleName()) && !(declTypeRef.equals(ref2));
+			if ("".equals(declTypeRef.getSimpleName())) {
+				//never print anonymous class ref
+				printType = false;
 			} else {
-				printType = !"".equals(declTypeRef.getSimpleName());
+				if (context.isInCurrentScope(declTypeRef)) {
+					//do not printType if we are in scope of that type
+					printType = false;
+				}
 			}
 		}
 
@@ -957,7 +956,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			printer.removeLastChar();
 		}
-		context.pushCurrentThis(intrface.getReference());
+		context.pushCurrentThis(intrface);
 		printer.write(" {").incTab();
 		// Content
 		elementPrinterHelper.writeElementList(intrface.getTypeMembers());
@@ -1581,7 +1580,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (isInner) {
 			if (!context.ignoreEnclosingClass() && !ref.isLocalType()) {
 				//compute visible type which can be used to print access path to ref
-				CtTypeReference<?> accessType = ref.getAccessType(context.getCurrentTypeReference(true));
+				CtTypeReference<?> accessType = ref.getAccessType();
 				if (!accessType.isAnonymous()) {
 					try (Writable _context = context.modify()) {
 						if (!withGenerics) {
