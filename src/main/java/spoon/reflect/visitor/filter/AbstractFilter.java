@@ -31,6 +31,7 @@ public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 	/**
 	 * Creates a filter with the type of the potentially matching elements.
 	 */
+	// TODO: INFER TYPE BY INTROSPECTION
 	@SuppressWarnings("unchecked")
 	public AbstractFilter(Class<? super T> type) {
 		this.type = (Class<T>) type;

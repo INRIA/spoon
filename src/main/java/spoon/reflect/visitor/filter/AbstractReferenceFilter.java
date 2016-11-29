@@ -26,24 +26,19 @@ import spoon.reflect.visitor.ReferenceFilter;
  * @param <T>
  * 		the type of the reference to be matched
  * @see spoon.reflect.visitor.ReferenceFilter#matches(CtReference)
+ *
+ * @deprecated use {@link AbstractFilter} instead.
  */
-public abstract class AbstractReferenceFilter<T extends CtReference>
-		implements ReferenceFilter<T> {
-
-	Class<T> type;
+@Deprecated
+public abstract class AbstractReferenceFilter<T extends CtReference> extends AbstractFilter<T> implements ReferenceFilter<T> {
 
 	/**
 	 * Creates a reference filter with the type of the potentially matching
 	 * references.
 	 */
-	// TODO: INFER TYPE BY INTROSPECTION
 	@SuppressWarnings("unchecked")
-	public AbstractReferenceFilter(Class<?> type) {
-		this.type = (Class<T>) type;
-	}
-
-	public Class<T> getType() {
-		return type;
+	public AbstractReferenceFilter(Class<? super T> type) {
+		super(type);
 	}
 
 }

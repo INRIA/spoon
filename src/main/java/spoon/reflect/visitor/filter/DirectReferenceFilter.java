@@ -22,8 +22,7 @@ import spoon.reflect.reference.CtReference;
  * This simple filter matches all the references to a given element by using
  * reference equality.
  */
-public class DirectReferenceFilter<T extends CtReference> extends
-		AbstractReferenceFilter<T> {
+public class DirectReferenceFilter<T extends CtReference> extends AbstractFilter<T> {
 	CtReference reference;
 
 	/**
@@ -32,8 +31,9 @@ public class DirectReferenceFilter<T extends CtReference> extends
 	 * @param reference
 	 *            the matching reference
 	 */
+	@SuppressWarnings("unchecked")
 	public DirectReferenceFilter(CtReference reference) {
-		super(reference.getClass());
+		super((Class<T>) reference.getClass());
 		this.reference = reference;
 	}
 
