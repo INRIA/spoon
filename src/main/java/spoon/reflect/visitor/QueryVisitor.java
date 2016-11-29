@@ -35,14 +35,15 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 	/**
 	 * Constructs a query visitor with a given filter.
 	 */
+	@SuppressWarnings("unchecked")
 	public QueryVisitor(Filter<T> filter) {
 		super();
 		this.filter = filter;
 		if (filter instanceof AbstractFilter) {
-			filteredType =  ((AbstractFilter) filter).getType();
+			filteredType =  ((AbstractFilter<T>) filter).getType();
 		} else {
 			Class<?>[] params = RtHelper.getMethodParameterTypes(filter.getClass(), "matches", 1);
-			filteredType = (Class<T>)params[0];
+			filteredType = (Class<T>) params[0];
 		}
 	}
 
