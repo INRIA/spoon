@@ -26,14 +26,14 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.CtScanner;
 
 /**
  * Responsible for computing signatures for elements where a signature exists
  * (CtType, CtMethod and CtPackage). Otherwise returns the empty string.
  *
  */
-public class SignaturePrinter extends CtInheritanceScanner {
+public class SignaturePrinter extends CtScanner {
 
 	private final StringBuffer signature = new StringBuffer();
 
