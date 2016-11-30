@@ -316,7 +316,7 @@ public class APITest {
 				}
 				final CtTypeReference<?> typeParameter = parameters.get(0).getType();
 				final CtTypeReference<CtElement> ctElementRef = element.getFactory().Type().createReference(CtElement.class);
-				if (!typeParameter.isSubtypeOf(ctElementRef) || !typeParameter.equals(ctElementRef)) {
+				if (!typeParameter.isSubtypeOf(ctElementRef)) {
 					return false;
 				}
 				return element.getSimpleName().startsWith("set") && element.getDeclaringType().getSimpleName().startsWith("Ct") && element.getBody() != null;
@@ -354,6 +354,7 @@ public class APITest {
 		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getStatement(0);
 
 		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
+		assertTrue(setters.size()>0);
 		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
 			// First statement should be a condition to protect the setter of the parent.
 			assertTrue("Check the method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(), statement instanceof CtIf);
