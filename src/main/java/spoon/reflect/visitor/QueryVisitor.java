@@ -21,6 +21,7 @@ import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.support.util.RtHelper;
 
 /**
  * A simple visitor that takes a filter and returns all the elements that match
@@ -34,10 +35,16 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 	/**
 	 * Constructs a query visitor with a given filter.
 	 */
+	@SuppressWarnings("unchecked")
 	public QueryVisitor(Filter<T> filter) {
 		super();
 		this.filter = filter;
-		filteredType = filter instanceof AbstractFilter ? ((AbstractFilter) filter).getType() : null;
+		if (filter instanceof AbstractFilter) {
+			filteredType =  ((AbstractFilter<T>) filter).getType();
+		} else {
+			Class<?>[] params = RtHelper.getMethodParameterTypes(filter.getClass(), "matches", 1);
+			filteredType = (Class<T>) params[0];
+		}
 	}
 
 	/**
