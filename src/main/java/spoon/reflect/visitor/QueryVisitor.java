@@ -19,6 +19,7 @@ package spoon.reflect.visitor;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.util.RtHelper;
@@ -53,7 +54,7 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 		}
 		this.consumer = consumer;
 	}
-	
+
 	private static class ArrayConsumer<T extends CtElement> implements ElementConsumer<T> {
 		final List<T> result = new ArrayList<>();
 		@Override
