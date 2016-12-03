@@ -20,7 +20,7 @@ You see the output at the end of this page for the current release version of Sp
 The basic usage of Spoon consists in defining the original source location and the list of compiled processors to be used. 
 
 ```console
-$ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-4.2.0-jar-with-dependencies.jar spoon.Launcher -i /path/to/src/of/your/project -p fr.inria.gforge.spoon.processors.CatchProcessor
+$ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-{{site.spoon_release}}-with-dependencies.jar spoon.Launcher -i /path/to/src/of/your/project -p fr.inria.gforge.spoon.processors.CatchProcessor
 ```
 
 If you plan to repeatedly run Spoon from the command line, it may be a good idea to combine all of your commands into a single bash script. An example of this can be found [here](https://github.com/INRIA/spoon/blob/master/doc/example_scripts/example_usage_script.sh).
