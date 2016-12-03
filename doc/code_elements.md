@@ -23,6 +23,7 @@ The generic type of `CtExpression` is used to add static type-checking when tran
 
 ### CtArrayRead
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtArrayRead.html)
+
 ```java
 
     int[] array = new int[10];
@@ -33,6 +34,7 @@ The generic type of `CtExpression` is used to add static type-checking when tran
 ```
 ### CtArrayWrite
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtArrayWrite.html)
+
 ```java
 
     Object[] array = new Object[10];
@@ -42,11 +44,13 @@ The generic type of `CtExpression` is used to add static type-checking when tran
 ```
 ### CtAssert
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtAssert.html)
+
 ```java
 assert 1+1==2
 ```
 ### CtAssignment
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtAssignment.html)
+
 ```java
 
     int x;
@@ -55,6 +59,7 @@ assert 1+1==2
 ```
 ### CtBinaryOperator
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtBinaryOperator.html)
+
 ```java
 
     // 3+4 is the binary expression
@@ -63,6 +68,7 @@ assert 1+1==2
 ```
 ### CtBlock
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtBlock.html)
+
 ```java
 
  { // <-- block start
@@ -72,6 +78,7 @@ assert 1+1==2
 ```
 ### CtBreak
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtBreak.html)
+
 ```java
 
     for(int i=0; i<10; i++) {
@@ -83,6 +90,7 @@ assert 1+1==2
 ```
 ### CtCase
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtCase.html)
+
 ```java
 
 int x = 0;
@@ -93,6 +101,7 @@ switch(x) {
 ```
 ### CtConditional
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtConditional.html)
+
 ```java
 
     System.out.println(
@@ -102,6 +111,7 @@ switch(x) {
 ```
 ### CtConstructorCall
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtConstructorCall.html)
+
 ```java
 
     new Object();
@@ -109,6 +119,7 @@ switch(x) {
 ```
 ### CtContinue
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtContinue.html)
+
 ```java
 
     for(int i=0; i<10; i++) {
@@ -120,6 +131,7 @@ switch(x) {
 ```
 ### CtDo
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtDo.html)
+
 ```java
 
     int x = 0;
@@ -130,6 +142,7 @@ switch(x) {
 ```
 ### CtExecutableReferenceExpression
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtExecutableReferenceExpression.html)
+
 ```java
 
     java.util.function.Supplier p =
@@ -138,6 +151,7 @@ switch(x) {
 ```
 ### CtFieldRead
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtFieldRead.html)
+
 ```java
 
     class Foo { int field; }
@@ -147,6 +161,7 @@ switch(x) {
 ```
 ### CtFieldWrite
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtFieldWrite.html)
+
 ```java
 
     class Foo { int field; }
@@ -156,6 +171,7 @@ switch(x) {
 ```
 ### CtFor
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtFor.html)
+
 ```java
 
     // a for statement
@@ -166,6 +182,7 @@ switch(x) {
 ```
 ### CtForEach
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtForEach.html)
+
 ```java
 
     java.util.List l = new java.util.ArrayList();
@@ -176,6 +193,7 @@ switch(x) {
 ```
 ### CtIf
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtIf.html)
+
 ```java
 
     if (1==0) {
@@ -187,6 +205,7 @@ switch(x) {
 ```
 ### CtInvocation
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtInvocation.html)
+
 ```java
 
     // invocation of method println
@@ -196,6 +215,7 @@ switch(x) {
 ```
 ### CtLambda
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLambda.html)
+
 ```java
 
     java.util.List l = new java.util.ArrayList();
@@ -206,6 +226,7 @@ switch(x) {
 ```
 ### CtLiteral
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLiteral.html)
+
 ```java
 
     int x = 4; // 4 is a literal
@@ -213,6 +234,7 @@ switch(x) {
 ```
 ### CtLocalVariable
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLocalVariable.html)
+
 ```java
 
     // defines a local variable x
@@ -221,6 +243,7 @@ switch(x) {
 ```
 ### CtNewArray
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtNewArray.html)
+
 ```java
 
     // inline creation of array content
@@ -229,6 +252,7 @@ switch(x) {
 ```
 ### CtNewClass
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtNewClass.html)
+
 ```java
 
    // an anonymous class creation
@@ -242,6 +266,7 @@ switch(x) {
 ```
 ### CtOperatorAssignment
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtOperatorAssignment.html)
+
 ```java
 
     int x = 0;
@@ -250,6 +275,7 @@ switch(x) {
 ```
 ### CtReturn
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtReturn.html)
+
 ```java
 
    Runnable r = new Runnable() {
@@ -262,6 +288,7 @@ switch(x) {
 ```
 ### CtSuperAccess
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtSuperAccess.html)
+
 ```java
 
     class Foo { int foo() { return 42;}};
@@ -274,6 +301,7 @@ switch(x) {
 ```
 ### CtSwitch
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtSwitch.html)
+
 ```java
 
 int x = 0;
@@ -284,6 +312,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtSynchronized
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtSynchronized.html)
+
 ```java
 
    java.util.List l = new java.util.ArrayList();
@@ -294,6 +323,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtThisAccess
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtThisAccess.html)
+
 ```java
 
     class Foo {
@@ -307,6 +337,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtThrow
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtThrow.html)
+
 ```java
 
     throw new RuntimeException("oops")
@@ -314,6 +345,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtTry
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTry.html)
+
 ```java
 
     try {
@@ -323,6 +355,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtTryWithResource
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTryWithResource.html)
+
 ```java
 
    // br is the resource
@@ -333,6 +366,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtTypeAccess
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTypeAccess.html)
+
 ```java
 
     // access to static field
@@ -358,6 +392,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtUnaryOperator
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtUnaryOperator.html)
+
 ```java
 
     int x=3;
@@ -366,6 +401,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtVariableRead
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtVariableRead.html)
+
 ```java
 
     String variable = "";
@@ -376,6 +412,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtVariableWrite
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtVariableWrite.html)
+
 ```java
 
     String variable = "";
@@ -388,6 +425,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtWhile
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtWhile.html)
+
 ```java
 
     int x = 0;
@@ -398,6 +436,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtAnnotation
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtAnnotation.html)
+
 ```java
 
     // statement annotated by annotation @SuppressWarnings
@@ -407,6 +446,7 @@ switch(x) { // <-- switch statement
 ```
 ### CtClass
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtClass.html)
+
 ```java
 
     // a class definition
