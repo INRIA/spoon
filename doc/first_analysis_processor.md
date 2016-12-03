@@ -10,7 +10,7 @@ last_updated: October 1, 2015
 To get started with the metamodel, you can browse the model (ie the Spoon AST) of a java file (say `MyClass.java`) as follows:
 
 ```
-$ java -cp spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i MyClass.java --gui
+$ java -cp spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i MyClass.java --gui --noclasspath
 ```
 
 
