@@ -24,6 +24,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Root;
+import spoon.reflect.visitor.chain.QueryStep;
 import spoon.support.DerivedProperty;
 
 import java.lang.annotation.Annotation;
@@ -168,6 +169,16 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	 * If the receiver (this) matches the filter, it is also returned
 	 */
 	<E extends CtElement> List<E> getElements(Filter<E> filter);
+
+	/**
+	 * Returns QueryStep which will process query starting on this Element
+	 * Use the {QueryStep} fluent API to build query or use
+	 * <ul>
+	 * <li>{QueryStep#list()} to return List of all matches
+	 * <li>{QueryStep#forEach(consumer)} to call consumer for each match
+	 * </ul>
+	 */
+	<E extends CtElement> QueryStep<E> query();
 
 	/**
 	 * @param filter

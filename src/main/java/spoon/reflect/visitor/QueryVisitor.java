@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +43,8 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 		if (filter instanceof AbstractFilter) {
 			filteredType =  ((AbstractFilter<T>) filter).getType();
 		} else {
-			Class<?>[] params = RtHelper.getMethodParameterTypes(filter.getClass(), "matches", 1);
-			filteredType = (Class<T>) params[0];
+			Method method = RtHelper.getMethod(filter.getClass(), "matches", 1);
+			filteredType = (Class<T>) method.getParameterTypes()[0];
 		}
 	}
 

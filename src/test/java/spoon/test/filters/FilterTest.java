@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -40,6 +41,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.chain.QueryStep;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -332,6 +334,8 @@ public class FilterTest {
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
 
 		assertEquals(0, Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aClass.getMethodsByName("prepare").get(0))).size());
+		assertEquals(0, Query.query().then(new OverriddenMethodFilter()).list(aClass.getMethodsByName("prepare").get(0)).size());
+		assertEquals(0, aClass.getMethodsByName("prepare").get(0).query().then(new OverriddenMethodFilter()).list().size());
 	}
 
 	@Test
@@ -367,7 +371,11 @@ public class FilterTest {
 
 		final CtInterface<ITostada> aITostada = launcher.getFactory().Interface().get(ITostada.class);
 
-		final List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0)));
+		List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0)));
+		assertEquals(0, overridingMethods.size());
+		overridingMethods = Query.query().then(new OverriddenMethodFilter()).list(aITostada.getMethodsByName("make").get(0));
+		assertEquals(0, overridingMethods.size());
+		overridingMethods = aITostada.getMethodsByName("make").get(0).query().then(new OverriddenMethodFilter()).list();
 		assertEquals(0, overridingMethods.size());
 	}
 
@@ -466,4 +474,48 @@ public class FilterTest {
 		}).get(0);
 		assertNotNull(invSize);
 	}
+	@Test
+	public void testQueryStepScannWithConsumer() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int counter = 0;
+		}
+		Context context = new Context();
+		
+		QueryStep<CtClass<?>> l_qv = launcher.getFactory().getModel().getRootPackage().query().scan(new TypeFilter<>(CtClass.class));
+		
+		assertEquals(0, context.counter);
+		l_qv.forEach(cls->{
+			assertTrue(cls instanceof CtClass);
+			context.counter++;
+		});
+		assertTrue(context.counter>0);
+	}
+	
+	@Test
+	public void testQueryBuilderWithFilterChain() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			CtMethod<?> method;
+		}
+		
+		Context context = new Context();
+
+		launcher.getFactory().Package().getRootPackage().query().scan(new TypeFilter<CtMethod<?>>(CtMethod.class))
+		.then(method -> {context.method = method;})
+		.then(new OverriddenMethodFilter())
+		.then(method -> {
+			assertTrue(context.method.getReference().isOverriding(method.getReference()));
+		});
+	}
+	
+	
 }

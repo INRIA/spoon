@@ -21,6 +21,8 @@ import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.visitor.chain.QueryStep;
+import spoon.reflect.visitor.chain.StartQueryStep;
 
 /**
  * This class provides some useful methods to retrieve program elements and
@@ -51,7 +53,7 @@ public abstract class Query {
 	}
 
 	/**
-	 * Returns all the program elements that match the filter.
+	 * Returns all the program elements that match the filter starting from defined rootElement.
 	 *
 	 * @param <E>
 	 * 		the type of the sought program elements
@@ -104,4 +106,7 @@ public abstract class Query {
 		return getElements(factory, filter);
 	}
 
+	public static QueryStep<?> query() {
+		return new StartQueryStep<>();
+	}
 }
