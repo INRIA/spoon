@@ -512,7 +512,7 @@ public class FilterTest {
 		launcher.getFactory().Package().getRootPackage().query().scan(new TypeFilter<CtMethod<?>>(CtMethod.class))
 		.then(method -> {context.method = method;})
 		.then(new OverriddenMethodFilter())
-		.then(method -> {
+		.forEach(method -> {
 			assertTrue(context.method.getReference().isOverriding(method.getReference()));
 		});
 	}
