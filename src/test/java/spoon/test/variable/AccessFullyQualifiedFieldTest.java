@@ -21,6 +21,7 @@ public class AccessFullyQualifiedFieldTest {
 	public void testNoFQNWhenShadowedByField() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a field variable
 		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[]{"--with-imports"});
 		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/BurritosFielded.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Field/";
 		spoon.setSourceOutputDirectory(output);

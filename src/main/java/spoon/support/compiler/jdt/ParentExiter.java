@@ -190,14 +190,10 @@ public class ParentExiter extends CtInheritanceScanner {
 				}
 			});
 
-			CtLiteral simpleExpression = this.jdtTreeBuilder.getFactory().Core().createLiteral();
-			simpleExpression.setValue(childJDT.toString());
-
-			if (allElements.isEmpty()) {
-				v.setDefaultExpression((CtExpression<T>) child);
-			} else {
-				v.setDefaultExpression(simpleExpression);
+			if (!allElements.isEmpty()) {
+				this.jdtTreeBuilder.getFactory().getEnvironment().setAutoImports(true);
 			}
+			v.setDefaultExpression((CtExpression<T>) child);
 			return;
 		}
 		super.scanCtVariable(v);
