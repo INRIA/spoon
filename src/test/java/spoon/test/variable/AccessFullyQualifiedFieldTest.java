@@ -2,11 +2,8 @@ package spoon.test.variable;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.test.main.MainTest;
-import spoon.test.variable.testclasses.Burritos;
 import spoon.test.variable.testclasses.Tacos;
 
 import static spoon.testing.utils.ModelUtils.build;
@@ -21,11 +18,22 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testNoFQN() throws Exception {
+	public void testNoFQNWhenShadowedByField() throws Exception {
+		// contract: no fully qualified name if top package is shadowed by a field variable
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/BurritosFielded.java");
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Field/";
+		spoon.setSourceOutputDirectory(output);
+		spoon.run();
+		canBeBuilt(output, 7);
+	}
+
+	@Test
+	public void testNoFQNWhenShadowedByLocalVariable() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a local variable
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/Burritos.java");
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"/";
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Local/";
 		spoon.setSourceOutputDirectory(output);
 		spoon.run();
 		canBeBuilt(output, 7);
