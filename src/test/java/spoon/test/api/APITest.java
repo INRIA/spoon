@@ -296,11 +296,18 @@ public class APITest {
 
 			@Override
 			public boolean matches(CtMethod<?> element) {
-				return isSetterMethod(element) && !isSubTypeOfCollection(element) && super.matches(element);
+				boolean isSetter = isSetterMethod(element);
+				boolean isNotSubType = !isSubTypeOfCollection(element);
+				boolean superMatch = super.matches(element);
+				return isSetter && isNotSubType && superMatch;
 			}
 
 			private boolean isSubTypeOfCollection(CtMethod<?> element) {
-				final CtTypeReference<?> type = element.getParameters().get(0).getType();
+				final List<CtParameter<?>> parameters = element.getParameters();
+				if (parameters.size() != 1) {
+					return false;
+				}
+				final CtTypeReference<?> type = parameters.get(0).getType();
 				for (CtTypeReference<?> aCollectionRef : collections) {
 					if (type.isSubtypeOf(aCollectionRef) || type.equals(aCollectionRef)) {
 						return true;
@@ -316,7 +323,10 @@ public class APITest {
 				}
 				final CtTypeReference<?> typeParameter = parameters.get(0).getType();
 				final CtTypeReference<CtElement> ctElementRef = element.getFactory().Type().createReference(CtElement.class);
-				if (!typeParameter.isSubtypeOf(ctElementRef) || !typeParameter.equals(ctElementRef)) {
+
+				boolean isSubtypeof = typeParameter.isSubtypeOf(ctElementRef);
+				boolean isEquals = typeParameter.equals(ctElementRef);
+				if (!isSubtypeof && !isEquals) {
 					return false;
 				}
 				return element.getSimpleName().startsWith("set") && element.getDeclaringType().getSimpleName().startsWith("Ct") && element.getBody() != null;
