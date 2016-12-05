@@ -19,7 +19,6 @@ package spoon.reflect.visitor.chain;
 import java.util.ArrayList;
 import java.util.List;
 
-import spoon.Launcher;
 import spoon.support.util.SafeInvoker;
 
 public class MultiConsumer<T> implements Consumer<T> {
@@ -40,7 +39,7 @@ public class MultiConsumer<T> implements Consumer<T> {
 				try {
 					invoke_accept.invoke(element);
 				} catch (ClassCastException e) {
-					Launcher.LOGGER.trace("Invocation of consumer failed. It can be expected behavior.", e);
+					invoke_accept.onClassCastException(e, element);
 				}
 			}
 		}

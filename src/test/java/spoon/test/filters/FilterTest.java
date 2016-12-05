@@ -39,6 +39,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.QueryStep;
@@ -505,17 +506,47 @@ public class FilterTest {
 		
 		class Context {
 			CtMethod<?> method;
+			int count = 0;
 		}
 		
 		Context context = new Context();
 
 		launcher.getFactory().Package().getRootPackage().query().scan(new TypeFilter<CtMethod<?>>(CtMethod.class))
-		.then(method -> {context.method = method;})
+		.thenConsume((CtMethod<?> method) -> {context.method = method;})
 		.then(new OverriddenMethodFilter())
-		.forEach(method -> {
+		.forEach((CtMethod<?> method) -> {
 			assertTrue(context.method.getReference().isOverriding(method.getReference()));
+			context.count++;
 		});
+		assertTrue(context.count>0);
 	}
 	
+	@Test
+	public void testFunctionQueryStep() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","debug" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int count = 0;
+		}
+		
+		Context context = new Context();
+
+		launcher.getFactory().Package().getRootPackage().query().scan((CtClass<?> c)->{return true;})
+			.then((CtClass<?> c)->c.getSuperInterfaces())
+			.then((CtTypeReference<?> iface)->iface.getTypeDeclaration())
+			.then((CtType<?> iface)->iface.getAllMethods())
+			.then((CtMethod<?> method)->method.getSimpleName().equals("make"))
+			.then((CtMethod<?> m)->m.getType())
+			.then((CtTypeReference<?> t)->t.getTypeDeclaration())
+			.forEach((CtInterface<?> c)->{
+				assertEquals("ITostada", c.getSimpleName());
+				context.count++;
+//				return null;
+			});
+		assertTrue(context.count>0);
+	}
 	
 }

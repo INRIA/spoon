@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor.chain;
 
-import spoon.Launcher;
 import spoon.support.util.SafeInvoker;
 
 public class AsyncFunctionQueryStep<O> extends QueryStep<O> {
@@ -31,9 +30,9 @@ public class AsyncFunctionQueryStep<O> extends QueryStep<O> {
 	public void accept(Object input) {
 		if (code.isParameterTypeAssignableFrom(input, null)) {
 			try {
-				this.code.invoke(input, next);
+				this.code.invoke(input, getNextConsumer());
 			} catch (ClassCastException e) {
-				Launcher.LOGGER.trace("Invocation of function failed. It can be expected behavior.", e);
+				code.onClassCastException(e, input);
 			}
 		}
 	}

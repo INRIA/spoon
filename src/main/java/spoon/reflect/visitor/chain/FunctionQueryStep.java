@@ -35,11 +35,21 @@ public class FunctionQueryStep<O> extends QueryStep<O> {
 			try {
 				result = code.invoke(input);
 			} catch (ClassCastException e) {
-				Launcher.LOGGER.trace("Invocation of function failed. It can be expected behavior.", e);
+				code.onClassCastException(e, input);
 				return;
 			}
 		} else {
 			return;
+		}
+		if (result instanceof Boolean) {
+			//the code is a predicate. send the input to output if result is true
+			if ((Boolean) result) {
+				fireNext((O) input);
+			} else {
+				if (Launcher.LOGGER.isDebugEnabled()) {
+					Launcher.LOGGER.debug(getDescription() + " predicate is false on " + input);
+				}
+			}
 		}
 		if (result instanceof Iterable) {
 			for (O out : (Iterable<O>) result) {

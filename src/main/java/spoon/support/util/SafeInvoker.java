@@ -19,6 +19,7 @@ package spoon.support.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import spoon.Launcher;
 import spoon.SpoonException;
 
 /**
@@ -92,6 +93,7 @@ public class SafeInvoker<T> {
 		}
 		for (int i = 0; i < paramTypes.length; i++) {
 			if (parameters[i] != null && paramTypes[i].isAssignableFrom(parameters[i].getClass()) == false) {
+				reportInputIgnored(i, parameters);
 				return false;
 			}
 		}
@@ -114,5 +116,36 @@ public class SafeInvoker<T> {
 			}
 		}
 		return null;
+	}
+
+	protected void reportInputIgnored(int incompatibleParamIdx, Object[] parameters) {
+		if (Launcher.LOGGER.isDebugEnabled()) {
+			reportInputIgnored(parameters[incompatibleParamIdx].getClass().getName() + " cannot be cast to " + paramTypes[incompatibleParamIdx].getName(), parameters);
+		}
+	}
+
+	public void onClassCastException(ClassCastException e, Object... parameters) {
+		//note: we can detect acceptable types by parsing of e.getMessage()
+		//spoon.support.reflect.reference.CtTypeReferenceImpl cannot be cast to spoon.reflect.declaration.CtClass
+		if (Launcher.LOGGER.isTraceEnabled()) {
+			Launcher.LOGGER.trace("Input ignored", e);
+		} else {
+			reportInputIgnored(e.getMessage(), parameters);
+		}
+	}
+
+	public void reportInputIgnored(String message, Object... parameters) {
+		if (Launcher.LOGGER.isDebugEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Input [");
+			for (int i = 0; i < parameters.length; i++) {
+				if (i > 0) {
+					sb.append(", ");
+				}
+				sb.append(parameters[i]);
+			}
+			sb.append("] ignored because ").append(message);
+			Launcher.LOGGER.debug(sb.toString());
+		}
 	}
 }

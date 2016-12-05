@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor.chain;
 
-import spoon.Launcher;
 import spoon.support.util.SafeInvoker;
 
 public class PredicateQueryStep<O> extends QueryStep<O> {
@@ -35,7 +34,7 @@ public class PredicateQueryStep<O> extends QueryStep<O> {
 			try {
 				matches = (Boolean) this.code.invoke(input);
 			} catch (ClassCastException e) {
-				Launcher.LOGGER.trace("Invocation of predicate failed. It can be expected behavior.", e);
+				code.onClassCastException(e, input);
 			}
 		}
 		if (matches) {

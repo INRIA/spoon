@@ -19,6 +19,7 @@ package spoon.reflect.visitor.chain;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.visitor.filter.Scann;
 
@@ -35,7 +36,7 @@ import spoon.reflect.visitor.filter.Scann;
 public abstract class QueryStep<O> implements Consumer<Object> {
 
 	private QueryStep<? extends Object> prev;
-	protected MultiConsumer<Object> next = new MultiConsumer<>();
+	private MultiConsumer<Object> next = new MultiConsumer<>();
 
 	protected QueryStep() {
 	}
@@ -51,17 +52,19 @@ public abstract class QueryStep<O> implements Consumer<Object> {
 		return then(new AsyncFunctionQueryStep<>(code));
 	}
 
-	public <I, R> QueryStep<R> then(Function<I, R> code) {
-		return then(new FunctionQueryStep<R>(code));
-	}
-
 	/**
-	 * Sends input to output if predicate.matches(input)==true
-	 * @param predicate
+	 * It behaves depending on the type of returned value like this:
+	 * <table>
+	 * <tr><td><b>Return type</b><td><b>Behavior</b>
+	 * <tr><td>{@link Boolean}<td>Sends input to the next step if returned value is true
+	 * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
+	 * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
+	 * </table><br>
+	 * @param code a Function with one parameter of type I returning value of type R
 	 * @return
 	 */
-	public <P> QueryStep<P> matches(Predicate<P> predicate) {
-		return then(new PredicateQueryStep<P>(predicate));
+	public <I, R> QueryStep<R> then(Function<I, R> code) {
+		return then(new FunctionQueryStep<R>(code));
 	}
 
 	/**
@@ -70,11 +73,11 @@ public abstract class QueryStep<O> implements Consumer<Object> {
 	 * @param predicate filters scanned
 	 * @return
 	 */
-	public <P> QueryStep<P> scan(Predicate<P> predicate) {
-		return then(new Scann()).matches(predicate);
+	public <P> QueryStep<P> scan(final Predicate<P> predicate) {
+		return (QueryStep<P>) then(new Scann()).then(new PredicateQueryStep<P>(predicate));
 	}
 
-	public QueryStep<O> then(Consumer<O> consumer) {
+	public <P> QueryStep<O> thenConsume(Consumer<P> consumer) {
 		add(consumer);
 		return this;
 	}
@@ -88,7 +91,34 @@ public abstract class QueryStep<O> implements Consumer<Object> {
 	}
 
 	protected void fireNext(Object out) {
-		next.accept(out);
+		getNextConsumer().accept(out);
+	}
+
+	protected Consumer<Object> getNextConsumer() {
+		if (Launcher.LOGGER.isDebugEnabled()) {
+			return new Consumer<Object>() {
+				@Override
+				public void accept(Object element) {
+					Launcher.LOGGER.debug(getDescription() + " " + element);
+					next.accept(element);
+				}
+			};
+		}
+		return next;
+	}
+
+	protected String getDescription() {
+		return String.valueOf(getDepth()) + ")";
+	}
+
+	private int getDepth() {
+		int i = 0;
+		QueryStep<?> qs = this;
+		while (qs.prev != null) {
+			qs = qs.prev;
+			i++;
+		}
+		return i;
 	}
 
 	public void run(Object... input) {
@@ -116,8 +146,9 @@ public abstract class QueryStep<O> implements Consumer<Object> {
 		return list;
 	}
 
-	public void forEach(Consumer<O> consumer, Object... input) {
-		then(consumer);
+	@SuppressWarnings("unchecked")
+	public <R> void forEach(Consumer<R> consumer, Object... input) {
+		thenConsume(consumer);
 		try {
 			run(input);
 		} finally {
