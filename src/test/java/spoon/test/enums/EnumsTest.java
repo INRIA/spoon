@@ -3,6 +3,7 @@ package spoon.test.enums;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -11,6 +12,7 @@ import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.Foo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EnumsTest {
@@ -55,4 +57,17 @@ public class EnumsTest {
 				+ "    }" + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
 				+ "}", burritos.toString());
 	}
+
+	@Test
+	public void testGetAllMethods() throws Exception {
+		// contract: getAllMethods also returns the methods of Enum
+		final Factory factory = build(Burritos.class);
+		final CtType<Burritos> burritos = factory.Type().get(Burritos.class);
+		CtMethod name = factory.Core().createMethod();
+		name.setSimpleName("name"); // from Enum
+		name.setType(factory.Type().createReference(String.class));
+		assertTrue(burritos.hasMethod(name));
+		assertTrue(burritos.getAllMethods().contains(name));
+	}
+
 }
