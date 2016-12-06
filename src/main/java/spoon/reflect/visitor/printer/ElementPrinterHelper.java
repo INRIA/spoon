@@ -262,10 +262,8 @@ public class ElementPrinterHelper {
 				printer.write("package " + types.get(0).getPackage().getQualifiedName() + ";");
 			}
 			printer.writeln().writeln().writeTabs();
-			if (env.isAutoImports()) {
-				for (CtTypeReference<?> ref : imports) {
-					printer.write("import " + ref.getQualifiedName() + ";").writeln().writeTabs();
-				}
+			for (CtTypeReference<?> ref : imports) {
+				printer.write("import " + ref.getQualifiedName() + ";").writeln().writeTabs();
 			}
 			printer.writeln().writeTabs();
 		}

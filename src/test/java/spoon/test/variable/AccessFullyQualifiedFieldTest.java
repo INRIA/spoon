@@ -21,7 +21,7 @@ public class AccessFullyQualifiedFieldTest {
 	public void testNoFQNWhenShadowedByField() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a field variable
 		Launcher spoon = new Launcher();
-		spoon.setArgs(new String[]{"--with-imports"});
+		//spoon.setArgs(new String[]{"--with-imports"});
 		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/BurritosFielded.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Field/";
 		spoon.setSourceOutputDirectory(output);
@@ -33,8 +33,21 @@ public class AccessFullyQualifiedFieldTest {
 	public void testNoFQNWhenShadowedByLocalVariable() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a local variable
 		Launcher spoon = new Launcher();
+		//spoon.setArgs(new String[]{"--with-imports"});
 		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/Burritos.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Local/";
+		spoon.setSourceOutputDirectory(output);
+		spoon.run();
+		canBeBuilt(output, 7);
+	}
+
+	@Test
+	public void testNoFQNWhenUsedInInnerClassAndShadowedByLocalVariable() throws Exception {
+		// contract: no fully qualified name if top package is shadowed by a local variable
+		Launcher spoon = new Launcher();
+		//spoon.setArgs(new String[]{"--with-imports"});
+		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/BurritosStaticMethod.java");
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-StaticMethod/";
 		spoon.setSourceOutputDirectory(output);
 		spoon.run();
 		canBeBuilt(output, 7);

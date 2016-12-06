@@ -44,7 +44,6 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
-import spoon.reflect.visitor.Filter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -180,19 +179,6 @@ public class ParentExiter extends CtInheritanceScanner {
 			substituteAnnotation((CtTypedElement) v);
 			return;
 		} else if (child instanceof CtExpression && hasChildEqualsToDefaultValue(v)) {
-
-			// first trial to detect if part of absolute name of a type is used by a previously recorded element in the model
-			List<CtElement> allElements = this.jdtTreeBuilder.getFactory().getModel().getElements(new Filter<CtElement>() {
-				@Override
-				public boolean matches(CtElement element) {
-
-					return (element instanceof CtVariable) && (child.toString().startsWith(((CtNamedElement) element).getSimpleName()));
-				}
-			});
-
-			if (!allElements.isEmpty()) {
-				this.jdtTreeBuilder.getFactory().getEnvironment().setAutoImports(true);
-			}
 			v.setDefaultExpression((CtExpression<T>) child);
 			return;
 		}

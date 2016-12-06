@@ -146,7 +146,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Handle imports of classes.
 	 */
-	private ImportScanner importsContext = new ImportScannerImpl();
+	private ImportScanner importsContext;
 
 	/**
 	 * Environment which Spoon is executed.
@@ -175,6 +175,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.env = env;
 		printer = new PrinterHelper(env);
 		elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
+
+		if (env.isAutoImports()) {
+			this.importsContext = new ImportScannerImpl();
+		} else {
+			this.importsContext = new ImportScannerWithoutAllImports();
+		}
 	}
 
 	/**
@@ -223,20 +229,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Make the imports for a given type.
 	 */
 	public Collection<CtTypeReference<?>> computeImports(CtType<?> type) {
-		if (env.isAutoImports()) {
-			context.currentTopLevel = type;
-			return importsContext.computeImports(context.currentTopLevel);
-		}
-		return Collections.emptyList();
+		context.currentTopLevel = type;
+		return importsContext.computeImports(context.currentTopLevel);
 	}
 
 	/**
 	 * Make the imports for all elements.
 	 */
 	public void computeImports(CtElement element) {
-		if (env.isAutoImports()) {
-			importsContext.computeImports(element);
-		}
+		importsContext.computeImports(element);
 	}
 
 	/**
