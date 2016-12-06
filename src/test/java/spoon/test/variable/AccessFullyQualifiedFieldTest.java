@@ -4,11 +4,9 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.factory.Factory;
 import spoon.test.main.MainTest;
-import spoon.test.variable.testclasses.BurritosWithLoop;
 import spoon.test.variable.testclasses.Tacos;
 
 import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class AccessFullyQualifiedFieldTest {

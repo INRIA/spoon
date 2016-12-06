@@ -16,21 +16,21 @@
  */
 package spoon.support.comparator;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.support.visitor.SignaturePrinter;
+
 import java.io.Serializable;
 import java.util.Comparator;
 
-import spoon.reflect.declaration.CtExecutable;
-import spoon.support.visitor.SignaturePrinter;
-
 /**
- * Compares executable based on a signature
+ * Compares executables (method, executable-references) based on a signature.
  */
-public class SignatureComparator implements Comparator<CtExecutable<?>>, Serializable {
+public class SignatureComparator implements Comparator<CtElement>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public int compare(CtExecutable<?> o1, CtExecutable<?> o2) {
+	public int compare(CtElement o1, CtElement o2) {
 		SignaturePrinter signaturePrinter1 = new SignaturePrinter();
 		SignaturePrinter signaturePrinter2 = new SignaturePrinter();
 		signaturePrinter1.scan(o1);

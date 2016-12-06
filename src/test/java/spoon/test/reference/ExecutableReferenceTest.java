@@ -112,18 +112,16 @@ public class ExecutableReferenceTest {
 
 		final CtInterface<spoon.test.reference.testclasses.Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);
 		final List<CtExecutableReference<?>> fooExecutables = foo.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(2, fooExecutables.size());
-		assertEquals(foo.getMethod("m").getReference(), fooExecutables.get(0));
-		assertEquals(launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference(), fooExecutables.get(1));
+		assertEquals(1, fooExecutables.size());
+		assertEquals(foo.getSuperInterfaces().stream().findFirst().get().getTypeDeclaration().getMethod("m").getReference(),  launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference());
 
 		final CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
 		final List<CtExecutableReference<?>> barExecutables = bar.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(1, barExecutables.size());
-		assertEquals(bar.getConstructors().stream().collect(Collectors.toList()).get(0).getReference(), barExecutables.get(0));
+		assertEquals(12 /* object */ + 1 /* constructor */, barExecutables.size());
 
 		final CtInterface<Kuu> kuu = launcher.getFactory().Interface().get(Kuu.class);
 		final List<CtExecutableReference<?>> kuuExecutables = kuu.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(1, kuuExecutables.size());
+		assertEquals(1 /* default method in interface */, kuuExecutables.size());
 		assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0));
 	}
 

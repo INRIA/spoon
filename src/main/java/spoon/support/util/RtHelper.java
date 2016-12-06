@@ -185,4 +185,25 @@ public abstract class RtHelper {
 		}
 		return l;
 	}
+
+	/**
+	 * Looks for first public method of clazz (or any super class or super interface),
+	 * whose name is equal to methodName and number of parameters is numParams
+	 * @param clazz
+	 * @param methodName
+	 * @param numParams
+	 * @return the types of the parameters of such method or null if not found
+	 */
+	public static Class<?>[] getMethodParameterTypes(Class<?> clazz, String methodName, int numParams) {
+		Method[] methods = clazz.getMethods();
+		for (Method method : methods) {
+			if (method.getName().equals(methodName)) {
+				Class<?>[] params = method.getParameterTypes();
+				if (params.length == numParams) {
+					return params;
+				}
+			}
+		}
+		return null;
+	}
 }
