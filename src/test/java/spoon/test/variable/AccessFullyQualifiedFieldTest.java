@@ -77,4 +77,16 @@ public class AccessFullyQualifiedFieldTest {
 		canBeBuilt(output, 7);
 	}
 
+	@Test
+	public void testStaticImportShouldBeDone() throws Exception {
+		// contract: no fully qualified name if top package is shadowed by a local variable
+		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[]{"--with-imports"});
+		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/MultiBurritos.java");
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Multi/";
+		spoon.setSourceOutputDirectory(output);
+		spoon.run();
+		canBeBuilt(output, 7);
+	}
+
 }
