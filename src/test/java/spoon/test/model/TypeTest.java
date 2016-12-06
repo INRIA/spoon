@@ -21,16 +21,18 @@ public class TypeTest {
 
 	@Test
 	public void testGetAllExecutables() throws Exception {
-		CtType<?> type = build("spoon.test.model", "Foo");
+		CtClass<?> type = build("spoon.test.model", "Foo");
 		assertEquals(1, type.getDeclaredFields().size());
 		assertEquals(3, type.getMethods().size());
 		assertEquals(4, type.getDeclaredExecutables().size());
 		assertEquals(2, type.getAllFields().size());
+		assertEquals(1, type.getConstructors().size());
+		assertEquals(16, type.getAllMethods().size());
+		assertEquals(12, type.getFactory().Type().get(Object.class).getAllMethods().size());
 
-		// we have 4  methods + one explicit constructor + 3 implicit
-		// constructors for Bar, Baz and Baz.Inner
+		// we have 3  methods in Foo + 2 in Baz - 1 common in Foo.bar (m) + 12 in Object + 1 explicit constructor in Foo
 		Collection<CtExecutableReference<?>> allExecutables = type.getAllExecutables();
-		assertEquals(8, allExecutables.size());
+		assertEquals(17, allExecutables.size());
 	}
 
 	@Test
