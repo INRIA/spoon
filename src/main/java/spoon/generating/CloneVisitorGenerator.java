@@ -198,7 +198,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					"spoon.support.reflect.declaration.CtCodeSnippetImpl", "spoon.support.reflect.declaration.CtFormalTypeDeclarerImpl", //
 					"spoon.support.reflect.declaration.CtGenericElementImpl", "spoon.support.reflect.reference.CtGenericElementReferenceImpl", //
 					"spoon.support.reflect.declaration.CtModifiableImpl", "spoon.support.reflect.declaration.CtMultiTypedElementImpl", //
-					"spoon.support.reflect.declaration.CtTypeMemberImpl", "spoon.support.reflect.declaration.CtElementImpl");
+					"spoon.support.reflect.declaration.CtTypeMemberImpl");
 			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "metadata");
 			private final CtTypeReference<List> LIST_REFERENCE = factory.Type().createReference(List.class);
 			private final CtTypeReference<Collection> COLLECTION_REFERENCE = factory.Type().createReference(Collection.class);
