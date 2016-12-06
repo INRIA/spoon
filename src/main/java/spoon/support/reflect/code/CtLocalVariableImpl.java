@@ -27,7 +27,6 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
