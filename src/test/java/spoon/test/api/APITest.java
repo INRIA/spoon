@@ -23,6 +23,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.template.Local;
 import spoon.template.TemplateMatcher;
@@ -298,8 +299,13 @@ public class APITest {
 			public boolean matches(CtMethod<?> element) {
 				boolean isSetter = isSetterMethod(element);
 				boolean isNotSubType = !isSubTypeOfCollection(element);
+				boolean doesNotHaveUnsettableAnnotation = doesNotHaveUnsettableAnnotation(element);
 				boolean superMatch = super.matches(element);
-				return isSetter && isNotSubType && superMatch;
+				return isSetter && doesNotHaveUnsettableAnnotation && isNotSubType && superMatch;
+			}
+
+			private boolean doesNotHaveUnsettableAnnotation(CtMethod<?> element) {
+				return (element.getAnnotation(UnsettableProperty.class) == null);
 			}
 
 			private boolean isSubTypeOfCollection(CtMethod<?> element) {
@@ -365,11 +371,13 @@ public class APITest {
 
 		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
 		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
+
 			// First statement should be a condition to protect the setter of the parent.
 			assertTrue("Check the method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(), statement instanceof CtIf);
 			CtIf ifCondition = (CtIf) statement;
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
-			assertEquals(1, matcher.find(ifCondition).size());
+
+			assertEquals("Check the number of if in method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(),1, matcher.find(ifCondition).size());
 		}
 	}
 }
