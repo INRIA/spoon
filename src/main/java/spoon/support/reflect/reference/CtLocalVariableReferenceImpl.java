@@ -57,7 +57,7 @@ public class CtLocalVariableReferenceImpl<T>
 		if (factory == null) {
 			return null;
 		}
-		final SimpleNameFilter filter = new SimpleNameFilter(factory);
+		final SimpleNameFilter filter = new SimpleNameFilter();
 
 		// successively iterate through all parents of this reference and
 		// return first result (which must be the closest declaration
@@ -99,10 +99,8 @@ public class CtLocalVariableReferenceImpl<T>
 	private final class SimpleNameFilter
 			extends AbstractFilter<CtLocalVariable<T>> {
 
-		@SuppressWarnings("unchecked")
-		SimpleNameFilter(final Factory pFactory) {
-			super((Class<CtLocalVariable<T>>)
-					pFactory.Core().createLocalVariable().getClass());
+		SimpleNameFilter() {
+			super();
 		}
 
 		@Override

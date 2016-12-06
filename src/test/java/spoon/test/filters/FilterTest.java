@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -37,7 +38,9 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FieldAccessFilter;
@@ -422,5 +425,45 @@ public class FilterTest {
 		final CtExecutable<?> declaration = expectedExecutable.getExecutableDeclaration();
 		assertNotNull(declaration);
 		assertEquals("size", declaration.getSimpleName());
+	}
+	
+	@Test
+	public void testReflectionBasedTypeFilter() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+
+		//First collect all classes using tested TypeFilter
+		List<CtClass<?>> allClasses = launcher.getFactory().Package().getRootPackage().getElements(new TypeFilter<CtClass<?>>(CtClass.class));
+		assertTrue(allClasses.size()>0);
+		allClasses.forEach(result->{
+			assertTrue(result instanceof CtClass);
+		});
+		//then do it using Filter whose type is computed by reflection
+		List<CtClass<?>> allClasses2 = launcher.getFactory().Package().getRootPackage().getElements(new Filter<CtClass<?>>() {
+			@Override
+			public boolean matches(CtClass<?> element) {
+				return true;
+			}
+		});
+		assertArrayEquals(allClasses.toArray(), allClasses2.toArray());
+
+		//then do it using Filter implemented by lambda expression
+		List<CtClass<?>> allClasses3 = launcher.getFactory().Package().getRootPackage().getElements((CtClass<?> element)->true);
+		assertArrayEquals(allClasses.toArray(), allClasses3.toArray());
+		
+		//last try AbstractFilter constructor without class parameter
+		final CtClass<Tacos> aTacos = launcher.getFactory().Class().get(Tacos.class);
+		final CtInvocation<?> invSize = aTacos.getElements(new AbstractFilter<CtInvocation<?>>(/*no class is needed here*/) {
+			@Override
+			public boolean matches(CtInvocation<?> element) {
+				if (element.getExecutable() == null) {
+					return false;
+				}
+				return "size".equals(element.getExecutable().getSimpleName()) && super.matches(element);
+			}
+		}).get(0);
+		assertNotNull(invSize);
 	}
 }

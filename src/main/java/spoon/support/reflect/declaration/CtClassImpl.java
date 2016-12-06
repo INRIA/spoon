@@ -276,4 +276,17 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 			}
 		}
 	}
+
+	/** adding the constructors and static executables */
+	@Override
+	public Collection<CtExecutableReference<?>> getAllExecutables() {
+		Set<CtExecutableReference<?>> l = (Set<CtExecutableReference<?>>) super.getAllExecutables();
+		for (CtConstructor c : getConstructors()) {
+			l.add(c.getReference());
+		}
+		for (CtExecutable<?> anon : getAnonymousExecutables()) {
+			l.add(anon.getReference());
+		}
+		return l;
+	}
 }

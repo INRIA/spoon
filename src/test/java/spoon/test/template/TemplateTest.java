@@ -20,6 +20,8 @@ import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 
 import java.io.File;
+import java.io.Serializable;
+import java.rmi.Remote;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -27,6 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class TemplateTest {
 
@@ -249,4 +252,29 @@ public class TemplateTest {
 		assertEquals("spoon.test.template.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
 	}
+
+	@Test
+	public void testTemplateInterfaces() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.getFactory();
+		spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources(
+						"./src/test/java/spoon/test/template/SubClass.java"),
+				SpoonResourceHelper
+						.resources(
+								"./src/test/java/spoon/test/template/InterfaceTemplate.java")
+				)
+				.build();
+
+		CtClass<?> superc = factory.Class().get(SuperClass.class);
+		InterfaceTemplate interfaceTemplate = new InterfaceTemplate(superc.getFactory());
+		interfaceTemplate.apply(superc);
+
+		assertEquals(3, superc.getSuperInterfaces().size());
+		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Comparable.class)));
+		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Serializable.class)));
+		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Remote.class)));
+	}
+
 }

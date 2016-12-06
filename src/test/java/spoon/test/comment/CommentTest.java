@@ -589,7 +589,7 @@ public class CommentTest {
 				if (x.getSimpleName().equals("CtAnnotationFieldAccess")) { return; } // too hard to snippetize
 
 				codeElementsDocumentationPage.append("### "+x.getSimpleName()+"\n");
-				codeElementsDocumentationPage.append("[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/"+x.getQualifiedName().replace('.', '/')+".html)\n");
+				codeElementsDocumentationPage.append("[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/"+x.getQualifiedName().replace('.', '/')+".html)\n\n");
 				codeElementsDocumentationPage.append("```java"+"\n");
 				Pattern p = Pattern.compile("<pre>(.*?)</pre>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE | Pattern.UNIX_LINES);
 				Matcher m = p.matcher(x.getDocComment());

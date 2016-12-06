@@ -16,8 +16,10 @@
  */
 package spoon.reflect.visitor.filter;
 
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
+import spoon.support.util.RtHelper;
 
 /**
  * Defines an abstract filter based on matching on the element types.
@@ -37,11 +39,15 @@ public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 	}
 
 	/**
-	 * Creates a filter with the no typing constraint.
+	 * Creates a filter with the type computed by reflection from the matches method parameter
 	 */
 	@SuppressWarnings("unchecked")
 	public AbstractFilter() {
-		this.type = (Class<T>) CtElement.class;
+		Class<?>[] params = RtHelper.getMethodParameterTypes(getClass(), "matches", 1);
+		if (params == null) {
+			throw new SpoonException("The method matches with one parameter was not found on the class " + getClass().getName());
+		}
+		this.type = (Class<T>) params[0];
 	}
 
 	public Class<T> getType() {

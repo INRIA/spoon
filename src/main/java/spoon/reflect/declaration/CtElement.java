@@ -23,7 +23,6 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.Root;
 import spoon.support.DerivedProperty;
 
@@ -173,8 +172,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	/**
 	 * @param filter
 	 * @return
+	 *
+	 * @deprecated use {@link #getElements(Filter)} instead.
 	 */
-	<T extends CtReference> List<T> getReferences(ReferenceFilter<T> filter);
+	@Deprecated
+	<T extends CtReference> List<T> getReferences(Filter<T> filter);
 
 	/**
 	 * Sets the position of this element and all its children element. Note that

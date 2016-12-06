@@ -45,8 +45,9 @@ import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.UnsettableProperty;
-import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.comparator.SignatureComparator;
+import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
 
@@ -56,9 +57,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -883,12 +884,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
-		Set<CtExecutableReference<?>> l = new HashSet<>(getDeclaredExecutables());
-		if (this instanceof CtClass) {
-			CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
-			if (st != null) {
-				l.addAll(st.getAllExecutables());
-			}
+		Set<CtExecutableReference<?>> l = new TreeSet(new SignatureComparator());
+		for (CtMethod<?> m : getAllMethods()) {
+			l.add((CtExecutableReference<?>) m.getReference());
 		}
 		return l;
 	}
@@ -919,8 +917,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			} catch (SpoonClassNotFoundException ignored) {
 				// should not be thrown in 'noClasspath' environment (#775)
 			}
-		} else {
-			// this is object
+		} else if (this instanceof CtClass) {
+			// only CtCLasses extend object
 			addAllBasedOnSignature(getFactory().Type().get(Object.class).getMethods(), l);
 		}
 
