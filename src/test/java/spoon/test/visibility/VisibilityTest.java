@@ -124,7 +124,7 @@ public class VisibilityTest {
 				"-o", "./target/spooned/visibility"
 		});
 
-		final List<CtFieldReference<?>> references = Query.getReferences(launcher.getFactory(), new AbstractReferenceFilter<CtFieldReference<?>>(CtFieldReference.class) {
+		final List<CtFieldReference<?>> references = Query.getElements(launcher.getFactory(), new AbstractReferenceFilter<CtFieldReference<?>>(CtFieldReference.class) {
 			@Override
 			public boolean matches(CtFieldReference<?> reference) {
 				return "x".equals(reference.getSimpleName());

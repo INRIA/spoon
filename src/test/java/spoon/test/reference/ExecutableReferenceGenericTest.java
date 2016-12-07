@@ -215,7 +215,7 @@ public class ExecutableReferenceGenericTest {
 
 		CtClass<?> classMyClass = Query.getElements(factory, new NameFilter<CtClass>("MyClass")).get(0);
 		assertEquals("MyClass", classMyClass.getSimpleName());
-		List<CtExecutableReference<?>> refsExecutableClass1 = Query.getReferences(classMyClass,
+		List<CtExecutableReference<?>> refsExecutableClass1 = Query.getElements(classMyClass,
 				new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 					public boolean matches(CtExecutableReference<?> reference) {
 						return true;
@@ -224,7 +224,7 @@ public class ExecutableReferenceGenericTest {
 
 		CtClass<?> classMyClass2 =  Query.getElements(factory, new NameFilter<CtClass>("MyClass2")).get(0);
 		assertEquals("MyClass2", classMyClass2.getSimpleName());
-		List<CtExecutableReference<?>> refsExecutableClass2 = Query.getReferences(classMyClass2,
+		List<CtExecutableReference<?>> refsExecutableClass2 = Query.getElements(classMyClass2,
 				new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 					public boolean matches(CtExecutableReference<?> reference) {
 						return true;
@@ -277,7 +277,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getCtConstructorsReferencedInCtConstructor(CtConstructor<?> aConstructor) {
-		return aConstructor.getReferences(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+		return aConstructor.getElements(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return reference.isConstructor();
@@ -295,7 +295,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getReferencesOfAMethod(CtMethod<?> method1) {
-		return method1.getReferences(new ReferenceTypeFilter<CtExecutableReference<?>>(CtExecutableReference.class));
+		return method1.getElements(new ReferenceTypeFilter<CtExecutableReference<?>>(CtExecutableReference.class));
 	}
 
 	private CtMethod<?> getCtMethodByNameFromCtClass(CtClass<?> clazz, String nameMethod5) {
