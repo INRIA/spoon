@@ -25,6 +25,22 @@ package spoon.support.visitor.clone;
  * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
  */
 public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
+	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
+		return spoon.support.visitor.clone.CloneBuilder.build(new spoon.support.visitor.clone.CloneBuilder(), element, other);
+	}
+
+	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.support.visitor.clone.CloneBuilder builder, spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
+		builder.setOther(other);
+		builder.scan(element);
+		return ((T) (builder.other));
+	}
+
+	private spoon.reflect.declaration.CtElement other;
+
+	public void setOther(spoon.reflect.declaration.CtElement other) {
+		spoon.support.visitor.clone.CloneBuilder.this.other = other;
+	}
+
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtCodeSnippetExpression(spoon.reflect.code.CtCodeSnippetExpression<T> e) {
 		((spoon.reflect.code.CtCodeSnippetExpression<T>) (other)).setValue(e.getValue());
@@ -35,6 +51,16 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	public void visitCtCodeSnippetStatement(spoon.reflect.code.CtCodeSnippetStatement e) {
 		((spoon.reflect.code.CtCodeSnippetStatement) (other)).setValue(e.getValue());
 		super.visitCtCodeSnippetStatement(e);
+	}
+
+	/**
+	 * Scans an abstract element.
+	 */
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	public void scanCtElement(spoon.reflect.declaration.CtElement e) {
+		((spoon.reflect.declaration.CtElement) (other)).setPosition(e.getPosition());
+		((spoon.reflect.declaration.CtElement) (other)).setImplicit(e.isImplicit());
+		super.scanCtElement(e);
 	}
 
 	/**
@@ -230,22 +256,6 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		((spoon.reflect.code.CtComment) (other)).setContent(e.getContent());
 		((spoon.reflect.code.CtComment) (other)).setCommentType(e.getCommentType());
 		super.visitCtComment(e);
-	}
-
-	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
-		return spoon.support.visitor.clone.CloneBuilder.build(new spoon.support.visitor.clone.CloneBuilder(), element, other);
-	}
-
-	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.support.visitor.clone.CloneBuilder builder, spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
-		builder.setOther(other);
-		builder.scan(element);
-		return ((T) (builder.other));
-	}
-
-	private spoon.reflect.declaration.CtElement other;
-
-	public void setOther(spoon.reflect.declaration.CtElement other) {
-		spoon.support.visitor.clone.CloneBuilder.this.other = other;
 	}
 }
 
