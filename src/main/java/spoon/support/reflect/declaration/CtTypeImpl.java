@@ -46,7 +46,6 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.UnsettableProperty;
 import spoon.support.SpoonClassNotFoundException;
-import spoon.support.comparator.SignatureComparator;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
@@ -59,7 +58,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
@@ -884,7 +882,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
-		Set<CtExecutableReference<?>> l = new TreeSet(new SignatureComparator());
+		Set<CtExecutableReference<?>> l = new SignatureBasedSortedSet();
 		for (CtMethod<?> m : getAllMethods()) {
 			l.add((CtExecutableReference<?>) m.getReference());
 		}
