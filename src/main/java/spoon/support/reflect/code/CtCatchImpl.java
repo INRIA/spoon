@@ -47,11 +47,16 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 
 	@Override
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
-		CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-		if (body != null) {
-			body.setParent(this);
+		if (statement != null) {
+			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
+			if (body != null) {
+				body.setParent(this);
+			}
+			this.body = body;
+		} else {
+			this.body = null;
 		}
-		this.body = body;
+
 		return (T) this;
 	}
 

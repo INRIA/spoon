@@ -44,6 +44,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.support.UnsettableProperty;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.comparator.SignatureComparator;
 import spoon.support.compiler.SnippetCompilationHelper;
@@ -847,6 +848,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
 		// overridden in subclasses.
 		return (C) this;
