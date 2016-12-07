@@ -198,7 +198,7 @@ public class CommentTest {
 		CtInvocation ctInvocation = m1.getBody().getStatement(4);
 		assertEquals(createFakeComment(f, "comment invocation"), ctInvocation.getComments().get(0));
 		assertEquals("// comment invocation" + newLine
-				+ "spoon.test.comment.testclasses.InlineComment.this.m()", ctInvocation.toString());
+				+ "this.m()", ctInvocation.toString());
 
 		CtLocalVariable ctLocalVariable = m1.getBody().getStatement(5);
 		assertEquals(createFakeComment(f, "comment local variable"), ctLocalVariable.getComments().get(0));
@@ -232,7 +232,7 @@ public class CommentTest {
 		CtSynchronized ctSynchronized = m1.getBody().getStatement(9);
 		assertEquals(createFakeComment(f, "comment synchronized"), ctSynchronized.getComments().get(0));
 		assertEquals("// comment synchronized" + newLine
-				+ "synchronized(spoon.test.comment.testclasses.InlineComment.this) {" + newLine
+				+ "synchronized(this) {" + newLine
 				+ "    // comment in synchronized" + newLine
 				+ "}", ctSynchronized.toString());
 
@@ -378,7 +378,7 @@ public class CommentTest {
 		CtInvocation ctInvocation = m1.getBody().getStatement(4);
 		assertEquals(createFakeBlockComment(f, "comment invocation"), ctInvocation.getComments().get(0));
 		assertEquals("/* comment invocation */" + newLine
-				+ "spoon.test.comment.testclasses.BlockComment.this.m()", ctInvocation.toString());
+				+ "this.m()", ctInvocation.toString());
 
 		CtLocalVariable ctLocalVariable = m1.getBody().getStatement(5);
 		assertEquals(createFakeBlockComment(f, "comment local variable"), ctLocalVariable.getComments().get(0));
@@ -412,7 +412,7 @@ public class CommentTest {
 		CtSynchronized ctSynchronized = m1.getBody().getStatement(9);
 		assertEquals(createFakeBlockComment(f, "comment synchronized"), ctSynchronized.getComments().get(0));
 		assertEquals("/* comment synchronized */" + newLine
-				+ "synchronized(spoon.test.comment.testclasses.BlockComment.this) {" + newLine
+				+ "synchronized(this) {" + newLine
 				+ "    /* comment in synchronized */" + newLine
 				+ "}", ctSynchronized.toString());
 

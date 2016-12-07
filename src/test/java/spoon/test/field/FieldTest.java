@@ -18,6 +18,7 @@
 package spoon.test.field;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -25,13 +26,16 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Test;
 
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.field.testclasses.AddFieldAtTop;
 
 public class FieldTest {
@@ -76,8 +80,19 @@ public class FieldTest {
 		assertEquals(generated2, aClass.getTypeMembers().get(0));
 		assertEquals(generated, aClass.getTypeMembers().get(1));
 		assertEquals(aClass.getAnonymousExecutables().get(0), aClass.getTypeMembers().get(3));
+	}
 
-		assertThat(aClass).isEqualTo(build(new File("./src/test/resources/expected/AddFieldAtTop.java")).Type().get("AddFieldAtTop"));
+	@Test
+	public void testFieldImplicitTarget() throws Exception {
+		// contract: no "." when target is implicit
+		final CtClass<AddFieldAtTop> aClass = (CtClass<AddFieldAtTop>) buildClass(AddFieldAtTop.class);
+
+		List<CtFieldRead> fieldReads = aClass.getElements(new TypeFilter<>(CtFieldRead.class));
+		assertEquals(1, fieldReads.size());
+		assertEquals("i", fieldReads.get(0).toString());
+		fieldReads.get(0).getTarget().setImplicit(false);
+		assertEquals(false, fieldReads.get(0).getTarget().isImplicit());
+		assertEquals("this.i", fieldReads.get(0).toString());
 	}
 
 	private CtField<Integer> createField(Factory factory, HashSet<ModifierKind> modifiers, String name) {
