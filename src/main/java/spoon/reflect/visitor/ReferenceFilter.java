@@ -24,19 +24,9 @@ import spoon.reflect.reference.CtReference;
  * @param <T>
  * 		the type of the filtered references (an reference belonging to the
  * 		filtered element must be assignable from <code>T</code>).
+ *
+ * @deprecated use {@link Filter} instead.
  */
-public interface ReferenceFilter<T extends CtReference> {
-	/**
-	 * Tells if the given reference matches.
-	 */
-	boolean matches(T reference);
-
-	/**
-	 * Gets the runtime type that corresponds to the <code>T</code> parameter
-	 * (the type of the filtered references). Any reference assignable from this
-	 * type is a potential match and is tested using the
-	 * {@link #matches(CtReference)} method, while other references are never a
-	 * match.
-	 */
-	Class<T> getType();
+@Deprecated
+public interface ReferenceFilter<T extends CtReference> extends Filter<T> {
 }

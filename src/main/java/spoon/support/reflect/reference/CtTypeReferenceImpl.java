@@ -38,7 +38,6 @@ import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -486,22 +485,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Collection<CtExecutableReference<?>> l = new ArrayList<>();
-		CtType<T> t = getDeclaration();
-		if (t == null) {
-			Class<?> c = getActualClass();
-			for (Method m : c.getDeclaredMethods()) {
-				l.add(getFactory().Method().createReference(m));
-			}
-			for (Constructor<?> cons : c.getDeclaredConstructors()) {
-				CtExecutableReference<?> consRef = getFactory().Constructor().createReference(cons);
-				l.add(consRef);
-			}
-			Class<?> sc = c.getSuperclass();
-			if (sc != null) {
-				l.addAll(getFactory().Type().createReference(sc).getAllExecutables());
-			}
-		} else {
-			return t.getAllExecutables();
+		CtType<T> t = getTypeDeclaration();
+		if (t != null) {
+			l.addAll(t.getAllExecutables());
 		}
 		return l;
 	}

@@ -16,48 +16,21 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtReference;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple visitor that takes a reference filter and returns all the references
  * that match it.
+ *
+ * @deprecated use {@link QueryVisitor} instead.
  */
-
-public class ReferenceQueryVisitor<T extends CtReference> extends CtScanner {
-	ReferenceFilter<T> filter;
-
-	List<T> result = new ArrayList<>();
+@Deprecated
+public class ReferenceQueryVisitor<T extends CtReference> extends QueryVisitor<T> {
 
 	/**
 	 * Constructs a reference query visitor with a given reference filter.
 	 */
 	public ReferenceQueryVisitor(ReferenceFilter<T> filter) {
-		super();
-		this.filter = filter;
-	}
-
-	/**
-	 * Gets the result (references matching the filter).
-	 */
-	public List<T> getResult() {
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void scan(CtElement element) {
-		if (element == null) {
-			return;
-		}
-		if (filter.getType().isAssignableFrom(element.getClass())) {
-			if (filter.matches((T) element)) {
-				result.add((T) element);
-			}
-		}
-		super.scan(element);
+		super(filter);
 	}
 }
