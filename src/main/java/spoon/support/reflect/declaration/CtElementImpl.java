@@ -31,6 +31,8 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.chain.ChainableFunction;
+import spoon.reflect.visitor.chain.Function;
 import spoon.reflect.visitor.chain.QueryStep;
 import spoon.reflect.visitor.chain.StartQueryStep;
 import spoon.reflect.visitor.filter.AnnotationFilter;
@@ -256,10 +258,24 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return Query.getElements(this, filter);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <E extends CtElement> QueryStep<E> query() {
-		return (QueryStep<E>) new StartQueryStep<CtElement>(this);
+	public <P> QueryStep<P> map(ChainableFunction<?, P> code) {
+		return new StartQueryStep<CtElement>(this).map(code);
+	}
+
+	@Override
+	public <I, R> QueryStep<R> map(Function<I, R> code) {
+		return new StartQueryStep<CtElement>(this).map(code);
+	}
+
+	@Override
+	public <R> QueryStep<R> map(QueryStep<R> queryStep) {
+		return new StartQueryStep<CtElement>(this).map(queryStep);
+	}
+
+	@Override
+	public <P extends CtElement> QueryStep<P> scan(Filter<P> predicate) {
+		return new StartQueryStep<CtElement>(this).scan(predicate);
 	}
 
 	public <T extends CtReference> List<T> getReferences(Filter<T> filter) {

@@ -16,24 +16,31 @@
  */
 package spoon.reflect.visitor.chain;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.Filter;
 import spoon.support.util.SafeInvoker;
 
-public class AsyncFunctionQueryStep<O> extends QueryStepImpl<O> {
+public class FilterQueryStep<O extends CtElement> extends QueryStepImpl<O> {
 
-	private SafeInvoker<AsyncFunction<?, ?>> code = new SafeInvoker<>("apply", 2);
+	private SafeInvoker<Filter<O>> code = new SafeInvoker<>("matches", 1);
 
-	public <I> AsyncFunctionQueryStep(AsyncFunction<I, O> code) {
-		this.code.setDelegate(code);
+	public <I> FilterQueryStep(Filter<O> filter) {
+		this.code.setDelegate(filter);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void accept(Object input) {
-		if (code.isParameterTypeAssignableFrom(input, null)) {
+		boolean matches = false;
+		if (code.isParameterTypeAssignableFrom(input)) {
 			try {
-				this.code.invoke(input, getNextConsumer());
+				matches = (Boolean) this.code.invoke(input);
 			} catch (ClassCastException e) {
 				code.onClassCastException(e, input);
 			}
+		}
+		if (matches) {
+			fireNext((O) input);
 		}
 	}
 }

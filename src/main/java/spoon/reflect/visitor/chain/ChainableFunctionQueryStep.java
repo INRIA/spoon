@@ -16,10 +16,24 @@
  */
 package spoon.reflect.visitor.chain;
 
-/**
- * @param <T> the type of the input to the function
- * @param <R> the type of the result of the function
- */
-public interface AsyncFunction<T, R> {
-	void apply(T input, Consumer<R> output);
+import spoon.support.util.SafeInvoker;
+
+public class ChainableFunctionQueryStep<O> extends QueryStepImpl<O> {
+
+	private SafeInvoker<ChainableFunction<?, ?>> code = new SafeInvoker<>("apply", 2);
+
+	public <I> ChainableFunctionQueryStep(ChainableFunction<I, O> code) {
+		this.code.setDelegate(code);
+	}
+
+	@Override
+	public void accept(Object input) {
+		if (code.isParameterTypeAssignableFrom(input, null)) {
+			try {
+				this.code.invoke(input, getNextConsumer());
+			} catch (ClassCastException e) {
+				code.onClassCastException(e, input);
+			}
+		}
+	}
 }

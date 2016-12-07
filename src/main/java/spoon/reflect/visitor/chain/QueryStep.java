@@ -18,40 +18,43 @@ package spoon.reflect.visitor.chain;
 
 import java.util.List;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.Query;
+
 /**
+ * QueryStep represents one step of the query.
+ * The chain of QueryStep items represents the query which can be used to traverse spoon model by several ways.<br>
  *
  *
+ * <br>
+ * Use {@link Query#query()}, {@link Query#query(Object)} or {@link CtElement#query()} to create a new query.
+ *
+ * Use these methods to compose the query
+ * <ul>
+ * <li> {@link #map(spoon.reflect.visitor.chain.Function)}
+ * <li> {@link #scan(spoon.reflect.visitor.chain.Predicate)}
+ * </ul>
+ *
+ * Use these methods to process the query:
+ * <ul>
+ * <li>{@link #apply(Object, Consumer)}
+ * <li>{@link #accept(Object)}
+ * <li>{@link #forEach(Consumer)}
+ * </ul>
+ * The query can be used several times.<br>
+ * But QueryStep is not thread safe. So you must create new query for each thread.<br>
+ * Usually the new query is created each time when you need to query something.
+ * The reusing of QueryStep instance makes sense when the same query has to be evaluated
+ * several times in the loop.
  *
  * @param <O> the type of the element produced by this QueryStep
  */
-public interface QueryStep<O> extends Consumer<Object> {
+public interface QueryStep<O> extends QueryComposer, Consumer<Object> {
 
+	/**
+	 * @return previous step of the query or null if this step is first
+	 */
 	QueryStep<Object> getPrev();
-
-	<R> QueryStep<R> map(QueryStep<R> queryStep);
-
-	<P> QueryStep<P> map(AsyncFunction<?, P> code);
-
-	/**
-	 * It behaves depending on the type of returned value like this:
-	 * <table>
-	 * <tr><td><b>Return type</b><td><b>Behavior</b>
-	 * <tr><td>{@link Boolean}<td>Sends input to the next step if returned value is true
-	 * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
-	 * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
-	 * </table><br>
-	 * @param code a Function with one parameter of type I returning value of type R
-	 * @return
-	 */
-	<I, R> QueryStep<R> map(Function<I, R> code);
-
-	/**
-	 * scan all child elements of input element. Only these elements are sent to, which predicate.matches(element)==true
-	 *
-	 * @param predicate filters scanned
-	 * @return
-	 */
-	<P> QueryStep<P> scan(Predicate<P> predicate);
 
 	List<O> list();
 

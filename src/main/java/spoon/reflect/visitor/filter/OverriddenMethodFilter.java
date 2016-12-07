@@ -20,26 +20,23 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.chain.AsyncFunction;
+import spoon.reflect.visitor.chain.ChainableFunction;
 import spoon.reflect.visitor.chain.Consumer;
 import spoon.reflect.visitor.chain.QueryStep;
 
 /**
  * Gets all overridden method from the method given.
  */
-public class OverriddenMethodFilter implements Filter<CtMethod<?>>, AsyncFunction<CtMethod<?>, CtMethod<?>> {
+public class OverriddenMethodFilter implements Filter<CtMethod<?>>, ChainableFunction<CtMethod<?>, CtMethod<?>> {
 	private CtMethod<?> method;
-	private QueryStep<CtMethod<?>> query;
 
 	/**
 	 * Creates a new overridden method filter, which will automatically scan correct scope for all overridden methods of the input element
-	 * Use {@link QueryStep#map(AsyncFunction)} to run process this filter instance
+	 * Use {@link QueryStep#map(ChainableFunction)} to run process this filter instance
 	 *
 	 * Note: the executable to be tested for being invoked, is this of CtElement, which invokes getElements method
 	 */
 	public OverriddenMethodFilter() {
-		query = Query.query().scan(this);
 	}
 	/**
 	 * Creates a new overridden method filter, which will scan input element for all overridden methods of the defined method
@@ -71,7 +68,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, AsyncFunctio
 		}
 		method = input;
 		try {
-			query.apply(method.getFactory().Package().getRootPackage(), output);
+			method.getFactory().Package().getRootPackage().scan(this).forEach(output);
 		} finally {
 			method = null;
 		}

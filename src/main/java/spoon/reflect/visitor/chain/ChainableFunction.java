@@ -16,29 +16,10 @@
  */
 package spoon.reflect.visitor.chain;
 
-import spoon.support.util.SafeInvoker;
-
-public class PredicateQueryStep<O> extends QueryStepImpl<O> {
-
-	private SafeInvoker<Predicate<O>> code = new SafeInvoker<>("matches", 1);
-
-	public <I> PredicateQueryStep(Predicate<O> code) {
-		this.code.setDelegate(code);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void accept(Object input) {
-		boolean matches = false;
-		if (code.isParameterTypeAssignableFrom(input)) {
-			try {
-				matches = (Boolean) this.code.invoke(input);
-			} catch (ClassCastException e) {
-				code.onClassCastException(e, input);
-			}
-		}
-		if (matches) {
-			fireNext((O) input);
-		}
-	}
+/**
+ * @param <T> the type of the input to the function
+ * @param <R> the type of the result of the function
+ */
+public interface ChainableFunction<T, R> {
+	void apply(T input, Consumer<R> output);
 }

@@ -334,8 +334,7 @@ public class FilterTest {
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
 
 		assertEquals(0, Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aClass.getMethodsByName("prepare").get(0))).size());
-		assertEquals(0, Query.query(aClass.getMethodsByName("prepare").get(0)).map(new OverriddenMethodFilter()).list().size());
-		assertEquals(0, aClass.getMethodsByName("prepare").get(0).query().map(new OverriddenMethodFilter()).list().size());
+		assertEquals(0, aClass.getMethodsByName("prepare").get(0).map(new OverriddenMethodFilter()).list().size());
 	}
 
 	@Test
@@ -373,9 +372,7 @@ public class FilterTest {
 
 		List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0)));
 		assertEquals(0, overridingMethods.size());
-		overridingMethods = Query.query(aITostada.getMethodsByName("make").get(0)).map(new OverriddenMethodFilter()).list();
-		assertEquals(0, overridingMethods.size());
-		overridingMethods = aITostada.getMethodsByName("make").get(0).query().map(new OverriddenMethodFilter()).list();
+		overridingMethods = aITostada.getMethodsByName("make").get(0).map(new OverriddenMethodFilter()).list();
 		assertEquals(0, overridingMethods.size());
 	}
 
@@ -486,7 +483,7 @@ public class FilterTest {
 		}
 		Context context = new Context();
 		
-		QueryStep<CtClass<?>> l_qv = launcher.getFactory().getModel().getRootPackage().query().scan(new TypeFilter<>(CtClass.class));
+		QueryStep<CtClass<?>> l_qv = launcher.getFactory().getModel().getRootPackage().scan(new TypeFilter<>(CtClass.class));
 		
 		assertEquals(0, context.counter);
 		l_qv.forEach(cls->{
@@ -510,7 +507,7 @@ public class FilterTest {
 		
 		Context context = new Context();
 
-		launcher.getFactory().Package().getRootPackage().query().scan(new TypeFilter<CtMethod<?>>(CtMethod.class))
+		launcher.getFactory().Package().getRootPackage().scan(new TypeFilter<CtMethod<?>>(CtMethod.class))
 		.map((CtMethod<?> method) -> {context.method = method;return method;})
 		.map(new OverriddenMethodFilter())
 		.forEach((CtMethod<?> method) -> {
@@ -533,7 +530,7 @@ public class FilterTest {
 		
 		Context context = new Context();
 
-		launcher.getFactory().Package().getRootPackage().query().scan((CtClass<?> c)->{return true;})
+		launcher.getFactory().Package().getRootPackage().scan((CtClass<?> c)->{return true;})
 			.map((CtClass<?> c)->c.getSuperInterfaces())
 			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
 			.map((CtType<?> iface)->iface.getAllMethods())

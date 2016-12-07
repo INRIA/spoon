@@ -17,7 +17,6 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.chain.Predicate;
 
 /**
  * This interface defines a filter for program elements.
@@ -26,11 +25,10 @@ import spoon.reflect.visitor.chain.Predicate;
  * 		the type of the filtered elements (an element belonging to the
  * 		filtered element must be assignable from <code>T</code>).
  */
-public interface Filter<T extends CtElement> extends Predicate<T> {
+public interface Filter<T extends CtElement> {
 	/**
 	 * Tells if the given element matches.
 	 * @param element - the element to be checked for a match. Parameter element is never null if {@link Query} is used.
 	 */
-	@Override
 	boolean matches(T element);
 }

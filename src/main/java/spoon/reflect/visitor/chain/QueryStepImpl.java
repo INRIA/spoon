@@ -21,6 +21,9 @@ import java.util.List;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.Scann;
 
 /**
@@ -55,26 +58,24 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 	}
 
 	@Override
-	public <P> QueryStep<P> map(AsyncFunction<?, P> code) {
-		return map(new AsyncFunctionQueryStep<>(code));
+	public <P> QueryStep<P> map(ChainableFunction<?, P> code) {
+		return map(Query.map(code));
 	}
 
 	@Override
 	public <I, R> QueryStep<R> map(Function<I, R> code) {
-		return map(new FunctionQueryStep<R>(code));
+		return map(Query.map(code));
 	}
 
 	@Override
-	public <P> QueryStep<P> scan(final Predicate<P> predicate) {
-		return (QueryStep<P>) map(new Scann()).map(new PredicateQueryStep<P>(predicate));
+	public <P extends CtElement> QueryStep<P> scan(Filter<P> filter) {
+		return map(new Scann()).map(Query.match(filter));
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void add(Consumer<Object> consumer) {
 		next.add(consumer);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void remove(Consumer<Object> consumer) {
 		next.remove(consumer);
 	}

@@ -21,8 +21,14 @@ import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.visitor.chain.ChainableFunction;
+import spoon.reflect.visitor.chain.ChainableFunctionQueryStep;
+import spoon.reflect.visitor.chain.Function;
+import spoon.reflect.visitor.chain.FunctionQueryStep;
+import spoon.reflect.visitor.chain.FilterQueryStep;
+import spoon.reflect.visitor.chain.QueryComposer;
 import spoon.reflect.visitor.chain.QueryStep;
-import spoon.reflect.visitor.chain.StartQueryStep;
+import spoon.reflect.visitor.filter.Scann;
 
 /**
  * This class provides some useful methods to retrieve program elements and
@@ -106,10 +112,45 @@ public abstract class Query {
 		return getElements(factory, filter);
 	}
 
-	public static <T> QueryStep<T> query() {
-		return new StartQueryStep<T>();
+	/**
+	 * @return a {@link QueryStep} which maps input to zero one or more output elements which are produced by code
+	 *<br><br>
+	 * Note: Use methods of {@link QueryComposer} implemented by {@link CtElement} to create a query which starts on the element.
+	 * This method is utility method to create building parts of the query chain
+	 */
+	public static <P> QueryStep<P> map(ChainableFunction<?, P> code) {
+		return new ChainableFunctionQueryStep<P>(code);
 	}
-	public static <T> QueryStep<T> query(T input) {
-		return new StartQueryStep<T>(input);
+
+	/**
+	 * returns a QueryStep which behaves depending on the type of returned value like this:
+	 * <table>
+	 * <tr><td><b>Return type</b><td><b>Behavior</b>
+	 * <tr><td>{@link Boolean}<td>Sends input to the next step if returned value is true
+	 * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
+	 * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
+	 * </table><br>
+	 *
+	 * @param code a Function with one parameter of type I returning value of type R
+	 *<br><br>
+	 * Note: Use methods of {@link QueryComposer} implemented by {@link CtElement} to create a query which starts on the element.
+	 * This method is utility method to create building parts of the query chain
+	 */
+	public static <I, R> QueryStep<R> map(Function<I, R> code) {
+		return new FunctionQueryStep<R>(code);
+	}
+
+	/**
+	 * Sends input to the next step if returned value is true
+	 *
+	 * @param filter
+	 * @return the create QueryStep, which is now the last step of the query
+	 */
+	public static <T extends CtElement> QueryStep<T> match(Filter<T> filter) {
+		return new FilterQueryStep<>(filter);
+	}
+
+	public static <T extends CtElement> QueryStep<T> scan(Filter<T> filter) {
+		return map(new Scann()).map(match(filter));
 	}
 }

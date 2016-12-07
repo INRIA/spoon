@@ -18,10 +18,10 @@ package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.chain.AsyncFunction;
+import spoon.reflect.visitor.chain.ChainableFunction;
 import spoon.reflect.visitor.chain.Consumer;
 
-public class Scann extends CtScanner implements AsyncFunction<CtElement, CtElement> {
+public class Scann extends CtScanner implements ChainableFunction<CtElement, CtElement> {
 
 	private Consumer<CtElement> output;
 
