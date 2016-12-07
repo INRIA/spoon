@@ -29,7 +29,7 @@ import java.util.Set;
  * A scanner dedicated to import only the necessary packages, @see spoon.test.variable.AccessFullyQualifiedTest
  *
  */
-public class ImportScannerWithoutAllImports extends ImportScannerImpl implements ImportScanner {
+public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
 
 	private Set<String> namedElements = new HashSet<String>();
 

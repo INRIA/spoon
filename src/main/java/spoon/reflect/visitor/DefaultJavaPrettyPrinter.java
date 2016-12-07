@@ -178,7 +178,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
 		} else {
-			this.importsContext = new ImportScannerWithoutAllImports();
+			this.importsContext = new MinimalImportScanner();
 		}
 	}
 
