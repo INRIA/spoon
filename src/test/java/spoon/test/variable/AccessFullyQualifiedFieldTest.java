@@ -35,7 +35,7 @@ public class AccessFullyQualifiedFieldTest {
 		//spoon.setArgs(new String[]{"--with-imports"});
 		spoon.addInputResource(pathResource);
 		spoon.setSourceOutputDirectory(output);
-		spoon.buildModel();
+		spoon.run();
 		PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
 
 		CtType element = spoon.getFactory().Class().getAll().get(0);
