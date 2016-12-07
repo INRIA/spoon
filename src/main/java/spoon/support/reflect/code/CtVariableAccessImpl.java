@@ -57,6 +57,7 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		// TODO: this setParent should be removed
 		if (type != null) {
 			type.setParent(this);
 		}

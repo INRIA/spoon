@@ -330,9 +330,9 @@ public class APITest {
 				final CtTypeReference<?> typeParameter = parameters.get(0).getType();
 				final CtTypeReference<CtElement> ctElementRef = element.getFactory().Type().createReference(CtElement.class);
 
+				// isSubtypeOf will return true in case of equality
 				boolean isSubtypeof = typeParameter.isSubtypeOf(ctElementRef);
-				boolean isEquals = typeParameter.equals(ctElementRef);
-				if (!isSubtypeof && !isEquals) {
+				if (!isSubtypeof) {
 					return false;
 				}
 				return element.getSimpleName().startsWith("set") && element.getDeclaringType().getSimpleName().startsWith("Ct") && element.getBody() != null;
@@ -370,6 +370,8 @@ public class APITest {
 		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getStatement(0);
 
 		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
+		assertTrue("Number of setters found null", setters.size() > 0);
+
 		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
 
 			// First statement should be a condition to protect the setter of the parent.
