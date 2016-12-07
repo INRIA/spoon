@@ -236,7 +236,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Make the imports for all elements.
 	 */
 	public void computeImports(CtElement element) {
-		importsContext.computeImports(element);
+		if (env.isAutoImports()) {
+			importsContext.computeImports(element);
+		}
 	}
 
 	/**
