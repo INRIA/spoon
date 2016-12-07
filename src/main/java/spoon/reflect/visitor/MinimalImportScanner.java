@@ -17,12 +17,10 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import java.util.HashSet;
 import java.util.Set;
