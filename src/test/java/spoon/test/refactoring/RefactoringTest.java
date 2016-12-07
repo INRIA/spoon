@@ -44,7 +44,7 @@ public class RefactoringTest {
 		final CtClass<?> aClassX = launcher.getFactory().Class().get("spoon.test.refactoring.testclasses.AClassX");
 		assertNotNull(aClassX);
 
-		final List<CtTypeReference<?>> references = Query.getReferences(aClassX.getFactory(), new AbstractReferenceFilter<CtTypeReference<?>>(CtTypeReference.class) {
+		final List<CtTypeReference<?>> references = Query.getElements(aClassX.getFactory(), new AbstractReferenceFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference<?> reference) {
 				return aClassX.getQualifiedName().equals(reference.getQualifiedName());

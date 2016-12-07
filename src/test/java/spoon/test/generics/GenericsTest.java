@@ -312,26 +312,26 @@ public class GenericsTest {
 
 		final CtMethod<?> m = aTacos.getMethodsByName("m").get(0);
 		final CtElement local1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
-		final CtTypeReference<Object> leftSideLocal1 = (CtTypeReference<Object>) local1.getReferences(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
+		final CtTypeReference<Object> leftSideLocal1 = (CtTypeReference<Object>) local1.getElements(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
 		final CtConstructorCall<Object> rightSideLocal1 = (CtConstructorCall<Object>) local1.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals(1, leftSideLocal1.getActualTypeArguments().size());
 		assertEquals(1, rightSideLocal1.getType().getActualTypeArguments().size());
 		assertEquals("java.util.List<java.lang.String> l = new java.util.ArrayList<>()", local1.toString());
 
 		final CtElement local2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
-		final CtTypeReference<Object> leftSideLocal2 = (CtTypeReference<Object>) local2.getReferences(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
+		final CtTypeReference<Object> leftSideLocal2 = (CtTypeReference<Object>) local2.getElements(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
 		assertEquals(0, leftSideLocal2.getActualTypeArguments().size());
 		assertEquals("java.util.List l2", local2.toString());
 
 		final CtElement local3 = m.getBody().getStatement(2).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
-		final CtTypeReference<Object> leftSideLocal3 = (CtTypeReference<Object>) local3.getReferences(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
+		final CtTypeReference<Object> leftSideLocal3 = (CtTypeReference<Object>) local3.getElements(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
 		final CtConstructorCall<Object> rightSideLocal3 = (CtConstructorCall<Object>) local3.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals(2, leftSideLocal3.getActualTypeArguments().size());
 		assertEquals(2, rightSideLocal3.getType().getActualTypeArguments().size());
 		assertEquals("spoon.test.generics.testclasses.IBurritos<?, ?> burritos = new Burritos<>()", local3.toString());
 
 		final CtElement local4 = m.getBody().getStatement(3).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
-		final CtTypeReference<Object> leftSideLocal4 = (CtTypeReference<Object>) local4.getReferences(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
+		final CtTypeReference<Object> leftSideLocal4 = (CtTypeReference<Object>) local4.getElements(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
 		final CtConstructorCall<Object> rightSideLocal4 = (CtConstructorCall<Object>) local4.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals(1, leftSideLocal4.getActualTypeArguments().size());
 		assertEquals(1, rightSideLocal4.getType().getActualTypeArguments().size());

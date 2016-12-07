@@ -39,7 +39,7 @@ public class VariableAccessTest {
 		CtClass<?> type = build("spoon.test.reference", "FooBar");
 		assertEquals("FooBar", type.getSimpleName());
 
-		final CtParameterReference<?> ref = type.getReferences(new AbstractReferenceFilter<CtParameterReference<?>>(CtParameterReference.class) {
+		final CtParameterReference<?> ref = type.getElements(new AbstractReferenceFilter<CtParameterReference<?>>(CtParameterReference.class) {
 			@Override
 			public boolean matches(CtParameterReference<?> reference) {
 				return "myArg".equals(reference.getSimpleName());
