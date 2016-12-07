@@ -297,7 +297,7 @@ public class SignatureTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
 
-		final List<CtExecutableReference> references = Query.getReferences(launcher.getFactory(), new ReferenceTypeFilter<CtExecutableReference>(CtExecutableReference.class) {
+		final List<CtExecutableReference> references = Query.getElements(launcher.getFactory(), new ReferenceTypeFilter<CtExecutableReference>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference reference) {
 				return "addField".equals(reference.getSimpleName()) && super.matches(reference);
