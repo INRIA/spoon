@@ -17,10 +17,12 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,13 +56,32 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 			while (!(parent instanceof CtPackage)) {
 				if (parent instanceof CtFieldReference) {
 					CtFieldReference parentType = (CtFieldReference) parent;
-					String qualifiedName = parentType.getQualifiedName();
+					Set<String> qualifiedNameTokens = new HashSet<>();
 
-					String[] splittedName = qualifiedName.split("(\\.|#)");
+					qualifiedNameTokens.add(parentType.getSimpleName());
 
-					for (String token : splittedName) {
-						if (namedElements.contains(token)) {
-							return true;
+					CtTypeReference typeReference = parentType.getDeclaringType();
+
+					qualifiedNameTokens.add(typeReference.getSimpleName());
+
+					if (typeReference.getPackage() != null) {
+						CtPackage ctPackage = typeReference.getPackage().getDeclaration();
+
+						while (ctPackage != null) {
+							qualifiedNameTokens.add(ctPackage.getSimpleName());
+
+							CtElement packParent = ctPackage.getParent();
+							if (packParent.getParent() != null) {
+								ctPackage = (CtPackage) packParent;
+							} else {
+								ctPackage = null;
+							}
+						}
+
+						for (String token : qualifiedNameTokens) {
+							if (namedElements.contains(token)) {
+								return true;
+							}
 						}
 					}
 				}
