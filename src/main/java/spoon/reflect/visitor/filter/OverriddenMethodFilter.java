@@ -34,7 +34,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, AsyncFunctio
 
 	/**
 	 * Creates a new overridden method filter, which will automatically scan correct scope for all overridden methods of the input element
-	 * Use {@link QueryStep#then(AsyncFunction)} to run process this filter instance
+	 * Use {@link QueryStep#map(AsyncFunction)} to run process this filter instance
 	 *
 	 * Note: the executable to be tested for being invoked, is this of CtElement, which invokes getElements method
 	 */
@@ -70,7 +70,10 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, AsyncFunctio
 			throw new SpoonException("Do not use parameterized constructor together with QueryStep#then(). Use A) parameterless constructor, B) QueryStep#scan()");
 		}
 		method = input;
-		query.forEach(output, method.getFactory().Package().getRootPackage());
-		method = null;
+		try {
+			query.apply(method.getFactory().Package().getRootPackage(), output);
+		} finally {
+			method = null;
+		}
 	}
 }

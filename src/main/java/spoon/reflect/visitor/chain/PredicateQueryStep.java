@@ -18,7 +18,7 @@ package spoon.reflect.visitor.chain;
 
 import spoon.support.util.SafeInvoker;
 
-public class PredicateQueryStep<O> extends QueryStep<O> {
+public class PredicateQueryStep<O> extends QueryStepImpl<O> {
 
 	private SafeInvoker<Predicate<O>> code = new SafeInvoker<>("matches", 1);
 

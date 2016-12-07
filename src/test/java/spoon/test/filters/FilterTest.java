@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -335,8 +334,8 @@ public class FilterTest {
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
 
 		assertEquals(0, Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aClass.getMethodsByName("prepare").get(0))).size());
-		assertEquals(0, Query.query().then(new OverriddenMethodFilter()).list(aClass.getMethodsByName("prepare").get(0)).size());
-		assertEquals(0, aClass.getMethodsByName("prepare").get(0).query().then(new OverriddenMethodFilter()).list().size());
+		assertEquals(0, Query.query(aClass.getMethodsByName("prepare").get(0)).map(new OverriddenMethodFilter()).list().size());
+		assertEquals(0, aClass.getMethodsByName("prepare").get(0).query().map(new OverriddenMethodFilter()).list().size());
 	}
 
 	@Test
@@ -374,9 +373,9 @@ public class FilterTest {
 
 		List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0)));
 		assertEquals(0, overridingMethods.size());
-		overridingMethods = Query.query().then(new OverriddenMethodFilter()).list(aITostada.getMethodsByName("make").get(0));
+		overridingMethods = Query.query(aITostada.getMethodsByName("make").get(0)).map(new OverriddenMethodFilter()).list();
 		assertEquals(0, overridingMethods.size());
-		overridingMethods = aITostada.getMethodsByName("make").get(0).query().then(new OverriddenMethodFilter()).list();
+		overridingMethods = aITostada.getMethodsByName("make").get(0).query().map(new OverriddenMethodFilter()).list();
 		assertEquals(0, overridingMethods.size());
 	}
 
@@ -512,8 +511,8 @@ public class FilterTest {
 		Context context = new Context();
 
 		launcher.getFactory().Package().getRootPackage().query().scan(new TypeFilter<CtMethod<?>>(CtMethod.class))
-		.thenConsume((CtMethod<?> method) -> {context.method = method;})
-		.then(new OverriddenMethodFilter())
+		.map((CtMethod<?> method) -> {context.method = method;return method;})
+		.map(new OverriddenMethodFilter())
 		.forEach((CtMethod<?> method) -> {
 			assertTrue(context.method.getReference().isOverriding(method.getReference()));
 			context.count++;
@@ -535,12 +534,12 @@ public class FilterTest {
 		Context context = new Context();
 
 		launcher.getFactory().Package().getRootPackage().query().scan((CtClass<?> c)->{return true;})
-			.then((CtClass<?> c)->c.getSuperInterfaces())
-			.then((CtTypeReference<?> iface)->iface.getTypeDeclaration())
-			.then((CtType<?> iface)->iface.getAllMethods())
-			.then((CtMethod<?> method)->method.getSimpleName().equals("make"))
-			.then((CtMethod<?> m)->m.getType())
-			.then((CtTypeReference<?> t)->t.getTypeDeclaration())
+			.map((CtClass<?> c)->c.getSuperInterfaces())
+			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
+			.map((CtType<?> iface)->iface.getAllMethods())
+			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
+			.map((CtMethod<?> m)->m.getType())
+			.map((CtTypeReference<?> t)->t.getTypeDeclaration())
 			.forEach((CtInterface<?> c)->{
 				assertEquals("ITostada", c.getSimpleName());
 				context.count++;

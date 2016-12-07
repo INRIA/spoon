@@ -18,7 +18,7 @@ package spoon.reflect.visitor.chain;
 
 import spoon.support.util.SafeInvoker;
 
-public class AsyncFunctionQueryStep<O> extends QueryStep<O> {
+public class AsyncFunctionQueryStep<O> extends QueryStepImpl<O> {
 
 	private SafeInvoker<AsyncFunction<?, ?>> code = new SafeInvoker<>("apply", 2);
 

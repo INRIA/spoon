@@ -106,7 +106,10 @@ public abstract class Query {
 		return getElements(factory, filter);
 	}
 
-	public static QueryStep<?> query() {
-		return new StartQueryStep<>();
+	public static <T> QueryStep<T> query() {
+		return new StartQueryStep<T>();
+	}
+	public static <T> QueryStep<T> query(T input) {
+		return new StartQueryStep<T>(input);
 	}
 }

@@ -19,7 +19,9 @@ package spoon.reflect.visitor.chain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StartQueryStep<O> extends QueryStep<O> {
+import spoon.SpoonException;
+
+public class StartQueryStep<O> extends QueryStepImpl<O> {
 
 	private List<O> inputs;
 
@@ -36,7 +38,15 @@ public class StartQueryStep<O> extends QueryStep<O> {
 	public void accept(Object input) {
 		if (input != null) {
 			fireNext(input);
+			if (inputs.size() > 0) {
+				throw new SpoonException("QueryHead may have only one input");
+			}
+		} else {
+			run();
 		}
+	}
+
+	public void run() {
 		for (O in : inputs) {
 			fireNext(in);
 		}
@@ -44,5 +54,13 @@ public class StartQueryStep<O> extends QueryStep<O> {
 
 	public List<O> getInputs() {
 		return inputs;
+	}
+
+	public void setInputs(List<O> inputs) {
+		this.inputs = inputs;
+	}
+
+	public void addInputs(List<O> inputs) {
+		this.inputs = inputs;
 	}
 }
