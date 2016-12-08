@@ -53,9 +53,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private static final Collection<String> namesPresentInJavaLang9 = Arrays.asList(
 			"ProcessHandle", "StackWalker", "StackFramePermission");
 
-	private Map<String, CtTypeReference<?>> imports = new TreeMap<>();
+	protected Map<String, CtTypeReference<?>> imports = new TreeMap<>();
 	//top declaring type of that import
-	private CtTypeReference<?> targetType;
+	protected CtTypeReference<?> targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 
 	@Override
@@ -207,10 +207,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	/**
 	 * Gets imports in imports Map for the key simpleType given.
 	 *
-	 * @param simpleType
 	 * @return Collection of {@link spoon.reflect.reference.CtTypeReference}
 	 */
-	private Collection<CtTypeReference<?>> getImports() {
+	protected Collection<CtTypeReference<?>> getImports() {
 		if (imports.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
@@ -235,7 +234,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	/**
 	 * Adds a type to the imports.
 	 */
-	private boolean addImport(CtTypeReference<?> ref) {
+	protected boolean addImport(CtTypeReference<?> ref) {
 		if (imports.containsKey(ref.getSimpleName())) {
 			return isImported(ref);
 		}
@@ -261,7 +260,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return true;
 	}
 
-	private boolean classNamePresentInJavaLang(CtTypeReference<?> ref) {
+	protected boolean classNamePresentInJavaLang(CtTypeReference<?> ref) {
 		Boolean presentInJavaLang = namesPresentInJavaLang.get(ref.getSimpleName());
 		if (presentInJavaLang == null) {
 			// The following procedure of determining if the handle is present in Java Lang or

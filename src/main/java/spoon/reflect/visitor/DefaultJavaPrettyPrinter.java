@@ -110,7 +110,6 @@ import spoon.reflect.visitor.printer.PrinterHelper;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +145,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Handle imports of classes.
 	 */
-	private ImportScanner importsContext = new ImportScannerImpl();
+	private ImportScanner importsContext;
 
 	/**
 	 * Environment which Spoon is executed.
@@ -175,6 +174,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.env = env;
 		printer = new PrinterHelper(env);
 		elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
+
+		if (env.isAutoImports()) {
+			this.importsContext = new ImportScannerImpl();
+		} else {
+			this.importsContext = new MinimalImportScanner();
+		}
 	}
 
 	/**
@@ -223,11 +228,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Make the imports for a given type.
 	 */
 	public Collection<CtTypeReference<?>> computeImports(CtType<?> type) {
-		if (env.isAutoImports()) {
-			context.currentTopLevel = type;
-			return importsContext.computeImports(context.currentTopLevel);
-		}
-		return Collections.emptyList();
+		context.currentTopLevel = type;
+		return importsContext.computeImports(context.currentTopLevel);
 	}
 
 	/**
