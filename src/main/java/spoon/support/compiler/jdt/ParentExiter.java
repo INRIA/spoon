@@ -37,71 +37,68 @@ import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtArrayAccess;
-import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtLoop;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtExecutableReferenceExpression;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
+import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtLoop;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.declaration.CtAnnotatedElementType;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
-import spoon.reflect.visitor.Filter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -237,24 +234,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			substituteAnnotation((CtTypedElement) v);
 			return;
 		} else if (child instanceof CtExpression && hasChildEqualsToDefaultValue(v)) {
-
-			// first trial to detect if part of absolute name of a type is used by a previously recorded element in the model
-			List<CtElement> allElements = this.jdtTreeBuilder.getFactory().getModel().getElements(new Filter<CtElement>() {
-				@Override
-				public boolean matches(CtElement element) {
-
-					return (element instanceof CtVariable) && (child.toString().startsWith(((CtNamedElement) element).getSimpleName()));
-				}
-			});
-
-			CtLiteral simpleExpression = this.jdtTreeBuilder.getFactory().Core().createLiteral();
-			simpleExpression.setValue(childJDT.toString());
-
-			if (allElements.isEmpty()) {
-				v.setDefaultExpression((CtExpression<T>) child);
-			} else {
-				v.setDefaultExpression(simpleExpression);
-			}
+			v.setDefaultExpression((CtExpression<T>) child);
 			return;
 		}
 		super.scanCtVariable(v);

@@ -25,6 +25,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class QualifiedThisRefTest {
@@ -54,7 +55,7 @@ public class QualifiedThisRefTest {
 		ctTypes.add(ctClass);
 		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
-		Assert.assertTrue(printer.getResult().contains("Object o = QualifiedThisRef.Sub.this"));
+		assertTrue(printer.getResult().contains("Object o = QualifiedThisRef.Sub.this"));
 	}
 
 	@Test
@@ -71,9 +72,11 @@ public class QualifiedThisRefTest {
 		CtMethod<?> clone = m2.clone();
 		CtInvocation<?> stat = clone.getBody().getStatement(0);
 		assertNotEquals("java.lang.Object.this.notify()", stat.toString()); // the original bug
-		assertEquals("spoon.test.delete.testclasses.Adobada.this.notify()", stat.toString());
-		stat.getTarget().setImplicit(true);
+		// clone preserves implicitness
+		assertTrue(stat.getTarget().isImplicit());
 		assertEquals("notify()", stat.toString());
+		stat.getTarget().setImplicit(false);
+		assertEquals("spoon.test.delete.testclasses.Adobada.this.notify()", stat.toString());
 
 		// note that this behavior means that you can only keep cloned "this" in the same class,
 		// and you cannot "transplant" a cloned "this" to another class
