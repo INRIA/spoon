@@ -33,6 +33,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -895,5 +896,35 @@ public class AnnotationTest {
 
 	private CtAnnotation<?> getMiddleAnnotation(CtNewArray<?> arrayAnnotations, int index) {
 		return (CtAnnotation<?>) arrayAnnotations.getElements().get(index);
+	}
+
+	@Test
+	public void testSpoonSpoonResult() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/dropwizard/GraphiteReporterFactory.java");
+		//spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PortRange.java");
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-firstspoon/";
+		spoon.setSourceOutputDirectory(output);
+		factory = spoon.getFactory();
+		spoon.run();
+
+		Launcher spoon2 = new Launcher();
+		spoon2.addInputResource(output+"/spoon/test/annotation/testclasses/dropwizard/GraphiteReporterFactory.java");
+		spoon2.buildModel();
+
+		List<CtMethod<?>> methods = spoon2.getModel().getElements(new NameFilter<CtMethod<?>>("getPort"));
+
+		assertEquals("Number of method getPort should be 1", 1, methods.size());
+
+		CtMethod getport = methods.get(0);
+		CtTypeReference returnType = getport.getType();
+
+		List<CtAnnotation<?>> annotations = returnType.getAnnotations();
+
+		assertEquals("Number of annotation for return type of method getPort should be 1", 1, annotations.size());
+
+		CtAnnotation annotation = annotations.get(0);
+
+		assertEquals("Annotation should be @spoon.test.annotation.testclasses.PortRange", "spoon.test.annotation.testclasses.PortRange", annotation.getAnnotationType().getQualifiedName());
 	}
 }
