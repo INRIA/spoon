@@ -902,7 +902,6 @@ public class AnnotationTest {
 	public void testSpoonSpoonResult() throws Exception {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/dropwizard/GraphiteReporterFactory.java");
-		//spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PortRange.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-firstspoon/";
 		spoon.setSourceOutputDirectory(output);
 		factory = spoon.getFactory();
@@ -910,6 +909,7 @@ public class AnnotationTest {
 
 		Launcher spoon2 = new Launcher();
 		spoon2.addInputResource(output+"/spoon/test/annotation/testclasses/dropwizard/GraphiteReporterFactory.java");
+		//spoon2.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PortRange.java");
 		spoon2.buildModel();
 
 		List<CtMethod<?>> methods = spoon2.getModel().getElements(new NameFilter<CtMethod<?>>("getPort"));
