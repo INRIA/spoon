@@ -8,6 +8,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -18,11 +19,14 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
+import spoon.test.exceptions.ExceptionTest;
+import spoon.test.template.testclasses.SecurityCheckerTemplate;
 
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -275,6 +279,27 @@ public class TemplateTest {
 		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Comparable.class)));
 		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Serializable.class)));
 		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Remote.class)));
+	}
+
+	@Test
+	public void testTemplateMatcher2() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/ContextHelper.java");
+		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/BServiceImpl.java");
+
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SecurityCheckerTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
+		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
+		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
+		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+
+		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
+
+		assertEquals(1, matches.size());
 	}
 
 }
