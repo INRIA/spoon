@@ -21,7 +21,7 @@ import spoon.reflect.visitor.Filter;
 
 /**
  * QueryComposer contains methods, which can be used to create/compose a {@link QueryStep}
- * It is implemented 1) by {@link CtElement} to allow creation new query and its first step 
+ * It is implemented 1) by {@link CtElement} to allow creation new query and its first step
  * 2) by {@link QueryStep} to allow creation of next query step
  */
 public interface QueryComposer {
@@ -64,9 +64,9 @@ public interface QueryComposer {
 	<I, R> QueryStep<R> map(Function<I, R> code);
 
 	/**
-	 * scan all child elements of an input element. 
+	 * scan all child elements of an input element.
 	 * The child element is sent to next step only if filter.matches(element)==true
-	 * 
+	 *
 	 * Note: the input element is also checked for match and if true it is sent to output too.
 	 *
 	 * @param filter used to filter scanned children elements of AST tree

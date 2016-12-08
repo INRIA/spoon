@@ -23,10 +23,10 @@ import spoon.Launcher;
 import spoon.SpoonException;
 
 /**
- * The helper object, which provides safe calling of defined method of delegate object by the safe way. 
+ * The helper object, which provides safe calling of defined method of delegate object by the safe way.
  * The safe means, that if the input parameters cannot be cast to the input parameters of the called method
  * and ClassCastException is thrown then such call is optionally logged and silently ignored
- * 
+ *
  * @param <T> the Type of the delegate object, which is target of the method invocation
  */
 public class SafeInvoker<T> {
@@ -62,7 +62,7 @@ public class SafeInvoker<T> {
 
 	/**
 	 * sets the object on which will be the this of invoked method
-	 * 
+	 *
 	 * @param delegate
 	 */
 	public void setDelegate(T delegate) {
@@ -90,8 +90,8 @@ public class SafeInvoker<T> {
 
 	/**
 	 * @param parameter
-	 * @return true if parameter might be accepted by the invoked method. 
-	 * Note that in some cases (Lambda expressions) we cannot detect runtime type of the parameters and therefore the invocation will cause ClassCastException. Handle it. 
+	 * @return true if parameter might be accepted by the invoked method.
+	 * Note that in some cases (Lambda expressions) we cannot detect runtime type of the parameters and therefore the invocation will cause ClassCastException. Handle it.
 	 */
 	public boolean isParameterTypeAssignableFrom(Object... parameters) {
 		if (paramTypes == null) {
@@ -131,10 +131,10 @@ public class SafeInvoker<T> {
 					}
 					/*
 					 * needed to re-throw ClassCastException.
-					 * TODO: we should check the stacktrace of the CCE and eat it silently only when it is thrown from the method invocation code. 
+					 * TODO: we should check the stacktrace of the CCE and eat it silently only when it is thrown from the method invocation code.
 					 * We should throw normal ClassCastException when the code fails later, because of the bug in the client's code!
-					 * 
-					 * Note: The CCE message has form like 
+					 *
+					 * Note: The CCE message has form like
 					 * spoon.support.reflect.reference.CtTypeReferenceImpl cannot be cast to spoon.reflect.declaration.CtClass
 					 * By parsing of this exception we would be able to detect
 					 * acceptable parameter type of the Lambda expression and avoid the CCE during the future calls - it might improve performance.
@@ -159,7 +159,7 @@ public class SafeInvoker<T> {
 	}
 
 	/**
-	 * Is used to log that invocation was not processed 
+	 * Is used to log that invocation was not processed
 	 * @param e
 	 * @param parameters
 	 */
@@ -170,7 +170,7 @@ public class SafeInvoker<T> {
 	}
 
 	/**
-	 * Is used to log that invocation was not processed 
+	 * Is used to log that invocation was not processed
 	 * @param message
 	 * @param e
 	 * @param parameters
@@ -191,7 +191,6 @@ public class SafeInvoker<T> {
 			} else {
 				Launcher.LOGGER.debug(sb.toString());
 			}
-			
 		}
 	}
 }

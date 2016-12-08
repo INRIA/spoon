@@ -25,8 +25,8 @@ import spoon.support.util.SafeInvoker;
  *
  * A Consumer which has a list of other Consumers.
  * If the {@link #accept(Object)} method is called then it calls {@link Consumer#accept(Object)} for each registered consumer
- * 
- * If the element, which is passed as input of this Consumer does not match parameter type of next consumer 
+ *
+ * If the element, which is passed as input of this Consumer does not match parameter type of next consumer
  * then this call is silently skipped, with meaning such consumer is not interested in such elements - no problem.
  *
  * @param <T> the type of element which is accepted by this consumer
@@ -58,7 +58,7 @@ public class MultiConsumer<T> implements Consumer<T> {
 	}
 
 	/**
-	 * Adds Consumer, which will be called when {@link #accept(Object)} is invoked 
+	 * Adds Consumer, which will be called when {@link #accept(Object)} is invoked
 	 * @param consumer
 	 * @return this instance of MultiConsumer - support of fluent API
 	 */
