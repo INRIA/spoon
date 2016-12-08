@@ -21,6 +21,8 @@ import spoon.reflect.visitor.Filter;
 
 /**
  * QueryComposer contains methods, which can be used to create/compose a {@link QueryStep}
+ * It is implemented 1) by {@link CtElement} to allow creation new query and its first step 
+ * 2) by {@link QueryStep} to allow creation of next query step
  */
 public interface QueryComposer {
 
@@ -34,7 +36,7 @@ public interface QueryComposer {
 	<R> QueryStep<R> map(QueryStep<R> queryStep);
 
 	/**
-	 * Creates new QueryStep, which will call code
+	 * Creates a new QueryStep, which will call code
 	 * whenever this QueryStep produces an element.
 	 * The produced element is sent to code.apply(input, consumer)
 	 * method as input parameter, together with consumer,
@@ -52,6 +54,7 @@ public interface QueryComposer {
 	 * <tr><td><b>Return type</b><td><b>Behavior</b>
 	 * <tr><td>{@link Boolean}<td>Sends input to the next step if returned value is true
 	 * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
+	 * <tr><td>{@link Object[]}<td>Sends each item of Array to the next step
 	 * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
 	 * </table><br>
 	 *
@@ -61,10 +64,13 @@ public interface QueryComposer {
 	<I, R> QueryStep<R> map(Function<I, R> code);
 
 	/**
-	 * scan all child elements of input element. Only these elements are sent to, which filter.matches(element)==true
+	 * scan all child elements of an input element. 
+	 * The child element is sent to next step only if filter.matches(element)==true
+	 * 
+	 * Note: the input element is also checked for match and if true it is sent to output too.
 	 *
-	 * @param filter used to filter scanned elements
-	 * @return the create QueryStep, which is now the last step of the query
+	 * @param filter used to filter scanned children elements of AST tree
+	 * @return the created QueryStep, which is now the last step of the query
 	 */
 	<T extends CtElement> QueryStep<T> scan(Filter<T> filter);
 }

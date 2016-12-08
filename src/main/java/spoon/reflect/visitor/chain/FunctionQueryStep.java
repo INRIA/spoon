@@ -16,9 +16,27 @@
  */
 package spoon.reflect.visitor.chain;
 
+import java.lang.reflect.Array;
+
 import spoon.Launcher;
 import spoon.support.util.SafeInvoker;
 
+/**
+ * {@link QueryStep} which uses a {@link Function} as a mapping function.<br><br>
+ * It behaves depending on the type of returned value like this:
+ * <table>
+ * <tr><td><b>Return type</b><td><b>Behavior</b>
+ * <tr><td>{@link Boolean}<td>Sends input to the next step if returned value is true
+ * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
+ * <tr><td>{@link Object[]}<td>Sends each item of Array to the next step
+ * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
+ * </table><br>
+ *
+ * If the type of QueryStep input is not assignable to type of input parameter of the function
+ * then such input is silently ignored
+ *
+ * @param <O> the type of the element produced by this {@link QueryStep}.
+ */
 public class FunctionQueryStep<O> extends QueryStepImpl<O> {
 
 	private SafeInvoker<Function<?, ?>> code = new SafeInvoker<>("apply", 1);
@@ -31,14 +49,19 @@ public class FunctionQueryStep<O> extends QueryStepImpl<O> {
 	@Override
 	public void accept(Object input) {
 		Object result;
+		//check that input type can be assigned to TypeX of Function.apply(TypeX element)
 		if (code.isParameterTypeAssignableFrom(input)) {
 			try {
 				result = code.invoke(input);
 			} catch (ClassCastException e) {
-				code.onClassCastException(e, input);
+				//in case of Lambda expressions, the type of apply method cannot be detected,
+				//so then it fails with CCE. Handle it silently with meaning: "input element does not match. Ignore it"
 				return;
 			}
 		} else {
+			return;
+		}
+		if (result == null) {
 			return;
 		}
 		if (result instanceof Boolean) {
@@ -52,8 +75,14 @@ public class FunctionQueryStep<O> extends QueryStepImpl<O> {
 			}
 		}
 		if (result instanceof Iterable) {
+			//send each item of Iterable to the next step
 			for (O out : (Iterable<O>) result) {
 				fireNext(out);
+			}
+		} else if (result.getClass().isArray()) {
+			//send each item of Array to the next step
+			for (int i = 0; i < Array.getLength(result); i++) {
+				fireNext(Array.get(result, i));
 			}
 		} else {
 			fireNext((O) result);

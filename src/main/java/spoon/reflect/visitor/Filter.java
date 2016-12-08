@@ -31,4 +31,5 @@ public interface Filter<T extends CtElement> {
 	 * @param element - the element to be checked for a match. Parameter element is never null if {@link Query} is used.
 	 */
 	boolean matches(T element);
+
 }

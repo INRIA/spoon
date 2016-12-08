@@ -20,21 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.Scann;
 
 /**
- * A) scan(Filter) scan all child elements of input element and send to output only these elements, which matches the filter
- * B) then(AsyncFnc) initialize filter with input element and then scan all children of the start element returned by filter and send to output only these elements, which matches the filter
- * C) scan all children of the start element returned by filter and send to output only these elements, which matches the filter - ignore input
- * D) matches(Predicate) - send input to output if it matches filter
- *
- *
- * @param <I> - input type
- * @param <O> - output type
+ * Contains the default implementation of the generic {@link QueryStep} methods
+ * Just the {@link #accept(Object)} method is implemented, by children classes
  */
 public abstract class QueryStepImpl<O> implements QueryStep<O> {
 
@@ -47,6 +40,16 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 	@Override
 	public QueryStep<Object> getPrev() {
 		return prev;
+	}
+
+	@Override
+	public QueryStep<Object> getFirstStep() {
+		@SuppressWarnings("unchecked")
+		QueryStep<Object> first = (QueryStep<Object>) this;
+		while (first.getPrev() != null) {
+			first = first.getPrev();
+		}
+		return first;
 	}
 
 	@Override
@@ -72,20 +75,36 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 		return map(new Scann()).map(Query.match(filter));
 	}
 
+	/**
+	 * adds a consumer of elements produced by this step
+	 * @param consumer
+	 */
 	protected void add(Consumer<Object> consumer) {
 		next.add(consumer);
 	}
 
+	/**
+	 * removes consumer of elements produced by this step
+	 * @param consumer
+	 */
 	protected void remove(Consumer<Object> consumer) {
 		next.remove(consumer);
 	}
 
+	/**
+	 * sends the out to the all registered consumers of this step
+	 * @param out
+	 */
 	protected void fireNext(Object out) {
 		getNextConsumer().accept(out);
 	}
 
+	/**
+	 * @return a consumer which can be used to send element to all registered consumers of this step
+	 */
 	protected Consumer<Object> getNextConsumer() {
 		if (Launcher.LOGGER.isDebugEnabled()) {
+			//if logging is enabled then we provide a consumer which logs each produced element
 			return new Consumer<Object>() {
 				@Override
 				public void accept(Object element) {
@@ -97,10 +116,17 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 		return next;
 	}
 
+	/**
+	 * helper method which provides description of this step. The description is visible in the log
+	 * @return
+	 */
 	protected String getDescription() {
 		return String.valueOf(getDepth()) + ")";
 	}
 
+	/**
+	 * @return depth of this query step starting from the first element. The first element has depth 0.
+	 */
 	@SuppressWarnings("unchecked")
 	private int getDepth() {
 		int i = 0;
@@ -110,20 +136,6 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 			i++;
 		}
 		return i;
-	}
-
-	public void run(Object... input) {
-		QueryStep<Object> start = getStartStep();
-		if (input.length > 0) {
-			if (start instanceof StartQueryStep && ((StartQueryStep<?>) start).getInputs().size() > 0) {
-				throw new SpoonException("Cannot accept exta input, because input of this QueryStep chain is alredy defined");
-			}
-			for (Object in : input) {
-				start.accept(in);
-			}
-		} else {
-			start.accept(null);
-		}
 	}
 
 	@Override
@@ -143,19 +155,10 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 	public <R> void forEach(Consumer<R> consumer) {
 		add((Consumer<Object>) consumer);
 		try {
-			run();
+			getFirstStep().accept(null);
 		} finally {
 			remove((Consumer<Object>) consumer);
 		}
-	}
-
-	public QueryStep<Object> getStartStep() {
-		@SuppressWarnings("unchecked")
-		QueryStep<Object> first = (QueryStep<Object>) this;
-		while (first.getPrev() != null) {
-			first = first.getPrev();
-		}
-		return first;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -163,10 +166,9 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 	public <T, R> void apply(T input, Consumer<R> output) {
 		add((Consumer<Object>) output);
 		try {
-			getStartStep().accept(input);
+			getFirstStep().accept(input);
 		} finally {
 			remove((Consumer<Object>) output);
 		}
 	}
-
 }

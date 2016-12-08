@@ -17,8 +17,12 @@
 package spoon.reflect.visitor.chain;
 
 /**
+ * Functional interface used to map elements using a function which accepts one input parameter and calls output.accept(out) for each produced output element
+ *
+ * It is used for example by {@link QueryStep#map(ChainableFunction))}
+ *
  * @param <T> the type of the input to the function
- * @param <R> the type of the result of the function
+ * @param <R> the type of the result produced by this function
  */
 public interface ChainableFunction<T, R> {
 	void apply(T input, Consumer<R> output);

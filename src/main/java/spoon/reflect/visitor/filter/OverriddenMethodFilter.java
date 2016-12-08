@@ -32,15 +32,15 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, ChainableFun
 
 	/**
 	 * Creates a new overridden method filter, which will automatically scan correct scope for all overridden methods of the input element
-	 * Use {@link QueryStep#map(ChainableFunction)} to run process this filter instance
+	 * Use {@link QueryStep#map(ChainableFunction)} to add query step using this filter
 	 *
-	 * Note: the executable to be tested for being invoked, is this of CtElement, which invokes getElements method
+	 * Note: the executable to be tested for being invoked, comes as output from previous query step
 	 */
 	public OverriddenMethodFilter() {
 	}
 	/**
 	 * Creates a new overridden method filter, which will scan input element for all overridden methods of the defined method
-	 * Use {@link QueryStep#scan(spoon.reflect.visitor.chain.Predicate)} to run process this filter instance
+	 * Use {@link QueryStep#scan(Filter)} to filter child elements produced by previous step by this filter
 	 *
 	 * @param method
 	 * 		the executable to be tested for being invoked
@@ -52,7 +52,13 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, ChainableFun
 	@Override
 	public boolean matches(CtMethod<?> element) {
 		if (method == null) {
-			throw new SpoonException("Do not use parameterless constructor together with QueryStep#scan(). Use A) parameterized constructor, B) QueryStep#then()");
+			/**
+			 * Do not use parameterless constructor together with QueryStep#scan().
+			 * Use:
+			 * A) parameterized constructor and QueryStep#scan()
+			 * B) parameterless constructor and QueryStep#map()
+			 */
+			throw new SpoonException("Missing Filter context parameter 'method'");
 		}
 		final CtType<?> expectedParent = method.getParent(CtType.class);
 		final CtType<?> currentParent = element.getParent(CtType.class);
@@ -61,10 +67,20 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, ChainableFun
 				&& method.getReference().isOverriding(element.getReference());
 	}
 
+	/**
+	 * This method is used when this Filter is used in {@link QueryStep#map(ChainableFunction)}
+	 * In such case Filter can automatically use correct scanning scope - root package
+	 */
 	@Override
 	public void apply(CtMethod<?> input, Consumer<CtMethod<?>> output) {
 		if (method != null) {
-			throw new SpoonException("Do not use parameterized constructor together with QueryStep#then(). Use A) parameterless constructor, B) QueryStep#scan()");
+			/**
+			 * Do not use parameterized constructor together with QueryStep#map().
+			 * Use:
+			 * A) parameterized constructor and QueryStep#scan()
+			 * B) parameterless constructor and QueryStep#map()
+			 */
+			throw new SpoonException("Do not use parameterized constructor together with QueryStep#map()");
 		}
 		method = input;
 		try {

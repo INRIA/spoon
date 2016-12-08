@@ -20,7 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtElement;
 
+/**
+ * The QueryStep, which knows the constant list of input elements.
+ * Is automatically created by {@link CtElement#map()} and  {@link CtElement#scan()}
+ * To assure that instance of CtElement is used as input of the query when {@link QueryStep#forEach(Consumer)} or {@link QueryStep#list()} are used
+ *
+ * @param <O> - output type
+ */
 public class StartQueryStep<O> extends QueryStepImpl<O> {
 
 	private List<O> inputs;
@@ -28,10 +36,7 @@ public class StartQueryStep<O> extends QueryStepImpl<O> {
 	@SafeVarargs
 	public StartQueryStep(O... inputs) {
 		super();
-		this.inputs = new ArrayList<>(inputs.length);
-		for (O in : inputs) {
-			this.inputs.add(in);
-		}
+		addInput(inputs);
 	}
 
 	@Override
@@ -47,20 +52,38 @@ public class StartQueryStep<O> extends QueryStepImpl<O> {
 	}
 
 	public void run() {
+		if (inputs.size() == 0) {
+			throw new SpoonException("First QueryStep has registered no input");
+		}
 		for (O in : inputs) {
 			fireNext(in);
 		}
 	}
 
+	/**
+	 * @return list of elements which will be used as input of the query
+	 */
 	public List<O> getInputs() {
 		return inputs;
 	}
 
+	/**
+	 * sets list of elements which will be used as input of the query
+	 */
 	public void setInputs(List<O> inputs) {
-		this.inputs = inputs;
+		this.inputs = new ArrayList<>(inputs);
 	}
 
-	public void addInputs(List<O> inputs) {
-		this.inputs = inputs;
+	/**
+	 * adds list of elements which will be used as input of the query too
+	 * @param inputs
+	 */
+	public void addInput(O... inputs) {
+		if (this.inputs == null) {
+			this.inputs = new ArrayList<>(inputs.length);
+		}
+		for (O in : inputs) {
+			this.inputs.add(in);
+		}
 	}
 }

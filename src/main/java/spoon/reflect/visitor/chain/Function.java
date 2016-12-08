@@ -17,6 +17,10 @@
 package spoon.reflect.visitor.chain;
 
 /**
+ * Functional interface used to map elements using simple function, which accepts one input parameter and returns some output
+ * 
+ * It is used for example by {@link QueryStep#map(Function)}
+ * 
  * @param <T> the type of the input to the function
  * @param <R> the type of the result of the function
  */

@@ -23,7 +23,11 @@ import spoon.Launcher;
 import spoon.SpoonException;
 
 /**
- * @param <T> the Type of the delegate object, which is target of method invocation
+ * The helper object, which provides safe calling of defined method of delegate object by the safe way. 
+ * The safe means, that if the input parameters cannot be cast to the input parameters of the called method
+ * and ClassCastException is thrown then such call is optionally logged and silently ignored
+ * 
+ * @param <T> the Type of the delegate object, which is target of the method invocation
  */
 public class SafeInvoker<T> {
 	private final String methodName;
@@ -34,8 +38,8 @@ public class SafeInvoker<T> {
 	private int numParams;
 
 	/**
-	 *
-	 * @param methodName
+	 * @param methodName - the name of the method, which will be invoked on the delegate object
+	 * @param numParams - the number of parameters of the called method
 	 */
 	public SafeInvoker(String methodName, int numParams) {
 		this.methodName = methodName;
@@ -43,10 +47,10 @@ public class SafeInvoker<T> {
 	}
 
 	/**
-	 * @return type of first parameter of invoked method or null if delegate does not have this method
+	 * @return type of idx-th parameter of invoked method or null if delegate does not have this method
 	 */
-	public Class<?> getParamType(int paramIdx) {
-		return paramTypes[paramIdx];
+	public Class<?> getParamType(int idx) {
+		return paramTypes == null ? null : paramTypes[idx];
 	}
 
 	/**
@@ -56,6 +60,11 @@ public class SafeInvoker<T> {
 		return delegate;
 	}
 
+	/**
+	 * sets the object on which will be the this of invoked method
+	 * 
+	 * @param delegate
+	 */
 	public void setDelegate(T delegate) {
 		if (delegate != null) {
 			method = RtHelper.getMethod(delegate.getClass(), methodName, this.numParams);
@@ -80,9 +89,9 @@ public class SafeInvoker<T> {
 	}
 
 	/**
-	 *
 	 * @param parameter
-	 * @return true if parameter might be accepted by the invoked method
+	 * @return true if parameter might be accepted by the invoked method. 
+	 * Note that in some cases (Lambda expressions) we cannot detect runtime type of the parameters and therefore the invocation will cause ClassCastException. Handle it. 
 	 */
 	public boolean isParameterTypeAssignableFrom(Object... parameters) {
 		if (paramTypes == null) {
@@ -100,6 +109,11 @@ public class SafeInvoker<T> {
 		return true;
 	}
 
+	/**
+	 * Invokes the defined method on the defined delegate object
+	 * @param parameter
+	 * @return
+	 */
 	public Object invoke(Object... parameter) {
 		if (method != null && delegate != null && parameter != null) {
 			try {
@@ -109,32 +123,59 @@ public class SafeInvoker<T> {
 			} catch (IllegalArgumentException e) {
 				throw new SpoonException(e);
 			} catch (InvocationTargetException e) {
-				if (e.getTargetException() instanceof RuntimeException) {
-					throw (RuntimeException) e.getTargetException();
+				Throwable targetE = e.getTargetException();
+				if (targetE instanceof RuntimeException) {
+					if (targetE instanceof ClassCastException) {
+						//log that invocation was ignored, because of incompatible input parameters
+						onClassCastException((ClassCastException) targetE, parameter);
+					}
+					/*
+					 * needed to re-throw ClassCastException.
+					 * TODO: we should check the stacktrace of the CCE and eat it silently only when it is thrown from the method invocation code. 
+					 * We should throw normal ClassCastException when the code fails later, because of the bug in the client's code!
+					 * 
+					 * Note: The CCE message has form like 
+					 * spoon.support.reflect.reference.CtTypeReferenceImpl cannot be cast to spoon.reflect.declaration.CtClass
+					 * By parsing of this exception we would be able to detect
+					 * acceptable parameter type of the Lambda expression and avoid the CCE during the future calls - it might improve performance.
+					 */
+					throw (RuntimeException) targetE;
 				}
-				throw new SpoonException(e.getTargetException());
+				throw new SpoonException(targetE);
 			}
 		}
 		return null;
 	}
 
+	/**
+	 * Is used to log that invocation was not processed
+	 * @param incompatibleParamIdx
+	 * @param parameters
+	 */
 	protected void reportInputIgnored(int incompatibleParamIdx, Object[] parameters) {
 		if (Launcher.LOGGER.isDebugEnabled()) {
-			reportInputIgnored(parameters[incompatibleParamIdx].getClass().getName() + " cannot be cast to " + paramTypes[incompatibleParamIdx].getName(), parameters);
+			reportInputIgnored(parameters[incompatibleParamIdx].getClass().getName() + " cannot be cast to " + paramTypes[incompatibleParamIdx].getName(), null, parameters);
 		}
 	}
 
-	public void onClassCastException(ClassCastException e, Object... parameters) {
-		//note: we can detect acceptable types by parsing of e.getMessage()
-		//spoon.support.reflect.reference.CtTypeReferenceImpl cannot be cast to spoon.reflect.declaration.CtClass
-		if (Launcher.LOGGER.isTraceEnabled()) {
-			Launcher.LOGGER.trace("Input ignored", e);
-		} else {
-			reportInputIgnored(e.getMessage(), parameters);
+	/**
+	 * Is used to log that invocation was not processed 
+	 * @param e
+	 * @param parameters
+	 */
+	protected void onClassCastException(ClassCastException e, Object... parameters) {
+		if (Launcher.LOGGER.isDebugEnabled()) {
+			reportInputIgnored(e.getMessage(), e, parameters);
 		}
 	}
 
-	public void reportInputIgnored(String message, Object... parameters) {
+	/**
+	 * Is used to log that invocation was not processed 
+	 * @param message
+	 * @param e
+	 * @param parameters
+	 */
+	protected void reportInputIgnored(String message, Throwable e, Object... parameters) {
 		if (Launcher.LOGGER.isDebugEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Input [");
@@ -145,7 +186,12 @@ public class SafeInvoker<T> {
 				sb.append(parameters[i]);
 			}
 			sb.append("] ignored because ").append(message);
-			Launcher.LOGGER.debug(sb.toString());
+			if (Launcher.LOGGER.isTraceEnabled() && e != null) {
+				Launcher.LOGGER.trace(sb.toString(), e);
+			} else {
+				Launcher.LOGGER.debug(sb.toString());
+			}
+			
 		}
 	}
 }

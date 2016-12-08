@@ -17,7 +17,14 @@
 package spoon.reflect.visitor.chain;
 
 import spoon.support.util.SafeInvoker;
-
+/**
+ * {@link QueryStep} which uses a {@link ChainableFunction} as a mapping function.<br><br>
+ *
+ * If the type of QueryStep input is not assignable to type of the first input parameter of the function
+ * then such input is silently ignored
+ *
+ * @param <O> the type of the element produced by this {@link QueryStep}.
+ */
 public class ChainableFunctionQueryStep<O> extends QueryStepImpl<O> {
 
 	private SafeInvoker<ChainableFunction<?, ?>> code = new SafeInvoker<>("apply", 2);
@@ -28,11 +35,13 @@ public class ChainableFunctionQueryStep<O> extends QueryStepImpl<O> {
 
 	@Override
 	public void accept(Object input) {
+		//check that input type can be assigned to TypeX of Function.apply(TypeX element, Consumer c)
 		if (code.isParameterTypeAssignableFrom(input, null)) {
 			try {
 				this.code.invoke(input, getNextConsumer());
 			} catch (ClassCastException e) {
-				code.onClassCastException(e, input);
+				//in case of Lambda expressions, the type of apply method cannot be detected,
+				//so then it fails with CCE. Handle it silently with meaning: "input element does not match. Ignore it"
 			}
 		}
 	}

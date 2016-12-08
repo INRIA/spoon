@@ -16,12 +16,9 @@
  */
 package spoon.reflect.visitor.chain;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.Filter;
-
 /**
  * Functional interface used to accept elements.
- * It is used for example by {@link QueryBuilder} and {@link CtElement#query(Filter)}
+ * It is used for example by {@link QueryStep#forEach(Consumer)}
  *
  * @param <T> - the type of accepted element
  */

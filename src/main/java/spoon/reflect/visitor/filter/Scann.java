@@ -20,7 +20,13 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.chain.ChainableFunction;
 import spoon.reflect.visitor.chain.Consumer;
+import spoon.reflect.visitor.chain.QueryStep;
 
+/**
+ * A scanner which can be used as Query step.
+ * In the Query chain (see {@link QueryStep}) it starts scanning from the QueryStep input element
+ * and sends each visited child elment as output of this QueryStep
+ */
 public class Scann extends CtScanner implements ChainableFunction<CtElement, CtElement> {
 
 	private Consumer<CtElement> output;

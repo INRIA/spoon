@@ -60,6 +60,7 @@ public abstract class Query {
 
 	/**
 	 * Returns all the program elements that match the filter starting from defined rootElement.
+	 * Use {@link CtElement#map(ChainableFunction)} if you want to let Filter automatically decide correct scanning context
 	 *
 	 * @param <E>
 	 * 		the type of the sought program elements
@@ -115,7 +116,7 @@ public abstract class Query {
 	/**
 	 * @return a {@link QueryStep} which maps input to zero one or more output elements which are produced by code
 	 *<br><br>
-	 * Note: Use methods of {@link QueryComposer} implemented by {@link CtElement} to create a query which starts on the element.
+	 * Note: Use methods of {@link QueryComposer} implemented by {@link CtElement} to create a query, which starts on the CtElement.
 	 * This method is utility method to create building parts of the query chain
 	 */
 	public static <P> QueryStep<P> map(ChainableFunction<?, P> code) {
@@ -128,6 +129,7 @@ public abstract class Query {
 	 * <tr><td><b>Return type</b><td><b>Behavior</b>
 	 * <tr><td>{@link Boolean}<td>Sends input to the next step if returned value is true
 	 * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
+	 * <tr><td>{@link Object[]}<td>Sends each item of Array to the next step
 	 * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
 	 * </table><br>
 	 *
@@ -141,7 +143,7 @@ public abstract class Query {
 	}
 
 	/**
-	 * Sends input to the next step if returned value is true
+	 * Sends input to the next step only if returned value is true
 	 *
 	 * @param filter
 	 * @return the create QueryStep, which is now the last step of the query
@@ -150,6 +152,10 @@ public abstract class Query {
 		return new FilterQueryStep<>(filter);
 	}
 
+	/**
+	 * creates a query which scans all children of the input and sends matching children to the output
+	 * The if input element is matching then it is sent to output too.
+	 */
 	public static <T extends CtElement> QueryStep<T> scan(Filter<T> filter) {
 		return map(new Scann()).map(match(filter));
 	}
