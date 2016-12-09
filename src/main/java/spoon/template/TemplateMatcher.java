@@ -177,7 +177,7 @@ public class TemplateMatcher {
 	 * @return the matched elements
 	 */
 	public List<CtElement> find(final CtElement targetRoot) {
-		new CtScanner() {
+		CtScanner scanner = new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
 				if (match(element, templateRoot)) {
@@ -186,13 +186,21 @@ public class TemplateMatcher {
 				}
 				super.scan(element);
 			}
-		}.scan(targetRoot);
+		};
 
+		scanner.scan(templateRoot);
 		if (!finds.contains(templateRoot)) {
 			throw new SpoonException("TemplateMatcher was unable to find itself, it certainly express a problem somewhere in the template.");
-		} else {
+		}
+		finds.clear();
+
+		scanner.scan(targetRoot);
+
+		// This case can occur when we are scanning the entire package for example see TemplateTest#testTemplateMatcherWithWholePackage
+		if (finds.contains(templateRoot)) {
 			finds.remove(templateRoot);
 		}
+
 		return finds;
 	}
 

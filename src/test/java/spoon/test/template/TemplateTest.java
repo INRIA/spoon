@@ -20,8 +20,6 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
-import spoon.test.exceptions.ExceptionTest;
-import spoon.test.template.testclasses.BServiceImpl;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
 
 import java.io.File;
@@ -35,7 +33,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.build;
 
 public class TemplateTest {
 
@@ -284,7 +281,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testTemplateMatcher2() throws Exception {
+	public void testTemplateMatcherWithWholePackage() throws Exception {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/ContextHelper.java");
 		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/BServiceImpl.java");
