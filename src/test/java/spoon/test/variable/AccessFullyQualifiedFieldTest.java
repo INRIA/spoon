@@ -2,10 +2,23 @@ package spoon.test.variable;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.PrettyPrinter;
+import spoon.reflect.visitor.filter.NameFilter;
+import spoon.support.JavaOutputProcessor;
 import spoon.test.main.MainTest;
 import spoon.test.variable.testclasses.Tacos;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -17,75 +30,78 @@ public class AccessFullyQualifiedFieldTest {
 		MainTest.checkAssignmentContracts(factory.Package().getRootPackage());
 	}
 
+	private String buildResourceAndReturnResult(String pathResource, String output) {
+		Launcher spoon = new Launcher();
+		//spoon.setArgs(new String[]{"--with-imports"});
+		spoon.addInputResource(pathResource);
+		spoon.setSourceOutputDirectory(output);
+		spoon.run();
+		PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		return prettyPrinter.getResult();
+	}
+
 	@Test
 	public void testNoFQNWhenShadowedByField() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a field variable
-		Launcher spoon = new Launcher();
-		//spoon.setArgs(new String[]{"--with-imports"});
-		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/BurritosFielded.java");
+
+		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosFielded.java";
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Field/";
-		spoon.setSourceOutputDirectory(output);
-		spoon.run();
+		String result = this.buildResourceAndReturnResult(pathResource, output);
+
+		assertTrue("The java file contain import for Launcher", result.contains("import spoon.Launcher"));
+		assertTrue("The xx variable is attributed with Launcher.SPOONED_CLASSES", result.contains("xx = Launcher.SPOONED_CLASSES"));
 		canBeBuilt(output, 7);
 	}
 
 	@Test
 	public void testNoFQNWhenShadowedByLocalVariable() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		Launcher spoon = new Launcher();
-		//spoon.setArgs(new String[]{"--with-imports"});
-		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/Burritos.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Local/";
-		spoon.setSourceOutputDirectory(output);
-		spoon.run();
+		String pathResource = "src/test/java/spoon/test/variable/testclasses/Burritos.java";
+		String result = this.buildResourceAndReturnResult(pathResource, output);
+
+		assertTrue("The java file contain import for Launcher", result.contains("import spoon.Launcher"));
+		assertTrue("The x variable is attributed with Launcher.SPOONED_CLASSES", result.contains("x = Launcher.SPOONED_CLASSES"));
+		assertTrue("The java.util.Map is not imported", !result.contains("import java.util.Map"));
+		assertTrue("The Map type use FQN", result.contains("java.util.Map uneMap"));
+		assertTrue("The other variable use FQN too", result.contains("spoon.test.variable.testclasses.ForStaticVariables.Map"));
 		canBeBuilt(output, 7);
 	}
 
 	@Test
 	public void testNoFQNWhenUsedInInnerClassAndShadowedByLocalVariable() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		Launcher spoon = new Launcher();
-		//spoon.setArgs(new String[]{"--with-imports"});
-		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/BurritosStaticMethod.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-StaticMethod/";
-		spoon.setSourceOutputDirectory(output);
-		spoon.run();
+		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosStaticMethod.java";
+		String result = this.buildResourceAndReturnResult(pathResource, output);
+
+		assertTrue("The inner class should contain call using import", result.contains(" BurritosStaticMethod.toto();"));
 		canBeBuilt(output, 7);
 	}
 
 	@Test
 	public void testNoFQNWhenUsedInTryCatch() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		Launcher spoon = new Launcher();
-		//spoon.setArgs(new String[]{"--with-imports"});
-		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/BurritosWithTryCatch.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-TryCatch/";
-		spoon.setSourceOutputDirectory(output);
-		spoon.run();
+		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosWithTryCatch.java";
+		String result = this.buildResourceAndReturnResult(pathResource, output);
+		assertTrue("The xx variable is attributed with Launcher.SPOONED_CLASSES", result.contains("xx = Launcher.SPOONED_CLASSES"));
 		canBeBuilt(output, 7);
 	}
 
 	@Test
 	public void testNoFQNWhenUsedInLoop() throws Exception {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		Launcher spoon = new Launcher();
-		//spoon.setArgs(new String[]{"--with-imports"});
-		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/BurritosWithLoop.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Loop/";
-		spoon.setSourceOutputDirectory(output);
-		spoon.run();
-		canBeBuilt(output, 7);
-	}
-
-	@Test
-	public void testStaticImportShouldBeDone() throws Exception {
-		// contract: no fully qualified name if top package is shadowed by a local variable
-		Launcher spoon = new Launcher();
-		spoon.setArgs(new String[]{"--with-imports"});
-		spoon.addInputResource("src/test/java/spoon/test/variable/testclasses/MultiBurritos.java");
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Multi/";
-		spoon.setSourceOutputDirectory(output);
-		spoon.run();
+		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosWithLoop.java";
+		String result = this.buildResourceAndReturnResult(pathResource, output);
+		assertTrue("The xx variable is attributed with Launcher.SPOONED_CLASSES", result.contains("xx = Launcher.SPOONED_CLASSES"));
 		canBeBuilt(output, 7);
 	}
 

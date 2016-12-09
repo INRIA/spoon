@@ -22,6 +22,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DerivedProperty;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -299,9 +300,30 @@ public class APITest {
 			public boolean matches(CtMethod<?> element) {
 				boolean isSetter = isSetterMethod(element);
 				boolean isNotSubType = !isSubTypeOfCollection(element);
+				// setter with unsettableProperty should not respect the contract, as well as derived properties
 				boolean doesNotHaveUnsettableAnnotation = doesNotHaveUnsettableAnnotation(element);
+				boolean isNotSetterForADerivedProperty = isNotSetterForADerivedProperty(element);
 				boolean superMatch = super.matches(element);
-				return isSetter && doesNotHaveUnsettableAnnotation && isNotSubType && superMatch;
+				return isSetter && doesNotHaveUnsettableAnnotation && isNotSetterForADerivedProperty && isNotSubType && superMatch;
+			}
+
+			private boolean isNotSetterForADerivedProperty(CtMethod<?> method) {
+				String methodName = method.getSimpleName();
+				String getterName = methodName.replace("set","get");
+
+				if (getterName.equals(methodName)) {
+					return false;
+				}
+
+				CtClass<?> zeClass = (CtClass)method.getParent();
+				List<CtMethod<?>> getterMethods = zeClass.getMethodsByName(getterName);
+
+				if (getterMethods.size() != 1) {
+					return false;
+				}
+				CtMethod<?> getterMethod = getterMethods.get(0);
+
+				return (getterMethod.getAnnotation(DerivedProperty.class) == null);
 			}
 
 			private boolean doesNotHaveUnsettableAnnotation(CtMethod<?> element) {
@@ -330,9 +352,9 @@ public class APITest {
 				final CtTypeReference<?> typeParameter = parameters.get(0).getType();
 				final CtTypeReference<CtElement> ctElementRef = element.getFactory().Type().createReference(CtElement.class);
 
+				// isSubtypeOf will return true in case of equality
 				boolean isSubtypeof = typeParameter.isSubtypeOf(ctElementRef);
-				boolean isEquals = typeParameter.equals(ctElementRef);
-				if (!isSubtypeof && !isEquals) {
+				if (!isSubtypeof) {
 					return false;
 				}
 				return element.getSimpleName().startsWith("set") && element.getDeclaringType().getSimpleName().startsWith("Ct") && element.getBody() != null;
@@ -370,6 +392,8 @@ public class APITest {
 		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getStatement(0);
 
 		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
+		assertTrue("Number of setters found null", setters.size() > 0);
+
 		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
 
 			// First statement should be a condition to protect the setter of the parent.

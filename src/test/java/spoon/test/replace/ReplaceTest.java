@@ -252,7 +252,7 @@ public class ReplaceTest {
 	public void testReplaceAllTypeRefenceWithGenerics() throws Exception {
 		// contract: replace all type references with a generic to the same type reference without generics.
 		final Factory factory = build(Tacos.class);
-		final List<CtTypeReference> references = Query.getReferences(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
+		final List<CtTypeReference> references = Query.getElements(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
 				return reference.getActualTypeArguments().size() > 0 && super.matches(reference);
@@ -280,7 +280,7 @@ public class ReplaceTest {
 
 		final CtType<Object> panini = launcher.getFactory().Type().get("Panini");
 
-		final CtTypeReference<?> burritos = panini.getReferences(new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
+		final CtTypeReference<?> burritos = panini.getElements(new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference<?> reference) {
 				return "Burritos".equals(reference.getSimpleName()) && super.matches(reference);

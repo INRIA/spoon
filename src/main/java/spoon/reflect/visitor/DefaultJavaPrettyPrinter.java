@@ -110,7 +110,6 @@ import spoon.reflect.visitor.printer.PrinterHelper;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -179,7 +178,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
 		} else {
-			this.importsContext = new ImportScannerWithoutAllImports();
+			this.importsContext = new MinimalImportScanner();
 		}
 	}
 
@@ -237,7 +236,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Make the imports for all elements.
 	 */
 	public void computeImports(CtElement element) {
-		importsContext.computeImports(element);
+		if (env.isAutoImports()) {
+			importsContext.computeImports(element);
+		}
 	}
 
 	/**

@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor;
 
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
@@ -117,6 +118,11 @@ public class SignaturePrinter extends CtScanner {
 			clearLast();
 		}
 		write(")");
+	}
+
+	@Override
+	public <T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod) {
+		visitCtMethod(annotationMethod);
 	}
 
 	/**

@@ -108,7 +108,7 @@ public class TypeReferenceTest {
 		// now we retrieve the reference to ReferencedClass
 		CtTypeReference referencedType = null;
 		ReferenceTypeFilter<CtTypeReference> referenceTypeFilter = new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class);
-		List<CtTypeReference> elements = Query.getReferences(theClass, referenceTypeFilter);
+		List<CtTypeReference> elements = Query.getElements(theClass, referenceTypeFilter);
 		for (CtTypeReference reference : elements) {
 			if (reference.getQualifiedName().equals(referencedQualifiedName)) {
 				referencedType = reference;

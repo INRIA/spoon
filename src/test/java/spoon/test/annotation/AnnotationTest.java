@@ -33,6 +33,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -56,6 +57,7 @@ import spoon.test.annotation.testclasses.Main;
 import spoon.test.annotation.testclasses.SuperAnnotation;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
+import spoon.test.annotation.testclasses.PortRange;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -829,6 +831,25 @@ public class AnnotationTest {
 		assertEquals(2, aTypeAnnotation.getMethods().size());
 	}
 
+	@Test
+	public void testAnnotationInterfacePreserveMethods() throws Exception {
+		final CtAnnotationType<?> ctAnnotationType = (CtAnnotationType<?>) this.factory.Type().get(PortRange.class);
+		List<CtMethod<?>> ctMethodMin = ctAnnotationType.getMethodsByName("min");
+		assertEquals("Method min is preserved after transformation", 1, ctMethodMin.size());
+
+		List<CtMethod<?>> ctMethodMax = ctAnnotationType.getMethodsByName("max");
+		assertEquals("Method max is preserved after transformation", 1, ctMethodMax.size());
+
+		List<CtMethod<?>> ctMethodMessage = ctAnnotationType.getMethodsByName("message");
+		assertEquals("Method message is preserved after transformation", 1, ctMethodMessage.size());
+
+		List<CtMethod<?>> ctMethodGroups = ctAnnotationType.getMethodsByName("groups");
+		assertEquals("Method groups is preserved after transformation", 1, ctMethodGroups.size());
+
+		List<CtMethod<?>> ctMethodPayload = ctAnnotationType.getMethodsByName("payload");
+		assertEquals("Method payload is preserved after transformation", 1, ctMethodPayload.size());
+	}
+
 	abstract class AbstractElementsProcessor<A extends Annotation, E extends CtElement>
 			extends AbstractAnnotationProcessor<A, E> {
 		final List<CtElement> elements = new ArrayList<>();
@@ -875,5 +896,35 @@ public class AnnotationTest {
 
 	private CtAnnotation<?> getMiddleAnnotation(CtNewArray<?> arrayAnnotations, int index) {
 		return (CtAnnotation<?>) arrayAnnotations.getElements().get(index);
+	}
+
+	@Test
+	public void testSpoonSpoonResult() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/dropwizard/GraphiteReporterFactory.java");
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-firstspoon/";
+		spoon.setSourceOutputDirectory(output);
+		factory = spoon.getFactory();
+		spoon.run();
+
+		Launcher spoon2 = new Launcher();
+		spoon2.addInputResource(output+"/spoon/test/annotation/testclasses/dropwizard/GraphiteReporterFactory.java");
+		//spoon2.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PortRange.java");
+		spoon2.buildModel();
+
+		List<CtMethod<?>> methods = spoon2.getModel().getElements(new NameFilter<CtMethod<?>>("getPort"));
+
+		assertEquals("Number of method getPort should be 1", 1, methods.size());
+
+		CtMethod getport = methods.get(0);
+		CtTypeReference returnType = getport.getType();
+
+		List<CtAnnotation<?>> annotations = returnType.getAnnotations();
+
+		assertEquals("Number of annotation for return type of method getPort should be 1", 1, annotations.size());
+
+		CtAnnotation annotation = annotations.get(0);
+
+		assertEquals("Annotation should be @spoon.test.annotation.testclasses.PortRange", "spoon.test.annotation.testclasses.PortRange", annotation.getAnnotationType().getQualifiedName());
 	}
 }
