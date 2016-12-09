@@ -153,7 +153,9 @@ public class ParentExiter extends CtInheritanceScanner {
 			for (CtTypeReference<? extends java.lang.annotation.Annotation> annotation : annotations) {
 				final CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = ele.getAnnotation(annotation);
 				ele.removeAnnotation(targetAnnotation);
-				ele.getType().addAnnotation(targetAnnotation);
+				if (!ele.getType().getAnnotations().contains(targetAnnotation)) {
+					ele.getType().addAnnotation(targetAnnotation);
+				}
 			}
 			annotationsMap.remove(ele);
 		}
