@@ -17,6 +17,7 @@
 package spoon.template;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
@@ -187,6 +188,11 @@ public class TemplateMatcher {
 			}
 		}.scan(targetRoot);
 
+		if (!finds.contains(templateRoot)) {
+			throw new SpoonException("TemplateMatcher was unable to find itself, it certainly express a problem somewhere in the template.");
+		} else {
+			finds.remove(templateRoot);
+		}
 		return finds;
 	}
 

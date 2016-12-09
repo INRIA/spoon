@@ -3,6 +3,7 @@ package spoon.test.template;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -20,6 +21,7 @@ import spoon.support.template.Parameters;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.test.exceptions.ExceptionTest;
+import spoon.test.template.testclasses.BServiceImpl;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
 
 import java.io.File;
@@ -300,6 +302,30 @@ public class TemplateTest {
 		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
 
 		assertEquals(1, matches.size());
+
+		CtElement match = matches.get(0);
+
+		assertTrue("Match is not a if", match instanceof CtIf);
+
+		CtElement matchParent = match.getParent();
+
+		assertTrue("Match parent is not a block", matchParent instanceof CtBlock);
+
+		CtElement matchParentParent = matchParent.getParent();
+
+		assertTrue("Match grand parent is not a method", matchParentParent instanceof CtMethod);
+
+		CtMethod methodHello = (CtMethod)matchParentParent;
+
+		assertEquals("Match grand parent is not a method called hello", "hello", methodHello.getSimpleName());
+
+		CtElement methodParent = methodHello.getParent();
+
+		assertTrue("Parent of the method is not a class",methodParent instanceof CtClass);
+
+		CtClass bservice = (CtClass) methodParent;
+
+		assertEquals("Parent of the method is not a class called BServiceImpl", "BServiceImpl", bservice.getSimpleName());
 	}
 
 }
