@@ -190,7 +190,7 @@ public class TemplateMatcher {
 
 		scanner.scan(templateRoot);
 		if (!finds.contains(templateRoot)) {
-			throw new SpoonException("TemplateMatcher was unable to find itself, it certainly express a problem somewhere in the template.");
+			throw new SpoonException("TemplateMatcher was unable to find itself, it certainly indicates a bug. Please revise your template or report an issue.");
 		}
 		finds.clear();
 
