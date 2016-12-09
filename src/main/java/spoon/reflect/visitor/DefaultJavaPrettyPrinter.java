@@ -676,8 +676,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printCtFieldAccess(fieldWrite);
 	}
 
-	private boolean isNotStaticField(CtFieldReference ref) {
-		return !ref.isStatic();
+	private boolean isStaticImportedField(CtFieldReference ref) {
+		if (!ref.isStatic()) {
+			return false;
+		}
+
+		return importsContext.isImported(ref);
 	}
 
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
@@ -687,7 +691,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				_context.ignoreGenerics(true);
 			}
 			if (f.getTarget() != null) {
-				if (!isInitializeStaticFinalField(f.getTarget()) && isNotStaticField(f.getVariable())) {
+				if (!isInitializeStaticFinalField(f.getTarget()) && !isStaticImportedField(f.getVariable())) {
 					scan(f.getTarget());
 					if (!f.getTarget().isImplicit()) {
 						printer.write(".");

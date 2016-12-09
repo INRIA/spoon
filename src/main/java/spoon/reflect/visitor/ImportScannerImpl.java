@@ -348,6 +348,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 
 		methodImports.put(ref.getSimpleName(), ref);
+		addClassImport(ref.getDeclaringType());
 		return true;
 	}
 
@@ -377,6 +378,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				return true;
 			}
 		}
+		CtTypeReference typeRef = ref.getDeclaringType();
+
+		if (typeRef != null) {
+			return isImportedInClassImports(typeRef);
+		}
+
 		return false;
 	}
 
