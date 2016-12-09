@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtInvocation;
@@ -29,6 +30,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -326,6 +328,41 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
 			return false;
 		}
+
+		// we want to be sure that we are not importing a class because a static field or method we already imported
+		// moreover we make exception for same package classes to avoid problems in FQN mode
+		try {
+			CtElement parent = ref.getParent();
+			if (parent != null) {
+				parent = parent.getParent();
+				if (parent != null) {
+					if ((parent instanceof CtFieldAccess) || (parent instanceof CtExecutable)) {
+						CtReference reference;
+
+						if (parent instanceof CtFieldAccess) {
+							CtFieldAccess field = (CtFieldAccess)parent;
+							reference = field.getVariable();
+						} else {
+							CtExecutable exec = (CtExecutable)parent;
+							reference = exec.getReference();
+						}
+
+						if (isImported(reference)) {
+							if (ref.getDeclaringType() != null) {
+								if (!ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
+									return false;
+								}
+							} else {
+								return false;
+							}
+						}
+					}
+				}
+			}
+		} catch (ParentNotInitializedException e) {
+		}
+
+
 		//note: we must add the type refs from the same package too, to assure that isImported(typeRef) returns true for them
 		//these type refs are removed in #getClassImports()
 		classImports.put(ref.getSimpleName(), ref);
@@ -347,8 +384,17 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return isImportedInMethodImports(ref);
 		}
 
+		// if the whole class is imported: no need to import the method.
+		if (isImportedInClassImports(ref.getDeclaringType())) {
+			return false;
+		}
+
 		methodImports.put(ref.getSimpleName(), ref);
-		addClassImport(ref.getDeclaringType());
+
+		// if we are in the same package than target type, we also import class to avoid FQN in FQN mode.
+		if (ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
+			addClassImport(ref.getDeclaringType());
+		}
 		return true;
 	}
 
