@@ -24,6 +24,7 @@ public class MultiBurritos {
 				MultiBurritos.toto();
 				MultiBurritos.spoon = "truc";
 				foo();
+
 			}
 		});
 	}

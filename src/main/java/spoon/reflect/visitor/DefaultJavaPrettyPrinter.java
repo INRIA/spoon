@@ -143,7 +143,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public PrintingContext context = new PrintingContext();
 
 	/**
-	 * Handle imports of classes.
+	 * Handle classImports of classes.
 	 */
 	private ImportScanner importsContext;
 
@@ -225,15 +225,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * Make the imports for a given type.
+	 * Make the classImports for a given type.
 	 */
-	public Collection<CtTypeReference<?>> computeImports(CtType<?> type) {
+	public Collection<CtReference> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
 		return importsContext.computeImports(context.currentTopLevel);
 	}
 
 	/**
-	 * Make the imports for all elements.
+	 * Make the classImports for all elements.
 	 */
 	public void computeImports(CtElement element) {
 		if (env.isAutoImports()) {
@@ -676,6 +676,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printCtFieldAccess(fieldWrite);
 	}
 
+	private boolean isNotStaticField(CtFieldReference ref) {
+		return !ref.isStatic();
+	}
+
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
 		try (Writable _context = context.modify()) {
@@ -683,7 +687,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				_context.ignoreGenerics(true);
 			}
 			if (f.getTarget() != null) {
-				if (!isInitializeStaticFinalField(f.getTarget())) {
+				if (!isInitializeStaticFinalField(f.getTarget()) && isNotStaticField(f.getVariable())) {
 					scan(f.getTarget());
 					if (!f.getTarget().isImplicit()) {
 						printer.write(".");
@@ -1715,7 +1719,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
-		Set<CtTypeReference<?>> imports = new HashSet<>();
+		Set<CtReference> imports = new HashSet<>();
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}

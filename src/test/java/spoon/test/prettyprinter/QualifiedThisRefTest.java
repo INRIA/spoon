@@ -13,6 +13,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -50,7 +51,7 @@ public class QualifiedThisRefTest {
 	public void testQualifiedThisRef() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 		CtType<?> ctClass = factory.Type().get(QualifiedThisRef.class);
-		Collection<CtTypeReference<?>> imports = printer.computeImports(ctClass);
+		Collection<CtReference> imports = printer.computeImports(ctClass);
 		final List<CtType<?>> ctTypes = new ArrayList<>();
 		ctTypes.add(ctClass);
 		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);

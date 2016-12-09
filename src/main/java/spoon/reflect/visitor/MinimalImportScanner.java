@@ -93,11 +93,11 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	}
 
 	@Override
-	protected boolean addImport(CtTypeReference<?> ref) {
+	protected boolean addClassImport(CtTypeReference<?> ref) {
 		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
 
 		if (shouldTypeBeImported) {
-			return super.addImport(ref);
+			return super.addClassImport(ref);
 		} else {
 			return false;
 		}

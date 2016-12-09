@@ -32,7 +32,7 @@ public class AccessFullyQualifiedFieldTest {
 
 	private String buildResourceAndReturnResult(String pathResource, String output) {
 		Launcher spoon = new Launcher();
-		//spoon.setArgs(new String[]{"--with-imports"});
+		//spoon.setArgs(new String[]{"--with-classImports"});
 		spoon.addInputResource(pathResource);
 		spoon.setSourceOutputDirectory(output);
 		spoon.run();
@@ -111,7 +111,7 @@ public class AccessFullyQualifiedFieldTest {
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/MultiBurritos.java";
 
 		Launcher spoon = new Launcher();
-		spoon.setArgs(new String[]{"--with-imports"});
+		spoon.setArgs(new String[]{"--with-classImports"});
 		spoon.addInputResource(pathResource);
 		spoon.setSourceOutputDirectory(output);
 		spoon.run();
@@ -123,8 +123,10 @@ public class AccessFullyQualifiedFieldTest {
 
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = prettyPrinter.getResult();
-		assertTrue("The result does not contain a static import for spoon.Launcher.SPOONED_CLASSES", result.contains("import static spoon.Launcher.SPOONED_CLASSES;"));
-		assertTrue("The result does not contain a static import for spoon.test.variable.testclasses.ForStaticVariables.foo", result.contains("import static spoon.test.variable.testclasses.ForStaticVariables.foo;"));
+		assertTrue("The result should contain a static import for spoon.Launcher.SPOONED_CLASSES", result.contains("import static spoon.Launcher.SPOONED_CLASSES;"));
+		assertTrue("The variable x should be assigned with only SPOONED_CLASSES", result.contains("Object x = SPOONED_CLASSES;"));
+		assertTrue("The result should not contain a static import for spoon.test.variable.testclasses.ForStaticVariables.foo as it is in the same package", !result.contains("import static spoon.test.variable.testclasses.ForStaticVariables.foo;"));
+
 
 		canBeBuilt(output, 7);
 	}
