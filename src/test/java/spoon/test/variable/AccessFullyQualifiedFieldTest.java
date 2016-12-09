@@ -105,4 +105,37 @@ public class AccessFullyQualifiedFieldTest {
 		canBeBuilt(output, 7);
 	}
 
+	@Test
+	public void testStaticImportWithAutoImport() throws Exception {
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Multi/";
+		String pathResource = "src/test/java/spoon/test/variable/testclasses/MultiBurritos.java";
+
+		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[]{"--with-imports"});
+		spoon.addInputResource(pathResource);
+		spoon.setSourceOutputDirectory(output);
+		spoon.run();
+		PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = prettyPrinter.getResult();
+		assertTrue("The result does not contain a static import for spoon.Launcher.SPOONED_CLASSES", result.contains("import static spoon.Launcher.SPOONED_CLASSES;"));
+		assertTrue("The result does not contain a static import for spoon.test.variable.testclasses.ForStaticVariables.foo", result.contains("import static spoon.test.variable.testclasses.ForStaticVariables.foo;"));
+
+		canBeBuilt(output, 7);
+	}
+
+	@Test
+	public void testNoFQNAndStaticImport() throws Exception {
+		// contract: no fully qualified name if top package is shadowed by a local variable
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Multi/";
+		String pathResource = "src/test/java/spoon/test/variable/testclasses/MultiBurritos.java";
+		String result = this.buildResourceAndReturnResult(pathResource, output);
+		canBeBuilt(output, 7);
+	}
+
 }

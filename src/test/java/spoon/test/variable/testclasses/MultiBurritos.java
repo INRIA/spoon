@@ -1,11 +1,9 @@
 package spoon.test.variable.testclasses;
 
-
-import com.sun.org.apache.xpath.internal.operations.Mult;
-
 import java.util.List;
 
 import static spoon.Launcher.SPOONED_CLASSES;
+import static spoon.test.variable.testclasses.ForStaticVariables.foo;
 
 public class MultiBurritos {
 	static Object spoon = "bla";
@@ -13,7 +11,7 @@ public class MultiBurritos {
 
 	static void toto() {}
 
-	void foo() {
+	void bar() {
 		Object spoon = null;
 		Object x = SPOONED_CLASSES; // cannot be written spoon.o, has to be with implicit visibility or static import
 		Launcher.isEmpty();
@@ -25,6 +23,7 @@ public class MultiBurritos {
 			public void run() {
 				MultiBurritos.toto();
 				MultiBurritos.spoon = "truc";
+				foo();
 			}
 		});
 	}

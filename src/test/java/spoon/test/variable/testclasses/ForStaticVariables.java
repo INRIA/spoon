@@ -16,4 +16,8 @@ package spoon.test.variable.testclasses;
  */
 public class ForStaticVariables {
     public static String Map = "BLA";
+
+    public static void foo() {
+    }
+
 }
