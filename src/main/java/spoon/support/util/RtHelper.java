@@ -16,7 +16,6 @@
  */
 package spoon.support.util;
 
-import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -197,18 +196,14 @@ public abstract class RtHelper {
 	 */
 	public static Method getMethod(Class<?> clazz, String methodName, int numParams) {
 		Method[] methods = clazz.getMethods();
-		Method m = null;
 		for (Method method : methods) {
 			if (method.getName().equals(methodName)) {
 				Class<?>[] params = method.getParameterTypes();
 				if (params.length == numParams) {
-					if (m != null) {
-						throw new SpoonException("There exists more then one method " + methodName + " with " + String.valueOf(numParams) + " parameter(s) on the class " + clazz.getName());
-					}
-					m = method;
+					return method;
 				}
 			}
 		}
-		return m;
+		return null;
 	}
 }
