@@ -37,6 +37,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -264,13 +265,15 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		List<CtExecutableReference<?>> refs = new ArrayList<>();
 		for (CtExecutableReference<?> ref : methodImports.values()) {
 			// ignore non-top-level type
-			if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
-				// ignore java.lang package
-				if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
-					// ignore type in same package
-					if (!ref.getDeclaringType().getPackage().getSimpleName()
-							.equals(pack.getSimpleName())) {
-						refs.add(ref);
+			if (ref.getDeclaringType() != null) {
+				if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
+					// ignore java.lang package
+					if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
+						// ignore type in same package
+						if (!ref.getDeclaringType().getPackage().getSimpleName()
+								.equals(pack.getSimpleName())) {
+							refs.add(ref);
+						}
 					}
 				}
 			}
@@ -385,15 +388,19 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 
 		// if the whole class is imported: no need to import the method.
-		if (isImportedInClassImports(ref.getDeclaringType())) {
+		if (ref.getDeclaringType() != null && isImportedInClassImports(ref.getDeclaringType())) {
 			return false;
 		}
 
 		methodImports.put(ref.getSimpleName(), ref);
 
 		// if we are in the same package than target type, we also import class to avoid FQN in FQN mode.
-		if (ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
-			addClassImport(ref.getDeclaringType());
+		if (ref.getDeclaringType() != null) {
+			if (ref.getDeclaringType().getPackage() != null) {
+				if (ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
+					addClassImport(ref.getDeclaringType());
+				}
+			}
 		}
 		return true;
 	}
@@ -420,9 +427,15 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private boolean isImportedInFieldImports(CtFieldReference<?> ref) {
 		if (!(ref.isImplicit()) && fieldImports.containsKey(ref.getSimpleName())) {
 			CtFieldReference<?> exist = fieldImports.get(ref.getSimpleName());
-			if (exist.getFieldDeclaration().equals(ref.getFieldDeclaration())) {
-				return true;
+			try {
+				if (exist.getFieldDeclaration() != null && exist.getFieldDeclaration().equals(ref.getFieldDeclaration())) {
+					return true;
+				}
+			// in some rare cases we could not access to the field, then we do not import it.
+			} catch (SpoonClassNotFoundException notfound) {
+				return false;
 			}
+
 		}
 		CtTypeReference typeRef = ref.getDeclaringType();
 
