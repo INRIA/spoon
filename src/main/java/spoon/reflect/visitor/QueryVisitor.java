@@ -27,7 +27,9 @@ import spoon.support.util.RtHelper;
 /**
  * A simple visitor that takes a filter and returns all the elements that match
  * it.
+ * @deprecated use {@link Query#scan(Filter)} instead.
  */
+@Deprecated
 public class QueryVisitor<T extends CtElement> extends CtScanner {
 	private final Filter<T> filter;
 	private final Class<T> filteredType;

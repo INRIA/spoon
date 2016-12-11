@@ -71,9 +71,7 @@ public abstract class Query {
 	 */
 	public static <E extends CtElement> List<E> getElements(
 			CtElement rootElement, Filter<E> filter) {
-		QueryVisitor<E> visitor = new QueryVisitor<>(filter);
-		visitor.scan(rootElement);
-		return visitor.getResult();
+		return rootElement.scan(filter).list();
 	}
 
 	/**

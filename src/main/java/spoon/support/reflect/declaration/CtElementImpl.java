@@ -255,7 +255,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
-		return Query.getElements(this, filter);
+		return scan(filter).list();
 	}
 
 	@Override
