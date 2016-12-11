@@ -537,6 +537,7 @@ public class FilterTest {
 			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration())
+			.setLogging(true)
 			.forEach((CtInterface<?> c)->{
 				assertEquals("ITostada", c.getSimpleName());
 				context.count++;
@@ -568,5 +569,8 @@ public class FilterTest {
 			});
 		assertTrue(context.count==1);
 		assertTrue(context.totalCount>1);
+		
 	}
+	
+	
 }

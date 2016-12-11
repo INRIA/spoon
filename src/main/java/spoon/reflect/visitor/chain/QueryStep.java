@@ -83,4 +83,17 @@ public interface QueryStep<O> extends QueryComposer, Consumer<Object> {
 	 * @param output
 	 */
 	<T, R> void apply(T input, Consumer<R> output);
+
+	/**
+	 * @return true if logging is enabled for this query chain
+	 */
+	boolean isLogging();
+	/**
+	 * Enable/disable logging for this query chain.
+	 *
+	 * Note: it is not possible to enable logging of all queries globally by Launcher.LOGGER.isDebugEnabled()
+	 * because it causes StackOverflow.
+	 * Reason: Query chains are used internally during writing of log messages too. So it would write logs for ever...
+	 */
+	QueryStep<O> setLogging(boolean logging);
 }

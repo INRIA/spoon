@@ -88,4 +88,10 @@ public class FunctionQueryStep<O> extends QueryStepImpl<O> {
 			fireNext((O) result);
 		}
 	}
+
+	@Override
+	public QueryStep<O> setLogging(boolean logging) {
+		code.setLogging(logging);
+		return super.setLogging(logging);
+	}
 }

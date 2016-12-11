@@ -36,6 +36,7 @@ public class SafeInvoker<T> {
 	private Class<?>[] paramTypes;
 	private Method method;
 	private int numParams;
+	private boolean logging;
 
 	/**
 	 * @param methodName - the name of the method, which will be invoked on the delegate object
@@ -153,7 +154,7 @@ public class SafeInvoker<T> {
 	 * @param parameters
 	 */
 	protected void reportInputIgnored(int incompatibleParamIdx, Object[] parameters) {
-		if (Launcher.LOGGER.isDebugEnabled()) {
+		if (isLogging()) {
 			reportInputIgnored(parameters[incompatibleParamIdx].getClass().getName() + " cannot be cast to " + paramTypes[incompatibleParamIdx].getName(), null, parameters);
 		}
 	}
@@ -164,7 +165,7 @@ public class SafeInvoker<T> {
 	 * @param parameters
 	 */
 	protected void onClassCastException(ClassCastException e, Object... parameters) {
-		if (Launcher.LOGGER.isDebugEnabled()) {
+		if (isLogging()) {
 			reportInputIgnored(e.getMessage(), e, parameters);
 		}
 	}
@@ -176,7 +177,7 @@ public class SafeInvoker<T> {
 	 * @param parameters
 	 */
 	protected void reportInputIgnored(String message, Throwable e, Object... parameters) {
-		if (Launcher.LOGGER.isDebugEnabled()) {
+		if (isLogging()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Input [");
 			for (int i = 0; i < parameters.length; i++) {
@@ -192,5 +193,13 @@ public class SafeInvoker<T> {
 				Launcher.LOGGER.debug(sb.toString());
 			}
 		}
+	}
+
+	public boolean isLogging() {
+		return logging;
+	}
+
+	public void setLogging(boolean logging) {
+		this.logging = logging;
 	}
 }

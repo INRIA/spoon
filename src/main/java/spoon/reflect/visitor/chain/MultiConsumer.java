@@ -76,4 +76,9 @@ public class MultiConsumer<T> implements Consumer<T> {
 		consumers.remove(consumer);
 		return this;
 	}
+
+	public MultiConsumer<T> setLogging(boolean logging) {
+		invoke_accept.setLogging(logging);
+		return this;
+	}
 }

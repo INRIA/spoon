@@ -55,4 +55,10 @@ public class FilterQueryStep<O extends CtElement> extends QueryStepImpl<O> {
 			fireNext((O) input);
 		}
 	}
+	
+	@Override
+	public QueryStep<O> setLogging(boolean logging) {
+		code.setLogging(logging);
+		return super.setLogging(logging);
+	}
 }

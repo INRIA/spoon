@@ -33,6 +33,7 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 
 	private QueryStep<Object> prev;
 	private MultiConsumer<Object> next = new MultiConsumer<>();
+	private boolean logging = false;
 
 	protected QueryStepImpl() {
 	}
@@ -103,7 +104,7 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 	 * @return a consumer which can be used to send element to all registered consumers of this step
 	 */
 	protected Consumer<Object> getNextConsumer() {
-		if (Launcher.LOGGER.isDebugEnabled()) {
+		if (isLogging()) {
 			//if logging is enabled then we provide a consumer which logs each produced element
 			return new Consumer<Object>() {
 				@Override
@@ -170,5 +171,25 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 		} finally {
 			remove((Consumer<Object>) output);
 		}
+	}
+
+	public boolean isLogging() {
+		QueryStep<Object> first = getFirstStep();
+		if (first == this) {
+			return this.logging;
+		} else {
+			return first.isLogging();
+		}
+	}
+
+	public QueryStep<O> setLogging(boolean logging) {
+		QueryStep<Object> prev = getPrev();
+		if (prev == null) {
+			this.logging = logging;
+		} else {
+			prev.setLogging(logging);
+		}
+		next.setLogging(logging);
+		return this;
 	}
 }

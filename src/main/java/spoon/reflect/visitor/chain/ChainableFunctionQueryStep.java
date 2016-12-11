@@ -45,4 +45,10 @@ public class ChainableFunctionQueryStep<O> extends QueryStepImpl<O> {
 			}
 		}
 	}
+
+	@Override
+	public QueryStep<O> setLogging(boolean logging) {
+		code.setLogging(logging);
+		return super.setLogging(logging);
+	}
 }
