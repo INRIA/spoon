@@ -269,11 +269,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <R> QueryStep<R> map(QueryStep<R> queryStep) {
-		return new StartQueryStep<CtElement>(this).map(queryStep);
-	}
-
-	@Override
 	public <P extends CtElement> QueryStep<P> scan(Filter<P> predicate) {
 		return new StartQueryStep<CtElement>(this).scan(predicate);
 	}

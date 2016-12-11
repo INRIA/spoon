@@ -51,7 +51,7 @@ import spoon.reflect.visitor.Query;
  *
  * @param <O> the type of the element produced by this QueryStep
  */
-public interface QueryStep<O> extends CtQueryable, Consumer<Object> {
+public interface QueryStep<O> extends CtQueryable, Consumer<Object>, ChainableFunction<Object, O> {
 
 	/**
 	 * @return previous step of the query or null if this step is the first one
@@ -82,7 +82,8 @@ public interface QueryStep<O> extends CtQueryable, Consumer<Object> {
 	 * @param input
 	 * @param output
 	 */
-	<T, R> void apply(T input, Consumer<R> output);
+	@Override
+	void apply(Object input, Consumer<O> output);
 
 	/**
 	 * @return true if logging is enabled for this query chain

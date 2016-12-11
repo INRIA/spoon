@@ -117,7 +117,12 @@ public abstract class Query {
 	 * Note: Use methods of {@link CtQueryable} implemented by {@link CtElement} to create a query, which starts on the CtElement.
 	 * This method is utility method to create building parts of the query chain
 	 */
+	@SuppressWarnings("unchecked")
 	public static <P> QueryStep<P> map(ChainableFunction<?, P> code) {
+		if (code instanceof QueryStep) {
+			//the code is already a QueryStep. Just return it. Do not add useless wrapper.
+			return (QueryStep<P>) code;
+		}
 		return new ChainableFunctionQueryStep<P>(code);
 	}
 

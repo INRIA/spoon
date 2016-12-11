@@ -27,15 +27,6 @@ import spoon.reflect.visitor.Filter;
 public interface CtQueryable {
 
 	/**
-	 * Appends queryStep to the current (last) step of the query
-	 * and returns queryStep, which was entered. It is now the last query step
-	 *
-	 * @param queryStep
-	 * @return the entered queryStep, which is now the last step of the query
-	 */
-	<R> QueryStep<R> map(QueryStep<R> queryStep);
-
-	/**
 	 * Creates a new QueryStep, which will call code
 	 * whenever this QueryStep produces an element.
 	 * The produced element is sent to code.apply(input, consumer)

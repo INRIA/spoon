@@ -23,7 +23,6 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.Scann;
 
 /**
  * Contains the default implementation of the generic {@link QueryStep} methods
@@ -54,26 +53,32 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <R> QueryStep<R> map(QueryStep<R> queryStep) {
-		((QueryStepImpl<R>) queryStep).prev = (QueryStep<Object>) this;
-		add(queryStep);
-		return queryStep;
-	}
-
-	@Override
 	public <P> QueryStep<P> map(ChainableFunction<?, P> code) {
-		return map(Query.map(code));
+		return addQueryStep(Query.map(code));
 	}
 
 	@Override
 	public <I, R> QueryStep<R> map(Function<I, R> code) {
-		return map(Query.map(code));
+		return addQueryStep(Query.map(code));
 	}
 
 	@Override
 	public <P extends CtElement> QueryStep<P> scan(Filter<P> filter) {
-		return map(new Scann()).map(Query.match(filter));
+		return addQueryStep(Query.scan(filter));
+	}
+
+	/**
+	 * appends the first step of queryStep as last step of self
+	 * and return queryStep, which is now the last step of the query chain
+	 */
+	@SuppressWarnings("unchecked")
+	protected <R> QueryStep<R> addQueryStep(QueryStep<R> queryStep) {
+		//add first QueryStep of the provided chain to the last step of self
+		QueryStep<Object> first = queryStep.getFirstStep();
+		((QueryStepImpl<R>) first).prev = (QueryStep<Object>) this;
+		add(first);
+		//return last step of queryStep as last step of this chain
+		return queryStep;
 	}
 
 	/**
@@ -154,17 +159,15 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <R> void forEach(Consumer<R> consumer) {
-		add((Consumer<Object>) consumer);
-		try {
-			getFirstStep().accept(null);
-		} finally {
-			remove((Consumer<Object>) consumer);
-		}
+		apply(null, (Consumer<O>) consumer);
 	}
+
+	@Override
+	public abstract void accept(Object t);
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, R> void apply(T input, Consumer<R> output) {
+	public void apply(Object input, Consumer<O> output) {
 		add((Consumer<Object>) output);
 		try {
 			getFirstStep().accept(input);
