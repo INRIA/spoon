@@ -26,7 +26,7 @@ import spoon.reflect.visitor.chain.ChainableFunctionQueryStep;
 import spoon.reflect.visitor.chain.Function;
 import spoon.reflect.visitor.chain.FunctionQueryStep;
 import spoon.reflect.visitor.chain.FilterQueryStep;
-import spoon.reflect.visitor.chain.QueryComposer;
+import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.reflect.visitor.chain.QueryStep;
 import spoon.reflect.visitor.filter.Scann;
 
@@ -114,7 +114,7 @@ public abstract class Query {
 	/**
 	 * @return a {@link QueryStep} which maps input to zero one or more output elements which are produced by code
 	 *<br><br>
-	 * Note: Use methods of {@link QueryComposer} implemented by {@link CtElement} to create a query, which starts on the CtElement.
+	 * Note: Use methods of {@link CtQueryable} implemented by {@link CtElement} to create a query, which starts on the CtElement.
 	 * This method is utility method to create building parts of the query chain
 	 */
 	public static <P> QueryStep<P> map(ChainableFunction<?, P> code) {
@@ -133,7 +133,7 @@ public abstract class Query {
 	 *
 	 * @param code a Function with one parameter of type I returning value of type R
 	 *<br><br>
-	 * Note: Use methods of {@link QueryComposer} implemented by {@link CtElement} to create a query which starts on the element.
+	 * Note: Use methods of {@link CtQueryable} implemented by {@link CtElement} to create a query which starts on the element.
 	 * This method is utility method to create building parts of the query chain
 	 */
 	public static <I, R> QueryStep<R> map(Function<I, R> code) {

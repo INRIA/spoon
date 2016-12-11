@@ -51,7 +51,7 @@ import spoon.reflect.visitor.Query;
  *
  * @param <O> the type of the element produced by this QueryStep
  */
-public interface QueryStep<O> extends QueryComposer, Consumer<Object> {
+public interface QueryStep<O> extends CtQueryable, Consumer<Object> {
 
 	/**
 	 * @return previous step of the query or null if this step is the first one

@@ -24,7 +24,7 @@ import spoon.reflect.visitor.Filter;
  * It is implemented 1) by {@link CtElement} to allow creation new query and its first step
  * 2) by {@link QueryStep} to allow creation of next query step
  */
-public interface QueryComposer {
+public interface CtQueryable {
 
 	/**
 	 * Appends queryStep to the current (last) step of the query
