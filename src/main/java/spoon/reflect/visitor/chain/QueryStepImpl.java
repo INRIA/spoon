@@ -94,7 +94,7 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <I, R> QueryStep<R> map(Function<I, R> code) {
+	public <I, R> QueryStep<R> map(CtFunction<I, R> code) {
 		add(new FunctionWrapper(code));
 		return (QueryStep<R>) this;
 	}
@@ -279,13 +279,13 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 	}
 
 	/**
-	 * a step which calls Function. Implements contract of {@link QueryStep#map(Function)}
+	 * a step which calls Function. Implements contract of {@link QueryStep#map(CtFunction)}
 	 */
 	private class FunctionWrapper extends Step {
-		private Function<Object, Object> fnc;
+		private CtFunction<Object, Object> fnc;
 
-		FunctionWrapper(Function<?, ?> code) {
-			fnc = (Function<Object, Object>) code;
+		FunctionWrapper(CtFunction<?, ?> code) {
+			fnc = (CtFunction<Object, Object>) code;
 		}
 
 		@SuppressWarnings("unchecked")

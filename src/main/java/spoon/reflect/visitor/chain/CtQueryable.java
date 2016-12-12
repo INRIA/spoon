@@ -52,7 +52,7 @@ public interface CtQueryable {
 	 * @param code a Function with one parameter of type I returning value of type R
 	 * @return the create QueryStep, which is now the last step of the query
 	 */
-	<I, R> QueryStep<R> map(Function<I, R> code);
+	<I, R> QueryStep<R> map(CtFunction<I, R> code);
 
 	/**
 	 * scan all child elements of an input element.

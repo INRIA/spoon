@@ -22,7 +22,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.ChainableFunction;
-import spoon.reflect.visitor.chain.Function;
+import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.QueryStepImpl;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.reflect.visitor.chain.QueryStep;
@@ -138,7 +138,7 @@ public abstract class Query {
 	 * Note: Use methods of {@link CtQueryable} implemented by {@link CtElement} to create a query which starts on the element.
 	 * This method is utility method to create building parts of the query chain
 	 */
-	public static <I, R> QueryStep<R> map(Function<I, R> code) {
+	public static <I, R> QueryStep<R> map(CtFunction<I, R> code) {
 		return new QueryStepImpl<R>().map(code);
 	}
 

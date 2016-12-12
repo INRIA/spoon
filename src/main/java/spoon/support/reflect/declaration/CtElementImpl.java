@@ -32,7 +32,7 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.ChainableFunction;
-import spoon.reflect.visitor.chain.Function;
+import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.QueryStepImpl;
 import spoon.reflect.visitor.chain.QueryStep;
 import spoon.reflect.visitor.filter.AnnotationFilter;
@@ -264,7 +264,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <I, R> QueryStep<R> map(Function<I, R> code) {
+	public <I, R> QueryStep<R> map(CtFunction<I, R> code) {
 		return new QueryStepImpl<R>(this).map(code);
 	}
 
