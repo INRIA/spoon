@@ -418,7 +418,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		for (CompilationUnitDeclaration unit : units) {
 			final String unitPath = new String(unit.getFileName());
 			for (final CompilationUnitFilter cuf : compilationUnitFilters) {
-				if (cuf.exclude(unit, unitPath)) {
+				if (cuf.exclude(unitPath)) {
 					// do not traverse this unit
 					continue units;
 				}

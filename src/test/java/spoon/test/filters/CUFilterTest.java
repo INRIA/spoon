@@ -31,8 +31,7 @@ public class CUFilterTest {
         launcher.getModelBuilder().addCompilationUnitFilter(
                 new CompilationUnitFilter() {
             @Override
-            public boolean exclude(final CompilationUnitDeclaration cud,
-                                   final String path) {
+            public boolean exclude(final String path) {
                 return path.endsWith("B.java");
             }
         });
