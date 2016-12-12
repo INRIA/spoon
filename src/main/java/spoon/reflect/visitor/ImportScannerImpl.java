@@ -251,23 +251,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
-		if (ref.getDeclaringType() != null) {
-			CtPackageReference pack = targetType.getPackage();
-
-			if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
-				// ignore java.lang package
-				if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
-					// ignore type in same package
-					if (ref.getDeclaringType().getPackage().getSimpleName()
-							.equals(pack.getSimpleName())) {
-						return false;
-					}
-				}
-			}
-		} else {
-			return false;
-		}
-
 		// we want to be sure that we are not importing a class because a static field or method we already imported
 		// moreover we make exception for same package classes to avoid problems in FQN mode
 		try {
@@ -287,7 +270,21 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 						}
 
 						if (isImported(reference)) {
-							return false;
+							// if we are in the **same** package we do the import for test with method isImported
+							if (ref.getDeclaringType() != null) {
+								CtPackageReference pack = targetType.getPackage();
+
+								if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
+									// ignore java.lang package
+									if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
+										// ignore type in same package
+										if (!ref.getDeclaringType().getPackage().getSimpleName()
+												.equals(pack.getSimpleName())) {
+											return false;
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -295,6 +292,17 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		} catch (ParentNotInitializedException e) {
 		}
 
+		CtPackageReference pack = targetType.getPackage();
+		if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
+			// ignore java.lang package
+			if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+				// ignore type in same package
+				if (ref.getPackage().getSimpleName()
+						.equals(pack.getSimpleName())) {
+					return false;
+				}
+			}
+		}
 
 		//note: we must add the type refs from the same package too, to assure that isImported(typeRef) returns true for them
 		//these type refs are removed in #getClassImports()
@@ -303,6 +311,24 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	private boolean isImportedInClassImports(CtTypeReference<?> ref) {
+		if (targetType != null) {
+			CtPackageReference pack = targetType.getPackage();
+
+			// we consider that if a class belongs to java.lang or the same package than the actual class
+			// then it is imported by default
+			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
+				// ignore java.lang package
+				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+					// ignore type in same package
+					if (!ref.getPackage().getSimpleName()
+							.equals(pack.getSimpleName())) {
+						return true;
+					}
+				}
+			}
+		}
+
+
 		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
 			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {

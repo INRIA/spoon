@@ -126,7 +126,9 @@ public class AccessFullyQualifiedFieldTest {
 		assertTrue("The result should contain a static import for spoon.Launcher.SPOONED_CLASSES", result.contains("import static spoon.Launcher.SPOONED_CLASSES;"));
 		assertTrue("The variable x should be assigned with only SPOONED_CLASSES", result.contains("Object x = SPOONED_CLASSES;"));
 		assertTrue("The result should not contain a static import for spoon.test.variable.testclasses.ForStaticVariables.foo as it is in the same package", !result.contains("import static spoon.test.variable.testclasses.ForStaticVariables.foo;"));
-
+		assertTrue("The result should not contain a FQN for toto", !result.contains("spoon.test.variable.testclasses.MultiBurritos.toto();"));
+		assertTrue("The result should not contain a FQN for spoon access", !result.contains("spoon.test.variable.testclasses.MultiBurritos.spoon = \"truc\";"));
+		assertTrue("The result should not contain a FQN for foo", !result.contains("spoon.test.variable.testclasses.ForStaticVariables.foo();"));
 
 		canBeBuilt(output, 7);
 	}
