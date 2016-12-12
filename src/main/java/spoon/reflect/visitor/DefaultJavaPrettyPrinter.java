@@ -1546,6 +1546,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			return false;
 		} else {
+			if (ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang")) {
+				return false;
+			}
 			return true;
 		}
 	}
