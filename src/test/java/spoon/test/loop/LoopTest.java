@@ -43,7 +43,7 @@ public class LoopTest {
 		assertTrue(ctLoop.getBody() instanceof CtBlock);
 		String expected = //
 				"for (spoon.test.loop.testclasses.Condition<? super T> condition : conditions)" + nl //
-						+ "    spoon.test.loop.testclasses.Join.this.conditions.add(spoon.test.loop.testclasses.Join.notNull(condition));" + nl;
+						+ "    this.conditions.add(spoon.test.loop.testclasses.Join.notNull(condition));" + nl;
 		assertEquals(expected, ctLoop.toString());
 	}
 }

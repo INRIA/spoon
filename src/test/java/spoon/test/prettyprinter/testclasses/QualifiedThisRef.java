@@ -6,5 +6,8 @@ public class QualifiedThisRef<T> {
 		void foo() {
 			Object o = spoon.test.prettyprinter.testclasses.QualifiedThisRef.Sub.this;
 		}
+		void foo2() {
+			Object o2 = spoon.test.prettyprinter.testclasses.QualifiedThisRef.this;
+		}
 	}
 }

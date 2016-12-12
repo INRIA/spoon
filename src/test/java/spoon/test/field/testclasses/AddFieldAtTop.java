@@ -9,4 +9,11 @@ public class AddFieldAtTop {
 
 	void m() {
 	}
+
+	class Foo {
+		int i;
+		void m() {
+			int x = i;
+		}
+	}
 }
