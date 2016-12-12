@@ -195,4 +195,29 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 		next.setLogging(logging);
 		return this;
 	}
+
+	/**
+	 * Is used to log that invocation was not processed
+	 * @param e
+	 * @param parameters
+	 */
+	protected void onClassCastException(String message, ClassCastException e, Object... parameters) {
+		if (isLogging()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(message);
+			sb.append("[");
+			for (int i = 0; i < parameters.length; i++) {
+				if (i > 0) {
+					sb.append(", ");
+				}
+				sb.append(parameters[i]);
+			}
+			sb.append("] ignored because ").append(e.getMessage());
+			if (Launcher.LOGGER.isTraceEnabled() && e != null) {
+				Launcher.LOGGER.trace(sb.toString(), e);
+			} else {
+				Launcher.LOGGER.debug(sb.toString());
+			}
+		}
+	}
 }

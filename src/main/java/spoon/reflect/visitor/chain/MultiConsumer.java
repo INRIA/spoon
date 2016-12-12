@@ -19,8 +19,6 @@ package spoon.reflect.visitor.chain;
 import java.util.ArrayList;
 import java.util.List;
 
-import spoon.support.util.SafeInvoker;
-
 /**
  *
  * A Consumer which has a list of other Consumers.
@@ -33,7 +31,6 @@ import spoon.support.util.SafeInvoker;
  */
 public class MultiConsumer<T> implements Consumer<T> {
 	private List<Consumer<T>> consumers = new ArrayList<>(1);
-	private SafeInvoker<Consumer<?>> invoke_accept = new SafeInvoker<>("accept", 1);
 
 	public MultiConsumer() {
 	}
@@ -44,15 +41,11 @@ public class MultiConsumer<T> implements Consumer<T> {
 			return;
 		}
 		for (Consumer<T> consumer : consumers) {
-			invoke_accept.setDelegate(consumer);
-			//check that element type can be assigned to TypeX of Consumer.accept(TypeX element)
-			if (invoke_accept.isParameterTypeAssignableFrom(element)) {
-				try {
-					invoke_accept.invoke(element);
-				} catch (ClassCastException e) {
-					//in case of Lambda expressions, the type of accept method cannot be detected,
-					//so then it fails with CCE. Handle it silently with meaning: "input element is not wanted by this Consumer. Ignore it"
-				}
+			try {
+				consumer.accept(element);
+			} catch (ClassCastException e) {
+				//in case of Lambda expressions, the type of accept method cannot be detected,
+				//so then it fails with CCE. Handle it silently with meaning: "input element is not wanted by this Consumer. Ignore it"
 			}
 		}
 	}
@@ -78,7 +71,7 @@ public class MultiConsumer<T> implements Consumer<T> {
 	}
 
 	public MultiConsumer<T> setLogging(boolean logging) {
-		invoke_accept.setLogging(logging);
+//		invoke_accept.setLogging(logging);
 		return this;
 	}
 }

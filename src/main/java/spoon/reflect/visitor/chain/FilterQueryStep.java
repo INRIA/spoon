@@ -18,7 +18,6 @@ package spoon.reflect.visitor.chain;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
-import spoon.support.util.SafeInvoker;
 
 /**
  * {@link QueryStep} which uses a {@link Filter} as a mapping function.
@@ -31,34 +30,26 @@ import spoon.support.util.SafeInvoker;
  */
 public class FilterQueryStep<O extends CtElement> extends QueryStepImpl<O> {
 
-	private SafeInvoker<Filter<O>> code = new SafeInvoker<>("matches", 1);
+	private Filter<O> filter;
 
 	public <I> FilterQueryStep(Filter<O> filter) {
-		this.code.setDelegate(filter);
+		this.filter = filter;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void accept(Object input) {
 		boolean matches = false;
-		//check that input type can be assigned to TypeX of Fitler.matches(TypeX element)
-		if (code.isParameterTypeAssignableFrom(input)) {
-			try {
-				matches = (Boolean) this.code.invoke(input);
-			} catch (ClassCastException e) {
-				//in case of Lambda expressions, the type of matches method cannot be detected,
-				//so then it fails with CCE. Handle it silently with meaning: "input element does not match. Ignore it"
-			}
+		try {
+			matches = (Boolean) this.filter.matches((O) input);
+		} catch (ClassCastException e) {
+			//in case of Lambda expressions, the type of matches method cannot be detected,
+			//so then it fails with CCE. Handle it silently with meaning: "input element does not match. Ignore it"
+			onClassCastException("Filter call skipped on input ", e, input);
 		}
 		if (matches) {
 			//send input to output, because Fitler.matches returned true
 			fireNext((O) input);
 		}
-	}
-
-	@Override
-	public QueryStep<O> setLogging(boolean logging) {
-		code.setLogging(logging);
-		return super.setLogging(logging);
 	}
 }

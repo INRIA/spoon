@@ -19,7 +19,6 @@ package spoon.reflect.visitor.chain;
 import java.lang.reflect.Array;
 
 import spoon.Launcher;
-import spoon.support.util.SafeInvoker;
 
 /**
  * {@link QueryStep} which uses a {@link Function} as a mapping function.<br><br>
@@ -39,26 +38,24 @@ import spoon.support.util.SafeInvoker;
  */
 public class FunctionQueryStep<O> extends QueryStepImpl<O> {
 
-	private SafeInvoker<Function<?, ?>> code = new SafeInvoker<>("apply", 1);
+	private Function<Object, Object> function;
 
+	@SuppressWarnings("unchecked")
 	public <I> FunctionQueryStep(Function<I, O> code) {
-		this.code.setDelegate(code);
+		this.function = (Function<Object, Object>) code;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void accept(Object input) {
 		Object result;
-		//check that input type can be assigned to TypeX of Function.apply(TypeX element)
-		if (code.isParameterTypeAssignableFrom(input)) {
-			try {
-				result = code.invoke(input);
-			} catch (ClassCastException e) {
-				//in case of Lambda expressions, the type of apply method cannot be detected,
-				//so then it fails with CCE. Handle it silently with meaning: "input element does not match. Ignore it"
-				return;
-			}
-		} else {
+		try {
+//				result = code.invoke(input);
+			result = function.apply(input);
+		} catch (ClassCastException e) {
+			//in case of Lambda expressions, the type of apply method cannot be detected,
+			//so then it fails with CCE. Handle it silently with meaning: "input element does not match. Ignore it"
+			onClassCastException("Function call skipped on input ", e, input);
 			return;
 		}
 		if (result == null) {
@@ -87,11 +84,5 @@ public class FunctionQueryStep<O> extends QueryStepImpl<O> {
 		} else {
 			fireNext((O) result);
 		}
-	}
-
-	@Override
-	public QueryStep<O> setLogging(boolean logging) {
-		code.setLogging(logging);
-		return super.setLogging(logging);
 	}
 }

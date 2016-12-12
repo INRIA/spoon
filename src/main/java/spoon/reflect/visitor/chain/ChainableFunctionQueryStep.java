@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor.chain;
 
-import spoon.support.util.SafeInvoker;
 /**
  * {@link QueryStep} which uses a {@link ChainableFunction} as a mapping function.<br><br>
  *
@@ -27,28 +26,21 @@ import spoon.support.util.SafeInvoker;
  */
 public class ChainableFunctionQueryStep<O> extends QueryStepImpl<O> {
 
-	private SafeInvoker<ChainableFunction<?, ?>> code = new SafeInvoker<>("apply", 2);
+	private ChainableFunction<Object, Object> function;
 
+	@SuppressWarnings("unchecked")
 	public <I> ChainableFunctionQueryStep(ChainableFunction<I, O> code) {
-		this.code.setDelegate(code);
+		this.function = (ChainableFunction<Object, Object>) code;
 	}
 
 	@Override
 	public void accept(Object input) {
-		//check that input type can be assigned to TypeX of Function.apply(TypeX element, Consumer c)
-		if (code.isParameterTypeAssignableFrom(input, null)) {
-			try {
-				this.code.invoke(input, getNextConsumer());
-			} catch (ClassCastException e) {
-				//in case of Lambda expressions, the type of apply method cannot be detected,
-				//so then it fails with CCE. Handle it silently with meaning: "input element does not match. Ignore it"
-			}
+		try {
+			function.apply(input, (Consumer<Object>) getNextConsumer());
+		} catch (ClassCastException e) {
+			//in case of Lambda expressions, the type of apply method cannot be detected,
+			//so then it fails with CCE. Handle it silently with meaning: "input element does not match. Ignore it"
+			onClassCastException("ChainableFunction call skipped on input ", e, input);
 		}
-	}
-
-	@Override
-	public QueryStep<O> setLogging(boolean logging) {
-		code.setLogging(logging);
-		return super.setLogging(logging);
 	}
 }
