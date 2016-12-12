@@ -759,8 +759,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			// complex case of qualifed this
 			if (context.currentThis.peekLast() != null
 				&& !context.currentThis.peekLast().type.getQualifiedName().equals(targetType.getQualifiedName())) {
+				printer.snapshotLength();
 				visitCtTypeReferenceWithoutGenerics(targetType);
-				printer.write(".this");
+				if (printer.hasNewContent()) {
+					printer.write(".");
+				}
+				printer.write("this");
 				return;
 			}
 

@@ -18,6 +18,7 @@
 
 package spoon.support.visitor.replace;
 
+import static spoon.support.visitor.replace.ReplacementVisitor.replace;
 
 /**
  * Used to replace an element by another one.
@@ -37,8 +38,8 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	private spoon.reflect.declaration.CtElement replace;
 
 	private ReplacementVisitor(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
-		spoon.support.visitor.replace.ReplacementVisitor.this.original = original;
-		spoon.support.visitor.replace.ReplacementVisitor.this.replace = replace;
+		this.original = original;
+		this.replace = replace;
 	}
 
 	private <K, V extends spoon.reflect.declaration.CtElement> void replaceInMapIfExist(java.util.Map<K, V> mapProtected, spoon.generating.replace.ReplaceMapListener listener) {
