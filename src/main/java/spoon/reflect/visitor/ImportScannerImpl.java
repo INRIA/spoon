@@ -258,29 +258,42 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			if (parent != null) {
 				parent = parent.getParent();
 				if (parent != null) {
-					if ((parent instanceof CtFieldAccess) || (parent instanceof CtExecutable)) {
-						CtReference reference;
+					if ((parent instanceof CtFieldAccess) || (parent instanceof CtExecutable) || (parent instanceof CtInvocation)) {
 
+						CtTypeReference declaringType;
+						CtReference reference;
+						CtPackageReference pack = targetType.getPackage();
 						if (parent instanceof CtFieldAccess) {
 							CtFieldAccess field = (CtFieldAccess)parent;
-							reference = field.getVariable();
-						} else {
+							CtFieldReference localReference = field.getVariable();
+							declaringType = localReference.getDeclaringType();
+							reference = localReference;
+						} else if (parent instanceof CtExecutable) {
 							CtExecutable exec = (CtExecutable)parent;
-							reference = exec.getReference();
+							CtExecutableReference localReference = exec.getReference();
+							declaringType = localReference.getDeclaringType();
+							reference = localReference;
+						} else if (parent instanceof CtInvocation) {
+							CtInvocation invo = (CtInvocation)parent;
+							CtExecutableReference localReference = invo.getExecutable();
+							declaringType = localReference.getDeclaringType();
+							reference = localReference;
+						} else {
+							declaringType = null;
+							reference = null;
 						}
 
-						if (isImported(reference)) {
+						if (reference != null && isImported(reference)) {
 							// if we are in the **same** package we do the import for test with method isImported
-							if (ref.getDeclaringType() != null) {
-								CtPackageReference pack = targetType.getPackage();
-
-								if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
+							if (declaringType != null) {
+								if (declaringType.getPackage() != null && !declaringType.getPackage().isUnnamedPackage()) {
 									// ignore java.lang package
-									if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
+									if (!declaringType.getPackage().getSimpleName().equals("java.lang")) {
 										// ignore type in same package
-										if (!ref.getDeclaringType().getPackage().getSimpleName()
+										if (declaringType.getPackage().getSimpleName()
 												.equals(pack.getSimpleName())) {
-											return false;
+											classImports.put(ref.getSimpleName(), ref);
+											return true;
 										}
 									}
 								}
@@ -292,14 +305,16 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		} catch (ParentNotInitializedException e) {
 		}
 
-		CtPackageReference pack = targetType.getPackage();
-		if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
-			// ignore java.lang package
-			if (!ref.getPackage().getSimpleName().equals("java.lang")) {
-				// ignore type in same package
-				if (ref.getPackage().getSimpleName()
-						.equals(pack.getSimpleName())) {
-					return false;
+		if (targetType != null) {
+			CtPackageReference pack = targetType.getPackage();
+			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
+				// ignore java.lang package
+				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+					// ignore type in same package
+					if (ref.getPackage().getSimpleName()
+							.equals(pack.getSimpleName())) {
+						return false;
+					}
 				}
 			}
 		}
@@ -311,7 +326,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	private boolean isImportedInClassImports(CtTypeReference<?> ref) {
-		if (targetType != null) {
+		/*if (targetType != null) {
 			CtPackageReference pack = targetType.getPackage();
 
 			// we consider that if a class belongs to java.lang or the same package than the actual class
@@ -320,13 +335,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				// ignore java.lang package
 				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
 					// ignore type in same package
-					if (!ref.getPackage().getSimpleName()
+					if (ref.getPackage().getSimpleName()
 							.equals(pack.getSimpleName())) {
 						return true;
 					}
 				}
 			}
-		}
+		}*/
 
 
 		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
@@ -346,19 +361,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		// if the whole class is imported: no need to import the method.
 		if (ref.getDeclaringType() != null && isImportedInClassImports(ref.getDeclaringType())) {
 			return false;
-		}
-
-		CtPackageReference pack = targetType.getPackage();
-
-		if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
-			// ignore java.lang package
-			if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
-				// ignore type in same package
-				if (ref.getDeclaringType().getPackage().getSimpleName()
-						.equals(pack.getSimpleName())) {
-					return false;
-				}
-			}
 		}
 
 		methodImports.put(ref.getSimpleName(), ref);

@@ -16,15 +16,19 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.declaration.CtClassImpl;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +39,20 @@ import java.util.Set;
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
 
 	private Set<String> namedElements = new HashSet<String>();
+
+	private CtClass getParentClass(CtReference ref) {
+		CtElement parent = ref.getParent();
+
+		while (parent != null && !(parent instanceof CtClass)) {
+			parent = parent.getParent();
+		}
+
+		if (parent == null) {
+			return null;
+		} else {
+			return (CtClass)parent;
+		}
+	}
 
 	/**
 	 * Test if the reference should be imported by looking if there is a name conflict
@@ -55,11 +73,30 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 				parent = ref;
 			}
 
+			CtClass parentClass = this.getParentClass(ref);
+
 			if (parent instanceof CtNamedElement) {
-				namedElements.add(((CtNamedElement) parent).getSimpleName());
+				CtNamedElement namedElement = (CtNamedElement)parent;
+
+				if (parentClass != null && parentClass.getReference() != null) {
+					if (parentClass.getReference().equals(targetType)) {
+						namedElements.add(namedElement.getSimpleName());
+					}
+				} else {
+					namedElements.add(namedElement.getSimpleName());
+				}
 			}
 
 			while (!(parent instanceof CtPackage)) {
+				/*if (parent instanceof CtClassImpl) {
+					CtClassImpl classParent = (CtClassImpl)parent;
+					CtTypeReference referencedType = classParent.getReference();
+
+					if (referencedType != null && referencedType.equals(this.targetType)) {
+						return false;
+					}
+
+				}*/
 				if ((parent instanceof CtFieldReference) || (parent instanceof CtExecutableReference)) {
 					CtReference parentType = (CtReference) parent;
 					Set<String> qualifiedNameTokens = new HashSet<>();
