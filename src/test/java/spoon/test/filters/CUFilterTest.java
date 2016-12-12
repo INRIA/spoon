@@ -10,7 +10,7 @@ import spoon.support.compiler.jdt.CompilationUnitFilter;
 
 import static org.junit.Assert.assertEquals;
 
-public class CUFilter {
+public class CUFilterTest {
 
     @Test
     public void testWithoutFilters() {
