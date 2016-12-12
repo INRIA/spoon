@@ -59,7 +59,8 @@ public class ImportScannerTest {
 
 		ImportScanner importScanner = new ImportScannerImpl();
 		importScanner.computeImports(classes.get(0));
-		assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
+		// as ArithmeticException come from java.lang it is not imported anymore
+		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
 		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
 	}
 }

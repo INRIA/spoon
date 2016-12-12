@@ -67,10 +67,10 @@ public class AccessFullyQualifiedFieldTest {
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 
 		assertTrue("The java file should contain import for Launcher", result.contains("import static spoon.Launcher.SPOONED_CLASSES;"));
-		assertTrue("The x variable is attributed with Launcher.SPOONED_CLASSES", result.contains("x = SPOONED_CLASSES"));
+		assertTrue("The x variable should be attributed with SPOONED_CLASSES", result.contains("x = SPOONED_CLASSES"));
 		assertTrue("The java.util.Map is not imported", !result.contains("import java.util.Map"));
 		assertTrue("The Map type use FQN", result.contains("java.util.Map uneMap"));
-		assertTrue("The other variable use FQN too", result.contains("spoon.test.variable.testclasses.ForStaticVariables.Map"));
+		assertTrue("The other variable use FQN too", result.contains("ForStaticVariables.Map"));
 		canBeBuilt(output, 7);
 	}
 
@@ -126,6 +126,7 @@ public class AccessFullyQualifiedFieldTest {
 		assertTrue("The result should contain a static import for spoon.Launcher.SPOONED_CLASSES", result.contains("import static spoon.Launcher.SPOONED_CLASSES;"));
 		assertTrue("The variable x should be assigned with only SPOONED_CLASSES", result.contains("Object x = SPOONED_CLASSES;"));
 		assertTrue("The result should not contain a static import for spoon.test.variable.testclasses.ForStaticVariables.foo as it is in the same package", !result.contains("import static spoon.test.variable.testclasses.ForStaticVariables.foo;"));
+		assertTrue("The result should not contain a import static for spoon.test.variable.testclasses.MultiBurritos.toto as it is in the same class", !result.contains("import static spoon.test.variable.testclasses.MultiBurritos.toto;"));
 		assertTrue("The result should not contain a FQN for toto", !result.contains("spoon.test.variable.testclasses.MultiBurritos.toto();"));
 		assertTrue("The result should not contain a FQN for spoon access", !result.contains("spoon.test.variable.testclasses.MultiBurritos.spoon = \"truc\";"));
 		assertTrue("The result should not contain a FQN for foo", !result.contains("spoon.test.variable.testclasses.ForStaticVariables.foo();"));

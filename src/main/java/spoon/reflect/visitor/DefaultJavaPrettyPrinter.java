@@ -676,14 +676,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printCtFieldAccess(fieldWrite);
 	}
 
-	private boolean isStaticImportedField(CtFieldReference ref) {
-		if (!ref.isStatic()) {
-			return false;
-		}
-
-		return importsContext.isImported(ref);
-	}
-
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
 		try (Writable _context = context.modify()) {
@@ -692,14 +684,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			if (f.getTarget() != null) {
 				boolean isInitializeStaticFinalField = isInitializeStaticFinalField(f.getTarget());
-				boolean isStaticImportedField = isStaticImportedField(f.getVariable());
+				boolean isStaticField = f.getVariable().isStatic();
+				boolean isImportedField = importsContext.isImported(f.getVariable());
 
-				if (!isInitializeStaticFinalField && !isStaticImportedField) {
+				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
 					scan(f.getTarget());
 					if (!f.getTarget().isImplicit()) {
 						printer.write(".");
 					}
-				}
+				} else if (isStaticField && !isImportedField) {
+					CtTypeReference declaringType = f.getVariable().getDeclaringType();
+					if (declaringType != null) {
+						printer.write(declaringType.getSimpleName());
+						printer.write(".");
+					}
+ 				}
 				_context.ignoreStaticAccess(true);
 			}
 			scan(f.getVariable());
