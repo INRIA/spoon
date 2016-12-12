@@ -54,15 +54,6 @@ import spoon.reflect.visitor.Query;
 public interface QueryStep<O> extends CtQueryable, Consumer<Object>, ChainableFunction<Object, O> {
 
 	/**
-	 * @return previous step of the query or null if this step is the first one
-	 */
-	QueryStep<Object> getPrev();
-	/**
-	 * @return first step of this query.
-	 */
-	QueryStep<Object> getFirstStep();
-
-	/**
 	 * calls getFirstStep().accept(null), which causes that all input elements registered in {@link StartQueryStep}
 	 * are processed by query chain. All the produced elements are collected in List
 	 * @return the List of collected elements.
@@ -85,6 +76,12 @@ public interface QueryStep<O> extends CtQueryable, Consumer<Object>, ChainableFu
 	@Override
 	void apply(Object input, Consumer<O> output);
 
+	/**
+	 * Sets the name of current QueryStep. It can help to identify the steps during debugging of your query
+	 * @param name
+	 * @return this to support fluent API
+	 */
+	QueryStep<O> name(String name);
 	/**
 	 * @return true if logging is enabled for this query chain
 	 */

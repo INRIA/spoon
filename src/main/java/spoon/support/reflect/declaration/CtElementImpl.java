@@ -33,8 +33,8 @@ import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.ChainableFunction;
 import spoon.reflect.visitor.chain.Function;
+import spoon.reflect.visitor.chain.QueryStepImpl;
 import spoon.reflect.visitor.chain.QueryStep;
-import spoon.reflect.visitor.chain.StartQueryStep;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
@@ -260,17 +260,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public <P> QueryStep<P> map(ChainableFunction<?, P> code) {
-		return new StartQueryStep<CtElement>(this).map(code);
+		return new QueryStepImpl<P>(this).map(code);
 	}
 
 	@Override
 	public <I, R> QueryStep<R> map(Function<I, R> code) {
-		return new StartQueryStep<CtElement>(this).map(code);
+		return new QueryStepImpl<R>(this).map(code);
 	}
 
 	@Override
 	public <P extends CtElement> QueryStep<P> scan(Filter<P> predicate) {
-		return new StartQueryStep<CtElement>(this).scan(predicate);
+		return new QueryStepImpl<P>(this).scan(predicate);
 	}
 
 	public <T extends CtReference> List<T> getReferences(Filter<T> filter) {

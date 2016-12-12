@@ -16,132 +16,123 @@
  */
 package spoon.reflect.visitor.chain;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.Scann;
 
 /**
  * Contains the default implementation of the generic {@link QueryStep} methods
- * Just the {@link #accept(Object)} method is implemented, by children classes
  */
-public abstract class QueryStepImpl<O> implements QueryStep<O> {
+public class QueryStepImpl<O> implements QueryStep<O> {
 
-	private QueryStep<Object> prev;
-	private MultiConsumer<Object> next = new MultiConsumer<>();
+	private List<Object> inputs;
+
+	private Step firstStep;
+	private Step lastStep;
+	private Step tail;
+
 	private boolean logging = false;
 
-	protected QueryStepImpl() {
+	public QueryStepImpl() {
+		tail = new TailConsumer();
+		firstStep = tail;
+		lastStep = tail;
 	}
 
-	@Override
-	public QueryStep<Object> getPrev() {
-		return prev;
+	@SuppressWarnings("unchecked")
+	public <T> QueryStepImpl(T input) {
+		this();
+		setInput((O) input);
 	}
 
-	@Override
-	public QueryStep<Object> getFirstStep() {
-		@SuppressWarnings("unchecked")
-		QueryStep<Object> first = (QueryStep<Object>) this;
-		while (first.getPrev() != null) {
-			first = first.getPrev();
+	/**
+	 * @return list of elements which will be used as input of the query
+	 */
+	public List<Object> getInputs() {
+		return inputs == null ? Collections.emptyList() : inputs;
+	}
+
+	/**
+	 * sets list of elements which will be used as input of the query
+	 * @param inputs
+	 * @return this to support fluent API
+	 */
+	public QueryStep<O> setInput(O input) {
+		if (inputs != null) {
+			inputs.clear();
 		}
-		return first;
+		return addInput(input);
 	}
 
+	/**
+	 * adds list of elements which will be used as input of the query too
+	 * @param inputs
+	 * @return this to support fluent API
+	 */
+	public QueryStep<O> addInput(O input) {
+		if (this.inputs == null) {
+			this.inputs = new ArrayList<>();
+		}
+		this.inputs.add(input);
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public <P> QueryStep<P> map(ChainableFunction<?, P> code) {
-		return addQueryStep(Query.map(code));
+		add(new ChainableFunctionWrapper(code));
+		return (QueryStep<P>) this;
 	}
 
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public <I, R> QueryStep<R> map(Function<I, R> code) {
-		return addQueryStep(Query.map(code));
+		add(new FunctionWrapper(code));
+		return (QueryStep<R>) this;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends CtElement> QueryStep<T> scan(Filter<T> filter) {
+		map(new Scann());
+		add(new FilterWrapper(filter));
+		return (QueryStep<T>) this;
+	}
+
 
 	@Override
-	public <P extends CtElement> QueryStep<P> scan(Filter<P> filter) {
-		return addQueryStep(Query.scan(filter));
+	public void accept(Object input) {
+		firstStep.accept(input);
 	}
 
-	/**
-	 * appends the first step of queryStep as last step of self
-	 * and return queryStep, which is now the last step of the query chain
-	 */
 	@SuppressWarnings("unchecked")
-	protected <R> QueryStep<R> addQueryStep(QueryStep<R> queryStep) {
-		//add first QueryStep of the provided chain to the last step of self
-		QueryStep<Object> first = queryStep.getFirstStep();
-		((QueryStepImpl<R>) first).prev = (QueryStep<Object>) this;
-		add(first);
-		//return last step of queryStep as last step of this chain
-		return queryStep;
-	}
-
-	/**
-	 * adds a consumer of elements produced by this step
-	 * @param consumer
-	 */
-	protected void add(Consumer<Object> consumer) {
-		next.add(consumer);
-	}
-
-	/**
-	 * removes consumer of elements produced by this step
-	 * @param consumer
-	 */
-	protected void remove(Consumer<Object> consumer) {
-		next.remove(consumer);
-	}
-
-	/**
-	 * sends the out to the all registered consumers of this step
-	 * @param out
-	 */
-	protected void fireNext(Object out) {
-		getNextConsumer().accept(out);
-	}
-
-	/**
-	 * @return a consumer which can be used to send element to all registered consumers of this step
-	 */
-	protected Consumer<Object> getNextConsumer() {
-		if (isLogging()) {
-			//if logging is enabled then we provide a consumer which logs each produced element
-			return new Consumer<Object>() {
-				@Override
-				public void accept(Object element) {
-					Launcher.LOGGER.debug(getDescription() + " " + element);
-					next.accept(element);
+	@Override
+	public void apply(Object input, Consumer<O> output) {
+		tail.next = (Consumer<Object>) output;
+		try {
+			if (input == null) {
+				if (inputs != null) {
+					for (Object in : inputs) {
+						accept(in);
+					}
 				}
-			};
+			} else {
+				if (inputs != null) {
+					throw new SpoonException("Do not add QueryStep inputs if you want to use query for extra input");
+				}
+				accept(input);
+			}
+		} finally {
+			tail.next = null;
 		}
-		return next;
-	}
-
-	/**
-	 * helper method which provides description of this step. The description is visible in the log
-	 * @return
-	 */
-	protected String getDescription() {
-		return String.valueOf(getDepth()) + ")";
-	}
-
-	/**
-	 * @return depth of this query step starting from the first element. The first element has depth 0.
-	 */
-	@SuppressWarnings("unchecked")
-	private int getDepth() {
-		int i = 0;
-		QueryStep<Object> qs = (QueryStep<Object>) this;
-		while (qs.getPrev() != null) {
-			qs = qs.getPrev();
-			i++;
-		}
-		return i;
 	}
 
 	@Override
@@ -156,44 +147,55 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 		return list;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
+	@Override
 	public <R> void forEach(Consumer<R> consumer) {
 		apply(null, (Consumer<O>) consumer);
 	}
 
 	@Override
-	public abstract void accept(Object t);
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void apply(Object input, Consumer<O> output) {
-		add((Consumer<Object>) output);
-		try {
-			getFirstStep().accept(input);
-		} finally {
-			remove((Consumer<Object>) output);
+	public QueryStep<O> name(String name) {
+		if (lastStep == tail) {
+			throw new SpoonException("Cannot set name of the step on the chain with no step");
 		}
-	}
-
-	public boolean isLogging() {
-		QueryStep<Object> first = getFirstStep();
-		if (first == this) {
-			return this.logging;
-		} else {
-			return first.isLogging();
-		}
-	}
-
-	public QueryStep<O> setLogging(boolean logging) {
-		QueryStep<Object> prev = getPrev();
-		if (prev == null) {
-			this.logging = logging;
-		} else {
-			prev.setLogging(logging);
-		}
-		next.setLogging(logging);
+		lastStep.name = name;
 		return this;
+	}
+
+	@Override
+	public boolean isLogging() {
+		return logging;
+	}
+
+	@Override
+	public QueryStep<O> setLogging(boolean logging) {
+		this.logging = logging;
+		return this;
+	}
+
+	private void add(Step step) {
+		if (lastStep == tail) {
+			firstStep = step;
+			lastStep = step;
+		} else {
+			lastStep.next = step;
+			lastStep = step;
+		}
+		step.next = tail;
+		name(String.valueOf(getLength()));
+	}
+
+	/**
+	 * @return number of steps of this query
+	 */
+	public int getLength() {
+		int len = 0;
+		Step s = firstStep;
+		while (s != tail) {
+			len++;
+			s = (Step) s.next;
+		}
+		return len;
 	}
 
 	/**
@@ -201,22 +203,160 @@ public abstract class QueryStepImpl<O> implements QueryStep<O> {
 	 * @param e
 	 * @param parameters
 	 */
-	protected void onClassCastException(String message, ClassCastException e, Object... parameters) {
+	protected void log(String message, ClassCastException e, Object... parameters) {
 		if (isLogging()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(message);
-			sb.append("[");
-			for (int i = 0; i < parameters.length; i++) {
-				if (i > 0) {
-					sb.append(", ");
+			if (parameters.length > 0) {
+				sb.append(" [");
+				for (int i = 0; i < parameters.length; i++) {
+					if (i > 0) {
+						sb.append(", ");
+					}
+					sb.append(parameters[i]);
 				}
-				sb.append(parameters[i]);
+				sb.append("]");
 			}
-			sb.append("] ignored because ").append(e.getMessage());
+			if (e != null) {
+				sb.append(" ignored because ").append(e.getMessage());
+			}
 			if (Launcher.LOGGER.isTraceEnabled() && e != null) {
 				Launcher.LOGGER.trace(sb.toString(), e);
 			} else {
 				Launcher.LOGGER.debug(sb.toString());
+			}
+		}
+	}
+
+	/**
+	 * abstract step which knows next Consumer and then name
+	 */
+	private abstract class Step implements Consumer<Object> {
+		protected String name;
+		protected Consumer<Object> next;
+	}
+
+	/**
+	 * There is always one TailConsumer in each query, which sends result to output
+	 */
+	private class TailConsumer extends Step {
+		@Override
+		public void accept(Object out) {
+			if (out == null) {
+				return;
+			}
+			if (next != null) {
+				try {
+					next.accept(out);
+				} catch (ClassCastException e) {
+					log("Query output skipped for value", e, out);
+				}
+			}
+		}
+	}
+
+	/**
+	 * a step which calls ChainableFunction. Implements contract of {@link QueryStep#map(ChainableFunction)}
+	 */
+	private class ChainableFunctionWrapper extends Step {
+		private ChainableFunction<Object, Object> fnc;
+
+		@SuppressWarnings("unchecked")
+		ChainableFunctionWrapper(ChainableFunction<?, ?> code) {
+			fnc = (ChainableFunction<Object, Object>) code;
+		}
+		@Override
+		public void accept(Object input) {
+			if (input == null) {
+				return;
+			}
+			try {
+				fnc.apply(input, next);
+			} catch (ClassCastException e) {
+				log("Calling of step " + name + " failed", e, input);
+			}
+		}
+	}
+
+	/**
+	 * a step which calls Function. Implements contract of {@link QueryStep#map(Function)}
+	 */
+	private class FunctionWrapper extends Step {
+		private Function<Object, Object> fnc;
+
+		FunctionWrapper(Function<?, ?> code) {
+			fnc = (Function<Object, Object>) code;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void accept(Object input) {
+			if (input == null) {
+				return;
+			}
+			Object result;
+			try {
+//					result = code.invoke(input);
+				result = fnc.apply(input);
+			} catch (ClassCastException e) {
+				log("Function call skipped on input ", e, input);
+				return;
+			}
+			if (result == null) {
+				return;
+			}
+			if (result instanceof Boolean) {
+				//the code is a predicate. send the input to output if result is true
+				if ((Boolean) result) {
+					next.accept(input);
+				} else {
+					log("Predicate is false on ", null, input);
+				}
+			}
+			if (result instanceof Iterable) {
+				//send each item of Iterable to the next step
+				for (Object out : (Iterable<Object>) result) {
+					next.accept(out);
+				}
+			} else if (result.getClass().isArray()) {
+				//send each item of Array to the next step
+				for (int i = 0; i < Array.getLength(result); i++) {
+					next.accept(Array.get(result, i));
+				}
+			} else {
+				next.accept(result);
+			}
+		}
+	}
+
+	/**
+	 * a step which proceeds only elements matching filter
+	 */
+	private class FilterWrapper extends Step {
+
+		private Filter<CtElement> filter;
+
+		@SuppressWarnings("unchecked")
+		FilterWrapper(Filter<? extends CtElement> filter) {
+			this.filter = (Filter<CtElement>) filter;
+		}
+
+		@Override
+		public void accept(Object input) {
+			if (input == null) {
+				return;
+			}
+			boolean matches = false;
+			try {
+				matches = (Boolean) filter.matches((CtElement) input);
+			} catch (ClassCastException e) {
+				log("Filter call skipped on input ", e, input);
+			}
+			if (matches) {
+				//send input to output, because Fitler.matches returned true
+				next.accept(input);
+			} else {
+				log("Filter is false on ", null, input);
 			}
 		}
 	}

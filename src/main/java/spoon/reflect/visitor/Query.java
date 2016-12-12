@@ -22,13 +22,10 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.ChainableFunction;
-import spoon.reflect.visitor.chain.ChainableFunctionQueryStep;
 import spoon.reflect.visitor.chain.Function;
-import spoon.reflect.visitor.chain.FunctionQueryStep;
-import spoon.reflect.visitor.chain.FilterQueryStep;
+import spoon.reflect.visitor.chain.QueryStepImpl;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.reflect.visitor.chain.QueryStep;
-import spoon.reflect.visitor.filter.Scann;
 
 /**
  * This class provides some useful methods to retrieve program elements and
@@ -123,7 +120,7 @@ public abstract class Query {
 			//the code is already a QueryStep. Just return it. Do not add useless wrapper.
 			return (QueryStep<P>) code;
 		}
-		return new ChainableFunctionQueryStep<P>(code);
+		return new QueryStepImpl<P>().map(code);
 	}
 
 	/**
@@ -142,17 +139,7 @@ public abstract class Query {
 	 * This method is utility method to create building parts of the query chain
 	 */
 	public static <I, R> QueryStep<R> map(Function<I, R> code) {
-		return new FunctionQueryStep<R>(code);
-	}
-
-	/**
-	 * Sends input to the next step only if returned value is true
-	 *
-	 * @param filter
-	 * @return the create QueryStep, which is now the last step of the query
-	 */
-	public static <T extends CtElement> QueryStep<T> match(Filter<T> filter) {
-		return new FilterQueryStep<>(filter);
+		return new QueryStepImpl<R>().map(code);
 	}
 
 	/**
@@ -160,6 +147,6 @@ public abstract class Query {
 	 * The if input element is matching then it is sent to output too.
 	 */
 	public static <T extends CtElement> QueryStep<T> scan(Filter<T> filter) {
-		return map(new Scann()).map(match(filter));
+		return new QueryStepImpl<T>().scan(filter);
 	}
 }
