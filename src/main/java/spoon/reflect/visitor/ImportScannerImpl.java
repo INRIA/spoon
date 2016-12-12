@@ -92,7 +92,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
 		if (reference.isStatic()) {
-			addFieldImport(reference);
+			if (!addFieldImport(reference)) {
+				scan(reference.getDeclaringType());
+			}
 		} else {
 			scan(reference.getDeclaringType());
 		}
@@ -197,9 +199,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		scan(simpleType);
 
 		Collection<CtReference> listallImports = new ArrayList<>();
-		listallImports.addAll(getClassImports());
-		listallImports.addAll(getFieldImports());
-		listallImports.addAll(getMethodImports());
+		listallImports.addAll(this.classImports.values());
+		listallImports.addAll(this.fieldImports.values());
+		listallImports.addAll(this.methodImports.values());
 		return listallImports;
 	}
 
@@ -226,89 +228,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	/**
-	 * Gets classImports in classImports Map for the key simpleType given.
-	 *
-	 * @return Collection of {@link spoon.reflect.reference.CtTypeReference}
-	 */
-	protected Collection<CtTypeReference<?>> getClassImports() {
-		if (classImports.isEmpty()) {
-			return Collections.EMPTY_LIST;
-		}
-		CtPackageReference pack = targetType.getPackage();
-		List<CtTypeReference<?>> refs = new ArrayList<>();
-		for (CtTypeReference<?> ref : classImports.values()) {
-			// ignore non-top-level type
-			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
-				// ignore java.lang package
-				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
-					// ignore type in same package
-					if (!ref.getPackage().getSimpleName()
-							.equals(pack.getSimpleName())) {
-						refs.add(ref);
-					}
-				}
-			}
-		}
-		return Collections.unmodifiableList(refs);
-	}
-
-	/**
-	 * Gets methodImports
-	 *
-	 * @return Collection of {@link spoon.reflect.reference.CtExecutableReference}
-	 */
-	protected Collection<CtExecutableReference<?>> getMethodImports() {
-		if (methodImports.isEmpty()) {
-			return Collections.EMPTY_LIST;
-		}
-		CtPackageReference pack = targetType.getPackage();
-		List<CtExecutableReference<?>> refs = new ArrayList<>();
-		for (CtExecutableReference<?> ref : methodImports.values()) {
-			// ignore non-top-level type
-			if (ref.getDeclaringType() != null) {
-				if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
-					// ignore java.lang package
-					if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
-						// ignore type in same package
-						if (!ref.getDeclaringType().getPackage().getSimpleName()
-								.equals(pack.getSimpleName())) {
-							refs.add(ref);
-						}
-					}
-				}
-			}
-		}
-		return Collections.unmodifiableList(refs);
-	}
-
-	/**
-	 * Gets fieldImports
-	 *
-	 * @return Collection of {@link spoon.reflect.reference.CtFieldReference}
-	 */
-	protected Collection<CtFieldReference<?>> getFieldImports() {
-		if (fieldImports.isEmpty()) {
-			return Collections.EMPTY_LIST;
-		}
-		CtPackageReference pack = targetType.getPackage();
-		List<CtFieldReference<?>> refs = new ArrayList<>();
-		for (CtFieldReference<?> ref : fieldImports.values()) {
-			// ignore non-top-level type
-			if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
-				// ignore java.lang package
-				if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
-					// ignore type in same package
-					if (!ref.getDeclaringType().getPackage().getSimpleName()
-							.equals(pack.getSimpleName())) {
-						refs.add(ref);
-					}
-				}
-			}
-		}
-		return Collections.unmodifiableList(refs);
-	}
-
-	/**
 	 * Adds a type to the classImports.
 	 */
 	protected boolean addClassImport(CtTypeReference<?> ref) {
@@ -332,6 +251,23 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
+		if (ref.getDeclaringType() != null) {
+			CtPackageReference pack = targetType.getPackage();
+
+			if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
+				// ignore java.lang package
+				if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
+					// ignore type in same package
+					if (ref.getDeclaringType().getPackage().getSimpleName()
+							.equals(pack.getSimpleName())) {
+						return false;
+					}
+				}
+			}
+		} else {
+			return false;
+		}
+
 		// we want to be sure that we are not importing a class because a static field or method we already imported
 		// moreover we make exception for same package classes to avoid problems in FQN mode
 		try {
@@ -351,13 +287,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 						}
 
 						if (isImported(reference)) {
-							if (ref.getDeclaringType() != null) {
-								if (!ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
-									return false;
-								}
-							} else {
-								return false;
-							}
+							return false;
 						}
 					}
 				}
@@ -392,6 +322,19 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
+		CtPackageReference pack = targetType.getPackage();
+
+		if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
+			// ignore java.lang package
+			if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
+				// ignore type in same package
+				if (ref.getDeclaringType().getPackage().getSimpleName()
+						.equals(pack.getSimpleName())) {
+					return false;
+				}
+			}
+		}
+
 		methodImports.put(ref.getSimpleName(), ref);
 
 		// if we are in the same package than target type, we also import class to avoid FQN in FQN mode.
@@ -418,6 +361,18 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected boolean addFieldImport(CtFieldReference ref) {
 		if (this.fieldImports.containsKey(ref.getSimpleName())) {
 			return isImportedInFieldImports(ref);
+		}
+		CtPackageReference pack = targetType.getPackage();
+
+		if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
+			// ignore java.lang package
+			if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
+				// ignore type in same package
+				if (ref.getDeclaringType().getPackage().getSimpleName()
+						.equals(pack.getSimpleName())) {
+					return false;
+				}
+			}
 		}
 
 		fieldImports.put(ref.getSimpleName(), ref);

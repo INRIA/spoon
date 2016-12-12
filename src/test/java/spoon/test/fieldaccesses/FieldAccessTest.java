@@ -392,7 +392,7 @@ public class FieldAccessTest {
 		final CtClass<B> aClass = launcher.getFactory().Class().get(B.class);
 		aClass.getFactory().getEnvironment().setAutoImports(true);
 
-		assertEquals("A.myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).toString());
+		assertEquals("myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).toString());
 		assertEquals("finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
 	}
 }

@@ -691,7 +691,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				_context.ignoreGenerics(true);
 			}
 			if (f.getTarget() != null) {
-				if (!isInitializeStaticFinalField(f.getTarget()) && !isStaticImportedField(f.getVariable())) {
+				boolean isInitializeStaticFinalField = isInitializeStaticFinalField(f.getTarget());
+				boolean isStaticImportedField = isStaticImportedField(f.getVariable());
+
+				if (!isInitializeStaticFinalField && !isStaticImportedField) {
 					scan(f.getTarget());
 					if (!f.getTarget().isImplicit()) {
 						printer.write(".");

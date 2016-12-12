@@ -169,11 +169,11 @@ public class DefaultPrettyPrinterTest {
 
 		String expected =
 			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" +nl+
-			"    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
+			"    localField = E1.ordinal();" +nl+
 			"}"
 		;
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
-		assertEquals( "the externally defined enum should be fully qualified to avoid a name clash with the local enum of the same name", expected, computed );
+		assertEquals( "E1 is statically imported then we can call it directly", expected, computed );
 
 		expected = //This is what is expected
 			"public void setFieldUsingLocallyDefinedEnum() {" +nl+
