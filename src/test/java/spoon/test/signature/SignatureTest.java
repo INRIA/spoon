@@ -282,9 +282,9 @@ public class SignatureTest {
 		CtAssignment<?,?> invoToInt1 = (CtAssignment<?,?>) methodString.getBody().getStatement(0);
 
 		CtExpression<?> left = invoToInt1.getAssigned();
-		assertEquals("PR.this.mfield",left.toString());
+		assertEquals("this.mfield",left.toString());
 		assertEquals(null,left.getType());// null because noclasspath
-		assertEquals("PR.this.mfield = p",invoToInt1.toString());
+		assertEquals("this.mfield = p",invoToInt1.toString());
 
 
 	}
@@ -297,7 +297,7 @@ public class SignatureTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
 
-		final List<CtExecutableReference> references = Query.getReferences(launcher.getFactory(), new ReferenceTypeFilter<CtExecutableReference>(CtExecutableReference.class) {
+		final List<CtExecutableReference> references = Query.getElements(launcher.getFactory(), new ReferenceTypeFilter<CtExecutableReference>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference reference) {
 				return "addField".equals(reference.getSimpleName()) && super.matches(reference);

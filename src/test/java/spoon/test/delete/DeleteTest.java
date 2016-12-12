@@ -150,11 +150,12 @@ public class DeleteTest {
 
 		final CtMethod method = adobada.getMethod("m4", factory.Type().INTEGER_PRIMITIVE, factory.Type().FLOAT_PRIMITIVE, factory.Type().STRING);
 
-		assertEquals(4, adobada.getMethods().size());
+		int n = adobada.getMethods().size();
 
+		// deleting m4
 		method.delete();
 
-		assertEquals(3, adobada.getMethods().size());
+		assertEquals(n - 1, adobada.getMethods().size());
 		assertFalse(adobada.getMethods().contains(method));
 	}
 

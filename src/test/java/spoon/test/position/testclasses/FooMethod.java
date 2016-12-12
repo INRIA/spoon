@@ -13,4 +13,17 @@ public class FooMethod {
 	int mWithDoc(int parm1) {
 		return parm1;
 	}
+
+
+	public
+	static
+	final
+	int mWithLine
+			(int parm1) {
+		return parm1;
+	}
+
+	public FooMethod(int arg1) {
+
+	}
 }

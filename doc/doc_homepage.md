@@ -28,8 +28,8 @@ Spoon is an open-source library that enables you to transform (see [example](/fi
 You have different options:
 
 * Open an issue on [Github](https://github.com/INRIA/spoon/issues) (preferred).
-* Send an email to the mailing list: <a href="mailto:{{ site.email }}">{{ site.email }}</a> 
-* Post a question to [StackOverflow with tag inria-spoon](http://stackoverflow.com/tags/inria-spoon)
+* Send an email to the [Spoon mailing list](http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss). 
+* Post a question to [StackOverflow with tag inria-spoon](http://stackoverflow.com/tags/inria-spoon).
 
 ## News
 

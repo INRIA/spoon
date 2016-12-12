@@ -123,7 +123,7 @@ class JDTCommentBuilder {
 		String commentContent = getCommentContent(start, end);
 
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;
-		SourcePosition sourcePosition = factory.Core().createSourcePosition(spoonUnit, start, start, end, lineSeparatorPositions);
+		SourcePosition sourcePosition = factory.Core().createSourcePosition(spoonUnit, start, end, lineSeparatorPositions);
 
 		// create the Spoon comment element
 		comment.setContent(commentContent);

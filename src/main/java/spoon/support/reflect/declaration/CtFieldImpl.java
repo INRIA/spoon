@@ -29,6 +29,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -59,6 +60,11 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	@Override
 	public CtType<?> getDeclaringType() {
 		return (CtType<?>) parent;
+	}
+
+	@Override
+	public <T> CtType<T> getTopLevelType() {
+		return getDeclaringType().getTopLevelType();
 	}
 
 	@Override
@@ -163,6 +169,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtRHSReceiver<T>> C setAssignment(CtExpression<T> assignment) {
 		setDefaultExpression(assignment);
 		return (C) this;

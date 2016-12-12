@@ -23,10 +23,8 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.Root;
 import spoon.support.DerivedProperty;
-import spoon.support.visitor.equals.IgnoredByEquals;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -174,8 +172,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	/**
 	 * @param filter
 	 * @return
+	 *
+	 * @deprecated use {@link #getElements(Filter)} instead.
 	 */
-	<T extends CtReference> List<T> getReferences(ReferenceFilter<T> filter);
+	@Deprecated
+	<T extends CtReference> List<T> getReferences(Filter<T> filter);
 
 	/**
 	 * Sets the position of this element and all its children element. Note that
@@ -265,7 +266,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable {
 	 * The list of comments
 	 * @return the list of comment
 	 */
-	@IgnoredByEquals
 	List<CtComment> getComments();
 
 	/**

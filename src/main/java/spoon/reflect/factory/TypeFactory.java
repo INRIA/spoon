@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.StandardEnvironment;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
@@ -473,7 +474,12 @@ public class TypeFactory extends SubFactory {
 		if (aType == null) {
 			final CtType<T> shadowClass = (CtType<T>) this.shadowCache.get(cl);
 			if (shadowClass == null) {
-				final CtType<T> newShadowClass = new JavaReflectionTreeBuilder(createFactory()).scan((Class<T>) cl);
+				CtType<T> newShadowClass;
+				try {
+					newShadowClass = new JavaReflectionTreeBuilder(createFactory()).scan((Class<T>) cl);
+				} catch (Throwable e) {
+					throw new SpoonClassNotFoundException("cannot create shadow class: " + cl.getName(), e);
+				}
 				newShadowClass.setFactory(factory);
 				newShadowClass.accept(new CtScanner() {
 					@Override

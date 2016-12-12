@@ -57,21 +57,7 @@ public class ParentContractTest<T extends CtVisitable> {
 	@Parameterized.Parameter(0)
 	public CtType<?> toTest;
 
-	/**
-	 * The default contains based on Method.equals takes into account the return type
-	 * And we don't want this, because we need to capture
-	 * the annotation of the implementation method.
-	 */
-	private boolean containsMethod(List<Method> l, Method setter) {
-		for(Method m : l ) {
-			if (m.getName().equals(setter.getName())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private Object createCompatibleObject(CtTypeReference<?> parameterType) {
+	public static Object createCompatibleObject(CtTypeReference<?> parameterType) {
 		Class<?> c = parameterType.getActualClass();
 		for(CtType t : allInstantiableMetamodelInterfaces) {
 			if (c.isAssignableFrom(t.getActualClass())) {

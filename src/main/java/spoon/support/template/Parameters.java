@@ -16,7 +16,7 @@
  */
 package spoon.support.template;
 
-import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
@@ -35,7 +35,6 @@ import spoon.template.TemplateParameter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,8 +181,8 @@ public abstract class Parameters {
 	 * Gets the names of all the template parameters of a given template type
 	 * (including the ones defined by the super types).
 	 */
-	public static Collection<String> getNames(CtClass<? extends Template<?>> templateType) {
-		Collection<String> params = new ArrayList<>();
+	public static List<String> getNames(CtClass<? extends Template<?>> templateType) {
+		List<String> params = new ArrayList<>();
 		try {
 			for (CtFieldReference<?> f : templateType.getReference().getAllFields()) {
 				if (isParameterSource(f)) {
@@ -191,7 +190,7 @@ public abstract class Parameters {
 				}
 			}
 		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
+			throw new SpoonException("Getting of template parameters failed", e);
 		}
 		return params;
 	}
@@ -200,18 +199,28 @@ public abstract class Parameters {
 	 * Tells if a given field is a template parameter.
 	 */
 	public static boolean isParameterSource(CtFieldReference<?> ref) {
-		try {
-			return (ref.getDeclaration() != null // we must have the source of
-					// this fieldref
-					&& ref.getDeclaration().getAnnotation(Parameter.class) != null) || (!((ref.getType() instanceof CtTypeParameterReference) || ref.getSimpleName().equals("this"))
-					&& getTemplateParameterType(ref.getFactory()).isSubtypeOf(ref.getType()));
-		} catch (RuntimeException e) {
-			// if (e.getCause() instanceof ClassNotFoundException) {
-			// return false;
-			// } else {
-			throw e;
-			// }
+		CtField<?> field = ref.getDeclaration();
+		if (field == null) {
+			// we must have the source of this fieldref, otherwise we cannot use it as template parameter
+			return false;
 		}
+		if (field.getAnnotation(Parameter.class) != null) {
+			//it is the template field which represents template parameter, because of "Parameter" annotation
+			return true;
+		}
+		if (ref.getType() instanceof CtTypeParameterReference) {
+			//the template fields, which are using generic type like <T>, are not template parameters
+			return false;
+		}
+		if (ref.getSimpleName().equals("this")) {
+			//the reference to this is not template parameter
+			return false;
+		}
+		if (getTemplateParameterType(ref.getFactory()).isSubtypeOf(ref.getType())) {
+			//the type of template field is or extends from class TemplateParameter.
+			return true;
+		}
+		return false;
 	}
 
 	/**

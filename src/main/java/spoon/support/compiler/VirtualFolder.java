@@ -89,7 +89,7 @@ public class VirtualFolder implements SpoonFolder {
 		List<SpoonFolder> result = new ArrayList<>();
 		for (SpoonFile f : getAllFiles()) {
 			SpoonFolder folder = f.getParent();
-			if (!result.contains(folder)) {
+			if (folder != null && !result.contains(folder)) {
 				result.add(folder);
 			}
 		}

@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
@@ -37,7 +38,6 @@ import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -361,7 +361,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			try {
 				return getDeclaredFieldReferences();
 			} catch (SpoonClassNotFoundException cnfe) {
-				return handleParentNotFound(cnfe);
+				handleParentNotFound(cnfe);
+				return Collections.emptyList();
 			}
 		} else {
 			return t.getDeclaredFields();
@@ -396,13 +397,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
-	private Collection<CtFieldReference<?>> handleParentNotFound(SpoonClassNotFoundException cnfe) {
+	private void handleParentNotFound(SpoonClassNotFoundException cnfe) {
 		String msg = "cannot load class: " + getQualifiedName() + " with class loader "
 				+ Thread.currentThread().getContextClassLoader();
 		if (getFactory().getEnvironment().getNoClasspath()) {
 			// should not be thrown in 'noClasspath' environment (#775)
 			Launcher.LOGGER.warn(msg);
-			return Collections.emptyList();
+			return;
 		} else {
 			throw cnfe;
 		}
@@ -476,41 +477,17 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			CtType<?> t = getTypeDeclaration();
 			return t.getAllFields();
 		} catch (SpoonClassNotFoundException cnfe) {
-			//START OF Hack of Hack in JDTTreeBuilderHelper.createType(...)
-			CtTypeReference<?> declaringTypeRef = this.getDeclaringType();
-			if (declaringTypeRef != null) {
-				CtType<?> declaringType = declaringTypeRef.getDeclaration();
-				if (declaringType != null && declaringType.getNestedType(getSimpleName()) == null) {
-					//this type does not know it's real fully qualified name, so we cannot access it's java class.
-					//See the spoon.test.imports.ImportTest, whose class spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected is this case
-					Launcher.LOGGER.warn("cannot load class with access path: " + getQualifiedName());
-					return Collections.emptyList();
-				}
-			}
-			//END OF Hack
-			return handleParentNotFound(cnfe);
+			handleParentNotFound(cnfe);
+			return Collections.emptyList();
 		}
 	}
 
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Collection<CtExecutableReference<?>> l = new ArrayList<>();
-		CtType<T> t = getDeclaration();
-		if (t == null) {
-			Class<?> c = getActualClass();
-			for (Method m : c.getDeclaredMethods()) {
-				l.add(getFactory().Method().createReference(m));
-			}
-			for (Constructor<?> cons : c.getDeclaredConstructors()) {
-				CtExecutableReference<?> consRef = getFactory().Constructor().createReference(cons);
-				l.add(consRef);
-			}
-			Class<?> sc = c.getSuperclass();
-			if (sc != null) {
-				l.addAll(getFactory().Type().createReference(sc).getAllExecutables());
-			}
-		} else {
-			return t.getAllExecutables();
+		CtType<T> t = getTypeDeclaration();
+		if (t != null) {
+			l.addAll(t.getAllExecutables());
 		}
 		return l;
 	}
@@ -624,6 +601,140 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean isGenerics() {
 		return false;
+	}
+
+	@Override
+	public boolean canAccess(CtTypeReference<?> type) {
+		try {
+			Set<ModifierKind> modifiers = type.getModifiers();
+
+			if (modifiers.contains(ModifierKind.PUBLIC)) {
+				return true;
+			}
+			if (modifiers.contains(ModifierKind.PROTECTED)) {
+				if (isSubtypeOf(type)) {
+					//is visible in subtypes
+					return true;
+				} //else it is visible in same package, like package protected
+			}
+			if (modifiers.contains(ModifierKind.PRIVATE)) {
+				//it is visible in scope of the same class only
+				return type.getTopLevelType().getQualifiedName().equals(this.getQualifiedName());
+			}
+			//package protected
+			if (type.getTopLevelType().getPackage().getSimpleName().equals(this.getTopLevelType().getPackage().getSimpleName())) {
+				//visible only in scope of the same package
+				return true;
+			}
+			return false;
+		} catch (SpoonClassNotFoundException e) {
+			handleParentNotFound(e);
+			//if the modifiers cannot be resolved then we expect that it is visible
+			return true;
+		}
+	}
+
+	@Override
+	public CtTypeReference<?> getTopLevelType() {
+		CtTypeReference<?> type = this;
+		while (true) {
+			CtTypeReference<?> parentType = type.getDeclaringType();
+			if (parentType == null) {
+				return type;
+			}
+			type = parentType;
+		}
+	}
+
+	@Override
+	public CtTypeReference<?> getAccessType() {
+		CtTypeReference<?> declType = this.getDeclaringType();
+		if (declType == null) {
+			throw new SpoonException("The nestedType is expected, but it is: " + getQualifiedName());
+		}
+		CtType<?> contextType = getParent(CtType.class);
+		if (contextType == null) {
+			return declType;
+		}
+		CtTypeReference<?> contextTypeRef = contextType.getReference();
+		if (contextType != null && contextTypeRef.canAccess(declType) == false) {
+			//search for visible declaring type
+			CtTypeReference<?> visibleDeclType = null;
+			CtTypeReference<?> type = contextTypeRef;
+			//search which type or declaring type of startType extends from nestedType
+			while (visibleDeclType == null && type != null) {
+				visibleDeclType = getLastVisibleSuperClassExtendingFrom(type, declType);
+				if (visibleDeclType != null) {
+					//found one!
+					applyActualTypeArguments(visibleDeclType, declType);
+					break;
+				}
+				//try class hierarchy of declaring type
+				type = type.getDeclaringType();
+			}
+			declType = visibleDeclType;
+		}
+		return declType;
+	}
+
+	/**
+	 * adds the actualTypeArguments of sourceTypeRef to targetTypeRef. Type of targetTypeRef extends from type of sourceTypeRef
+	 * @param targetTypeRef
+	 * @param sourceTypeRef
+	 */
+	private static void applyActualTypeArguments(CtTypeReference<?> targetTypeRef, CtTypeReference<?> sourceTypeRef) {
+		CtTypeReference<?> targetDeclType = targetTypeRef.getDeclaringType();
+		CtTypeReference<?> sourceDeclType = sourceTypeRef.getDeclaringType();
+		if (targetDeclType != null && sourceDeclType != null && targetDeclType.isSubtypeOf(sourceDeclType)) {
+			applyActualTypeArguments(targetDeclType, sourceDeclType);
+		}
+		if (targetTypeRef.isSubtypeOf(sourceTypeRef) == false) {
+			throw new SpoonException("Invalid arguments. targetTypeRef " + targetTypeRef.getQualifiedName() + " must be a sub type of sourceTypeRef " + sourceTypeRef.getQualifiedName());
+		}
+		List<CtTypeReference<?>> newTypeArgs = new ArrayList<>();
+		/*
+		 * for now simply copy the type arguments, to have it fixed fast. But it is not correct!
+		 *
+		 * For example in this case
+		 *
+		 * class A<T,K>{}
+		 *
+		 * class B<U,T> extends A<T,Integer>
+		 *
+		 * The sourceTypeRef: A<T,K>
+		 * has to be applied to
+		 * targetTypeRef: B<?,T>
+		 */
+		for (CtTypeReference<?> l_tr : sourceTypeRef.getActualTypeArguments()) {
+			newTypeArgs.add(l_tr.clone());
+		}
+		targetTypeRef.setActualTypeArguments(newTypeArgs);
+	}
+
+	/**
+	 *
+	 * @param sourceType
+	 * @param targetType
+	 * @return sourceType or last super class of sourceType, which extends from targetType and which is visible from sourceType or null if sourceType does not extends from targetType
+	 */
+	private static CtTypeReference<?> getLastVisibleSuperClassExtendingFrom(CtTypeReference<?> sourceType, CtTypeReference<?> targetType) {
+		String targetQN = targetType.getQualifiedName();
+		CtTypeReference<?> adept = sourceType;
+		CtTypeReference<?> type = sourceType;
+		while (true) {
+			if (targetQN.equals(type.getQualifiedName())) {
+				return adept;
+			}
+			type = type.getSuperclass();
+			if (type == null) {
+				//there is no super type which extends from targetType
+				return null;
+			}
+			if (sourceType.canAccess(type)) {
+				//this super type is still visible. It is adept for returning
+				adept = type;
+			}
+		}
 	}
 
 	boolean isShadow;

@@ -17,12 +17,7 @@
 package spoon.reflect.factory;
 
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.Import;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
-import spoon.support.reflect.cu.ImportImpl;
 
 import java.io.File;
 import java.util.Map;
@@ -86,34 +81,6 @@ public class CompilationUnitFactory extends SubFactory {
 	 */
 	public CompilationUnit removeFromCache(String filePath) {
 		return cachedCompilationUnits.remove(filePath);
-	}
-
-	/**
-	 * Creates an import for the given type.
-	 */
-	public Import createImport(CtTypeReference<?> type) {
-		return new ImportImpl(type);
-	}
-
-	/**
-	 * Creates an import for the given type.
-	 */
-	public Import createImport(Class<?> type) {
-		return new ImportImpl(factory.Type().createReference(type));
-	}
-
-	/**
-	 * Creates an import for the given field.
-	 */
-	public Import createImport(CtFieldReference<?> field) {
-		return new ImportImpl(field);
-	}
-
-	/**
-	 * Creates an import for the given package.
-	 */
-	public Import createImport(CtPackageReference pack) {
-		return new ImportImpl(pack);
 	}
 
 }

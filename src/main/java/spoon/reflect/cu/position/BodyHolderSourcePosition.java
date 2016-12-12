@@ -14,29 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.cu;
-
-import spoon.reflect.reference.CtReference;
+package spoon.reflect.cu.position;
 
 /**
- * This interface represents imports in a compilation unit. Imports are not part
- * of the AST and are generated automatically. However, when the auto-import
- * feature of a compilation unit is turned off, the programmer can manually
- * specify the imports to be done.
- *
- * @see spoon.compiler.Environment#isAutoImports()
- * @see spoon.compiler.Environment#setAutoImports(boolean)
+ * This interface represents the position of a Method declaration in a source file.
  */
-public interface Import {
+public interface BodyHolderSourcePosition extends DeclarationSourcePosition {
 
-	/**
-	 * Gets the Java string declaration of the import.
-	 */
-	String toString();
+	int getBodyStart();
 
-	/**
-	 * Gets the reference of the element that is imported.
-	 */
-	CtReference getReference();
+	int getBodyEnd();
 
 }

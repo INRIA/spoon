@@ -14,31 +14,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.equals;
+package spoon.support.reflect.eval;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.CtBiScannerDefault;
-import spoon.support.visitor.equals.EqualsChecker;
+import spoon.reflect.eval.PartialEvaluator;
+import spoon.reflect.visitor.CtScanner;
 
 /**
- * Used to check equality between an element and another one.
- *
- * This class is generated automatically by the processor {@link spoon.generating.EqualsVisitorGenerator}.
+ * Simplifies an AST inline based on {@link VisitorPartialEvaluator} (wanring: the nodes are changed).
  */
-class EqualsVisitorTemplate extends CtBiScannerDefault {
-	public static boolean equals(CtElement element, CtElement other) {
-		return !new EqualsVisitorTemplate().biScan(element, other);
+public class InlinePartialEvaluator extends CtScanner {
+	private final PartialEvaluator eval;
+
+	public InlinePartialEvaluator(PartialEvaluator eval) {
+		this.eval = eval;
 	}
-
-	private final EqualsChecker checker = new EqualsChecker();
-
 	@Override
-	protected void enter(CtElement e) {
-		super.enter(e);
-		checker.setOther(stack.peek());
-		checker.scan(e);
-		if (checker.isNotEqual()) {
-			fail();
+	protected void exit(CtElement e) {
+		CtElement simplified = eval.evaluate(e);
+		if (simplified != null) {
+			e.replace(simplified);
 		}
 	}
 }

@@ -23,6 +23,7 @@ import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -388,5 +389,15 @@ public class PrinterHelper {
 	@Override
 	public String toString() {
 		return sbf.toString();
+	}
+
+	private ArrayDeque<Integer> lengths = new ArrayDeque<>();
+	/** stores the length of the printer */
+	public void snapshotLength() {
+		lengths.addLast(toString().length());
+	}
+	/** returns true if something has been written since the last call to snapshotLength() */
+	public boolean hasNewContent() {
+		return lengths.pollLast() < toString().length();
 	}
 }

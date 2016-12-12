@@ -23,10 +23,10 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.SignatureBasedSortedSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -46,7 +46,9 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
-		Set<CtMethod<?>> allMethods = new HashSet<>(getMethods());
+		Set<CtMethod<?>> allMethods = new SignatureBasedSortedSet();
+		allMethods.addAll(getMethods());
+		allMethods.addAll(getFactory().Type().get(Enum.class).getMethods());
 		allMethods.add(valuesMethod());
 		allMethods.add(valueOfMethod());
 		return allMethods;

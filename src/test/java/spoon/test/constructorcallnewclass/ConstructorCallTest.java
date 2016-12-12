@@ -1,15 +1,7 @@
 package spoon.test.constructorcallnewclass;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
@@ -22,6 +14,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Panini;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ConstructorCallTest {
 	private List<CtConstructorCall<?>> constructorCalls;
@@ -89,7 +88,7 @@ public class ConstructorCallTest {
 		assertTrue(implicitArray.isImplicit());
 		final CtArrayTypeReference implicitArrayTyped = (CtArrayTypeReference) implicitArray;
 		assertEquals("", implicitArrayTyped.toString());
-		assertEquals("Array", implicitArrayTyped.getSimpleName());
+		assertEquals("AtomicLong[]", implicitArrayTyped.getSimpleName());
 		assertTrue(implicitArrayTyped.getComponentType().isImplicit());
 		assertEquals("", implicitArrayTyped.getComponentType().toString());
 		assertEquals("AtomicLong", implicitArrayTyped.getComponentType().getSimpleName());
@@ -110,4 +109,18 @@ public class ConstructorCallTest {
 	private void assertConstructorCallWithType(Class<?> typeExpected, CtConstructorCall<?> constructorCall) {
 		assertEquals("Constructor call is typed by the class of the constructor", typeExpected, constructorCall.getType().getActualClass());
 	}
+
+	@Test
+	public void testCoreConstructorCall() throws Exception {
+		Launcher spoon = new Launcher();
+		// the minimum is setType()
+		CtConstructorCall call = spoon.getFactory().Core().createConstructorCall();
+		call.setType(spoon.getFactory().Core().createTypeReference().setSimpleName("Foo"));
+		assertEquals("new Foo()", call.toString());
+
+		// now with Code factory
+		CtConstructorCall call2 = spoon.getFactory().Code().createConstructorCall(spoon.getFactory().Core().createTypeReference().setSimpleName("Bar"));
+		assertEquals("new Bar()", call2.toString());
+	}
+
 }

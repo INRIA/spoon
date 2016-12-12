@@ -39,7 +39,7 @@ import java.util.Set;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
-	String simpleName;
+	String simpleName = "";
 	CtExpression<T> expression;
 	CtBlock<?> body;
 	List<CtParameter<?>> parameters = emptyList();
@@ -69,14 +69,20 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtBodyHolder> C setBody(CtStatement statement) {
-		CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-		if (expression != null && body != null) {
-			throw new SpoonException("A lambda can't have two bodys.");
+
+		if (statement != null) {
+			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
+			if (expression != null && body != null) {
+				throw new SpoonException("A lambda can't have two bodys.");
+			}
+			if (body != null) {
+				body.setParent(this);
+			}
+			this.body = body;
+		} else {
+			this.body = null;
 		}
-		if (body != null) {
-			body.setParent(this);
-		}
-		this.body = body;
+
 		return (C) this;
 	}
 
@@ -180,11 +186,12 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	public <C extends CtLambda<T>> C setExpression(CtExpression<T> expression) {
 		if (body != null && expression != null) {
 			throw new SpoonException("A lambda can't have two bodys.");
+		} else {
+			if (expression != null) {
+				expression.setParent(this);
+			}
+			this.expression = expression;
 		}
-		if (expression != null) {
-			expression.setParent(this);
-		}
-		this.expression = expression;
 		return (C) this;
 	}
 

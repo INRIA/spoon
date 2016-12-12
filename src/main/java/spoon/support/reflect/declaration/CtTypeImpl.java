@@ -18,7 +18,6 @@ package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -45,8 +44,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
-import spoon.support.compiler.SnippetCompilationHelper;
+import spoon.support.UnsettableProperty;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
 
@@ -56,7 +56,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -137,13 +136,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
-		if (field != null && !this.typeMembers.contains(field)) {
-			CompilationUnit compilationUnit = null;
-			if (getPosition() != null) {
-				compilationUnit = getPosition().getCompilationUnit();
-			}
-			field.setPosition(getFactory().Core().createSourcePosition(compilationUnit, -1, -1, -1, new int[0]));
-		}
 		return addTypeMemberAt(0, field);
 	}
 
@@ -303,6 +295,20 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return getParent(CtType.class);
 		} catch (ParentNotInitializedException ex) {
 			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> CtType<T> getTopLevelType() {
+		CtType<?> top = this;
+
+		while (true) {
+			CtType<?> nextTop = top.getDeclaringType();
+			if (nextTop == null) {
+				return (CtType<T>) top;
+			}
+			top = nextTop;
 		}
 	}
 
@@ -718,7 +724,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			} else {
 				return getFactory().Type().objectType().equals(expectedType);
 			}
-		} else if (!expectedType.equals(ctParameterType)) {
+		} else if (!expectedType.getQualifiedName().equals(ctParameterType.getQualifiedName())) {
 			return false;
 		}
 		return true;
@@ -840,6 +846,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
 		// overridden in subclasses.
 		return (C) this;
@@ -875,12 +882,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
-		Set<CtExecutableReference<?>> l = new HashSet<>(getDeclaredExecutables());
-		if (this instanceof CtClass) {
-			CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
-			if (st != null) {
-				l.addAll(st.getAllExecutables());
-			}
+		Set<CtExecutableReference<?>> l = new SignatureBasedSortedSet();
+		for (CtMethod<?> m : getAllMethods()) {
+			l.add((CtExecutableReference<?>) m.getReference());
 		}
 		return l;
 	}
@@ -911,8 +915,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			} catch (SpoonClassNotFoundException ignored) {
 				// should not be thrown in 'noClasspath' environment (#775)
 			}
-		} else {
-			// this is object
+		} else if (this instanceof CtClass) {
+			// only CtCLasses extend object
 			addAllBasedOnSignature(getFactory().Type().get(Object.class).getMethods(), l);
 		}
 

@@ -118,9 +118,6 @@ public interface CtTypeInformation {
 	 *
 	 * getSuperClass().getDeclaration()/getTypeDeclaration() returns the corresponding CtType (if in the source folder of Spoon).
 	 *
-	 * However, getSuperClass().getDeclaration() returns null in very rare cases if the superclass does not use a simple name or a fully-qualified
-	 * name based on packages, but rather an access path.
-	 *
 	 * @return the class type directly extended by this class, or null if there
 	 *         is none
 	 */
@@ -160,17 +157,16 @@ public interface CtTypeInformation {
 	Collection<CtExecutableReference<?>> getDeclaredExecutables();
 
 	/**
-	 * Gets the executables declared by this type and by all its supertypes if
+	 * Gets the executables declared by this type and by all its supertypes (static/instance methods, constructors, anonymous static blocks) if
 	 * applicable. This method returns:
 	 *
 	 * <ul>
-	 *     <li>static, instance and default executables</li>
-	 *     <li>Overridden methods</li>
+	 *     <li>static, instance and default methods</li>
 	 *     <li>constructors</li>
 	 * </ul>
 	 *
 	 * If a method is overridden twice in the hierarchy, it counts for two different elements.
-	 * If a method is declared in an interface in the hierarchy and implemented in the current type or in a super type, it counts for two (or n different elements).
+	 * The method can be abstract.
 	 */
 	@DerivedProperty
 	Collection<CtExecutableReference<?>> getAllExecutables();

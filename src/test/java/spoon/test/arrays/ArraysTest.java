@@ -23,7 +23,7 @@ public class ArraysTest {
 	public void testArrayReferences() throws Exception {
 		CtType<?> type = build("spoon.test.arrays", "ArrayClass");
 		assertEquals("ArrayClass", type.getSimpleName());
-		assertEquals("int[][][]", type.getField("i").getType().toString());
+		assertEquals("int[][][]", type.getField("i").getType().getSimpleName());
 		assertEquals(3, ((CtArrayTypeReference<?>) type.getField("i").getType()).getDimensionCount());
 		final CtArrayTypeReference<?> arrayTypeReference = (CtArrayTypeReference<?>) type.getField("i").getDefaultExpression().getType();
 		assertEquals(1, arrayTypeReference.getArrayType().getAnnotations().size());
@@ -31,8 +31,8 @@ public class ArraysTest {
 
 		CtField<?> x = type.getField("x");
 		assertTrue(x.getType() instanceof CtArrayTypeReference);
-		assertEquals("Array", x.getType().getSimpleName());
-		assertEquals("java.lang.reflect.Array", x.getType().getQualifiedName());
+		assertEquals("int[]", x.getType().getSimpleName());
+		assertEquals("int[]", x.getType().getQualifiedName());
 		assertEquals("int", ((CtArrayTypeReference<?>) x.getType()).getComponentType().getSimpleName());
 		assertTrue(((CtArrayTypeReference<?>) x.getType()).getComponentType().getActualClass().equals(int.class));
 	}

@@ -267,9 +267,9 @@ public class FieldAccessTest {
 		assertEquals("i", fields.get(0).toString());
 
 		final List<CtVariableWrite<?>> variables = prepare.getElements(new TypeFilter<>(CtVariableWrite.class));
-		assertEquals(1, variables.size());
-		assertEquals("j += 0", variables.get(0).getParent().toString());
-		assertEquals("j", variables.get(0).toString());
+		assertEquals(2, variables.size());
+		assertEquals("j += 0", variables.get(1).getParent().toString());
+		assertEquals("j", variables.get(1).toString());
 
 		final List<CtArrayWrite<?>> arrays = prepare.getElements(new TypeFilter<>(CtArrayWrite.class));
 		assertEquals(1, arrays.size());

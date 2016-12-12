@@ -244,7 +244,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		} else if (value instanceof CtCodeElement) {
 			// Evaluate code elements
 			PartialEvaluator eval = getFactory().Eval().createPartialEvaluator();
-			Object ret = eval.evaluate(null, (CtCodeElement) value);
+			Object ret = eval.evaluate((CtCodeElement) value);
 
 			return this.convertValue(ret);
 		} else if (value instanceof CtTypeReference) {

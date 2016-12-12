@@ -16,7 +16,6 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.SpoonException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
@@ -46,9 +45,6 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
-		if (simplename.contains("?")) {
-			throw new SpoonException("A reference can't have a \"?\" in its name.");
-		}
 		Factory factory = getFactory();
 		if (factory instanceof FactoryImpl) {
 			simplename = ((FactoryImpl) factory).dedup(simplename);

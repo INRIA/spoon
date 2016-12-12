@@ -18,11 +18,15 @@ package spoon.generating.replace;
 
 import spoon.SpoonException;
 import spoon.generating.ReplacementVisitorGenerator;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -36,10 +40,9 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.ReferenceFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +54,6 @@ public class ReplaceScanner extends CtScanner {
 	public static final String GENERATING_REPLACE_PACKAGE = "spoon.generating.replace";
 	public static final String GENERATING_REPLACE_VISITOR = GENERATING_REPLACE_PACKAGE + ".ReplacementVisitor";
 
-	private final List<String> excludes = Collections.singletonList("spoon.reflect.code.CtLiteral#getValue()");
 	private final Map<String, CtClass> listeners = new HashMap<>();
 	private final CtClass<Object> target;
 	private final CtExecutableReference<?> element;
@@ -80,15 +82,13 @@ public class ReplaceScanner extends CtScanner {
 		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
 			CtInvocation inv = element.getBody().getStatement(i);
 			CtInvocation getter = (CtInvocation) inv.getArguments().get(0);
+
 			if (clone.getComments().size() == 0) {
 				// Add auto-generated comment.
 				final CtComment comment = factory.Core().createComment();
 				comment.setCommentType(CtComment.CommentType.INLINE);
 				comment.setContent("auto-generated, see " + ReplacementVisitorGenerator.class.getName());
 				clone.addComment(comment);
-			}
-			if (excludes.contains(getter.getExecutable().toString())) {
-				continue;
 			}
 			Class actualClass = getter.getType().getActualClass();
 			CtInvocation<?> invocation = createInvocation(factory, element, inv, getter, actualClass);
@@ -172,15 +172,10 @@ public class ReplaceScanner extends CtScanner {
 		listener = factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener").clone();
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
-		final List<CtTypeReference> references = listener.getReferences(new ReferenceFilter<CtTypeReference>() {
+		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference != null && (GENERATING_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
-			}
-
-			@Override
-			public Class<CtTypeReference> getType() {
-				return CtTypeReference.class;
+				return (GENERATING_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
 			}
 		});
 		for (CtTypeReference reference : references) {
@@ -196,6 +191,9 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtParameter<?> updateConstructor(CtClass listener, CtTypeReference type) {
 		final CtConstructor ctConstructor = (CtConstructor) listener.getConstructors().toArray(new CtConstructor[listener.getConstructors().size()])[0];
+		CtAssignment assign = (CtAssignment) ctConstructor.getBody().getStatement(1);
+		CtThisAccess fieldAccess = (CtThisAccess) ((CtFieldAccess) assign.getAssigned()).getTarget();
+		((CtTypeAccess) fieldAccess.getTarget()).getAccessedType().setImplicit(true);
 		final CtParameter<?> aParameter = (CtParameter<?>) ctConstructor.getParameters().get(0);
 		aParameter.setType(type);
 		return aParameter;

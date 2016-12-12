@@ -3,15 +3,20 @@ package spoon.test.comparison;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class EqualTest {
@@ -61,5 +66,34 @@ public class EqualTest {
 
 	}
 
+	@Test
+	public void testEqualsComment() throws Exception {
+		Factory factory = new Launcher().createFactory();
+		CtLocalVariable<?> var = factory.Code().createCodeSnippetStatement("int i=0").compile();
+		CtLocalVariable<?> var2 = var.clone();
+		var2.addComment(factory.Code().createComment("foo", CtComment.CommentType.INLINE));
+		assertNotEquals(1, var.getComments().size());
+		assertNotEquals(var2, var);
+	}
 
+	@Test
+	public void testEqualsMultitype() throws Exception {
+		Factory factory = new Launcher().createFactory();
+		CtTry var = factory.Code().createCodeSnippetStatement("try{}catch(RuntimeException | AssertionError e){}").compile();
+		CtTry var2 = var.clone();
+		assertEquals(2, var2.getCatchers().get(0).getParameter().getMultiTypes().size());
+		// removing a multitype
+		var2.getCatchers().get(0).getParameter().getMultiTypes().remove(0);
+		assertEquals(1, var2.getCatchers().get(0).getParameter().getMultiTypes().size());
+		assertNotEquals(var2, var);
+	}
+
+	@Test
+	public void testEqualsActualTypeRef() throws Exception {
+		// contract: actual type refs are part of the identity
+		Factory factory = new Launcher().createFactory();
+		CtLocalVariable var = factory.Code().createCodeSnippetStatement("java.util.List<String> l ").compile();
+		CtLocalVariable var2 = factory.Code().createCodeSnippetStatement("java.util.List<Object> l ").compile();
+		assertNotEquals(var2, var);
+	}
 }

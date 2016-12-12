@@ -31,9 +31,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.ReferenceFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.support.reflect.cu.SourcePositionImpl;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.HashcodeVisitor;
@@ -83,9 +81,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	private List<CtComment> comments = emptyList();
 
-	public final SourcePosition DEFAULT_POSITION = new SourcePositionImpl(null, -1, -1, -1, null);
-
-	SourcePosition position = DEFAULT_POSITION;
+	SourcePosition position = SourcePosition.NOPOSITION;
 
 	Map<String, Object> metadata;
 
@@ -258,8 +254,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return Query.getElements(this, filter);
 	}
 
-	public <T extends CtReference> List<T> getReferences(ReferenceFilter<T> filter) {
-		return Query.getReferences(this, filter);
+	public <T extends CtReference> List<T> getReferences(Filter<T> filter) {
+		return getElements(filter);
 	}
 
 	@Override
@@ -295,7 +291,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException {
-		if (getParent() == null) {
+		if (parent == null) {
 			return null;
 		}
 		if (parentType.isAssignableFrom(getParent().getClass())) {

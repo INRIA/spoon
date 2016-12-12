@@ -63,6 +63,8 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.position.DeclarationSourcePosition;
+import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
@@ -323,6 +325,12 @@ public interface CoreFactory {
 
 	/**
 	 * Creates a constructor call expression.
+	 *
+	 * Example to build "new Foo()":
+	 * <pre>
+	 *     CtConstructorCall call = spoon.getFactory().Core().createConstructorCall();
+	 *     call.setType(spoon.getFactory().Core().createTypeReference().setSimpleName("Foo"));
+	 * </pre>
 	 */
 	<T> CtConstructorCall<T> createConstructorCall();
 
@@ -374,9 +382,37 @@ public interface CoreFactory {
 	/**
 	 * Creates a source position.
 	 */
+	@Deprecated
 	SourcePosition createSourcePosition(
 			CompilationUnit compilationUnit,
 			int startDeclaration, int startSource, int end, int[] lineSeparatorPositions);
+
+	/**
+	 * Creates a source position.
+	 */
+	SourcePosition createSourcePosition(
+			CompilationUnit compilationUnit,
+			int startSource, int end, int[] lineSeparatorPositions);
+
+	/**
+	 * Creates a declaration source position.
+	 */
+	DeclarationSourcePosition createDeclarationSourcePosition(
+			CompilationUnit compilationUnit,
+			int startSource, int end,
+			int modifierStart, int modifierEnd,
+			int declarationStart, int declarationEnd,
+			int[] lineSeparatorPositions);
+
+	/**
+	 * Creates a body holder source position.
+	 */
+	BodyHolderSourcePosition createBodyHolderSourcePosition(
+			CompilationUnit compilationUnit,
+			int startSource, int end,
+			int modifierStart, int modifierEnd,
+			int declarationStart, int declarationEnd,
+			int bodyStart, int bodyEnd, int[] lineSeparatorPositions);
 
 	/**
 	 * Creates a statement list.

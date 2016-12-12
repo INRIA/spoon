@@ -5,13 +5,15 @@ keywords: start, begin, hello world, processor, spoon
 last_updated: October 1, 2015
 ---
 
-Spoon analyzes source code. However, this source code may refer to libraries (as a field, parameter, or method return type). Those library may be or not in the classpath. The boundary between source and libraries is handled by the reference mechanism.
+## Visualizing the model of a Java file
 
-When you're consider a reference object (say, a TypeReference), there are three cases:
+To get started with the metamodel, you can browse the model (ie the Spoon AST) of a java file (say `MyClass.java`) as follows:
 
-- Case 1: the reference points to a code element for which the source code is present. In this case, reference.getDeclaration() returns this code element (e.g. TypeReference.getDeclaration returns the CtType representing the given java file). reference.getTypeDeclaration() is identical to reference.getDeclaration().
-- Case 2: the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the --source-classpath argument). In this case, reference.getDeclaration() returns null and reference.getTypeDeclaration returns a partial CtType built using runtime reflection. Those objects built using runtime reflection are called shadow objects; and you can identify them with method isShadow. (This also holds for getFieldDeclaration and getExecutableDeclaration)
-- Case 3: : the reference points to a code element for which the source code is NOT present, but for which the binary class is NOT in the classpath. This is called in Spoon the noclasspath mode. In this case, both reference.getDeclaration() and reference.getTypeDeclaration() return null. (This also holds for getFieldDeclaration and getExecutableDeclaration)
+```
+$ java -cp spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i MyClass.java --gui --noclasspath
+```
+
+
 
 ## Creation of the processor
 

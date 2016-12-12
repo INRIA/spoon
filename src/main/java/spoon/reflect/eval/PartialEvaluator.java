@@ -16,7 +16,6 @@
  */
 package spoon.reflect.eval;
 
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -31,11 +30,9 @@ public interface PartialEvaluator {
 	 *
 	 * @param <R>
 	 * 		the partially evaluated element type
-	 * @param parent
-	 * 		the parent element of the partially evaluated element
 	 * @param element
 	 * 		the element to be partially evaluated
 	 * @return the result of the partial evaluation
 	 */
-	<R extends CtCodeElement> R evaluate(CtElement parent, R element);
+	<R extends CtElement> R evaluate(R element);
 }

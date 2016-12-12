@@ -27,6 +27,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.EnumSet;
@@ -37,7 +38,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	CtExpression<T> defaultExpression;
 
-	String name;
+	String name = "";
 
 	CtTypeReference<T> type;
 
@@ -156,6 +157,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtRHSReceiver<T>> C setAssignment(CtExpression<T> assignment) {
 		setDefaultExpression(assignment);
 		return (C) this;

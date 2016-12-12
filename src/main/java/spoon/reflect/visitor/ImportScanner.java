@@ -37,6 +37,7 @@ public interface ImportScanner {
 	/**
 	 * Computes imports for all elements.
 	 */
+	@Deprecated
 	void computeImports(CtElement element);
 
 	/**

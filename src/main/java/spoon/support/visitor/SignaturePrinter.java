@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor;
 
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
@@ -26,13 +27,14 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.CtScanner;
 
 /**
  * Responsible for computing signatures for elements where a signature exists
- * (CtType, CtMethod and CtPackage). Otherwise returns the empty string
+ * (CtType, CtMethod and CtPackage). Otherwise returns the empty string.
+ *
  */
-public class SignaturePrinter extends CtInheritanceScanner {
+public class SignaturePrinter extends CtScanner {
 
 	private final StringBuffer signature = new StringBuffer();
 
@@ -119,6 +121,17 @@ public class SignaturePrinter extends CtInheritanceScanner {
 	}
 
 	@Override
+	public <T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod) {
+		visitCtMethod(annotationMethod);
+	}
+
+	/**
+	* For methods, this implementation of signature contains the return type, which corresponds
+	* to what the Java compile and virtual machine call a "descriptor".
+	*
+	* See chapter "8.4.2 Method Signature" of the Java specification
+	*/
+	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
 		if (!m.getFormalCtTypeParameters().isEmpty()) {
 			write("<");
@@ -131,6 +144,7 @@ public class SignaturePrinter extends CtInheritanceScanner {
 			}
 			write("> ");
 		}
+		// the return type is required, see example in SimilarSignatureMethodes in test code (name and arguments are identical)
 		if (m.getType() != null) {
 			write(m.getType().getQualifiedName());
 		}

@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtElement;
 public interface Filter<T extends CtElement> {
 	/**
 	 * Tells if the given element matches.
+	 * @param element - the element to be checked for a match. Parameter element is never null if {@link Query} is used.
 	 */
 	boolean matches(T element);
 

@@ -27,6 +27,7 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.QualifiedNameBasedSortedSet;
@@ -50,6 +51,14 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		super();
 	}
 
+	public CtType<?> getDeclaringType() {
+		return (CtType<?>) parent;
+	}
+
+	public <T> CtType<T> getTopLevelType() {
+		return getDeclaringType().getTopLevelType();
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtBlock<R> getBody() {
@@ -58,11 +67,15 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
-		CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-		if (body != null) {
-			body.setParent(this);
+		if (statement != null) {
+			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
+			if (body != null) {
+				body.setParent(this);
+			}
+			this.body = body;
+		} else {
+			this.body = null;
 		}
-		this.body = body;
 		return (T) this;
 	}
 

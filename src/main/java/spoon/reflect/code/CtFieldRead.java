@@ -31,7 +31,7 @@ package spoon.reflect.code;
  * @param <T>
  * 		type of the field
  */
-public interface CtFieldRead<T> extends CtFieldAccess<T> {
+public interface CtFieldRead<T> extends CtFieldAccess<T>, CtVariableRead<T> {
 	@Override
 	CtFieldRead<T> clone();
 }

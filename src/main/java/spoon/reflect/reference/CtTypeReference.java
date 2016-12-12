@@ -86,7 +86,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return the declaring type if this references an inner class; null in
 	 * other cases
 	 */
-	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
 	/**
@@ -94,7 +93,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the declaring package or null if this if a inner class
 	 */
-	@DerivedProperty
 	CtPackageReference getPackage();
 
 	/**
@@ -140,4 +138,47 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	@Override
 	@DerivedProperty
 	CtTypeReference<?> getSuperclass();
+
+	/**
+	 * Checks visibility based on public, protected, package protected and private modifiers of type
+	 * @param type
+	 * @return true if this can access that type
+	 */
+	boolean canAccess(CtTypeReference<?> type);
+
+	/**
+	 * Returns this, or top level type of this, if this is an inner type
+	 */
+	@DerivedProperty
+	CtTypeReference<?> getTopLevelType();
+
+	/**
+	 * Computes nearest access path parent to this type from the context of this type reference.
+	 * The context is defined by this.getParent(CtType.class).
+	 *
+	 * Normally the declaring type can be used as access path. For example in this class hierarchy
+	 * <pre>
+	 * class A {
+	 *    class B {
+	 *       class C {}
+	 *    }
+	 * }
+	 * </pre>
+	 *
+	 * The C.getAccessParentFrom(null) will return B, because B can be used to access C, using code like <code>B.C</code><br>
+	 * But when some class (A or B) on the access path is not visible in type X, then we must found an alternative path.
+	 * For example in case like, when A and B are invisible, e.g because of modifier <code>protected</code>:
+	 * <pre>
+	 * class D extends B {
+	 * }
+	 * class X extends D {
+	 * 	 class F extends C
+	 * }
+	 * </pre>
+	 * The C.getAccessParentFrom(X) will return D, because D can be used to access C in scope of X.
+	 *
+	 * @return type reference which can be used to access this type in scope of contextType.
+	 */
+	@DerivedProperty
+	CtTypeReference<?> getAccessType();
 }

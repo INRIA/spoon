@@ -3,11 +3,13 @@ package spoon.test.template;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -18,9 +20,13 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
+import spoon.test.template.testclasses.SecurityCheckerTemplate;
 
 import java.io.File;
+import java.io.Serializable;
+import java.rmi.Remote;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -249,4 +255,74 @@ public class TemplateTest {
 		assertEquals("spoon.test.template.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
 	}
+
+	@Test
+	public void testTemplateInterfaces() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.getFactory();
+		spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources(
+						"./src/test/java/spoon/test/template/SubClass.java"),
+				SpoonResourceHelper
+						.resources(
+								"./src/test/java/spoon/test/template/InterfaceTemplate.java")
+				)
+				.build();
+
+		CtClass<?> superc = factory.Class().get(SuperClass.class);
+		InterfaceTemplate interfaceTemplate = new InterfaceTemplate(superc.getFactory());
+		interfaceTemplate.apply(superc);
+
+		assertEquals(3, superc.getSuperInterfaces().size());
+		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Comparable.class)));
+		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Serializable.class)));
+		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Remote.class)));
+	}
+
+	@Test
+	public void testTemplateMatcherWithWholePackage() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/ContextHelper.java");
+		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/BServiceImpl.java");
+
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SecurityCheckerTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
+		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
+		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
+		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+
+		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
+
+		assertEquals(1, matches.size());
+
+		CtElement match = matches.get(0);
+
+		assertTrue("Match is not a if", match instanceof CtIf);
+
+		CtElement matchParent = match.getParent();
+
+		assertTrue("Match parent is not a block", matchParent instanceof CtBlock);
+
+		CtElement matchParentParent = matchParent.getParent();
+
+		assertTrue("Match grand parent is not a method", matchParentParent instanceof CtMethod);
+
+		CtMethod methodHello = (CtMethod)matchParentParent;
+
+		assertEquals("Match grand parent is not a method called hello", "hello", methodHello.getSimpleName());
+
+		CtElement methodParent = methodHello.getParent();
+
+		assertTrue("Parent of the method is not a class",methodParent instanceof CtClass);
+
+		CtClass bservice = (CtClass) methodParent;
+
+		assertEquals("Parent of the method is not a class called BServiceImpl", "BServiceImpl", bservice.getSimpleName());
+	}
+
 }

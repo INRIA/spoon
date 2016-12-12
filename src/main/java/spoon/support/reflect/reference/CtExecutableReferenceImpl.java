@@ -52,6 +52,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	CtTypeReference<?> declaringType;
 
+	/**
+	 * For methods, stores the return type of the method. (not pretty-printed).
+	 * For constructors, stores the type of the target constructor (pretty-printed).
+	 */
 	CtTypeReference<T> type;
 
 	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();

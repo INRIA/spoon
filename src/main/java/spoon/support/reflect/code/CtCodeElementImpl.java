@@ -31,7 +31,7 @@ public abstract class CtCodeElementImpl extends CtElementImpl implements CtCodeE
 	@Override
 	public <R extends CtCodeElement> R partiallyEvaluate() {
 		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
-		return eval.evaluate(getParent(), (R) this);
+		return eval.evaluate((R) this);
 	}
 
 	@Override

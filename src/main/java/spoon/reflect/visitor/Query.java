@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
@@ -26,11 +25,10 @@ import spoon.reflect.reference.CtReference;
 /**
  * This class provides some useful methods to retrieve program elements and
  * reference through a {@link spoon.reflect.visitor.CtScanner}-based deep
- * search. It uses the {@link spoon.reflect.visitor.Filter} and
- * {@link spoon.reflect.visitor.ReferenceFilter} facility to select the right
+ * search. It uses the {@link spoon.reflect.visitor.Filter} facility to select the right
  * elements or references.
  */
-public abstract class Query extends CtScanner {
+public abstract class Query {
 
 	private Query() {
 	}
@@ -49,9 +47,7 @@ public abstract class Query extends CtScanner {
 	 */
 	public static <E extends CtElement> List<E> getElements(Factory factory,
 															Filter<E> filter) {
-		List<E> e = new ArrayList<>();
-		e.addAll(getElements(factory.Package().getRootPackage(), filter));
-		return e;
+		return getElements(factory.Package().getRootPackage(), filter);
 	}
 
 	/**
@@ -80,12 +76,13 @@ public abstract class Query extends CtScanner {
 	 * 		the element to start the recursive search on
 	 * @param filter
 	 * 		the filter which defines the matching criteria
+	 *
+	 * @deprecated use {@link #getElements(CtElement, Filter)} instead.
 	 */
+	@Deprecated
 	public static <T extends CtReference> List<T> getReferences(
-			CtElement rootElement, ReferenceFilter<T> filter) {
-		ReferenceQueryVisitor<T> visitor = new ReferenceQueryVisitor<>(filter);
-		visitor.scan(rootElement);
-		return visitor.getResult();
+			CtElement rootElement, Filter<T> filter) {
+		return getElements(rootElement, filter);
 	}
 
 	/**
@@ -99,12 +96,12 @@ public abstract class Query extends CtScanner {
 	 * 		search on
 	 * @param filter
 	 * 		the filter which defines the matching criteria
+	 * @deprecated use {@link #getElements(CtElement, Filter)} instead.
 	 */
+	@Deprecated
 	public static <R extends CtReference> List<R> getReferences(
-			Factory factory, ReferenceFilter<R> filter) {
-		List<R> r = new ArrayList<>();
-		r.addAll(getReferences(factory.Package().getRootPackage(), filter));
-		return r;
+			Factory factory, Filter<R> filter) {
+		return getElements(factory, filter);
 	}
 
 }

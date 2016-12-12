@@ -53,7 +53,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private static final Collection<String> namesPresentInJavaLang9 = Arrays.asList(
 			"ProcessHandle", "StackWalker", "StackFramePermission");
 
-	private Map<String, CtTypeReference<?>> imports = new TreeMap<>();
+	protected Map<String, CtTypeReference<?>> imports = new TreeMap<>();
+	//top declaring type of that import
+	protected CtTypeReference<?> targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 
 	@Override
@@ -113,7 +115,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			if (reference.getDeclaringType() == null) {
 				addImport(reference);
 			} else {
-				addImport(reference.getDeclaringType());
+				addImport(reference.getAccessType());
 			}
 		}
 		super.visitCtTypeReference(reference);
@@ -175,14 +177,19 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
 		imports.clear();
+		//look for top declaring type of that simpleType
+		targetType = simpleType.getReference().getTopLevelType();
 		addImport(simpleType.getReference());
 		scan(simpleType);
-		return getImports(simpleType);
+		return getImports();
 	}
 
 	@Override
 	public void computeImports(CtElement element) {
 		imports.clear();
+		//look for top declaring type of that element
+		CtType<?> type = element.getParent(CtType.class);
+		targetType = type == null ? null : type.getReference().getTopLevelType();
 		scan(element);
 	}
 
@@ -200,15 +207,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	/**
 	 * Gets imports in imports Map for the key simpleType given.
 	 *
-	 * @param simpleType
 	 * @return Collection of {@link spoon.reflect.reference.CtTypeReference}
 	 */
-	private Collection<CtTypeReference<?>> getImports(
-			CtType<?> simpleType) {
+	protected Collection<CtTypeReference<?>> getImports() {
 		if (imports.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		CtPackageReference pack = simpleType.getPackage().getReference();
+		CtPackageReference pack = targetType.getPackage();
 		List<CtTypeReference<?>> refs = new ArrayList<>();
 		for (CtTypeReference<?> ref : imports.values()) {
 			// ignore non-top-level type
@@ -229,7 +234,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	/**
 	 * Adds a type to the imports.
 	 */
-	private boolean addImport(CtTypeReference<?> ref) {
+	protected boolean addImport(CtTypeReference<?> ref) {
 		if (imports.containsKey(ref.getSimpleName())) {
 			return isImported(ref);
 		}
@@ -245,11 +250,17 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				return false;
 			}
 		}
+		if (targetType != null && targetType.canAccess(ref) == false) {
+			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
+			return false;
+		}
+		//note: we must add the type refs from the same package too, to assure that isImported(typeRef) returns true for them
+		//these type refs are removed in #getImports()
 		imports.put(ref.getSimpleName(), ref);
 		return true;
 	}
 
-	private boolean classNamePresentInJavaLang(CtTypeReference<?> ref) {
+	protected boolean classNamePresentInJavaLang(CtTypeReference<?> ref) {
 		Boolean presentInJavaLang = namesPresentInJavaLang.get(ref.getSimpleName());
 		if (presentInJavaLang == null) {
 			// The following procedure of determining if the handle is present in Java Lang or

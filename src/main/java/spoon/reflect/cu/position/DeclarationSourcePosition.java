@@ -14,14 +14,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.visitor.equals;
+package spoon.reflect.cu.position;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import spoon.reflect.cu.SourcePosition;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
-public @interface IgnoredByEquals {
+/**
+ * This interface represents the position of a program element in a source file.
+ */
+public interface DeclarationSourcePosition extends SourcePosition {
+
+	int getModifierSourceStart();
+
+	int getModifierSourceEnd();
+
+	int getNameStart();
+
+	int getNameEnd();
+
 }

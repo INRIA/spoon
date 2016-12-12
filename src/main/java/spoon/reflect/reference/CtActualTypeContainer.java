@@ -16,8 +16,6 @@
  */
 package spoon.reflect.reference;
 
-import spoon.support.visitor.equals.IgnoredByEquals;
-
 import java.util.List;
 
 /**
@@ -27,7 +25,6 @@ public interface CtActualTypeContainer {
 	/**
 	 * Gets the type arguments.
 	 */
-	@IgnoredByEquals
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**

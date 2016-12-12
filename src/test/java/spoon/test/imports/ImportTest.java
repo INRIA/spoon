@@ -45,6 +45,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ImportTest {
 
@@ -66,18 +67,16 @@ public class ImportTest {
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
 		assertEquals(expected, innerClass.getReference().toString());
 
-
-		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
-		assertEquals(expected, innerClass.getSuperclass().toString());
+		//test that acces path depends on the context
+		//this checks the access path in context of innerClass. The context is defined by CtTypeReference.getParent(CtType.class). 
+		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
+		//this checks the access path in context of SuperClass. The context is defined by CtTypeReference.getParent(CtType.class) 
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClass.getSuperclass().getTypeDeclaration().getReference().toString());
 		assertEquals("InnerClassProtected", innerClass.getSuperclass().getSimpleName());
 
-		// here we specify a bug. This correct value should be SuperClass
-		// however; for this we would need to introduce a new property in CtTypeReference related to access path (which is a major change)
-		// the current behavior:
-		// - works in 99% of the cases
-		// - enables Spoon to pretty-print correct compilable code (checked by shouldCompileTrue above)
-		assertEquals("ChildClass", innerClass.getSuperclass().getDeclaringType().getSimpleName());
-		assertEquals(null, innerClass.getSuperclass().getDeclaration());
+
+		assertEquals("SuperClass", innerClass.getSuperclass().getDeclaringType().getSimpleName());
+		assertEquals(spoon.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected"), innerClass.getSuperclass().getDeclaration());
 	}
 
 	@Test
@@ -95,19 +94,20 @@ public class ImportTest {
 		final List<CtClass<?>> classes = Query.getElements(spoon.getFactory(), new NameFilter<CtClass<?>>("ClientClass"));
 
 		final CtClass<?> innerClass = classes.get(0).getNestedType("InnerClass");
+		
+		assertEquals("spoon.test.imports.testclasses.ClientClass$InnerClass", innerClass.getQualifiedName());
+		
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
 		assertEquals(expected, innerClass.getReference().toString());
+		
 
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClass.getSuperclass().getQualifiedName());
+		
 		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 
-		// here we specify a bug. This correct value should be SuperClass
-		// however; for this we would need to introduce a new property in CtTypeReference related to access path (which is a major change)
-		// the current behavior:
-		// - works in 99% of the cases
-		// - enables Spoon to pretty-print correct compilable code (checked by shouldCompileTrue above)
-		assertEquals("ChildClass", innerClass.getSuperclass().getDeclaringType().getSimpleName());
-		assertEquals(null, innerClass.getSuperclass().getDeclaration());
+		assertEquals("SuperClass", innerClass.getSuperclass().getDeclaringType().getSimpleName());
+		assertEquals(spoon.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected"), innerClass.getSuperclass().getDeclaration());
 	}
 
 	@Test
@@ -201,6 +201,8 @@ public class ImportTest {
 		assertEquals(2, imports.size());
 		final Collection<CtTypeReference<?>> imports1 = importScanner.computeImports(anotherClass);
 		assertEquals(1, imports1.size());
+		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
+		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
 		final Collection<CtTypeReference<?>> imports2 = importScanner.computeImports(classWithInvocation);
 		assertEquals("Spoon ignores the arguments of CtInvocations", 1, imports2.size());
 	}
@@ -339,6 +341,159 @@ public class ImportTest {
 		assertEquals("public class A {" + newLine
 				+ "    public class ArrayList extends java.util.ArrayList {    }" + newLine
 				+ "}", aClass.toString());
+	}
+	
+	@Test
+	public void testAccessToNestedClass() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
+		});
+		launcher.buildModel();
+		final CtClass<ImportTest> aClass = launcher.getFactory().Class().get(ClientClass.class.getName()+"$InnerClass");
+		assertEquals(ClientClass.class.getName()+"$InnerClass", aClass.getQualifiedName()); 
+		final CtTypeReference<?> parentClass = aClass.getSuperclass();
+		//comment next line and parentClass.getActualClass(); will fail anyway
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", parentClass.getQualifiedName()); 
+		Class<?> actualClass = parentClass.getActualClass();
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", actualClass.getName()); 
+	}
+	
+	@Test
+	public void testAccessType() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
+		});
+		launcher.buildModel();
+		final CtClass<ImportTest> aInnerClass = launcher.getFactory().Class().get(ClientClass.class.getName()+"$InnerClass");
+		final CtClass<ImportTest> aSuperClass = launcher.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass");
+		assertEquals(ClientClass.class.getName()+"$InnerClass", aInnerClass.getQualifiedName());
+		
+		//Check that access type of ClientClass$InnerClass in package protected class is still ClientClass
+		assertEquals(ClientClass.class.getName(), aInnerClass.getReference().getAccessType().getQualifiedName());
+		
+		final CtTypeReference<?> innerClassProtectedByGetSuperClass = aInnerClass.getSuperclass();
+		final CtTypeReference<?> innerClassProtectedByQualifiedName = launcher.getFactory().Class().get("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected").getReference();
+
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByGetSuperClass.getQualifiedName()); 
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByQualifiedName.getQualifiedName()); 
+		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtectedByGetSuperClass.getAccessType().getQualifiedName());
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtectedByQualifiedName.getAccessType().getQualifiedName());
+		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
+		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClassProtectedByQualifiedName.toString());
+	}
+
+	@Test
+	public void testNestedAccessPathWithTypedParameter() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
+		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
+		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		 								  
+	}
+
+	@Test
+	public void testNestedAccessPathWithTypedParameterWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java", "--with-imports"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
+		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
+		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		 								  
+	}
+
+	@Test
+	public void testNestedStaticPathWithTypedParameter() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/Interners.java"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
+		assertTrue(mm.toString().indexOf("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;")>=0);
+		 								  
+	}
+
+	@Test
+	public void testNestedStaticPathWithTypedParameterWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
+		assertTrue(mm.toString().indexOf("List<Interners.WeakInterner.Dummy> list;")>=0);
+		 								  
+	}
+
+	@Test
+	public void testDeepNestedStaticPathWithTypedParameter() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/StaticWithNested.java"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
+		assertTrue("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
+		 								  
+	}
+	@Test
+	public void testDeepNestedStaticPathWithTypedParameterWithImports() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses2/StaticWithNested.java", "--with-imports"
+		});
+		launcher.buildModel();
+		launcher.prettyprint();
+		try {
+			launcher.getModelBuilder().compile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
+		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
+		 								  
 	}
 
 	private Factory getFactory(String...inputs) {
