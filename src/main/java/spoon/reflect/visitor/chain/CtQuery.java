@@ -20,64 +20,50 @@ import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.OverriddenMethodFilter;
 
 /**
- * QueryStep represents one step of the query.
- * The chain of QueryStep items represents the query, which can be used to traverse spoon model by several ways.<br>
+ * CtQuery represents a query, which can be used to traverse spoon model by several ways.<br>
  *
  * <br>
  * Use {@link CtElement#map()} or {@link CtElement#filterChildren(Filter)} to create a new query starting from existing element.<br>
- * If you need to create query which is not bound to any input element and then call that query independent then use
- * {@link Query#map()} or {@link Query#scan(spoon.reflect.visitor.Filter)} or {@link Query#match(spoon.reflect.visitor.Filter)}
  *
  * Use these methods to compose the next steps of the query
  * <ul>
- * <li> {@link #map(spoon.reflect.visitor.chain.Function)}
- * <li> {@link #filterChildren(spoon.reflect.visitor.chain.Predicate)}
+ * <li> {@link #map(CtFunction))} - use java 8 lambda expression to navigate to any model element directly accessible from input element
+ * <li> {@link #map(CtQueryStep))} - use implementation of the CtQueryStep interface to evaluate complex query like {@link OverriddenMethodFilter}
+ * <li> {@link #filterChildren(Filter))} - use {@link Filter} instances to filter children of input element
  * </ul>
  *
  * Use these methods to process the query:
  * <ul>
- * <li>{@link #apply(Object, Consumer)}
- * <li>{@link #accept(Object)}
- * <li>{@link #forEach(Consumer)}
- * <li>{@link #list()}
+ * <li>{@link #forEach(Consumer)} - to evaluate the query and call a Consumer.apply(output) method for each element produced by this query
+ * <li>{@link #list()} - to evaluate the query and return list of elements produced by this query
  * </ul>
  * The query can be used several times.<br>
- * But QueryStep is not thread safe. So you must create new query for each thread.<br>
+ * QueryStep is not thread safe. So you must create new query for each thread.<br>
  * Usually the new query is created each time when you need to query something.
- * The reusing of QueryStep instance makes sense when the same query has to be evaluated
+ * The reusing of {@link CtQuery} instance makes sense when the same query has to be evaluated
  * several times in the loop.
  *
- * @param <O> the type of the element produced by this QueryStep
+ * @param <O> the type of the element produced by this query
  */
-public interface CtQuery<O> extends CtQueryable, CtQueryStep<Object, O> {
+public interface CtQuery<O> extends CtQueryable {
 
 	/**
-	 * calls getFirstStep().accept(null), which causes that all input elements registered in {@link StartQueryStep}
-	 * are processed by query chain. All the produced elements are collected in List
+	 * evaluates the query which causes that input element
+	 * is processed by query chain. All the produced elements are collected in the List
 	 * @return the List of collected elements.
 	 */
 	List<O> list();
 
 	/**
-	 * calls getFirstStep().accept(null), which causes that all input elements registered in {@link StartQueryStep}
-	 * are processed by query chain. For each produced element the consumer.accept(element) is called
+	 * evaluates the query which causes that input element
+	 * is processed by query chain. For each produced element the consumer.accept(element) is called.<br>
+	 * You can use java 8 lambda expression to implement consumer.
 	 * @param consumer
 	 */
 	<R> void forEach(Consumer<R> consumer);
-
-	/**
-	 * Sends the input parameter as input of the whole query
-	 * through chain of query steps and calls output.accept(element)
-	 * for each element produced by this query.
-	 *
-	 * @param input
-	 * @param output
-	 */
-	@Override
-	void process(Object input, Consumer<O> output);
 
 	/**
 	 * Sets the name of current QueryStep. It can help to identify the steps during debugging of your query

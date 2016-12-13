@@ -120,8 +120,15 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	}
 
 
+	/**
+	 * Sends the input parameter as input of the whole query
+	 * through chain of query steps and calls output.accept(element)
+	 * for each element produced by this query.
+	 *
+	 * @param input
+	 * @param output
+	 */
 	@SuppressWarnings("unchecked")
-	@Override
 	public void process(Object input, Consumer<O> output) {
 		tail.setNext((Consumer<Object>) output);
 		try {

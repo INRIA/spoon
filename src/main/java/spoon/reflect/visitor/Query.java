@@ -103,4 +103,5 @@ public abstract class Query {
 			Factory factory, Filter<R> filter) {
 		return getElements(factory, filter);
 	}
+
 }
