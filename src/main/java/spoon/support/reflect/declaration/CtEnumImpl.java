@@ -23,13 +23,12 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.comparator.SignatureComparator;
+import spoon.support.util.SignatureBasedSortedSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
@@ -47,7 +46,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
-		Set<CtMethod<?>> allMethods = new TreeSet<>(new SignatureComparator());
+		Set<CtMethod<?>> allMethods = new SignatureBasedSortedSet();
 		allMethods.addAll(getMethods());
 		allMethods.addAll(getFactory().Type().get(Enum.class).getMethods());
 		allMethods.add(valuesMethod());

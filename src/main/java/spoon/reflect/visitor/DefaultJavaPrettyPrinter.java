@@ -479,7 +479,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		context.pushCurrentThis(ctClass);
-
 		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
 			if (ctClass.isLocalType()) {
@@ -688,8 +687,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				boolean isImportedField = importsContext.isImported(f.getVariable());
 
 				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
+					printer.snapshotLength();
 					scan(f.getTarget());
-					if (!f.getTarget().isImplicit()) {
+					if (printer.hasNewContent()) {
 						printer.write(".");
 					}
 				} else if (isStaticField && !isImportedField) {
@@ -731,45 +731,50 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
-		enterCtExpression(thisAccess);
-		if (thisAccess.getTarget() != null && thisAccess.getTarget() instanceof CtTypeAccess
-				&& !tryToInitializeFinalFieldInConstructor(thisAccess)
-				&& !thisAccess.isImplicit()
-				&& !thisAccess.getTarget().isImplicit()) {
-			final CtTypeReference accessedType = ((CtTypeAccess) thisAccess.getTarget()).getAccessedType();
-			if (accessedType.isLocalType()) {
-				printer.write(accessedType.getSimpleName().replaceAll("^[0-9]*", "") + ".");
-			} else if (!accessedType.isAnonymous()) {
-				visitCtTypeReferenceWithoutGenerics(accessedType);
-				printer.write(".");
-			}
-		}
-		if (!thisAccess.isImplicit()) {
-			printer.write("this");
-		}
-		exitCtExpression(thisAccess);
-	}
-
-	/**
-	 * Check if the this access expression is a target of a private final field in a constructor.
-	 */
-	private <T> boolean tryToInitializeFinalFieldInConstructor(CtThisAccess<T> thisAccess) {
 		try {
-			final CtElement parent = thisAccess.getParent();
-			if (!(parent instanceof CtFieldWrite) || !thisAccess.equals(((CtFieldWrite) parent).getTarget()) || thisAccess.getParent(CtConstructor.class) == null) {
-				return false;
+			enterCtExpression(thisAccess);
+
+			// we only write qualified this when this is required
+			// this is good both in fully-qualified mode and in readable (with-imports) mode
+			// the implicit information is used for analysis (eg are visibility caused by implicit bugs?) but
+			// not for pretty-printing
+			CtTypeAccess target = (CtTypeAccess) thisAccess.getTarget();
+			CtTypeReference targetType = target.getAccessedType();
+
+			// readable mode as close as possible to the original code
+			if (thisAccess.isImplicit()) {
+				// write nothing, "this" is implicit and we unfortunately cannot always know
+				// what the good target is in JDTTreeBuilder
+				return;
 			}
-			final CtFieldReference variable = ((CtFieldWrite) parent).getVariable();
-			if (variable == null) {
-				return false;
+
+			// the simplest case: we always print "this" if we're in the top-level class,
+			// this is shorter (no qualified this), explicit, and less fragile wrt transformation
+			if (targetType == null || (thisAccess.getParent(CtType.class) != null && thisAccess.getParent(CtType.class).isTopLevel())) {
+				printer.write("this");
+				return; // still go through finally block below
 			}
-			final CtField declaration = variable.getDeclaration();
-			if (declaration == null) {
-				return true;
+
+			// we cannot have fully-qualified this in anonymous classes
+			// we simply print "this" and it always works
+			// this has to come after the implicit test just before
+			if (targetType.isAnonymous()) {
+				printer.write("this");
+				return;
 			}
-			return declaration.getModifiers().contains(ModifierKind.FINAL);
-		} catch (ParentNotInitializedException e) {
-			return false;
+
+			// complex case of qualifed this
+			if (context.currentThis.peekLast() != null
+				&& !context.currentThis.peekLast().type.getQualifiedName().equals(targetType.getQualifiedName())) {
+				visitCtTypeReferenceWithoutGenerics(targetType);
+				printer.write(".this");
+				return;
+			}
+
+			// the default super simple case only comes at the end
+			printer.write("this");
+		} finally {
+			exitCtExpression(thisAccess);
 		}
 	}
 
@@ -867,7 +872,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if (reference.isFinal() && reference.isStatic()) {
 			CtTypeReference<?> declTypeRef = reference.getDeclaringType();
-			if ("".equals(declTypeRef.getSimpleName())) {
+			if (declTypeRef.isAnonymous()) {
 				//never print anonymous class ref
 				printType = false;
 			} else {
@@ -992,25 +997,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (parentType != null && parentType.getQualifiedName() != null && parentType.getQualifiedName().equals(invocation.getExecutable().getDeclaringType().getQualifiedName())) {
 				printer.write("this");
 			} else {
-				if (invocation.getTarget() != null) {
-					scan(invocation.getTarget());
+				printer.snapshotLength();
+				scan(invocation.getTarget());
+				if (printer.hasNewContent()) {
 					printer.write(".");
 				}
 				printer.write("super");
 			}
 		} else {
 			// It's a method invocation
-			if (invocation.getTarget() != null) {
-				try (Writable _context = context.modify()) {
-					if (invocation.getTarget() instanceof CtTypeAccess) {
-						_context.ignoreGenerics(true);
-					}
-					scan(invocation.getTarget());
+			printer.snapshotLength();
+			try (Writable _context = context.modify()) {
+				if (invocation.getTarget() instanceof CtTypeAccess) {
+					_context.ignoreGenerics(true);
 				}
-				if (!invocation.getTarget().isImplicit()) {
-					printer.write(".");
-				}
+				scan(invocation.getTarget());
 			}
+			if (printer.hasNewContent()) {
+				printer.write(".");
+			}
+
 			elementPrinterHelper.writeActualTypeArguments(invocation);
 			if (env.isPreserveLineNumbers()) {
 				printer.adjustPosition(invocation, sourceCompilationUnit);
@@ -1720,6 +1726,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void reset() {
 		printer = new PrinterHelper(env);
 		elementPrinterHelper.setPrinter(printer);
+		context = new PrintingContext();
 	}
 
 	@Override

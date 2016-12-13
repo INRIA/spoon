@@ -180,11 +180,6 @@ public class DefaultPrettyPrinterTest {
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
 		assertEquals( "E1 is statically imported then we can call it directly", expected, computed );
 
-		expected = //This is what is expected
-			"public void setFieldUsingLocallyDefinedEnum() {" +nl+
-			"    localField = ENUM.E1.ordinal();" +nl+
-			"}"
-		;
 		expected = //This is correct however it could be more concise.
 			"public void setFieldUsingLocallyDefinedEnum() {" +nl+
 			"    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
@@ -201,12 +196,6 @@ public class DefaultPrettyPrinterTest {
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
 		assertEquals( "The static field of an external type with the same identifier as the compilation unit is statically imported", expected, computed );
 
-		expected = //This is what is expected
-				"public void referToTwoInnerClassesWithTheSameName() {" +nl+
-				"    ClassA.VAR0 = ClassA.getNum();" +nl+
-				"    Class1.ClassA.VAR1 = Class1.ClassA.getNum();" +nl+
-				"}"
-			;
 		expected = //This is correct however it could be more concise.
 			"public void referToTwoInnerClassesWithTheSameName() {" +nl+
 			"    TypeIdentifierCollision.Class0.ClassA.VAR0 = TypeIdentifierCollision.Class0.ClassA.getNum();" +nl+

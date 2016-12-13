@@ -16,15 +16,13 @@
  */
 package spoon.reflect.visitor;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
-
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class PrintingContext {
 
@@ -92,7 +90,7 @@ public class PrintingContext {
 		return new Writable();
 	}
 
-	List<TypeContext> currentThis = new ArrayList<>();
+	Deque<TypeContext> currentThis = new ArrayDeque<>();
 
 	/**
 	 * @return top level type
@@ -109,7 +107,7 @@ public class PrintingContext {
 	}
 	private TypeContext getCurrentTypeContext() {
 		if (currentThis != null && currentThis.size() > 0) {
-			TypeContext tc = currentThis.get(currentThis.size() - 1);
+			TypeContext tc = currentThis.peek();
 			return tc;
 		}
 		return null;
@@ -119,7 +117,7 @@ public class PrintingContext {
 		currentThis.add(new TypeContext(type));
 	}
 	public void popCurrentThis() {
-		currentThis.remove(currentThis.size() - 1);
+		currentThis.pop();
 	}
 
 

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static javax.swing.text.html.HTML.Tag.HEAD;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -56,7 +57,8 @@ public class QualifiedThisRefTest {
 		ctTypes.add(ctClass);
 		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
-		assertTrue(printer.getResult().contains("Object o = QualifiedThisRef.Sub.this"));
+		Assert.assertTrue(printer.getResult().contains("Object o = this"));
+		Assert.assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));
 	}
 
 	@Test
@@ -69,15 +71,10 @@ public class QualifiedThisRefTest {
 		CtThisAccess th = (CtThisAccess) m2.getElements(new TypeFilter(CtThisAccess.class)).get(0);
 		assertEquals(true,th.isImplicit());
 		assertEquals("notify()",th.getParent().toString());
-		assertEquals("spoon.test.delete.testclasses.Adobada", ((CtTypeAccess)th.getTarget()).getAccessedType().toString());
-		CtMethod<?> clone = m2.clone();
-		CtInvocation<?> stat = clone.getBody().getStatement(0);
-		assertNotEquals("java.lang.Object.this.notify()", stat.toString()); // the original bug
+		CtInvocation<?> clone = m2.clone().getBody().getStatement(0);
 		// clone preserves implicitness
-		assertTrue(stat.getTarget().isImplicit());
-		assertEquals("notify()", stat.toString());
-		stat.getTarget().setImplicit(false);
-		assertEquals("spoon.test.delete.testclasses.Adobada.this.notify()", stat.toString());
+		assertEquals(true, clone.getTarget().isImplicit());
+		assertEquals("notify()", clone.toString()); // the original bug
 
 		// note that this behavior means that you can only keep cloned "this" in the same class,
 		// and you cannot "transplant" a cloned "this" to another class
