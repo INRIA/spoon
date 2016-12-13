@@ -4,13 +4,13 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.compiler.SnippetCompilationHelper;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.TreeSet;
 
@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class SpoonArchitectureEnforcer {
+public class SpoonArchitectureEnforcerTest {
 
 	@Test
 	public void statelessFactory() throws Exception {
@@ -83,4 +83,26 @@ public class SpoonArchitectureEnforcer {
 			assertTrue(implType.getReference().isSubtypeOf(interfaceType.getReference()));
 		}
 	}
+
+
+	@Test
+	public void testGoodTestClassNames() throws Exception {
+		// contract: to be run by Maven surefire, all test classes must be called Test* or *Test
+		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard patterns:"
+		// "**/Test*.java" and "**/*Test.java"
+		// http://maven.apache.org/surefire/maven-surefire-plugin/examples/inclusion-exclusion.html
+		SpoonAPI spoon = new Launcher();
+		spoon.addInputResource("src/test/java/");
+		spoon.buildModel();
+
+		for (CtMethod<?> meth : spoon.getModel().getRootPackage().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
+			@Override
+			public boolean matches(CtMethod element) {
+				return super.matches(element) && element.getAnnotation(Test.class) != null;
+			}
+		})) {
+			assertTrue("naming contract violated for "+meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
+		}
+	}
+
 }

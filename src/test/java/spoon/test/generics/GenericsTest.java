@@ -85,7 +85,7 @@ public class GenericsTest {
 		CtMethod<?> node5 = type.getElements(
 				new NameFilter<CtMethod<?>>("node5")).get(0);
 		assertEquals(
-				"spoon.test.generics.Tree.this.<java.lang.Class<? extends java.lang.Throwable>>foo()",
+				"this.<java.lang.Class<? extends java.lang.Throwable>>foo()",
 				node5.getBody().getStatement(0).toString());
 	}
 
@@ -368,11 +368,11 @@ public class GenericsTest {
 		final CtMethod<?> m = aTacos.getMethodsByName("m2").get(0);
 		final CtInvocation invocation1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		assertEquals(1, invocation1.getExecutable().getActualTypeArguments().size());
-		assertEquals("spoon.test.generics.testclasses.Tacos.this.<java.lang.String>makeTacos(null)", invocation1.toString());
+		assertEquals("this.<java.lang.String>makeTacos(null)", invocation1.toString());
 
 		final CtInvocation invocation2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
-		assertEquals("spoon.test.generics.testclasses.Tacos.this.makeTacos(null)", invocation2.toString());
+		assertEquals("this.makeTacos(null)", invocation2.toString());
 
 		canBeBuilt("./target/spooned/spoon/test/generics/testclasses/", 8);
 	}

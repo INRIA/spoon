@@ -18,11 +18,15 @@ package spoon.generating.replace;
 
 import spoon.SpoonException;
 import spoon.generating.ReplacementVisitorGenerator;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -187,6 +191,9 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtParameter<?> updateConstructor(CtClass listener, CtTypeReference type) {
 		final CtConstructor ctConstructor = (CtConstructor) listener.getConstructors().toArray(new CtConstructor[listener.getConstructors().size()])[0];
+		CtAssignment assign = (CtAssignment) ctConstructor.getBody().getStatement(1);
+		CtThisAccess fieldAccess = (CtThisAccess) ((CtFieldAccess) assign.getAssigned()).getTarget();
+		((CtTypeAccess) fieldAccess.getTarget()).getAccessedType().setImplicit(true);
 		final CtParameter<?> aParameter = (CtParameter<?>) ctConstructor.getParameters().get(0);
 		aParameter.setType(type);
 		return aParameter;
