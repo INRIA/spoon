@@ -18,7 +18,7 @@ package spoon.reflect.visitor.chain;
 
 /**
  * Functional interface used to accept elements.
- * It is used for example by {@link QueryStep#forEach(Consumer)}
+ * It is used for example by {@link CtQuery#forEach(Consumer)}
  *
  * @param <T> - the type of accepted element
  */

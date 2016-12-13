@@ -20,9 +20,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 
 /**
- * QueryComposer contains methods, which can be used to create/compose a {@link QueryStep}
+ * QueryComposer contains methods, which can be used to create/compose a {@link CtQuery}
  * It is implemented 1) by {@link CtElement} to allow creation new query and its first step
- * 2) by {@link QueryStep} to allow creation of next query step
+ * 2) by {@link CtQuery} to allow creation of next query step
  */
 public interface CtQueryable {
 
@@ -37,7 +37,7 @@ public interface CtQueryable {
 	 * @param code
 	 * @return the create QueryStep, which is now the last step of the query
 	 */
-	<P> QueryStep<P> map(ChainableFunction<?, P> code);
+	<P> CtQuery<P> map(CtQueryStep<?, P> code);
 
 	/**
 	 * It behaves depending on the type of returned value like this:
@@ -52,7 +52,7 @@ public interface CtQueryable {
 	 * @param code a Function with one parameter of type I returning value of type R
 	 * @return the create QueryStep, which is now the last step of the query
 	 */
-	<I, R> QueryStep<R> map(CtFunction<I, R> code);
+	<I, R> CtQuery<R> map(CtFunction<I, R> code);
 
 	/**
 	 * scan all child elements of an input element.
@@ -63,5 +63,5 @@ public interface CtQueryable {
 	 * @param filter used to filter scanned children elements of AST tree
 	 * @return the created QueryStep, which is now the last step of the query
 	 */
-	<T extends CtElement> QueryStep<T> scan(Filter<T> filter);
+	<T extends CtElement> CtQuery<T> filterChildren(Filter<T> filter);
 }

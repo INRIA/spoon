@@ -41,7 +41,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.chain.QueryStep;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -483,7 +483,7 @@ public class FilterTest {
 		}
 		Context context = new Context();
 		
-		QueryStep<CtClass<?>> l_qv = launcher.getFactory().getModel().getRootPackage().scan(new TypeFilter<>(CtClass.class));
+		CtQuery<CtClass<?>> l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
 		
 		assertEquals(0, context.counter);
 		l_qv.forEach(cls->{
@@ -507,7 +507,7 @@ public class FilterTest {
 		
 		Context context = new Context();
 
-		launcher.getFactory().Package().getRootPackage().scan(new TypeFilter<CtMethod<?>>(CtMethod.class))
+		launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<CtMethod<?>>(CtMethod.class))
 		.map((CtMethod<?> method) -> {context.method = method;return method;})
 		.map(new OverriddenMethodFilter())
 		.forEach((CtMethod<?> method) -> {
@@ -530,7 +530,7 @@ public class FilterTest {
 		
 		Context context = new Context();
 
-		launcher.getFactory().Package().getRootPackage().scan((CtClass<?> c)->{return true;})
+		launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;})
 			.map((CtClass<?> c)->c.getSuperInterfaces())
 			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
 			.map((CtType<?> iface)->iface.getAllMethods())

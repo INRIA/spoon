@@ -26,14 +26,14 @@ import spoon.reflect.visitor.Query;
  * The chain of QueryStep items represents the query, which can be used to traverse spoon model by several ways.<br>
  *
  * <br>
- * Use {@link CtElement#map()} or {@link CtElement#scan(Filter)} to create a new query starting from existing element.<br>
+ * Use {@link CtElement#map()} or {@link CtElement#filterChildren(Filter)} to create a new query starting from existing element.<br>
  * If you need to create query which is not bound to any input element and then call that query independent then use
  * {@link Query#map()} or {@link Query#scan(spoon.reflect.visitor.Filter)} or {@link Query#match(spoon.reflect.visitor.Filter)}
  *
  * Use these methods to compose the next steps of the query
  * <ul>
  * <li> {@link #map(spoon.reflect.visitor.chain.Function)}
- * <li> {@link #scan(spoon.reflect.visitor.chain.Predicate)}
+ * <li> {@link #filterChildren(spoon.reflect.visitor.chain.Predicate)}
  * </ul>
  *
  * Use these methods to process the query:
@@ -51,7 +51,7 @@ import spoon.reflect.visitor.Query;
  *
  * @param <O> the type of the element produced by this QueryStep
  */
-public interface QueryStep<O> extends CtQueryable, Consumer<Object>, ChainableFunction<Object, O> {
+public interface CtQuery<O> extends CtQueryable, Consumer<Object>, CtQueryStep<Object, O> {
 
 	/**
 	 * calls getFirstStep().accept(null), which causes that all input elements registered in {@link StartQueryStep}
@@ -74,14 +74,14 @@ public interface QueryStep<O> extends CtQueryable, Consumer<Object>, ChainableFu
 	 * @param output
 	 */
 	@Override
-	void apply(Object input, Consumer<O> output);
+	void query(Object input, Consumer<O> output);
 
 	/**
 	 * Sets the name of current QueryStep. It can help to identify the steps during debugging of your query
 	 * @param name
 	 * @return this to support fluent API
 	 */
-	QueryStep<O> name(String name);
+	CtQuery<O> name(String name);
 	/**
 	 * @return true if logging is enabled for this query chain
 	 */
@@ -93,5 +93,5 @@ public interface QueryStep<O> extends CtQueryable, Consumer<Object>, ChainableFu
 	 * because it causes StackOverflow.
 	 * Reason: Query chains are used internally during writing of log messages too. So it would write logs for ever...
 	 */
-	QueryStep<O> setLogging(boolean logging);
+	CtQuery<O> setLogging(boolean logging);
 }

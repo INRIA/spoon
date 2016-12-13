@@ -20,19 +20,19 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.chain.ChainableFunction;
+import spoon.reflect.visitor.chain.CtQueryStep;
 import spoon.reflect.visitor.chain.Consumer;
-import spoon.reflect.visitor.chain.QueryStep;
+import spoon.reflect.visitor.chain.CtQuery;
 
 /**
  * Gets all overridden method from the method given.
  */
-public class OverriddenMethodFilter implements Filter<CtMethod<?>>, ChainableFunction<CtMethod<?>, CtMethod<?>> {
+public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<CtMethod<?>, CtMethod<?>> {
 	private CtMethod<?> method;
 
 	/**
 	 * Creates a new overridden method filter, which will automatically scan correct scope for all overridden methods of the input element
-	 * Use {@link QueryStep#map(ChainableFunction)} to add query step using this filter
+	 * Use {@link CtQuery#map(CtQueryStep)} to add query step using this filter
 	 *
 	 * Note: the executable to be tested for being invoked, comes as output from previous query step
 	 */
@@ -40,7 +40,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, ChainableFun
 	}
 	/**
 	 * Creates a new overridden method filter, which will scan input element for all overridden methods of the defined method
-	 * Use {@link QueryStep#scan(Filter)} to filter child elements produced by previous step by this filter
+	 * Use {@link CtQuery#filterChildren(Filter)} to filter child elements produced by previous step by this filter
 	 *
 	 * @param method
 	 * 		the executable to be tested for being invoked
@@ -68,11 +68,11 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, ChainableFun
 	}
 
 	/**
-	 * This method is used when this Filter is used in {@link QueryStep#map(ChainableFunction)}
+	 * This method is used when this Filter is used in {@link CtQuery#map(CtQueryStep)}
 	 * In such case Filter can automatically use correct scanning scope - root package
 	 */
 	@Override
-	public void apply(CtMethod<?> input, Consumer<CtMethod<?>> output) {
+	public void query(CtMethod<?> input, Consumer<CtMethod<?>> output) {
 		if (method != null) {
 			/**
 			 * Do not use parameterized constructor together with QueryStep#map().
@@ -84,7 +84,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, ChainableFun
 		}
 		method = input;
 		try {
-			method.getFactory().Package().getRootPackage().scan(this).forEach(output);
+			method.getFactory().Package().getRootPackage().filterChildren(this).forEach(output);
 		} finally {
 			method = null;
 		}

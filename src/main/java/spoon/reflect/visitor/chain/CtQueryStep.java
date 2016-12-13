@@ -24,6 +24,6 @@ package spoon.reflect.visitor.chain;
  * @param <T> the type of the input to the function
  * @param <R> the type of the result produced by this function
  */
-public interface ChainableFunction<T, R> {
-	void apply(T input, Consumer<R> output);
+public interface CtQueryStep<T, R> {
+	void query(T input, Consumer<R> output);
 }

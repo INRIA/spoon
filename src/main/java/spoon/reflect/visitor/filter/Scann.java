@@ -18,16 +18,16 @@ package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.chain.ChainableFunction;
+import spoon.reflect.visitor.chain.CtQueryStep;
 import spoon.reflect.visitor.chain.Consumer;
-import spoon.reflect.visitor.chain.QueryStep;
+import spoon.reflect.visitor.chain.CtQuery;
 
 /**
  * A scanner which can be used as Query step.
- * In the Query chain (see {@link QueryStep}) it starts scanning from the QueryStep input element
+ * In the Query chain (see {@link CtQuery}) it starts scanning from the QueryStep input element
  * and sends each visited child elment as output of this QueryStep
  */
-public class Scann extends CtScanner implements ChainableFunction<CtElement, CtElement> {
+public class Scann extends CtScanner implements CtQueryStep<CtElement, CtElement> {
 
 	private Consumer<CtElement> output;
 
@@ -35,7 +35,7 @@ public class Scann extends CtScanner implements ChainableFunction<CtElement, CtE
 	}
 
 	@Override
-	public void apply(CtElement input, Consumer<CtElement> output) {
+	public void query(CtElement input, Consumer<CtElement> output) {
 		this.output = output;
 		scan(input);
 	}

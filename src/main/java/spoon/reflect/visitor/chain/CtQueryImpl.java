@@ -28,9 +28,9 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.Scann;
 
 /**
- * Contains the default implementation of the generic {@link QueryStep} methods
+ * Contains the default implementation of the generic {@link CtQuery} methods
  */
-public class QueryStepImpl<O> implements QueryStep<O> {
+public class CtQueryImpl<O> implements CtQuery<O> {
 
 	private List<Object> inputs;
 
@@ -40,14 +40,14 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 
 	private boolean logging = false;
 
-	public QueryStepImpl() {
+	public CtQueryImpl() {
 		tail = new TailConsumer();
 		firstStep = tail;
 		lastStep = tail;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> QueryStepImpl(T input) {
+	public <T> CtQueryImpl(T input) {
 		this();
 		setInput((O) input);
 	}
@@ -64,7 +64,7 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 	 * @param inputs
 	 * @return this to support fluent API
 	 */
-	public QueryStep<O> setInput(O input) {
+	public CtQuery<O> setInput(O input) {
 		if (inputs != null) {
 			inputs.clear();
 		}
@@ -76,7 +76,7 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 	 * @param inputs
 	 * @return this to support fluent API
 	 */
-	public QueryStep<O> addInput(O input) {
+	public CtQuery<O> addInput(O input) {
 		if (this.inputs == null) {
 			this.inputs = new ArrayList<>();
 		}
@@ -86,25 +86,25 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <P> QueryStep<P> map(ChainableFunction<?, P> code) {
+	public <P> CtQuery<P> map(CtQueryStep<?, P> code) {
 		add(new ChainableFunctionWrapper(code));
-		return (QueryStep<P>) this;
+		return (CtQuery<P>) this;
 	}
 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <I, R> QueryStep<R> map(CtFunction<I, R> code) {
+	public <I, R> CtQuery<R> map(CtFunction<I, R> code) {
 		add(new FunctionWrapper(code));
-		return (QueryStep<R>) this;
+		return (CtQuery<R>) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends CtElement> QueryStep<T> scan(Filter<T> filter) {
+	public <T extends CtElement> CtQuery<T> filterChildren(Filter<T> filter) {
 		map(new Scann());
 		add(new FilterWrapper(filter));
-		return (QueryStep<T>) this;
+		return (CtQuery<T>) this;
 	}
 
 
@@ -115,7 +115,7 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void apply(Object input, Consumer<O> output) {
+	public void query(Object input, Consumer<O> output) {
 		tail.next = (Consumer<Object>) output;
 		try {
 			if (input == null) {
@@ -150,11 +150,11 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <R> void forEach(Consumer<R> consumer) {
-		apply(null, (Consumer<O>) consumer);
+		query(null, (Consumer<O>) consumer);
 	}
 
 	@Override
-	public QueryStep<O> name(String name) {
+	public CtQuery<O> name(String name) {
 		if (lastStep == tail) {
 			throw new SpoonException("Cannot set name of the step on the chain with no step");
 		}
@@ -168,7 +168,7 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 	}
 
 	@Override
-	public QueryStep<O> setLogging(boolean logging) {
+	public CtQuery<O> setLogging(boolean logging) {
 		this.logging = logging;
 		return this;
 	}
@@ -256,14 +256,14 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 	}
 
 	/**
-	 * a step which calls ChainableFunction. Implements contract of {@link QueryStep#map(ChainableFunction)}
+	 * a step which calls ChainableFunction. Implements contract of {@link CtQuery#map(CtQueryStep)}
 	 */
 	private class ChainableFunctionWrapper extends Step {
-		private ChainableFunction<Object, Object> fnc;
+		private CtQueryStep<Object, Object> fnc;
 
 		@SuppressWarnings("unchecked")
-		ChainableFunctionWrapper(ChainableFunction<?, ?> code) {
-			fnc = (ChainableFunction<Object, Object>) code;
+		ChainableFunctionWrapper(CtQueryStep<?, ?> code) {
+			fnc = (CtQueryStep<Object, Object>) code;
 		}
 		@Override
 		public void accept(Object input) {
@@ -271,7 +271,7 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 				return;
 			}
 			try {
-				fnc.apply(input, next);
+				fnc.query(input, next);
 			} catch (ClassCastException e) {
 				log("Calling of step " + name + " failed", e, input);
 			}
@@ -279,7 +279,7 @@ public class QueryStepImpl<O> implements QueryStep<O> {
 	}
 
 	/**
-	 * a step which calls Function. Implements contract of {@link QueryStep#map(CtFunction)}
+	 * a step which calls Function. Implements contract of {@link CtQuery#map(CtFunction)}
 	 */
 	private class FunctionWrapper extends Step {
 		private CtFunction<Object, Object> fnc;

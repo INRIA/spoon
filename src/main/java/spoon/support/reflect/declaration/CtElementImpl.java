@@ -31,10 +31,10 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.chain.ChainableFunction;
+import spoon.reflect.visitor.chain.CtQueryStep;
 import spoon.reflect.visitor.chain.CtFunction;
-import spoon.reflect.visitor.chain.QueryStepImpl;
-import spoon.reflect.visitor.chain.QueryStep;
+import spoon.reflect.visitor.chain.CtQueryImpl;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
@@ -255,22 +255,22 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
-		return scan(filter).list();
+		return filterChildren(filter).list();
 	}
 
 	@Override
-	public <P> QueryStep<P> map(ChainableFunction<?, P> code) {
-		return new QueryStepImpl<P>(this).map(code);
+	public <P> CtQuery<P> map(CtQueryStep<?, P> code) {
+		return new CtQueryImpl<P>(this).map(code);
 	}
 
 	@Override
-	public <I, R> QueryStep<R> map(CtFunction<I, R> code) {
-		return new QueryStepImpl<R>(this).map(code);
+	public <I, R> CtQuery<R> map(CtFunction<I, R> code) {
+		return new CtQueryImpl<R>(this).map(code);
 	}
 
 	@Override
-	public <P extends CtElement> QueryStep<P> scan(Filter<P> predicate) {
-		return new QueryStepImpl<P>(this).scan(predicate);
+	public <P extends CtElement> CtQuery<P> filterChildren(Filter<P> predicate) {
+		return new CtQueryImpl<P>(this).filterChildren(predicate);
 	}
 
 	public <T extends CtReference> List<T> getReferences(Filter<T> filter) {

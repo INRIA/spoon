@@ -21,11 +21,11 @@ import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.chain.ChainableFunction;
+import spoon.reflect.visitor.chain.CtQueryStep;
 import spoon.reflect.visitor.chain.CtFunction;
-import spoon.reflect.visitor.chain.QueryStepImpl;
+import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.chain.CtQueryable;
-import spoon.reflect.visitor.chain.QueryStep;
+import spoon.reflect.visitor.chain.CtQuery;
 
 /**
  * This class provides some useful methods to retrieve program elements and
@@ -57,7 +57,7 @@ public abstract class Query {
 
 	/**
 	 * Returns all the program elements that match the filter starting from defined rootElement.
-	 * Use {@link CtElement#map(ChainableFunction)} if you want to let Filter automatically decide correct scanning context
+	 * Use {@link CtElement#map(CtQueryStep)} if you want to let Filter automatically decide correct scanning context
 	 *
 	 * @param <E>
 	 * 		the type of the sought program elements
@@ -68,7 +68,7 @@ public abstract class Query {
 	 */
 	public static <E extends CtElement> List<E> getElements(
 			CtElement rootElement, Filter<E> filter) {
-		return rootElement.scan(filter).list();
+		return rootElement.filterChildren(filter).list();
 	}
 
 	/**
@@ -109,18 +109,18 @@ public abstract class Query {
 	}
 
 	/**
-	 * @return a {@link QueryStep} which maps input to zero one or more output elements which are produced by code
+	 * @return a {@link CtQuery} which maps input to zero one or more output elements which are produced by code
 	 *<br><br>
 	 * Note: Use methods of {@link CtQueryable} implemented by {@link CtElement} to create a query, which starts on the CtElement.
 	 * This method is utility method to create building parts of the query chain
 	 */
 	@SuppressWarnings("unchecked")
-	public static <P> QueryStep<P> map(ChainableFunction<?, P> code) {
-		if (code instanceof QueryStep) {
+	public static <P> CtQuery<P> map(CtQueryStep<?, P> code) {
+		if (code instanceof CtQuery) {
 			//the code is already a QueryStep. Just return it. Do not add useless wrapper.
-			return (QueryStep<P>) code;
+			return (CtQuery<P>) code;
 		}
-		return new QueryStepImpl<P>().map(code);
+		return new CtQueryImpl<P>().map(code);
 	}
 
 	/**
@@ -138,15 +138,15 @@ public abstract class Query {
 	 * Note: Use methods of {@link CtQueryable} implemented by {@link CtElement} to create a query which starts on the element.
 	 * This method is utility method to create building parts of the query chain
 	 */
-	public static <I, R> QueryStep<R> map(CtFunction<I, R> code) {
-		return new QueryStepImpl<R>().map(code);
+	public static <I, R> CtQuery<R> map(CtFunction<I, R> code) {
+		return new CtQueryImpl<R>().map(code);
 	}
 
 	/**
 	 * creates a query which scans all children of the input and sends matching children to the output
 	 * The if input element is matching then it is sent to output too.
 	 */
-	public static <T extends CtElement> QueryStep<T> scan(Filter<T> filter) {
-		return new QueryStepImpl<T>().scan(filter);
+	public static <T extends CtElement> CtQuery<T> scan(Filter<T> filter) {
+		return new CtQueryImpl<T>().filterChildren(filter);
 	}
 }
