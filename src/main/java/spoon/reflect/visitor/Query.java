@@ -22,10 +22,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.CtQueryStep;
-import spoon.reflect.visitor.chain.CtFunction;
-import spoon.reflect.visitor.chain.CtQueryImpl;
-import spoon.reflect.visitor.chain.CtQueryable;
-import spoon.reflect.visitor.chain.CtQuery;
 
 /**
  * This class provides some useful methods to retrieve program elements and
@@ -106,47 +102,5 @@ public abstract class Query {
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, Filter<R> filter) {
 		return getElements(factory, filter);
-	}
-
-	/**
-	 * @return a {@link CtQuery} which maps input to zero one or more output elements which are produced by code
-	 *<br><br>
-	 * Note: Use methods of {@link CtQueryable} implemented by {@link CtElement} to create a query, which starts on the CtElement.
-	 * This method is utility method to create building parts of the query chain
-	 */
-	@SuppressWarnings("unchecked")
-	public static <P> CtQuery<P> map(CtQueryStep<?, P> code) {
-		if (code instanceof CtQuery) {
-			//the code is already a QueryStep. Just return it. Do not add useless wrapper.
-			return (CtQuery<P>) code;
-		}
-		return new CtQueryImpl<P>().map(code);
-	}
-
-	/**
-	 * returns a QueryStep which behaves depending on the type of returned value like this:
-	 * <table>
-	 * <tr><td><b>Return type</b><td><b>Behavior</b>
-	 * <tr><td>{@link Boolean}<td>Sends input to the next step if returned value is true
-	 * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
-	 * <tr><td>{@link Object[]}<td>Sends each item of Array to the next step
-	 * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
-	 * </table><br>
-	 *
-	 * @param code a Function with one parameter of type I returning value of type R
-	 *<br><br>
-	 * Note: Use methods of {@link CtQueryable} implemented by {@link CtElement} to create a query which starts on the element.
-	 * This method is utility method to create building parts of the query chain
-	 */
-	public static <I, R> CtQuery<R> map(CtFunction<I, R> code) {
-		return new CtQueryImpl<R>().map(code);
-	}
-
-	/**
-	 * creates a query which scans all children of the input and sends matching children to the output
-	 * The if input element is matching then it is sent to output too.
-	 */
-	public static <T extends CtElement> CtQuery<T> scan(Filter<T> filter) {
-		return new CtQueryImpl<T>().filterChildren(filter);
 	}
 }

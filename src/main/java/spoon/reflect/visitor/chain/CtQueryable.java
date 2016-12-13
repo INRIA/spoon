@@ -27,23 +27,27 @@ import spoon.reflect.visitor.Filter;
 public interface CtQueryable {
 
 	/**
-	 * Creates a new QueryStep, which will call code
-	 * whenever this QueryStep produces an element.
-	 * The produced element is sent to code.apply(input, consumer)
-	 * method as input parameter, together with consumer,
-	 * which will take all the produced elements and sent them
-	 * to next query step
+	 * Appends a queryStep to the query.
+	 * When the query is executed then this queryStep, works like this:<br>
+	 * It gets two parameters<br>
+	 * 1) input element<br>
+	 * 2) output {@link Consumer}<br>
+	 * The query sends input to the queryStep and the queryStep
+	 * sends the result element(s) of this queryStep by calling out output.accept(result)
 	 *
 	 * @param code
 	 * @return the create QueryStep, which is now the last step of the query
 	 */
-	<P> CtQuery<P> map(CtQueryStep<?, P> code);
+	<T> CtQuery<T> map(CtQueryStep<?, T> queryStep);
 
 	/**
-	 * It behaves depending on the type of returned value like this:
+	 * Appends a Function based queryStep to the query.
+	 * When the query is executed then this queryStep, works like this:<br>
+	 * It gets one input parameter and returns an Object.
+	 * The exact behavior depends on type of returned object.
 	 * <table>
 	 * <tr><td><b>Return type</b><td><b>Behavior</b>
-	 * <tr><td>{@link Boolean}<td>Sends input to the next step if returned value is true
+	 * <tr><td>{@link Boolean}<td>Sends input of this step to the next step if returned value is true
 	 * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
 	 * <tr><td>{@link Object[]}<td>Sends each item of Array to the next step
 	 * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
@@ -59,6 +63,9 @@ public interface CtQueryable {
 	 * The child element is sent to next step only if filter.matches(element)==true
 	 *
 	 * Note: the input element is also checked for match and if true it is sent to output too.
+	 * This step never throws {@link ClassCastException}.
+	 * The elements which would throw {@link ClassCastException} during {@link Filter#matches(CtElement)}
+	 * are understood as not matching.
 	 *
 	 * @param filter used to filter scanned children elements of AST tree
 	 * @return the created QueryStep, which is now the last step of the query

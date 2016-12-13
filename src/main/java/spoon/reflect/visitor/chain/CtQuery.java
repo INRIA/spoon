@@ -19,6 +19,7 @@ package spoon.reflect.visitor.chain;
 import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 
 /**
@@ -51,7 +52,7 @@ import spoon.reflect.visitor.Query;
  *
  * @param <O> the type of the element produced by this QueryStep
  */
-public interface CtQuery<O> extends CtQueryable, Consumer<Object>, CtQueryStep<Object, O> {
+public interface CtQuery<O> extends CtQueryable, CtQueryStep<Object, O> {
 
 	/**
 	 * calls getFirstStep().accept(null), which causes that all input elements registered in {@link StartQueryStep}
@@ -68,13 +69,15 @@ public interface CtQuery<O> extends CtQueryable, Consumer<Object>, CtQueryStep<O
 	<R> void forEach(Consumer<R> consumer);
 
 	/**
-	 * Sends the input parameter as input of the whole query (by getFirstStep().accept(input)) and call output.accept(element) for each element produced by this query
+	 * Sends the input parameter as input of the whole query
+	 * through chain of query steps and calls output.accept(element)
+	 * for each element produced by this query.
 	 *
 	 * @param input
 	 * @param output
 	 */
 	@Override
-	void query(Object input, Consumer<O> output);
+	void process(Object input, Consumer<O> output);
 
 	/**
 	 * Sets the name of current QueryStep. It can help to identify the steps during debugging of your query
@@ -82,16 +85,24 @@ public interface CtQuery<O> extends CtQueryable, Consumer<Object>, CtQueryStep<O
 	 * @return this to support fluent API
 	 */
 	CtQuery<O> name(String name);
+
 	/**
-	 * @return true if logging is enabled for this query chain
+	 * @param fail - if true then this query will throw {@link ClassCastException}
+	 * when output of previous step cannot be cast to type of input of next step.
+	 * The default value is true. <br>
+	 *
+	 * Note: The {@link CtQueryable#filterChildren(Filter)} step never throws {@link ClassCastException}
+	 *
+	 * @return this to support fluent API
 	 */
-	boolean isLogging();
+	CtQuery<O> failOnCCE(boolean fail);
+
 	/**
-	 * Enable/disable logging for this query chain.
+	 * Enable/disable logging for this query
 	 *
 	 * Note: it is not possible to enable logging of all queries globally by Launcher.LOGGER.isDebugEnabled()
 	 * because it causes StackOverflow.
 	 * Reason: Query chains are used internally during writing of log messages too. So it would write logs for ever...
 	 */
-	CtQuery<O> setLogging(boolean logging);
+	CtQuery<O> logging(boolean logging);
 }

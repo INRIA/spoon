@@ -24,24 +24,38 @@ import java.util.List;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.filter.Scann;
 
 /**
  * Contains the default implementation of the generic {@link CtQuery} methods
  */
 public class CtQueryImpl<O> implements CtQuery<O> {
 
+	/**
+	 * All the constant inputs of this query. It can be null
+	 */
 	private List<Object> inputs;
 
+	/**
+	 * first step of the query
+	 */
 	private Step firstStep;
+	/**
+	 * last step of the query
+	 */
 	private Step lastStep;
+	/**
+	 * the Step which wraps final Consumer, which is always present in each (even empty) query
+	 */
 	private Step tail;
 
 	private boolean logging = false;
+	private boolean failOnCCE = true;
 
 	public CtQueryImpl() {
 		tail = new TailConsumer();
+		tail.setName("TailConsumer");
 		firstStep = tail;
 		lastStep = tail;
 	}
@@ -87,10 +101,9 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <P> CtQuery<P> map(CtQueryStep<?, P> code) {
-		add(new ChainableFunctionWrapper(code));
+		add(new QueryStepWrapper(code));
 		return (CtQuery<P>) this;
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -102,36 +115,30 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends CtElement> CtQuery<T> filterChildren(Filter<T> filter) {
-		map(new Scann());
-		add(new FilterWrapper(filter));
+		add(new ChildrenFilteringWrapper(filter));
 		return (CtQuery<T>) this;
 	}
 
 
-	@Override
-	public void accept(Object input) {
-		firstStep.accept(input);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public void query(Object input, Consumer<O> output) {
-		tail.next = (Consumer<Object>) output;
+	public void process(Object input, Consumer<O> output) {
+		tail.setNext((Consumer<Object>) output);
 		try {
 			if (input == null) {
 				if (inputs != null) {
 					for (Object in : inputs) {
-						accept(in);
+						firstStep.accept(in);
 					}
 				}
 			} else {
 				if (inputs != null) {
 					throw new SpoonException("Do not add QueryStep inputs if you want to use query for extra input");
 				}
-				accept(input);
+				firstStep.accept(input);
 			}
 		} finally {
-			tail.next = null;
+			tail.setNext(null);
 		}
 	}
 
@@ -150,7 +157,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <R> void forEach(Consumer<R> consumer) {
-		query(null, (Consumer<O>) consumer);
+		process(null, (Consumer<O>) consumer);
 	}
 
 	@Override
@@ -158,17 +165,24 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		if (lastStep == tail) {
 			throw new SpoonException("Cannot set name of the step on the chain with no step");
 		}
-		lastStep.name = name;
+		lastStep.setName(name);
+		return this;
+	}
+	@Override
+	public CtQuery<O> failOnCCE(boolean fail) {
+		if (lastStep == tail) {
+			throw new SpoonException("Cannot set ignoreIncompatibleInput of the step on the chain with no step");
+		}
+		failOnCCE = fail;
 		return this;
 	}
 
-	@Override
-	public boolean isLogging() {
+	private boolean isLogging() {
 		return logging;
 	}
 
 	@Override
-	public CtQuery<O> setLogging(boolean logging) {
+	public CtQuery<O> logging(boolean logging) {
 		this.logging = logging;
 		return this;
 	}
@@ -178,10 +192,10 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 			firstStep = step;
 			lastStep = step;
 		} else {
-			lastStep.next = step;
+			lastStep.setNext(step);
 			lastStep = step;
 		}
-		step.next = tail;
+		step.setNext(tail);
 		name(String.valueOf(getLength()));
 	}
 
@@ -193,63 +207,114 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		Step s = firstStep;
 		while (s != tail) {
 			len++;
-			s = (Step) s.next;
+			s = (Step) s.getNext();
 		}
 		return len;
 	}
 
 	/**
 	 * Is used to log that invocation was not processed
+	 * @param step the step which thrown CCE
 	 * @param e
 	 * @param parameters
 	 */
-	protected void log(String message, ClassCastException e, Object... parameters) {
-		if (isLogging()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(message);
-			if (parameters.length > 0) {
-				sb.append(" [");
-				for (int i = 0; i < parameters.length; i++) {
-					if (i > 0) {
-						sb.append(", ");
-					}
-					sb.append(parameters[i]);
-				}
-				sb.append("]");
-			}
-			if (e != null) {
-				sb.append(" ignored because ").append(e.getMessage());
-			}
-			if (Launcher.LOGGER.isTraceEnabled() && e != null) {
-				Launcher.LOGGER.trace(sb.toString(), e);
-			} else {
-				Launcher.LOGGER.debug(sb.toString());
-			}
+	private void onClassCastException(Step step, ClassCastException e, Object... parameters) {
+		if (step.isFailOnCCE()) {
+			throw e;
+		} else if (Launcher.LOGGER.isTraceEnabled()) {
+			//log expected CCE ... there might be some unexpected too!
+			Launcher.LOGGER.trace(e);
 		}
+		log(step, e.getMessage(), parameters);
+	}
+
+	private void log(Step step, String message, Object... parameters) {
+		if (isLogging() && Launcher.LOGGER.isInfoEnabled()) {
+			StringBuilder sb = new StringBuilder("Step ");
+			sb.append(step.getName()).append(") ");
+			sb.append(message);
+			for (int i = 0; i < parameters.length; i++) {
+				sb.append("\nParameter ").append(i + 1).append(") ");
+				sb.append(parameters[i]);
+			}
+			Launcher.LOGGER.info(sb.toString());
+		}
+	}
+
+	/**
+	 * Each Step must implement it
+	 */
+	private interface Step extends Consumer<Object> {
+		/**
+		 * @return next {@link Consumer}
+		 */
+		Consumer<Object> getNext();
+		/**
+		 * sets next {@link Consumer}
+		 */
+		void setNext(Consumer<Object> next);
+		/**
+		 * @return name of this Step - for debugging purposes
+		 */
+		String getName();
+		/**
+		 * @param name of the step - for debugging purposes
+		 */
+		void setName(String name);
+		/**
+		 * @return true if this step should throw {@link ClassCastException} in case of
+		 * step input type incompatibility
+		 */
+		boolean isFailOnCCE();
 	}
 
 	/**
 	 * abstract step which knows next Consumer and then name
 	 */
-	private abstract class Step implements Consumer<Object> {
-		protected String name;
+	private abstract class AbstractStep implements Step {
+		private String name;
 		protected Consumer<Object> next;
+		@Override
+		public Consumer<Object> getNext() {
+			return next;
+		}
+		@Override
+		public void setNext(Consumer<Object> next) {
+			this.next = next;
+		}
+		@Override
+		public String getName() {
+			return name;
+		}
+		@Override
+		public void setName(String name) {
+			this.name = name;
+		}
+		@Override
+		public boolean isFailOnCCE() {
+			return failOnCCE;
+		}
+		public final void accept(Object input) {
+			if (input == null) {
+				return;
+			}
+			log(this, "received", input);
+			processInput(input);
+		}
+		protected abstract void processInput(Object input);
 	}
 
 	/**
 	 * There is always one TailConsumer in each query, which sends result to output
 	 */
-	private class TailConsumer extends Step {
+	private class TailConsumer extends AbstractStep {
 		@Override
-		public void accept(Object out) {
-			if (out == null) {
-				return;
-			}
+		public void processInput(Object out) {
 			if (next != null) {
 				try {
 					next.accept(out);
 				} catch (ClassCastException e) {
-					log("Query output skipped for value", e, out);
+					onClassCastException(this, e, out);
 				}
 			}
 		}
@@ -258,22 +323,19 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	/**
 	 * a step which calls ChainableFunction. Implements contract of {@link CtQuery#map(CtQueryStep)}
 	 */
-	private class ChainableFunctionWrapper extends Step {
+	private class QueryStepWrapper extends AbstractStep {
 		private CtQueryStep<Object, Object> fnc;
 
 		@SuppressWarnings("unchecked")
-		ChainableFunctionWrapper(CtQueryStep<?, ?> code) {
+		QueryStepWrapper(CtQueryStep<?, ?> code) {
 			fnc = (CtQueryStep<Object, Object>) code;
 		}
 		@Override
-		public void accept(Object input) {
-			if (input == null) {
-				return;
-			}
+		public void processInput(Object input) {
 			try {
-				fnc.query(input, next);
+				fnc.process(input, next);
 			} catch (ClassCastException e) {
-				log("Calling of step " + name + " failed", e, input);
+				onClassCastException(this, e, input);
 			}
 		}
 	}
@@ -281,25 +343,22 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	/**
 	 * a step which calls Function. Implements contract of {@link CtQuery#map(CtFunction)}
 	 */
-	private class FunctionWrapper extends Step {
+	private class FunctionWrapper extends AbstractStep {
 		private CtFunction<Object, Object> fnc;
 
+		@SuppressWarnings("unchecked")
 		FunctionWrapper(CtFunction<?, ?> code) {
 			fnc = (CtFunction<Object, Object>) code;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void accept(Object input) {
-			if (input == null) {
-				return;
-			}
+		public void processInput(Object input) {
 			Object result;
 			try {
-//					result = code.invoke(input);
 				result = fnc.apply(input);
 			} catch (ClassCastException e) {
-				log("Function call skipped on input ", e, input);
+				onClassCastException(this, e, input);
 				return;
 			}
 			if (result == null) {
@@ -310,34 +369,39 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 				if ((Boolean) result) {
 					next.accept(input);
 				} else {
-					log("Predicate is false on ", null, input);
+					log(this, "Skipped element, because CtFunction#accept(input) returned false", input);
 				}
+				return;
 			}
 			if (result instanceof Iterable) {
 				//send each item of Iterable to the next step
 				for (Object out : (Iterable<Object>) result) {
 					next.accept(out);
 				}
-			} else if (result.getClass().isArray()) {
+				return;
+			}
+			if (result.getClass().isArray()) {
 				//send each item of Array to the next step
 				for (int i = 0; i < Array.getLength(result); i++) {
 					next.accept(Array.get(result, i));
 				}
-			} else {
-				next.accept(result);
+				return;
 			}
+			next.accept(result);
 		}
 	}
 
 	/**
-	 * a step which proceeds only elements matching filter
+	 * a step which scans all children of input element and only elements matching filter go to the next step
 	 */
-	private class FilterWrapper extends Step {
+	private class ChildrenFilteringWrapper extends CtScanner implements Step {
 
+		private String name;
+		protected Consumer<Object> next;
 		private Filter<CtElement> filter;
 
 		@SuppressWarnings("unchecked")
-		FilterWrapper(Filter<? extends CtElement> filter) {
+		ChildrenFilteringWrapper(Filter<? extends CtElement> filter) {
 			this.filter = (Filter<CtElement>) filter;
 		}
 
@@ -346,18 +410,54 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 			if (input == null) {
 				return;
 			}
+			log(this, "CtScanner received", input);
+			scan(input);
+		}
+		@Override
+		public void scan(CtElement element) {
+			processFilter(element);
+			super.scan(element);
+		}
+
+		private void processFilter(CtElement element) {
+			if (element == null) {
+				return;
+			}
 			boolean matches = false;
 			try {
-				matches = (Boolean) filter.matches((CtElement) input);
+				matches = filter.matches(element);
 			} catch (ClassCastException e) {
-				log("Filter call skipped on input ", e, input);
+				onClassCastException(this, e, element);
+				return;
 			}
 			if (matches) {
 				//send input to output, because Fitler.matches returned true
-				next.accept(input);
+				next.accept(element);
 			} else {
-				log("Filter is false on ", null, input);
+				log(this, "Skipped child element, because Filter#matches(input) returned false", element);
 			}
+		}
+
+		@Override
+		public Consumer<Object> getNext() {
+			return next;
+		}
+		@Override
+		public void setNext(Consumer<Object> next) {
+			this.next = next;
+		}
+		@Override
+		public String getName() {
+			return name;
+		}
+		@Override
+		public void setName(String name) {
+			this.name = name;
+		}
+		@Override
+		public boolean isFailOnCCE() {
+			//never fail on CCE during Filter.matching
+			return false;
 		}
 	}
 }

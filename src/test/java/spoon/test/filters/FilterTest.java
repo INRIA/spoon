@@ -520,7 +520,7 @@ public class FilterTest {
 	@Test
 	public void testFunctionQueryStep() throws Exception {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","debug" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -537,7 +537,7 @@ public class FilterTest {
 			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration())
-			.setLogging(true)
+			.logging(true)
 			.forEach((CtInterface<?> c)->{
 				assertEquals("ITostada", c.getSimpleName());
 				context.count++;

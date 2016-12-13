@@ -17,13 +17,15 @@
 package spoon.reflect.visitor.chain;
 
 /**
- * Functional interface used to map elements using a function which accepts one input parameter and calls output.accept(out) for each produced output element
- *
- * It is used for example by {@link QueryStep#map(ChainableFunction))}
+ * Functional interface, which represents one query step.<br>
+ * {@link CtQuery} algorithm sends the input element as first parameter
+ * together with output Consumer parameter. The implementation of
+ * {@link #process(Object, Consumer)} method should call output.accept(outputElement)
+ * for each outputElement produced by this query step.
  *
  * @param <T> the type of the input to the function
  * @param <R> the type of the result produced by this function
  */
 public interface CtQueryStep<T, R> {
-	void query(T input, Consumer<R> output);
+	void process(T input, Consumer<R> output);
 }
