@@ -26,7 +26,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -45,7 +44,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -217,11 +215,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public boolean isImported(CtReference ref) {
 		if (ref instanceof CtFieldReference) {
-			return isImportedInFieldImports((CtFieldReference)ref);
+			return isImportedInFieldImports((CtFieldReference) ref);
 		} else if (ref instanceof CtExecutableReference) {
-			return isImportedInMethodImports((CtExecutableReference)ref);
+			return isImportedInMethodImports((CtExecutableReference) ref);
 		} else if (ref instanceof CtTypeReference) {
-			return isImportedInClassImports((CtTypeReference)ref);
+			return isImportedInClassImports((CtTypeReference) ref);
 		} else {
 			return false;
 		}
@@ -265,17 +263,17 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 							CtReference reference;
 							CtPackageReference pack = targetType.getPackage();
 							if (parent instanceof CtFieldAccess) {
-								CtFieldAccess field = (CtFieldAccess)parent;
+								CtFieldAccess field = (CtFieldAccess) parent;
 								CtFieldReference localReference = field.getVariable();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;
 							} else if (parent instanceof CtExecutable) {
-								CtExecutable exec = (CtExecutable)parent;
+								CtExecutable exec = (CtExecutable) parent;
 								CtExecutableReference localReference = exec.getReference();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;
 							} else if (parent instanceof CtInvocation) {
-								CtInvocation invo = (CtInvocation)parent;
+								CtInvocation invo = (CtInvocation) parent;
 								CtExecutableReference localReference = invo.getExecutable();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;

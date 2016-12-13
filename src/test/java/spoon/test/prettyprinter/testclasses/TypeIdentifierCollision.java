@@ -1,7 +1,6 @@
 package spoon.test.prettyprinter.testclasses;
 
 import spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.Class0.ClassA;
-import static spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1;
 
 public class TypeIdentifierCollision
 {
@@ -21,12 +20,12 @@ public class TypeIdentifierCollision
 
 	public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal()
 	{
-		localField = E1.ordinal();
+		localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();
 	}
 
 	public void setFieldUsingLocallyDefinedEnum()
 	{
-		localField = E1.ordinal();
+		localField = ENUM.E1.ordinal();
 	}
 
 	public void setFieldOfClassWithSameNameAsTheCompilationUnitClass()

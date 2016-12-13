@@ -11,6 +11,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
+import spoon.reflect.visitor.MinimalImportScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 
@@ -28,6 +29,21 @@ import static spoon.testing.utils.ModelUtils.build;
 public class ImportScannerTest {
 
 	@Test
+	public void testComputeMinimalImportsInClass() throws Exception {
+		String packageName = "spoon.test";
+		String className = "SampleImportClass";
+		String qualifiedName = packageName + "." + className;
+
+		Factory aFactory = build(packageName, className).getFactory();
+		CtType<?> theClass = aFactory.Type().get(qualifiedName);
+
+		ImportScanner importContext = new MinimalImportScanner();
+		Collection<CtReference> imports = importContext.computeImports(theClass);
+
+		assertTrue(imports.isEmpty());
+	}
+
+	@Test
 	public void testComputeImportsInClass() throws Exception {
 		String packageName = "spoon.test";
 		String className = "SampleImportClass";
@@ -39,7 +55,7 @@ public class ImportScannerTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		Collection<CtReference> imports = importContext.computeImports(theClass);
 
-		assertEquals(2, imports.size());
+		assertEquals(3, imports.size());
 	}
 
 

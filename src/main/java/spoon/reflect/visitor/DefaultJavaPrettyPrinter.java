@@ -698,7 +698,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 						printer.write(declaringType.getSimpleName());
 						printer.write(".");
 					}
- 				}
+				}
 				_context.ignoreStaticAccess(true);
 			}
 			scan(f.getVariable());
@@ -1530,7 +1530,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		if (importsContext.isImported(ref)) {
+		if (importsContext.isImported(ref) || (this.env.isAutoImports() && ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang"))) {
 			// If my.pkg.Something is imported, but
 			//A) we are in the context of a class which is also called "Something",
 			//B) we are in the context of a class which defines field which is also called "Something",
@@ -1546,9 +1546,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			return false;
 		} else {
-			if (ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang")) {
-				return false;
-			}
 			return true;
 		}
 	}

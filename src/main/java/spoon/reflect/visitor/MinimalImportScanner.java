@@ -18,16 +18,13 @@ package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.reflect.declaration.CtClassImpl;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -50,7 +47,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		if (parent == null) {
 			return null;
 		} else {
-			return (CtClass)parent;
+			return (CtClass) parent;
 		}
 	}
 
@@ -76,7 +73,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 			CtClass parentClass = this.getParentClass(ref);
 
 			if (parent instanceof CtNamedElement) {
-				CtNamedElement namedElement = (CtNamedElement)parent;
+				CtNamedElement namedElement = (CtNamedElement) parent;
 
 				if (parentClass != null && parentClass.getReference() != null) {
 					if (parentClass.getReference().equals(targetType)) {
@@ -105,9 +102,9 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 					CtTypeReference typeReference;
 					if (parent instanceof CtFieldReference) {
-						typeReference = ((CtFieldReference)parent).getDeclaringType();
+						typeReference = ((CtFieldReference) parent).getDeclaringType();
 					} else {
-						typeReference = ((CtExecutableReference)parent).getDeclaringType();
+						typeReference = ((CtExecutableReference) parent).getDeclaringType();
 					}
 
 					if (typeReference != null) {

@@ -266,16 +266,16 @@ public class ElementPrinterHelper {
 			printer.writeln().writeln().writeTabs();
 			for (CtReference ref : imports) {
 				if (ref instanceof CtTypeReference) {
-					CtTypeReference typeRef = (CtTypeReference)ref;
+					CtTypeReference typeRef = (CtTypeReference) ref;
 					printer.write("import " + typeRef.getQualifiedName() + ";").writeln().writeTabs();
 				} else if (ref instanceof CtExecutableReference) {
-					CtExecutableReference execRef = (CtExecutableReference)ref;
+					CtExecutableReference execRef = (CtExecutableReference) ref;
 					if (execRef.getDeclaringType() != null) {
-						printer.write("import static " + execRef.getDeclaringType().getQualifiedName()+"."+execRef.getSimpleName()+";").writeln().writeTabs();
+						printer.write("import static " + execRef.getDeclaringType().getQualifiedName() + "." + execRef.getSimpleName() + ";").writeln().writeTabs();
 					}
 				} else if (ref instanceof CtFieldReference) {
-					CtFieldReference fieldRef = (CtFieldReference)ref;
-					printer.write("import static " + fieldRef.getDeclaringType().getQualifiedName()+"."+fieldRef.getSimpleName()+";").writeln().writeTabs();
+					CtFieldReference fieldRef = (CtFieldReference) ref;
+					printer.write("import static " + fieldRef.getDeclaringType().getQualifiedName() + "." + fieldRef.getSimpleName() + ";").writeln().writeTabs();
 				}
 
 			}
