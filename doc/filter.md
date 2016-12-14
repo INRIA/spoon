@@ -9,28 +9,43 @@ Spoon aims at giving developers a way to query code elements in
 one single line of code in the normal cases. Code query in Spoon 
 is done in plain Java, in the spirit of an embedded DSL.
 The information that can be queried is that of a well-formed typed AST.
-For this, we provide the query API, based on the `QueryStep` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/chain/QueryStep.html)).
-A QueryStep is a chain of the steps, which can be used to browse spoon model (AST).
-The `QueryStep` can be create by `Query#query()` or `CtElement#query()`. Query can be constructed using these functional interfaces
+For this, we provide the query API. 
+* The creation of first or next query step is in responsibility of `CtQueryable` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/chain/CtQueryable.html)).
+* The methods which executes the query are in `CtQuery` 
+([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/chain/CtQuery.html)).
+* The result of query can be consumed using functional interface `CtConsumer` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/chain/CtConsumer.html)).
+* The core contract of each query step is based on `CtQueryStep` 
+([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/chain/CtQueryStep.html)), 
+which gets two input parameters:
+  * a `CtConsumer` which is used by this query step to send produced results to the next step - next step consumes these results.
+  * a `<T> input` which represents input of the query step. Usually an AST node - a object based on `CtElement` 
 
-QueryStep method | Functional class | Description
------------------|--------------|--------
-then(AsyncFunction fnc) | `AsyncFunction<T,R>#apply(T input, Consumer<R> output)` | a functional which gets an input element and can return zero, one or more output elements by calling of output.accept(result)
-then(Function fnc) | `Function<T,R>#apply(T input):R` | a functional which gets an input element and returns element or collection of elements. Each not null element from the collection is then sent as input to the next `QueryStep`
-then(Consumer consumer) | `Consumer<T>#accept(T input):void` | a functional which gets an input element. It is used to collect the results of browsing. 
-matches(Predicate predicate) | `Predicate<T>#matches(T input):boolean` | if predicate.matches(input)==true then input is sent to next step.
-scan(Predicate filter)  | `Predicate<T>#matches(T input):boolean` | scans all children of the step input element and the input elements which `predicate.matches(input)==true` are sent to next step
+A query is a chain of the steps, which can be used to browse spoon model (AST). Spoon provides these types of query steps:
+* filtering of child nodes of AST tree. All children nodes of input element, which matches the Filter are sent to next step. If the input element matches the filter then it is sent to next step too. Use `CtQueryable#filterChildren(Filter)`.
+* filtering of nodes (but only of input node, not it's children). Use the `CtQueryable#map(CtFunction)`. 
+The input element of query step is evaluated by your implementation of CtFunction 
+and the returned value of type boolean tells whether input element 
+is sent to next step (`return true`) or input element is skipped (`return false`).
+* navigation from one node to another node or collection of nodes. 
+Use the `CtQueryable#map(CtFunction)`. The input element of query step is evaluated 
+by your implementation of CtFunction and the returned element is sent to next step. 
+If returned element is the `Collection` or `array` then each item is sent to next step sequentially. 
+This approach is good for navigation using existing spoon model API, 
+with code of query step like `aQuery.map((CtType t)->t.getSuperclasses())` 
+It is easy to use and it performs well, because the returned value contains only few items. 
+But in case of complex query steps, 
+which for example has to return all references to an package protected field, 
+it is better to use `CtQueryable#map(CtQueryStep)`, 
+which performs well on many thousands of returned elements without need to store all the results into memory. 
+The results can be immediately processed by next query step. 
+Use an existing implementations of `CtQueryStep` interface or implement one, which fits to your needs.
 
-Spoon has defined several Filter classes, which are based on `Predicate` functional interface.
+Spoon implements several Filters. 
 A Filter defines a predicate of the form of a `matches` method that 
 returns `true` if an element is part of the filter.
-There are three ways how to use Filter in query
-
-1) `QueryStep#scan(Filter filter)` - scans all children of input element using a depth-first search algorithm, and each element which matches the filter is sent to next step
-
-2) `QueryStep#then(AsyncFunction filter)` - input element is used to initialize Filter context. Then Filter scans all children from start node detected by this Filter. All the elements which matches the Filter are sent to next step. Only some filters, these which implements `AsyncFunction`, can supports this kind of Filtering.
-  
-3) `QueryStep#matches(Filter filter)` - if input element matches the Filter then it is sent to next step. No scanning is done 
+A Filter is given as parameter to a `CtQueryable#filterChildren(Filter)` method which implements depth-first search algorithm.
+During AST traversal, the elements satisfying the matching predicate are 
+given to the next query step for subsequent treatment.
 
 This table gives an excerpt of built-in filters.
 
@@ -73,41 +88,4 @@ list3 = rootPackage.getElements(
     }
   }
 );
-```
-
-##Filter scope
-The result of the filtering depends on the starting element of the AST traversal. In the examples above the starting elements were 
-- methodBody element - it means only elements in body of method can be in result 
-- rootPackage element - it means any element of the spoon model can be in result
-
-The starting element was the Element on which getElements method is called.
-
-Some filters returns correct result only if their AST traversal starts at correct element. 
-For example 'OverriddenMethodFilter' filter should be processed
-
-A) on root package if the method is public
-
-B) on top level class if the method is private
-
-If the Filter needs to influence the scanning scope then
- 
-1) the filter must implement interface `AsyncFunction`
- 
-2) the client must add the filter to the query by `QueryStep#then(AsyncFunction filter)` method
-
-```java
-CtMethod<?> method = ...//the input method for the filter
-List<CtMethod<?>> overridenMethods = Query.query().then(new OverriddenMethodFilter(method)).list()
-```
-
-##Filter input element 
-Note that some filters needs an input parameter. For example `OverriddenMethodFilter` needs a method, 
-whose overridden methods has to be returned by searching using this filter. 
-Such filters can implement interface `AsyncFunction`  
-([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/chain/AsyncFunction.html)).
-Then client can use following code to search for overridden methods
-
-```java
-CtMethod<?> method = ...//the input method for the filter
-List<CtMethod<?>> overridenMethods = method.query().then(new OverriddenMethodFilter()).list()
 ```
