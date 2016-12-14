@@ -42,6 +42,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtQuery;
+import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -530,15 +531,15 @@ public class FilterTest {
 		
 		Context context = new Context();
 
-		launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;})
+		CtQuery<CtType<?>> query = launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;})
 			.map((CtClass<?> c)->c.getSuperInterfaces())
 			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
 			.map((CtType<?> iface)->iface.getAllMethods())
 			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
 			.map((CtMethod<?> m)->m.getType())
-			.map((CtTypeReference<?> t)->t.getTypeDeclaration())
-			.logging(true)
-			.forEach((CtInterface<?> c)->{
+			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
+		((CtQueryImpl<?>)query).logging(true);
+		query.forEach((CtInterface<?> c)->{
 				assertEquals("ITostada", c.getSimpleName());
 				context.count++;
 //				return null;

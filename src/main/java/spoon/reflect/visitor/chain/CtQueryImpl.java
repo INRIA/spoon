@@ -51,7 +51,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	private Step tail;
 
 	private boolean logging = false;
-	private boolean failOnCCE = true;
+	private QueryFailurePolicy failurePolicy = QueryFailurePolicy.FAIL;
 
 	public CtQueryImpl() {
 		tail = new TailConsumer();
@@ -129,8 +129,8 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	 * @param output
 	 */
 	@SuppressWarnings("unchecked")
-	public void process(Object input, Consumer<O> output) {
-		tail.setNext((Consumer<Object>) output);
+	public void process(Object input, CtConsumer<O> output) {
+		tail.setNext((CtConsumer<Object>) output);
 		try {
 			if (input == null) {
 				if (inputs != null) {
@@ -152,7 +152,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	@Override
 	public List<O> list() {
 		final List<O> list = new ArrayList<>();
-		forEach(new Consumer<O>() {
+		forEach(new CtConsumer<O>() {
 			@Override
 			public void accept(O out) {
 				list.add(out);
@@ -163,8 +163,8 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <R> void forEach(Consumer<R> consumer) {
-		process(null, (Consumer<O>) consumer);
+	public <R> void forEach(CtConsumer<R> consumer) {
+		process(null, (CtConsumer<O>) consumer);
 	}
 
 	@Override
@@ -176,11 +176,11 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		return this;
 	}
 	@Override
-	public CtQuery<O> failOnCCE(boolean fail) {
+	public CtQuery<O> failurePolicy(QueryFailurePolicy policy) {
 		if (lastStep == tail) {
 			throw new SpoonException("Cannot set ignoreIncompatibleInput of the step on the chain with no step");
 		}
-		failOnCCE = fail;
+		failurePolicy = policy;
 		return this;
 	}
 
@@ -188,7 +188,13 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		return logging;
 	}
 
-	@Override
+	/**
+	 * Enable/disable logging for this query
+	 *
+	 * Note: it is not possible to enable logging of all queries globally by Launcher.LOGGER.isDebugEnabled()
+	 * because it causes StackOverflow.
+	 * Reason: Query chains are used internally during writing of log messages too. So it would write logs for ever...
+	 */
 	public CtQuery<O> logging(boolean logging) {
 		this.logging = logging;
 		return this;
@@ -251,15 +257,15 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	/**
 	 * Each Step must implement it
 	 */
-	private interface Step extends Consumer<Object> {
+	private interface Step extends CtConsumer<Object> {
 		/**
-		 * @return next {@link Consumer}
+		 * @return next {@link CtConsumer}
 		 */
-		Consumer<Object> getNext();
+		CtConsumer<Object> getNext();
 		/**
-		 * sets next {@link Consumer}
+		 * sets next {@link CtConsumer}
 		 */
-		void setNext(Consumer<Object> next);
+		void setNext(CtConsumer<Object> next);
 		/**
 		 * @return name of this Step - for debugging purposes
 		 */
@@ -280,13 +286,13 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	 */
 	private abstract class AbstractStep implements Step {
 		private String name;
-		protected Consumer<Object> next;
+		protected CtConsumer<Object> next;
 		@Override
-		public Consumer<Object> getNext() {
+		public CtConsumer<Object> getNext() {
 			return next;
 		}
 		@Override
-		public void setNext(Consumer<Object> next) {
+		public void setNext(CtConsumer<Object> next) {
 			this.next = next;
 		}
 		@Override
@@ -299,7 +305,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		}
 		@Override
 		public boolean isFailOnCCE() {
-			return failOnCCE;
+			return failurePolicy == QueryFailurePolicy.FAIL;
 		}
 		public final void accept(Object input) {
 			if (input == null) {
@@ -404,7 +410,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	private class ChildrenFilteringWrapper extends CtScanner implements Step {
 
 		private String name;
-		protected Consumer<Object> next;
+		protected CtConsumer<Object> next;
 		private Filter<CtElement> filter;
 
 		@SuppressWarnings("unchecked")
@@ -446,11 +452,11 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		}
 
 		@Override
-		public Consumer<Object> getNext() {
+		public CtConsumer<Object> getNext() {
 			return next;
 		}
 		@Override
-		public void setNext(Consumer<Object> next) {
+		public void setNext(CtConsumer<Object> next) {
 			this.next = next;
 		}
 		@Override

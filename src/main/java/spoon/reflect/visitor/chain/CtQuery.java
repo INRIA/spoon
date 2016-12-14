@@ -37,7 +37,7 @@ import spoon.reflect.visitor.filter.OverriddenMethodFilter;
  *
  * Use these methods to process the query:
  * <ul>
- * <li>{@link #forEach(Consumer)} - to evaluate the query and call a Consumer.apply(output) method for each element produced by this query
+ * <li>{@link #forEach(CtConsumer)} - to evaluate the query and call a Consumer.apply(output) method for each element produced by this query
  * <li>{@link #list()} - to evaluate the query and return list of elements produced by this query
  * </ul>
  * The query can be used several times.<br>
@@ -63,7 +63,7 @@ public interface CtQuery<O> extends CtQueryable {
 	 * You can use java 8 lambda expression to implement consumer.
 	 * @param consumer
 	 */
-	<R> void forEach(Consumer<R> consumer);
+	<R> void forEach(CtConsumer<R> consumer);
 
 	/**
 	 * Sets the name of current QueryStep. It can help to identify the steps during debugging of your query
@@ -73,22 +73,13 @@ public interface CtQuery<O> extends CtQueryable {
 	CtQuery<O> name(String name);
 
 	/**
-	 * @param fail - if true then this query will throw {@link ClassCastException}
+	 * @param policy - defines whether this query will throw {@link ClassCastException}
 	 * when output of previous step cannot be cast to type of input of next step.
-	 * The default value is true. <br>
+	 * The default value is {@link QueryFailurePolicy#FAIL}<br>
 	 *
 	 * Note: The {@link CtQueryable#filterChildren(Filter)} step never throws {@link ClassCastException}
 	 *
 	 * @return this to support fluent API
 	 */
-	CtQuery<O> failOnCCE(boolean fail);
-
-	/**
-	 * Enable/disable logging for this query
-	 *
-	 * Note: it is not possible to enable logging of all queries globally by Launcher.LOGGER.isDebugEnabled()
-	 * because it causes StackOverflow.
-	 * Reason: Query chains are used internally during writing of log messages too. So it would write logs for ever...
-	 */
-	CtQuery<O> logging(boolean logging);
+	CtQuery<O> failurePolicy(QueryFailurePolicy policy);
 }

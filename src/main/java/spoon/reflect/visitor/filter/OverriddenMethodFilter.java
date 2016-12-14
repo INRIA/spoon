@@ -21,7 +21,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtQueryStep;
-import spoon.reflect.visitor.chain.Consumer;
+import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 
 /**
@@ -72,7 +72,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<
 	 * In such case Filter can automatically use correct scanning scope - root package
 	 */
 	@Override
-	public void process(CtMethod<?> input, Consumer<CtMethod<?>> output) {
+	public void process(CtMethod<?> input, CtConsumer<CtMethod<?>> output) {
 		if (method != null) {
 			/**
 			 * Do not use parameterized constructor together with QueryStep#map().

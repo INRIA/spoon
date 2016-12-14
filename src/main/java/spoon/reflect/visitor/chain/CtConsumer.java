@@ -17,15 +17,11 @@
 package spoon.reflect.visitor.chain;
 
 /**
- * Functional interface, which represents one query step.<br>
- * {@link CtQuery} algorithm sends the input element as first parameter
- * together with output Consumer parameter. The implementation of
- * {@link #process(Object, CtConsumer)} method should call output.accept(outputElement)
- * for each outputElement produced by this query step.
+ * Functional interface used to accept elements.
+ * It is used for example by {@link CtQuery#forEach(Consumer)}
  *
- * @param <T> the type of the input to the function
- * @param <R> the type of the result produced by this function
+ * @param <T> - the type of accepted element
  */
-public interface CtQueryStep<T, R> {
-	void process(T input, CtConsumer<R> output);
+public interface CtConsumer<T> {
+	void accept(T t);
 }

@@ -31,7 +31,7 @@ public interface CtQueryable {
 	 * When the query is executed then this queryStep, works like this:<br>
 	 * It gets two parameters<br>
 	 * 1) input element<br>
-	 * 2) output {@link Consumer}<br>
+	 * 2) output {@link CtConsumer}<br>
 	 * The query sends input to the queryStep and the queryStep
 	 * sends the result element(s) of this queryStep by calling out output.accept(result)
 	 *

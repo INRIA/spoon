@@ -17,11 +17,11 @@
 package spoon.reflect.visitor.chain;
 
 /**
- * Functional interface used to accept elements.
- * It is used for example by {@link CtQuery#forEach(Consumer)}
- *
- * @param <T> - the type of accepted element
+ * Use in {@link CtQuery#failurePolicy(QueryFailurePolicy)} to define how to handle failure
  */
-public interface Consumer<T> {
-	void accept(T t);
+public enum QueryFailurePolicy {
+	/**Throws ClassCastException when output type of previous step cannot be assigned to input type of next step*/
+	FAIL,
+	/**when output type of previous step cannot be assigned to input type of next step then such output is ignored*/
+	IGNORE
 }
