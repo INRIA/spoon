@@ -198,13 +198,13 @@ public class ImportTest {
 		final CtClass<ImportTest> classWithInvocation = launcher.getFactory().Class().get(ClassWithInvocation.class);
 
 		final ImportScanner importScanner = new ImportScannerImpl();
-		final Collection<CtReference> imports = importScanner.computeImports(aClass);
+		final Collection<CtTypeReference<?>> imports = importScanner.computeImports(aClass);
 		assertEquals(2, imports.size());
-		final Collection<CtReference> imports1 = importScanner.computeImports(anotherClass);
+		final Collection<CtTypeReference<?>> imports1 = importScanner.computeImports(anotherClass);
 		assertEquals(1, imports1.size());
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
-		final Collection<CtReference> imports2 = importScanner.computeImports(classWithInvocation);
+		final Collection<CtTypeReference<?>> imports2 = importScanner.computeImports(classWithInvocation);
 		assertEquals("Spoon ignores the arguments of CtInvocations", 1, imports2.size());
 	}
 
@@ -279,7 +279,7 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtReference> imports = importContext.computeImports(factory.Class().get(Mole.class));
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(Mole.class));
 
 		assertEquals(1, imports.size());
 		assertEquals("spoon.test.imports.testclasses.internal2.Chimichanga", imports.toArray()[0].toString());
@@ -293,7 +293,7 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/NotImportExecutableType.java");
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtReference> imports = importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
 		assertEquals(2, imports.size());
 		Set<String> expectedImports = new HashSet<>(
@@ -309,7 +309,7 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtReference> imports = importContext.computeImports(factory.Class().get(Pozole.class));
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(Pozole.class));
 
 		assertEquals(1, imports.size());
 		assertEquals("spoon.test.imports.testclasses.internal2.Menudo", imports.toArray()[0].toString());

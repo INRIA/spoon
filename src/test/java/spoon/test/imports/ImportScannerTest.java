@@ -38,7 +38,7 @@ public class ImportScannerTest {
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new MinimalImportScanner();
-		Collection<CtReference> imports = importContext.computeImports(theClass);
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
 
 		assertTrue(imports.isEmpty());
 	}
@@ -53,9 +53,9 @@ public class ImportScannerTest {
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtReference> imports = importContext.computeImports(theClass);
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
 
-		assertEquals(3, imports.size());
+		assertEquals(2, imports.size());
 	}
 
 

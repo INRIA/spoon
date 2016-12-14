@@ -143,7 +143,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public PrintingContext context = new PrintingContext();
 
 	/**
-	 * Handle classImports of classes.
+	 * Handle imports of classes.
 	 */
 	private ImportScanner importsContext;
 
@@ -225,15 +225,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * Make the classImports for a given type.
+	 * Make the imports for a given type.
 	 */
 	public Collection<CtReference> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
-		return importsContext.computeImports(context.currentTopLevel);
+		return importsContext.computeAllImports(context.currentTopLevel);
 	}
 
 	/**
-	 * Make the classImports for all elements.
+	 * Make the imports for all elements.
 	 */
 	public void computeImports(CtElement element) {
 		if (env.isAutoImports()) {

@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * A scanner that calculates the classImports for a given model.
+ * A scanner that calculates the imports for a given model.
  */
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
@@ -189,7 +189,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public Collection<CtReference> computeImports(CtType<?> simpleType) {
+	public Collection<CtReference> computeAllImports(CtType<?> simpleType) {
 		classImports.clear();
 		fieldImports.clear();
 		methodImports.clear();
@@ -206,8 +206,20 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
+	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
+		classImports.clear();
+		//look for top declaring type of that simpleType
+		targetType = simpleType.getReference().getTopLevelType();
+		addClassImport(simpleType.getReference());
+		scan(simpleType);
+		return this.classImports.values();
+	}
+
+	@Override
 	public void computeImports(CtElement element) {
 		classImports.clear();
+		fieldImports.clear();
+		methodImports.clear();
 		//look for top declaring type of that element
 		CtType<?> type = element.getParent(CtType.class);
 		targetType = type == null ? null : type.getReference().getTopLevelType();
