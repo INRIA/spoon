@@ -105,4 +105,10 @@ rootPackage
   .forEach((CtMethod<?> method)->{
   	... do something with found methods ...
   });
+  
+// query which returns overridden methods of deprecated methods
+list4 = rootPackage
+  .filterChildren((CtMethod method)->method.getAnnotation(Deprecated.class)!=null)
+  .map(new OverriddenMethodFilter())
+  .list();
 ```
