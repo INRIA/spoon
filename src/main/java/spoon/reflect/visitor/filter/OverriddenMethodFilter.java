@@ -34,7 +34,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<
 	 * Creates a new overridden method filter, which will automatically scan correct scope for all overridden methods of the input element
 	 * Use {@link CtQuery#map(CtQueryStep)} to add query step using this filter
 	 *
-	 * Note: the executable to be tested for being invoked, comes as output from previous query step
+	 * Note: the executable to be tested for being invoked, comes from previous query step
 	 */
 	public OverriddenMethodFilter() {
 	}
@@ -53,10 +53,10 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<
 	public boolean matches(CtMethod<?> element) {
 		if (method == null) {
 			/**
-			 * Do not use parameterless constructor together with QueryStep#scan().
+			 * Do not use parameterless constructor together with {@link CtQuery#filterChildren(Filter)}.
 			 * Use:
-			 * A) parameterized constructor and QueryStep#scan()
-			 * B) parameterless constructor and QueryStep#map()
+			 * A) parameterized constructor and {@link CtQuery#filterChildren(Filter)}
+			 * B) parameterless constructor and {@link CtQuery#map(CtQueryStep)}
 			 */
 			throw new SpoonException("Missing Filter context parameter 'method'");
 		}
@@ -75,10 +75,10 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<
 	public void forEach(CtConsumer<CtMethod<?>> output, CtMethod<?> input) {
 		if (method != null) {
 			/**
-			 * Do not use parameterized constructor together with QueryStep#map().
+			 * Do not use parameterized constructor together with {@link CtQuery#map(CtQueryStep)}.
 			 * Use:
-			 * A) parameterized constructor and QueryStep#scan()
-			 * B) parameterless constructor and QueryStep#map()
+			 * A) parameterized constructor and {@link CtQuery#filterChildren(Filter)}
+			 * B) parameterless constructor and {@link CtQuery#map(CtQueryStep)}
 			 */
 			throw new SpoonException("Do not use parameterized constructor together with QueryStep#map()");
 		}
