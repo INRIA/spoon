@@ -21,13 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.util.RtHelper;
 
 /**
  * A simple visitor that takes a filter and returns all the elements that match
  * it.
- * @deprecated use {@link Query#scan(Filter)} instead.
+ * @deprecated use {@link CtQuery#filterChildren(Filter)} instead.
  */
 @Deprecated
 public class QueryVisitor<T extends CtElement> extends CtScanner {
