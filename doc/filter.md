@@ -74,13 +74,18 @@ filter that only matches public fields across all classes.
 
 ```java
 // collecting all assignments of a method body
-list1 = methodBody.getElements(new TypeFilter(CtAssignment.class));
+list1 = methodBody.filterChildren(new TypeFilter(CtAssignment.class)).list();
+
+// processing all assignments of a method body
+methodBody.filterChildren(new TypeFilter(CtAssignment.class)).forEach((CtAssignment assignment)->{
+	... process assignment ...
+});
 
 // collecting all deprecated classes
-list2 = rootPackage.getElements(new AnnotationFilter(Deprecated.class));
+list2 = rootPackage.filterChildren(new AnnotationFilter(Deprecated.class)).list();
 
 // creating a custom filter to select all public fields
-list3 = rootPackage.getElements(
+list3 = rootPackage.filterChildren(
   new AbstractFilter<CtField>(CtField.class) {
     @Override
     public boolean matches(CtField field) {
@@ -88,4 +93,16 @@ list3 = rootPackage.getElements(
     }
   }
 );
+
+//creating a custom filter to select all public fields using java 8 lambda
+list3 = rootPackage.filterChildren((CtField field)->field.getModifiers.contains(ModifierKind.PUBLIC));
+
+// a query, which processes all not deprecated methods of all deprecated classes
+rootPackage
+  .filterChildren((CtClass clazz)->clazz.getAnnotation(Deprecated.class)!=null)
+  .map((CtClass clazz)->clazz.getMethods())
+  .map((CtMethod<?> method)->method.getAnnotation(Deprecated.class)==null)
+  .forEach((CtMethod<?> method)->{
+  	... do something with found methods ...
+  });
 ```
