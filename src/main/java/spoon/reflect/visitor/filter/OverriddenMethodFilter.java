@@ -72,7 +72,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<
 	 * In such case Filter can automatically use correct scanning scope - root package
 	 */
 	@Override
-	public void process(CtMethod<?> input, CtConsumer<CtMethod<?>> output) {
+	public void forEach(CtConsumer<CtMethod<?>> output, CtMethod<?> input) {
 		if (method != null) {
 			/**
 			 * Do not use parameterized constructor together with QueryStep#map().

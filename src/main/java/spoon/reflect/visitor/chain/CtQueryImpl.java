@@ -129,7 +129,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	 * @param output
 	 */
 	@SuppressWarnings("unchecked")
-	public void process(Object input, CtConsumer<O> output) {
+	public void forEach(CtConsumer<O> output, Object input) {
 		tail.setNext((CtConsumer<Object>) output);
 		try {
 			if (input == null) {
@@ -164,7 +164,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <R> void forEach(CtConsumer<R> consumer) {
-		process(null, (CtConsumer<O>) consumer);
+		forEach((CtConsumer<O>) consumer, null);
 	}
 
 	@Override
@@ -346,7 +346,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		@Override
 		public void processInput(Object input) {
 			try {
-				fnc.process(input, next);
+				fnc.forEach(next, input);
 			} catch (ClassCastException e) {
 				onClassCastException(this, e, input);
 			}
