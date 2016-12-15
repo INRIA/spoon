@@ -1,7 +1,7 @@
 package spoon.test;
 
-import java.util.Collections;
 import java.util.List;
+import static java.util.Collections.EMPTY_LIST;
 
 public class SampleImportClass {
 
@@ -14,7 +14,7 @@ public class SampleImportClass {
 		this(j, 0);
 		new Thread() {
 		};
-		List<?> emptyList = Collections.EMPTY_LIST;
+		List<?> emptyList = EMPTY_LIST;
 	}
 
 	public SampleImportClass(int j, int k) {

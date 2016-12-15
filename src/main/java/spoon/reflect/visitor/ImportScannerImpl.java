@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtInvocation;
@@ -24,14 +25,18 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -39,7 +44,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -53,7 +57,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private static final Collection<String> namesPresentInJavaLang9 = Arrays.asList(
 			"ProcessHandle", "StackWalker", "StackFramePermission");
 
-	protected Map<String, CtTypeReference<?>> imports = new TreeMap<>();
+	protected Map<String, CtTypeReference<?>> classImports = new TreeMap<>();
+	protected Map<String, CtFieldReference<?>> fieldImports = new TreeMap<>();
+	protected Map<String, CtExecutableReference<?>> methodImports = new TreeMap<>();
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
@@ -83,7 +89,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
-		scan(reference.getDeclaringType());
+		if (reference.isStatic()) {
+			if (!addFieldImport(reference)) {
+				scan(reference.getDeclaringType());
+			}
+		} else {
+			scan(reference.getDeclaringType());
+		}
 		exit(reference);
 	}
 
@@ -91,7 +103,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
 		enter(reference);
-		if (reference.isConstructor()) {
+		if (reference.isStatic()) {
+			addMethodImport(reference);
+		} else if (reference.isConstructor()) {
 			scan(reference.getDeclaringType());
 		}
 		scan(reference.getActualTypeArguments());
@@ -113,9 +127,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 		if (!(reference instanceof CtArrayTypeReference)) {
 			if (reference.getDeclaringType() == null) {
-				addImport(reference);
+				addClassImport(reference);
 			} else {
-				addImport(reference.getAccessType());
+				addClassImport(reference.getAccessType());
 			}
 		}
 		super.visitCtTypeReference(reference);
@@ -132,36 +146,36 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <A extends Annotation> void visitCtAnnotationType(
 			CtAnnotationType<A> annotationType) {
-		addImport(annotationType.getReference());
+		addClassImport(annotationType.getReference());
 		super.visitCtAnnotationType(annotationType);
 	}
 
 	@Override
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
-		addImport(ctEnum.getReference());
+		addClassImport(ctEnum.getReference());
 		super.visitCtEnum(ctEnum);
 	}
 
 	@Override
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
-		addImport(intrface.getReference());
+		addClassImport(intrface.getReference());
 		for (CtTypeMember t : intrface.getTypeMembers()) {
 			if (!(t instanceof CtType)) {
 				continue;
 			}
-			addImport(((CtType) t).getReference());
+			addClassImport(((CtType) t).getReference());
 		}
 		super.visitCtInterface(intrface);
 	}
 
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		addImport(ctClass.getReference());
+		addClassImport(ctClass.getReference());
 		for (CtTypeMember t : ctClass.getTypeMembers()) {
 			if (!(t instanceof CtType)) {
 				continue;
 			}
-			addImport(((CtType) t).getReference());
+			addClassImport(((CtType) t).getReference());
 		}
 		super.visitCtClass(ctClass);
 	}
@@ -169,24 +183,45 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
 		for (CtTypeReference<?> type : catchVariable.getMultiTypes()) {
-			addImport(type);
+			addClassImport(type);
 		}
 		super.visitCtCatchVariable(catchVariable);
 	}
 
 	@Override
-	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
-		imports.clear();
+	public Collection<CtReference> computeAllImports(CtType<?> simpleType) {
+		classImports.clear();
+		fieldImports.clear();
+		methodImports.clear();
 		//look for top declaring type of that simpleType
 		targetType = simpleType.getReference().getTopLevelType();
-		addImport(simpleType.getReference());
+		addClassImport(simpleType.getReference());
 		scan(simpleType);
-		return getImports();
+
+		Collection<CtReference> listallImports = new ArrayList<>();
+		listallImports.addAll(this.classImports.values());
+		listallImports.addAll(this.fieldImports.values());
+		listallImports.addAll(this.methodImports.values());
+		return listallImports;
+	}
+
+	@Override
+	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
+		classImports.clear();
+		fieldImports.clear();
+		methodImports.clear();
+		//look for top declaring type of that simpleType
+		targetType = simpleType.getReference().getTopLevelType();
+		addClassImport(simpleType.getReference());
+		scan(simpleType);
+		return this.classImports.values();
 	}
 
 	@Override
 	public void computeImports(CtElement element) {
-		imports.clear();
+		classImports.clear();
+		fieldImports.clear();
+		methodImports.clear();
 		//look for top declaring type of that element
 		CtType<?> type = element.getParent(CtType.class);
 		targetType = type == null ? null : type.getReference().getTopLevelType();
@@ -194,55 +229,30 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public boolean isImported(CtTypeReference<?> ref) {
-		if (!(ref.isImplicit()) && imports.containsKey(ref.getSimpleName())) {
-			CtTypeReference<?> exist = imports.get(ref.getSimpleName());
-			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
-				return true;
-			}
+	public boolean isImported(CtReference ref) {
+		if (ref instanceof CtFieldReference) {
+			return isImportedInFieldImports((CtFieldReference) ref);
+		} else if (ref instanceof CtExecutableReference) {
+			return isImportedInMethodImports((CtExecutableReference) ref);
+		} else if (ref instanceof CtTypeReference) {
+			return isImportedInClassImports((CtTypeReference) ref);
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	/**
-	 * Gets imports in imports Map for the key simpleType given.
-	 *
-	 * @return Collection of {@link spoon.reflect.reference.CtTypeReference}
+	 * Adds a type to the classImports.
 	 */
-	protected Collection<CtTypeReference<?>> getImports() {
-		if (imports.isEmpty()) {
-			return Collections.EMPTY_LIST;
-		}
-		CtPackageReference pack = targetType.getPackage();
-		List<CtTypeReference<?>> refs = new ArrayList<>();
-		for (CtTypeReference<?> ref : imports.values()) {
-			// ignore non-top-level type
-			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
-				// ignore java.lang package
-				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
-					// ignore type in same package
-					if (!ref.getPackage().getSimpleName()
-							.equals(pack.getSimpleName())) {
-						refs.add(ref);
-					}
-				}
-			}
-		}
-		return Collections.unmodifiableList(refs);
-	}
-
-	/**
-	 * Adds a type to the imports.
-	 */
-	protected boolean addImport(CtTypeReference<?> ref) {
-		if (imports.containsKey(ref.getSimpleName())) {
-			return isImported(ref);
+	protected boolean addClassImport(CtTypeReference<?> ref) {
+		if (classImports.containsKey(ref.getSimpleName())) {
+			return isImportedInClassImports(ref);
 		}
 		// don't import unnamed package elements
 		if (ref.getPackage() == null || ref.getPackage().isUnnamedPackage()) {
 			return false;
 		}
-		if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+		if (ref.getPackage().getSimpleName().equals("java.lang")) {
 			if (classNamePresentInJavaLang(ref)) {
 				// Don't import class with names clashing with some classes present in java.lang,
 				// because it leads to undecidability and compilation errors. I. e. always leave
@@ -254,10 +264,201 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
 			return false;
 		}
+
+		// we want to be sure that we are not importing a class because a static field or method we already imported
+		// moreover we make exception for same package classes to avoid problems in FQN mode
+		if (targetType != null) {
+			try {
+				CtElement parent = ref.getParent();
+				if (parent != null) {
+					parent = parent.getParent();
+					if (parent != null) {
+						if ((parent instanceof CtFieldAccess) || (parent instanceof CtExecutable) || (parent instanceof CtInvocation)) {
+
+							CtTypeReference declaringType;
+							CtReference reference;
+							CtPackageReference pack = targetType.getPackage();
+							if (parent instanceof CtFieldAccess) {
+								CtFieldAccess field = (CtFieldAccess) parent;
+								CtFieldReference localReference = field.getVariable();
+								declaringType = localReference.getDeclaringType();
+								reference = localReference;
+							} else if (parent instanceof CtExecutable) {
+								CtExecutable exec = (CtExecutable) parent;
+								CtExecutableReference localReference = exec.getReference();
+								declaringType = localReference.getDeclaringType();
+								reference = localReference;
+							} else if (parent instanceof CtInvocation) {
+								CtInvocation invo = (CtInvocation) parent;
+								CtExecutableReference localReference = invo.getExecutable();
+								declaringType = localReference.getDeclaringType();
+								reference = localReference;
+							} else {
+								declaringType = null;
+								reference = null;
+							}
+
+							if (reference != null && isImported(reference)) {
+								// if we are in the **same** package we do the import for test with method isImported
+								if (declaringType != null) {
+									if (declaringType.getPackage() != null && !declaringType.getPackage().isUnnamedPackage()) {
+										// ignore java.lang package
+										if (!declaringType.getPackage().getSimpleName().equals("java.lang")) {
+											// ignore type in same package
+											if (declaringType.getPackage().getSimpleName()
+													.equals(pack.getSimpleName())) {
+												classImports.put(ref.getSimpleName(), ref);
+												return true;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (ParentNotInitializedException e) {
+			}
+			CtPackageReference pack = targetType.getPackage();
+			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
+				// ignore java.lang package
+				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+					// ignore type in same package
+					if (ref.getPackage().getSimpleName()
+							.equals(pack.getSimpleName())) {
+						return false;
+					}
+				}
+			}
+		}
+
 		//note: we must add the type refs from the same package too, to assure that isImported(typeRef) returns true for them
-		//these type refs are removed in #getImports()
-		imports.put(ref.getSimpleName(), ref);
+		//these type refs are removed in #getClassImports()
+		classImports.put(ref.getSimpleName(), ref);
 		return true;
+	}
+
+	private boolean isImportedInClassImports(CtTypeReference<?> ref) {
+		if (targetType != null) {
+			CtPackageReference pack = targetType.getPackage();
+
+			// we consider that if a class belongs to java.lang or the same package than the actual class
+			// then it is imported by default
+			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
+				// ignore java.lang package
+				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+					// ignore type in same package
+					if (ref.getPackage().getSimpleName()
+							.equals(pack.getSimpleName())) {
+						return true;
+					}
+				}
+			}
+		}
+
+		if (ref.equals(targetType)) {
+			return true;
+		}
+
+		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
+			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
+			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected boolean addMethodImport(CtExecutableReference ref) {
+		if (this.methodImports.containsKey(ref.getSimpleName())) {
+			return isImportedInMethodImports(ref);
+		}
+
+		// if the whole class is imported: no need to import the method.
+		if (ref.getDeclaringType() != null && isImportedInClassImports(ref.getDeclaringType())) {
+			return false;
+		}
+
+		methodImports.put(ref.getSimpleName(), ref);
+
+		// if we are in the same package than target type, we also import class to avoid FQN in FQN mode.
+		if (ref.getDeclaringType() != null) {
+			if (ref.getDeclaringType().getPackage() != null) {
+				if (ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
+					addClassImport(ref.getDeclaringType());
+				}
+			}
+		}
+		return true;
+	}
+
+	private boolean isImportedInMethodImports(CtExecutableReference<?> ref) {
+		if (!(ref.isImplicit()) && methodImports.containsKey(ref.getSimpleName())) {
+			CtExecutableReference<?> exist = methodImports.get(ref.getSimpleName());
+			if (exist.getSignature().equals(ref.getSignature())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected boolean addFieldImport(CtFieldReference ref) {
+		if (this.fieldImports.containsKey(ref.getSimpleName())) {
+			return isImportedInFieldImports(ref);
+		}
+		//CtPackageReference pack = targetType.getPackage();
+
+		// if the whole class is imported: no need to import the method.
+		CtTypeReference declaringType = ref.getDeclaringType();
+		if (declaringType != null) {
+			if (isImportedInClassImports(declaringType)) {
+				return false;
+			}
+
+			while (declaringType != null) {
+				if (declaringType.equals(targetType)) {
+					return false;
+				}
+				declaringType = declaringType.getDeclaringType();
+			}
+
+		}
+
+		/*if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
+			// ignore java.lang package
+			if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
+				// ignore type in same package
+				if (ref.getDeclaringType().getPackage().getSimpleName()
+						.equals(pack.getSimpleName())) {
+					return false;
+				}
+			}
+		}*/
+
+		fieldImports.put(ref.getSimpleName(), ref);
+		return true;
+	}
+
+	private boolean isImportedInFieldImports(CtFieldReference<?> ref) {
+		if (!(ref.isImplicit()) && fieldImports.containsKey(ref.getSimpleName())) {
+			CtFieldReference<?> exist = fieldImports.get(ref.getSimpleName());
+			try {
+				if (exist.getFieldDeclaration() != null && exist.getFieldDeclaration().equals(ref.getFieldDeclaration())) {
+					return true;
+				}
+			// in some rare cases we could not access to the field, then we do not import it.
+			} catch (SpoonClassNotFoundException notfound) {
+				return false;
+			}
+
+		}
+		/*CtTypeReference typeRef = ref.getDeclaringType();
+
+		if (typeRef != null) {
+			return isImportedInClassImports(typeRef);
+		}*/
+
+		return false;
 	}
 
 	protected boolean classNamePresentInJavaLang(CtTypeReference<?> ref) {

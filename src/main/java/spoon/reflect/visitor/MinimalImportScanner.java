@@ -16,12 +16,16 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,55 +37,100 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	private Set<String> namedElements = new HashSet<String>();
 
+	private CtClass getParentClass(CtReference ref) {
+		CtElement parent = ref.getParent();
+
+		while (parent != null && !(parent instanceof CtClass)) {
+			parent = parent.getParent();
+		}
+
+		if (parent == null) {
+			return null;
+		} else {
+			return (CtClass) parent;
+		}
+	}
+
 	/**
 	 * Test if the reference should be imported by looking if there is a name conflict
 	 * @param ref
 	 * @return true if the ref should be imported.
 	 */
-	private boolean shouldTypeBeImported(CtTypeReference<?> ref) {
+	private boolean shouldTypeBeImported(CtReference ref) {
 		// we import the targetType by default to simplify and avoid conclict in inner classes
 		if (ref.equals(targetType)) {
 			return true;
 		}
 
 		try {
-			CtElement parent = ref.getParent();
+			CtElement parent;
+			if (ref instanceof CtTypeReference) {
+				parent = ref.getParent();
+			} else {
+				parent = ref;
+			}
+
+			CtClass parentClass = this.getParentClass(ref);
 
 			if (parent instanceof CtNamedElement) {
-				namedElements.add(((CtNamedElement) parent).getSimpleName());
+				CtNamedElement namedElement = (CtNamedElement) parent;
+
+				if (parentClass != null && parentClass.getReference() != null) {
+					if (parentClass.getReference().equals(targetType)) {
+						namedElements.add(namedElement.getSimpleName());
+					}
+				} else {
+					namedElements.add(namedElement.getSimpleName());
+				}
 			}
 
 			while (!(parent instanceof CtPackage)) {
-				if (parent instanceof CtFieldReference) {
-					CtFieldReference parentType = (CtFieldReference) parent;
+				/*if (parent instanceof CtClassImpl) {
+					CtClassImpl classParent = (CtClassImpl)parent;
+					CtTypeReference referencedType = classParent.getReference();
+
+					if (referencedType != null && referencedType.equals(this.targetType)) {
+						return false;
+					}
+
+				}*/
+				if ((parent instanceof CtFieldReference) || (parent instanceof CtExecutableReference)) {
+					CtReference parentType = (CtReference) parent;
 					Set<String> qualifiedNameTokens = new HashSet<>();
 
 					qualifiedNameTokens.add(parentType.getSimpleName());
 
-					CtTypeReference typeReference = parentType.getDeclaringType();
+					CtTypeReference typeReference;
+					if (parent instanceof CtFieldReference) {
+						typeReference = ((CtFieldReference) parent).getDeclaringType();
+					} else {
+						typeReference = ((CtExecutableReference) parent).getDeclaringType();
+					}
 
-					qualifiedNameTokens.add(typeReference.getSimpleName());
+					if (typeReference != null) {
+						qualifiedNameTokens.add(typeReference.getSimpleName());
 
-					if (typeReference.getPackage() != null) {
-						CtPackage ctPackage = typeReference.getPackage().getDeclaration();
+						if (typeReference.getPackage() != null) {
+							CtPackage ctPackage = typeReference.getPackage().getDeclaration();
 
-						while (ctPackage != null) {
-							qualifiedNameTokens.add(ctPackage.getSimpleName());
+							while (ctPackage != null) {
+								qualifiedNameTokens.add(ctPackage.getSimpleName());
 
-							CtElement packParent = ctPackage.getParent();
-							if (packParent.getParent() != null) {
-								ctPackage = (CtPackage) packParent;
-							} else {
-								ctPackage = null;
-							}
-						}
-
-						for (String token : qualifiedNameTokens) {
-							if (namedElements.contains(token)) {
-								return true;
+								CtElement packParent = ctPackage.getParent();
+								if (packParent.getParent() != null) {
+									ctPackage = (CtPackage) packParent;
+								} else {
+									ctPackage = null;
+								}
 							}
 						}
 					}
+					for (String token : qualifiedNameTokens) {
+						if (namedElements.contains(token)) {
+							return true;
+						}
+					}
+
 				}
 				parent = parent.getParent();
 			}
@@ -93,11 +142,33 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	}
 
 	@Override
-	protected boolean addImport(CtTypeReference<?> ref) {
+	protected boolean addClassImport(CtTypeReference<?> ref) {
 		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
 
 		if (shouldTypeBeImported) {
-			return super.addImport(ref);
+			return super.addClassImport(ref);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	protected boolean addFieldImport(CtFieldReference ref) {
+		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
+
+		if (shouldTypeBeImported) {
+			return super.addFieldImport(ref);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	protected boolean addMethodImport(CtExecutableReference ref) {
+		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
+
+		if (shouldTypeBeImported) {
+			return super.addMethodImport(ref);
 		} else {
 			return false;
 		}

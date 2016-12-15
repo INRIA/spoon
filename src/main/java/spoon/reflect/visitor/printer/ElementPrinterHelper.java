@@ -44,7 +44,9 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrintingContext.Writable;
@@ -251,7 +253,7 @@ public class ElementPrinterHelper {
 	/**
 	 * Write the compilation unit header.
 	 */
-	public void writeHeader(List<CtType<?>> types, Collection<CtTypeReference<?>> imports) {
+	public void writeHeader(List<CtType<?>> types, Collection<CtReference> imports) {
 		if (!types.isEmpty()) {
 			for (CtType<?> ctType : types) {
 				writeComment(ctType, CommentOffset.TOP_FILE);
@@ -262,8 +264,20 @@ public class ElementPrinterHelper {
 				printer.write("package " + types.get(0).getPackage().getQualifiedName() + ";");
 			}
 			printer.writeln().writeln().writeTabs();
-			for (CtTypeReference<?> ref : imports) {
-				printer.write("import " + ref.getQualifiedName() + ";").writeln().writeTabs();
+			for (CtReference ref : imports) {
+				if (ref instanceof CtTypeReference) {
+					CtTypeReference typeRef = (CtTypeReference) ref;
+					printer.write("import " + typeRef.getQualifiedName() + ";").writeln().writeTabs();
+				} else if (ref instanceof CtExecutableReference) {
+					CtExecutableReference execRef = (CtExecutableReference) ref;
+					if (execRef.getDeclaringType() != null) {
+						printer.write("import static " + execRef.getDeclaringType().getQualifiedName() + "." + execRef.getSimpleName() + ";").writeln().writeTabs();
+					}
+				} else if (ref instanceof CtFieldReference) {
+					CtFieldReference fieldRef = (CtFieldReference) ref;
+					printer.write("import static " + fieldRef.getDeclaringType().getQualifiedName() + "." + fieldRef.getSimpleName() + ";").writeln().writeTabs();
+				}
+
 			}
 			printer.writeln().writeTabs();
 		}
