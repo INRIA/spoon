@@ -387,13 +387,13 @@ public class FieldAccessTest {
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/");
+		launcher.getEnvironment().setAutoImports(true);
 		launcher.run();
 
 		final CtClass<B> aClass = launcher.getFactory().Class().get(B.class);
-		aClass.getFactory().getEnvironment().setAutoImports(true);
 
 		// now static fields are used with the name of the parent class
 		assertEquals("A.myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).toString());
-		assertEquals("B.finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
+		assertEquals("finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
 	}
 }

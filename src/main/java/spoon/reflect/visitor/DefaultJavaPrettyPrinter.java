@@ -692,12 +692,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					if (printer.hasNewContent()) {
 						printer.write(".");
 					}
-				} else if (isStaticField && !isImportedField) {
-					CtTypeReference declaringType = f.getVariable().getDeclaringType();
-					if (declaringType != null) {
-						printer.write(declaringType.getSimpleName());
-						printer.write(".");
-					}
 				}
 				_context.ignoreStaticAccess(true);
 			}

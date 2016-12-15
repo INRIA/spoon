@@ -298,7 +298,7 @@ public class ImportTest {
 		assertEquals(2, imports.size());
 		Set<String> expectedImports = new HashSet<>(
 				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File"));
-		Set<String> actualImports = imports.stream().map(CtReference::toString).collect(Collectors.toSet());
+		Set<String> actualImports = imports.stream().map(CtTypeReference::toString).collect(Collectors.toSet());
 		assertEquals(expectedImports, actualImports);
 	}
 
