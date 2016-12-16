@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
+import spoon.support.compiler.jdt.CompilationUnitFilter;
 import spoon.support.compiler.jdt.FactoryCompilerConfig;
 import spoon.support.compiler.jdt.FileCompilerConfig;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
@@ -303,4 +304,29 @@ public interface SpoonModelBuilder {
 	 * Returns the working factory
 	 */
 	Factory getFactory();
+
+	/**
+	 * Adds {@code filter}.
+	 *
+	 * @param filter
+	 *  	The {@link CompilationUnitFilter} to add.
+	 */
+	void addCompilationUnitFilter(final CompilationUnitFilter filter);
+
+	/**
+	 * Removes {@code filter}. Does nothing, if {@code filter} has not been
+	 * added beforehand.
+	 *
+	 * @param filter
+	 *  	The {@link CompilationUnitFilter} to remove.
+	 */
+	void removeCompilationUnitFilter(final CompilationUnitFilter filter);
+
+	/**
+	 * Returns a copy of the internal list of {@link CompilationUnitFilter}s.
+	 *
+	 * @return
+	 *  	A copy of the internal list of {@link CompilationUnitFilter}s.
+	 */
+	List<CompilationUnitFilter> getCompilationUnitFilter();
 }
