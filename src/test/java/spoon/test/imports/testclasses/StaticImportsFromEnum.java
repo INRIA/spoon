@@ -39,4 +39,8 @@ public class StaticImportsFromEnum {
     public ItfWithEnum.Bar[] getBarValues() {
         return ItfWithEnum.Bar.values();
     }
+
+    public ItfWithEnum.Bar getLip() {
+        return ItfWithEnum.Bar.Lip;
+    }
 }

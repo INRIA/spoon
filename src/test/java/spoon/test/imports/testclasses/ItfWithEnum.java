@@ -15,5 +15,7 @@ package spoon.test.imports.testclasses;
  * Created by urli on 16/12/2016.
  */
 public interface ItfWithEnum {
-    public enum Bar {}
+    public enum Bar {
+        Lip
+    }
 }
