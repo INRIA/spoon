@@ -582,4 +582,25 @@ public class ImportTest {
 		assertTrue("The file should not contain a static import to the inner enum value",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;"));
 		canBeBuilt(outputDir, 7);
 	}
+
+	@Test
+	public void testShouldNotCreateAutoreference() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(false);
+		String outputDir = "./target/spooned-autoref";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/ShouldNotAutoreference.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue("The file should not contain a static import for NOFOLLOW_LINKS",!output.contains("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;"));
+		canBeBuilt(outputDir, 7);
+	}
 }
