@@ -105,6 +105,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setAutoImports(boolean autoImports) {
 		this.autoImports = autoImports;
+		// TODO: unexpected behaviour could occur, if we reset the autoimport AFTER the pretty printer is created...
 	}
 
 	@Override

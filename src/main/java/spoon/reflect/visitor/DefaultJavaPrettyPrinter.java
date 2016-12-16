@@ -227,9 +227,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public Collection<CtTypeReference<?>> computeImports(CtType<?> type) {
+	public Collection<CtReference> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
-		return importsContext.computeImports(context.currentTopLevel);
+		return importsContext.computeAllImports(context.currentTopLevel);
 	}
 
 	/**
@@ -682,7 +682,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				_context.ignoreGenerics(true);
 			}
 			if (f.getTarget() != null) {
-				if (!isInitializeStaticFinalField(f.getTarget())) {
+				boolean isInitializeStaticFinalField = isInitializeStaticFinalField(f.getTarget());
+				boolean isStaticField = f.getVariable().isStatic();
+				boolean isImportedField = importsContext.isImported(f.getVariable());
+
+				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
 					printer.snapshotLength();
 					scan(f.getTarget());
 					if (printer.hasNewContent()) {
@@ -1526,7 +1530,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		if (importsContext.isImported(ref)) {
+		if (importsContext.isImported(ref) || (this.env.isAutoImports() && ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang"))) {
 			// If my.pkg.Something is imported, but
 			//A) we are in the context of a class which is also called "Something",
 			//B) we are in the context of a class which defines field which is also called "Something",
@@ -1722,7 +1726,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
-		Set<CtTypeReference<?>> imports = new HashSet<>();
+		Set<CtReference> imports = new HashSet<>();
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}

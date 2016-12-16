@@ -15,6 +15,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -292,8 +293,7 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/NotImportExecutableType.java");
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtTypeReference<?>> imports =
-				importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
 		assertEquals(2, imports.size());
 		Set<String> expectedImports = new HashSet<>(

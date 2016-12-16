@@ -7,9 +7,11 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
+import spoon.reflect.visitor.MinimalImportScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 
@@ -27,6 +29,21 @@ import static spoon.testing.utils.ModelUtils.build;
 public class ImportScannerTest {
 
 	@Test
+	public void testComputeMinimalImportsInClass() throws Exception {
+		String packageName = "spoon.test";
+		String className = "SampleImportClass";
+		String qualifiedName = packageName + "." + className;
+
+		Factory aFactory = build(packageName, className).getFactory();
+		CtType<?> theClass = aFactory.Type().get(qualifiedName);
+
+		ImportScanner importContext = new MinimalImportScanner();
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
+
+		assertTrue(imports.isEmpty());
+	}
+
+	@Test
 	public void testComputeImportsInClass() throws Exception {
 		String packageName = "spoon.test";
 		String className = "SampleImportClass";
@@ -36,8 +53,7 @@ public class ImportScannerTest {
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtTypeReference<?>> imports = importContext
-				.computeImports(theClass);
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
 
 		assertEquals(2, imports.size());
 	}
@@ -59,7 +75,8 @@ public class ImportScannerTest {
 
 		ImportScanner importScanner = new ImportScannerImpl();
 		importScanner.computeImports(classes.get(0));
-		assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
+		// as ArithmeticException come from java.lang it is not imported anymore
+		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
 		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
 	}
 }

@@ -175,6 +175,8 @@ public class TargetedExpressionTest {
 		final CtAnonymousExecutable staticInit = type.getAnonymousExecutables().get(0);
 		final List<CtFieldAccess<?>> staticElements = staticInit.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, staticElements.size());
+
+		// Changing behaviour when writing static field, it is now writed using the class name
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("p"), staticElements.get(0));
 	}
 

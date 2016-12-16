@@ -162,18 +162,23 @@ public class DefaultPrettyPrinterTest {
 
 	@Test
 	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() throws Exception {
-		Factory factory = build( spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.class, spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class );
+		final Launcher launcher = new Launcher();
+		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
+		final SpoonCompiler compiler = launcher.createCompiler();
+		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/sub/TypeIdentifierCollision.java"));
+		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java"));
+		compiler.build();
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get( spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class );
 
 		String expected =
 			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" +nl+
-			"    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
+			"    localField = E1.ordinal();" +nl+
 			"}"
 		;
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
-		assertEquals( "the externally defined enum should be fully qualified to avoid a name clash with the local enum of the same name", expected, computed );
+		assertEquals( "E1 is statically imported then we can call it directly", expected, computed );
 
 		expected = //This is correct however it could be more concise.
 			"public void setFieldUsingLocallyDefinedEnum() {" +nl+
@@ -185,11 +190,11 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public void setFieldOfClassWithSameNameAsTheCompilationUnitClass() {" +nl+
-			"    TypeIdentifierCollision.globalField = localField;" +nl+
+			"    globalField = localField;" +nl+
 			"}"
 		;
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
-		assertEquals( "The static field of an external type with the same identifier as the compilation unit should be fully qualified", expected, computed );
+		assertEquals( "The static field of an external type with the same identifier as the compilation unit is statically imported", expected, computed );
 
 		expected = //This is correct however it could be more concise.
 			"public void referToTwoInnerClassesWithTheSameName() {" +nl+
@@ -205,7 +210,7 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public enum ENUM {" +nl+
-			"E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField,spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" +nl+
+			"E1(globalField,E1);" +nl+
 			"    final int NUM;" +nl+nl+
 			"    final Enum<?> e;" +nl+nl+
 			"    private ENUM(int num, Enum<?> e) {" +nl+
@@ -215,7 +220,7 @@ public class DefaultPrettyPrinterTest {
 			"}"
 		;
 		computed = aClass.getNestedType("ENUM").toString();
-		assertEquals( "Parameters in an enum constructor should be fully typed when they refer to externally defined static field of a class with the same identifier as another locally defined type", expected, computed );
+		assertEquals( "Parameters in an enum constructor should be statically imported when they refer to externally defined static field of a class with the same identifier as another locally defined type", expected, computed );
 	}
 
 	@Test
