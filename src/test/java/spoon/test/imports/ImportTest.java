@@ -565,7 +565,7 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-innerenum";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/WithInnerEnum.java");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/StaticImportsFromEnum.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
@@ -577,8 +577,8 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertTrue("The file should not contain a static import to the inner enum method values",!output.contains("import static spoon.test.imports.testclasses.WithInnerEnum$DataElement.values;"));
+		assertTrue("The file should not contain a static import to the inner enum method values",!output.contains("import static spoon.test.imports.testclasses.StaticImportsFromEnum$DataElement.values;"));
+		assertTrue("The file should not contain a static import to the inner enum method values of a distinct interface",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.values;"));
 		canBeBuilt(outputDir, 7);
-
 	}
 }

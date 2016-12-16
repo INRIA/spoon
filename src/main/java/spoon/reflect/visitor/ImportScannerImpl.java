@@ -104,13 +104,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			CtExecutableReference<T> reference) {
 		enter(reference);
 		CtTypeReference declaringType = reference.getDeclaringType();
-		boolean isLocal = false;
+		boolean isStaticMethodFromInnerClass = false;
 		if (declaringType != null) {
-			if (declaringType.getDeclaringType() != null && declaringType.getDeclaringType().equals(this.targetType)) {
-				isLocal = true;
+			if (declaringType.getDeclaringType() != null && (declaringType.getDeclaringType().equals(this.targetType) || (declaringType instanceof CtTypeReference))) {
+				isStaticMethodFromInnerClass = true;
 			}
 		}
-		if (reference.isStatic() && !isLocal) {
+		if (reference.isStatic() && !isStaticMethodFromInnerClass) {
 			addMethodImport(reference);
 		} else if (reference.isConstructor()) {
 			scan(reference.getDeclaringType());

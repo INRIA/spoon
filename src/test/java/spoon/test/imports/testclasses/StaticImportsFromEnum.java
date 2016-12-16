@@ -15,7 +15,7 @@ package spoon.test.imports.testclasses;
 /**
  * Created by urli on 16/12/2016.
  */
-public class WithInnerEnum {
+public class StaticImportsFromEnum {
 
     static enum DataElement {
         KEY("key"), VALUE("value");
@@ -34,5 +34,9 @@ public class WithInnerEnum {
 
     public DataElement[] getValues() {
         return DataElement.values();
+    }
+
+    public ItfWithEnum.Bar[] getBarValues() {
+        return ItfWithEnum.Bar.values();
     }
 }
