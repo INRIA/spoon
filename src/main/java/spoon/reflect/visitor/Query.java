@@ -52,8 +52,8 @@ public abstract class Query {
 	}
 
 	/**
-	 * Returns all the program elements that match the filter starting from defined rootElement.
-	 * Use {@link CtElement#map(CtQueryStep)} if you want to let Filter automatically decide correct scanning context
+	 * Returns all the program elements that match the filter starting from the given rootElement.
+	 * Use {@link CtElement#map(CtQueryStep)} if you need more control on the scanning context of the Filter.
 	 *
 	 * @param <E>
 	 * 		the type of the sought program elements

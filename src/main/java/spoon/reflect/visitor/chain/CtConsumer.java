@@ -17,10 +17,10 @@
 package spoon.reflect.visitor.chain;
 
 /**
- * Functional interface used to accept elements.
- * It is used for example by {@link CtQuery#forEach(Consumer)}
+ * Interface used to query and manipulate elements in a functional manner.
+ * It is used for example by {@link CtQuery#forEach(CtConsumer)}}
  *
- * @param <T> - the type of accepted element
+ * @param &lt;T> - the type of accepted elements
  */
 public interface CtConsumer<T> {
 	void accept(T t);

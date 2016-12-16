@@ -107,8 +107,8 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <I, R> CtQuery<R> map(CtFunction<I, R> code) {
-		add(new FunctionWrapper(code));
+	public <I, R> CtQuery<R> map(CtFunction<I, R> function) {
+		add(new FunctionWrapper(function));
 		return (CtQuery<R>) this;
 	}
 

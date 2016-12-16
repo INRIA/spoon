@@ -264,8 +264,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <I, R> CtQuery<R> map(CtFunction<I, R> code) {
-		return new CtQueryImpl<R>(this).map(code);
+	public <I, R> CtQuery<R> map(CtFunction<I, R> function) {
+		return new CtQueryImpl<R>(this).map(function);
 	}
 
 	@Override
