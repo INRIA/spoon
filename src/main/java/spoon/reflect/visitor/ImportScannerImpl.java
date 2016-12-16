@@ -89,14 +89,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
-		CtTypeReference declaringType = reference.getDeclaringType();
-		boolean isStaticFieldFromInnerClass = false;
-		if (declaringType != null) {
-			if (declaringType.getDeclaringType() != null && (declaringType.getDeclaringType().equals(this.targetType) || (declaringType instanceof CtTypeReference))) {
-				isStaticFieldFromInnerClass = true;
-			}
-		}
-		if (reference.isStatic() && !isStaticFieldFromInnerClass) {
+		if (reference.isStatic()) {
 			if (!addFieldImport(reference)) {
 				scan(reference.getDeclaringType());
 			}
@@ -110,14 +103,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
 		enter(reference);
-		CtTypeReference declaringType = reference.getDeclaringType();
-		boolean isStaticMethodFromInnerClass = false;
-		if (declaringType != null) {
-			if (declaringType.getDeclaringType() != null && (declaringType.getDeclaringType().equals(this.targetType) || (declaringType instanceof CtTypeReference))) {
-				isStaticMethodFromInnerClass = true;
-			}
-		}
-		if (reference.isStatic() && !isStaticMethodFromInnerClass) {
+		if (reference.isStatic()) {
 			addMethodImport(reference);
 		} else if (reference.isConstructor()) {
 			scan(reference.getDeclaringType());
