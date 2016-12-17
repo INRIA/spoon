@@ -271,16 +271,20 @@ public class ElementPrinterHelper {
 				} else if (ref instanceof CtExecutableReference) {
 					CtExecutableReference execRef = (CtExecutableReference) ref;
 					if (execRef.getDeclaringType() != null) {
-						printer.write("import static " + execRef.getDeclaringType().getQualifiedName() + "." + execRef.getSimpleName() + ";").writeln().writeTabs();
+						printer.write("import static " + this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName() + ";").writeln().writeTabs();
 					}
 				} else if (ref instanceof CtFieldReference) {
 					CtFieldReference fieldRef = (CtFieldReference) ref;
-					printer.write("import static " + fieldRef.getDeclaringType().getQualifiedName() + "." + fieldRef.getSimpleName() + ";").writeln().writeTabs();
+					printer.write("import static " + this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName() + ";").writeln().writeTabs();
 				}
 
 			}
 			printer.writeln().writeTabs();
 		}
+	}
+
+	private String removeInnerTypeSeparator(String fqn) {
+		return fqn.replace(CtType.INNERTTYPE_SEPARATOR, ".");
 	}
 
 	public void writeComment(CtComment comment) {

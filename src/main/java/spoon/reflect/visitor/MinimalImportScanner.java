@@ -98,7 +98,10 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 					CtReference parentType = (CtReference) parent;
 					Set<String> qualifiedNameTokens = new HashSet<>();
 
-					qualifiedNameTokens.add(parentType.getSimpleName());
+					// we don't want to test the current ref name, as we risk to create field import and make autoreference
+					if (parentType != parent) {
+						qualifiedNameTokens.add(parentType.getSimpleName());
+					}
 
 					CtTypeReference typeReference;
 					if (parent instanceof CtFieldReference) {
