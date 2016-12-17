@@ -283,8 +283,8 @@ public class ElementPrinterHelper {
 		}
 	}
 
-	private String removeInnerTypeSeparator(String FQN) {
-		return FQN.replace('$', '.');
+	private String removeInnerTypeSeparator(String fqn) {
+		return fqn.replace(CtType.INNERTTYPE_SEPARATOR, ".");
 	}
 
 	public void writeComment(CtComment comment) {
