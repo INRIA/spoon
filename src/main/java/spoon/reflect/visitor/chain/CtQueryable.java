@@ -45,7 +45,7 @@ public interface CtQueryable {
 	 * Recursively scans all child elements of an input element.
 	 * The matched child element (filter.matches(element)==true) are sent to the next step.
 	 * Essentially the same as {@link CtElement#getElements(Filter)} but more powerful, because it
-	 * be chained with other subsequent queries.
+	 * can be chained with other subsequent queries.
 	 *
 	 * Note: the input element (the root of the query, this if you're in {@link CtElement}) is also checked and may thus be also sent to the next step.
 	 * The elements which throw {@link ClassCastException} during {@link Filter#matches(CtElement)}
