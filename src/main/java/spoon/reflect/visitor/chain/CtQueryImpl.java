@@ -75,7 +75,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 
 	/**
 	 * sets list of elements which will be used as input of the query
-	 * @param inputs
+	 * @param input
 	 * @return this to support fluent API
 	 */
 	public CtQuery<O> setInput(O input) {
@@ -87,7 +87,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 
 	/**
 	 * adds list of elements which will be used as input of the query too
-	 * @param inputs
+	 * @param input
 	 * @return this to support fluent API
 	 */
 	public CtQuery<O> addInput(O input) {
@@ -100,9 +100,9 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <P> CtQuery<P> map(CtQueryStep<?, P> code) {
+	public <I> CtQuery<I> forEach(CtConsumer<O> code) {
 		add(new QueryStepWrapper(code));
-		return (CtQuery<P>) this;
+		return (CtQuery<I>) this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -157,14 +157,8 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 			public void accept(O out) {
 				list.add(out);
 			}
-		});
+		}, null);
 		return list;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <R> void forEach(CtConsumer<R> consumer) {
-		forEach((CtConsumer<O>) consumer, null);
 	}
 
 	@Override
@@ -334,19 +328,19 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	}
 
 	/**
-	 * a step which calls ChainableFunction. Implements contract of {@link CtQuery#map(CtQueryStep)}
+	 * a step which calls ChainableFunction. Implements contract of {@link CtQuery#append(CtQueryStep)}
 	 */
 	private class QueryStepWrapper extends AbstractStep {
-		private CtQueryStep<Object, Object> fnc;
+		private CtConsumer<Object> fnc;
 
 		@SuppressWarnings("unchecked")
-		QueryStepWrapper(CtQueryStep<?, ?> code) {
-			fnc = (CtQueryStep<Object, Object>) code;
+		QueryStepWrapper(CtConsumer<?> code) {
+			fnc = (CtConsumer<Object>) code;
 		}
 		@Override
 		public void processInput(Object input) {
 			try {
-				fnc.forEach(next, input);
+				fnc.accept(input);
 			} catch (ClassCastException e) {
 				onClassCastException(this, e, input);
 			}

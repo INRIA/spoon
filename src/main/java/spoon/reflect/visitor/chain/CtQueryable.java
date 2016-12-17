@@ -27,20 +27,10 @@ import spoon.reflect.visitor.Filter;
 public interface CtQueryable {
 
 	/**
-	 * Appends a queryStep to the query.
-	 * When this query is executed then this query sends input to the queryStep and the queryStep
-	 * sends the result element(s) of this queryStep by calling out output.accept(result)
-	 *
-	 * @param queryStep
-	 * @return the created QueryStep, which is the new last step of the query
-	 */
-	<T> CtQuery<T> map(CtQueryStep<?, T> queryStep);
-
-	/**
-	 * Appends a function to the query, that is executed according to the return type of function.
+	 * Query elements based on a function, the behavior depends on the return type of the function.
 	 * <table>
 	 * <tr><td><b>Return type of `function`</b><td><b>Behavior</b>
-	 * <tr><td>{@link Boolean}<td>Sends input of this step to the next step if returned value of `function`is true
+	 * <tr><td>{@link Boolean}<td>Sends input of this step to the next step if returned value of `function`is true (as existing {@link Filter}).
 	 * <tr><td>{@link Iterable}<td>Sends each item of the collection to the next step
 	 * <tr><td>{@link Object[]}<td>Sends each item of the array to the next step
 	 * <tr><td>? extends {@link Object}<td>Sends the returned value of `function` to the next step
@@ -52,8 +42,10 @@ public interface CtQueryable {
 	<I, R> CtQuery<R> map(CtFunction<I, R> function);
 
 	/**
-	 * Recursively scans alR child elements of an input element.
+	 * Recursively scans all child elements of an input element.
 	 * The matched child element (filter.matches(element)==true) are sent to the next step.
+	 * Essentially the same as {@link CtElement#getElements(Filter)} but more powerful, because it
+	 * be chained with other subsequent queries.
 	 *
 	 * Note: the input element (the root of the query, this if you're in {@link CtElement}) is also checked and may thus be also sent to the next step.
 	 * The elements which throw {@link ClassCastException} during {@link Filter#matches(CtElement)}
@@ -63,4 +55,5 @@ public interface CtQueryable {
 	 * @return the created QueryStep, which is now the last step of the query
 	 */
 	<T extends CtElement> CtQuery<T> filterChildren(Filter<T> filter);
+
 }

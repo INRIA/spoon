@@ -335,7 +335,7 @@ public class FilterTest {
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
 
 		assertEquals(0, Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aClass.getMethodsByName("prepare").get(0))).size());
-		assertEquals(0, aClass.getMethodsByName("prepare").get(0).map(new OverriddenMethodFilter()).list().size());
+		assertEquals(0, aClass.getMethodsByName("prepare").get(0).filterChildren(new OverriddenMethodFilter()).list().size());
 	}
 
 	@Test
@@ -373,7 +373,7 @@ public class FilterTest {
 
 		List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0)));
 		assertEquals(0, overridingMethods.size());
-		overridingMethods = aITostada.getMethodsByName("make").get(0).map(new OverriddenMethodFilter()).list();
+		overridingMethods = aITostada.getMethodsByName("make").get(0).filterChildren(new OverriddenMethodFilter()).list();
 		assertEquals(0, overridingMethods.size());
 	}
 
@@ -487,10 +487,11 @@ public class FilterTest {
 		CtQuery<CtClass<?>> l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
 		
 		assertEquals(0, context.counter);
-		l_qv.forEach(cls->{
+		l_qv.map(cls->{
 			assertTrue(cls instanceof CtClass);
 			context.counter++;
-		});
+			return true;
+		}).list();
 		assertTrue(context.counter>0);
 	}
 	
@@ -510,11 +511,11 @@ public class FilterTest {
 
 		launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<CtMethod<?>>(CtMethod.class))
 		.map((CtMethod<?> method) -> {context.method = method;return method;})
-		.map(new OverriddenMethodFilter())
+		.filterChildren(new OverriddenMethodFilter())
 		.forEach((CtMethod<?> method) -> {
 			assertTrue(context.method.getReference().isOverriding(method.getReference()));
 			context.count++;
-		});
+		}).list();
 		assertTrue(context.count>0);
 	}
 	
@@ -539,11 +540,11 @@ public class FilterTest {
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
 		((CtQueryImpl<?>)query).logging(true);
-		query.forEach((CtInterface<?> c)->{
+		query.map((CtInterface<?> c)->{
 				assertEquals("ITostada", c.getSimpleName());
 				context.count++;
-//				return null;
-			});
+				return true;
+			}).list();
 		assertTrue(context.count>0);
 	}
 	
@@ -562,12 +563,13 @@ public class FilterTest {
 		Context context = new Context();
 
 		launcher.getFactory().Class().get(FieldAccessFilterTacos.class).map((CtClass clazz)->clazz.getAllFields())
-			.forEach((CtFieldReference<?> fr)->{
+			.map((CtFieldReference<?> fr)->{
 				if("myfield".equals(fr.getSimpleName())){
 					context.count++;
 				}
 				context.totalCount++;
-			});
+				return true;
+			}).list();
 		assertTrue(context.count==1);
 		assertTrue(context.totalCount>1);
 		

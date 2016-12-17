@@ -32,9 +32,9 @@ import spoon.reflect.visitor.filter.OverriddenMethodFilter;
  * The main methods are:
  * <ul>
  * <li> {@link #map(CtFunction))} - use lambda expression to navigate to any model elements that are directly accessible from an input element
- * <li> {@link #map(CtQueryStep))} - use CtQueryStep interface to evaluate queries over a list of elements like {@link OverriddenMethodFilter}
+ * <li> {@link #forEach(CtConsumer))} - use CtQueryStep interface to evaluate queries over a list of elements like {@link OverriddenMethodFilter}
  * <li> {@link #filterChildren(Filter))} - use {@link Filter} instances to filter children of input element
- * <li> {@link #forEach(CtConsumer)} - to evaluate the query and call a Consumer.apply(output) method for each element produced by this query
+ * <li> {@link #forEach(CtConsumer, Object)}} - to evaluate the query and call a Consumer.apply(output) method for each element produced by this query
  * <li> {@link #list()} - to evaluate the query and return a list of elements produced by this query
  * </ul>
  * The query can be used several times.<br>
@@ -54,11 +54,14 @@ public interface CtQuery<O> extends CtQueryable {
 	List<O> list();
 
 	/**
-	 * evaluates the query and then, for each produced element, the consumer method.accept(element) is called.<br>
-	 * You can use java 8 lambda expression to implement consumer.
-	 * @param consumer
+	 * Appends a queryStep to the query.
+	 * When this query is executed then this query sends input to the queryStep and the queryStep
+	 * sends the result element(s) of this queryStep by calling out output.accept(result)
+	 *
+	 * @param queryStep
+	 * @return the created QueryStep, which is the new last step of the query
 	 */
-	<R> void forEach(CtConsumer<R> consumer);
+	<T> CtQuery<T> forEach(CtConsumer<O> queryStep);
 
 	/**
 	 * Defines whether this query will throw {@link ClassCastException}

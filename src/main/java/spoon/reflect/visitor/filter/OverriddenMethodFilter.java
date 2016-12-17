@@ -20,19 +20,18 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.chain.CtQueryStep;
-import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.chain.CtQuery;
 
 /**
  * Gets all overridden method from the method given.
  */
-public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<CtMethod<?>, CtMethod<?>> {
+public class OverriddenMethodFilter extends CtQueryImpl<CtMethod<?>> implements Filter<CtMethod<?>>, CtQuery<CtMethod<?>> {
 	private CtMethod<?> method;
 
 	/**
 	 * Creates a new overridden method filter, which will automatically scan correct scope for all overridden methods of the input element
-	 * Use {@link CtQuery#map(CtQueryStep)} to add query step using this filter
+	 * Use {@link CtQuery#append(CtQueryStep)} to add query step using this filter
 	 *
 	 * Note: the executable to be tested for being invoked, comes from previous query step
 	 */
@@ -50,13 +49,18 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<
 	}
 
 	@Override
+	public CtQuery<CtMethod<?>> setInput(CtMethod<?> input) {
+		return super.setInput(input);
+	}
+
+	@Override
 	public boolean matches(CtMethod<?> element) {
 		if (method == null) {
 			/**
 			 * Do not use parameterless constructor together with {@link CtQuery#filterChildren(Filter)}.
 			 * Use:
 			 * A) parameterized constructor and {@link CtQuery#filterChildren(Filter)}
-			 * B) parameterless constructor and {@link CtQuery#map(CtQueryStep)}
+			 * B) parameterless constructor and {@link CtQuery#append(CtQueryStep)}
 			 */
 			throw new SpoonException("Missing Filter context parameter 'method'");
 		}
@@ -67,26 +71,4 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>>, CtQueryStep<
 				&& method.getReference().isOverriding(element.getReference());
 	}
 
-	/**
-	 * This method is used when this Filter is used in {@link CtQuery#map(CtQueryStep)}
-	 * In such case Filter can automatically use correct scanning scope - root package
-	 */
-	@Override
-	public void forEach(CtConsumer<CtMethod<?>> output, CtMethod<?> input) {
-		if (method != null) {
-			/**
-			 * Do not use parameterized constructor together with {@link CtQuery#map(CtQueryStep)}.
-			 * Use:
-			 * A) parameterized constructor and {@link CtQuery#filterChildren(Filter)}
-			 * B) parameterless constructor and {@link CtQuery#map(CtQueryStep)}
-			 */
-			throw new SpoonException("Do not use parameterized constructor together with QueryStep#map()");
-		}
-		method = input;
-		try {
-			method.getFactory().Package().getRootPackage().filterChildren(this).forEach(output);
-		} finally {
-			method = null;
-		}
-	}
 }
