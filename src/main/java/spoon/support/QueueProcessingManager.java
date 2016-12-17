@@ -28,12 +28,14 @@ import spoon.support.visitor.ProcessingVisitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
- * This processing manager implements a blocking processing policy that consists
- * of applying the processors in a FIFO order until no processors remain to be
- * applied.The processors will be removed from the manager once applied.
+ * This processing manager applies the processors one by one from the given root element.
+ * for p : processors
+ *   p.process(el)
+ * Default processor in Spoon
  */
 public class QueueProcessingManager implements ProcessingManager {
 	Processor<?> current;
@@ -104,7 +106,10 @@ public class QueueProcessingManager implements ProcessingManager {
 
 	public void process(Collection<? extends CtElement> elements) {
 		Processor<?> p;
-		while ((p = getProcessors().poll()) != null) {
+		// copy so that one can reuse the processing manager
+		// among different processing steps
+		Queue<Processor<?>> processors = new LinkedList<>(getProcessors());
+		while ((p = processors.poll()) != null) {
 			try {
 				getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
 				current = p;
@@ -112,7 +117,8 @@ public class QueueProcessingManager implements ProcessingManager {
 				p.init();
 				p.process();
 				for (CtElement e : new ArrayList<>(elements)) {
-					process(e, p);
+					getVisitor().setProcessor(p);
+					getVisitor().scan(e);
 				}
 			} catch (ProcessInterruption ignore) {
 			} finally {
@@ -122,30 +128,14 @@ public class QueueProcessingManager implements ProcessingManager {
 	}
 
 	public void process(CtElement element) {
-		Processor<?> p;
-		while ((p = getProcessors().poll()) != null) {
-			try {
-				current = p;
-				p.init();
-				p.process();
-				process(element, p);
-			} catch (ProcessInterruption ignore) {
-			} finally {
-				p.processingDone();
-			}
-		}
-	}
-
-	protected void process(CtElement element, Processor<?> processor) {
-		getVisitor().setProcessor(processor);
-		getVisitor().scan(element);
+		List<CtElement> l = new ArrayList<>();
+		l.add(element);
+		process(l);
 	}
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 		factory.getEnvironment().setManager(this);
 	}
-
-
 
 }
