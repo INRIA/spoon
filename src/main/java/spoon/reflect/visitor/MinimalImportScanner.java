@@ -17,18 +17,15 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -75,7 +72,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		}
 
 		if (parent != null) {
-			CtBlock block = (CtBlock)parent;
+			CtBlock block = (CtBlock) parent;
 			boolean innerClass = false;
 
 			// now we have the first container block, we want to check if we're not in an inner class
@@ -92,7 +89,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 					}
 
 					if (parent != null) {
-						block = (CtBlock)parent;
+						block = (CtBlock) parent;
 					}
 				}
 			}
@@ -127,7 +124,6 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 				parent = ref;
 			}
 
-			CtClass parentClass = this.getParentClass(ref);
 			Set<String> localVariablesOfBlock = new HashSet<>();
 
 			if (parent instanceof CtField) {
@@ -137,19 +133,6 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 			} else {
 				localVariablesOfBlock = this.lookForLocalVariables(parent);
 			}
-
-			/*
-			if (parent instanceof CtNamedElement) {
-				CtNamedElement namedElement = (CtNamedElement) parent;
-
-				if (parentClass != null && parentClass.getReference() != null) {
-					if (parentClass.getReference().equals(targetType)) {
-						this.addToNamedElement(namedElement);
-					}
-				} else {
-					this.addToNamedElement(namedElement);
-				}
-			}*/
 
 			while (!(parent instanceof CtPackage)) {
 				if ((parent instanceof CtFieldReference) || (parent instanceof CtExecutableReference)) {
