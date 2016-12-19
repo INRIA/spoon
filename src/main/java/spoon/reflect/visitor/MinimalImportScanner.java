@@ -16,10 +16,13 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -27,6 +30,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,7 +39,7 @@ import java.util.Set;
  */
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
 
-	private Set<String> namedElements = new HashSet<String>();
+	private Set<String> fieldAndMethodsNames = new HashSet<String>();
 
 	private CtClass getParentClass(CtReference ref) {
 		CtElement parent = ref.getParent();
@@ -49,6 +53,52 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		} else {
 			return (CtClass) parent;
 		}
+	}
+
+	private Set<String> lookForLocalVariables(CtElement parent) {
+		Set<String> result = new HashSet<>();
+
+		// try to get the block container
+		// if the first container is the class, then we are not in a block and we can quit now.
+		while (parent != null && !(parent instanceof CtBlock)) {
+			if (parent instanceof CtClass) {
+				return result;
+			}
+			parent = parent.getParent();
+		}
+
+		if (parent != null) {
+			CtBlock block = (CtBlock) parent;
+			boolean innerClass = false;
+
+			// now we have the first container block, we want to check if we're not in an inner class
+			while (parent != null && !(parent instanceof CtClass)) {
+				parent = parent.getParent();
+			}
+
+			if (parent != null) {
+				// uhoh it's not a package as a parent, we must in an inner block:
+				// let's find the last block BEFORE the class call: some collision could occur because of variables defined in that block
+				if (!(parent.getParent() instanceof CtPackage)) {
+					while (parent != null && !(parent instanceof CtBlock)) {
+						parent = parent.getParent();
+					}
+
+					if (parent != null) {
+						block = (CtBlock) parent;
+					}
+				}
+			}
+
+			AccessibleVariablesFinder avf = new AccessibleVariablesFinder(block);
+			List<CtVariable> variables = avf.find();
+
+			for (CtVariable variable : variables) {
+				result.add(variable.getSimpleName());
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -70,30 +120,17 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 				parent = ref;
 			}
 
-			CtClass parentClass = this.getParentClass(ref);
+			Set<String> localVariablesOfBlock = new HashSet<>();
 
-			if (parent instanceof CtNamedElement) {
-				CtNamedElement namedElement = (CtNamedElement) parent;
-
-				if (parentClass != null && parentClass.getReference() != null) {
-					if (parentClass.getReference().equals(targetType)) {
-						namedElements.add(namedElement.getSimpleName());
-					}
-				} else {
-					namedElements.add(namedElement.getSimpleName());
-				}
+			if (parent instanceof CtField) {
+				this.fieldAndMethodsNames.add(((CtField) parent).getSimpleName());
+			} else if (parent instanceof CtMethod) {
+				this.fieldAndMethodsNames.add(((CtMethod) parent).getSimpleName());
+			} else {
+				localVariablesOfBlock = this.lookForLocalVariables(parent);
 			}
 
 			while (!(parent instanceof CtPackage)) {
-				/*if (parent instanceof CtClassImpl) {
-					CtClassImpl classParent = (CtClassImpl)parent;
-					CtTypeReference referencedType = classParent.getReference();
-
-					if (referencedType != null && referencedType.equals(this.targetType)) {
-						return false;
-					}
-
-				}*/
 				if ((parent instanceof CtFieldReference) || (parent instanceof CtExecutableReference)) {
 					CtReference parentType = (CtReference) parent;
 					Set<String> qualifiedNameTokens = new HashSet<>();
@@ -129,7 +166,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 						}
 					}
 					for (String token : qualifiedNameTokens) {
-						if (namedElements.contains(token)) {
+						if (fieldAndMethodsNames.contains(token) || localVariablesOfBlock.contains(token)) {
 							return true;
 						}
 					}
@@ -160,7 +197,12 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
 
 		if (shouldTypeBeImported) {
-			return super.addFieldImport(ref);
+			if (this.fieldImports.containsKey(ref.getSimpleName())) {
+				return isImportedInFieldImports(ref);
+			}
+
+			fieldImports.put(ref.getSimpleName(), ref);
+			return true;
 		} else {
 			return false;
 		}
@@ -171,9 +213,33 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
 
 		if (shouldTypeBeImported) {
-			return super.addMethodImport(ref);
+			if (this.methodImports.containsKey(ref.getSimpleName())) {
+				return isImportedInMethodImports(ref);
+			}
+
+			methodImports.put(ref.getSimpleName(), ref);
+
+			if (ref.getDeclaringType() != null) {
+				if (ref.getDeclaringType().getPackage() != null) {
+					if (ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
+						addClassImport(ref.getDeclaringType());
+					}
+				}
+			}
+			return true;
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
+		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
+			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
+			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
