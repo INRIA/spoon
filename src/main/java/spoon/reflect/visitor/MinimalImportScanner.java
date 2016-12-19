@@ -16,17 +16,24 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,7 +42,11 @@ import java.util.Set;
  */
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
 
-	private Set<String> namedElements = new HashSet<String>();
+	private Set<String> fieldAndMethodsNames = new HashSet<String>();
+
+	public MinimalImportScanner() {
+		super(true);
+	}
 
 	private CtClass getParentClass(CtReference ref) {
 		CtElement parent = ref.getParent();
@@ -49,6 +60,28 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		} else {
 			return (CtClass) parent;
 		}
+	}
+
+	private Set<String> lookForLocalVariables(CtElement parent) {
+		Set<String> result = new HashSet<>();
+
+		while (parent != null && !(parent instanceof CtBlock)) {
+			if (parent instanceof CtClass) {
+				return result;
+			}
+			parent = parent.getParent();
+		}
+
+		if (parent != null) {
+			AccessibleVariablesFinder avf = new AccessibleVariablesFinder(parent);
+			List<CtVariable> variables = avf.find();
+
+			for (CtVariable variable : variables) {
+				result.add(variable.getSimpleName());
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -71,29 +104,30 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 			}
 
 			CtClass parentClass = this.getParentClass(ref);
+			Set<String> localVariablesOfBlock = new HashSet<>();
 
+			if (parent instanceof CtField) {
+				this.fieldAndMethodsNames.add(((CtField) parent).getSimpleName());
+			} else if (parent instanceof CtMethod) {
+				this.fieldAndMethodsNames.add(((CtMethod) parent).getSimpleName());
+			} else {
+				localVariablesOfBlock = this.lookForLocalVariables(parent);
+			}
+
+			/*
 			if (parent instanceof CtNamedElement) {
 				CtNamedElement namedElement = (CtNamedElement) parent;
 
 				if (parentClass != null && parentClass.getReference() != null) {
 					if (parentClass.getReference().equals(targetType)) {
-						namedElements.add(namedElement.getSimpleName());
+						this.addToNamedElement(namedElement);
 					}
 				} else {
-					namedElements.add(namedElement.getSimpleName());
+					this.addToNamedElement(namedElement);
 				}
-			}
+			}*/
 
 			while (!(parent instanceof CtPackage)) {
-				/*if (parent instanceof CtClassImpl) {
-					CtClassImpl classParent = (CtClassImpl)parent;
-					CtTypeReference referencedType = classParent.getReference();
-
-					if (referencedType != null && referencedType.equals(this.targetType)) {
-						return false;
-					}
-
-				}*/
 				if ((parent instanceof CtFieldReference) || (parent instanceof CtExecutableReference)) {
 					CtReference parentType = (CtReference) parent;
 					Set<String> qualifiedNameTokens = new HashSet<>();
@@ -129,7 +163,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 						}
 					}
 					for (String token : qualifiedNameTokens) {
-						if (namedElements.contains(token)) {
+						if (fieldAndMethodsNames.contains(token) || localVariablesOfBlock.contains(token)) {
 							return true;
 						}
 					}
@@ -175,5 +209,16 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
+		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
+			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
+			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

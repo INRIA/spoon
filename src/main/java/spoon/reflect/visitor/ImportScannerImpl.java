@@ -64,6 +64,20 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected CtTypeReference<?> targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 
+	/**
+	 * Determine if the ImportScanner should work in a FQN mode or in auto import mode.
+	 */
+	private boolean fqnMode;
+
+	public ImportScannerImpl() {
+		this(false);
+	}
+
+	public ImportScannerImpl(boolean fqnMode) {
+		super();
+		this.fqnMode = fqnMode;
+	}
+
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 		enter(fieldRead);
@@ -338,7 +352,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return true;
 	}
 
-	private boolean isImportedInClassImports(CtTypeReference<?> ref) {
+	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
 		if (targetType != null) {
 			CtPackageReference pack = targetType.getPackage();
 
@@ -369,13 +383,36 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return false;
 	}
 
+	/**
+	 * This method is used to check if the declaring type has been already imported, or if it is local
+	 * In both case we do not want to import it, even in FQN mode.
+	 * @param declaringType
+	 * @return true if it is local or imported
+	 */
+	private boolean declaringTypeIsLocalOrImported(CtTypeReference declaringType) {
+		if (declaringType != null) {
+			if (isImportedInClassImports(declaringType)) {
+				return true;
+			}
+
+			while (declaringType != null) {
+				if (declaringType.equals(targetType)) {
+					return true;
+				}
+				declaringType = declaringType.getDeclaringType();
+			}
+
+		}
+		return false;
+	}
+
 	protected boolean addMethodImport(CtExecutableReference ref) {
 		if (this.methodImports.containsKey(ref.getSimpleName())) {
 			return isImportedInMethodImports(ref);
 		}
 
 		// if the whole class is imported: no need to import the method.
-		if (ref.getDeclaringType() != null && isImportedInClassImports(ref.getDeclaringType())) {
+		if (!this.fqnMode && declaringTypeIsLocalOrImported(ref.getDeclaringType())) {
 			return false;
 		}
 
@@ -392,7 +429,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return true;
 	}
 
-	private boolean isImportedInMethodImports(CtExecutableReference<?> ref) {
+	protected boolean isImportedInMethodImports(CtExecutableReference<?> ref) {
 		if (!(ref.isImplicit()) && methodImports.containsKey(ref.getSimpleName())) {
 			CtExecutableReference<?> exist = methodImports.get(ref.getSimpleName());
 			if (exist.getSignature().equals(ref.getSignature())) {
@@ -406,40 +443,16 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (this.fieldImports.containsKey(ref.getSimpleName())) {
 			return isImportedInFieldImports(ref);
 		}
-		//CtPackageReference pack = targetType.getPackage();
 
-		// if the whole class is imported: no need to import the method.
-		CtTypeReference declaringType = ref.getDeclaringType();
-		if (declaringType != null) {
-			if (isImportedInClassImports(declaringType)) {
-				return false;
-			}
-
-			while (declaringType != null) {
-				if (declaringType.equals(targetType)) {
-					return false;
-				}
-				declaringType = declaringType.getDeclaringType();
-			}
-
+		if (!this.fqnMode && declaringTypeIsLocalOrImported(ref.getDeclaringType())) {
+			return false;
 		}
-
-		/*if (ref.getDeclaringType().getPackage() != null && !ref.getDeclaringType().getPackage().isUnnamedPackage()) {
-			// ignore java.lang package
-			if (!ref.getDeclaringType().getPackage().getSimpleName().equals("java.lang")) {
-				// ignore type in same package
-				if (ref.getDeclaringType().getPackage().getSimpleName()
-						.equals(pack.getSimpleName())) {
-					return false;
-				}
-			}
-		}*/
 
 		fieldImports.put(ref.getSimpleName(), ref);
 		return true;
 	}
 
-	private boolean isImportedInFieldImports(CtFieldReference<?> ref) {
+	protected boolean isImportedInFieldImports(CtFieldReference<?> ref) {
 		if (!(ref.isImplicit()) && fieldImports.containsKey(ref.getSimpleName())) {
 			CtFieldReference<?> exist = fieldImports.get(ref.getSimpleName());
 			try {
@@ -452,11 +465,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			}
 
 		}
-		/*CtTypeReference typeRef = ref.getDeclaringType();
-
-		if (typeRef != null) {
-			return isImportedInClassImports(typeRef);
-		}*/
 
 		return false;
 	}
