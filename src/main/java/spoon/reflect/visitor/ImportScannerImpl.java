@@ -64,20 +64,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected CtTypeReference<?> targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 
-	/**
-	 * Determine if the ImportScanner should work in a FQN mode or in auto import mode.
-	 */
-	private boolean fqnMode;
-
-	public ImportScannerImpl() {
-		this(false);
-	}
-
-	public ImportScannerImpl(boolean fqnMode) {
-		super();
-		this.fqnMode = fqnMode;
-	}
-
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 		enter(fieldRead);
@@ -412,7 +398,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 
 		// if the whole class is imported: no need to import the method.
-		if (!this.fqnMode && declaringTypeIsLocalOrImported(ref.getDeclaringType())) {
+		if (declaringTypeIsLocalOrImported(ref.getDeclaringType())) {
 			return false;
 		}
 
@@ -444,7 +430,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return isImportedInFieldImports(ref);
 		}
 
-		if (!this.fqnMode && declaringTypeIsLocalOrImported(ref.getDeclaringType())) {
+		if (declaringTypeIsLocalOrImported(ref.getDeclaringType())) {
 			return false;
 		}
 

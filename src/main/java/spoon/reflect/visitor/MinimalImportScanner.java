@@ -41,10 +41,6 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
 
-	public MinimalImportScanner() {
-		super(true);
-	}
-
 	private CtClass getParentClass(CtReference ref) {
 		CtElement parent = ref.getParent();
 
@@ -201,7 +197,12 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
 
 		if (shouldTypeBeImported) {
-			return super.addFieldImport(ref);
+			if (this.fieldImports.containsKey(ref.getSimpleName())) {
+				return isImportedInFieldImports(ref);
+			}
+
+			fieldImports.put(ref.getSimpleName(), ref);
+			return true;
 		} else {
 			return false;
 		}
@@ -212,7 +213,20 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
 
 		if (shouldTypeBeImported) {
-			return super.addMethodImport(ref);
+			if (this.methodImports.containsKey(ref.getSimpleName())) {
+				return isImportedInMethodImports(ref);
+			}
+
+			methodImports.put(ref.getSimpleName(), ref);
+
+			if (ref.getDeclaringType() != null) {
+				if (ref.getDeclaringType().getPackage() != null) {
+					if (ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
+						addClassImport(ref.getDeclaringType());
+					}
+				}
+			}
+			return true;
 		} else {
 			return false;
 		}

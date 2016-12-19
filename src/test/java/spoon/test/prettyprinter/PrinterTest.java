@@ -55,7 +55,24 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		result = printer.getResult();
 		assertTrue("The result should now contain imports: "+result, result.contains("import java.util.List;"));
+	}
 
+	@Test
+	public void testFQNModeWriteFQNConstructorInCtVisitor() {
+		Launcher spoon = new Launcher();
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.getEnvironment().setAutoImports(false);
+		spoon.addInputResource("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java");
+		spoon.buildModel();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		assertTrue("The result should contain FQN for constructor: "+result, result.contains("new spoon.support.visitor.replace.ReplacementVisitor("));
+		assertTrue("The result should not contain reduced constructors: "+result, !result.contains("new ReplacementVisitor("));
 	}
 
 }

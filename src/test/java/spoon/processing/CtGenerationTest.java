@@ -47,15 +47,6 @@ public class CtGenerationTest {
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
 
-		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
-
-		CtType element = launcher.getFactory().Class().get(ReplacementVisitor.class);
-		List<CtType<?>> toPrint = new ArrayList<>();
-		toPrint.add(element);
-
-		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
-		String replacementVisitorContent = prettyPrinter.getResult();
-
 		// cp ./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java ./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java
 		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
@@ -64,7 +55,6 @@ public class CtGenerationTest {
 		} catch (AssertionError e) {
 			throw new ComparisonFailure("ReplacementVisitor different", expected.toString(), actual.toString());
 		}
-		assertTrue("ReplacementVisitor should contain FQN constructors",replacementVisitorContent.contains("new spoon.support.visitor.replace.ReplacementVisitor("));
 	}
 
 	@Test
