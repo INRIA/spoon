@@ -21,7 +21,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -30,7 +29,6 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -160,7 +158,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 								qualifiedNameTokens.add(ctPackage.getSimpleName());
 
 								CtElement packParent = ctPackage.getParent();
-								if (packParent.getParent() != null && !((CtPackage)packParent).getSimpleName().equals("unnamed package")) {
+								if (packParent.getParent() != null && !((CtPackage) packParent).getSimpleName().equals("unnamed package")) {
 									ctPackage = (CtPackage) packParent;
 								} else {
 									ctPackage = null;
