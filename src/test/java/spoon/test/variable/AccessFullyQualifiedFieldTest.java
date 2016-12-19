@@ -151,7 +151,7 @@ public class AccessFullyQualifiedFieldTest {
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-privateStatic/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/digest/DigestUtil.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
-		assertTrue("The result should contain a static import for STREAM_BUFFER_LENGTH", result.contains("import static spoon.test.variable.testclasses.digest.DigestUtil.STREAM_BUFFER_LENGTH;"));
+		assertTrue("The result should contain a static import for STREAM_BUFFER_LENGTH", !result.contains("import static spoon.test.variable.testclasses.digest.DigestUtil.STREAM_BUFFER_LENGTH;"));
 
 		canBeBuilt(output, 7);
 	}
