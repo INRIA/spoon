@@ -160,10 +160,6 @@ public class AccessibleVariablesFinder {
 
         new VariableScanner().scan(parent);
 
-        if (parent.isParentInitialized()) {
-            variables.addAll(getVariable(parent.getParent()));
-        }
-
         return variables;
     }
 }

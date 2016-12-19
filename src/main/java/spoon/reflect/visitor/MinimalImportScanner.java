@@ -65,6 +65,8 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	private Set<String> lookForLocalVariables(CtElement parent) {
 		Set<String> result = new HashSet<>();
 
+		// try to get the block container
+		// if the first container is the class, then we are not in a block and we can quit now.
 		while (parent != null && !(parent instanceof CtBlock)) {
 			if (parent instanceof CtClass) {
 				return result;
@@ -73,7 +75,29 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		}
 
 		if (parent != null) {
-			AccessibleVariablesFinder avf = new AccessibleVariablesFinder(parent);
+			CtBlock block = (CtBlock)parent;
+			boolean innerClass = false;
+
+			// now we have the first container block, we want to check if we're not in an inner class
+			while (parent != null && !(parent instanceof CtClass)) {
+				parent = parent.getParent();
+			}
+
+			if (parent != null) {
+				// uhoh it's not a package as a parent, we must in an inner block:
+				// let's find the last block BEFORE the class call: some collision could occur because of variables defined in that block
+				if (!(parent.getParent() instanceof CtPackage)) {
+					while (parent != null && !(parent instanceof CtBlock)) {
+						parent = parent.getParent();
+					}
+
+					if (parent != null) {
+						block = (CtBlock)parent;
+					}
+				}
+			}
+
+			AccessibleVariablesFinder avf = new AccessibleVariablesFinder(block);
 			List<CtVariable> variables = avf.find();
 
 			for (CtVariable variable : variables) {
