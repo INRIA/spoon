@@ -32,7 +32,7 @@ public class FileSystemFolderTest {
 	@Test
 	public void testLauncherWithWrongPathAsInput() {
 		expectedEx.expect(SpoonException.class);
-		expectedEx.expectMessage("java.io.FileNotFoundException: The following file does not exist: /Users/urli/Github/spoon/src/wrong/direction/File.java");
+		expectedEx.expectMessage("java.io.FileNotFoundException");
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/wrong/direction/File.java");
