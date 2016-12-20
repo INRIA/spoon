@@ -166,6 +166,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 							}
 						}
 					}
+
 					if (!qualifiedNameTokens.isEmpty()) {
 						if (fieldAndMethodsNames.contains(qualifiedNameTokens.getLast()) || localVariablesOfBlock.contains(qualifiedNameTokens.getLast())) {
 							return true;

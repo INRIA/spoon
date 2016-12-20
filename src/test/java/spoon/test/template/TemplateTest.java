@@ -65,7 +65,7 @@ public class TemplateTest {
 		assertEquals("toBeOverriden", addedMethod2.getSimpleName());
 		assertEquals("super.toBeOverriden()", addedMethod2.getBody()
 				.getStatements().get(0).toString());
-
+		assertEquals(1, subc.getNestedTypes().size());
 	}
 
 	@Test
