@@ -11,14 +11,15 @@
 
 package spoon.test.prettyprinter.testclasses;
 
-import com.sun.tools.internal.xjc.Language;
-
 import java.util.*;
 
 /**
  * Created by urli on 19/12/2016.
  */
 public class Rule {
+    public enum Language {
+        DTD, WSDL, OTHER
+    }
     public static final class Phoneme implements PhonemeExpr {
         public interface Bidule {}
 
