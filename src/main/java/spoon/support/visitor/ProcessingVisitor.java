@@ -41,10 +41,10 @@ public class ProcessingVisitor extends CtScanner {
 		this.factory = factory;
 	}
 
-	private boolean canBeProcessed(Processor<?> p, CtElement e) {
+	private boolean canBeProcessed(CtElement e) {
 		if (!factory.getEnvironment().isProcessingStopped()
-				&& p.getProcessedElementTypes() != null) {
-			for (Object o : p.getProcessedElementTypes()) {
+				&& processor.getProcessedElementTypes() != null) {
+			for (Object o : processor.getProcessedElementTypes()) {
 				if (((Class<?>) o).isAssignableFrom(e.getClass())) {
 					return true;
 				}
@@ -80,14 +80,14 @@ public class ProcessingVisitor extends CtScanner {
 		}
 		Processor<CtElement> p = (Processor<CtElement>) processor;
 		if (p.getTraversalStrategy() == TraversalStrategy.PRE_ORDER
-				&& canBeProcessed(p, e)) {
+				&& canBeProcessed(e)) {
 			if (p.isToBeProcessed(e)) {
 				p.process(e);
 			}
 		}
 		super.scan(e);
 		if (p.getTraversalStrategy() == TraversalStrategy.POST_ORDER
-				&& canBeProcessed(p, e)) {
+				&& canBeProcessed(e)) {
 			if (p.isToBeProcessed(e)) {
 				p.process(e);
 			}
