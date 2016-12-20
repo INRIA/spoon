@@ -16,12 +16,12 @@
  */
 package spoon.reflect.visitor;
 
-import java.util.List;
-
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.chain.CtQueryStep;
+import spoon.reflect.visitor.chain.CtFunction;
+
+import java.util.List;
 
 /**
  * This class provides some useful methods to retrieve program elements and
@@ -52,8 +52,8 @@ public abstract class Query {
 	}
 
 	/**
-	 * Returns all the program elements that match the filter starting from defined rootElement.
-	 * Use {@link CtElement#map(CtQueryStep)} if you want to let Filter automatically decide correct scanning context
+	 * Returns all the program elements that match the filter starting from the given rootElement.
+	 * Use {@link spoon.reflect.visitor.chain.CtQueryable#map(CtFunction)} if you need more control on the scanning context of the Filter.
 	 *
 	 * @param <E>
 	 * 		the type of the sought program elements

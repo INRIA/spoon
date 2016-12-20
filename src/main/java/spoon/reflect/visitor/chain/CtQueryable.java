@@ -20,55 +20,40 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 
 /**
- * QueryComposer contains methods, which can be used to create/compose a {@link CtQuery}
- * It is implemented 1) by {@link CtElement} to allow creation new query and its first step
- * 2) by {@link CtQuery} to allow creation of next query step
+ * Represents an object on which one can make queries.
+ * It is implemented 1) by {@link CtElement} to allow creation of a new query
+ * 2) by {@link CtQuery} to allow chaining query steps
  */
 public interface CtQueryable {
 
 	/**
-	 * Appends a queryStep to the query.
-	 * When the query is executed then this queryStep, works like this:<br>
-	 * It gets two parameters<br>
-	 * 1) input element<br>
-	 * 2) output {@link CtConsumer}<br>
-	 * The query sends input to the queryStep and the queryStep
-	 * sends the result element(s) of this queryStep by calling out output.accept(result)
-	 *
-	 * @param code
-	 * @return the create QueryStep, which is now the last step of the query
-	 */
-	<T> CtQuery<T> map(CtQueryStep<?, T> queryStep);
-
-	/**
-	 * Appends a Function based queryStep to the query.
-	 * When the query is executed then this queryStep, works like this:<br>
-	 * It gets one input parameter and returns an Object.
-	 * The exact behavior depends on type of returned object.
+	 * Query elements based on a function, the behavior depends on the return type of the function.
 	 * <table>
-	 * <tr><td><b>Return type</b><td><b>Behavior</b>
-	 * <tr><td>{@link Boolean}<td>Sends input of this step to the next step if returned value is true
-	 * <tr><td>{@link Iterable}<td>Sends each item of Iterable to the next step
-	 * <tr><td>{@link Object[]}<td>Sends each item of Array to the next step
-	 * <tr><td>? extends {@link Object}<td>Sends returned value to the next step
+	 * <tr><td><b>Return type of `function`</b><td><b>Behavior</b>
+	 * <tr><td>{@link Boolean}<td>Sends input of this step to the next step if returned value of `function`is true (as existing {@link Filter}).
+	 * <tr><td>{@link Iterable}<td>Sends each item of the collection to the next step
+	 * <tr><td>{@link Object[]}<td>Sends each item of the array to the next step
+	 * <tr><td>? extends {@link Object}<td>Sends the returned value of `function` to the next step
 	 * </table><br>
 	 *
-	 * @param code a Function with one parameter of type I returning value of type R
+	 * @param function a Function with one parameter of type I returning value of type R
 	 * @return the create QueryStep, which is now the last step of the query
 	 */
-	<I, R> CtQuery<R> map(CtFunction<I, R> code);
+	<I, R> CtQuery<R> map(CtFunction<I, R> function);
 
 	/**
-	 * scan all child elements of an input element.
-	 * The child element is sent to next step only if filter.matches(element)==true
+	 * Recursively scans all child elements of an input element.
+	 * The matched child element (filter.matches(element)==true) are sent to the next step.
+	 * Essentially the same as {@link CtElement#getElements(Filter)} but more powerful, because it
+	 * can be chained with other subsequent queries.
 	 *
-	 * Note: the input element is also checked for match and if true it is sent to output too.
-	 * This step never throws {@link ClassCastException}.
-	 * The elements which would throw {@link ClassCastException} during {@link Filter#matches(CtElement)}
-	 * are understood as not matching.
+	 * Note: the input element (the root of the query, this if you're in {@link CtElement}) is also checked and may thus be also sent to the next step.
+	 * The elements which throw {@link ClassCastException} during {@link Filter#matches(CtElement)}
+	 * are considered as not matching.
 	 *
-	 * @param filter used to filter scanned children elements of AST tree
+	 * @param filter used to filter scanned children elements of the AST tree
 	 * @return the created QueryStep, which is now the last step of the query
 	 */
 	<T extends CtElement> CtQuery<T> filterChildren(Filter<T> filter);
+
 }

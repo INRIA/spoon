@@ -17,12 +17,11 @@
 package spoon.reflect.visitor.chain;
 
 /**
- * Functional interface used to map elements using simple function, which accepts one input parameter and returns some output
+ * Abstraction for functions in the Spoon realm.
+ * It is used in the query stack, for example by {@link CtQueryable#map(CtFunction)}
  *
- * It is used for example by {@link CtQuery#map(Function)}
- *
- * @param <T> the type of the input to the function
- * @param <R> the type of the result of the function
+ * @param &lt;T> the type of the input to the function
+ * @param &lt;R> the type of the result of the function
  */
 public interface CtFunction<T, R> {
 	R apply(T input);

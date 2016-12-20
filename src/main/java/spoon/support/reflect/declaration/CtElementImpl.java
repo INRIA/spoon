@@ -31,7 +31,6 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.chain.CtQueryStep;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -259,13 +258,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <P> CtQuery<P> map(CtQueryStep<?, P> code) {
-		return new CtQueryImpl<P>(this).map(code);
-	}
-
-	@Override
-	public <I, R> CtQuery<R> map(CtFunction<I, R> code) {
-		return new CtQueryImpl<R>(this).map(code);
+	public <I, R> CtQuery<R> map(CtFunction<I, R> function) {
+		return new CtQueryImpl<R>(this).map(function);
 	}
 
 	@Override

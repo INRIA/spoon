@@ -75,7 +75,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 
 	/**
 	 * sets list of elements which will be used as input of the query
-	 * @param inputs
+	 * @param input
 	 * @return this to support fluent API
 	 */
 	public CtQuery<O> setInput(O input) {
@@ -87,7 +87,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 
 	/**
 	 * adds list of elements which will be used as input of the query too
-	 * @param inputs
+	 * @param input
 	 * @return this to support fluent API
 	 */
 	public CtQuery<O> addInput(O input) {
@@ -100,15 +100,8 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <P> CtQuery<P> map(CtQueryStep<?, P> code) {
-		add(new QueryStepWrapper(code));
-		return (CtQuery<P>) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <I, R> CtQuery<R> map(CtFunction<I, R> code) {
-		add(new FunctionWrapper(code));
+	public <I, R> CtQuery<R> map(CtFunction<I, R> function) {
+		add(new FunctionWrapper(function));
 		return (CtQuery<R>) this;
 	}
 
@@ -129,7 +122,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	 * @param output
 	 */
 	@SuppressWarnings("unchecked")
-	public void forEach(CtConsumer<O> output, Object input) {
+	private void forEach(CtConsumer<O> output, Object input) {
 		tail.setNext((CtConsumer<Object>) output);
 		try {
 			if (input == null) {
@@ -157,14 +150,8 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 			public void accept(O out) {
 				list.add(out);
 			}
-		});
+		}, null);
 		return list;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <R> void forEach(CtConsumer<R> consumer) {
-		forEach((CtConsumer<O>) consumer, null);
 	}
 
 	@Override
@@ -334,26 +321,6 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	}
 
 	/**
-	 * a step which calls ChainableFunction. Implements contract of {@link CtQuery#map(CtQueryStep)}
-	 */
-	private class QueryStepWrapper extends AbstractStep {
-		private CtQueryStep<Object, Object> fnc;
-
-		@SuppressWarnings("unchecked")
-		QueryStepWrapper(CtQueryStep<?, ?> code) {
-			fnc = (CtQueryStep<Object, Object>) code;
-		}
-		@Override
-		public void processInput(Object input) {
-			try {
-				fnc.forEach(next, input);
-			} catch (ClassCastException e) {
-				onClassCastException(this, e, input);
-			}
-		}
-	}
-
-	/**
 	 * a step which calls Function. Implements contract of {@link CtQuery#map(CtFunction)}
 	 */
 	private class FunctionWrapper extends AbstractStep {
@@ -472,5 +439,14 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 			//never fail on CCE during Filter.matching
 			return false;
 		}
+	}
+
+	/**
+	 * Interface used to query and manipulate elements in a functional manner.
+	 *
+	 * @param &lt;T> - the type of accepted elements
+	 */
+	private interface CtConsumer<T> {
+		void accept(T t);
 	}
 }
