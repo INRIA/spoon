@@ -20,7 +20,10 @@ import spoon.reflect.reference.CtReference;
 import spoon.support.DerivedProperty;
 
 /**
- * This element defines a simple (relative) name.
+ * Declares an element that has a name (a class, a method, a variable, etc).
+ * Hence, all subclasses of CtNamedElement are in package "declaration".
+ * Note that references don't define elements, hence are not under CtNamedElement
+ * even if they also have methods set/getSimpleName.
  */
 public interface CtNamedElement extends CtElement {
 	/**
