@@ -146,4 +146,13 @@ public class AccessFullyQualifiedFieldTest {
 		canBeBuilt(output, 7);
 	}
 
+	@Test
+	public void testPrivateStaticImportShouldNotBeImportedInSameClass() throws Exception {
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-privateStatic/";
+		String pathResource = "src/test/java/spoon/test/variable/testclasses/digest/DigestUtil.java";
+		String result = this.buildResourceAndReturnResult(pathResource, output);
+		assertTrue("The result should not contain a static import for STREAM_BUFFER_LENGTH", !result.contains("import static spoon.test.variable.testclasses.digest.DigestUtil.STREAM_BUFFER_LENGTH;"));
+
+		canBeBuilt(output, 7);
+	}
 }

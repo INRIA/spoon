@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -133,7 +134,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 			while (!(parent instanceof CtPackage)) {
 				if ((parent instanceof CtFieldReference) || (parent instanceof CtExecutableReference)) {
 					CtReference parentType = (CtReference) parent;
-					Set<String> qualifiedNameTokens = new HashSet<>();
+					LinkedList<String> qualifiedNameTokens = new LinkedList<>();
 
 					// we don't want to test the current ref name, as we risk to create field import and make autoreference
 					if (parentType != parent) {
@@ -157,7 +158,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 								qualifiedNameTokens.add(ctPackage.getSimpleName());
 
 								CtElement packParent = ctPackage.getParent();
-								if (packParent.getParent() != null) {
+								if (packParent.getParent() != null && !((CtPackage) packParent).getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 									ctPackage = (CtPackage) packParent;
 								} else {
 									ctPackage = null;
@@ -165,11 +166,12 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 							}
 						}
 					}
-					for (String token : qualifiedNameTokens) {
-						if (fieldAndMethodsNames.contains(token) || localVariablesOfBlock.contains(token)) {
+					if (!qualifiedNameTokens.isEmpty()) {
+						if (fieldAndMethodsNames.contains(qualifiedNameTokens.getLast()) || localVariablesOfBlock.contains(qualifiedNameTokens.getLast())) {
 							return true;
 						}
 					}
+
 
 				}
 				parent = parent.getParent();
