@@ -66,18 +66,18 @@ public abstract class Substitution {
 
 		CtClass<T> templateClass = getTemplateCtClass(targetType, template);
 		// insert all the interfaces
-		insertAllSuperInterfaces(targetType, template, templateClass);
+		insertAllSuperInterfaces(targetType, template);
 		// insert all the methods
-		insertAllMethods(targetType, template, templateClass);
+		insertAllMethods(targetType, template);
 		// insert all the constructors and all the initialization blocks (only for classes)
-		insertAllConstructors(targetType, template, templateClass);
+		insertAllConstructors(targetType, template);
 		for (CtTypeMember typeMember : templateClass.getTypeMembers()) {
 			if (typeMember instanceof CtField) {
 				// insert all the fields
 				insertGeneratedField(targetType, template, (CtField<?>) typeMember);
 			} else if (typeMember instanceof CtType) {
 				// insert all the inner types
-				insertGeneratedNestedType(targetType, template, (CtType) typeMember, templateClass);
+				insertGeneratedNestedType(targetType, template, (CtType) typeMember);
 			}
 		}
 	}
@@ -241,7 +241,7 @@ public abstract class Substitution {
 		// insert all the fields
 		for (CtTypeMember typeMember: sourceClass.getTypeMembers()) {
 			if (typeMember instanceof CtType) {
-				insertGeneratedNestedType(targetType, template, (CtType<?>) typeMember, sourceClass);
+				insertGeneratedNestedType(targetType, template, (CtType<?>) typeMember);
 			}
 		}
 	}
@@ -250,18 +250,16 @@ public abstract class Substitution {
 	 * Inserts the nestedType by substituting all the
 	 * template parameters by their values. Nested type annotated with
 	 * {@link spoon.template.Local} is not inserted.
-	 *
-	 * @param targetType
+	 *  @param targetType
 	 * 		the target type
 	 * @param template
 	 * 		the source template
 	 * @param nestedType
-	 * 		to be insterted nested type
-	 * @param sourceClass
-	 * 		the model of source template
+ * 		to be insterted nested type
 	 */
-	static void insertGeneratedNestedType(CtType<?> targetType, Template<?> template, CtType<?> nestedType, CtClass<?> sourceClass) {
+	static void insertGeneratedNestedType(CtType<?> targetType, Template<?> template, CtType<?> nestedType) {
 
+		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
 		if (nestedType.getAnnotation(Local.class) != null) {
 			return;
 		}

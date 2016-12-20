@@ -9,12 +9,18 @@ import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.PrettyPrinter;
+import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -24,6 +30,7 @@ public class CtGenerationTest {
 		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
 		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(false);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
@@ -45,8 +52,7 @@ public class CtGenerationTest {
 		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
 		try {
-			assertThat(actual)
-				.isEqualTo(expected);
+			assertThat(actual).isEqualTo(expected);
 		} catch (AssertionError e) {
 			throw new ComparisonFailure("ReplacementVisitor different", expected.toString(), actual.toString());
 		}
@@ -79,8 +85,8 @@ public class CtGenerationTest {
 		// this can be done on an informed basis when important changes are made in the metamodel/scanner
 		// and then we can have smaller clean tested pull requests to see the impact of the change
 		// cp ./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java ./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java
-		//assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class))
-		//		.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class));
+		assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class))
+				.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java")).Class().get(CtBiScannerDefault.class));
 	}
 
 	@Test

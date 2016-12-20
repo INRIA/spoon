@@ -174,7 +174,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.env = env;
 		printer = new PrinterHelper(env);
 		elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
-
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
 		} else {
@@ -760,8 +759,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			// complex case of qualifed this
 			if (context.currentThis.peekLast() != null
 				&& !context.currentThis.peekLast().type.getQualifiedName().equals(targetType.getQualifiedName())) {
+				printer.snapshotLength();
 				visitCtTypeReferenceWithoutGenerics(targetType);
-				printer.write(".this");
+				if (printer.hasNewContent()) {
+					printer.write(".");
+				}
+				printer.write("this");
 				return;
 			}
 
@@ -1726,6 +1729,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
+		// reset the import scanner between each compilationunit
+		if (env.isAutoImports()) {
+			this.importsContext = new ImportScannerImpl();
+		} else {
+			this.importsContext = new MinimalImportScanner();
+		}
 		Set<CtReference> imports = new HashSet<>();
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
