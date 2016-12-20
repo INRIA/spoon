@@ -12,6 +12,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.ModelConsistencyChecker;
@@ -325,4 +326,27 @@ public class TemplateTest {
 		assertEquals("Parent of the method is not a class called BServiceImpl", "BServiceImpl", bservice.getSimpleName());
 	}
 
+	@Test
+	public void testTemplateMatcherMatchTwoSnippets() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/TwoSnippets.java");
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SecurityCheckerTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
+		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
+		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
+		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+
+		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
+
+		assertEquals(2, matches.size());
+
+		CtElement match1 = matches.get(0);
+		CtElement match2 = matches.get(1);
+
+		assertTrue(match1.equals(match2));
+	}
 }
