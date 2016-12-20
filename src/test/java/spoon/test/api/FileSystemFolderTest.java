@@ -26,16 +26,15 @@ public class FileSystemFolderTest {
 		assertTrue(subFolders.isEmpty());
 	}
 
-	@Rule
-	public ExpectedException expectedEx = ExpectedException.none();
-
 	@Test
 	public void testLauncherWithWrongPathAsInput() {
-		expectedEx.expect(SpoonException.class);
-		expectedEx.expectMessage("java.io.FileNotFoundException");
-
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/wrong/direction/File.java");
-		spoon.buildModel();
+		try {
+			spoon.buildModel();
+		} catch (SpoonException spe) {
+			Throwable containedException = spe.getCause().getCause();
+			assertTrue(containedException instanceof FileNotFoundException);
+		}
 	}
 }
