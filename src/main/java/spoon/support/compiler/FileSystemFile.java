@@ -41,6 +41,9 @@ public class FileSystemFile implements SpoonFile {
 		super();
 		try {
 			this.file = file.getCanonicalFile();
+			if (!this.file.exists()) {
+				throw new FileNotFoundException("The following file does not exist: "+this.file.getCanonicalPath());
+			}
 		} catch (IOException e) {
 			throw new SpoonException(e);
 		}
