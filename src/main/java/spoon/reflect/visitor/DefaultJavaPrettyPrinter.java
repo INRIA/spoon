@@ -756,22 +756,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				return;
 			}
 
-			// in case we want to write a final field, it can only be inside the constructor or at declaration,
-			// then we can use this.
-			if (thisAccess.getParent() != null && thisAccess.getParent() instanceof CtFieldWrite) {
-				CtFieldWrite field = (CtFieldWrite) thisAccess.getParent();
-				if (field.getVariable().getModifiers().contains(ModifierKind.FINAL)) {
-					printer.write("this");
-					return;
-				}
-			}
-
-
-
 			// complex case of qualifed this
 			if (context.currentThis.peekLast() != null) {
 
-				CtType lastType = context.currentThis.peekLast().type;
+				CtType lastType = context.currentThis.peekFirst().type;
 				String lastTypeQualifiedName = lastType.getQualifiedName();
 				String targetTypeQualifiedName = targetType.getQualifiedName();
 

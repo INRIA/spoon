@@ -114,7 +114,7 @@ public class PrintingContext {
 	}
 
 	public void pushCurrentThis(CtType<?> type) {
-		currentThis.add(new TypeContext(type));
+		currentThis.push(new TypeContext(type));
 	}
 	public void popCurrentThis() {
 		currentThis.pop();
