@@ -158,7 +158,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 								qualifiedNameTokens.add(ctPackage.getSimpleName());
 
 								CtElement packParent = ctPackage.getParent();
-								if (packParent.getParent() != null && !((CtPackage) packParent).getSimpleName().equals("unnamed package")) {
+								if (packParent.getParent() != null && !((CtPackage) packParent).getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 									ctPackage = (CtPackage) packParent;
 								} else {
 									ctPackage = null;
