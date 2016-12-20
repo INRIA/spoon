@@ -80,7 +80,7 @@ public class PrinterTest {
 	public void testRuleCanBeBuild() {
 		Launcher spoon = new Launcher();
 		PrettyPrinter printer = spoon.createPrettyPrinter();
-		spoon.getEnvironment().setAutoImports(false);
+		spoon.getEnvironment().setAutoImports(true);
 		String output = "./target/spoon-rule/";
 		spoon.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/Rule.java");
 		spoon.setSourceOutputDirectory(output);
@@ -92,7 +92,27 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		assertTrue("The result should contain FQN for constructor: "+result, !result.contains("spoon.test.prettyprinter.testclasses.Rule.Phoneme.this.phonemeText"));
+		assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
+		canBeBuilt(output, 7);
+	}
+
+	@Test
+	public void testJDTBatchCompilerCanBeBuild() {
+		Launcher spoon = new Launcher();
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.getEnvironment().setAutoImports(false);
+		String output = "./target/spoon-jdtbatchcompiler/";
+		spoon.addInputResource("./src/main/java/spoon/support/compiler/jdt/JDTBatchCompiler.java");
+		spoon.setSourceOutputDirectory(output);
+		spoon.run();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		//assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
 		canBeBuilt(output, 7);
 	}
 

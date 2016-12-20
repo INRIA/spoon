@@ -20,6 +20,8 @@ import java.util.*;
  */
 public class Rule {
     public static final class Phoneme implements PhonemeExpr {
+        public interface Bidule {}
+
         public static final Comparator<Phoneme> COMPARATOR = new Comparator<Phoneme>() {
             @Override
             public int compare(final Phoneme o1, final Phoneme o2) {
@@ -47,6 +49,11 @@ public class Rule {
         public Phoneme(final CharSequence phonemeText, final Language language) {
             this.phonemeText = new StringBuilder(phonemeText);
             this.language = language;
+        }
+
+        @Override
+        public Iterable<Phoneme> getPhonemes() {
+            return Collections.singleton(this);
         }
     }
 
