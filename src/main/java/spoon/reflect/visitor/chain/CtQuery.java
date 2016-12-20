@@ -16,26 +16,25 @@
  */
 package spoon.reflect.visitor.chain;
 
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 
 import java.util.List;
 
 /**
- * CtQuery represents a query, which can be used to traverse a spoon model in several ways.<br>
- * A CtQuery  is lazily evaluated.
+ * CtQuery represents a query, which can be used to traverse a spoon model and collect
+ * children elements in several ways.<br>
  *
  * <br>
- * Use {@link CtQueryable#map(CtFunction)}} or {@link CtElement#filterChildren(Filter)} to create a new query starting from an existing element.<br>
+ * Use {@link CtQueryable#map(CtFunction)}} or {@link CtQueryable#filterChildren(Filter)} to create a new query starting from an existing element.<br>
  *
  * The main methods are:
  * <ul>
- * <li> {@link #map(CtFunction))} - use lambda expression to navigate to any model elements that are directly accessible from an input element
- * <li> {@link #filterChildren(Filter))} - use {@link Filter} instances to filter children of input element
- * <li> {@link #list()} - to evaluate the query and return a list of elements produced by this query
+ * <li> {@link #map(CtFunction))} - uses a lambda expression to return any model elements that are directly accessible from an input element.
+ * <li> {@link #filterChildren(Filter))} - uses {@link Filter} instances to filter children of an element
+ * <li> {@link #list()} - to evaluate the query and return a list of elements produced by this query.
  * </ul>
  * The query can be used several times.<br>
- * QueryStep is not thread safe. So you must create new query for each thread.<br>
+ * A CtQuery  is lazily evaluated once {{@link #list()}} is called.
  * Usually a new query is created each time when one needs to query something.
  * However, reusing a {@link CtQuery} instance makes sense when the same query has to be evaluated
  * several times in a loop.
@@ -46,7 +45,7 @@ public interface CtQuery<O> extends CtQueryable {
 
 	/**
 	 * actually evaluates the query and returns all the produced elements collected in a List
-	 * @return the List of collected elements.
+	 * @return the list of elements collected by the query.
 	 */
 	List<O> list();
 
@@ -57,17 +56,16 @@ public interface CtQuery<O> extends CtQueryable {
 	 *
 	 * Note: The {@link CtQueryable#filterChildren(Filter)} step never throws {@link ClassCastException}
 	 *
-	 * @return this to support fluent API
 	 * @param policy the policy
+	 * @return this to support fluent API
 	 */
 	CtQuery<O> failurePolicy(QueryFailurePolicy policy);
 
 	/**
-	 * Sets the name of current QueryStep. It can help to identify the current step during debugging of a query
+	 * Sets the name of current query, to identify the current step during debugging of a query
 	 * @param name
 	 * @return this to support fluent API
 	 */
 	CtQuery<O> name(String name);
-
 
 }
