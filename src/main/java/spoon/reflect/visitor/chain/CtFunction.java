@@ -19,6 +19,7 @@ package spoon.reflect.visitor.chain;
 /**
  * Abstraction for functions in the Spoon realm.
  * It is used in the query stack, for example by {@link CtQueryable#map(CtFunction)}
+ * Compatible with Java 8 lambdas, hence enable to write queries with lambdas.
  *
  * @param &lt;T> the type of the input to the function
  * @param &lt;R> the type of the result of the function
