@@ -347,6 +347,6 @@ public class TemplateTest {
 		CtElement match1 = matches.get(0);
 		CtElement match2 = matches.get(1);
 
-		assertTrue(!match1.equals(match2));
+		assertTrue(match1.equals(match2));
 	}
 }

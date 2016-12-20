@@ -28,7 +28,7 @@ public class TwoSnippets {
     }
 
     public void toto() {
-        if(!contextHelper.hasPermission("b")) {
+        if(!contextHelper.hasPermission("c")) {
             throw new SecurityException();
         }
         bDao.toString();
