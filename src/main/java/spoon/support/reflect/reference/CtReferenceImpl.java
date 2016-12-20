@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
@@ -44,7 +45,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	}
 
 	@Override
-	public <T extends CtReference> T setSimpleName(String simplename) {
+	public <T extends CtNamedElement> T setSimpleName(String simplename) {
 		Factory factory = getFactory();
 		if (factory instanceof FactoryImpl) {
 			simplename = ((FactoryImpl) factory).dedup(simplename);
@@ -63,6 +64,11 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	@Override
 	public abstract void accept(CtVisitor visitor);
+
+	@Override
+	public CtReference getReference() {
+		return this;
+	}
 
 	@Override
 	public CtReference clone() {

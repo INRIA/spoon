@@ -512,6 +512,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> e) {
 		scanCtReference(e);
+		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtActualTypeContainer(e);
 		scanCtVisitable(e);
@@ -544,6 +545,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtFieldReference(CtFieldReference<T> e) {
 		scanCtVariableReference(e);
 		scanCtReference(e);
+		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
@@ -617,6 +619,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 			CtLocalVariableReference<T> e) {
 		scanCtVariableReference(e);
 		scanCtReference(e);
+		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
@@ -635,6 +638,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> e) {
 		scanCtVariableReference(e);
 		scanCtReference(e);
+		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
@@ -714,6 +718,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public void visitCtPackageReference(CtPackageReference e) {
 		scanCtReference(e);
+		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
@@ -730,6 +735,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtParameterReference(CtParameterReference<T> e) {
 		scanCtVariableReference(e);
 		scanCtReference(e);
+		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
@@ -798,6 +804,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtTypeReference(CtTypeReference<T> e) {
 		scanCtReference(e);
+		scanCtNamedElement(e);
 		scanCtTypeInformation(e);
 		scanCtActualTypeContainer(e);
 		scanCtElement(e);
@@ -867,6 +874,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
 		scanCtVariableReference(reference);
 		scanCtReference(reference);
+		scanCtNamedElement(reference);
 		scanCtElement(reference);
 		scanCtVisitable(reference);
 	}

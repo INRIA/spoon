@@ -18,6 +18,7 @@ package spoon.reflect.reference;
 
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
@@ -32,18 +33,7 @@ import java.util.List;
  *
  * @see spoon.reflect.declaration.CtElement
  */
-public interface CtReference extends CtElement {
-
-	/**
-	 * Gets the simple name of referenced element.
-	 */
-	String getSimpleName();
-
-	/**
-	 * Sets the name of referenced element.
-	 */
-	<T extends CtReference> T setSimpleName(String simpleName);
-
+public interface CtReference extends CtNamedElement {
 	/**
 	 * Tries to get the declaration that corresponds to the referenced element.
 	 *

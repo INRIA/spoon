@@ -17,6 +17,7 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.Filter;
 
 /**
@@ -39,7 +40,11 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 
 	public boolean matches(T element) {
 		try {
-			return name.equals(element.getSimpleName());
+			if (!(element instanceof CtReference)) {
+				return name.equals(element.getSimpleName());
+			} else {
+				return false;
+			}
 		} catch (UnsupportedOperationException e) {
 			return false;
 		}
