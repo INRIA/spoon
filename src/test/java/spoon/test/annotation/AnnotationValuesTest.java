@@ -1,6 +1,7 @@
 package spoon.test.annotation;
 
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -117,6 +118,32 @@ public class AnnotationValuesTest {
 		assertEquals(byteOrder, on(field).giveMeAnnotation(BoundNumber.class));
 		assertTrue(on(byteOrder).giveMeAnnotationValue("byteOrder").element instanceof CtFieldRead);
 	}
+
+	@Test
+	public void testAnnotationPrintAnnotation() throws Exception {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/printer-test/spoon/test/AnnotationSpecTest.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		assertEquals(strCtClassOracle,
+				launcher.getFactory().Class().getAll().get(0).getElements(new TypeFilter<>(CtClass.class)).get(2).toString());
+	}
+
+	private static final String nl = System.lineSeparator();
+
+	private static final String strCtClassOracle = "@HasDefaultsAnnotation(" + nl  +
+			"      o = Breakfast.PANCAKES," + nl  +
+			"      p = 1701," + nl  +
+			"      f = 11.1," + nl  +
+			"      m = {9, 8, 1}," + nl  +
+			"      l = Override.class," + nl  +
+			"      j = @AnnotationA," + nl  +
+			"      q = @AnnotationC(\"bar\")," + nl  +
+			"      r = {Float.class, Double.class})" + nl  +
+			"  public class IsAnnotated {" + nl  +
+			"    // empty" + nl  +
+			"  }";
 
 	static class Request {
 		private static Request myself = new Request();
