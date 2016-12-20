@@ -757,7 +757,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 
 			// complex case of qualifed this
-			if (context.currentThis.peekLast() != null) {
+			if (!context.currentThis.isEmpty()) {
 
 				CtType lastType = context.currentThis.peekFirst().type;
 				String lastTypeQualifiedName = lastType.getQualifiedName();
