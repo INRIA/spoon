@@ -48,11 +48,13 @@ public class FileSystemFile implements SpoonFile {
 
 	public InputStream getContent() {
 		try {
+			if (!this.file.exists()) {
+				throw new FileNotFoundException("The following file does not exist: " + this.file.getCanonicalPath());
+			}
 			return new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
+		} catch (IOException e) {
+			throw new SpoonException(e);
 		}
-		return null;
 	}
 
 	public String getName() {
