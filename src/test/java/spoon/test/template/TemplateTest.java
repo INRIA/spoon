@@ -12,7 +12,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.ModelConsistencyChecker;
@@ -26,6 +25,7 @@ import spoon.test.template.testclasses.SecurityCheckerTemplate;
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.Remote;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,12 +60,28 @@ public class TemplateTest {
 		assertEquals("toBeOverriden", addedMethod.getSimpleName());
 
 		CtClass<?> subc = factory.Class().get(SubClass.class);
-		Substitution.insertAll(subc, new SubTemplate());
+		SubTemplate template = new SubTemplate();
+		template.params = new ArrayList<>();
+		CtParameter<Integer> parameter = factory.Core().createParameter();
+		parameter.setSimpleName("x");
+		parameter.setType(factory.Type().createReference(int.class));
+		template.params.add(parameter);
+		Substitution.insertAll(subc, template);
+
 		CtMethod<?> addedMethod2 = subc.getElements(
 				new NameFilter<CtMethod<?>>("toBeOverriden")).get(0);
 		assertEquals("toBeOverriden", addedMethod2.getSimpleName());
 		assertEquals("super.toBeOverriden()", addedMethod2.getBody()
 				.getStatements().get(0).toString());
+
+		// contract; method parameter templates are handled
+		CtMethod<?> methodWithTemplatedParameters = subc.getElements(
+				new NameFilter<CtMethod<?>>("methodWithTemplatedParameters")).get(0);
+		assertEquals("methodWithTemplatedParameters", methodWithTemplatedParameters.getSimpleName());
+		assertEquals("x", methodWithTemplatedParameters.getParameters().get(0).getSimpleName());
+		assertEquals("int x", methodWithTemplatedParameters.getParameters().get(0).toString());
+
+		// contract: nested types of the templates are copied
 		assertEquals(1, subc.getNestedTypes().size());
 	}
 
