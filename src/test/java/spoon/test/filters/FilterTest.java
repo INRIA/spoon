@@ -545,33 +545,4 @@ public class FilterTest {
 			}).list();
 		assertTrue(context.count>0);
 	}
-	
-	@Test
-	public void testElementFunctionQueryStep() throws Exception {
-		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","debug" });
-		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.run();
-		
-		class Context {
-			int count = 0;
-			int totalCount = 0;
-		}
-		
-		Context context = new Context();
-
-		launcher.getFactory().Class().get(FieldAccessFilterTacos.class).map((CtClass clazz)->clazz.getAllFields())
-			.map((CtFieldReference<?> fr)->{
-				if("myfield".equals(fr.getSimpleName())){
-					context.count++;
-				}
-				context.totalCount++;
-				return true;
-			}).list();
-		assertTrue(context.count==1);
-		assertTrue(context.totalCount>1);
-		
-	}
-	
-	
 }
