@@ -55,7 +55,6 @@ import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,13 +72,13 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	CtTypeReference<A> annotationType;
 
-	private Map<String, CtExpression> elementValues = new TreeMap(){
+	private Map<String, CtExpression> elementValues = new TreeMap() {
 		@Override
-		public Set<Entry<String,CtExpression>> entrySet() {
-			Set<Entry<String,CtExpression>> result = new TreeSet<Entry<String, CtExpression>>(new Comparator<Entry<String,CtExpression>>() {
+		public Set<Entry<String, CtExpression>> entrySet() {
+			Set<Entry<String, CtExpression>> result = new TreeSet<Entry<String, CtExpression>>(new Comparator<Entry<String, CtExpression>>() {
 				final CtLineElementComparator comp = new CtLineElementComparator();
 				@Override
-				public int compare(Entry<String,CtExpression> o1, Entry<String,CtExpression> o2) {
+				public int compare(Entry<String, CtExpression> o1, Entry<String, CtExpression> o2) {
 					return comp.compare(o1.getValue(), o2.getValue());
 				}
 			}
