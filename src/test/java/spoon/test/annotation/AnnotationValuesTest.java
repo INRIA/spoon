@@ -132,18 +132,10 @@ public class AnnotationValuesTest {
 
 	private static final String nl = System.lineSeparator();
 
-	private static final String strCtClassOracle = "@HasDefaultsAnnotation(" + nl  +
-			"      o = Breakfast.PANCAKES," + nl  +
-			"      p = 1701," + nl  +
-			"      f = 11.1," + nl  +
-			"      m = {9, 8, 1}," + nl  +
-			"      l = Override.class," + nl  +
-			"      j = @AnnotationA," + nl  +
-			"      q = @AnnotationC(\"bar\")," + nl  +
-			"      r = {Float.class, Double.class})" + nl  +
-			"  public class IsAnnotated {" + nl  +
-			"    // empty" + nl  +
-			"  }";
+	private static final String strCtClassOracle = "@com.squareup.javapoet.AnnotationSpecTest.HasDefaultsAnnotation(o = com.squareup.javapoet.AnnotationSpecTest.Breakfast.PANCAKES, p = 1701, f = 11.1, m = { 9 , 8 , 1 }, l = java.lang.Override.class, j = @com.squareup.javapoet.AnnotationSpecTest.AnnotationA" + nl +
+			", q = @com.squareup.javapoet.AnnotationSpecTest.AnnotationC(value = \"bar\")" + nl +
+			", r = { java.lang.Float.class , java.lang.Double.class })" + nl +
+			"public class IsAnnotated {}";
 
 	static class Request {
 		private static Request myself = new Request();

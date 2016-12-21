@@ -70,7 +70,8 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	/**
 	 * Returns this annotation's elements and their values. This is returned in
 	 * the form of a map that associates element names with their corresponding
-	 * values.
+	 * values. If you iterate over the map with entrySet(), the iteration order
+	 * complies with the order of annotation values in the source code.
 	 *
 	 * @return this annotation's element names and their values, or an empty map
 	 * if there are none
