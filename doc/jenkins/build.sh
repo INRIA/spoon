@@ -170,6 +170,10 @@ xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:
 mv pom.bak22.xml pom.xml
 rm pom.bak*.xml
 
+# Purge the project from snapshots
+# Avoid to use an old snapshot of Spoon and force the resolution
+mvn dependency:purge-local-repository -DmanualInclude="fr.inria.gforge.spoon:spoon-core" -DsnapshotsOnly=true
+
 # Compiles project with spoon configuration.
 START_COMPILE_WITH_SPOON=$(($(date +%s%N)/1000000))
 mvn clean install 
