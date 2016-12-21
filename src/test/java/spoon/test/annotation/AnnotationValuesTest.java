@@ -1,6 +1,7 @@
 package spoon.test.annotation;
 
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -117,6 +118,24 @@ public class AnnotationValuesTest {
 		assertEquals(byteOrder, on(field).giveMeAnnotation(BoundNumber.class));
 		assertTrue(on(byteOrder).giveMeAnnotationValue("byteOrder").element instanceof CtFieldRead);
 	}
+
+	@Test
+	public void testAnnotationPrintAnnotation() throws Exception {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/printer-test/spoon/test/AnnotationSpecTest.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		assertEquals(strCtClassOracle,
+				launcher.getFactory().Class().getAll().get(0).getElements(new TypeFilter<>(CtClass.class)).get(2).toString());
+	}
+
+	private static final String nl = System.lineSeparator();
+
+	private static final String strCtClassOracle = "@com.squareup.javapoet.AnnotationSpecTest.HasDefaultsAnnotation(o = com.squareup.javapoet.AnnotationSpecTest.Breakfast.PANCAKES, p = 1701, f = 11.1, m = { 9 , 8 , 1 }, l = java.lang.Override.class, j = @com.squareup.javapoet.AnnotationSpecTest.AnnotationA" + nl +
+			", q = @com.squareup.javapoet.AnnotationSpecTest.AnnotationC(value = \"bar\")" + nl +
+			", r = { java.lang.Float.class , java.lang.Double.class })" + nl +
+			"public class IsAnnotated {}";
 
 	static class Request {
 		private static Request myself = new Request();

@@ -5,6 +5,7 @@ import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -12,6 +13,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.List;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
@@ -52,12 +54,14 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/main/java/");
 		spoon.buildModel();
 
-		assertEquals(0, spoon.getFactory().Package().getRootPackage().getElements(new AbstractFilter<CtConstructorCall>() {
+		List<CtConstructorCall> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
 			@Override
 			public boolean matches(CtConstructorCall element) {
-				return element.getType().getActualClass().equals(TreeSet.class);
-			};
-		}).size());
+				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().size() == 0;
+			}
+		}).list();
+
+		assertEquals(0, treeSetWithoutComparators.size());
 	}
 
 	@Test
