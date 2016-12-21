@@ -31,6 +31,9 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.chain.CtFunction;
+import spoon.reflect.visitor.chain.CtQueryImpl;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
@@ -251,7 +254,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
-		return Query.getElements(this, filter);
+		return filterChildren(filter).list();
+	}
+
+	@Override
+	public <I, R> CtQuery<R> map(CtFunction<I, R> function) {
+		return new CtQueryImpl<R>(this).map(function);
+	}
+
+	@Override
+	public <P extends CtElement> CtQuery<P> filterChildren(Filter<P> predicate) {
+		return new CtQueryImpl<P>(this).filterChildren(predicate);
 	}
 
 	public <T extends CtReference> List<T> getReferences(Filter<T> filter) {
