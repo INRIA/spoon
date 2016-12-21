@@ -192,15 +192,15 @@ public abstract class RtHelper {
 	 * @param clazz
 	 * @param methodName
 	 * @param numParams
-	 * @return the types of the parameters of such method or null if not found
+	 * @return the found method or null
 	 */
-	public static Class<?>[] getMethodParameterTypes(Class<?> clazz, String methodName, int numParams) {
+	public static Method getMethod(Class<?> clazz, String methodName, int numParams) {
 		Method[] methods = clazz.getMethods();
 		for (Method method : methods) {
 			if (method.getName().equals(methodName)) {
 				Class<?>[] params = method.getParameterTypes();
 				if (params.length == numParams) {
-					return params;
+					return method;
 				}
 			}
 		}

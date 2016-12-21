@@ -16,6 +16,8 @@
  */
 package spoon.reflect.visitor.filter;
 
+import java.lang.reflect.Method;
+
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
@@ -43,11 +45,11 @@ public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public AbstractFilter() {
-		Class<?>[] params = RtHelper.getMethodParameterTypes(getClass(), "matches", 1);
-		if (params == null) {
+		Method method = RtHelper.getMethod(getClass(), "matches", 1);
+		if (method == null) {
 			throw new SpoonException("The method matches with one parameter was not found on the class " + getClass().getName());
 		}
-		this.type = (Class<T>) params[0];
+		this.type = (Class<T>) method.getParameterTypes()[0];
 	}
 
 	public Class<T> getType() {

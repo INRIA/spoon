@@ -16,17 +16,22 @@
  */
 package spoon.reflect.visitor;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.util.RtHelper;
 
 /**
  * A simple visitor that takes a filter and returns all the elements that match
  * it.
+ * @deprecated use {@link CtQuery#filterChildren(Filter)} instead.
  */
+@Deprecated
 public class QueryVisitor<T extends CtElement> extends CtScanner {
 	private final Filter<T> filter;
 	private final Class<T> filteredType;
@@ -42,8 +47,11 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 		if (filter instanceof AbstractFilter) {
 			filteredType =  ((AbstractFilter<T>) filter).getType();
 		} else {
-			Class<?>[] params = RtHelper.getMethodParameterTypes(filter.getClass(), "matches", 1);
-			filteredType = (Class<T>) params[0];
+			Method method = RtHelper.getMethod(filter.getClass(), "matches", 1);
+			if (method == null) {
+				throw new SpoonException("The Filter class " + filter.getClass().getName() + " has no matches method with one parameter.");
+			}
+			filteredType = (Class<T>) method.getParameterTypes()[0];
 		}
 	}
 

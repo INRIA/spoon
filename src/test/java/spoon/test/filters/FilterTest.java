@@ -38,8 +38,11 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.chain.CtQuery;
+import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -367,7 +370,9 @@ public class FilterTest {
 
 		final CtInterface<ITostada> aITostada = launcher.getFactory().Interface().get(ITostada.class);
 
-		final List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0)));
+		OverriddenMethodFilter filter = new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0));
+		List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), filter);
+		assertEquals(0, overridingMethods.size());
 		assertEquals(0, overridingMethods.size());
 	}
 
@@ -387,7 +392,8 @@ public class FilterTest {
 		assertEquals(ITostada.class, overriddenMethods.get(0).getParent(CtInterface.class).getActualClass());
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
-		final List<CtMethod<?>> overriddenMethodsFromSub = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aTostada.getMethodsByName("make").get(0)));
+		OverriddenMethodFilter filter = new OverriddenMethodFilter(aTostada.getMethodsByName("make").get(0));
+		final List<CtMethod<?>> overriddenMethodsFromSub = Query.getElements(launcher.getFactory(), filter);
 		assertEquals(2, overriddenMethodsFromSub.size());
 		assertEquals(AbstractTostada.class, overriddenMethodsFromSub.get(0).getParent(CtType.class).getActualClass());
 		assertEquals(ITostada.class, overriddenMethodsFromSub.get(1).getParent(CtType.class).getActualClass());
@@ -465,5 +471,78 @@ public class FilterTest {
 			}
 		}).get(0);
 		assertNotNull(invSize);
+	}
+	@Test
+	public void testQueryStepScannWithConsumer() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int counter = 0;
+		}
+		Context context = new Context();
+		
+		CtQuery<CtClass<?>> l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
+		
+		assertEquals(0, context.counter);
+		// map with java8 lambda
+		l_qv.map(cls->{
+			assertTrue(cls instanceof CtClass);
+			context.counter++;
+			return true;
+		}).list();
+		assertTrue(context.counter>0);
+	}
+	
+	@Test
+	public void testQueryBuilderWithFilterChain() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			CtMethod<?> method;
+			int count = 0;
+		}
+		
+		Context context = new Context();
+
+		launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<CtMethod<?>>(CtMethod.class))
+		// using a lazily-evaluated lambda
+		.map((CtMethod<?> method) -> {context.count++;return method;})
+		.list(); // actual evaluation
+		assertTrue(context.count>0);
+	}
+	
+	@Test
+	public void testFunctionQueryStep() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int count = 0;
+		}
+		
+		Context context = new Context();
+
+		CtQuery<CtType<?>> query = launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;})
+			.map((CtClass<?> c)->c.getSuperInterfaces())
+			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
+			.map((CtType<?> iface)->iface.getAllMethods())
+			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
+			.map((CtMethod<?> m)->m.getType())
+			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
+		((CtQueryImpl<?>)query).logging(true);
+		query.map((CtInterface<?> c)->{
+				assertEquals("ITostada", c.getSimpleName());
+				context.count++;
+				return true;
+			}).list();
+		assertTrue(context.count>0);
 	}
 }
