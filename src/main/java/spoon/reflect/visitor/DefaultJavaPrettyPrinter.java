@@ -457,6 +457,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtCatch(CtCatch catchBlock) {
+		elementPrinterHelper.writeComment(catchBlock, CommentOffset.BEFORE);
 		printer.write(" catch (");
 		CtCatchVariable<? extends Throwable> parameter = catchBlock.getParameter();
 		if (parameter.getMultiTypes().size() > 0) {

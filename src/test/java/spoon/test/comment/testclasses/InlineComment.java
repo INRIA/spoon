@@ -67,7 +67,10 @@ public class InlineComment {
 		try {
 			// comment in try
 			i++;
-		} catch (Exception e) {
+		}
+		// between
+		// try/catch
+		catch (Exception e) {
 			// comment in catch
 		}
 		// comment synchronized
