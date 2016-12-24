@@ -31,6 +31,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.visitor.AstParentConsistencyChecker;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
@@ -38,6 +39,8 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.comment.testclasses.BlockComment;
+import spoon.test.comment.testclasses.Comment1;
+import spoon.test.comment.testclasses.Comment2;
 import spoon.test.comment.testclasses.InlineComment;
 
 import java.io.FileOutputStream;
@@ -617,5 +620,17 @@ public class CommentTest {
 		} finally {
 			write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
 		}
+	}
+
+	@Test
+	public void testCommentsInComment1And2() {
+		Factory f = getSpoonFactory();
+		f.getModel().getRootPackage().accept(new AstParentConsistencyChecker());
+		CtClass<?> type = (CtClass<?>) f.Type().get(Comment1.class);
+		List<CtComment> comments = type.getComments();
+		assertEquals(2, comments.size());
+
+		type = (CtClass<?>) f.Type().get(Comment2.class);
+		assertEquals(1, type.getComments().size());
 	}
 }
