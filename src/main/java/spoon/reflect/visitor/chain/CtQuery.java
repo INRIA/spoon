@@ -29,20 +29,25 @@ import java.util.List;
  *
  * The main methods are:
  * <ul>
- * <li> {@link CtQueryable#map(CtFunction)} - uses a lambda expression to return any model elements that are directly accessible from an input element.
- * <li> {@link CtQueryable#filterChildren(Filter)} - uses {@link Filter} instances to filter children of an element
+ * <li> {@link #map(CtFunction))} - uses a lambda expression to return any model elements that are directly accessible from an input element.
+ * <li> {@link #map(CtLazyFunction))} -implementations of {@link CtLazyFunction} provides a complex queries.
+ * <li> {@link #filterChildren(Filter))} - uses {@link Filter} instances to filter children of an element
  * <li> {@link #list()} - to evaluate the query and return a list of elements produced by this query.
  * </ul>
- * The query can be used several times.<br>
- * A CtQuery  is lazily evaluated once {{@link #list()}} is called.
+ * It makes sense to evaluate this query only once, because the input element is constant.<br>
+ * A CtQuery is lazily evaluated once {{@link #list()}} or {@link #forEach(CtConsumer)} are called.
  * Usually a new query is created each time when one needs to query something.
- * However, reusing a {@link CtQuery} instance makes sense when the same query has to be evaluated
- * several times in a loop.
+ * If you need to reuse a query instance several times, for example in a loop, then use {@link CtBaseQuery}.
  *
- * @param <O> the type of the element produced by this query
+ * @param &lt;O> the type of the element produced by this query
  */
 public interface CtQuery<O> extends CtQueryable {
 
+	/**
+	 * actually evaluates the query and for each produced outputElement calls `consumer.accept(outputElement)`
+     * @param consumer The consumer which accepts the results of the query
+	 */
+	<R> void forEach(CtConsumer<R> consumer);
 	/**
 	 * actually evaluates the query and returns all the produced elements collected in a List
 	 * @return the list of elements collected by the query.
@@ -67,5 +72,4 @@ public interface CtQuery<O> extends CtQueryable {
 	 * @return this to support fluent API
 	 */
 	CtQuery<O> name(String name);
-
 }

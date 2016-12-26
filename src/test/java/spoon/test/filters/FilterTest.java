@@ -41,8 +41,10 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryImpl;
+import spoon.reflect.visitor.chain.CtBaseQuery;
+import spoon.reflect.visitor.chain.CtBaseQueryImpl;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -538,11 +540,10 @@ public class FilterTest {
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
 		((CtQueryImpl<?>)query).logging(true);
-		query.map((CtInterface<?> c)->{
+		query.forEach((CtInterface<?> c)->{
 				assertEquals("ITostada", c.getSimpleName());
 				context.count++;
-				return true;
-			}).list();
+			});
 		assertTrue(context.count>0);
 	}
 }
