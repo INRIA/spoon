@@ -21,9 +21,12 @@ import spoon.reflect.visitor.Filter;
 
 /**
  * Represents an object on which one can make queries.
- * It is implemented 1) by {@link CtElement} to allow creation of a new query on
+ * It is implemented
+ * <ol>
+ * <li> by {@link CtElement} to allow creation of a new query on
  * children of an element.
- * 2) by {@link CtQuery} to allow chaining query steps.
+ * <li> by {@link CtQuery} to allow chaining query steps.
+ * </ol>
  */
 public interface CtQueryable {
 
@@ -41,6 +44,15 @@ public interface CtQueryable {
 	 * @return a new query object
 	 */
 	<I, R> CtQuery<R> map(CtFunction<I, R> function);
+
+	/**
+	 * Query elements based on a CtQueryStep, which supports efficient implementation of CtScanner based queries,
+	 * which produces thousands of mapping output elements.
+	 *
+	 * @param queryStep
+	 * @return the created QueryStep, which is the new last step of the query
+	 */
+	<T> CtQuery<T> map(CtLazyFunction<?, T> queryStep);
 
 	/**
 	 * Recursively scans all children elements of an input element.
