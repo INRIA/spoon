@@ -61,4 +61,4 @@ as classpath in the buildscript of your project where the Gradle plugin can retr
 Otherwise, your processor won't be applied.
 {{site.data.alerts.end}}
 
-To know more about this Maven plugin, you can check the README of its [GitHub project](https://github.com/SpoonLabs/spoon-gradle-plugin). 
+To know more about this Gradle plugin, you can check the README of its [GitHub project](https://github.com/SpoonLabs/spoon-gradle-plugin). 
