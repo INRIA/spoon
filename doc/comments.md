@@ -14,13 +14,13 @@ In Spoon there are four different kinds of comments:
 * Javadoc comments (from /** to */) `CtComment.CommentType.JAVADOC`
 
 The comments are represented in Spoon with a `CtComment` class ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtComment.html)). 
-This class exposes API to get the content of the comment `CtComment.getContent()`, the type of the comment `CtComment.getCommentType()` and the position `CtComment.getPosition()`.
+This class exposes an API to get the content `CtComment.getContent()`, the type `CtComment.getCommentType()` and the position `CtComment.getPosition()` of an comment.
 
 We also try to understand to which element they are attached.
-We use simple heuristics that work well in nominal cases but it is not possible to address all specific cases.
-You can receive the comments of each `CtElement` via the API `CtElement.getComments()` which returns a `List<CtComment>`.
+We use some simple heuristics that work well in nominal cases but cannot address all specific cases.
+You can retrieve the comments of each `CtElement` via the API `CtElement.getComments()` which returns a `List<CtComment>`.
 
-The parsing of the comments can be disable in the Environment via the option `Environment.setCommentsEnable(boolean)` or the argument `--enable-comments` (or `-c`) with the command line.  
+The parsing of the comments can be enabled in the Environment via the option `Environment.setCommentsEnable(boolean)` or the command line argument `--enable-comments` (or `-c`).  
 
 ## Javadoc Comments
 
@@ -28,12 +28,12 @@ The Javadoc comments are also available via the API `CtElement.getDocComment()` 
 
 ## Comment Attribution
 
-* Each comment can have multiple comments
-* Comments in the same line of a statement is attached to the statement
-* Comments which are alone in one line (or more than one lines) are associated to the first element following them. 
-* Comments cannot be associated to other comment
-* Comments at the end of a block are considered as orphans comment
-* Comments in a class level is attached to the class
+* Each element can have multiple comments
+* Comments in the same line of a statement are attached to the statement
+* Comments which are alone in one line (or more than one line) are associated to the first element following them
+* Comments cannot be associated to other comments
+* Comments at the end of a block are considered as orphan comments
+* Comments before a class definition are attached to the class
 
 ### Comment Examples
 
@@ -105,5 +105,5 @@ SourcePosition is extended by three specialized positions:
 
 These three specializations are used to define the position of specific CtElement.
 For example DeclarationSourcePosition is used to define the position of all declarations (variable, type, method, ...).
-This provide an easy access to the position of the modifiers and the name.
+This provides an easy access to the position of the modifiers and the name.
 The BodyHolderSourcePosition is used to declare the position of all elements that have a body.
