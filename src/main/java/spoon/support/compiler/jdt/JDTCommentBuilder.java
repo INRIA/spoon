@@ -24,6 +24,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
@@ -187,6 +188,7 @@ class JDTCommentBuilder {
 		// visitor that inserts the comment in the element
 		CtInheritanceScanner insertionVisitor = new CtInheritanceScanner() {
 			private boolean isScanned = false;
+
 			@Override
 			public void scan(CtElement e) {
 				if (e == null) {
@@ -372,6 +374,14 @@ class JDTCommentBuilder {
 			@Override
 			public <T> void visitCtParameter(CtParameter<T> e) {
 				e.addComment(comment);
+			}
+
+			@Override
+			public void visitCtCatch(CtCatch e) {
+				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
+					e.addComment(comment);
+					return;
+				}
 			}
 		};
 		insertionVisitor.scan(commentParent);

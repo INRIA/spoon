@@ -29,8 +29,10 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.visitor.AstParentConsistencyChecker;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
@@ -38,6 +40,8 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.comment.testclasses.BlockComment;
+import spoon.test.comment.testclasses.Comment1;
+import spoon.test.comment.testclasses.Comment2;
 import spoon.test.comment.testclasses.InlineComment;
 
 import java.io.FileOutputStream;
@@ -107,7 +111,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(57, comments.size());
+		assertEquals(59, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -225,7 +229,9 @@ public class CommentTest {
 				+ "try {" + newLine
 				+ "    // comment in try" + newLine
 				+ "    i++;" + newLine
-				+ "} catch (java.lang.Exception e) {" + newLine
+				+ "}// between" + newLine
+				+ "// try/catch" + newLine
+				+ " catch (java.lang.Exception e) {" + newLine
 				+ "    // comment in catch" + newLine
 				+ "}", ctTry.toString());
 
@@ -617,5 +623,17 @@ public class CommentTest {
 		} finally {
 			write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
 		}
+	}
+
+	@Test
+	public void testCommentsInComment1And2() {
+		Factory f = getSpoonFactory();
+		CtClass<?> type = (CtClass<?>) f.Type().get(Comment1.class);
+		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		assertEquals(4, comments.size());
+
+		type = (CtClass<?>) f.Type().get(Comment2.class);
+		comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		assertEquals(1, comments.size());
 	}
 }
