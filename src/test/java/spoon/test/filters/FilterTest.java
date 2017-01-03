@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -44,6 +45,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.chain.CtBaseQuery;
 import spoon.reflect.visitor.chain.CtBaseQueryImpl;
+import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
@@ -532,10 +534,12 @@ public class FilterTest {
 		
 		Context context = new Context();
 
-		CtQuery<CtType<?>> query = launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;})
-			.map((CtClass<?> c)->c.getSuperInterfaces())
+		CtQuery<CtType<?>> query = launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("filter CtClass only")
+			.map((CtClass<?> c)->c.getSuperInterfaces()).name("super interfaces")
 			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
-			.map((CtType<?> iface)->iface.getAllMethods())
+			.map((CtType<?> iface)->iface.getAllMethods()).name("allMethods if interface")
+			//just try LazyFunction, which does nothing - sends input to output
+			.map((CtMethod<?> method, CtConsumer<Object> out)->out.accept(method)).name("lazyFnc")
 			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
@@ -545,5 +549,24 @@ public class FilterTest {
 				context.count++;
 			});
 		assertTrue(context.count>0);
+	}
+	@Test
+	public void testInvalidQueryStep() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		try {
+			launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("step1")
+				.map((CtMethod<?> m)->m).name("invalidStep2")
+				.map((o)->o).name("step3")
+				.forEach((CtInterface<?> c)->{
+					fail();
+				});
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().indexOf("Step invalidStep2) spoon.support.reflect.declaration.CtClassImpl cannot be cast to spoon.reflect.declaration.CtMethod")>=0);
+		}
 	}
 }

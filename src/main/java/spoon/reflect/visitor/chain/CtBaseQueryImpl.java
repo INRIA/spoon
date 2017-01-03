@@ -125,7 +125,7 @@ public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
 	 */
 	private void onClassCastException(CurrentStep step, ClassCastException e, Object... parameters) {
 		if (step.isFailOnCCE()) {
-			throw e;
+			throw new SpoonException(getStepDescription(step, e.getMessage(), parameters), e);
 		} else if (Launcher.LOGGER.isTraceEnabled()) {
 			//log expected CCE ... there might be some unexpected too!
 			Launcher.LOGGER.trace(e);
@@ -135,15 +135,23 @@ public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
 
 	private void log(CurrentStep step, String message, Object... parameters) {
 		if (isLogging() && Launcher.LOGGER.isInfoEnabled()) {
-			StringBuilder sb = new StringBuilder("Step ");
-			sb.append(step.getName()).append(") ");
-			sb.append(message);
-			for (int i = 0; i < parameters.length; i++) {
-				sb.append("\nParameter ").append(i + 1).append(") ");
-				sb.append(parameters[i]);
-			}
-			Launcher.LOGGER.info(sb.toString());
+			Launcher.LOGGER.info(getStepDescription(step, message, parameters));
 		}
+	}
+
+	private String getStepDescription(CurrentStep step, String message, Object... parameters) {
+		StringBuilder sb = new StringBuilder("Step ");
+		sb.append(step.getName()).append(") ");
+		sb.append(message);
+		for (int i = 0; i < parameters.length; i++) {
+			sb.append("\nParameter ").append(i + 1).append(") ");
+			if (parameters[i] != null) {
+				sb.append(parameters[i].getClass().getSimpleName());
+				sb.append(": ");
+			}
+			sb.append(parameters[i]);
+		}
+		return sb.toString();
 	}
 
 	/**
@@ -208,6 +216,11 @@ public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
 
 		private AbstractStep getStep() {
 			return CtBaseQueryImpl.this.getStep(stepIdx - 1);
+		}
+
+		@Override
+		public String toString() {
+			return "Step " + getName();
 		}
 	}
 
