@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -27,6 +28,7 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -41,6 +43,7 @@ public class TemplateTest {
 	public void testTemplateInheritance() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.getFactory();
+		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
@@ -66,7 +69,17 @@ public class TemplateTest {
 		parameter.setSimpleName("x");
 		parameter.setType(factory.Type().createReference(int.class));
 		template.params.add(parameter);
-		Substitution.insertAll(subc, template);
+
+		// templating the invocation
+		template.invocation = factory.Code().createInvocation(null, addedMethod.getReference());
+
+		// templating the foreach
+		template.intValues = new CtExpression[2];
+		template.intValues[0] = factory.Code().createLiteral(0);
+		template.intValues[1] = factory.Code().createLiteral(1);
+
+		// we apply the extension template to subc
+		template.apply(subc);
 
 		CtMethod<?> addedMethod2 = subc.getElements(
 				new NameFilter<CtMethod<?>>("toBeOverriden")).get(0);
@@ -83,6 +96,23 @@ public class TemplateTest {
 
 		// contract: nested types of the templates are copied
 		assertEquals(1, subc.getNestedTypes().size());
+
+		// contract: variable are renamed
+		assertEquals("java.util.List newVarName = null", methodWithTemplatedParameters.getBody().getStatement(0).toString());
+
+		// contract: types are replaced by other types
+		assertEquals("java.util.LinkedList l = null", methodWithTemplatedParameters.getBody().getStatement(1).toString());
+
+		// contract: casts are replaced by substitution types
+		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))", methodWithTemplatedParameters.getBody().getStatement(2).toString());
+
+		// contract: invocations are replaced by actual invocations
+		assertEquals("toBeOverriden()", methodWithTemplatedParameters.getBody().getStatement(3).toString());
+
+		// contract: foreach are inlined
+		CtBlock templatedForEach = methodWithTemplatedParameters.getBody().getStatement(4);
+		assertEquals("java.lang.System.out.println(0)", templatedForEach.getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)", templatedForEach.getStatement(1).toString());
 	}
 
 	@Test

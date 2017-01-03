@@ -96,7 +96,7 @@ Using method `apply()` enables to get a new block.
 Using method `apply()` enables to get a new expression.  The core template method must be called `expression` and only contain a return with the expression to be templated.
 
 #### Subclassing `ExtensionTemplate`
-Using method `apply()` enables to get a new class where:
+Using method `apply()` enables to get a new class where all possible templating in all methods. In addition, the following class level transformations are made:
 
 1) methods and field of the templates are injected in the target class
 
@@ -126,7 +126,7 @@ Substitution.insertAll(aCtClass, t);
 
 ```
 
-3) method parameters
+3) method parameters are replaced
 
 ```java
 class ATemplate3 extends ExtensionTemplate {
@@ -171,6 +171,41 @@ public class TryCatchOutOfBoundTemplate extends BlockTemplate {
 }
 ```
 
+Similarly, templated invocations require to declare a template parameter
+
+```java
+@Parameter
+CtInvocation invocation;
+```
+and then all `invocation.S()` will be replaced by the actual invocation.
+
+#### Inlining foreach expressions
+
+Foreach expressions can be inlined. They have to be declared as follows:
+```java
+@Parameter
+CtExpression[] intValues;
+...
+template.intValues = new CtExpression[2];
+template.intValues[0] = factory.Code().createLiteral(0);
+template.intValues[1] = factory.Code().createLiteral(1);
+```
+
+and then,
+
+```java
+for(Object x : intValues) {
+         System.out.println(x);
+}
+```
+is transformed into:
+
+```java
+{
+    java.lang.System.out.println(0);
+    java.lang.System.out.println(1);
+}
+```
 #### Literal template Parameters
 
 For literals, Spoon provides developers with  *literal template parameters*. When the parameter is known to
