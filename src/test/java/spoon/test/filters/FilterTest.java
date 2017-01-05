@@ -611,7 +611,7 @@ public class FilterTest {
 
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
-		CtQueryImpl q = (CtQueryImpl)cls.map((CtClass<?> c, CtConsumer<String> out)->out.accept(c.getSimpleName()));
+		CtQueryImpl q = (CtQueryImpl)cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
 		q.forEach((String name)->{
 			context.count++;
 			assertEquals(cls.getSimpleName(), name);
@@ -644,12 +644,12 @@ public class FilterTest {
 		
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
-		CtBaseQuery q = new CtBaseQueryImpl().map((CtClass<?> c, CtConsumer<String> out)->out.accept(c.getSimpleName()));
-		q.apply(cls, (String name)->{
+		CtBaseQuery q = new CtBaseQueryImpl().map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
+		q.evaluate(cls, (String name)->{
 			context.count++;
 			assertEquals(cls.getSimpleName(), name);
 		});
-		q.apply(cls2, (String name)->{
+		q.evaluate(cls2, (name)->{
 			context.count++;
 			assertEquals(cls2.getSimpleName(), name);
 		});
@@ -670,7 +670,7 @@ public class FilterTest {
 		
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtBaseQueryImpl allChildPublicClasses = new CtBaseQueryImpl().filterChildren((CtClass clazz)->clazz.hasModifier(ModifierKind.PUBLIC));
-		launcher.getFactory().Package().getRootPackage().map((in,out)->allChildPublicClasses.apply(in,out)).forEach((CtElement clazz)->{
+		launcher.getFactory().Package().getRootPackage().map((in,out)->allChildPublicClasses.evaluate(in,out)).forEach((CtElement clazz)->{
 			context.count++;
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));

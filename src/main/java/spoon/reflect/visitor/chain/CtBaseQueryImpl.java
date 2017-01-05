@@ -40,7 +40,7 @@ public class CtBaseQueryImpl implements CtBaseQuery {
 	}
 
 	@Override
-	public <I, R> CtBaseQueryImpl map(CtConsumableFunction<I, R> code) {
+	public <I> CtBaseQueryImpl map(CtConsumableFunction<I> code) {
 		steps.add(new LazyFunctionWrapper(code));
 		return this;
 	}
@@ -59,7 +59,7 @@ public class CtBaseQueryImpl implements CtBaseQuery {
 	}
 
 	@Override
-	public <I, R> void apply(I input, CtConsumer<R> outputConsumer) {
+	public <I, R> void evaluate(I input, CtConsumer<R> outputConsumer) {
 		new CurrentStep(outputConsumer).accept(input);
 	}
 
@@ -254,12 +254,12 @@ public class CtBaseQueryImpl implements CtBaseQuery {
 	}
 
 	private class LazyFunctionWrapper extends AbstractStep {
-		private final CtConsumableFunction<Object, Object> fnc;
+		private final CtConsumableFunction<Object> fnc;
 
 		@SuppressWarnings("unchecked")
-		LazyFunctionWrapper(CtConsumableFunction<?, ?> fnc) {
+		LazyFunctionWrapper(CtConsumableFunction<?> fnc) {
 			super();
-			this.fnc = (CtConsumableFunction<Object, Object>) fnc;
+			this.fnc = (CtConsumableFunction<Object>) fnc;
 		}
 
 		@Override
@@ -328,7 +328,7 @@ public class CtBaseQueryImpl implements CtBaseQuery {
 	/**
 	 * a step which scans all children of input element and only elements matching filter go to the next step
 	 */
-	private class ChildrenFilteringFunction extends CtScanner implements CtConsumableFunction<CtElement, CtElement> {
+	private class ChildrenFilteringFunction extends CtScanner implements CtConsumableFunction<CtElement> {
 
 		protected CurrentStep next;
 		private Filter<CtElement> filter;
@@ -339,7 +339,7 @@ public class CtBaseQueryImpl implements CtBaseQuery {
 		}
 
 		@Override
-		public void apply(CtElement input, CtConsumer<CtElement> outputConsumer) {
+		public void apply(CtElement input, CtConsumer<Object> outputConsumer) {
 			next = (CurrentStep) (CtConsumer<?>) outputConsumer;
 			scan(input);
 		}

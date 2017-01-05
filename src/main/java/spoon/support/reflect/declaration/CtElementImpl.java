@@ -260,7 +260,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <I, R> CtQuery map(CtConsumableFunction<I, R> queryStep) {
+	public <I> CtQuery map(CtConsumableFunction<I> queryStep) {
 		return new CtQueryImpl(this).map(queryStep);
 	}
 

@@ -19,15 +19,15 @@ package spoon.reflect.visitor.chain;
 /**
  * Functional interface, which represents a algorithm,
  * which returns one or more results by calling of output.accept(oneResult)<br>
- * It is used by {@link CtQueryable#map(CtLazyFunction)} to efficiently implement CtScanner based queries.
+ * It is used by {@link CtQueryable#map(CtConsumableFunction)} to efficiently implement CtScanner based queries.
  *
  * @param <T> the type of the input to the function
  * @param <R> the type of the result produced by this function
  */
-public interface CtConsumableFunction<T, R> {
+public interface CtConsumableFunction<T> {
 	/**
 	 * @param input the input of the function
 	 * @param outputConsumer the consumer which accepts the results of this function.
 	 */
-	void apply(T input, CtConsumer<R> outputConsumer);
+	void apply(T input, CtConsumer<Object> outputConsumer);
 }

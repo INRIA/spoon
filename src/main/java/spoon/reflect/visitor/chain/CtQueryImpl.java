@@ -80,7 +80,7 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	@Override
-	public <I, R> CtQueryImpl map(CtConsumableFunction<I, R> function) {
+	public <I> CtQueryImpl map(CtConsumableFunction<I> function) {
 		query.map(function);
 		return this;
 	}
@@ -97,10 +97,9 @@ public class CtQueryImpl implements CtQuery {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <R> void forEach(CtConsumer<R> consumer) {
 		for (Object input : inputs) {
-			query.apply(input, (CtConsumer<Object>) consumer);
+			query.evaluate(input, consumer);
 		}
 	}
 
