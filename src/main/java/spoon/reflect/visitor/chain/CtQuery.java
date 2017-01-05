@@ -37,11 +37,22 @@ import java.util.List;
  * It makes sense to evaluate this query only once, because the input element is constant.<br>
  * A CtQuery is lazily evaluated once {{@link #list()}} or {@link #forEach(CtConsumer)} are called.
  * Usually a new query is created each time when one needs to query something.
- * If you need to reuse a query instance several times, for example in a loop, then use {@link CtBaseQuery}.
+ * If you need to reuse a query instance several times, for example in a loop, then use {@link CtQuery#setInput(Object)}
+ * to bound this query with different input.
  *
  * @param &lt;O> the type of the element produced by this query
  */
 public interface CtQuery extends CtQueryable.Step<CtQuery> {
+
+	/**
+	 * sets input of the query. If the query is created by {@link CtElement#map} or {@link CtElement#filterChildren(Filter)},
+	 * then such query is already bound the input element.
+	 * Next call of {@link #setInput(Object...)} will reset current binding ans use new one.
+	 *
+	 * @param input
+	 * @return this to support fluent API
+	 */
+	CtQueryImpl setInput(Object... input);
 
 	/**
 	 * actually evaluates the query and for each produced outputElement calls `consumer.accept(outputElement)`
