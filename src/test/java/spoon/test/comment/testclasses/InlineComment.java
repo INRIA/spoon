@@ -7,6 +7,7 @@ package spoon.test.comment.testclasses;
 // comment class
 public class InlineComment {
 	// Comment Field
+	// comment field 2
 	private int field // comment in field
 			= 10;
 
@@ -91,6 +92,7 @@ public class InlineComment {
 			1, // comment after array value
 			2,
 			3
+				// last comment at the end of array
 		};
 		// comment return
 		return;

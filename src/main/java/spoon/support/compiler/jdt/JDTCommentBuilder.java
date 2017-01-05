@@ -142,6 +142,7 @@ class JDTCommentBuilder {
 	private CtElement addCommentToNear(final CtComment comment, final Collection<CtElement> elements) {
 		CtElement best = null;
 		int smallDistance = Integer.MAX_VALUE;
+
 		for (CtElement element : elements) {
 			if (element.getPosition() == null) {
 				continue;
@@ -157,7 +158,11 @@ class JDTCommentBuilder {
 			if (isAfter) {
 				distance = Math.abs(element.getPosition().getSourceEnd() - comment.getPosition().getSourceStart());
 			}
-			if (distance < smallDistance && (!isAfter || element.getPosition().getEndLine() == comment.getPosition().getLine())) {
+
+			int elementEndLine = element.getPosition().getEndLine();
+			int commentLine = comment.getPosition().getLine();
+
+			if (distance < smallDistance && (!isAfter || elementEndLine == commentLine)) {
 				best = element;
 				smallDistance = distance;
 			}

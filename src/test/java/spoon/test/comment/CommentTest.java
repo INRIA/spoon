@@ -111,7 +111,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(59, comments.size());
+		assertEquals(61, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -128,9 +128,10 @@ public class CommentTest {
 		assertEquals(createFakeComment(f, "comment class"), type.getComments().get(1));
 
 		CtField<?> field = type.getField("field");
-		assertEquals(2, field.getComments().size());
+		assertEquals(3, field.getComments().size());
 		assertEquals(createFakeComment(f, "Comment Field"), field.getComments().get(0));
 		assertEquals("// Comment Field" + newLine
+				+ "// comment field 2" + newLine
 				+ "// comment in field" + newLine
 				+ "private int field = 10;", field.toString());
 
@@ -256,9 +257,12 @@ public class CommentTest {
 				+ "new java.lang.Double((j / ((double) (i - 1))))", ctLocalVariable1.toString());
 
 		CtNewArray ctNewArray = (CtNewArray) ((CtLocalVariable) m1.getBody().getStatement(11)).getDefaultExpression();
+		assertEquals(createFakeComment(f, "last comment at the end of array"), ctNewArray.getComments().get(0));
+
 		CtElement arrayValue = (CtElement) ctNewArray.getElements().get(0);
 		assertEquals(createFakeComment(f, "comment before array value"), arrayValue.getComments().get(0));
 		assertEquals(createFakeComment(f, "comment after array value"), arrayValue.getComments().get(1));
+
 
 		CtReturn ctReturn = m1.getBody().getStatement(12);
 		assertEquals(createFakeComment(f, "comment return"), ctReturn.getComments().get(0));
@@ -634,6 +638,9 @@ public class CommentTest {
 
 		type = (CtClass<?>) f.Type().get(Comment2.class);
 		comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
-		assertEquals(1, comments.size());
+		assertEquals(2, comments.size());
+
+		CtComment commentD = comments.get(1);
+		assertEquals("D", commentD.getContent());
 	}
 }
