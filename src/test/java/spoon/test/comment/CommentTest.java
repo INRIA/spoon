@@ -111,7 +111,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(59, comments.size());
+		assertEquals(60, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -259,6 +259,7 @@ public class CommentTest {
 		CtElement arrayValue = (CtElement) ctNewArray.getElements().get(0);
 		assertEquals(createFakeComment(f, "comment before array value"), arrayValue.getComments().get(0));
 		assertEquals(createFakeComment(f, "comment after array value"), arrayValue.getComments().get(1));
+		assertEquals(createFakeComment(f, "// last comment at the end of array"), arrayValue.getComments().get(2));
 
 		CtReturn ctReturn = m1.getBody().getStatement(12);
 		assertEquals(createFakeComment(f, "comment return"), ctReturn.getComments().get(0));
@@ -634,6 +635,9 @@ public class CommentTest {
 
 		type = (CtClass<?>) f.Type().get(Comment2.class);
 		comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
-		assertEquals(1, comments.size());
+		assertEquals(2, comments.size());
+
+		CtComment commentD = comments.get(1);
+		assertEquals("D", commentD.getContent());
 	}
 }

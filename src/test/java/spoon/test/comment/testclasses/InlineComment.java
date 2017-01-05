@@ -91,6 +91,7 @@ public class InlineComment {
 			1, // comment after array value
 			2,
 			3
+			// last comment at the end of array
 		};
 		// comment return
 		return;
