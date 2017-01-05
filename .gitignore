@@ -26,3 +26,6 @@ maven-eclipse.xml
 spooned-classes/
 spooned/
 doc/_jekyll/_site/
+
+# Nodejs
+node_modules/
