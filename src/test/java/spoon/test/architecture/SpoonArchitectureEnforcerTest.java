@@ -54,7 +54,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/main/java/");
 		spoon.buildModel();
 
-		List<CtConstructorCall> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
+		List<Object> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
 			@Override
 			public boolean matches(CtConstructorCall element) {
 				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().size() == 0;

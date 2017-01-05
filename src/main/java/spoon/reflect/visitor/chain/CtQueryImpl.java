@@ -30,7 +30,7 @@ import spoon.reflect.visitor.Filter;
  *
  * @param <O> - the type of element which is produced by the last step of the query
  */
-public class CtQueryImpl<O> implements CtQuery<O> {
+public class CtQueryImpl implements CtQuery {
 
 	/**
 	 * All the constant inputs of this query.
@@ -40,12 +40,11 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	/**
 	 * The {@link CtBaseQuery} which provides low level query behavior for this query.
 	 */
-	private final CtBaseQueryImpl<Object> query;
+	private final CtBaseQueryImpl query;
 
-	@SuppressWarnings("unchecked")
 	public <T> CtQueryImpl(T input) {
-		query = new CtBaseQueryImpl<>();
-		setInput((O) input);
+		query = new CtBaseQueryImpl();
+		setInput(input);
 	}
 
 	/**
@@ -60,7 +59,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	 * @param input
 	 * @return this to support fluent API
 	 */
-	public CtQuery<O> setInput(O input) {
+	public CtQueryImpl setInput(Object input) {
 		if (inputs != null) {
 			inputs.clear();
 		}
@@ -72,7 +71,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	 * @param input
 	 * @return this to support fluent API
 	 */
-	public CtQuery<O> addInput(O input) {
+	public CtQueryImpl addInput(Object input) {
 		if (this.inputs == null) {
 			this.inputs = new ArrayList<>();
 		}
@@ -80,25 +79,22 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <R> CtQuery<R> map(CtLazyFunction<?, R> queryStep) {
-		query.map(queryStep);
-		return (CtQuery<R>) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <I, R> CtQuery<R> map(CtFunction<I, R> function) {
+	public <I, R> CtQueryImpl map(CtConsumableFunction<I, R> function) {
 		query.map(function);
-		return (CtQuery<R>) this;
+		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends CtElement> CtQuery<T> filterChildren(Filter<T> filter) {
+	public <I, R> CtQueryImpl map(CtFunction<I, R> function) {
+		query.map(function);
+		return this;
+	}
+
+	@Override
+	public <T extends CtElement> CtQueryImpl filterChildren(Filter<T> filter) {
 		query.filterChildren(filter);
-		return (CtQuery<T>) this;
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -108,25 +104,33 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 		}
 	}
 
-	public List<O> list() {
-		final List<O> list = new ArrayList<>();
-		forEach(new CtConsumer<O>() {
+	@Override
+	public List<Object> list() {
+		return list(Object.class);
+	}
+
+	@Override
+	public <R> List<R> list(Class<R> itemClass) {
+		final List<R> list = new ArrayList<>();
+		forEach(new CtConsumer<R>() {
 			@Override
-			public void accept(O out) {
-				list.add(out);
+			public void accept(R out) {
+				if (out != null && itemClass.isAssignableFrom(out.getClass())) {
+					list.add(out);
+				}
 			}
 		});
 		return list;
 	}
 
 	@Override
-	public CtQuery<O> name(String name) {
+	public CtQueryImpl name(String name) {
 		query.name(name);
 		return this;
 	}
 
 	@Override
-	public CtQuery<O> failurePolicy(QueryFailurePolicy policy) {
+	public CtQueryImpl failurePolicy(QueryFailurePolicy policy) {
 		query.failurePolicy(policy);
 		return this;
 	}
@@ -138,7 +142,7 @@ public class CtQueryImpl<O> implements CtQuery<O> {
 	 * because it causes StackOverflow.
 	 * Reason: Query chains are used internally during writing of log messages too. So it would write logs for ever...
 	 */
-	public CtQuery<O> logging(boolean logging) {
+	public CtQueryImpl logging(boolean logging) {
 		query.logging(logging);
 		return this;
 	}

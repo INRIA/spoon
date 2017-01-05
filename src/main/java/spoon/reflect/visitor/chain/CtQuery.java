@@ -30,7 +30,7 @@ import java.util.List;
  * The main methods are:
  * <ul>
  * <li> {@link #map(CtFunction))} - uses a lambda expression to return any model elements that are directly accessible from an input element.
- * <li> {@link #map(CtLazyFunction))} -implementations of {@link CtLazyFunction} provides a complex queries.
+ * <li> {@link #map(CtConsumableFunction))} -implementations of {@link CtConsumableFunction} provides a complex queries.
  * <li> {@link #filterChildren(Filter))} - uses {@link Filter} instances to filter children of an element
  * <li> {@link #list()} - to evaluate the query and return a list of elements produced by this query.
  * </ul>
@@ -41,7 +41,7 @@ import java.util.List;
  *
  * @param &lt;O> the type of the element produced by this query
  */
-public interface CtQuery<O> extends CtQueryable {
+public interface CtQuery extends CtQueryable.Step<CtQuery> {
 
 	/**
 	 * actually evaluates the query and for each produced outputElement calls `consumer.accept(outputElement)`
@@ -52,24 +52,12 @@ public interface CtQuery<O> extends CtQueryable {
 	 * actually evaluates the query and returns all the produced elements collected in a List
 	 * @return the list of elements collected by the query.
 	 */
-	List<O> list();
-
+	List<Object> list();
 	/**
-	 * Defines whether this query will throw {@link ClassCastException}
-	 * when the output of the previous step cannot be cast to type of input of next step.
-	 * The default value is {@link QueryFailurePolicy#FAIL}<br>
-	 *
-	 * Note: The {@link CtQueryable#filterChildren(Filter)} step never throws {@link ClassCastException}
-	 *
-	 * @param policy the policy
-	 * @return this to support fluent API
+	 * actually evaluates the query and returns these produced elements as a List,
+	 * which are assignable to `itemClass`
+	 * @return the list of elements collected by the query.
 	 */
-	CtQuery<O> failurePolicy(QueryFailurePolicy policy);
+	<R> List<R> list(Class<R> itemClass);
 
-	/**
-	 * Sets the name of current query, to identify the current step during debugging of a query
-	 * @param name
-	 * @return this to support fluent API
-	 */
-	CtQuery<O> name(String name);
 }

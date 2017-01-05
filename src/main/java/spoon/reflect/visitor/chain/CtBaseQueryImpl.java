@@ -29,7 +29,7 @@ import spoon.reflect.visitor.Filter;
 /**
  * Contains the default implementation of the generic {@link CtBaseQuery} methods
  */
-public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
+public class CtBaseQueryImpl implements CtBaseQuery {
 
 	private List<AbstractStep> steps = new ArrayList<>();
 
@@ -39,44 +39,43 @@ public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
 	public CtBaseQueryImpl() {
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <P> CtBaseQuery<P> map(CtLazyFunction<?, P> code) {
+	public <I, R> CtBaseQueryImpl map(CtConsumableFunction<I, R> code) {
 		steps.add(new LazyFunctionWrapper(code));
-		return (CtBaseQuery<P>) this;
+		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <I, R> CtBaseQuery<R> map(CtFunction<I, R> function) {
+	public <I, R> CtBaseQueryImpl map(CtFunction<I, R> function) {
 		steps.add(new FunctionWrapper(function));
-		return (CtBaseQuery<R>) this;
+		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends CtElement> CtBaseQuery<T> filterChildren(Filter<T> filter) {
+	public <R extends CtElement> CtBaseQueryImpl filterChildren(Filter<R> filter) {
 		map(new ChildrenFilteringFunction(filter));
 		stepFailurePolicy(QueryFailurePolicy.IGNORE);
-		return (CtBaseQuery<T>) this;
+		return this;
 	}
 
 	@Override
-	public void apply(Object input, CtConsumer<O> outputConsumer) {
+	public <I, R> void apply(I input, CtConsumer<R> outputConsumer) {
 		new CurrentStep(outputConsumer).accept(input);
 	}
 
 	@Override
-	public CtBaseQuery<O> name(String name) {
+	public CtBaseQueryImpl name(String name) {
 		getLastStep().setName(name);
 		return this;
 	}
+
 	@Override
-	public CtBaseQuery<O> failurePolicy(QueryFailurePolicy policy) {
+	public CtBaseQueryImpl failurePolicy(QueryFailurePolicy policy) {
 		failurePolicy = policy;
 		return this;
 	}
-	public CtBaseQuery<O> stepFailurePolicy(QueryFailurePolicy policy) {
+
+	public CtBaseQueryImpl stepFailurePolicy(QueryFailurePolicy policy) {
 		getLastStep().setLocalFailurePolicy(policy);
 		return this;
 	}
@@ -87,16 +86,9 @@ public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
 	 * because it causes StackOverflow.
 	 * Reason: Query chains are used internally during writing of log messages too. So it would write logs for ever...
 	 */
-	public CtBaseQuery<O> logging(boolean logging) {
+	public CtBaseQueryImpl logging(boolean logging) {
 		this.logging = logging;
 		return this;
-	}
-
-	/**
-	 * @return number of steps of this query
-	 */
-	public int getLength() {
-		return steps.size();
 	}
 
 	private AbstractStep getStep(int stepIdx) {
@@ -262,12 +254,12 @@ public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
 	}
 
 	private class LazyFunctionWrapper extends AbstractStep {
-		private final CtLazyFunction<Object, Object> fnc;
+		private final CtConsumableFunction<Object, Object> fnc;
 
 		@SuppressWarnings("unchecked")
-		LazyFunctionWrapper(CtLazyFunction<?, ?> fnc) {
+		LazyFunctionWrapper(CtConsumableFunction<?, ?> fnc) {
 			super();
-			this.fnc = (CtLazyFunction<Object, Object>) fnc;
+			this.fnc = (CtConsumableFunction<Object, Object>) fnc;
 		}
 
 		@Override
@@ -336,7 +328,7 @@ public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
 	/**
 	 * a step which scans all children of input element and only elements matching filter go to the next step
 	 */
-	private class ChildrenFilteringFunction extends CtScanner implements CtLazyFunction<CtElement, CtElement> {
+	private class ChildrenFilteringFunction extends CtScanner implements CtConsumableFunction<CtElement, CtElement> {
 
 		protected CurrentStep next;
 		private Filter<CtElement> filter;
@@ -346,7 +338,6 @@ public class CtBaseQueryImpl<O> implements CtBaseQuery<O> {
 			this.filter = (Filter<CtElement>) filter;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void apply(CtElement input, CtConsumer<CtElement> outputConsumer) {
 			next = (CurrentStep) (CtConsumer<?>) outputConsumer;
