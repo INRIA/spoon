@@ -368,7 +368,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtNewArray(CtNewArray<T> e) {
-				addCommentToNear(comment, new ArrayList<>(e.getElements()));
+				addCommentToNear(comment, new ArrayList<CtElement>(e.getElements()));
 				try {
 					comment.getParent();
 				} catch (ParentNotInitializedException ex) {
