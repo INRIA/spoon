@@ -6,6 +6,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
@@ -14,6 +15,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.test.position.testclasses.Foo;
 import spoon.test.position.testclasses.FooClazz;
 import spoon.test.position.testclasses.FooClazz2;
 import spoon.test.position.testclasses.FooField;
@@ -31,6 +33,7 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class PositionTest {
 
@@ -363,6 +366,16 @@ public class PositionTest {
 		assertEquals(-1, s.getLine());
 		assertEquals("(unknown file)", s.toString());
 		assertTrue(s.hashCode() > 0); // no NPE
+	}
+
+	@Test
+	public void defaultConstructorPositionTest() throws Exception {
+		CtClass<Foo> aClass = (CtClass<Foo>) buildClass(Foo.class);
+		CtConstructor<Foo> defaultConstructor = aClass.getConstructor();
+		assertEquals(SourcePosition.NOPOSITION, defaultConstructor.getPosition());
+		CtStatement implicitSuperCall = defaultConstructor.getBody().getStatement(0);
+		assertTrue(implicitSuperCall.isImplicit());
+		assertEquals(SourcePosition.NOPOSITION, implicitSuperCall.getPosition());
 	}
 
 }
