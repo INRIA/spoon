@@ -70,6 +70,11 @@ public interface CtQueryable<T> {
 	 */
 	<R extends CtElement> T filterChildren(Filter<R> filter);
 
+	/**
+	 * Defines helper methods of query step
+	 *
+	 * @param <T> the type of returned query
+	 */
 	interface Step<T> extends CtQueryable<T> {
 		/**
 		 * Defines whether this query will throw {@link ClassCastException}

@@ -42,7 +42,7 @@ public class CtQueryImpl implements CtQuery {
 	 */
 	private final CtBaseQueryImpl query;
 
-	public <T> CtQueryImpl(T input) {
+	public CtQueryImpl(Object... input) {
 		query = new CtBaseQueryImpl();
 		setInput(input);
 	}
@@ -54,12 +54,8 @@ public class CtQueryImpl implements CtQuery {
 		return inputs == null ? Collections.emptyList() : inputs;
 	}
 
-	/**
-	 * sets list of elements which will be used as input of the query
-	 * @param input
-	 * @return this to support fluent API
-	 */
-	public CtQueryImpl setInput(Object input) {
+	@Override
+	public CtQueryImpl setInput(Object... input) {
 		if (inputs != null) {
 			inputs.clear();
 		}
@@ -71,29 +67,13 @@ public class CtQueryImpl implements CtQuery {
 	 * @param input
 	 * @return this to support fluent API
 	 */
-	public CtQueryImpl addInput(Object input) {
+	public CtQueryImpl addInput(Object... input) {
 		if (this.inputs == null) {
 			this.inputs = new ArrayList<>();
 		}
-		this.inputs.add(input);
-		return this;
-	}
-
-	@Override
-	public <I> CtQueryImpl map(CtConsumableFunction<I> function) {
-		query.map(function);
-		return this;
-	}
-
-	@Override
-	public <I, R> CtQueryImpl map(CtFunction<I, R> function) {
-		query.map(function);
-		return this;
-	}
-
-	@Override
-	public <T extends CtElement> CtQueryImpl filterChildren(Filter<T> filter) {
-		query.filterChildren(filter);
+		for (Object in : input) {
+			this.inputs.add(in);
+		}
 		return this;
 	}
 
@@ -120,6 +100,24 @@ public class CtQueryImpl implements CtQuery {
 			}
 		});
 		return list;
+	}
+
+	@Override
+	public <I> CtQueryImpl map(CtConsumableFunction<I> function) {
+		query.map(function);
+		return this;
+	}
+
+	@Override
+	public <I, R> CtQueryImpl map(CtFunction<I, R> function) {
+		query.map(function);
+		return this;
+	}
+
+	@Override
+	public <T extends CtElement> CtQueryImpl filterChildren(Filter<T> filter) {
+		query.filterChildren(filter);
+		return this;
 	}
 
 	@Override

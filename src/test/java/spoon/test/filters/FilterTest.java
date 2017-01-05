@@ -618,7 +618,7 @@ public class FilterTest {
 
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
-		CtQueryImpl q = (CtQueryImpl)cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
+		CtQuery q = cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
 		q.forEach((String name)->{
 			context.count++;
 			assertEquals(cls.getSimpleName(), name);
