@@ -24,7 +24,7 @@ package spoon.reflect.visitor.chain;
  * @param <T> the type of the input to the function
  * @param <R> the type of the result produced by this function
  */
-public interface CtLazyFunction<T, R> {
+public interface CtConsumableFunction<T, R> {
 	/**
 	 * @param input the input of the function
 	 * @param outputConsumer the consumer which accepts the results of this function.
