@@ -3,13 +3,18 @@ package spoon.test.architecture;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -45,6 +50,48 @@ public class SpoonArchitectureEnforcerTest {
 			}
 		}
 
+	}
+
+	@Test
+	public void testFactorySubFactory() throws Exception {
+		// contract:: all subfactory methods must also be in the main factory
+		// this is very important for usability and discoverability
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/main/java/spoon/reflect/factory");
+		class SanityCheck { int val = 0; };
+		SanityCheck sanityCheck = new SanityCheck();
+		launcher.addProcessor(new AbstractManualProcessor() {
+			@Override
+			public void process() {
+				CtType factoryImpl = getFactory().Interface().get(Factory.class);
+				CtPackage factoryPackage = getFactory().Package().getOrCreate("spoon.reflect.factory");
+				CtInterface itf = getFactory().Interface().create("MegaFactoryItf");
+				CtClass impl = getFactory().Class().create("MegaFactory");
+				for (CtType<?> t : factoryPackage.getTypes()) {
+					if (t.getSimpleName().startsWith("Mega")) continue; //
+					for (CtMethod<?> m : t.getMethods()) {
+						// we only consider factory methods
+						if (!m.getSimpleName().startsWith("create")) continue;
+
+						// too generic, what should we create??
+						if (m.getSimpleName().equals("create")) continue;
+
+						// too generic, is it a fieldref? an execref? etc
+						if (m.getSimpleName().equals("createReference"))
+							continue;
+
+						if (m.getModifiers().contains(ModifierKind.ABSTRACT)) continue;
+
+						sanityCheck.val++;
+
+						// the core assertion
+						assertTrue(factoryImpl.hasMethod(m));
+					}
+				}
+			}
+		});
+		launcher.run();
+		assertTrue(sanityCheck.val > 100);
 	}
 
 	@Test
