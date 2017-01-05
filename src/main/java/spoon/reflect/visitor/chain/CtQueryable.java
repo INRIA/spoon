@@ -53,7 +53,7 @@ public interface CtQueryable<T> {
 	 * @param queryStep
 	 * @return the created QueryStep, which is the new last step of the query
 	 */
-	<I, R> T map(CtConsumableFunction<I, R> queryStep);
+	<I> T map(CtConsumableFunction<I> queryStep);
 
 	/**
 	 * Recursively scans all children elements of an input element.

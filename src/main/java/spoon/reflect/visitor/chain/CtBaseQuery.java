@@ -49,5 +49,5 @@ public interface CtBaseQuery extends CtQueryable.Step<CtBaseQuery> {
 	 * @param input represents the input element of the first mapping function of this query
 	 * @param outputConsumer method accept of the outputConsumer is called for each element produced by last mapping function of this query
 	 */
-	<I, R> void apply(I input, CtConsumer<R> outputConsumer);
+	<I, R> void evaluate(I input, CtConsumer<R> outputConsumer);
 }
