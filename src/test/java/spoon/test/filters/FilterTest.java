@@ -44,8 +44,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtQueryImpl;
-import spoon.reflect.visitor.chain.CtBaseQuery;
-import spoon.reflect.visitor.chain.CtBaseQueryImpl;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -651,7 +649,7 @@ public class FilterTest {
 		
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
-		CtBaseQuery q = new CtBaseQueryImpl().map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
+		CtQueryImpl q = new CtQueryImpl().map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
 		q.evaluate(cls, (String name)->{
 			context.count++;
 			assertEquals(cls.getSimpleName(), name);
@@ -676,7 +674,7 @@ public class FilterTest {
 		Context context = new Context();
 		
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
-		CtBaseQueryImpl allChildPublicClasses = new CtBaseQueryImpl().filterChildren((CtClass clazz)->clazz.hasModifier(ModifierKind.PUBLIC));
+		CtQueryImpl allChildPublicClasses = new CtQueryImpl().filterChildren((CtClass clazz)->clazz.hasModifier(ModifierKind.PUBLIC));
 		launcher.getFactory().Package().getRootPackage().map((in,out)->allChildPublicClasses.evaluate(in,out)).forEach((CtElement clazz)->{
 			context.count++;
 			assertTrue(clazz instanceof CtClass);

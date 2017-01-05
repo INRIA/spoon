@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor.chain;
 
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 
 import java.util.List;
@@ -70,5 +71,4 @@ public interface CtQuery extends CtQueryable.Step<CtQuery> {
 	 * @return the list of elements collected by the query.
 	 */
 	<R> List<R> list(Class<R> itemClass);
-
 }
