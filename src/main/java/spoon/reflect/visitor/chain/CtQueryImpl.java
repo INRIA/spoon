@@ -109,7 +109,7 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	@Override
-	public <R> List<R> list(Class<R> itemClass) {
+	public <R> List<R> list(final Class<R> itemClass) {
 		final List<R> list = new ArrayList<>();
 		forEach(new CtConsumer<R>() {
 			@Override
