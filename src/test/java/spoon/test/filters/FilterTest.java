@@ -57,6 +57,7 @@ import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.LineFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodFilter;
+import spoon.reflect.visitor.filter.OverriddenMethodQuery;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
@@ -340,6 +341,7 @@ public class FilterTest {
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
 
 		assertEquals(0, Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aClass.getMethodsByName("prepare").get(0))).size());
+		assertEquals(0, aClass.getMethodsByName("prepare").get(0).map(new OverriddenMethodQuery()).list().size());
 	}
 
 	@Test
@@ -378,7 +380,8 @@ public class FilterTest {
 		OverriddenMethodFilter filter = new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0));
 		List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), filter);
 		assertEquals(0, overridingMethods.size());
-		assertEquals(0, overridingMethods.size());
+		List<CtMethod> overridingMethods2 = aITostada.getMethodsByName("make").get(0).map(new OverriddenMethodQuery()).list(CtMethod.class);
+		assertEquals(0, overridingMethods2.size());
 	}
 
 	@Test
@@ -492,12 +495,10 @@ public class FilterTest {
 		CtQuery l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
 		
 		assertEquals(0, context.counter);
-		// map with java8 lambda
-		l_qv.map(cls->{
+		l_qv.forEach(cls->{
 			assertTrue(cls instanceof CtClass);
 			context.counter++;
-			return true;
-		}).list();
+		});
 		assertTrue(context.counter>0);
 	}
 	
@@ -509,6 +510,7 @@ public class FilterTest {
 		launcher.run();
 		
 		class Context {
+			CtMethod<?> method;
 			int count = 0;
 		}
 		
@@ -516,8 +518,13 @@ public class FilterTest {
 
 		launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<CtMethod<?>>(CtMethod.class))
 		// using a lazily-evaluated lambda
-		.map((CtMethod<?> method) -> {context.count++;return method;})
-		.list(); // actual evaluation
+		.map((CtMethod<?> method) -> {context.method = method;return method;})
+		.map(new OverriddenMethodQuery())
+		// actual evaluation
+		.forEach((CtMethod<?> method) -> {
+			assertTrue(context.method.getReference().isOverriding(method.getReference()));
+			context.count++;
+		});
 		assertTrue(context.count>0);
 	}
 	
@@ -584,7 +591,7 @@ public class FilterTest {
 		assertEquals(cls.getParent(), cls.map((CtClass<?> c)->c.getParent()).list().get(0));
 	}
 	@Test
-	public void testElementMapLazyFunction() throws Exception {
+	public void testElementMapConsumableFunction() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
