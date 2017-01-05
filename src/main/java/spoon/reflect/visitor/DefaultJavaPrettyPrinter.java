@@ -1188,7 +1188,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@SuppressWarnings("rawtypes")
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
-
+		elementPrinterHelper.writeComment(newArray, CommentOffset.BEFORE);
 		boolean isNotInAnnotation;
 		try {
 			isNotInAnnotation = (newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null);
@@ -1244,8 +1244,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					elementPrinterHelper.writeComment(e, CommentOffset.AFTER);
 				}
 			}
+
+			elementPrinterHelper.writeComment(newArray, CommentOffset.INSIDE);
 			printer.write(" }");
 		}
+		elementPrinterHelper.writeComment(newArray, CommentOffset.AFTER);
 		exitCtExpression(newArray);
 	}
 
