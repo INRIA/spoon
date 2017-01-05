@@ -87,7 +87,7 @@ public class ContextBuilder {
 	void enter(CtElement e, ASTNode node) {
 		stack.push(new ASTPair(e, node));
 		if (!(e instanceof CtPackage) || (compilationUnitSpoon.getFile() != null && compilationUnitSpoon.getFile().getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION))) {
-			if (compilationunitdeclaration != null) {
+			if (compilationunitdeclaration != null && !e.isImplicit()) {
 				e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
 			}
 		}
