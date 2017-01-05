@@ -6,11 +6,12 @@
 
 # Spoon
 
-Spoon is an open-source library for analyzing and transforming Java source code. External contributions as pull requests are welcome!
+Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. It parses source files to build a well-designed AST with powerful analysis and transformation API. It fully supports Java 8.
+External contributions as pull requests are welcome.
+The official website is available at <http://spoon.gforge.inria.fr/>.
 
-The mission of Spoon is to provide a high-quality library for analyzing and transforming Java source code.
 
-- If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact Martin Monperrus for this).
+- If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact [Martin Monperrus](http://monperrus.net/martin/) for this).
 
 - If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. “Spoon: A Library for Implementing Analyses and Transformations of Java Source Code”. In Software: Practice and Experience, Wiley-Blackwell, 2015. Doi: 10.1002/spe.2346.
 
@@ -29,7 +30,21 @@ The mission of Spoon is to provide a high-quality library for analyzing and tran
 
 ```
 
-The official website is available [here](http://spoon.gforge.inria.fr/).
+## Compiling
+
+To compile Spoon, you need a Java Development Kit (JDK) and Maven:
+
+```
+git clone https://github.com/INRIA/spoon
+cd spoon
+mvn compile
+```
+
+To run the tests:
+```
+mvn test
+```
+
 
 # Design Philosophy
 
@@ -54,12 +69,16 @@ R6) When feasible, the text version of a Spoon model is close to the original on
 You can find plugins for [Maven](https://github.com/SpoonLabs/spoon-maven-plugin) and [Gradle](https://github.com/SpoonLabs/spoon-gradle-plugin) to run spoon on a target project with some processors if necessary.
 
 Here are some projects already using Spoon:
+
 - [Spooet](https://github.com/SpoonLabs/spooet): A Spoon printer implemented with JavaPoet.
-- [Metamutor](https://github.com/SpoonLabs/metamutator): A muta-mutation tool for Java.
+- [Metamutator](https://github.com/SpoonLabs/metamutator): A muta-mutation tool for Java.
 - [Astor](https://github.com/SpoonLabs/astor): Evolutionary automatic software repair tool for Java. 
 - [Nopol](https://github.com/SpoonLabs/nopol): Automatic repair system developed at the University of Lille and Inria.
 - [Gumtree Spoon AST diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff): Computes the AST difference between two Spoon abstract syntax trees.
-- [c2spoo](https://github.com/SpoonLabs/c2spoon): Loads C code as a Spoon model using srcml.
+- [c2spoon](https://github.com/SpoonLabs/c2spoon): Loads C code as a Spoon model using srcml.
+- [trebuchet](https://github.com/slipperyseal/trebuchet): a Java to C++ transpiler
+- [CoCoSpoon](https://github.com/SpoonLabs/CoCoSpoon) and [CoCoSpoon-ui](https://github.com/SpoonLabs/CoCoSpoon-ui): Measuring and visualizing code coverage with Spoon
+- [jmixer](https://github.com/seintur/jmixer) is an implementation of mixins for Java
 - Yours?
 
 # Download
@@ -111,12 +130,15 @@ Alphabetical order of last names
 
 * Olivier Barais
 * David Bernard
+* Benjamin Danglot
 * Benoit Cornu
 * Didier Donsez
 * Favio DeMarco
 * Christophe Dufour
+* Thomas Durieux
 * Alcides Fonseca
 * Sebastian Lamelas Marcote
+* Romain Leventov
 * Matias Martinez
 * Martin Monperrus
 * Carlos Noguera
@@ -126,4 +148,7 @@ Alphabetical order of last names
 * Nicolas Petitprez
 * Phillip Schichtel
 * Lionel Seinturier
+* Marcel Steinbeck
+* Simon Urli
+* Pavel Vojtechovsky
 * Stefan Wolf
