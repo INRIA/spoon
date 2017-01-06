@@ -37,7 +37,7 @@ import java.util.Set;
  * element).
  */
 @Root
-public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable<CtQuery> {
+public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable {
 
 	/**
 	 * Searches for an annotation (proxy) of the given class that annotates the

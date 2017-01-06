@@ -135,13 +135,13 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	@Override
-	public CtQueryImpl name(String name) {
+	public CtQuery name(String name) {
 		getLastStep().setName(name);
 		return this;
 	}
 
 	@Override
-	public CtQueryImpl failurePolicy(QueryFailurePolicy policy) {
+	public CtQuery failurePolicy(QueryFailurePolicy policy) {
 		failurePolicy = policy;
 		return this;
 	}

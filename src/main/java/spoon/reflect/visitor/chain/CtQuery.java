@@ -38,17 +38,17 @@ import java.util.List;
  * It makes sense to evaluate this query only once, because the input element is constant.<br>
  * A CtQuery is lazily evaluated once {{@link #list()}} or {@link #forEach(CtConsumer)} are called.
  * Usually a new query is created each time when one needs to query something.
- * If you need to reuse a query instance several times, for example in a loop, then use {@link CtQuery#setInput(Object)}
+ * If you need to reuse a query instance several times, for example in a loop, then use {@link CtQuery#setInput(Object...)}
  * to bound this query with different input.
  *
  * @param &lt;O> the type of the element produced by this query
  */
-public interface CtQuery extends CtQueryable.Step<CtQuery> {
+public interface CtQuery extends CtQueryable {
 
 	/**
-	 * sets input of the query. If the query is created by {@link CtElement#map} or {@link CtElement#filterChildren(Filter)},
-	 * then such query is already bound the input element.
-	 * Next call of {@link #setInput(Object...)} will reset current binding ans use new one.
+	 * sets (binds) the input of the query. If the query is created by {@link CtElement#map} or {@link CtElement#filterChildren(Filter)},
+	 * then the query is already bound to this element.
+	 * A new call of {@link #setInput(Object...)} will reset the current binding ans use the new one.
 	 *
 	 * @param input
 	 * @return this to support fluent API
@@ -63,6 +63,7 @@ public interface CtQuery extends CtQueryable.Step<CtQuery> {
 	/**
 	 * actually evaluates the query and returns all the produced elements collected in a List
 	 * @return the list of elements collected by the query.
+	 * @see #forEach(CtConsumer) for an efficient way of manipulating the elements without creating an intermediate list.
 	 */
 	List<Object> list();
 	/**
@@ -71,4 +72,23 @@ public interface CtQuery extends CtQueryable.Step<CtQuery> {
 	 * @return the list of elements collected by the query.
 	 */
 	<R> List<R> list(Class<R> itemClass);
+
+	/**
+	 * Defines whether this query will throw {@link ClassCastException}
+	 * when the output of the previous step cannot be cast to type of input of next step.
+	 * The default value is {@link QueryFailurePolicy#FAIL}<br>
+	 *
+	 * Note: The {@link CtQueryable#filterChildren(Filter)} step never throws {@link ClassCastException}
+	 *
+	 * @param policy the policy
+	 * @return this to support fluent API
+	 */
+	CtQuery failurePolicy(QueryFailurePolicy policy);
+
+	/**
+	 * Sets the name of current query, to identify the current step during debugging of a query
+	 * @param name
+	 * @return this to support fluent API
+	 */
+	CtQuery name(String name);
 }
