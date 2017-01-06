@@ -276,6 +276,38 @@ public class TemplateTest {
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 		}
+
+
+		// testing with named elements, at the method level
+		{
+			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> klass = factory.Class().get(CheckBound.class);
+			CtMethod meth = (CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0);
+
+			// exact match
+			meth.setSimpleName("foo");
+			TemplateMatcher matcher = new TemplateMatcher(meth);
+			List<CtMethod> ctElements = matcher.find(klass);
+			assertEquals(1, ctElements.size());
+			assertEquals("foo", ctElements.get(0).getSimpleName());
+		}
+
+		{
+			// contract: the name to be matched does not have to be an exact match
+			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> klass = factory.Class().get(CheckBound.class);
+			CtMethod meth = (CtMethod) templateKlass.getElements(new NameFilter("matcher4")).get(0);
+
+			// together with the appropriate @Parameter f, this means
+			// we match all methods with name f*
+			meth.setSimpleName("f");
+			TemplateMatcher matcher = new TemplateMatcher(meth);
+			List<CtMethod> ctElements = matcher.find(klass);
+			assertEquals(3, ctElements.size());
+			assertEquals("foo", ctElements.get(0).getSimpleName());
+			assertEquals("foo2", ctElements.get(1).getSimpleName());
+			assertEquals("fbar", ctElements.get(2).getSimpleName());
+		}
 	}
 
 	@Test

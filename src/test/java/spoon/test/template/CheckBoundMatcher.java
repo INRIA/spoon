@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
+import spoon.template.Parameter;
 import spoon.template.TemplateParameter;
 
 public class CheckBoundMatcher {
@@ -12,7 +13,8 @@ public class CheckBoundMatcher {
 	public TemplateParameter<Integer> _x_;
 	public TemplateParameter<CtBlock> _block_;
 	public TemplateParameter<CtStatement> _stmt_;
-	
+
+
 	public void matcher1() {
 		if (_col_.S().size() > 10)
 			throw new IndexOutOfBoundsException();
@@ -40,4 +42,9 @@ public class CheckBoundMatcher {
 	public void matcher6() {
 		if (_x_.S() > _x_.S()) { _stmt_.S(); }
 	}
+
+	/** defines a matcher f* for named templates */
+	@Parameter
+	Object f;
+
 }

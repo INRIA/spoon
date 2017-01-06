@@ -176,7 +176,7 @@ public class TemplateMatcher {
 	 * 		the target to be tested for match
 	 * @return the matched elements
 	 */
-	public List<CtElement> find(final CtElement targetRoot) {
+	public <T extends CtElement> List<T> find(final CtElement targetRoot) {
 		CtScanner scanner = new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
@@ -201,16 +201,23 @@ public class TemplateMatcher {
 			finds.remove(templateRoot);
 		}
 
-		return finds;
+		return (List<T>) finds;
 	}
 
-	private ParameterMatcher findParameterMatcher(CtElement declaration, String name) throws InstantiationException, IllegalAccessException {
-		if (declaration == null) {
+	/**
+	 *
+	 * returns an appropriate ParameterMatcher defined in a template parameter, or else a default one
+	 *
+	 * if a template parameter (field annotated with @Parameter) whose name (field name) is a substring of the template name, it also works
+	 */
+	private ParameterMatcher findParameterMatcher(CtNamedElement templateDeclaration) throws InstantiationException, IllegalAccessException {
+		if (templateDeclaration == null) {
 			return new DefaultParameterMatcher();
 		}
+		String name = templateDeclaration.getSimpleName();
 		CtClass<?> clazz = null;
 		try {
-			clazz = declaration.getParent(CtClass.class);
+			clazz = templateDeclaration.getParent(CtClass.class);
 		} catch (ParentNotInitializedException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 		}
@@ -227,7 +234,7 @@ public class TemplateMatcher {
 				continue; // not a parameter.
 			}
 			String proxy = p.value();
-			if (proxy != "") {
+			if (!"".equals(proxy)) {
 				if (name.contains(proxy)) {
 					param = fieldRef;
 					break;
@@ -239,10 +246,6 @@ public class TemplateMatcher {
 				break;
 			}
 			// todo: check for field hack.
-		}
-
-		if (param == null) {
-			throw new IllegalStateException("Parameter not defined " + name + "at " + declaration.getPosition());
 		}
 		return getParameterInstance(param);
 	}
@@ -275,7 +278,12 @@ public class TemplateMatcher {
 		return matches;
 	}
 
+	/** returns a specific ParameterMatcher corresponding to the field acting as template parameter */
 	private ParameterMatcher getParameterInstance(CtFieldReference<?> param) throws InstantiationException, IllegalAccessException {
+		if (param == null) {
+			// return a default impl
+			return new DefaultParameterMatcher();
+		}
 		Parameter anParam = param.getDeclaration().getAnnotation(Parameter.class);
 		if (anParam == null) {
 			// Parameter not annotated. Probably is a TemplateParameter. Just
@@ -426,7 +434,7 @@ public class TemplateMatcher {
 				return instance.match(this, (CtReference) template, (CtReference) target);
 			} else if (template instanceof CtNamedElement) {
 				CtNamedElement named = (CtNamedElement) template;
-				ParameterMatcher instance = findParameterMatcher(named, named.getSimpleName());
+				ParameterMatcher instance = findParameterMatcher(named);
 				return instance.match(this, (CtElement) template, (CtElement) target);
 			} else {
 				// Should not happen
@@ -546,22 +554,21 @@ public class TemplateMatcher {
 		return true;
 	}
 
-	private boolean matchNames(String name, String tname) {
+	private boolean matchNames(String templateName, String elementName) {
 
-		try {
-			for (String pname : names) {
+			for (String templateParameterName : names) {
 				// pname = pname.replace("_FIELD_", "");
-				if (name.contains(pname)) {
-					String newName = name.replace(pname, "(.*)");
+				if (templateName.contains(templateParameterName)) {
+					String newName = templateName.replace(templateParameterName, "(.*)");
 					Pattern p = Pattern.compile(newName);
-					Matcher m = p.matcher(tname);
+					Matcher m = p.matcher(elementName);
 					if (!m.matches()) {
 						return false;
 					}
 					// TODO: fix with parameter from @Parameter
 					// boolean ok = addMatch(getBindedParameter(pname),
 					// m.group(1));
-					boolean ok = addMatch(pname, m.group(1));
+					boolean ok = addMatch(templateParameterName, m.group(1));
 					if (!ok) {
 						Launcher.LOGGER.debug("incongruent match");
 						return false;
@@ -569,11 +576,7 @@ public class TemplateMatcher {
 					return true;
 				}
 			}
-		} catch (RuntimeException e) {
-			// //fall back on dumb way to do it.
-			// if
-		}
-		return name.equals(tname);
+		return templateName.equals(elementName);
 	}
 
 	private CtElement nextListStatement(List<?> teList, CtElement inMulti) {
