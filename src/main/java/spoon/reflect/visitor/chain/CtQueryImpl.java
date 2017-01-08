@@ -84,9 +84,10 @@ public class CtQueryImpl implements CtQuery {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object> list() {
-		return list(Object.class);
+	public <R extends Object> List<R> list() {
+		return (List<R>) list(Object.class);
 	}
 
 	@Override

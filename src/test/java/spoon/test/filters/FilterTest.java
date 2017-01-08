@@ -630,7 +630,7 @@ public class FilterTest {
 	public void testElementMapFunctionArray() throws Exception {
 		final Launcher launcher = new Launcher();
 		CtQueryImpl q = new CtQueryImpl().map((String s)->new String[]{"a", null, s});
-		List<Object> list = q.setInput(null).list();
+		List<String> list = q.setInput(null).list();
 		assertEquals(0, list.size());
 		
 		list = q.setInput("c").list();
@@ -642,7 +642,7 @@ public class FilterTest {
 	public void testElementMapFunctionNull() throws Exception {
 		final Launcher launcher = new Launcher();
 		CtQueryImpl q = new CtQueryImpl().map((String s)->null);
-		List<Object> list = q.setInput(null).list();
+		List<String> list = q.setInput(null).list();
 		assertEquals(0, list.size());
 		
 		list = q.setInput("c").list();

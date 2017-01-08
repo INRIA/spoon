@@ -62,10 +62,9 @@ public abstract class Query {
 	 * @param filter
 	 * 		the filter which defines the matching criteria
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <E extends CtElement> List<E> getElements(
 			CtElement rootElement, Filter<E> filter) {
-		return (List<E>) (List) rootElement.filterChildren(filter).list();
+		return rootElement.filterChildren(filter).list();
 	}
 
 	/**

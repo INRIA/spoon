@@ -256,7 +256,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
-		return (List<E>) (List) filterChildren(filter).list();
+		return filterChildren(filter).list();
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public interface CtQuery extends CtQueryable {
 	 * @return the list of elements collected by the query.
 	 * @see #forEach(CtConsumer) for an efficient way of manipulating the elements without creating an intermediate list.
 	 */
-	List<Object> list();
+	<R extends Object> List<R> list();
 	/**
 	 * actually evaluates the query and returns these produced elements as a List,
 	 * which are assignable to `itemClass`
