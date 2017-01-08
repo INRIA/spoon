@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -44,6 +45,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtQueryImpl;
+import spoon.reflect.visitor.chain.QueryFailurePolicy;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -575,6 +577,28 @@ public class FilterTest {
 		}
 	}
 	@Test
+	public void testInvalidQueryStepFailurePolicyIgnore() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int count = 0;
+		}
+		Context context = new Context();
+		
+		launcher.getFactory().Package().getRootPackage().filterChildren((CtElement c)->{return true;}).name("step1")
+			.map((CtMethod<?> m)->m).name("invalidStep2")
+			.map((o)->o).name("step3")
+			.failurePolicy(QueryFailurePolicy.IGNORE)
+			.forEach((CtElement c)->{
+				assertTrue(c instanceof CtMethod);
+				context.count++;
+			});
+		assertTrue(context.count>0);
+	}
+	@Test
 	public void testElementMapFunction() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
@@ -603,6 +627,28 @@ public class FilterTest {
 		assertEquals(cls.getParent(), cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getParent())).list().get(0));
 	}
 	@Test
+	public void testElementMapFunctionArray() throws Exception {
+		final Launcher launcher = new Launcher();
+		CtQueryImpl q = new CtQueryImpl().map((String s)->new String[]{"a", null, s});
+		List<Object> list = q.setInput(null).list();
+		assertEquals(0, list.size());
+		
+		list = q.setInput("c").list();
+		assertEquals(2, list.size());
+		assertEquals("a", list.get(0));
+		assertEquals("c", list.get(1));
+	}
+	@Test
+	public void testElementMapFunctionNull() throws Exception {
+		final Launcher launcher = new Launcher();
+		CtQueryImpl q = new CtQueryImpl().map((String s)->null);
+		List<Object> list = q.setInput(null).list();
+		assertEquals(0, list.size());
+		
+		list = q.setInput("c").list();
+		assertEquals(0, list.size());
+	}
+	@Test
 	public void testReuseOfQuery() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
@@ -621,6 +667,8 @@ public class FilterTest {
 			context.count++;
 			assertEquals(cls.getSimpleName(), name);
 		});
+		assertEquals(1, ((CtQueryImpl)q).getInputs().size());
+		assertSame(cls, ((CtQueryImpl)q).getInputs().get(0));
 		//change the input of query to cls2
 		q.setInput(cls2).forEach((String name)->{
 			context.count++;
@@ -632,6 +680,10 @@ public class FilterTest {
 			assertEquals(cls2.getSimpleName(), name);
 		});
 		assertEquals(cls2.getSimpleName(), q.list().get(0));
+		
+		assertEquals(1, ((CtQueryImpl)q).getInputs().size());
+		assertSame(cls2, ((CtQueryImpl)q).getInputs().get(0));
+		
 		assertEquals(3, context.count);
 	}
 	@Test
@@ -659,6 +711,10 @@ public class FilterTest {
 			assertEquals(cls2.getSimpleName(), name);
 		});
 		assertEquals(2, context.count);
+		//try null input. It should not fail too
+		q.evaluate(null, (name)->{
+			fail();
+		});
 	}
 	@Test
 	public void testQueryInQuery() throws Exception {
