@@ -21,6 +21,7 @@ import spoon.reflect.ModelStreamer;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.Filter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,13 +52,15 @@ public class SerializationModelStreamer implements ModelStreamer {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(in);
 			final Factory f = (Factory) ois.readObject();
-			new CtScanner() {
+			//create query using factory directly
+			//because any try to call CtElement#map or CtElement#filterChildren will fail on uninitialized factory
+			f.createQuery(f.getModel().getRootPackage()).filterChildren(new Filter<CtElement>() {
 				@Override
-				public void enter(CtElement e) {
+				public boolean matches(CtElement e) {
 					e.setFactory(f);
-					super.enter(e);
+					return false;
 				}
-			}.scan(f.Package().getAll());
+			}).list();
 			ois.close();
 			return f;
 		} catch (ClassNotFoundException e) {
