@@ -44,6 +44,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.chain.QueryFailurePolicy;
 import spoon.reflect.visitor.chain.CtConsumer;
@@ -504,6 +505,7 @@ public class FilterTest {
 	
 	@Test
 	public void testQueryBuilderWithFilterChain() throws Exception {
+		// contract: query methods can be lazy evaluated in a foreach
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -516,15 +518,19 @@ public class FilterTest {
 		
 		Context context = new Context();
 
-		launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<CtMethod<?>>(CtMethod.class))
-		// using a lazily-evaluated lambda
-		.map((CtMethod<?> method) -> {context.method = method;return method;})
-		.map(new OverriddenMethodQuery())
+		// chaining queries
+		CtQuery q = launcher.getFactory().Package().getRootPackage()
+				.filterChildren(new TypeFilter<CtMethod<?>>(CtMethod.class))
+				// using a lazily-evaluated lambda
+				.map((CtMethod<?> method) -> {context.method = method;return method;})
+				.map(new OverriddenMethodQuery());
+
 		// actual evaluation
-		.forEach((CtMethod<?> method) -> {
+		q.forEach((CtMethod<?> method) -> {
 			assertTrue(context.method.getReference().isOverriding(method.getReference()));
 			context.count++;
 		});
+		// sanity check
 		assertTrue(context.count>0);
 	}
 	
@@ -545,8 +551,6 @@ public class FilterTest {
 			.map((CtClass<?> c)->c.getSuperInterfaces()).name("super interfaces")
 			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
 			.map((CtType<?> iface)->iface.getAllMethods()).name("allMethods if interface")
-			//just try LazyFunction, which does nothing - sends input to output
-			.map((CtMethod<?> method, CtConsumer<Object> out)->out.accept(method)).name("lazyFnc")
 			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
@@ -559,6 +563,8 @@ public class FilterTest {
 	}
 	@Test
 	public void testInvalidQueryStep() throws Exception {
+		// contract: with default policy an exception is thrown is the input type of a query step
+		// does not correspond to the output type of the previous step
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -578,6 +584,9 @@ public class FilterTest {
 	}
 	@Test
 	public void testInvalidQueryStepFailurePolicyIgnore() throws Exception {
+		// contract: with QueryFailurePolicy.IGNORE, no exception is thrown
+		// and only valid elements are kept for the next step
+
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -600,6 +609,7 @@ public class FilterTest {
 	}
 	@Test
 	public void testElementMapFunction() throws Exception {
+		// contract: a map(Function) can be followed by a forEach(...) or by a list()
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -613,21 +623,8 @@ public class FilterTest {
 		assertEquals(cls.getParent(), cls.map((CtClass<?> c)->c.getParent()).list().get(0));
 	}
 	@Test
-	public void testElementMapConsumableFunction() throws Exception {
-		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
-		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
-		launcher.run();
-		
-		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
-		cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getParent()))
-			.forEach((CtElement e)->{
-				assertEquals(cls.getParent(), e);
-			});
-		assertEquals(cls.getParent(), cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getParent())).list().get(0));
-	}
-	@Test
-	public void testElementMapFunctionArray() throws Exception {
+	public void testElementMapFunctionOtherContracts() throws Exception {
+		// contract: when a function returns an array, all non-null values are sent to the next step
 		final Launcher launcher = new Launcher();
 		CtQueryImpl q = new CtQueryImpl().map((String s)->new String[]{"a", null, s});
 		List<String> list = q.setInput(null).list();
@@ -637,85 +634,100 @@ public class FilterTest {
 		assertEquals(2, list.size());
 		assertEquals("a", list.get(0));
 		assertEquals("c", list.get(1));
+
+		// contract: the input is stored, and we can evaluate the same query several times
+		list = q.list(); // using "c" as input
+		assertEquals(2, list.size());
+		assertEquals("a", list.get(0));
+		assertEquals("c", list.get(1));
+
+		// contract: when input is null then the query function is not called at all.
+		CtQueryImpl q2 = new CtQueryImpl().map((String s)->{ throw new AssertionError();});
+		assertEquals(0, q2.setInput(null).list().size());
 	}
 	@Test
 	public void testElementMapFunctionNull() throws Exception {
+		// contract: when a function returns null, it is discarded at the next step
 		final Launcher launcher = new Launcher();
 		CtQueryImpl q = new CtQueryImpl().map((String s)->null);
-		List<String> list = q.setInput(null).list();
-		assertEquals(0, list.size());
-		
-		list = q.setInput("c").list();
+		List<String> list = q.setInput("c").list();
 		assertEquals(0, list.size());
 	}
 	@Test
 	public void testReuseOfQuery() throws Exception {
+		// contract: a query created from an existing element can be reused on other inputs
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
-		class Context {
-			int count = 0;
-		}
-		Context context = new Context();
-
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
-		CtQuery q = cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
-		q.forEach((String name)->{
-			context.count++;
-			assertEquals(cls.getSimpleName(), name);
-		});
+
+		// by default the query starts with "cls" as input
+		CtQuery q = cls.map((CtClass c) -> c.getSimpleName());
+		// high-level assert
+		assertEquals(cls.getSimpleName(), q.list().get(0));
+		// low-level assert on implementation
 		assertEquals(1, ((CtQueryImpl)q).getInputs().size());
 		assertSame(cls, ((CtQueryImpl)q).getInputs().get(0));
-		//change the input of query to cls2
-		q.setInput(cls2).forEach((String name)->{
-			context.count++;
-			assertEquals(cls2.getSimpleName(), name);
-		});
+
+		// now changing the input of query to cls2
+		q.setInput(cls2);
 		//the input is still cls2
-		q.forEach((String name)->{
-			context.count++;
-			assertEquals(cls2.getSimpleName(), name);
-		});
 		assertEquals(cls2.getSimpleName(), q.list().get(0));
-		
 		assertEquals(1, ((CtQueryImpl)q).getInputs().size());
 		assertSame(cls2, ((CtQueryImpl)q).getInputs().get(0));
-		
-		assertEquals(3, context.count);
+
 	}
 	@Test
 	public void testReuseOfBaseQuery() throws Exception {
+		// contract: an empty  query can be used on several inputs
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
-		class Context {
-			int count = 0;
-		}
-		
-		Context context = new Context();
-		
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
-		CtQueryImpl q = new CtQueryImpl().map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
-		q.evaluate(cls, (String name)->{
-			context.count++;
-			assertEquals(cls.getSimpleName(), name);
-		});
-		q.evaluate(cls2, (name)->{
-			context.count++;
-			assertEquals(cls2.getSimpleName(), name);
-		});
-		assertEquals(2, context.count);
-		//try null input. It should not fail too
-		q.evaluate(null, (name)->{
-			fail();
-		});
+
+		// here is the query
+		CtQuery q = new CtQueryImpl().map((CtClass c) -> c.getSimpleName());
+		// using it on a first input
+		assertEquals("Tacos", q.setInput(cls).list().get(0));
+		// using it on a second input
+		assertEquals("Tostada", q.setInput(cls2).list().get(0));
 	}
+
+
+
+	// now testing map(CtConsumableFunction)
+
+	@Test
+	public void testElementMapConsumableFunction() throws Exception {
+		// contract: a method map(CtConsumableFunction) is provided
+		// a simple consumer.accept() is equivalent to a single return in a CtFunction
+
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+
+		// long version
+		class aFunction implements CtConsumableFunction<CtClass> {
+			@Override
+			public void apply(CtClass c, CtConsumer out) {
+				// equivalent to a single return
+				out.accept(c.getParent());
+			}
+		}
+		assertEquals(cls.getParent(), cls.map(new aFunction()).list().get(0));
+
+		// now the same with Java8 one-liner
+		assertEquals(cls.getParent(), cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getParent())).list().get(0));
+	}
+
 	@Test
 	public void testQueryInQuery() throws Exception {
 		final Launcher launcher = new Launcher();
@@ -730,12 +742,45 @@ public class FilterTest {
 		Context context = new Context();
 		
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
-		CtQueryImpl allChildPublicClasses = new CtQueryImpl().filterChildren((CtClass clazz)->clazz.hasModifier(ModifierKind.PUBLIC));
-		launcher.getFactory().Package().getRootPackage().map((in,out)->allChildPublicClasses.evaluate(in,out)).forEach((CtElement clazz)->{
+
+		// first query
+		CtQuery allChildPublicClasses = new CtQueryImpl().filterChildren((CtClass clazz)->clazz.hasModifier(ModifierKind.PUBLIC));
+
+		// second query,involving the first query
+		CtQuery q = launcher.getFactory().Package().getRootPackage().map((CtElement in)->allChildPublicClasses.setInput(in).list());
+
+		// now the assertions
+		q.forEach((CtElement clazz)->{
 			context.count++;
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertTrue(context.count>0);
+		assertEquals(6, context.count);
+		context.count=0; //reset
+
+		// again second query, but now with CtConsumableFunction
+		CtQuery q2 = launcher.getFactory().Package().getRootPackage().map((CtElement in, CtConsumer<Object> out)->allChildPublicClasses.setInput(in).forEach(x -> out.accept(x)));
+
+		// now the assertions
+		q2.forEach((CtElement clazz)->{
+			context.count++;
+			assertTrue(clazz instanceof CtClass);
+			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
+		});
+		assertEquals(6, context.count);
+		context.count=0; //reset
+
+		// again second query, but with low-level circuitry thanks to cast
+		CtQuery q3 = launcher.getFactory().Package().getRootPackage().map((in, out)->((CtQueryImpl)allChildPublicClasses).evaluate(in, out));
+
+		// now the assertions
+		q3.forEach((CtElement clazz)->{
+			context.count++;
+			assertTrue(clazz instanceof CtClass);
+			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
+		});
+		assertEquals(6, context.count);
+
+
 	}
 }
