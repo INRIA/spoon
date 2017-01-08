@@ -24,7 +24,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Root;
-import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.support.DerivedProperty;
 
