@@ -41,7 +41,6 @@ import java.util.List;
  * If you need to reuse a query instance several times, for example in a loop, then use {@link CtQuery#setInput(Object...)}
  * to bound this query with different input.
  *
- * @param &lt;O> the type of the element produced by this query
  */
 public interface CtQuery extends CtQueryable {
 
@@ -53,7 +52,7 @@ public interface CtQuery extends CtQueryable {
 	 * @param input
 	 * @return this to support fluent API
 	 */
-	CtQuery setInput(Object... input);
+	<T extends CtQuery> T setInput(Object... input);
 
 	/**
 	 * actually evaluates the query and for each produced outputElement calls `consumer.accept(outputElement)`

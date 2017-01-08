@@ -52,6 +52,7 @@ public class CtQueryImpl implements CtQuery {
 		return inputs == null ? Collections.emptyList() : inputs;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public CtQueryImpl setInput(Object... input) {
 		if (inputs != null) {
