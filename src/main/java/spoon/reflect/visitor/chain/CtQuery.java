@@ -52,7 +52,7 @@ public interface CtQuery extends CtQueryable {
 	 * @param input
 	 * @return this to support fluent API
 	 */
-	CtQuery setInput(Object... input);
+	<T extends CtQuery> T setInput(Object... input);
 
 	/**
 	 * actually evaluates the query and for each produced outputElement calls `consumer.accept(outputElement)`
