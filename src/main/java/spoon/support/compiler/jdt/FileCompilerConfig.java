@@ -16,6 +16,7 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,25 +57,28 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 	@Override
 	public void initializeCompiler(JDTBatchCompiler compiler) {
 		JDTBasedSpoonCompiler jdtCompiler = compiler.getJdtCompiler();
-		List<CompilationUnit> culist = new ArrayList<>();
-		for (SpoonFile f : getFiles(compiler)) {
-			if (compiler.filesToBeIgnored.contains(f.getPath())) {
-				continue;
-			}
-			try {
-				String fName = "";
-				if (f.isActualFile()) {
-					fName = f.getPath();
-				} else {
-					fName = f.getName();
+		List<CompilationUnit> cuList = new ArrayList<>();
+		InputStream inputStream = null;
+
+		try {
+			for (SpoonFile f : getFiles(compiler)) {
+
+				if (compiler.filesToBeIgnored.contains(f.getPath())) {
+					continue;
 				}
-				culist.add(new CompilationUnit(IOUtils.toCharArray(f
-						.getContent(), jdtCompiler.encoding), fName, null));
-			} catch (Exception e) {
-				throw new SpoonException(e);
+
+				String fName = f.isActualFile() ? f.getPath() : f.getName();
+				inputStream = f.getContent();
+				char[] content = IOUtils.toCharArray(inputStream, jdtCompiler.encoding);
+				cuList.add(new CompilationUnit(content, fName, null));
+				IOUtils.closeQuietly(inputStream);
 			}
+		} catch (Exception e) {
+			IOUtils.closeQuietly(inputStream);
+			throw new SpoonException(e);
 		}
-		compiler.setCompilationUnits(culist.toArray(new CompilationUnit[0]));
+
+		compiler.setCompilationUnits(cuList.toArray(new CompilationUnit[0]));
 	}
 
 	protected List<SpoonFile> getFiles(JDTBatchCompiler compiler) {
