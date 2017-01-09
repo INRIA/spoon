@@ -56,3 +56,6 @@ for (CtElement elems : matcher.find(aPackage)) { ... };
 			
 ```
 
+For named elements, a wildcard can be specified: if the named element (eg a method) to be matched is called `f` and the template matcher class contains a template parameter called `f` (of type Object), all methods starting by `f` will be matched.
+
+

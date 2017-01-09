@@ -17,7 +17,7 @@ public class CheckBound {
 	  throw new IndexOutOfBoundsException();
   }	
 
-  public void bar() {
+  public void fbar() {
     if (l.size() > 10)
       throw new IndexOutOfBoundsException();
   }
