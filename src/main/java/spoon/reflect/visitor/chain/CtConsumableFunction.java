@@ -17,15 +17,21 @@
 package spoon.reflect.visitor.chain;
 
 /**
- * Functional interface, which represents a algorithm,
- * which returns one or more results by calling of output.accept(oneResult)<br>
- * It is used by {@link CtQueryable#map(CtConsumableFunction)} to efficiently implement CtScanner based queries.
+ * Represents a function, as {@link CtFunction}. However, the main difference is that
+ * while a {@link CtFunction} returns something with a standard Java return keyword,
+ * a {@link CtConsumableFunction} returns something by passing the returned object
+ * as parameter to the given outpuConsumer#accept. This enables to write efficient and concise code in certain situations.
+ * It also enables one to emulate several returns, by simply calling several times accept, while not paying
+ * the code or performance price of creating a list or an iterable object.
+ *
+ * It is typically used as parameter of {@link CtQueryable#map(CtConsumableFunction)}, can be written as one-liners
+ * with Java8 lambdas:.`cls.map((CtClass&t;?> c, CtConsumer&t;Object> out)->out.accept(c.getParent()))`
  *
  * @param <T> the type of the input to the function
- * @param <R> the type of the result produced by this function
  */
 public interface CtConsumableFunction<T> {
 	/**
+	 * Evaluates the function on the given input.
 	 * @param input the input of the function
 	 * @param outputConsumer the consumer which accepts the results of this function.
 	 */

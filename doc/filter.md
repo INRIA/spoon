@@ -47,19 +47,25 @@ Queries
 
 The Query, introduced in Spoon 5.5 by Pavel Vojtechovsky, is an improved filter mechanism:
 
-* matching can be done with a Java 8 lambda
+* queries can be done with a Java 8 lambda
 * queries can be chained
+* queries can be reused on multiple input elements
 
-`CtQueryable#filterChildren(Filter)` is a filtering query that can be chained:
+**Queries with Java8 lambdas**: `CtQueryable#map(CtFunction)`enables you to give Java 8 lambda as query.
+
+```java
+// returns a list of String
+CtQuery q = package.map((CtClass c) -> c.getSimpleName());
+```
+
+**Compatibility with existing filters** `CtQueryable#filterChildren(Filter)` is a filtering query that can be chained:
 
 ```java
 // collecting all methods of deprecated classes
 list2 = rootPackage
     .filterChildren(new AnnotationFilter(Deprecated.class))
-    .filterChildren(new TypeFilter(CtMethod.class)).list();
 ```
 
-`CtQueryable#map(CtFunction)`enables you to give Java 8 lambda as query.
 A boolean return value of the lambda tells whether the elements are selected for inclusion or not.
 
 ```java
@@ -67,7 +73,7 @@ A boolean return value of the lambda tells whether the elements are selected for
 list3 = rootPackage.filterChildren((CtField field)->field.getModifiers.contains(ModifierKind.PUBLIC)).list();
 ```
 
-If the CtFunction returns an object, this object is given as result to the query:
+**Chaining** If the CtFunction returns an object, this object is given as result to the next step of the query:
 
 ```java
 // a query which processes all not deprecated methods of all deprecated classes
@@ -80,4 +86,15 @@ rootPackage
 ```
 
 Finally, if the CtFunction returns and Iterable or an Array then each item of the collection/array is sent to next query step or result.
+
+**Query reuse**. Method `setInput` allows you to reuse the same query over multiple inputs.
+
+```java
+// here is the query
+CtQuery q = new CtQueryImpl().map((CtClass c) -> c.getSimpleName());
+// using it on a first input
+String s1 = q.setInput(cls).list().get(0);
+// using it on a second input
+String s2 = q.setInput(cls2).list().get(0);
+```
 
