@@ -2,7 +2,6 @@ package spoon.test.reference;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
@@ -19,20 +18,23 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
+import spoon.test.reference.testclasses.ParamRefs;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
@@ -591,5 +593,18 @@ public class TypeReferenceTest {
 		CtLocalVariable<?> s2 = new Launcher().getFactory().Code().createCodeSnippetStatement("java.util.List<String> l = null").compile();
 		assertEquals("String", s2.getType().getActualTypeArguments().get(0).getSimpleName());
 		assertEquals(String.class, s2.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
+	}
+
+	@Test
+	public void testEqualityTypeReference() throws Exception {
+		CtClass<ParamRefs> aClass = (CtClass) buildClass(ParamRefs.class);
+		CtParameter<?> parameter = aClass.getElements(new NameFilter<CtParameter<?>>("param")).get(0);
+		CtParameterReference<?> parameterRef1 = parameter.getReference();
+		CtParameterReference<?> parameterRef2 = aClass.getElements((CtParameterReference<?> ref)->ref.getSimpleName().equals("param")).get(0);
+
+		assertEquals(aClass.getReference(), parameterRef1.getDeclaringExecutable().getType());
+		assertEquals(aClass.getReference(), parameterRef2.getDeclaringExecutable().getType());
+
+		assertEquals(parameterRef1, parameterRef2);
 	}
 }

@@ -338,11 +338,14 @@ public class ReferenceBuilder {
 		if (exec == null) {
 			return null;
 		}
-
 		final CtExecutableReference ref = this.jdtTreeBuilder.getFactory().Core().createExecutableReference();
-		ref.setSimpleName(new String(exec.selector));
-		ref.setType(getTypeReference(exec.returnType));
-
+		if (exec.isConstructor()) {
+			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
+			ref.setType(getTypeReference(exec.declaringClass));
+		} else {
+			ref.setSimpleName(new String(exec.selector));
+			ref.setType(getTypeReference(exec.returnType));
+		}
 		if (exec instanceof ProblemMethodBinding) {
 			if (exec.declaringClass != null && Arrays.asList(exec.declaringClass.methods()).contains(exec)) {
 				ref.setDeclaringType(getTypeReference(exec.declaringClass));

@@ -721,9 +721,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	private <T> boolean hasChildEqualsToType(CtConstructorCall<T> ctConstructorCall) {
 		final AllocationExpression parent = (AllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
 		// Type is equals to the jdt child.
-		return parent.type != null && parent.type.equals(childJDT)
-				// Type not yet initialized.
-				&& !((CtTypeAccess) child).getAccessedType().equals(ctConstructorCall.getExecutable().getType());
+		return parent.type != null && parent.type.equals(childJDT);
 	}
 
 	@Override
