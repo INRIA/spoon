@@ -64,6 +64,15 @@ public class VariableAccessTest {
 	}
 
 	@Test
+	public void testParameterReferenceInConstructorNoClasspath () {
+		final Launcher launcher = new Launcher();
+		// throws `NullPointerException` before PR #1098
+		launcher.addInputResource("./src/test/resources/noclasspath/org/elasticsearch/indices/analysis/HunspellService.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+	}
+
+	@Test
 	public void testDeclarationOfVariableReference() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Foo2.java");
