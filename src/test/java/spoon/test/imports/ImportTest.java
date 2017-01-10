@@ -603,4 +603,15 @@ public class ImportTest {
 		assertTrue("The file should not contain a static import for NOFOLLOW_LINKS",!output.contains("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;"));
 		canBeBuilt(outputDir, 7);
 	}
+	
+	@Test
+	public void testAccessPath() {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","debug","-x"});
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/TransportIndicesShardStoresAction.java");
+		launcher.run();
+		CtType element = launcher.getFactory().Class().getAll().get(0);
+		element.toString();
+	}
+	
 }
