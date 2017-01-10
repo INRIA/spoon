@@ -607,11 +607,21 @@ public class ImportTest {
 	@Test
 	public void testAccessPath() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","debug","-x"});
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/TransportIndicesShardStoresAction.java");
+		String outputDir = "./target/spooned-accessPath";
+		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 		CtType element = launcher.getFactory().Class().getAll().get(0);
-		element.toString();
+		
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		canBeBuilt(outputDir, 7);
 	}
 	
 }
