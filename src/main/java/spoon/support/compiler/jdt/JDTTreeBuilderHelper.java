@@ -17,9 +17,9 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -42,14 +42,16 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.ExecutableFactory;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -161,6 +163,7 @@ class JDTTreeBuilderHelper {
 	 * 		   visible in current scope, {@code null} otherwise.
 	 */
 	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
+		final TypeFactory typeFactory = jdtTreeBuilder.getFactory().Type();
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
 		final ExecutableFactory executableFactory = jdtTreeBuilder.getFactory().Executable();
 		final ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
@@ -186,50 +189,64 @@ class JDTTreeBuilderHelper {
 				// references (in terms of Java objects) have not been set up yet. Thus, we need to
 				// create the required parameter reference by our own.
 
-				// since the given parameter has not been declared in a lambda expression it must
-				// have been declared by a method!
-				final CtMethod method = (CtMethod) variable.getParent();
+				// Since the given parameter has not been declared in a lambda expression it must
+				// have been declared by a method/constructor.
+				final CtExecutable executable = (CtExecutable) variable.getParent();
 
-				// create list of method's parameter types
-				final List<CtTypeReference<?>> parameterTypesOfMethod = new ArrayList<>();
-				final List<CtParameter<?>> parametersOfMethod = method.getParameters();
-				for (CtParameter<?> parameter : parametersOfMethod) {
+				// create list of executable's parameter types
+				final List<CtTypeReference<?>> parameterTypesOfExecutable = new ArrayList<>();
+				@SuppressWarnings("unchecked")
+				final List<CtParameter<?>> parametersOfExecutable = executable.getParameters();
+				for (CtParameter<?> parameter : parametersOfExecutable) {
 					if (parameter.getType() != null) {
-						parameterTypesOfMethod.add(parameter.getType().clone());
+						parameterTypesOfExecutable.add(parameter.getType().clone());
+					} else {
+						// it's the best match :(
+						parameterTypesOfExecutable.add(typeFactory.OBJECT);
 					}
 				}
 
-				// find method's corresponding jdt element
-				MethodDeclaration methodJDT = null;
+				// find executable's corresponding jdt element
+				AbstractMethodDeclaration executableJDT = null;
 				for (final ASTPair astPair : contextBuilder.stack) {
-					if (astPair.element == method) {
-						methodJDT = (MethodDeclaration) astPair.node;
-						break;
+					if (astPair.element == executable) {
+						executableJDT = (AbstractMethodDeclaration) astPair.node;
 					}
 				}
-				assert methodJDT != null;
+				assert executableJDT != null;
 
-				// create a reference to method's declaring class
-				final CtTypeReference declaringReferenceOfMethod =
+				// create a reference to executable's declaring class
+				final CtTypeReference declaringReferenceOfExecutable =
 						// `binding` may be null for anonymous classes which means we have to
 						// create an 'empty' type reference since we have no further information
-						methodJDT.binding == null ? coreFactory.createTypeReference()
-								: referenceBuilder.getTypeReference(methodJDT.binding.declaringClass);
+						// available
+						executableJDT.binding == null ? coreFactory.createTypeReference()
+								: referenceBuilder.getTypeReference(
+										executableJDT.binding.declaringClass);
 
-				// create a reference to the method of the currently processed parameter reference
-				final CtExecutableReference methodReference =
-						executableFactory.createReference(declaringReferenceOfMethod,
-								// we need to clone method's return type (rt) before passing to
-								// `createReference` since this method (indirectly) sets the parent
-								// of the rt and, therefore, may break the AST
-								method.getType().clone(),
-								// no need to clone/copy as Strings are immutable
-								method.getSimpleName(),
-								// no need to clone/copy as we just created this object
-								parameterTypesOfMethod);
+				// If executable is a constructor, `executable.getType()` returns null since the
+				// parent is not available yet. Fortunately, however, the return type of a
+				// constructor is its declaring class which, in our case, is already available with
+				// declaringReferenceOfExecutable.
+				CtTypeReference executableTypeReference = executable instanceof CtConstructor
+						// IMPORTANT: Create a clone of the type reference (rt) if retrieved by
+						// other AST elements as `executableFactory.createReference` (see below)
+						// indirectly sets the parent of `rt` and, thus, may break the AST!
+						? declaringReferenceOfExecutable.clone()
+						: executable.getType().clone();
 
-				// finally, we can set the method reference...
-				parameterReference.setDeclaringExecutable(methodReference);
+				// create a reference to the executable of the currently processed parameter
+				// reference
+				@SuppressWarnings("unchecked")
+				final CtExecutableReference executableReference =
+						executableFactory.createReference(
+								declaringReferenceOfExecutable,
+								executableTypeReference,
+								executable.getSimpleName(),
+								parameterTypesOfExecutable);
+
+				// finally, we can set the executable reference...
+				parameterReference.setDeclaringExecutable(executableReference);
 			}
 			variableReference = parameterReference;
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
