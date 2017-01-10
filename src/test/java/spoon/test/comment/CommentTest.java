@@ -29,10 +29,8 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.reflect.visitor.AstParentConsistencyChecker;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
@@ -557,6 +555,28 @@ public class CommentTest {
 		assertEquals(2, returnSt.getComments().size());
 		assertEquals("method body comment", returnSt.getComments().get(0).getContent());
 		assertEquals("inline comment", returnSt.getComments().get(1).getContent());
+	}
+
+	@Test
+	public void testAddCommentsToSnippet() {
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
+				new StandardEnvironment());
+		factory.getEnvironment().setNoClasspath(true);
+		factory.getEnvironment().setCommentEnabled(true);
+
+		CtStatement statement = factory.Code().createCodeSnippetStatement("System.out.println(\"Caenorhabditis\")");
+		CtComment comment = factory.createComment("My comment on my statement", CtComment.CommentType.INLINE);
+		statement.addComment(comment);
+
+		CtExpression expression = factory.Code().createCodeSnippetExpression("\"Caenorhabditis\" + \"Caenorhabditis\"");
+		CtComment commentExpression = factory.createComment("My comment on my expression", CtComment.CommentType.INLINE);
+		expression.addComment(commentExpression);
+
+		assertEquals("// My comment on my statement" + newLine + "System.out.println(\"Caenorhabditis\")",
+				statement.toString());
+
+		assertEquals("// My comment on my expression" + newLine + "\"Caenorhabditis\" + \"Caenorhabditis\"",
+				expression.toString());
 	}
 
 	@Test
