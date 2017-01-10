@@ -39,7 +39,7 @@ list3 = rootPackage.filterChildren(
       return field.getModifiers.contains(ModifierKind.PUBLIC);
     }
   }
-);
+).list();
 ```
 
 Queries
@@ -55,7 +55,7 @@ The Query, introduced in Spoon 5.5 by Pavel Vojtechovsky, is an improved filter 
 
 ```java
 // returns a list of String
-CtQuery q = package.map((CtClass c) -> c.getSimpleName());
+list = package.map((CtClass c) -> c.getSimpleName()).list();
 ```
 
 **Compatibility with existing filters** `CtQueryable#filterChildren(Filter)` is a filtering query that can be chained:
@@ -63,7 +63,7 @@ CtQuery q = package.map((CtClass c) -> c.getSimpleName());
 ```java
 // collecting all methods of deprecated classes
 list2 = rootPackage
-    .filterChildren(new AnnotationFilter(Deprecated.class))
+    .filterChildren(new AnnotationFilter(Deprecated.class)).list()
 ```
 
 A boolean return value of the lambda tells whether the elements are selected for inclusion or not.

@@ -25,7 +25,7 @@ import java.util.List;
  * CtQuery represents a query, which can be used to traverse a spoon model and collect
  * children elements in several ways.<br/>
  *
- * Creation: A query is created either from a {@link CtElement}, or it can be used defined first from {@link CtQueryImpl} and bound to root elements
+ * Creation: A query is created either from a {@link CtElement}, or it can be defined first from {@link CtQueryImpl} and bound to root elements
  * afterwards using {{@link #setInput(Object...)}.<br/>
  *
  * Chaining: In a query several steps can be chained, by chaining calls to map functions. The non-null outputs of one step
@@ -47,7 +47,7 @@ public interface CtQuery extends CtQueryable {
 	 * are considered as **not matching**, ie. are excluded.
 	 *
 	 * @param filter used to filter scanned children elements of the AST tree
-	 * @return a new Query
+	 * @return this to support fluent API
 	 */
 	@Override
 	<R extends CtElement> CtQuery filterChildren(Filter<R> filter);
@@ -57,23 +57,23 @@ public interface CtQuery extends CtQueryable {
 	 * Query elements based on a function, the behavior depends on the return type of the function.
 	 * <table>
 	 * <tr><td><b>Return type of `function`</b><td><b>Behavior</b>
-	 * <tr><td>{@link Boolean}<td>Select elements if thereturned value of `function` is true (as for {@link Filter}).
+	 * <tr><td>{@link Boolean}<td>Select elements if the returned value of `function` is true (as for {@link Filter}).
 	 * <tr><td>? extends {@link Object}<td>Send the returned value of `function` to the next step
 	 * <tr><td>{@link Iterable}<td>Send each item of the collection to the next step
 	 * <tr><td>{@link Object[]}<td>Send each item of the array to the next step
 	 * </table><br>
 	 *
 	 * @param function a Function with one parameter of type I returning a value of type R
-	 * @return a new query object
+	 * @return this to support fluent API
 	 */
 	@Override
 	<I, R> CtQuery map(CtFunction<I, R> function);
 
 	/**
-	 * Sets (binds) the input of the query, the search will be done on children of that element.
+	 * Sets (binds) the input of the query.
 	 * If the query is created by {@link CtElement#map} or {@link CtElement#filterChildren(Filter)},
 	 * then the query is already bound to this element.
-	 * A new call of {@link #setInput(Object...)} will is always possible, it resets the current binding ans sets the new one.
+	 * A new call of {@link #setInput(Object...)} is always possible, it resets the current binding and sets the new one.
 	 *
 	 * @param input
 	 * @return this to support fluent API
@@ -91,14 +91,17 @@ public interface CtQuery extends CtQueryable {
 	<R> void forEach(CtConsumer<R> consumer);
 
 	/**
-	 * Actually evaluates the query and returns all the elements produced in the last step.
+	 * Actually evaluates the query and returns all the elements produced in the last step.<br>
+	 * Note: The type R of the list is not checked by the query. So use the type, which matches the results of your query,
+	 * otherwise the ClassCastException will be thrown when reading the list.
 	 * @return the list of elements collected by the query.
 	 * @see #forEach(CtConsumer) for an efficient way of manipulating the elements without creating an intermediate list.
 	 */
 	<R extends Object> List<R> list();
 
 	/**
-	 * Same as {@link #list()}, but with static typing on the return type.
+	 * Same as {@link #list()}, but with static typing on the return type
+	 * and the final filtering, which matches only results, which are assignable from that return type.
 	 *
 	 * @return the list of elements collected by the query.
 	 */
@@ -129,7 +132,7 @@ public interface CtQuery extends CtQueryable {
 	 * allows efficient and easy to write chained processing, see {@link CtConsumableFunction}.
 	 *
 	 * @param queryStep
-	 * @return the created QueryStep, which is the new last step of the query
+	 * @return this to support fluent API
 	 */
 	@Override
 	<I> CtQuery map(CtConsumableFunction<I> queryStep);
