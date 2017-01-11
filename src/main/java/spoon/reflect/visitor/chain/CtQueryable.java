@@ -21,11 +21,15 @@ import spoon.reflect.visitor.Filter;
 
 /**
  * Represents an object on which one can make queries.
- * It is implemented 1) by {@link CtElement} to allow creation of a new query on
+ * It is implemented
+ * <ol>
+ * <li> by {@link CtElement} to allow creation of a new query on
  * children of an element.
- * 2) by {@link CtQuery} to allow chaining query steps.
+ * <li> by {@link CtQuery} to allow chaining query steps.
+ * </ol>
+ * @param <T> the type of returned query
  */
-public interface CtQueryable {
+public interface CtQueryable<T> {
 
 	/**
 	 * Query elements based on a function, the behavior depends on the return type of the function.
@@ -40,7 +44,16 @@ public interface CtQueryable {
 	 * @param function a Function with one parameter of type I returning a value of type R
 	 * @return a new query object
 	 */
-	<I, R> CtQuery<R> map(CtFunction<I, R> function);
+	<I, R> T map(CtFunction<I, R> function);
+
+	/**
+	 * Query elements based on a CtQueryStep, which supports efficient implementation of CtScanner based queries,
+	 * which produces thousands of mapping output elements.
+	 *
+	 * @param queryStep
+	 * @return the created QueryStep, which is the new last step of the query
+	 */
+	<I> T map(CtConsumableFunction<I> queryStep);
 
 	/**
 	 * Recursively scans all children elements of an input element.
@@ -55,6 +68,31 @@ public interface CtQueryable {
 	 * @param filter used to filter scanned children elements of the AST tree
 	 * @return a new Query
 	 */
-	<T extends CtElement> CtQuery<T> filterChildren(Filter<T> filter);
+	<R extends CtElement> T filterChildren(Filter<R> filter);
 
+	/**
+	 * Defines helper methods of query step
+	 *
+	 * @param <T> the type of returned query
+	 */
+	interface Step<T> extends CtQueryable<T> {
+		/**
+		 * Defines whether this query will throw {@link ClassCastException}
+		 * when the output of the previous step cannot be cast to type of input of next step.
+		 * The default value is {@link QueryFailurePolicy#FAIL}<br>
+		 *
+		 * Note: The {@link CtQueryable#filterChildren(Filter)} step never throws {@link ClassCastException}
+		 *
+		 * @param policy the policy
+		 * @return this to support fluent API
+		 */
+		T failurePolicy(QueryFailurePolicy policy);
+
+		/**
+		 * Sets the name of current query, to identify the current step during debugging of a query
+		 * @param name
+		 * @return this to support fluent API
+		 */
+		T name(String name);
+	}
 }

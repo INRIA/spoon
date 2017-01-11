@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -35,14 +36,18 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryImpl;
+import spoon.reflect.visitor.chain.CtBaseQuery;
+import spoon.reflect.visitor.chain.CtBaseQueryImpl;
+import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -52,6 +57,7 @@ import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.LineFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodFilter;
+import spoon.reflect.visitor.filter.OverriddenMethodQuery;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
@@ -335,6 +341,7 @@ public class FilterTest {
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
 
 		assertEquals(0, Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aClass.getMethodsByName("prepare").get(0))).size());
+		assertEquals(0, aClass.getMethodsByName("prepare").get(0).map(new OverriddenMethodQuery()).list().size());
 	}
 
 	@Test
@@ -373,7 +380,8 @@ public class FilterTest {
 		OverriddenMethodFilter filter = new OverriddenMethodFilter(aITostada.getMethodsByName("make").get(0));
 		List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), filter);
 		assertEquals(0, overridingMethods.size());
-		assertEquals(0, overridingMethods.size());
+		List<CtMethod> overridingMethods2 = aITostada.getMethodsByName("make").get(0).map(new OverriddenMethodQuery()).list(CtMethod.class);
+		assertEquals(0, overridingMethods2.size());
 	}
 
 	@Test
@@ -484,15 +492,13 @@ public class FilterTest {
 		}
 		Context context = new Context();
 		
-		CtQuery<CtClass<?>> l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
+		CtQuery l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
 		
 		assertEquals(0, context.counter);
-		// map with java8 lambda
-		l_qv.map(cls->{
+		l_qv.forEach(cls->{
 			assertTrue(cls instanceof CtClass);
 			context.counter++;
-			return true;
-		}).list();
+		});
 		assertTrue(context.counter>0);
 	}
 	
@@ -512,8 +518,13 @@ public class FilterTest {
 
 		launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<CtMethod<?>>(CtMethod.class))
 		// using a lazily-evaluated lambda
-		.map((CtMethod<?> method) -> {context.count++;return method;})
-		.list(); // actual evaluation
+		.map((CtMethod<?> method) -> {context.method = method;return method;})
+		.map(new OverriddenMethodQuery())
+		// actual evaluation
+		.forEach((CtMethod<?> method) -> {
+			assertTrue(context.method.getReference().isOverriding(method.getReference()));
+			context.count++;
+		});
 		assertTrue(context.count>0);
 	}
 	
@@ -530,19 +541,147 @@ public class FilterTest {
 		
 		Context context = new Context();
 
-		CtQuery<CtType<?>> query = launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;})
-			.map((CtClass<?> c)->c.getSuperInterfaces())
+		CtQuery query = launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("filter CtClass only")
+			.map((CtClass<?> c)->c.getSuperInterfaces()).name("super interfaces")
 			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
-			.map((CtType<?> iface)->iface.getAllMethods())
+			.map((CtType<?> iface)->iface.getAllMethods()).name("allMethods if interface")
+			//just try LazyFunction, which does nothing - sends input to output
+			.map((CtMethod<?> method, CtConsumer<Object> out)->out.accept(method)).name("lazyFnc")
 			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
-		((CtQueryImpl<?>)query).logging(true);
-		query.map((CtInterface<?> c)->{
+		((CtQueryImpl)query).logging(true);
+		query.forEach((CtInterface<?> c)->{
 				assertEquals("ITostada", c.getSimpleName());
 				context.count++;
-				return true;
-			}).list();
+			});
+		assertTrue(context.count>0);
+	}
+	@Test
+	public void testInvalidQueryStep() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		try {
+			launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("step1")
+				.map((CtMethod<?> m)->m).name("invalidStep2")
+				.map((o)->o).name("step3")
+				.forEach((CtInterface<?> c)->{
+					fail();
+				});
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().indexOf("Step invalidStep2) spoon.support.reflect.declaration.CtClassImpl cannot be cast to spoon.reflect.declaration.CtMethod")>=0);
+		}
+	}
+	@Test
+	public void testElementMapFunction() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		cls.map((CtClass<?> c)->c.getParent())
+			.forEach((CtElement e)->{
+				assertEquals(cls.getParent(), e);
+			});
+		assertEquals(cls.getParent(), cls.map((CtClass<?> c)->c.getParent()).list().get(0));
+	}
+	@Test
+	public void testElementMapConsumableFunction() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getParent()))
+			.forEach((CtElement e)->{
+				assertEquals(cls.getParent(), e);
+			});
+		assertEquals(cls.getParent(), cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getParent())).list().get(0));
+	}
+	@Test
+	public void testReuseOfQuery() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int count = 0;
+		}
+		Context context = new Context();
+
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
+		CtQuery q = cls.map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
+		q.forEach((String name)->{
+			context.count++;
+			assertEquals(cls.getSimpleName(), name);
+		});
+		//change the input of query to cls2
+		q.setInput(cls2).forEach((String name)->{
+			context.count++;
+			assertEquals(cls2.getSimpleName(), name);
+		});
+		//the input is still cls2
+		q.forEach((String name)->{
+			context.count++;
+			assertEquals(cls2.getSimpleName(), name);
+		});
+		assertEquals(cls2.getSimpleName(), q.list().get(0));
+		assertEquals(3, context.count);
+	}
+	@Test
+	public void testReuseOfBaseQuery() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int count = 0;
+		}
+		
+		Context context = new Context();
+		
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
+		CtBaseQuery q = new CtBaseQueryImpl().map((CtClass<?> c, CtConsumer<Object> out)->out.accept(c.getSimpleName()));
+		q.evaluate(cls, (String name)->{
+			context.count++;
+			assertEquals(cls.getSimpleName(), name);
+		});
+		q.evaluate(cls2, (name)->{
+			context.count++;
+			assertEquals(cls2.getSimpleName(), name);
+		});
+		assertEquals(2, context.count);
+	}
+	@Test
+	public void testQueryInQuery() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int count = 0;
+		}
+		
+		Context context = new Context();
+		
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		CtBaseQueryImpl allChildPublicClasses = new CtBaseQueryImpl().filterChildren((CtClass clazz)->clazz.hasModifier(ModifierKind.PUBLIC));
+		launcher.getFactory().Package().getRootPackage().map((in,out)->allChildPublicClasses.evaluate(in,out)).forEach((CtElement clazz)->{
+			context.count++;
+			assertTrue(clazz instanceof CtClass);
+			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
+		});
 		assertTrue(context.count>0);
 	}
 }

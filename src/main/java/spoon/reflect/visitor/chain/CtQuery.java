@@ -30,42 +30,45 @@ import java.util.List;
  * The main methods are:
  * <ul>
  * <li> {@link #map(CtFunction))} - uses a lambda expression to return any model elements that are directly accessible from an input element.
+ * <li> {@link #map(CtConsumableFunction))} -implementations of {@link CtConsumableFunction} provides a complex queries.
  * <li> {@link #filterChildren(Filter))} - uses {@link Filter} instances to filter children of an element
  * <li> {@link #list()} - to evaluate the query and return a list of elements produced by this query.
  * </ul>
- * The query can be used several times.<br>
- * A CtQuery  is lazily evaluated once {{@link #list()}} is called.
+ * It makes sense to evaluate this query only once, because the input element is constant.<br>
+ * A CtQuery is lazily evaluated once {{@link #list()}} or {@link #forEach(CtConsumer)} are called.
  * Usually a new query is created each time when one needs to query something.
- * However, reusing a {@link CtQuery} instance makes sense when the same query has to be evaluated
- * several times in a loop.
+ * If you need to reuse a query instance several times, for example in a loop, then use {@link CtQuery#setInput(Object)}
+ * to bound this query with different input.
  *
  * @param &lt;O> the type of the element produced by this query
  */
-public interface CtQuery<O> extends CtQueryable {
+public interface CtQuery extends CtQueryable.Step<CtQuery> {
 
+	/**
+	 * sets input of the query. If the query is created by {@link CtElement#map} or {@link CtElement#filterChildren(Filter)},
+	 * then such query is already bound the input element.
+	 * Next call of {@link #setInput(Object...)} will reset current binding ans use new one.
+	 *
+	 * @param input
+	 * @return this to support fluent API
+	 */
+	CtQuery setInput(Object... input);
+
+	/**
+	 * actually evaluates the query and for each produced outputElement calls `consumer.accept(outputElement)`
+     * @param consumer The consumer which accepts the results of the query
+	 */
+	<R> void forEach(CtConsumer<R> consumer);
 	/**
 	 * actually evaluates the query and returns all the produced elements collected in a List
 	 * @return the list of elements collected by the query.
 	 */
-	List<O> list();
-
+	List<Object> list();
 	/**
-	 * Defines whether this query will throw {@link ClassCastException}
-	 * when the output of the previous step cannot be cast to type of input of next step.
-	 * The default value is {@link QueryFailurePolicy#FAIL}<br>
-	 *
-	 * Note: The {@link CtQueryable#filterChildren(Filter)} step never throws {@link ClassCastException}
-	 *
-	 * @param policy the policy
-	 * @return this to support fluent API
+	 * actually evaluates the query and returns these produced elements as a List,
+	 * which are assignable to `itemClass`
+	 * @return the list of elements collected by the query.
 	 */
-	CtQuery<O> failurePolicy(QueryFailurePolicy policy);
-
-	/**
-	 * Sets the name of current query, to identify the current step during debugging of a query
-	 * @param name
-	 * @return this to support fluent API
-	 */
-	CtQuery<O> name(String name);
+	<R> List<R> list(Class<R> itemClass);
 
 }

@@ -24,6 +24,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Root;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.support.DerivedProperty;
 
@@ -36,7 +37,7 @@ import java.util.Set;
  * element).
  */
 @Root
-public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable {
+public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable<CtQuery> {
 
 	/**
 	 * Searches for an annotation (proxy) of the given class that annotates the
