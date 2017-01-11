@@ -27,7 +27,7 @@ import spoon.support.DerivedProperty;
  *     class Foo { int foo() { return 42;}};
  *     class Bar extends Foo {
  *     int foo() {
- *       return super.foo(); // <-- access to super
+ *       return super.foo(); // &lt;-- access to super
  *     }
  *     };
  * </pre>

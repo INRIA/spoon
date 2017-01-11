@@ -29,8 +29,8 @@ import java.util.List;
  *
  * The main methods are:
  * <ul>
- * <li> {@link #map(CtFunction))} - uses a lambda expression to return any model elements that are directly accessible from an input element.
- * <li> {@link #filterChildren(Filter))} - uses {@link Filter} instances to filter children of an element
+ * <li> {@link CtQueryable#map(CtFunction)} - uses a lambda expression to return any model elements that are directly accessible from an input element.
+ * <li> {@link CtQueryable#filterChildren(Filter)} - uses {@link Filter} instances to filter children of an element
  * <li> {@link #list()} - to evaluate the query and return a list of elements produced by this query.
  * </ul>
  * The query can be used several times.<br>
@@ -39,7 +39,7 @@ import java.util.List;
  * However, reusing a {@link CtQuery} instance makes sense when the same query has to be evaluated
  * several times in a loop.
  *
- * @param &lt;O> the type of the element produced by this query
+ * @param <O> the type of the element produced by this query
  */
 public interface CtQuery<O> extends CtQueryable {
 

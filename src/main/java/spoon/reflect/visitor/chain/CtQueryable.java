@@ -29,7 +29,7 @@ public interface CtQueryable {
 
 	/**
 	 * Query elements based on a function, the behavior depends on the return type of the function.
-	 * <table>
+	 * <table summary="">
 	 * <tr><td><b>Return type of `function`</b><td><b>Behavior</b>
 	 * <tr><td>{@link Boolean}<td>Select elements if thereturned value of `function` is true (as for {@link Filter}).
 	 * <tr><td>? extends {@link Object}<td>Send the returned value of `function` to the next step

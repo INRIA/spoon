@@ -20,9 +20,9 @@ package spoon.reflect.code;
  * This code element defines the continue statement.
  * Example:
  * <pre>
- *     for(int i=0; i<10; i++) {
- *         if (i>3) {
- *				continue; // <-- continue statement
+ *     for(int i=0; i&lt;10; i++) {
+ *         if (i&gt;3) {
+ *				continue; // &lt;-- continue statement
  *         }
  *     }
  * </pre>

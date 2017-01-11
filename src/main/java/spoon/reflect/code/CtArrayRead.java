@@ -23,7 +23,7 @@ package spoon.reflect.code;
  * <pre>
  *     int[] array = new int[10];
  *     System.out.println(
- *     array[0] // <-- array read
+ *     array[0] // &lt;-- array read
  *     );
  * </pre>
  *

@@ -21,7 +21,7 @@ package spoon.reflect.code;
  * For example :
  * <pre>
  *     int x=3;
- *     --x; // <-- unary --
+ *     --x; // &lt;-- unary --
  * </pre>
  *
  * @param <T>

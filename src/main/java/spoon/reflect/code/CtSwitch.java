@@ -23,7 +23,7 @@ import java.util.List;
  *
  * Example: <pre>
  * int x = 0;
- * switch(x) { // <-- switch statement
+ * switch(x) { // &lt;-- switch statement
  *     case 1:
  *       System.out.println("foo");
  * }</pre>

@@ -21,7 +21,7 @@ package spoon.reflect.code;
  * Example:
  * <pre>
  *     java.util.List l = new java.util.ArrayList();
- *     for(Object o : l) { // <-- foreach loop
+ *     for(Object o : l) { // &lt;-- foreach loop
  *     	System.out.println(o);
  *     }
  * </pre>

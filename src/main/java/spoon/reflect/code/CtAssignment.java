@@ -22,7 +22,7 @@ package spoon.reflect.code;
  * Example:
  * <pre>
  *     int x;
- *     x = 4; // <-- an assignment
+ *     x = 4; // &lt;-- an assignment
  * </pre>
  * @param <T>
  * 		type of assigned expression

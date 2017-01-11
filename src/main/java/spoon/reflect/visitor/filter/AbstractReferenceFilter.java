@@ -25,7 +25,7 @@ import spoon.reflect.visitor.ReferenceFilter;
  *
  * @param <T>
  * 		the type of the reference to be matched
- * @see spoon.reflect.visitor.ReferenceFilter#matches(CtReference)
+ * @see spoon.reflect.visitor.Filter
  *
  * @deprecated use {@link AbstractFilter} instead.
  */

@@ -31,7 +31,7 @@ import java.util.List;
  * <pre>
  *    // an anonymous class creation
  *    Runnable r = new Runnable() {
- *     	@Override
+ *     	&#64;Override
  *     	public void run() {
  *     	  System.out.println("foo");
  *     	}

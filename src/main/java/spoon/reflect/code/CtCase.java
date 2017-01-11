@@ -22,7 +22,7 @@ package spoon.reflect.code;
  * Example: <pre>
  * int x = 0;
  * switch(x) {
- *     case 1: // <-- case statement
+ *     case 1: // &lt;-- case statement
  *       System.out.println("foo");
  * }</pre>
  *

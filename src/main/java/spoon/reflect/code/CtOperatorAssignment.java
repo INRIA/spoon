@@ -22,7 +22,7 @@ package spoon.reflect.code;
  * Example:
  * <pre>
  *     int x = 0;
- *     x *= 3; // <-- a CtOperatorAssignment
+ *     x *= 3; // &lt;-- a CtOperatorAssignment
  * </pre>
  *
  */

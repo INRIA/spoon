@@ -24,7 +24,7 @@ import spoon.template.TemplateParameter;
  * statements enclosed in curly brackets.
  *
  * Example: <pre>
- *  { // <-- block start
+ *  { // &lt;-- block start
  *   System.out.println("foo");
  *  }
  *	</pre>
