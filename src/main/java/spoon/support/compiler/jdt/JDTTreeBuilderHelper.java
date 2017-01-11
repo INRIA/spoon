@@ -198,12 +198,11 @@ class JDTTreeBuilderHelper {
 				@SuppressWarnings("unchecked")
 				final List<CtParameter<?>> parametersOfExecutable = executable.getParameters();
 				for (CtParameter<?> parameter : parametersOfExecutable) {
-					if (parameter.getType() != null) {
-						parameterTypesOfExecutable.add(parameter.getType().clone());
-					} else {
-						// it's the best match :(
-						parameterTypesOfExecutable.add(typeFactory.OBJECT);
-					}
+					parameterTypesOfExecutable.add(parameter.getType() != null
+							? parameter.getType().clone()
+							// it's the best match :(
+							: typeFactory.OBJECT.clone()
+					);
 				}
 
 				// find executable's corresponding jdt element
