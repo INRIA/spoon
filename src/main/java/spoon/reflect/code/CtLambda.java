@@ -30,7 +30,7 @@ import java.util.Set;
  * <pre>
  *     java.util.List l = new java.util.ArrayList();
  *     l.stream().map(
- *       x -> { return x.toString(); } // a lambda
+ *       x -&gt; { return x.toString(); } // a lambda
  *     );
  * </pre>
  *

@@ -24,7 +24,7 @@ package spoon.reflect.code;
  *     class Foo {
  *     int value = 42;
  *     int foo() {
- *       return this.value; // <-- access to this
+ *       return this.value; // &lt;-- access to this
  *     }
  *     };
 

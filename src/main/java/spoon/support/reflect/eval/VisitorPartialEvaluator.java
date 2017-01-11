@@ -58,7 +58,7 @@ import java.util.List;
 
 /**
  *
- * Simplifies an AST by performing all operations that are statically known and changes the AST accordingly (eg "0+1" -> "1")
+ * Simplifies an AST by performing all operations that are statically known and changes the AST accordingly (eg "0+1" -&gt; "1")
  * This visitor implements a simple partial evaluator for the program
  * compile-time metamodel.
  */

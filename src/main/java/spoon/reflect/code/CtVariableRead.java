@@ -23,7 +23,7 @@ package spoon.reflect.code;
  * <pre>
  *     String variable = "";
  *     System.out.println(
- *       variable // <-- a variable read
+ *       variable // &lt;-- a variable read
  *     );
  * </pre>
  *

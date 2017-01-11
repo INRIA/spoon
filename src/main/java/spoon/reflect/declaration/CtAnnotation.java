@@ -33,8 +33,8 @@ import java.util.Map;
  *
  * <pre>
  *     // statement annotated by annotation @SuppressWarnings
- *     @SuppressWarnings("unchecked")
- *     java.util.List<?> x = new java.util.ArrayList<>()
+ *     &#64;SuppressWarnings("unchecked")
+ *     java.util.List&lt;?&gt; x = new java.util.ArrayList&lt;&gt;()
  * </pre>
  * @param <A>
  * 		type of represented annotation

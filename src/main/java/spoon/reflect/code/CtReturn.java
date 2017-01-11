@@ -24,9 +24,9 @@ import spoon.template.TemplateParameter;
  * Example:
  * <pre>
  *    Runnable r = new Runnable() {
- *     	@Override
+ *     	&#64;Override
  *     	public void run() {
- *     	  return; // <-- CtReturn statement
+ *     	  return; // &lt;-- CtReturn statement
  *     	}
  *    };
  * </pre>

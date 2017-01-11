@@ -22,7 +22,7 @@ package spoon.reflect.code;
  * Example:
  * <pre>
  *     System.out.println(
- *        1==0 ? "foo" : "bar" // <-- ternary conditional
+ *        1==0 ? "foo" : "bar" // &lt;-- ternary conditional
  *     );
  * </pre>
  */
