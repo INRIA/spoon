@@ -403,8 +403,8 @@ public class ImportTest {
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
-		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
 		 								  
 	}
 
@@ -424,8 +424,8 @@ public class ImportTest {
 
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
-		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
 		 								  
 	}
 
