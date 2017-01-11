@@ -20,7 +20,6 @@ import spoon.Launcher;
 import spoon.reflect.ModelStreamer;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Filter;
 
 import java.io.IOException;
