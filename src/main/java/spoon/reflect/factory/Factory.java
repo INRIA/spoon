@@ -166,7 +166,7 @@ public interface Factory {
 	<R> CtStatementList createStatementList(CtBlock<R> block);
 
 	/**
-	 *  @see CodeFactory#createCtBlock(T)
+	 *  @see CodeFactory#createCtBlock(CtStatement)
 	 */
 	<T extends CtStatement> CtBlock<?> createCtBlock(T element);
 
@@ -206,7 +206,7 @@ public interface Factory {
 	<T> CtInvocation<T> createInvocation(CtExpression<?> target, CtExecutableReference<T> executable, CtExpression<?>... arguments);
 
 	/**
-	 *  @see CodeFactory#createLiteral(T)
+	 *  @see CodeFactory#createLiteral(Object)
 	 */
 	<T> CtLiteral<T> createLiteral(T value);
 
@@ -216,7 +216,7 @@ public interface Factory {
 	<T> CtLocalVariable<T> createLocalVariable(CtTypeReference<T> type, String name, CtExpression<T> defaultExpression);
 
 	/**
-	 *  @see CodeFactory#createLiteralArray(T[])
+	 *  @see CodeFactory#createLiteralArray(Object[])
 	 */
 	@SuppressWarnings(value = "unchecked")
 	<T> CtNewArray<T[]> createLiteralArray(T[] value);

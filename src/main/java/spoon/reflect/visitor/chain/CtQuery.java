@@ -29,8 +29,8 @@ import java.util.List;
  *
  * The main methods are:
  * <ul>
- * <li> {@link #map(CtFunction<I,R>))} - uses a lambda expression to return any model elements that are directly accessible from an input element.
- * <li> {@link #filterChildren(Filter<T>))} - uses {@link Filter<T>} instances to filter children of an element
+ * <li> {@link CtQueryable#map(CtFunction)} - uses a lambda expression to return any model elements that are directly accessible from an input element.
+ * <li> {@link CtQueryable#filterChildren(Filter)} - uses {@link Filter} instances to filter children of an element
  * <li> {@link #list()} - to evaluate the query and return a list of elements produced by this query.
  * </ul>
  * The query can be used several times.<br>
