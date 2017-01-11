@@ -924,6 +924,8 @@ public class ReferenceBuilder {
 		for (ASTPair astPair : jdtTreeBuilder.getContextBuilder().stack) {
 			if (astPair.node instanceof LambdaExpression) {
 				potentialLambda = astPair;
+				// stop at innermost lambda, fixes #1100
+				break;
 			}
 		}
 		if (potentialLambda == null) {
@@ -942,6 +944,9 @@ public class ReferenceBuilder {
 				for (CtParameter<?> parameter : parameters) {
 					if (parameter.getType() != null) {
 						parametersType.add(parameter.getType().clone());
+					} else {
+						// it's the best match :(
+						parametersType.add(jdtTreeBuilder.getFactory().Type().OBJECT.clone());
 					}
 				}
 				return jdtTreeBuilder.getFactory().Executable().createReference(declaringType, ctLambda.getType(), ctLambda.getSimpleName(), parametersType);
