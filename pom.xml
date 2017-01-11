@@ -245,6 +245,7 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.5</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
