@@ -163,4 +163,14 @@ public class ExecutableReferenceTest {
 		}).get(0);
 		assertNotNull(invocation.getExecutable().getExecutableDeclaration());
 	}
+
+	@Test
+	public void testLambdaNoClasspath() {
+		final Launcher launcher = new Launcher();
+		// Throws `IllegalStateException` before PR #1100 due to invalid AST
+		// hierarchy.
+		launcher.addInputResource("./src/test/resources/noclasspath/org/elasticsearch/action/admin/cluster/node/tasks");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+	}
 }
