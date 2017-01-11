@@ -924,6 +924,8 @@ public class ReferenceBuilder {
 		for (ASTPair astPair : jdtTreeBuilder.getContextBuilder().stack) {
 			if (astPair.node instanceof LambdaExpression) {
 				potentialLambda = astPair;
+				// stop at innermost lambda, fixes #1100
+				break;
 			}
 		}
 		if (potentialLambda == null) {
