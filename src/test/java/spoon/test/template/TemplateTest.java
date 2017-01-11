@@ -19,7 +19,6 @@ import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
-import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
 
@@ -28,7 +27,6 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
