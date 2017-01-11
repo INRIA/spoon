@@ -20,8 +20,8 @@ package spoon.reflect.code;
  * This code element defines a break statement.
  * Example:
  * <pre>
- *     for(int i=0; i &lt; 10; i++) {
- *         if (i &gt; 3) {
+ *     for(int i=0; i&lt;10; i++) {
+ *         if (i&gt;3) {
  *				break; // &lt;-- break statement
  *         }
  *     }

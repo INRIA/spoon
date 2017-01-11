@@ -1,6 +1,7 @@
 package spoon.test.comment;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtComment;
@@ -606,6 +607,7 @@ public class CommentTest {
 				m.find();
 				do {
 					String snippet = m.group(1);
+					snippet = StringEscapeUtils.unescapeHtml4(snippet);
 
 					// it must compile
 					CtElement el = launcher.getFactory().Code().createCodeSnippetStatement(snippet).compile();

@@ -24,7 +24,7 @@ package spoon.reflect.code;
  *     int x = 0;
  *     do {
  *         x=x+1;
- *     } while (x &lt; 10);
+ *     } while (x&lt;10);
  * </pre>
  *
  */
