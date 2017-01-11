@@ -942,9 +942,11 @@ public class ReferenceBuilder {
 				List<CtTypeReference<?>> parametersType = new ArrayList<>();
 				List<CtParameter<?>> parameters = ctLambda.getParameters();
 				for (CtParameter<?> parameter : parameters) {
-					if (parameter.getType() != null) {
-						parametersType.add(parameter.getType().clone());
-					}
+					parametersType.add(parameter.getType() != null
+							? parameter.getType().clone()
+							// it's the best match :(
+							: jdtTreeBuilder.getFactory().Type().OBJECT.clone()
+					);
 				}
 				return jdtTreeBuilder.getFactory().Executable().createReference(declaringType, ctLambda.getType(), ctLambda.getSimpleName(), parametersType);
 			}

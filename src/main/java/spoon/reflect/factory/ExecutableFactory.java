@@ -100,10 +100,11 @@ public class ExecutableFactory extends SubFactory {
 		CtTypeReference<?> refs[] = new CtTypeReference[e.getParameters().size()];
 		int i = 0;
 		for (CtParameter<?> param : e.getParameters()) {
-			if (param.getType() != null) {
-				// With a lambda and in noclasspath (when the type of parameters isn't specified), we don't have a type.
-				refs[i++] = param.getType().clone();
-			}
+			refs[i++] = param.getType() != null
+					? param.getType().clone()
+					// With a lambda and in noclasspath (when the type of
+					// parameters isn't specified), we assume Object.
+					: factory.Type().OBJECT.clone();
 		}
 		String executableName = e.getSimpleName();
 		if (e instanceof CtMethod) {
