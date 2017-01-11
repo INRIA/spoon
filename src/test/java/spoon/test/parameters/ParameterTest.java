@@ -6,6 +6,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -58,6 +59,62 @@ public class ParameterTest {
 		for (CtParameterReference element : elements) {
 			assertEquals(ctParameter, element.getDeclaration());
 			assertEquals(ctParameter.getReference(), element);
+		}
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testMultiParameterLambdaTypeReference() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/MultiParameterLambda.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		List<CtParameter> parameters;
+
+		// test string parameters
+		parameters = launcher.getModel()
+						.getElements(new NameFilter<CtMethod>("stringLambda"))
+						.get(0)
+						.getElements(new TypeFilter<>(CtParameter.class));
+		assertEquals(2, parameters.size());
+		for (final CtParameter param : parameters) {
+			for (final CtTypeReference refType :
+					(List<CtTypeReference>) param.getReference()
+							.getDeclaringExecutable()
+							.getParameters()) {
+				assertEquals(launcher.getFactory().Type().STRING, refType);
+			}
+		}
+
+		// test integer parameters
+		parameters = launcher.getModel()
+				.getElements(new NameFilter<CtMethod>("integerLambda"))
+				.get(0)
+				.getElements(new TypeFilter<>(CtParameter.class));
+		assertEquals(2, parameters.size());
+		for (final CtParameter param : parameters) {
+			for (final CtTypeReference refType :
+					(List<CtTypeReference>) param.getReference()
+					.getDeclaringExecutable()
+					.getParameters()) {
+				assertEquals(launcher.getFactory().Type().INTEGER, refType);
+			}
+		}
+
+		// test unknown parameters
+		parameters = launcher.getModel()
+				.getElements(new NameFilter<CtMethod>("unknownLambda"))
+				.get(0)
+				.getElements(new TypeFilter<>(CtParameter.class));
+		assertEquals(2, parameters.size());
+		for (final CtParameter param : parameters) {
+			for (final CtTypeReference refType :
+					(List<CtTypeReference>) param.getReference()
+							.getDeclaringExecutable()
+							.getParameters()) {
+				assertEquals(launcher.getFactory().Type().OBJECT, refType);
+			}
 		}
 	}
 }
