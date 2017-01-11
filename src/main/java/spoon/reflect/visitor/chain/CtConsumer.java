@@ -20,7 +20,7 @@ package spoon.reflect.visitor.chain;
  * The functional interface used to receive objects.
  * It is used for example to receive results of the query in {@link CtQuery#forEach(CtConsumer)}
  *
- * @param &lt;T> - the type of accepted elements
+ * @param <T> - the type of accepted elements
  */
 public interface CtConsumer<T> {
 	void accept(T t);

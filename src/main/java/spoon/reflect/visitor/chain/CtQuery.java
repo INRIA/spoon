@@ -26,12 +26,12 @@ import java.util.List;
  * children elements in several ways.<br/>
  *
  * Creation: A query is created either from a {@link CtElement}, or it can be defined first from {@link CtQueryImpl} and bound to root elements
- * afterwards using {{@link #setInput(Object...)}.<br/>
+ * afterwards using {@link CtQuery#setInput(Object...)}.<br/>
  *
  * Chaining: In a query several steps can be chained, by chaining calls to map functions. The non-null outputs of one step
  * are given as input to the next step. An iterable or array output is considered as a set of different inputs for the next step.
  *
- * Evaluation: A CtQuery is lazily evaluated once {{@link #list()}} or {@link #forEach(CtConsumer)} are called.<br/>
+ * Evaluation: A CtQuery is lazily evaluated once {@link CtQuery#list()} or {@link CtQuery#forEach(CtConsumer)} are called.<br/>
  *
  */
 public interface CtQuery extends CtQueryable {
@@ -73,7 +73,7 @@ public interface CtQuery extends CtQueryable {
 	 * Sets (binds) the input of the query.
 	 * If the query is created by {@link CtElement#map} or {@link CtElement#filterChildren(Filter)},
 	 * then the query is already bound to this element.
-	 * A new call of {@link #setInput(Object...)} is always possible, it resets the current binding and sets the new one.
+	 * A new call of {@link CtQuery#setInput(Object...)} is always possible, it resets the current binding and sets the new one.
 	 *
 	 * @param input
 	 * @return this to support fluent API
@@ -100,7 +100,7 @@ public interface CtQuery extends CtQueryable {
 	<R extends Object> List<R> list();
 
 	/**
-	 * Same as {@link #list()}, but with static typing on the return type
+	 * Same as {@link CtQuery#list()}, but with static typing on the return type
 	 * and the final filtering, which matches only results, which are assignable from that return type.
 	 *
 	 * @return the list of elements collected by the query.
@@ -127,7 +127,7 @@ public interface CtQuery extends CtQueryable {
 	CtQuery name(String name);
 
 	/**
-	 * Same as {@link #map(CtFunction)}, but the returned object is not handled
+	 * Same as {@link CtQuery#map(CtFunction)}, but the returned object is not handled
 	 * by java's return statement, but by a call to {@link CtConsumer#accept(Object)}, this
 	 * allows efficient and easy to write chained processing, see {@link CtConsumableFunction}.
 	 *
