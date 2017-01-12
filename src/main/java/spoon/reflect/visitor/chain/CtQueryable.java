@@ -21,40 +21,30 @@ import spoon.reflect.visitor.Filter;
 
 /**
  * Represents an object on which one can make queries.
- * It is implemented 1) by {@link CtElement} to allow creation of a new query on
+ * It is implemented
+ * <ol>
+ * <li> by {@link CtElement} to allow creation of a new query on
  * children of an element.
- * 2) by {@link CtQuery} to allow chaining query steps.
+ * <li> by {@link CtQuery} to allow reusable queries and chaining query steps.
+ * </ol>
+ *
+ * The main methods are documented in CtQuery
  */
 public interface CtQueryable {
 
 	/**
-	 * Query elements based on a function, the behavior depends on the return type of the function.
-	 * <table summary="">
-	 * <tr><td><b>Return type of `function`</b><td><b>Behavior</b>
-	 * <tr><td>{@link Boolean}<td>Select elements if thereturned value of `function` is true (as for {@link Filter}).
-	 * <tr><td>? extends {@link Object}<td>Send the returned value of `function` to the next step
-	 * <tr><td>{@link Iterable}<td>Send each item of the collection to the next step
-	 * <tr><td>{@link Object[]}<td>Send each item of the array to the next step
-	 * </table><br>
-	 *
-	 * @param function a Function with one parameter of type I returning a value of type R
-	 * @return a new query object
+	 * @see CtQuery#filterChildren(Filter)
 	 */
-	<I, R> CtQuery<R> map(CtFunction<I, R> function);
+	<R extends CtElement> CtQuery filterChildren(Filter<R> filter);
 
 	/**
-	 * Recursively scans all children elements of an input element.
-	 * The matched child element for which (filter.matches(element)==true) are sent to the next step.
-	 * Essentially the same as {@link CtElement#getElements(Filter)} but more powerful, because it
-	 * can be chained with other subsequent queries.
-	 *
-	 * Note: the input element (the root of the query, `this` if you're in {@link CtElement}) is also checked and may thus be also sent to the next step.
-	 * The elements which throw {@link ClassCastException} during {@link Filter#matches(CtElement)}
-	 * are considered as **not matching**, ie. are excluded.
-	 *
-	 * @param filter used to filter scanned children elements of the AST tree
-	 * @return a new Query
+	 * @see CtQuery#map(CtFunction)
 	 */
-	<T extends CtElement> CtQuery<T> filterChildren(Filter<T> filter);
+	<I, R> CtQuery map(CtFunction<I, R> function);
+
+	/**
+	 * @see CtQuery#map(CtConsumableFunction)
+	 */
+	<I> CtQuery map(CtConsumableFunction<I> queryStep);
 
 }

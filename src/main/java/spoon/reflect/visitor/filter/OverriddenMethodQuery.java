@@ -14,16 +14,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.chain;
+package spoon.reflect.visitor.filter;
+
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.visitor.chain.CtConsumableFunction;
+import spoon.reflect.visitor.chain.CtConsumer;
 
 /**
- * Abstraction for functions in the Spoon realm.
- * It is used in the query stack, for example by {@link CtQueryable#map(CtFunction)}
- * It is compatible with Java 8 lambdas, hence enable to write one-liner queries with lambdas.
- *
- * @param <T> the type of the input to the function
- * @param <R> the type of the result of the function
+ * Gets all overridden method from the method given.
  */
-public interface CtFunction<T, R> {
-	R apply(T input);
+public class OverriddenMethodQuery implements CtConsumableFunction<CtMethod<?>> {
+	@Override
+	public void apply(CtMethod<?> input, CtConsumer<Object> outputConsumer) {
+		CtPackage searchScope = input.getFactory().Package().getRootPackage();
+		searchScope.filterChildren(new OverriddenMethodFilter(input)).forEach(outputConsumer);
+	}
 }
