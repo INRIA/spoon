@@ -28,11 +28,9 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Filter;
 
 /**
- * The facade of {@link CtBaseQuery} which represents a query bound to the {@link CtElement},
+ * The facade of {@link CtQuery} which represents a query bound to the {@link CtElement},
  * which is the constant input of this query.
  * It is used by {@link CtElement} implementations of {@link CtQueryable}.
- *
- * @param <O> - the type of element which is produced by the last step of the query
  */
 public class CtQueryImpl implements CtQuery {
 
@@ -224,7 +222,10 @@ public class CtQueryImpl implements CtQuery {
 	/**
 	 * The thread local implementation of CtConsumer,
 	 * which knows index of actually processed step
-	 * and handles response of current step and sends it to next step
+	 * and handles response of current step and sends it to next step.
+	 *
+	 * This class plays a role of an orchestrator to move the step cursor forward,
+	 * get the step, apply it and finally to call the output consumer.
 	 */
 	private class CurrentStep implements CtConsumer<Object> {
 		private final CtConsumer<?> outputConsumer;
@@ -244,7 +245,7 @@ public class CtQueryImpl implements CtQuery {
 			try {
 				if (stepIdx <= steps.size()) {
 					//process next intermediate step
-					AbstractStep step = steps.get(stepIdx - 1);
+					AbstractStep step = getStep();
 					log(this, "received", input);
 					try {
 						step.apply(input, this);
@@ -349,7 +350,7 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	/**
-	 * a step which calls Function. Implements contract of {@link CtBaseQuery#map(CtFunction)}
+	 * a step which calls Function. Implements contract of {@link CtQuery#map(CtFunction)}
 	 */
 	private class FunctionWrapper extends AbstractStep {
 		private CtFunction<Object, Object> fnc;
