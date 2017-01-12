@@ -177,6 +177,11 @@
       <name>Maven Repository for JDT Compiler release</name>
       <url>http://spoon.gforge.inria.fr/repositories/releases</url>
     </repository>
+    <repository>
+      <id>gforge.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://spoon.gforge.inria.fr/repositories/snapshots</url>
+    </repository>
   </repositories>
 
   <distributionManagement>
@@ -506,21 +511,9 @@
         <configuration>
           <alwaysCheckForReleaseVersion>false</alwaysCheckForReleaseVersion>
           <oldVersion>LATEST</oldVersion>
-          <analysisConfiguration>
-            {
-              "revapi": {
-                "java": {
-                    "filter": {
-                      "packages": {
-                        "regex": true,
-                        "include": ["spoon\\..*"],
-                        "exclude": ["spoon\\..*\\.test(\\..*)?"]
-                      }
-                    }
-                }
-              }
-            }
-          </analysisConfiguration>
+          <analysisConfigurationFiles>
+            <file>${project.basedir}/revapi.json</file>
+          </analysisConfigurationFiles>
         </configuration>
       </plugin>
     </plugins>

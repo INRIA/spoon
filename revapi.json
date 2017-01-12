@@ -1,0 +1,27 @@
+{
+  "revapi": {
+    "java": {
+      "filter": {
+        "packages": {
+          "regex": true,
+          "include": ["spoon\\..*"],
+          "exclude": ["spoon\\..*\\.test(\\..*)?"]
+        }
+      },
+      "missing-classes": {
+        "behavior": "report"
+      }
+    },
+    "semver" : {
+      "ignore" : {
+        "enabled" : true,
+        "versionIncreaseAllows" : {
+          "major" : "breaking",
+          "minor" : "nonBreaking",
+          "patch" : "equivalent"
+        },
+        "passThroughDifferences": ["java.class.nonPublicPartOfAPI"]
+      }
+    }
+  }
+}
