@@ -771,7 +771,7 @@ public interface Factory {
 	CtQuery createQuery();
 
 	/**
-	 *  @see QueryFactory#createQuery(Object))
+	 *  @see QueryFactory#createQuery(Object)
 	 */
 	CtQuery createQuery(Object input);
 }
