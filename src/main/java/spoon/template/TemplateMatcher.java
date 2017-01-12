@@ -182,7 +182,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * @return the matched elements
 	 */
 	public <T extends CtElement> List<T> find(final CtElement targetRoot) {
-		return (List<T>) targetRoot.filterChildren(this).list();
+		return targetRoot.filterChildren(this).list();
 	}
 
 	/**
