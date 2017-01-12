@@ -482,7 +482,49 @@
 	</executions>
       </plugin>
 
+      <!-- Used for checking backward compatibility (binary and source) -->
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <!-- Lock down plugin version for build reproducibility -->
+        <version>0.8.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.revapi</groupId>
+            <artifactId>revapi-java</artifactId>
+            <version>0.13.0</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>revapi-check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <alwaysCheckForReleaseVersion>false</alwaysCheckForReleaseVersion>
+          <oldVersion>LATEST</oldVersion>
+          <analysisConfiguration>
+            {
+              "revapi": {
+                "java": {
+                    "filter": {
+                      "packages": {
+                        "regex": true,
+                        "include": ["spoon\\..*"],
+                        "exclude": ["spoon\\..*\\.test(\\..*)?"]
+                      }
+                    }
+                }
+              }
+            }
+          </analysisConfiguration>
+        </configuration>
+      </plugin>
     </plugins>
+
 
     <pluginManagement>
       <plugins>
