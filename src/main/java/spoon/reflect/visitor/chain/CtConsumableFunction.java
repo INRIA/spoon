@@ -25,7 +25,7 @@ package spoon.reflect.visitor.chain;
  * the code or performance price of creating a list or an iterable object.
  *
  * It is typically used as parameter of {@link CtQueryable#map(CtConsumableFunction)}, can be written as one-liners
- * with Java8 lambdas:.`cls.map((CtClass&t;?> c, CtConsumer&t;Object> out)->out.accept(c.getParent()))`
+ * with Java8 lambdas:.`cls.map((CtClass&lt;?&gt; c, CtConsumer&lt;Object&gt; out)-&gt;out.accept(c.getParent()))`
  *
  * @param <T> the type of the input to the function
  */
