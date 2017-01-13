@@ -819,10 +819,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 		// remove declaring type
 		String[] split = signature.split("#");
-		String tmp = split[split.length-1];
+		String tmp = split[split.length - 1];
 		// remove return type
 		split = tmp.split(" ");
-		tmp = split[split.length-1];
+		tmp = split[split.length - 1];
 
 		final String actualSignature = tmp;
 		final String simpleName = actualSignature.split("\\(")[0];
@@ -841,8 +841,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		} else if (method.getAnnotation(overrideRef) != null) {
 			return true;
 		} else {
+			final CtTypeReference<?> superClass = getSuperclass();
 			try {
-				final CtTypeReference<?> superClass = getSuperclass();
 				if (superClass != null
 						&& superClass.getTypeDeclaration().hasMethod(method)) {
 					return true;
@@ -851,14 +851,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				// nothing to do here
 			}
 
-			try {
-				for (CtTypeReference<?> interfaces : getSuperInterfaces()) {
+			for (CtTypeReference<?> interfaces : getSuperInterfaces()) {
+				try {
 					if (interfaces.getTypeDeclaration().hasMethod(method)) {
 						return true;
 					}
+				} catch (final SpoonException e) {
+					// nothing to do here
 				}
-			} catch (final SpoonException e) {
-				// nothing to do here
 			}
 
 			return false;
