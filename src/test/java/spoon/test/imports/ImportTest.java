@@ -403,8 +403,11 @@ public class ImportTest {
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
-		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
+		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
+		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+
+		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
+		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
 		 								  
 	}
 
@@ -424,9 +427,12 @@ public class ImportTest {
 
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
-		assertTrue(mmwli.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedList.WrappedIterator")>=0);
-		 								  
+		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
+		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+
+		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
+		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
+
 	}
 
 	@Test
@@ -603,4 +609,25 @@ public class ImportTest {
 		assertTrue("The file should not contain a static import for NOFOLLOW_LINKS",!output.contains("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;"));
 		canBeBuilt(outputDir, 7);
 	}
+	
+	@Test
+	public void testAccessPath() {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/TransportIndicesShardStoresAction.java");
+		String outputDir = "./target/spooned-accessPath";
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+		CtType element = launcher.getFactory().Class().getAll().get(0);
+		
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		canBeBuilt(outputDir, 7);
+	}
+	
 }
