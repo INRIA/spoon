@@ -132,6 +132,8 @@ public class TemplateMatcher implements Filter<CtElement> {
 	/**
 	 * Constructs a matcher for a given template.
 	 *
+	 * @param templateRoot the template to match against
+	 *
 	 */
 	@SuppressWarnings("unchecked")
 	public TemplateMatcher(CtElement templateRoot) {
@@ -446,16 +448,11 @@ public class TemplateMatcher implements Filter<CtElement> {
 	}
 
 	/**
-	 * Matches a target program sub-tree against a template. Once this method
-	 * has been called, {@link #getMatches()} will give the matching parts if
-	 * any.
+	 * Matches a target program sub-tree against a template.
 	 *
 	 * @param targetRoot
 	 * 		the target to be tested for match
-	 * @param templateRoot
-	 * 		the template to match against
 	 * @return true if matches
-	 * @see #getMatches()
 	 */
 	@Override
 	public boolean matches(CtElement targetRoot) {

@@ -17,6 +17,7 @@
 package spoon.reflect.visitor.chain;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
  * <p>CtQuery represents a query, which can be used to traverse a spoon model and collect
  * children elements in several ways.</p>
  *
- * <p>Creation: A query is created either from a {@link CtElement}, or it can be defined first from {@link CtQueryImpl} and bound to root elements
+ * <p>Creation: A query is created either from a {@link CtElement}, or it can be defined first from {@link Factory#createQuery()} and bound to root elements
  * afterwards using {@link CtQuery#setInput(Object...)}.</p>
  *
  * <p>Chaining: In a query several steps can be chained, by chaining calls to map functions. The non-null outputs of one step

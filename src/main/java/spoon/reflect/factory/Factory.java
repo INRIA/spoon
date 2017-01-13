@@ -104,6 +104,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.visitor.chain.CtQuery;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -149,6 +150,8 @@ public interface Factory {
 	EvalFactory Eval(); // used 4 times
 
 	ConstructorFactory Constructor(); // used 3 times
+
+	QueryFactory Query();
 
 	/**
 	 *  @see CodeFactory#createAnnotation(CtTypeReference)
@@ -762,4 +765,13 @@ public interface Factory {
 	 */
 	CtTypeParameterReference createTypeParameterReference(String name);
 
+	/**
+	 *  @see QueryFactory#createQuery()
+	 */
+	CtQuery createQuery();
+
+	/**
+	 *  @see QueryFactory#createQuery(Object)
+	 */
+	CtQuery createQuery(Object input);
 }
