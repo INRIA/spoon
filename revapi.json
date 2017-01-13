@@ -1,26 +1,41 @@
 {
   "revapi": {
+    // use java module
+    // Doc there: http://revapi.org/modules/revapi-java/extensions/java.html
     "java": {
+
+      // filter rules to compare API
       "filter": {
+
+        // specify which package to filter
         "packages": {
           "regex": true,
           "include": ["spoon\\..*"],
           "exclude": ["spoon\\..*\\.test(\\..*)?"]
         }
-      },
-      "missing-classes": {
-        "behavior": "report"
+
+        /*
+        // Exclude all impl classes
+        "classes": {
+          "regex": true,
+          "exclude": [".*Impl.*"]
+        }
+        */
       }
     },
+
+    // use the semantic version module to check changes respectively to the versions of the API
+    // doc here: http://revapi.org/modules/revapi-basic-features/extensions/semver-ignore.html
     "semver" : {
       "ignore" : {
         "enabled" : true,
+
+        // specify to ignore kind of errors based on version number
         "versionIncreaseAllows" : {
           "major" : "breaking",
           "minor" : "nonBreaking",
           "patch" : "equivalent"
         },
-        "passThroughDifferences": ["java.class.nonPublicPartOfAPI"]
       }
     }
   }
