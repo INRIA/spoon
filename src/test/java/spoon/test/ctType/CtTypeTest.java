@@ -73,4 +73,72 @@ public class CtTypeTest {
 		assertFalse(xCtType.isSubtypeOf(xCtType.getFactory().Type().createReference("spoon.test.ctType.testclasses.Y")));
 		assertTrue(xCtType.getFactory().Type().get("spoon.test.ctType.testclasses.Y").isSubtypeOf(xCtType.getReference()));
 	}
+
+	@Test
+	public void testOverridesMethod() {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
+		launcher.run();
+
+		final CtClass<?> yClass= launcher.getFactory().Class().get(
+				"spoon.test.ctType.testclasses.Y");
+		assertFalse(yClass.overridesMethod("clone()"));
+		assertFalse(yClass.overridesMethod("equals(java.lang.Object)"));
+		assertFalse(yClass.overridesMethod("finalize()"));
+		assertFalse(yClass.overridesMethod("hashCode()"));
+		assertFalse(yClass.overridesMethod("toString()"));
+		assertFalse(yClass.overridesMethod("foo()"));
+
+		// check multiple overrides
+		final CtClass<?> multiOverrideClass = launcher.getFactory().Class().get(
+				"spoon.test.ctType.testclasses.MultiOverrideClass");
+		assertFalse(multiOverrideClass.overridesMethod("clone()"));
+		assertTrue(multiOverrideClass.overridesMethod("equals(java.lang.Object)"));
+		assertFalse(multiOverrideClass.overridesMethod("finalize()"));
+		assertTrue(multiOverrideClass.overridesMethod("hashCode()"));
+		assertTrue(multiOverrideClass.overridesMethod("toString()"));
+
+		// with @Override
+		final CtClass<?> aClass = launcher.getFactory().Class().get(
+				"spoon.test.ctType.testclasses.A");
+		assertTrue(aClass.overridesMethod("foo()"));
+		// prepend an arbitrary declaring type
+		assertTrue(aClass.overridesMethod("FooBar#foo()"));
+		assertTrue(aClass.overridesMethod("java.lang.Object#foo()"));
+		// prepend an arbitrary return type
+		assertTrue(aClass.overridesMethod("void foo()"));
+		assertTrue(aClass.overridesMethod("foobar foo()"));
+
+		// without @Override
+		final CtClass<?> bClass = launcher.getFactory().Class().get(
+				"spoon.test.ctType.testclasses.B");
+		assertTrue(bClass.overridesMethod("foo()"));
+		// prepend an arbitrary declaring type
+		assertTrue(bClass.overridesMethod("FooBar#foo()"));
+		assertTrue(bClass.overridesMethod("java.lang.Object#foo()"));
+		// prepend an arbitrary return type
+		assertTrue(bClass.overridesMethod("void foo()"));
+		assertTrue(bClass.overridesMethod("foobar foo()"));
+
+		// transitive
+		final CtClass<?> cClass = launcher.getFactory().Class().get(
+				"spoon.test.ctType.testclasses.C");
+		assertFalse(cClass.overridesMethod("foo()"));
+		final CtClass<?> dClass = launcher.getFactory().Class().get(
+				"spoon.test.ctType.testclasses.D");
+		// prepend an arbitrary declaring type
+		assertTrue(dClass.overridesMethod("FooBar#foo()"));
+		assertTrue(dClass.overridesMethod("java.lang.Object#foo()"));
+		// prepend an arbitrary return type
+		assertTrue(dClass.overridesMethod("void foo()"));
+		assertTrue(dClass.overridesMethod("foobar foo()"));
+
+		// from interface
+		final CtClass<?> wClass = launcher.getFactory().Class().get(
+				"spoon.test.ctType.testclasses.W");
+		assertFalse(cClass.overridesMethod("foo()"));
+		final CtClass<?> vClass = launcher.getFactory().Class().get(
+				"spoon.test.ctType.testclasses.V");
+		assertTrue(vClass.overridesMethod("foo()"));
+	}
 }

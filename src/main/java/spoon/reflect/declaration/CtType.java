@@ -237,6 +237,35 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	boolean hasMethod(CtMethod<?> method);
 
 	/**
+	 * Checks if this {@link CtType} overrides a method with given signature by:
+	 *
+	 *   checking if this type declares a method with signature
+	 *   {@code signature} => if yes, checking if the corresponding method is
+	 *   annotated with '@Override' => if not, checking if a superclass or
+	 *   interface declares a method with same signature.
+	 *
+	 * This method is safe to use with noclasspath mode. Additionally,
+	 * {@code false} is returned if {@code signature == null}.
+	 *
+	 * Note: {@link spoon.reflect.reference.CtExecutableReference#getSignature()}
+	 * usually prepends the qualified name of a method's declaring type (if
+	 * present). Thus, for the sake of convenience, the declaring type in
+	 * {@code signature} is not considered. For example, if {@code signature} is
+	 * 'spoon.foo#bar(java.lang.String)', only 'bar(java.lang.String)' is
+	 * processed. Analogously, the qualified name of a method's return type
+	 * prepended by {@link CtMethod#getSignature()} (which actually isn't part
+	 * a signature), is ignored as well.
+	 *
+	 * Note: The types of the parameters must be fully qualified. For instance,
+	 * 'foo(java.lang.Object).'
+	 *
+	 * @param signature The signature of the potentially overridden method.
+	 * @return true, if this {@link CtType} overrides a method with given
+	 * 			signature (or if {@code signature == null}), false otherwise.
+	 */
+	boolean overridesMethod(String signature);
+
+	/**
 	 * Sets the methods of this type.
 	 */
 	<C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods);

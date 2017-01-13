@@ -811,6 +811,59 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return false;
 	}
 
+	@Override
+	public boolean overridesMethod(final String signature) {
+		if (signature == null) {
+			return false;
+		}
+
+		// remove declaring type
+		String[] split = signature.split("#");
+		String tmp = split[split.length-1];
+		// remove return type
+		split = tmp.split(" ");
+		tmp = split[split.length-1];
+
+		final String actualSignature = tmp;
+		final String simpleName = actualSignature.split("\\(")[0];
+		final CtTypeReference overrideRef =
+				factory.Annotation().createReference(Override.class);
+
+		CtMethod method = null;
+		for (final CtMethod m : getMethodsByName(simpleName)) {
+			if (m.getSignature().split(" ")[1].equals(tmp)) {
+				method = m;
+				break;
+			}
+		}
+		if (method == null) {
+			return false;
+		} else if (method.getAnnotation(overrideRef) != null) {
+			return true;
+		} else {
+			try {
+				final CtTypeReference<?> superClass = getSuperclass();
+				if (superClass != null
+						&& superClass.getTypeDeclaration().hasMethod(method)) {
+					return true;
+				}
+			} catch (final SpoonException e) {
+				// nothing to do here
+			}
+
+			try {
+				for (CtTypeReference<?> interfaces : getSuperInterfaces()) {
+					if (interfaces.getTypeDeclaration().hasMethod(method)) {
+						return true;
+					}
+				}
+			} catch (final SpoonException e) {
+				// nothing to do here
+			}
+
+			return false;
+		}
+	}
 
 	@Override
 	public String getQualifiedName() {
