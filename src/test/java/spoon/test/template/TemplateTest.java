@@ -19,7 +19,6 @@ import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
-import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
 
@@ -28,7 +27,6 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -418,12 +416,23 @@ public class TemplateTest {
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
+		//match using legacy TemplateMatcher#find method
 		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
 
 		assertEquals(2, matches.size());
 
 		CtElement match1 = matches.get(0);
 		CtElement match2 = matches.get(1);
+
+		assertTrue(match1.equals(match2));
+		
+		//match using TemplateMatcher#matches method and query filter
+		matches = factory.getModel().getRootPackage().filterChildren(matcher).list();
+
+		assertEquals(2, matches.size());
+
+		match1 = matches.get(0);
+		match2 = matches.get(1);
 
 		assertTrue(match1.equals(match2));
 	}

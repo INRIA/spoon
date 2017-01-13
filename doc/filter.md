@@ -87,11 +87,12 @@ rootPackage
 
 Finally, if the CtFunction returns and Iterable or an Array then each item of the collection/array is sent to next query step or result.
 
-**Query reuse**. Method `setInput` allows you to reuse the same query over multiple inputs.
+**Query reuse**. Method `setInput` allows you to reuse the same query over multiple inputs. 
+In such case it makes sense to create unbound query using `Factory#createQuery()`.
 
 ```java
 // here is the query
-CtQuery q = new CtQueryImpl().map((CtClass c) -> c.getSimpleName());
+CtQuery q = factory.createQuery().map((CtClass c) -> c.getSimpleName());
 // using it on a first input
 String s1 = q.setInput(cls).list().get(0);
 // using it on a second input

@@ -37,6 +37,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.support.template.DefaultParameterMatcher;
@@ -58,7 +59,7 @@ import java.util.regex.Pattern;
 /**
  * This class defines an engine for matching a template to pieces of code.
  */
-public class TemplateMatcher {
+public class TemplateMatcher implements Filter<CtElement> {
 
 	private List<CtInvocation<?>> getMethods(CtClass<? extends Template<?>> root) {
 		CtExecutableReference<?> methodRef = root.getFactory().Executable()
@@ -131,7 +132,10 @@ public class TemplateMatcher {
 	/**
 	 * Constructs a matcher for a given template.
 	 *
+	 * @param templateRoot the template to match against
+	 *
 	 */
+	@SuppressWarnings("unchecked")
 	public TemplateMatcher(CtElement templateRoot) {
 		this.templateType = templateRoot.getParent(CtClass.class);
 		this.templateRoot = templateRoot;
@@ -139,7 +143,10 @@ public class TemplateMatcher {
 		typeVariables = getTemplateTypeParameters(templateType);
 		names = getTemplateNameParameters(templateType);
 		varArgs = getVarargs(templateType, variables);
-		this.templateType = templateType;
+		//check that template matches itself
+		if (helperMatch(this.templateRoot, this.templateRoot) == false) {
+			throw new SpoonException("TemplateMatcher was unable to find itself, it certainly indicates a bug. Please revise your template or report an issue.");
+		}
 	}
 
 	private boolean addMatch(Object template, Object target) {
@@ -177,31 +184,7 @@ public class TemplateMatcher {
 	 * @return the matched elements
 	 */
 	public <T extends CtElement> List<T> find(final CtElement targetRoot) {
-		CtScanner scanner = new CtScanner() {
-			@Override
-			public void scan(CtElement element) {
-				if (match(element, templateRoot)) {
-					finds.add(element);
-					// matches.clear();
-				}
-				super.scan(element);
-			}
-		};
-
-		scanner.scan(templateRoot);
-		if (!finds.contains(templateRoot)) {
-			throw new SpoonException("TemplateMatcher was unable to find itself, it certainly indicates a bug. Please revise your template or report an issue.");
-		}
-		finds.clear();
-
-		scanner.scan(targetRoot);
-
-		// This case can occur when we are scanning the entire package for example see TemplateTest#testTemplateMatcherWithWholePackage
-		if (finds.contains(templateRoot)) {
-			finds.remove(templateRoot);
-		}
-
-		return (List<T>) finds;
+		return targetRoot.filterChildren(this).list();
 	}
 
 	/**
@@ -465,18 +448,19 @@ public class TemplateMatcher {
 	}
 
 	/**
-	 * Matches a target program sub-tree against a template. Once this method
-	 * has been called, {@link #getMatches()} will give the matching parts if
-	 * any.
+	 * Matches a target program sub-tree against a template.
 	 *
 	 * @param targetRoot
 	 * 		the target to be tested for match
-	 * @param templateRoot
-	 * 		the template to match against
 	 * @return true if matches
-	 * @see #getMatches()
 	 */
-	private boolean match(CtElement targetRoot, CtElement templateRoot) {
+	@Override
+	public boolean matches(CtElement targetRoot) {
+		if (targetRoot == templateRoot) {
+			// This case can occur when we are scanning the entire package for example see TemplateTest#testTemplateMatcherWithWholePackage
+			// Correct template matches itself of course, but client does not want that
+			return false;
+		}
 		return helperMatch(targetRoot, templateRoot);
 	}
 

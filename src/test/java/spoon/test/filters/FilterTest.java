@@ -626,7 +626,7 @@ public class FilterTest {
 	public void testElementMapFunctionOtherContracts() throws Exception {
 		// contract: when a function returns an array, all non-null values are sent to the next step
 		final Launcher launcher = new Launcher();
-		CtQueryImpl q = new CtQueryImpl().map((String s)->new String[]{"a", null, s});
+		CtQuery q = launcher.getFactory().Query().createQuery().map((String s)->new String[]{"a", null, s});
 		List<String> list = q.setInput(null).list();
 		assertEquals(0, list.size());
 		
@@ -642,14 +642,14 @@ public class FilterTest {
 		assertEquals("c", list.get(1));
 
 		// contract: when input is null then the query function is not called at all.
-		CtQueryImpl q2 = new CtQueryImpl().map((String s)->{ throw new AssertionError();});
+		CtQuery q2 = launcher.getFactory().Query().createQuery().map((String s)->{ throw new AssertionError();});
 		assertEquals(0, q2.setInput(null).list().size());
 	}
 	@Test
 	public void testElementMapFunctionNull() throws Exception {
 		// contract: when a function returns null, it is discarded at the next step
 		final Launcher launcher = new Launcher();
-		CtQueryImpl q = new CtQueryImpl().map((String s)->null);
+		CtQuery q = launcher.getFactory().Query().createQuery().map((String s)->null);
 		List<String> list = q.setInput("c").list();
 		assertEquals(0, list.size());
 	}
@@ -692,7 +692,7 @@ public class FilterTest {
 		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
 
 		// here is the query
-		CtQuery q = new CtQueryImpl().map((CtClass c) -> c.getSimpleName());
+		CtQuery q = launcher.getFactory().Query().createQuery().map((CtClass c) -> c.getSimpleName());
 		// using it on a first input
 		assertEquals("Tacos", q.setInput(cls).list().get(0));
 		// using it on a second input
@@ -744,7 +744,7 @@ public class FilterTest {
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
 
 		// first query
-		CtQuery allChildPublicClasses = new CtQueryImpl().filterChildren((CtClass clazz)->clazz.hasModifier(ModifierKind.PUBLIC));
+		CtQuery allChildPublicClasses = launcher.getFactory().Query().createQuery().filterChildren((CtClass clazz)->clazz.hasModifier(ModifierKind.PUBLIC));
 
 		// second query,involving the first query
 		CtQuery q = launcher.getFactory().Package().getRootPackage().map((CtElement in)->allChildPublicClasses.setInput(in).list());
@@ -759,7 +759,7 @@ public class FilterTest {
 		context.count=0; //reset
 
 		// again second query, but now with CtConsumableFunction
-		CtQuery q2 = launcher.getFactory().Package().getRootPackage().map((CtElement in, CtConsumer<Object> out)->allChildPublicClasses.setInput(in).forEach(x -> out.accept(x)));
+		CtQuery q2 = launcher.getFactory().Package().getRootPackage().map((CtElement in, CtConsumer<Object> out)->allChildPublicClasses.setInput(in).forEach(out));
 
 		// now the assertions
 		q2.forEach((CtElement clazz)->{
@@ -780,7 +780,37 @@ public class FilterTest {
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
 		assertEquals(6, context.count);
+	}
+	
+	@Test
+	public void testEmptyQuery() throws Exception {
+		// contract: unbound or empty query
 
+		final Launcher launcher = new Launcher();
+		
+		//contract: empty query returns no element
+		assertEquals(0, launcher.getFactory().createQuery().list().size());
+		assertEquals(0, launcher.getFactory().createQuery(null).list().size());
+		//contract: empty query returns no element
+		launcher.getFactory().createQuery().forEach(x->fail());
+		launcher.getFactory().createQuery(null).forEach(x->fail());
+		//contract: empty query calls no mapping
+		assertEquals(0, launcher.getFactory().createQuery().map(x->{fail();return true;}).list().size());
+		assertEquals(0, launcher.getFactory().createQuery(null).map(x->{fail();return true;}).list().size());
+		//contract: empty query calls no filterChildren
+		assertEquals(0, launcher.getFactory().createQuery().filterChildren(x->{fail();return true;}).list().size());
+		assertEquals(0, launcher.getFactory().createQuery(null).filterChildren(x->{fail();return true;}).list().size());
+	}
+	
+	@Test
+	public void testBoundQuery() throws Exception {
+		// contract: bound query, without any mapping
 
+		final Launcher launcher = new Launcher();
+		
+		//contract: bound query returns bound element
+		List<String> list = launcher.getFactory().createQuery("x").list();
+		assertEquals(1, list.size());
+		assertEquals("x", list.get(0));
 	}
 }

@@ -105,6 +105,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 
@@ -333,6 +334,19 @@ public class FactoryImpl implements Factory, Serializable {
 			type = new TypeFactory(this);
 		}
 		return type;
+	}
+
+	private transient QueryFactory query;
+
+	/**
+	 * The query sub-factory.
+	 */
+	@Override
+	public QueryFactory Query() {
+		if (query == null) {
+			query = new QueryFactory(this);
+		}
+		return query;
 	}
 
 	/**
@@ -1024,4 +1038,13 @@ public class FactoryImpl implements Factory, Serializable {
 		return Type().createTypeParameterReference(name);
 	}
 
+	@Override
+	public CtQuery createQuery() {
+		return Query().createQuery();
+	}
+
+	@Override
+	public CtQuery createQuery(Object input) {
+		return Query().createQuery(input);
+	}
 }

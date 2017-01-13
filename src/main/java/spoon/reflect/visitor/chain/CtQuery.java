@@ -17,21 +17,22 @@
 package spoon.reflect.visitor.chain;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 
 import java.util.List;
 
 /**
- * CtQuery represents a query, which can be used to traverse a spoon model and collect
- * children elements in several ways.<br/>
+ * <p>CtQuery represents a query, which can be used to traverse a spoon model and collect
+ * children elements in several ways.</p>
  *
- * Creation: A query is created either from a {@link CtElement}, or it can be defined first from {@link CtQueryImpl} and bound to root elements
- * afterwards using {@link CtQuery#setInput(Object...)}.<br/>
+ * <p>Creation: A query is created either from a {@link CtElement}, or it can be defined first from {@link Factory#createQuery()} and bound to root elements
+ * afterwards using {@link CtQuery#setInput(Object...)}.</p>
  *
- * Chaining: In a query several steps can be chained, by chaining calls to map functions. The non-null outputs of one step
- * are given as input to the next step. An iterable or array output is considered as a set of different inputs for the next step.
+ * <p>Chaining: In a query several steps can be chained, by chaining calls to map functions. The non-null outputs of one step
+ * are given as input to the next step. An iterable or array output is considered as a set of different inputs for the next step.</p>
  *
- * Evaluation: A CtQuery is lazily evaluated once {@link CtQuery#list()} or {@link CtQuery#forEach(CtConsumer)} are called.<br/>
+ * <p>Evaluation: A CtQuery is lazily evaluated once {@link CtQuery#list()} or {@link CtQuery#forEach(CtConsumer)} are called.</p>
  *
  */
 public interface CtQuery extends CtQueryable {
@@ -55,7 +56,7 @@ public interface CtQuery extends CtQueryable {
 
 	/**
 	 * Query elements based on a function, the behavior depends on the return type of the function.
-	 * <table>
+	 * <table summary="">
 	 * <tr><td><b>Return type of `function`</b><td><b>Behavior</b>
 	 * <tr><td>{@link Boolean}<td>Select elements if the returned value of `function` is true (as for {@link Filter}).
 	 * <tr><td>? extends {@link Object}<td>Send the returned value of `function` to the next step

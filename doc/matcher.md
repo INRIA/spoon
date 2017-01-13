@@ -30,7 +30,7 @@ To define a template matcher one must:
 
 1. specify the "holes" of the template matcher 
 1. write the matcher in a dedicated method
-1. instantiate TemplateMatcher and call method `find`.
+1. instantiate TemplateMatcher and call method `find` or use it as Filter of a query.
 
 Taking again the same example.
 
@@ -53,9 +53,9 @@ CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0)).getBody().getStatement(0);
 TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 for (CtElement elems : matcher.find(aPackage)) { ... };
-			
+//or TemplateMatcher as a Filter of query
+aPackage.filterChildren(matcher).forEach((CtElement elem)->{ ... });
 ```
 
 For named elements, a wildcard can be specified: if the named element (eg a method) to be matched is called `f` and the template matcher class contains a template parameter called `f` (of type Object), all methods starting by `f` will be matched.
-
 
