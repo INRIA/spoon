@@ -152,7 +152,7 @@ entries:
           product: all
           version: all
 
-    - title: Processing source code elements
+    - title: Transforming source code
       audience: writers, designers
       platform: all
       product: all
@@ -173,36 +173,8 @@ entries:
             product: all
             version: all
 
-    - title: Templating source code
-      audience: writers, designers
-      platform: all
-      product: all
-      version: all
-
-      items:
-          - title: Template definition
+          - title: Templates
             url: /template_definition.html
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all
-
-          - title: Template instantiation
-            url: /template_instantiation.html
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all
-
-          - title: What can be templated?
-            url: /template_can_be_templated.html
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all
-
-          - title: Literal Template Parameter
-            url: /template_parameter.html
             audience: writers, designers
             platform: all
             product: all
