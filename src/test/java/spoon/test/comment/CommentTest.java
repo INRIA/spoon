@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
@@ -110,7 +111,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(61, comments.size());
+		assertEquals(64, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -249,8 +250,8 @@ public class CommentTest {
 		assertEquals(createFakeComment(f, "comment after then CtConditional"), ctConditional.getThenExpression().getComments().get(1));
 		assertEquals(createFakeComment(f, "comment before else CtConditional"), ctConditional.getElseExpression().getComments().get(0));
 		assertEquals(createFakeComment(f, "comment after else CtConditional"), ctLocalVariable1.getComments().get(0));
-		assertEquals("java.lang.Double dou = (i == 1)// comment after condition CtConditional" + newLine
-				+ " ? // comment before then CtConditional" + newLine
+		assertEquals("java.lang.Double dou = (i == 1// comment after condition CtConditional" + newLine
+				+ ") ? // comment before then CtConditional" + newLine
 				+ "null// comment after then CtConditional" + newLine
 				+ " : // comment before else CtConditional" + newLine
 				+ "new java.lang.Double((j / ((double) (i - 1))))", ctLocalVariable1.toString());
@@ -263,7 +264,18 @@ public class CommentTest {
 		assertEquals(createFakeComment(f, "comment after array value"), arrayValue.getComments().get(1));
 
 
-		CtReturn ctReturn = m1.getBody().getStatement(12);
+		CtLocalVariable ctLocalVariableString = m1.getBody().getStatement(12);
+		assertEquals(createFakeComment(f, "comment multi line string"), ((CtBinaryOperator)((CtBinaryOperator)ctLocalVariableString.getDefaultExpression()).getRightHandOperand()).getLeftHandOperand().getComments().get(0));
+		assertEquals("\"\" + (\"\"// comment multi line string" + newLine
+				+ " + \"\")", ctLocalVariableString.getDefaultExpression().toString());
+
+		ctLocalVariable1 = m1.getBody().getStatement(13);
+		ctConditional = (CtConditional) ctLocalVariable1.getDefaultExpression();
+		assertEquals("boolean c = (i == 1) ? // comment before then boolean CtConditional" + newLine
+				+ "i == 1// comment after then boolean CtConditional" + newLine
+				+ " : i == 2", ctLocalVariable1.toString());
+
+		CtReturn ctReturn = m1.getBody().getStatement(14);
 		assertEquals(createFakeComment(f, "comment return"), ctReturn.getComments().get(0));
 		assertEquals("// comment return" + newLine
 				+ "return ", ctReturn.toString());

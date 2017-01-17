@@ -75,6 +75,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -397,6 +398,10 @@ public class ParentExiter extends CtInheritanceScanner {
 				op.setLeftHandOperand(operator.getRightHandOperand());
 				op.setRightHandOperand((CtExpression<?>) child);
 				operator.setRightHandOperand(op);
+				int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+				SourcePosition leftPosition = op.getLeftHandOperand().getPosition();
+				SourcePosition rightPosition = op.getRightHandOperand().getPosition();
+				op.setPosition(op.getFactory().createSourcePosition(leftPosition.getCompilationUnit(), leftPosition.getSourceStart(), rightPosition.getSourceEnd(), lineSeparatorPositions));
 				return;
 			}
 		}
