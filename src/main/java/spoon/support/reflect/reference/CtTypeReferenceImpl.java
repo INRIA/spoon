@@ -465,7 +465,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
 		CtType<T> t = getDeclaration();
 		if (t == null) {
-			return RtHelper.getAllExecutables(getActualClass(), getFactory());
+			try {
+				return RtHelper.getAllExecutables(getActualClass(), getFactory());
+			} catch (final SpoonClassNotFoundException e) {
+				if (getFactory().getEnvironment().getNoClasspath()) {
+					return Collections.emptyList();
+				}
+				throw e;
+			}
 		} else {
 			return t.getDeclaredExecutables();
 		}
@@ -508,12 +515,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (t != null) {
 			return t.getSuperclass();
 		} else {
-			Class<T> c = getActualClass();
-			Class<?> sc = c.getSuperclass();
-			if (sc == null) {
-				return null;
+			try {
+				Class<T> c = getActualClass();
+				Class<?> sc = c.getSuperclass();
+				if (sc == null) {
+					return null;
+				}
+				return getFactory().Type().createReference(sc);
+			} catch (final SpoonClassNotFoundException e) {
+				if (getFactory().getEnvironment().getNoClasspath()) {
+					return null;
+				}
+				throw e;
 			}
-			return getFactory().Type().createReference(sc);
 		}
 	}
 
