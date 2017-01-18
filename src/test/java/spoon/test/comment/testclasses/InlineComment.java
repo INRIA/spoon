@@ -94,6 +94,16 @@ public class InlineComment {
 			3
 				// last comment at the end of array
 		};
+
+		String m = "" +
+				"" + // comment multi line string
+				"";
+
+		boolean c = (i == 1) ?
+				// comment before then boolean CtConditional
+				i == 1    // comment after then boolean CtConditional
+				:
+				i == 2;
 		// comment return
 		return;
 	}

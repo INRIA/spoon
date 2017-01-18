@@ -185,6 +185,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Enters an expression.
 	 */
 	protected void enterCtExpression(CtExpression<?> e) {
+		if (!(e instanceof CtStatement)) {
+			elementPrinterHelper.writeComment(e, CommentOffset.BEFORE);
+		}
 		printer.mapLine(e, sourceCompilationUnit);
 		if (shouldSetBracket(e)) {
 			context.parenthesedExpression.push(e);
@@ -220,6 +223,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		while ((context.parenthesedExpression.size() > 0) && e == context.parenthesedExpression.peek()) {
 			context.parenthesedExpression.pop();
 			printer.write(")");
+		}
+		if (!(e instanceof CtStatement)) {
+			elementPrinterHelper.writeComment(e, CommentOffset.AFTER);
 		}
 	}
 
@@ -507,9 +513,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtConditional(CtConditional<T> conditional) {
 		enterCtExpression(conditional);
 		CtExpression<Boolean> condition = conditional.getCondition();
-		if (!(condition instanceof CtStatement)) {
-			elementPrinterHelper.writeComment(condition, CommentOffset.BEFORE);
-		}
 		boolean parent;
 		try {
 			parent = conditional.getParent() instanceof CtAssignment || conditional.getParent() instanceof CtVariable;
@@ -524,18 +527,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (parent) {
 			printer.write(")");
 		}
-		if (!(condition instanceof CtStatement)) {
-			elementPrinterHelper.writeComment(condition, CommentOffset.AFTER);
-		}
 		printer.write(" ? ");
 		CtExpression<T> thenExpression = conditional.getThenExpression();
-		if (!(thenExpression instanceof CtStatement)) {
-			elementPrinterHelper.writeComment(thenExpression, CommentOffset.BEFORE);
-		}
 		scan(thenExpression);
-		if (!(thenExpression instanceof CtStatement)) {
-			elementPrinterHelper.writeComment(thenExpression, CommentOffset.AFTER);
-		}
 		printer.write(" : ");
 
 		CtExpression<T> elseExpression = conditional.getElseExpression();
@@ -543,13 +537,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if ((isAssign = elseExpression instanceof CtAssignment)) {
 			printer.write("(");
 		}
-		if (!(elseExpression instanceof CtStatement)) {
-			elementPrinterHelper.writeComment(elseExpression, CommentOffset.BEFORE);
-		}
 		scan(elseExpression);
-		if (!(elseExpression instanceof CtStatement)) {
-			elementPrinterHelper.writeComment(elseExpression, CommentOffset.AFTER);
-		}
 		if (isAssign) {
 			printer.write(")");
 		}
@@ -1188,7 +1176,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@SuppressWarnings("rawtypes")
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
-		elementPrinterHelper.writeComment(newArray, CommentOffset.BEFORE);
 		boolean isNotInAnnotation;
 		try {
 			isNotInAnnotation = (newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null);
@@ -1210,13 +1197,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.write("[");
 				if (newArray.getDimensionExpressions().size() > i) {
 					CtExpression<Integer> e = newArray.getDimensionExpressions().get(i);
-					if (!(e instanceof CtStatement)) {
-						elementPrinterHelper.writeComment(e, CommentOffset.BEFORE);
-					}
 					scan(e);
-					if (!(e instanceof CtStatement)) {
-						elementPrinterHelper.writeComment(e, CommentOffset.AFTER);
-					}
 				}
 				printer.write("]");
 				ref = ((CtArrayTypeReference) ref).getComponentType();
@@ -1227,21 +1208,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			List<CtExpression<?>> l_elements = newArray.getElements();
 			for (int i = 0; i < l_elements.size(); i++) {
 				CtExpression e = l_elements.get(i);
-				if (!(e instanceof CtStatement)) {
-					elementPrinterHelper.writeComment(e, CommentOffset.BEFORE);
-				}
 				scan(e);
 				printer.write(" , ");
 				if (i + 1 == l_elements.size()) {
-					/*
-					 * we have to remove last char before we writeComment.
-					 * We cannot simply skip adding of " , ",
-					 * because it influences formatting and EOL too
-					 */
 					printer.removeLastChar();
-				}
-				if (!(e instanceof CtStatement)) {
-					elementPrinterHelper.writeComment(e, CommentOffset.AFTER);
+					// if the last element c
+					List<CtComment> comments = elementPrinterHelper.getComments(e, CommentOffset.AFTER);
+					// if the last element contains an inline comment, print a new line before closing the array
+					if (!comments.isEmpty() && comments.get(comments.size() - 1).getCommentType() == CtComment.CommentType.INLINE) {
+						printer.insertLine();
+					}
 				}
 			}
 
