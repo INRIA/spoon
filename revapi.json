@@ -12,15 +12,14 @@
           "regex": true,
           "include": ["spoon\\..*"],
           "exclude": ["spoon\\..*\\.test(\\..*)?"]
-        }
+        },
 
-        /*
         // Exclude all impl classes
         "classes": {
           "regex": true,
           "exclude": [".*Impl.*"]
         }
-        */
+
       }
     },
 
@@ -36,6 +35,13 @@
           "minor" : "nonBreaking",
           "patch" : "equivalent"
         },
+      }
+    },
+
+    "reporter" : {
+      "text" : {
+        "minSeverity": "POTENTIALLY_BREAKING",
+        "output" : "target/revapi.report"
       }
     }
   }
