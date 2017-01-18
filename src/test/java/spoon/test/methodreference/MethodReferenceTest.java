@@ -5,17 +5,20 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.compiler.SpoonCompiler;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.methodreference.testclasses.Foo;
 
@@ -26,6 +29,7 @@ import java.util.function.Supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class MethodReferenceTest {
@@ -158,6 +162,40 @@ public class MethodReferenceTest {
 		assertNotNull(element.getExecutable().getDeclaringType());
 		assertEquals("Tacos", element.getExecutable().getDeclaringType().getSimpleName());
 		assertEquals("elemType::isInstance", element.toString());
+	}
+
+	@Test
+	public void testNoClasspathSuperExecutable() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("src/test/resources/noclasspath/superclass/UnknownSuperClass.java");
+		launcher.buildModel();
+		final CtModel model = launcher.getModel();
+
+		final CtTypeReference overrideRef = launcher.getFactory().
+				Annotation().createReference(Override.class);
+
+		// call `getSuperClass()` indirectly using `getOverridingExecutable()`
+
+		// some consistency checks...
+		assertEquals(1, model.getElements(
+				new NameFilter<CtMethod>("a")).size());
+		assertEquals(1, model.getElements(
+				new NameFilter<CtMethod>("b")).size());
+		assertEquals(1, model.getElements(
+				new NameFilter<CtMethod>("toString")).size());
+
+		// get super method of a class not available in classpath
+		final CtMethod bMethod = model.getElements(
+				new NameFilter<CtMethod>("b")).get(0);
+		assertNotNull(bMethod.getAnnotation(overrideRef));
+		assertNull(bMethod.getReference().getOverridingExecutable());
+
+		// get super method of a class available in classpath (Object)
+		final CtMethod toStringMethod = model.getElements(
+				new NameFilter<CtMethod>("toString")).get(0);
+		assertNotNull(toStringMethod.getAnnotation(overrideRef));
+		assertNotNull(toStringMethod.getReference().getOverridingExecutable());
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
