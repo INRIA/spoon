@@ -813,4 +813,25 @@ public class FilterTest {
 		assertEquals(1, list.size());
 		assertEquals("x", list.get(0));
 	}
+
+	@Test
+	public void testClassCastExceptionOnForEach() throws Exception {
+		// contract: bound query, without any mapping
+
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			int count = 0;
+		}
+		
+		Context context = new Context();
+		//contract: if the query produces elements which cannot be cast to forEach consumer, then they are ignored
+		launcher.getFactory().Package().getRootPackage().filterChildren(f->{return true;}).forEach((CtType t)->{
+			context.count++;
+		});
+		assertTrue(context.count>0);
+	}
 }

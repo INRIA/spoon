@@ -279,7 +279,12 @@ public class CtQueryImpl implements CtQuery {
 		}
 
 		private boolean isFailOnCCE() {
-			return getStep().isFailOnCCE();
+			AbstractStep step = getStep();
+			if (step == null) {
+				//it is final consumer. Never throw CCE on final forEach consumer
+				return false;
+			}
+			return step.isFailOnCCE();
 		}
 
 		private AbstractStep getStep() {
