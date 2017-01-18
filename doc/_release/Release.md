@@ -10,7 +10,7 @@ This article is a short summary of the [official documentation of sonatype](http
   1. download the keepass file
   1. import the keys with `gpg2 --import` (doc in keypass.kdbx)
   1. check with `gpg2 --list-keys`
-1. update  `~/.m2/settings.xml`  with passphrase and keyname (see below)
+1. update  `~/.m2/settings.xml`  with passphrase and keyname (see below and don't forget monperrus key also in keypass!)
 1. clean your project for the release and prepare the release `mvn release:clean release:prepare`
 1. `mvn release:perform` (sends the new version on Maven Central)
 1. check that the new version is on Maven Central (connect to `oss.sonatype.org`)
@@ -19,7 +19,7 @@ This article is a short summary of the [official documentation of sonatype](http
     - `git push origin spoon-core-X.X.X`
 1. update the `stable` branch
     - `git checkout stable`
-    - `git reset --hard <commit-id-last-master>` # We need two commits from previous release to deploy a hotfix.
+    - `git reset --hard <commit-id>` # Where commit-id corresponds to the last commit before those created by maven: we need two commits from previous release to deploy a hotfix.
     - `git push origin stable`
 1. update the doc, etc., see checklist below
 
@@ -57,9 +57,9 @@ This article is a short summary of the [official documentation of sonatype](http
       </activation>
       <properties>
         <gpg.executable>gpg2</gpg.executable>
-        <gpg.passphrase><!-- password of your pair of keys--></gpg.passphrase>
+        <gpg.passphrase><!-- password of the keys--></gpg.passphrase>
         <gpg.useagent>true</gpg.useagent>
-        <gpg.keyname><!-- your public id key --></gpg.keyname> 
+        <gpg.keyname><!-- the name of the key file --></gpg.keyname> 
       </properties>
     </profile>
   </profiles>
