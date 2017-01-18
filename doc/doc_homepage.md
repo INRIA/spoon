@@ -36,27 +36,27 @@ You have different options:
 Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/spoon). :-)
 
 <!-- .* Marker comment. -->
-- January 11, 2017: Spoon 5.5.0 is released. Happy new year!
-- October 27, 2016: Spoon 5.4.0 is released.
-- September 19, 2016: Spoon 5.3.0 is released.
-- June 30, 2016: Spoon 5.2.0 is released.
-- June 22, 2016: Spoon 5.1.1 is released.
-- March 21, 2016: Spoon 5.1.0 is released.
-- February 12, 2016: Spoon 5.0.2 is released.
-- February 3, 2016: Spoon 5.0.1 is released.
-- January 25, 2016: Spoon 5.0.0 is released.
-- November 18, 2015: Spoon 4.4.1 is released.
-- November 16, 2015: Spoon 4.4.0 is released.
-- September 22, 2015: Spoon 4.3.0 is released.
-- June 15, 2015: Spoon 4.2.0 is released.
-- May 7, 2015: Spoon 4.1.0 is released.
-- April 8, 2015: Spoon 4.0.0 is released.
-- February 11, 2015: Spoon 3.1 is released.
-- December 9, 2014: Spoon 3.0 is released.
-- November 12, 2014: Spoon 2.4 is released.
-- October 9, 2014: Spoon 2.3.1 is released.
-- September 12, 2014: Spoon 2.1 is released.
-- April 2, 2014: Spoon 2.0 is released.
+- January 11, 2017: Spoon 5.5.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.5.0). Happy new year!
+- October 27, 2016: Spoon 5.4.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.4.0).
+- September 19, 2016: Spoon 5.3.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.3.0).
+- June 30, 2016: Spoon 5.2.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.2.0).
+- June 22, 2016: Spoon 5.1.1 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.1.1).
+- March 21, 2016: Spoon 5.1.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.1.0).
+- February 12, 2016: Spoon 5.0.2 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.0.2).
+- February 3, 2016: Spoon 5.0.1 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.0.1).
+- January 25, 2016: Spoon 5.0.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.0.0).
+- November 18, 2015: Spoon 4.4.1 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.5.0).
+- November 16, 2015: Spoon 4.4.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-4.4.0).
+- September 22, 2015: Spoon 4.3.0 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2015-September/001803.html).
+- June 15, 2015: Spoon 4.2.0 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2015-June/001781.html).
+- May 7, 2015: Spoon 4.1.0 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2015-May/001774.html).
+- April 8, 2015: Spoon 4.0.0 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2015-April/001769.html).
+- February 11, 2015: Spoon 3.1 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2015-February/001741.html).
+- December 9, 2014: Spoon 3.0 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2014-December/001721.html).
+- November 12, 2014: Spoon 2.4 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2014-November/001710.html).
+- October 9, 2014: Spoon 2.3.1 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2014-October/001688.html).
+- September 12, 2014: Spoon 2.1 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2014-September/001683.html).
+- April 2, 2014: Spoon 2.0 is released [(changelog)](https://lists.gforge.inria.fr/pipermail/spoon-discuss/2014-March/001639.html).
 - September 30, 2013: Spoon 1.6 is released.
 - April 12, 2012: Spoon 1.5 is released.
 
