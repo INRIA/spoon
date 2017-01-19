@@ -268,7 +268,7 @@ public class ExecutableReferenceGenericTest {
 		if (!inv.getExecutable().getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
 			return new ArrayList<>();
 		}
-		return inv.getExecutable().getReferences(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+		return inv.getExecutable().getElements(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return reference.isConstructor();
