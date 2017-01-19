@@ -84,14 +84,6 @@ public abstract class AbstractAssert<T extends AbstractAssert<T, A>, A> {
 		return myself;
 	}
 
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public boolean equals(Object obj) {
-		throw new UnsupportedOperationException("\'equals\' is not supported...maybe you intended to call \'isEqualTo\'");
-	}
-
 	public int hashCode() {
 		return 1;
 	}
