@@ -834,4 +834,51 @@ public class FilterTest {
 		});
 		assertTrue(context.count>0);
 	}
+	
+	@Test
+	public void testEarlyTerminatingQuery() throws Exception {
+		// contract: a method first evaluates query until first element is found and then terminates the query
+
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			boolean wasTerminated = false;
+			void failIfTerminated(String place) {
+				assertTrue("The "+place+" is called after query was terminated.", wasTerminated==false);
+			}
+		}
+		
+		Context context = new Context();
+		
+		CtMethod firstMethod = launcher.getFactory().Package().getRootPackage().filterChildren(e->{
+			context.failIfTerminated("Filter#match of filterChildren");
+			return true;
+		}).map((CtElement e)->{
+			context.failIfTerminated("Array returning CtFunction#apply of map");
+			//send result twice to check that second item is skipped
+			return new CtElement[]{e,e};
+		}).map((CtElement e)->{
+			context.failIfTerminated("List returning CtFunction#apply of map");
+			//send result twice to check that second item is skipped
+			return Arrays.asList(new CtElement[]{e,e});
+		}).map((CtElement e, CtConsumer<Object> out)->{
+			context.failIfTerminated("CtConsumableFunction#apply of map");
+			if(e instanceof CtMethod) {
+				//this call should pass and cause termination of the query
+				out.accept(e);
+				context.wasTerminated = true;
+				//let it call out.accept(e); once more to check that next step is not called after query is terminated
+			}
+			out.accept(e);
+		}).map(e->{
+			context.failIfTerminated("CtFunction#apply of map after CtConsumableFunction");
+			return e;
+		}).first(CtMethod.class);
+		
+		assertTrue(firstMethod!=null);
+		assertTrue(context.wasTerminated);
+	}
 }

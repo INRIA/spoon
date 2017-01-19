@@ -109,6 +109,24 @@ public interface CtQuery extends CtQueryable {
 	<R> List<R> list(Class<R> itemClass);
 
 	/**
+	 * Actually evaluates the query and returns first elements produced in the last step.<br>
+	 * After the first element is found, the query evaluation is terminated.
+	 *
+	 * Note: The return type R is not checked by the query. So use the type, which matches the results of your query,
+	 * otherwise the ClassCastException will be thrown.
+	 * @return the first element found by the query.
+	 */
+	<R extends Object> R first();
+
+	/**
+	 * Same as {@link CtQuery#first()}, but with static typing on the return type
+	 * and the final filtering, which matches only the first result, which is assignable from that return type.
+	 *
+	 * @return the list of elements collected by the query.
+	 */
+	<R> R first(Class<R> itemClass);
+
+	/**
 	 * Defines whether this query will throw {@link ClassCastException}
 	 * when the output of the previous step cannot be cast to type of input of next step.
 	 * The default value is {@link QueryFailurePolicy#FAIL}, which means than exception is thrown when there is a mismatch<br>
