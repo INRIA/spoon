@@ -642,12 +642,6 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	@Override
-	@Deprecated
-	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startDeclaration, int startSource, int end, int[] lineSeparatorPositions) {
-		return new SourcePositionImpl(compilationUnit, startSource, end, lineSeparatorPositions);
-	}
-
-	@Override
 	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
 		return new SourcePositionImpl(compilationUnit, startSource, end, lineSeparatorPositions);
 	}

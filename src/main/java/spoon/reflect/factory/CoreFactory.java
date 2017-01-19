@@ -382,14 +382,6 @@ public interface CoreFactory {
 	/**
 	 * Creates a source position.
 	 */
-	@Deprecated
-	SourcePosition createSourcePosition(
-			CompilationUnit compilationUnit,
-			int startDeclaration, int startSource, int end, int[] lineSeparatorPositions);
-
-	/**
-	 * Creates a source position.
-	 */
 	SourcePosition createSourcePosition(
 			CompilationUnit compilationUnit,
 			int startSource, int end, int[] lineSeparatorPositions);
