@@ -77,11 +77,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public boolean isAssignableFrom(CtTypeReference<?> type) {
-		return false;
-	}
-
-	@Override
 	public boolean isGenerics() {
 		return true;
 	}

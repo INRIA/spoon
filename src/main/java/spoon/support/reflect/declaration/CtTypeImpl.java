@@ -539,11 +539,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public boolean isAssignableFrom(CtTypeReference<?> type) {
-		return isSubtypeOf(type);
-	}
-
-	@Override
 	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
 		if (method != null) {
 			for (CtTypeMember typeMember : new ArrayList<>(typeMembers)) {

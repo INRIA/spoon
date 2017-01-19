@@ -238,11 +238,6 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
-	public boolean isAssignableFrom(CtTypeReference<?> type) {
-		return false;
-	}
-
-	@Override
 	@UnsettableProperty
 	public <M, C extends CtType<Object>> C addMethod(CtMethod<M> method) {
 		// unsettable property

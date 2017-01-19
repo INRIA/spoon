@@ -195,11 +195,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	public boolean isAssignableFrom(CtTypeReference<?> type) {
-		return type != null && type.isSubtypeOf(this);
-	}
-
-	@Override
 	public boolean isPrimitive() {
 		return ("boolean".equals(getSimpleName()) || "byte".equals(getSimpleName()) || "double".equals(getSimpleName()) || "int".equals(getSimpleName()) || "short".equals(getSimpleName())
 				|| "char".equals(getSimpleName()) || "long".equals(getSimpleName()) || "float".equals(getSimpleName()) || "void".equals(getSimpleName()));
