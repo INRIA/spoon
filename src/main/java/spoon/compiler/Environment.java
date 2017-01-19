@@ -240,12 +240,6 @@ public interface Environment {
 	void setSourceClasspath(String[] sourceClasspath);
 
 	/**
-	 * Use {@link #getInputClassLoader()}
-	 */
-	@Deprecated
-	ClassLoader getClassLoader();
-
-	/**
 	 * Sets the option "noclasspath", use with caution (see explanation below).
 	 *
 	 * With this option, Spoon does not require the full classpath to build the
