@@ -171,15 +171,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	<E extends CtElement> List<E> getElements(Filter<E> filter);
 
 	/**
-	 * @param filter
-	 * @return
-	 *
-	 * @deprecated use {@link #getElements(Filter)} instead.
-	 */
-	@Deprecated
-	<T extends CtReference> List<T> getReferences(Filter<T> filter);
-
-	/**
 	 * Sets the position of this element and all its children element. Note that
 	 * this information is used to feed the line numbers in the generated
 	 * bytecode if any (which is useful for debugging).

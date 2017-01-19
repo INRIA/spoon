@@ -273,10 +273,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return factory.Query().createQuery(this).filterChildren(predicate);
 	}
 
-	public <T extends CtReference> List<T> getReferences(Filter<T> filter) {
-		return getElements(filter);
-	}
-
 	@Override
 	public CtElement getParent() throws ParentNotInitializedException {
 		if (parent == null) {
