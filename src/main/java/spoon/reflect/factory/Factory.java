@@ -660,12 +660,6 @@ public interface Factory {
 	CompilationUnit createCompilationUnit();
 
 	/**
-	 *  @see CoreFactory#createSourcePosition(CompilationUnit,int,int,int,int[])
-	 */
-	@Deprecated
-	SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startDeclaration, int startSource, int end, int[] lineSeparatorPositions);
-
-	/**
 	 *  @see CoreFactory#createSourcePosition(CompilationUnit,int,int,int[])
 	 */
 	SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions);

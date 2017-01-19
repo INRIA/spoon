@@ -932,12 +932,6 @@ public class FactoryImpl implements Factory, Serializable {
 		return Core().createCompilationUnit();
 	}
 
-	@Deprecated
-	@Override
-	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startDeclaration, int startSource, int end, int[] lineSeparatorPositions) {
-		return Core().createSourcePosition(compilationUnit, startDeclaration, startSource, end, lineSeparatorPositions);
-	}
-
 	@Override
 	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
 		return Core().createSourcePosition(compilationUnit, startSource, end, lineSeparatorPositions);
