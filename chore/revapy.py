@@ -13,6 +13,10 @@ if (args.__len__() < 3) or os.environ.get('GITHUB_TOKEN') == None or os.environ.
     print "The following environement variable must be set as well: GITHUB_TOKEN and TRAVIS_PULL_REQUEST"
     exit(1)
 
+if (str(os.environ.get('TRAVIS_PULL_REQUEST')) == "false"):
+    print "Revapi report ignored as this is not launched by PR."
+    exit(0)
+
 login = args[1]
 token = os.environ['GITHUB_TOKEN']
 repo_name = args[2]

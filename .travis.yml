@@ -39,6 +39,6 @@ script: |
   mvn coveralls:report -Pcoveralls --fail-never &&
 
   # documentation
-  python chore/check-links-in-doc.py
-  'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then python chore/revapy.py spoon-bot INRIA/spoon; fi'
+  python chore/check-links-in-doc.py &&
+  python chore/revapy.py spoon-bot INRIA/spoon
 
