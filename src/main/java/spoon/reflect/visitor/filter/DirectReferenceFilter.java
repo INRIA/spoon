@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2016 INRIA and contributors
+ * Copyright (C) 2006-2017 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -38,6 +38,9 @@ public class DirectReferenceFilter<T extends CtReference> extends AbstractFilter
 	}
 
 	public boolean matches(T reference) {
+		if (super.matches(reference) == false) {
+			return false;
+		}
 		return this.reference.equals(reference);
 	}
 }
