@@ -20,7 +20,7 @@ import java.io.File;
 
 /**
  * This interface defines generic resources that are used by
- * {@link SpoonCompiler} in the Java compilation process.
+ * {@link spoon.SpoonModelBuilder} in the Java compilation process.
  */
 public interface SpoonResource {
 

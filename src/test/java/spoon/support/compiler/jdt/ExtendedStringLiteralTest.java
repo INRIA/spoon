@@ -8,6 +8,7 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtExpression;
@@ -20,7 +21,7 @@ public class ExtendedStringLiteralTest {
 	public void testExtendedStringLiteral() throws Exception {
 		Launcher launcher = new Launcher() {
 			@Override
-			public SpoonCompiler createCompiler() {
+			public SpoonModelBuilder createCompiler() {
 				return new JDTBasedSpoonCompiler(getFactory()) {
 					@Override
 					protected JDTBatchCompiler createBatchCompiler() {
@@ -53,7 +54,7 @@ public class ExtendedStringLiteralTest {
 				};
 			}
 		};
-		SpoonCompiler comp = launcher.createCompiler();
+		SpoonModelBuilder comp = launcher.createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources(
 				"./src/test/java/spoon/support/compiler/jdt/ExtendedStringLiteralClass.java"));
 		comp.build();

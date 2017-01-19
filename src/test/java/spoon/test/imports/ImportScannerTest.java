@@ -2,6 +2,7 @@ package spoon.test.imports;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtClass;
@@ -64,7 +65,7 @@ public class ImportScannerTest {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 
-		SpoonCompiler compiler = spoon.createCompiler(
+		SpoonModelBuilder compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
 						"./src/test/java/spoon/test/imports/testclasses/MultiCatch.java"));
