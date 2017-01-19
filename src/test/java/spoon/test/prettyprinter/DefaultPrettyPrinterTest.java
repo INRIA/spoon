@@ -3,8 +3,8 @@ package spoon.test.prettyprinter;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -39,7 +39,7 @@ public class DefaultPrettyPrinterTest {
 		String packageName = "spoon.test.subclass.prettyprinter";
 		String className = "DefaultPrettyPrinterExample";
 		String qualifiedName = packageName + "." + className;
-		SpoonCompiler comp = new Launcher().createCompiler();
+		SpoonModelBuilder comp = new Launcher().createCompiler();
 		List<SpoonResource> fileToBeSpooned = SpoonResourceHelper.resources("./src/test/resources/printer-test/" + qualifiedName.replace('.', '/') + ".java");
 		assertEquals(1, fileToBeSpooned.size());
 		comp.addInputSources(fileToBeSpooned);
@@ -67,7 +67,7 @@ public class DefaultPrettyPrinterTest {
 		List<SpoonResource> files = SpoonResourceHelper.resources(sourcePath);
 		assertEquals(1, files.size());
 
-		SpoonCompiler comp = new Launcher().createCompiler();
+		SpoonModelBuilder comp = new Launcher().createCompiler();
 		comp.addInputSources(files);
 		comp.build();
 
@@ -82,7 +82,7 @@ public class DefaultPrettyPrinterTest {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
-		final SpoonCompiler compiler = launcher.createCompiler();
+		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/"));
 		compiler.build();
 
@@ -113,7 +113,7 @@ public class DefaultPrettyPrinterTest {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
-		final SpoonCompiler compiler = launcher.createCompiler();
+		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/"));
 		compiler.build();
 
@@ -140,7 +140,7 @@ public class DefaultPrettyPrinterTest {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
-		final SpoonCompiler compiler = launcher.createCompiler();
+		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/"));
 		compiler.build();
 
@@ -165,7 +165,7 @@ public class DefaultPrettyPrinterTest {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
-		final SpoonCompiler compiler = launcher.createCompiler();
+		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/sub/TypeIdentifierCollision.java"));
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java"));
 		compiler.build();

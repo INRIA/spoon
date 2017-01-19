@@ -18,7 +18,6 @@ package spoon.support.compiler;
 
 import spoon.SpoonModelBuilder;
 import spoon.compiler.ModelBuildingException;
-import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;

@@ -5,7 +5,6 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonCompiler;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;

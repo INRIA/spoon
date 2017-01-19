@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.VirtualFile;

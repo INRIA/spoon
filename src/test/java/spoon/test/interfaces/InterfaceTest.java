@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonCompiler;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;

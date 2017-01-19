@@ -2,7 +2,7 @@ package spoon.test.reference;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
@@ -81,7 +81,7 @@ public class TypeReferenceTest {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void loadReferencedClassFromClasspath() throws Exception {
-		SpoonCompiler comp = new Launcher().createCompiler();
+		SpoonModelBuilder comp = new Launcher().createCompiler();
 		Factory factory = comp.getFactory();
 
 		String packageName = "spoon.test.reference";
@@ -137,7 +137,7 @@ public class TypeReferenceTest {
 		 * the definitions of ClassB and ClassC were provided in the class path.
 		 */
 
-		SpoonCompiler comp = new Launcher().createCompiler();
+		SpoonModelBuilder comp = new Launcher().createCompiler();
 		Factory factory = comp.getFactory();
 
 		String qualifiedName = "spoontest.a.ClassA";

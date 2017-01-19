@@ -4,8 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtAnnotation;
@@ -70,13 +70,13 @@ public class PackageTest {
 
 		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(new File("./target/spooned/"), factory.getEnvironment()));
 		factory.getEnvironment().setAutoImports(false);
-		SpoonCompiler compiler = launcher.createCompiler(factory);
+		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		compiler.addInputSource(new File("./src/test/java/spoon/test/pkg/testclasses/"));
 		compiler.setSourceOutputDirectory(new File("./target/spooned/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
 
-		final SpoonCompiler newCompiler = launcher.createCompiler(launcher.createFactory());
+		final SpoonModelBuilder newCompiler = launcher.createCompiler(launcher.createFactory());
 		newCompiler.addInputSource(new File("./target/spooned/spoon/test/pkg/testclasses/"));
 
 		try {

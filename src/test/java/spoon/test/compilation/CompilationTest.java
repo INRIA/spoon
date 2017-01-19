@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;

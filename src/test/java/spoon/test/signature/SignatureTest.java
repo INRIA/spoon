@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
@@ -92,7 +91,7 @@ public class SignatureTest {
 				+ " Integer.toString(" + unboundVarAccess + ");"
 				+ " return null;" + "}};";
 
-		SpoonCompiler builder = new JDTSnippetCompiler(factory, content);
+		SpoonModelBuilder builder = new JDTSnippetCompiler(factory, content);
 		try {
 			builder.build();
 			Assert.fail();
@@ -198,7 +197,7 @@ public class SignatureTest {
 				+ "}"
 				+ "};";
 
-		SpoonCompiler builder = new JDTSnippetCompiler(factory, content);
+		SpoonModelBuilder builder = new JDTSnippetCompiler(factory, content);
 
 		builder.build();
 
@@ -262,7 +261,7 @@ public class SignatureTest {
 				+ "}"
 				+ "};";
 
-		SpoonCompiler builder = new JDTSnippetCompiler(factory, content);
+		SpoonModelBuilder builder = new JDTSnippetCompiler(factory, content);
 		try{
 		builder.build();
 		fail();
@@ -316,7 +315,7 @@ public class SignatureTest {
 		// must have different signatures
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		SpoonCompiler comp = launcher.createCompiler();
+		SpoonModelBuilder comp = launcher.createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources("./src/main/java/spoon/SpoonModelBuilder.java"));
 		comp.build();
 		CtType<?> ctClass = (CtType<?>) comp.getFactory().Type().get(SpoonModelBuilder.class);

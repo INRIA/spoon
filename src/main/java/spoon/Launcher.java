@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
