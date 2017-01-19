@@ -621,11 +621,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 	}
 
 	@Override
-	public boolean compileInputSources() {
-		return compile(InputType.FILES);
-	}
-
-	@Override
 	public void addCompilationUnitFilter(final CompilationUnitFilter filter) {
 		compilationUnitFilters.add(filter);
 	}

@@ -109,10 +109,6 @@ public interface SpoonModelBuilder {
 	 */
 	boolean compile(InputType... types);
 
-	/** replaced by {@link #compile(InputType...)} */
-	@Deprecated
-	boolean compileInputSources();
-
 	/**
 	 * Takes a list of fully qualified name processors and instantiates them to process
 	 * the Java model.
