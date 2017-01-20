@@ -8,10 +8,23 @@ revapi_file = "./target/revapi.report"
 
 args = sys.argv
 
-if (args.__len__() < 3) or os.environ.get('GITHUB_TOKEN') == None or os.environ.get('TRAVIS_PULL_REQUEST') == None:
+def usage():
     print "Usage: "+str(args[0])+ " <login> <repository>"
     print "The following environement variable must be set as well: GITHUB_TOKEN and TRAVIS_PULL_REQUEST"
     exit(1)
+
+if (args.__len__() < 3):
+    print "Error in the args number"
+    usage()
+
+if os.environ.get('GITHUB_TOKEN') == None:
+    print "You forgot to specify GITHUB_TOKEN"
+    usage()
+
+if os.environ.get('TRAVIS_PULL_REQUEST') == None:
+    print "You forgot to specify TRAVIS_PULL_REQUEST"
+    usage()
+
 
 if (str(os.environ.get('TRAVIS_PULL_REQUEST')) == "false"):
     print "Revapi report ignored as this is not launched by PR."
