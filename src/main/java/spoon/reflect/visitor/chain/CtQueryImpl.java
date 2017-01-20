@@ -77,6 +77,40 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	/**
+	 * The evaluation context of the CtQuery. Can be used to bind the query the the output {@link CtConsumer}
+	 * using {@link CtQueryContext#setOutputConsumer(CtConsumer)} and then
+	 * <ul>
+	 * <li>to evaluate the query on provided input using {@link CtQueryContext#accept(Object)}
+	 * <li>to terminate the query evaluation at any phase of query execution using {@link CtQueryContext#terminate()}
+	 * <li>to check if query is terminated at any phase of query execution using {@link CtQueryContext#isTerminated()}
+	 * and to stop an expensive query evaluating process
+	 * </ul>
+	 */
+	private interface CtQueryContext extends CtConsumer<Object> {
+		/**
+		 * @return the {@link CtConsumer} used to deliver results of the query evaluation
+		 */
+		CtConsumer<?> getOutputConsumer();
+		/**
+		 * @param outputConsumer the {@link CtConsumer} used to deliver results of the query evaluation
+		 * @return this to support fluent API
+		 */
+		CtQueryContext setOutputConsumer(CtConsumer<?> outputConsumer);
+
+		/**
+		 * terminates current query evaluation.
+		 * This method returns normally. It does not throw exception.
+		 * But it causes that query evaluation engine terminates
+		 * and returns all the till now collected results.
+		 */
+		void terminate();
+		/**
+		 * @return true if evaluation has to be/was terminated
+		 */
+		boolean isTerminated();
+	}
+
+	/**
 	 * Creates CtQueryContext, which can be used to evaluate or terminate the query.
 	 * Usage:<br>
 	 * <pre>
@@ -93,7 +127,7 @@ public class CtQueryImpl implements CtQuery {
 	 * </pre>
 	 * @return new instance of CtQueryContext of this query
 	 */
-	public <R> CtQueryContext createQueryContext() {
+	private <R> CtQueryContext createQueryContext() {
 		return new CurrentStep();
 	}
 
