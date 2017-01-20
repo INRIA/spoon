@@ -165,9 +165,9 @@ public class CtQueryImpl implements CtQuery {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <R> R first(Class<R> itemClass) {
-		CtQueryContext cc = createQueryContext();
-		Object[] result = new Object[1];
+	public <R> R first(final Class<R> itemClass) {
+		final CtQueryContext cc = createQueryContext();
+		final Object[] result = new Object[1];
 		cc.setOutputConsumer(new CtConsumer<R>() {
 			@Override
 			public void accept(R out) {
