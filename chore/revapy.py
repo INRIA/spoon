@@ -1,7 +1,9 @@
 #!/usr/bin/python
-# Retrieve revapi Report and publish it as PR comment
+# Retrieve revapi report from target and publish it as PR comment
+# This script intends to be launched by a webhooks and take as parameter the hook payload
+# see: https://developer.github.com/v3/activity/events/types/#pullrequestevent
 
-import os, sys
+import os, sys, json
 from github import *
 
 revapi_file = "./target/revapi.report"
@@ -9,31 +11,12 @@ revapi_file = "./target/revapi.report"
 args = sys.argv
 
 def usage():
-    print "Usage: "+str(args[0])+ " <login> <repository>"
-    print "The following environement variable must be set as well: GITHUB_TOKEN and TRAVIS_PULL_REQUEST"
+    print "Usage: "+str(args[0])+ " <github_login> <github_token> <PRPayload>"
     exit(1)
 
-if (args.__len__() < 3):
+if (args.__len__() < 4):
     print "Error in the args number"
     usage()
-
-if os.environ.get('GITHUB_TOKEN') == None:
-    print "You forgot to specify GITHUB_TOKEN"
-    usage()
-
-if os.environ.get('TRAVIS_PULL_REQUEST') == None:
-    print "You forgot to specify TRAVIS_PULL_REQUEST"
-    usage()
-
-
-if (str(os.environ.get('TRAVIS_PULL_REQUEST')) == "false"):
-    print "Revapi report ignored as this is not launched by PR."
-    exit(0)
-
-login = args[1]
-token = os.environ['GITHUB_TOKEN']
-repo_name = args[2]
-pr_id = int(os.environ['TRAVIS_PULL_REQUEST'])
 
 if (not(os.path.isfile(revapi_file))):
     print "Revapi report file cannot be found at the following location: "+revapi_file
@@ -48,8 +31,21 @@ if (file_content == ""):
     print "Revapi report is empty"
     exit(1)
 
+login = args[1]
+token = args[2]
+
 try:
     gh = Github(login,token)
+except GithubException as e:
+    print "Error while connecting to github, are you sure about your credentials?"
+    print e
+    exit(1)
+
+payloadJSON = json.loads(args[3])
+repo_name = payloadJSON['repository']['full_name']
+pr_id = payloadJSON['pull_request']['number']
+
+try:
     repo = gh.get_repo(repo_name,True)
 
     pr = repo.get_pull(pr_id)

@@ -8,10 +8,6 @@ jdk:
 # from https://docs.travis-ci.com/user/customizing-the-build
 # A build on Travis CI is made up of two steps: install: (install any dependencies required), script: (run the build script)
 
-env:
-  global:
-    - secure: "P76wAc2GqqrNu8062IvCOLO3i+bt2UPoARKRGhFf0J7SBs8Lzg/W2VAFW/oe2m8gjjr5a7X95hUmHsmnvpJ87sIn6j4xcDNohVouE32J1K4D+tChdwWLN2AS2D5gphkclW4JKMmQjuk6Sat/iEXW1PWgbe9xKJzW9vZKazxC9M8="
-
 install:
   - # download deps with maven
   - mvn dependency:resolve
@@ -40,6 +36,5 @@ script: |
   mvn coveralls:report -Pcoveralls --fail-never &&
 
   # documentation
-  python chore/check-links-in-doc.py &&
-  python chore/revapy.py spoon-bot INRIA/spoon
+  python chore/check-links-in-doc.py
 
