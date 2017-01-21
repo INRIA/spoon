@@ -535,6 +535,20 @@ public class FilterTest {
 	}
 	
 	@Test
+	public void testFilterQueryStep() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		//Contract: the filter(Filter) can be used to detect if input of query step should pass to next query step.
+		List<CtElement> realList = launcher.getFactory().Package().getRootPackage().filterChildren(e->{return true;}).select(new TypeFilter<>(CtClass.class)).list();
+		List<CtElement> expectedList = launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class)).list();
+		assertArrayEquals(expectedList.toArray(), realList.toArray());
+		assertTrue(expectedList.size()>0);
+	}
+
+	@Test
 	public void testFunctionQueryStep() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });

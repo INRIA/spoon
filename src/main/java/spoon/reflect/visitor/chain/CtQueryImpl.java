@@ -126,6 +126,18 @@ public class CtQueryImpl implements CtQuery {
 		return this;
 	}
 
+	@Override
+	public <R extends CtElement> CtQueryImpl select(final Filter<R> filter) {
+		map(new CtFunction<R, Boolean>() {
+			@Override
+			public Boolean apply(R input) {
+				return filter.matches(input);
+			}
+		});
+		stepFailurePolicy(QueryFailurePolicy.IGNORE);
+		return this;
+	}
+
 	/**
 	 * Evaluates this query, ignoring bound input - if any
 	 *

@@ -53,6 +53,16 @@ public interface CtQuery extends CtQueryable {
 	@Override
 	<R extends CtElement> CtQuery filterChildren(Filter<R> filter);
 
+	/**
+	 * The matched element for which (filter.matches(element)==true) is sent to the next query step.
+	 *
+	 * The elements which throw {@link ClassCastException} during {@link Filter#matches(CtElement)}
+	 * are considered as **not matching**, ie. are excluded.
+	 *
+	 * @param filter used to detect if input element can pass to next query step
+	 * @return this to support fluent API
+	 */
+	<R extends CtElement> CtQuery select(Filter<R> filter);
 
 	/**
 	 * Query elements based on a function, the behavior depends on the return type of the function.
