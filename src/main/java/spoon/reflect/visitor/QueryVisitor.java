@@ -35,13 +35,19 @@ import spoon.support.util.RtHelper;
 public class QueryVisitor<T extends CtElement> extends CtScanner {
 	private final Filter<T> filter;
 	private final Class<T> filteredType;
-	private final List<T> result = new ArrayList<>();
+	private final ElementConsumer<T> consumer;
 
 	/**
 	 * Constructs a query visitor with a given filter.
 	 */
-	@SuppressWarnings("unchecked")
 	public QueryVisitor(Filter<T> filter) {
+		this(filter, new ArrayConsumer<T>());
+	}
+
+	/**
+	 * Constructs a query visitor with a given filter and Consumer.
+	 */
+	public QueryVisitor(Filter<T> filter, ElementConsumer<T> consumer) {
 		super();
 		this.filter = filter;
 		if (filter instanceof AbstractFilter) {
@@ -53,13 +59,25 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 			}
 			filteredType = (Class<T>) method.getParameterTypes()[0];
 		}
+		this.consumer = consumer;
+	}
+
+	private static class ArrayConsumer<T extends CtElement> implements ElementConsumer<T> {
+		final List<T> result = new ArrayList<>();
+		@Override
+		public void accept(T e) {
+			result.add(e);
+		}
 	}
 
 	/**
 	 * Gets the result (elements matching the filter).
 	 */
 	public List<T> getResult() {
-		return result;
+		if (consumer instanceof ArrayConsumer) {
+			return ((ArrayConsumer<T>) consumer).result;
+		}
+		throw new SpoonException("getResult() cannot be used on QueryVistor with consumer");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -71,7 +89,7 @@ public class QueryVisitor<T extends CtElement> extends CtScanner {
 		try {
 			if ((filteredType == null || filteredType.isAssignableFrom(element.getClass()))) {
 				if (filter.matches((T) element)) {
-					result.add((T) element);
+					consumer.accept((T) element);
 				}
 			}
 		} catch (ClassCastException e) {

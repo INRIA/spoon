@@ -22,6 +22,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
+import spoon.reflect.visitor.ElementConsumer;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Root;
 import spoon.reflect.visitor.chain.CtQueryable;
@@ -169,6 +170,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * If the receiver (this) matches the filter, it is also returned
 	 */
 	<E extends CtElement> List<E> getElements(Filter<E> filter);
+	/**
+	 * calls the {@link ElementConsumer#accept(CtElement)} for all the children elements recursively matching the filter.
+	 * If the receiver (this) matches the filter, it is also sent to accept
+	 */
+	<E extends CtElement> void forEachElement(Filter<E> filter, ElementConsumer<E> consumer);
 
 	/**
 	 * @param filter

@@ -28,6 +28,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ElementConsumer;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
@@ -271,6 +272,11 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public <P extends CtElement> CtQuery filterChildren(Filter<P> predicate) {
 		return factory.Query().createQuery(this).filterChildren(predicate);
+	}
+
+	@Override
+	public <E extends CtElement> void forEachElement(Filter<E> filter, ElementConsumer<E> p_consumer) {
+		Query.forEachElement(this, filter, p_consumer);
 	}
 
 	public <T extends CtReference> List<T> getReferences(Filter<T> filter) {

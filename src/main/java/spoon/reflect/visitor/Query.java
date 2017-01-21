@@ -67,6 +67,11 @@ public abstract class Query {
 		return rootElement.filterChildren(filter).list();
 	}
 
+	public static <E extends CtElement> void forEachElement(CtElement rootElement, Filter<E> filter, ElementConsumer<E> consumer) {
+		new QueryVisitor<>(filter, consumer).scan(rootElement);
+	}
+
+
 	/**
 	 * Returns all the program element references that match the filter.
 	 *
@@ -103,5 +108,6 @@ public abstract class Query {
 			Factory factory, Filter<R> filter) {
 		return getElements(factory, filter);
 	}
+
 
 }
