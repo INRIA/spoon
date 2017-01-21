@@ -47,7 +47,8 @@ public interface CtQuery extends CtQueryable {
 	 * The elements which throw {@link ClassCastException} during {@link Filter#matches(CtElement)}
 	 * are considered as **not matching**, ie. are excluded.
 	 *
-	 * @param filter used to filter scanned children elements of the AST tree
+	 * @param filter used to filter scanned children elements of the AST tree.
+	 * 	If null then all children elements pass to next step.
 	 * @return this to support fluent API
 	 */
 	@Override
