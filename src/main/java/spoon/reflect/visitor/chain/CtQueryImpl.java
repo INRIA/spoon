@@ -24,7 +24,7 @@ import java.util.List;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Filter;
 
 /**
@@ -76,9 +76,65 @@ public class CtQueryImpl implements CtQuery {
 		return this;
 	}
 
+	/**
+	 * The evaluation context of the CtQuery. Can be used to bind the query the the output {@link CtConsumer}
+	 * using {@link CtQueryContext#outputConsumer(CtConsumer)} and then
+	 * <ul>
+	 * <li>to evaluate the query on provided input using {@link CtQueryContext#accept(Object)}
+	 * <li>to terminate the query evaluation at any phase of query execution using {@link CtQueryContext#terminate()}
+	 * <li>to check if query is terminated at any phase of query execution using {@link CtQueryContext#isTerminated()}
+	 * and to stop an expensive query evaluating process
+	 * </ul>
+	 */
+	private interface CtQueryContext extends CtConsumer<Object> {
+		/**
+		 * @return the {@link CtConsumer} used to deliver results of the query evaluation
+		 */
+		CtConsumer<?> getOutputConsumer();
+		/**
+		 * @param outputConsumer the {@link CtConsumer} used to deliver results of the query evaluation
+		 * @return this to support fluent API
+		 */
+		CtQueryContext outputConsumer(CtConsumer<?> outputConsumer);
+
+		/**
+		 * terminates current query evaluation.
+		 * This method returns normally. It does not throw exception.
+		 * But it causes that query evaluation engine terminates
+		 * and returns all the till now collected results.
+		 */
+		void terminate();
+		/**
+		 * @return true if evaluation has to be/was terminated
+		 */
+		boolean isTerminated();
+	}
+
+	/**
+	 * Creates CtQueryContext, which can be used to evaluate or terminate the query.
+	 * Usage:<br>
+	 * <pre>
+	 * {@code
+	 * CtQueryContext cc = factory.createQuery().map(...).createQueryContext();
+	 * cc.setOutputConsumer(e->{
+	 *   //... process returned elements
+	 *   //... or optionally terminate the query by
+	 *   cc.terminate();
+	 * });
+	 * //evaluate the query with `input`. The results will be delivered to `resultConsumer`
+	 * cc.accept(input);
+	 * }
+	 * </pre>
+	 * @return new instance of CtQueryContext of this query
+	 */
+	private <R> CtQueryContext createQueryContext() {
+		return new CurrentStep();
+	}
+
 	public <R> void forEach(CtConsumer<R> consumer) {
+		CtQueryContext cc = createQueryContext().outputConsumer(consumer);
 		for (Object input : inputs) {
-			evaluate(input, consumer);
+			cc.accept(input);
 		}
 	}
 
@@ -100,6 +156,31 @@ public class CtQueryImpl implements CtQuery {
 			}
 		});
 		return list;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public <R> R first() {
+		return (R) first(Object.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <R> R first(final Class<R> itemClass) {
+		final CtQueryContext cc = createQueryContext();
+		final Object[] result = new Object[1];
+		cc.outputConsumer(new CtConsumer<R>() {
+			@Override
+			public void accept(R out) {
+				if (out != null && itemClass.isAssignableFrom(out.getClass())) {
+					result[0] = out;
+					cc.terminate();
+				}
+			}
+		});
+		for (Object input : inputs) {
+			cc.accept(input);
+		}
+		return (R) result[0];
 	}
 
 	private List<AbstractStep> steps = new ArrayList<>();
@@ -145,7 +226,7 @@ public class CtQueryImpl implements CtQuery {
 	 * @param outputConsumer method accept of the outputConsumer is called for each element produced by last mapping function of this query
 	 */
 	public <I, R> void evaluate(I input, CtConsumer<R> outputConsumer) {
-		new CurrentStep(outputConsumer).accept(input);
+		createQueryContext().outputConsumer(outputConsumer).accept(input);
 	}
 
 	@Override
@@ -239,18 +320,29 @@ public class CtQueryImpl implements CtQuery {
 	 * This class plays a role of an orchestrator to move the step cursor forward,
 	 * get the step, apply it and finally to call the output consumer.
 	 */
-	private class CurrentStep implements CtConsumer<Object> {
-		private final CtConsumer<?> outputConsumer;
+	private class CurrentStep implements CtQueryContext {
+		private CtConsumer<?> outputConsumer;
 		private int stepIdx = 0;
+		private boolean terminated = false;
 
-		CurrentStep(CtConsumer<?> outputConsumer) {
+		CurrentStep() {
+		}
+
+		@Override
+		public CtConsumer<?> getOutputConsumer() {
+			return outputConsumer;
+		}
+
+		@Override
+		public CtQueryContext outputConsumer(CtConsumer<?> outputConsumer) {
 			this.outputConsumer = outputConsumer;
+			return this;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public void accept(Object input) {
-			if (input == null) {
+			if (input == null || isTerminated()) {
 				return;
 			}
 			stepIdx++;
@@ -267,10 +359,12 @@ public class CtQueryImpl implements CtQuery {
 				} else {
 					//send element to outputConsumer, it means return one value of the query
 					log(this, "returning", input);
-					try {
-						((CtConsumer<Object>) outputConsumer).accept(input);
-					} catch (ClassCastException e) {
-						onClassCastException(this, e, input);
+					if (outputConsumer != null) {
+						try {
+							((CtConsumer<Object>) outputConsumer).accept(input);
+						} catch (ClassCastException e) {
+							onClassCastException(this, e, input);
+						}
 					}
 				}
 			} finally {
@@ -306,6 +400,16 @@ public class CtQueryImpl implements CtQuery {
 		@Override
 		public String toString() {
 			return "Step " + getName();
+		}
+
+		@Override
+		public void terminate() {
+			terminated = true;
+		}
+
+		@Override
+		public boolean isTerminated() {
+			return terminated;
 		}
 	}
 
@@ -388,7 +492,7 @@ public class CtQueryImpl implements CtQuery {
 				onClassCastException(outputConsumer, e, input);
 				return;
 			}
-			if (result == null) {
+			if (result == null || outputConsumer.isTerminated()) {
 				return;
 			}
 			if (result instanceof Boolean) {
@@ -404,6 +508,9 @@ public class CtQueryImpl implements CtQuery {
 				//send each item of Iterable to the next step
 				for (Object out : (Iterable<Object>) result) {
 					outputConsumer.accept(out);
+					if (outputConsumer.isTerminated()) {
+						return;
+					}
 				}
 				return;
 			}
@@ -411,6 +518,9 @@ public class CtQueryImpl implements CtQuery {
 				//send each item of Array to the next step
 				for (int i = 0; i < Array.getLength(result); i++) {
 					outputConsumer.accept(Array.get(result, i));
+					if (outputConsumer.isTerminated()) {
+						return;
+					}
 				}
 				return;
 			}
@@ -421,7 +531,7 @@ public class CtQueryImpl implements CtQuery {
 	/**
 	 * a step which scans all children of input element and only elements matching filter go to the next step
 	 */
-	private class ChildrenFilteringFunction extends CtScanner implements CtConsumableFunction<CtElement> {
+	private class ChildrenFilteringFunction extends EarlyTerminatingScanner<Void> implements CtConsumableFunction<CtElement> {
 
 		protected CurrentStep next;
 		private Filter<CtElement> filter;
@@ -441,9 +551,13 @@ public class CtQueryImpl implements CtQuery {
 			processFilter(element);
 			super.scan(element);
 		}
+		@Override
+		protected boolean isTerminated() {
+			return next.isTerminated();
+		}
 
 		private void processFilter(CtElement element) {
-			if (element == null) {
+			if (element == null || isTerminated()) {
 				return;
 			}
 			boolean matches = true;
@@ -454,6 +568,9 @@ public class CtQueryImpl implements CtQuery {
 					onClassCastException(next, e, element);
 					return;
 				}
+			}
+			if (isTerminated()) {
+				return;
 			}
 			if (matches) {
 				//send input to output, because Fitler.matches returned true

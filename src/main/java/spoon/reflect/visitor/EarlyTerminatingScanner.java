@@ -18,7 +18,9 @@ package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 public class EarlyTerminatingScanner<T> extends CtScanner {
 
@@ -27,6 +29,10 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 
 	protected void terminate() {
 		terminate = true;
+	}
+
+	protected boolean isTerminated() {
+		return terminate;
 	}
 
 	protected void setResult(T result) {
@@ -39,15 +45,22 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 
 	@Override
 	public void scan(Collection<? extends CtElement> elements) {
-		if (terminate) {
+		if (isTerminated() || elements == null) {
 			return;
 		}
-		super.scan(elements);
+		// we use defensive copy so as to be able to change the class while scanning
+		// otherwise one gets a ConcurrentModificationException
+		for (CtElement e : new ArrayList<>(elements)) {
+			scan(e);
+			if (isTerminated()) {
+				return;
+			}
+		}
 	}
 
 	@Override
 	public void scan(CtElement element) {
-		if (terminate) {
+		if (isTerminated()) {
 			return;
 		}
 		super.scan(element);
@@ -55,9 +68,20 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 
 	@Override
 	public void scan(Object o) {
-		if (terminate) {
+		if (isTerminated() || o == null) {
 			return;
 		}
-		super.scan(o);
+		if (o instanceof CtElement) {
+			scan((CtElement) o);
+		} else if (o instanceof Collection<?>) {
+			scan((Collection<? extends CtElement>) o);
+		} else if (o instanceof Map<?, ?>) {
+			for (Object obj : ((Map) o).values()) {
+				scan(obj);
+				if (isTerminated()) {
+					return;
+				}
+			}
+		}
 	}
 }
