@@ -446,12 +446,14 @@ public class CtQueryImpl implements CtQuery {
 			if (element == null) {
 				return;
 			}
-			boolean matches = false;
-			try {
-				matches = filter.matches(element);
-			} catch (ClassCastException e) {
-				onClassCastException(next, e, element);
-				return;
+			boolean matches = true;
+			if (filter != null) {
+				try {
+					matches = filter.matches(element);
+				} catch (ClassCastException e) {
+					onClassCastException(next, e, element);
+					return;
+				}
 			}
 			if (matches) {
 				//send input to output, because Fitler.matches returned true

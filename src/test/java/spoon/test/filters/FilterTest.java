@@ -11,6 +11,7 @@ import static spoon.testing.utils.ModelUtils.build;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -546,6 +547,27 @@ public class FilterTest {
 		List<CtElement> expectedList = launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class)).list();
 		assertArrayEquals(expectedList.toArray(), realList.toArray());
 		assertTrue(expectedList.size()>0);
+	}
+
+	@Test
+	public void testFilterChildrenWithoutFilterQueryStep() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		//Contract: the filterChildren(null) without Filter returns same results like filter which returns true for each input.
+		List<CtElement> list = launcher.getFactory().Package().getRootPackage().filterChildren(null).list();
+		Iterator<CtElement> iter = list.iterator();
+		launcher.getFactory().Package().getRootPackage().filterChildren(e->{return true;}).forEach(real->{
+			//the elements produced by each query are same
+			CtElement expected = iter.next();
+			if(real!=expected) {
+				assertEquals(expected, real);
+			}
+		});
+		assertTrue(list.size()>0);
+		assertTrue(iter.hasNext()==false);
 	}
 
 	@Test
