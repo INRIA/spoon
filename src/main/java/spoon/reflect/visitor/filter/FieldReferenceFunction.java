@@ -43,7 +43,7 @@ public class FieldReferenceFunction implements CtConsumableFunction<CtField<?>> 
 	public void apply(CtField<?> field, CtConsumer<Object> outputConsumer) {
 		field
 			.map(new FieldScopeFunction())
-			.filter(new DirectReferenceFilter<CtFieldReference<?>>(field.getReference()))
+			.select(new DirectReferenceFilter<CtFieldReference<?>>(field.getReference()))
 			.forEach(outputConsumer);
 	}
 }
