@@ -78,7 +78,7 @@ public class CtQueryImpl implements CtQuery {
 
 	/**
 	 * The evaluation context of the CtQuery. Can be used to bind the query the the output {@link CtConsumer}
-	 * using {@link CtQueryContext#setOutputConsumer(CtConsumer)} and then
+	 * using {@link CtQueryContext#outputConsumer(CtConsumer)} and then
 	 * <ul>
 	 * <li>to evaluate the query on provided input using {@link CtQueryContext#accept(Object)}
 	 * <li>to terminate the query evaluation at any phase of query execution using {@link CtQueryContext#terminate()}
@@ -95,7 +95,7 @@ public class CtQueryImpl implements CtQuery {
 		 * @param outputConsumer the {@link CtConsumer} used to deliver results of the query evaluation
 		 * @return this to support fluent API
 		 */
-		CtQueryContext setOutputConsumer(CtConsumer<?> outputConsumer);
+		CtQueryContext outputConsumer(CtConsumer<?> outputConsumer);
 
 		/**
 		 * terminates current query evaluation.
@@ -132,7 +132,7 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	public <R> void forEach(CtConsumer<R> consumer) {
-		CtQueryContext cc = createQueryContext().setOutputConsumer(consumer);
+		CtQueryContext cc = createQueryContext().outputConsumer(consumer);
 		for (Object input : inputs) {
 			cc.accept(input);
 		}
@@ -168,7 +168,7 @@ public class CtQueryImpl implements CtQuery {
 	public <R> R first(final Class<R> itemClass) {
 		final CtQueryContext cc = createQueryContext();
 		final Object[] result = new Object[1];
-		cc.setOutputConsumer(new CtConsumer<R>() {
+		cc.outputConsumer(new CtConsumer<R>() {
 			@Override
 			public void accept(R out) {
 				if (out != null && itemClass.isAssignableFrom(out.getClass())) {
@@ -214,7 +214,7 @@ public class CtQueryImpl implements CtQuery {
 	 * @param outputConsumer method accept of the outputConsumer is called for each element produced by last mapping function of this query
 	 */
 	public <I, R> void evaluate(I input, CtConsumer<R> outputConsumer) {
-		createQueryContext().setOutputConsumer(outputConsumer).accept(input);
+		createQueryContext().outputConsumer(outputConsumer).accept(input);
 	}
 
 	@Override
@@ -322,7 +322,7 @@ public class CtQueryImpl implements CtQuery {
 		}
 
 		@Override
-		public CtQueryContext setOutputConsumer(CtConsumer<?> outputConsumer) {
+		public CtQueryContext outputConsumer(CtConsumer<?> outputConsumer) {
 			this.outputConsumer = outputConsumer;
 			return this;
 		}
