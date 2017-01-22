@@ -95,6 +95,22 @@ public class QueryTest {
 		assertEquals(countOfModelClasses, context.classCount);
 	}
 
+	@Test
+	public void testParameterReferenceFunction() throws Exception {
+		//visits all the CtParameter elements whose name is "field" and search for all their references
+		//The test detects whether found references are correct by these two checks:
+		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
+		//2) the model is searched for all variable references which has same identification number and counts them
+		//Then it checks that counted number of references and found number of references is same 
+		factory.Package().getRootPackage().filterChildren((CtParameter<?> param)->{
+			if(param.getSimpleName().equals("field")) {
+				int value = getLiteralValue(param);
+				checkVariableAccess(param, value, new ParameterReferenceFunction());
+			}
+			return false;
+		}).list();
+	}
+	
 	private void checkVariableAccess(CtVariable<?> var, int value, CtConsumableFunction<?> query) {
 		class Context {
 			int classCount = 0;
