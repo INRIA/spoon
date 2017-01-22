@@ -28,6 +28,7 @@ import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
 import spoon.reflect.visitor.filter.FieldReferenceFunction;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.ParameterReferenceFunction;
+import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.test.query_function.testclasses.ClassC;
 import spoon.test.query_function.testclasses.packageA.ClassA;
 import spoon.test.query_function.testclasses.packageA.ClassB;
@@ -164,6 +165,22 @@ public class QueryTest {
 			if(var.getSimpleName().equals("field")) {
 				int value = getLiteralValue(var);
 				checkVariableAccess(var, value, new FieldReferenceFunction());
+			}
+			return false;
+		}).list();
+	}
+
+	@Test
+	public void testVariableReferenceFunction() throws Exception {
+		//visits all the CtVariable elements whose name is "field" and search for all their references
+		//The test detects whether found references are correct by these two checks:
+		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
+		//2) the model is searched for all variable references which has same identification number and counts them
+		//Then it checks that counted number of references and found number of references is same 
+		factory.Package().getRootPackage().filterChildren((CtVariable<?> var)->{
+			if(var.getSimpleName().equals("field")) {
+				int value = getLiteralValue(var);
+				checkVariableAccess(var, value, new VariableReferenceFunction());
 			}
 			return false;
 		}).list();
