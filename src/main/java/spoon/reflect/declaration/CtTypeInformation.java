@@ -102,18 +102,6 @@ public interface CtTypeInformation {
 	boolean isSubtypeOf(CtTypeReference<?> type);
 
 	/**
-	 * Returns <code>true</code> if this referenced type is assignable from an
-	 * instance of the given type.
-	 *
-	 * Deprecated on Nov 19, 2016
-	 * Reasons for deprecation:
-	 * 1) it has the opposite behavior of java.lang.Class.isAssignableFrom, this is very confusing
-	 * 2) we already have {@link #isSubtypeOf(CtTypeReference)}
-	 */
-	@Deprecated
-	boolean isAssignableFrom(CtTypeReference<?> type);
-
-	/**
 	 * Returns the class type directly extended by this class.
 	 *
 	 * getSuperClass().getDeclaration()/getTypeDeclaration() returns the corresponding CtType (if in the source folder of Spoon).

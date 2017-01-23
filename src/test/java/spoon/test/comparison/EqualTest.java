@@ -2,7 +2,7 @@ package spoon.test.comparison;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -32,7 +32,7 @@ public class EqualTest {
 				+ " Integer.getInteger(" + realParam1 + ");"
 				+ " return \"\";" + "}};";
 
-		SpoonCompiler builder = new JDTSnippetCompiler(factory, content);
+		SpoonModelBuilder builder = new JDTSnippetCompiler(factory, content);
 		try {
 			builder.build();
 		} catch (Exception e) {

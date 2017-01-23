@@ -4,7 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
@@ -52,7 +52,7 @@ public class VisibilityTest {
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir, launcher.getEnvironment()));
 		final Factory factory = launcher.getFactory();
-		final SpoonCompiler compiler = launcher.createCompiler();
+		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/visibility/testclasses/"));
 		compiler.setSourceOutputDirectory(sourceOutputDir);
 		compiler.build();

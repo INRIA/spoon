@@ -3,7 +3,7 @@ package spoon.test.reference;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
@@ -37,7 +37,7 @@ public class ExecutableReferenceGenericTest {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
 
-		SpoonCompiler compiler = spoon.createCompiler(
+		SpoonModelBuilder compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
 						"./src/test/java/spoon/test/reference/MyClass.java",
@@ -268,7 +268,7 @@ public class ExecutableReferenceGenericTest {
 		if (!inv.getExecutable().getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
 			return new ArrayList<>();
 		}
-		return inv.getExecutable().getReferences(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+		return inv.getExecutable().getElements(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return reference.isConstructor();

@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.builder.ClasspathOptions;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
@@ -33,7 +33,7 @@ public class ComputeClasspathTest {
 	public void setUp() {
 		Launcher launcher = new Launcher() {
 
-			public SpoonCompiler createCompiler(Factory factory) {
+			public SpoonModelBuilder createCompiler(Factory factory) {
 				return new JDTBasedSpoonCompiler(factory);
 			}
 

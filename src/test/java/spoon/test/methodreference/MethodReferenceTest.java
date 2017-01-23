@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
@@ -43,7 +43,7 @@ public class MethodReferenceTest {
 		factory.getEnvironment().setComplianceLevel(8);
 		final File sourceOutputDir = new File("./target/spooned/");
 		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir, factory.getEnvironment()));
-		final SpoonCompiler compiler = launcher.createCompiler(factory);
+		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
 
 		compiler.setSourceOutputDirectory(sourceOutputDir);
 		compiler.addInputSource(new File("./src/test/java/spoon/test/methodreference/testclasses/"));

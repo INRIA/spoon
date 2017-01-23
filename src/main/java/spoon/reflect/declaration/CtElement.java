@@ -19,7 +19,6 @@ package spoon.reflect.declaration;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
@@ -169,15 +168,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * If the receiver (this) matches the filter, it is also returned
 	 */
 	<E extends CtElement> List<E> getElements(Filter<E> filter);
-
-	/**
-	 * @param filter
-	 * @return
-	 *
-	 * @deprecated use {@link #getElements(Filter)} instead.
-	 */
-	@Deprecated
-	<T extends CtReference> List<T> getReferences(Filter<T> filter);
 
 	/**
 	 * Sets the position of this element and all its children element. Note that

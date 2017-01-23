@@ -2,7 +2,7 @@ package spoon.test.imports;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtConstructorCall;
@@ -15,7 +15,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -117,7 +116,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportOfAnInnerClassInASuperClassAvailableInLibrary() throws Exception {
-		SpoonCompiler comp = new Launcher().createCompiler();
+		SpoonModelBuilder comp = new Launcher().createCompiler();
 		List<SpoonResource> fileToBeSpooned = SpoonResourceHelper.resources("./src/test/resources/visibility/YamlRepresenter.java");
 		assertEquals(1, fileToBeSpooned.size());
 		comp.addInputSources(fileToBeSpooned);
@@ -142,7 +141,7 @@ public class ImportTest {
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
 
-		SpoonCompiler compiler = spoon.createCompiler(factory, SpoonResourceHelper
+		SpoonModelBuilder compiler = spoon.createCompiler(factory, SpoonResourceHelper
 				.resources("./src/test/java/spoon/test/imports/testclasses/internal/PublicSuperClass.java", "./src/test/java/spoon/test/imports/testclasses/DefaultClientClass.java"));
 
 		compiler.build();
@@ -160,7 +159,7 @@ public class ImportTest {
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
 
-		SpoonCompiler compiler = spoon.createCompiler(factory,
+		SpoonModelBuilder compiler = spoon.createCompiler(factory,
 				SpoonResourceHelper.resources("./src/test/java/spoon/test/imports/testclasses/SuperClass.java", "./src/test/java/spoon/test/imports/testclasses/SubClass.java"));
 
 		compiler.build();
@@ -183,7 +182,7 @@ public class ImportTest {
 		factory.getEnvironment().setNoClasspath(true);
 		factory.getEnvironment().setLevel("OFF");
 
-		SpoonCompiler compiler = spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/import-resources/fr/inria/MissingImport.java"));
+		SpoonModelBuilder compiler = spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/import-resources/fr/inria/MissingImport.java"));
 
 		compiler.build();
 		CtTypeReference<?> type = factory.Class().getAll().get(0).getFields().get(0).getType();

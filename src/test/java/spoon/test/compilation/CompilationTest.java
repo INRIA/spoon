@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -166,7 +165,7 @@ public class CompilationTest {
 		// shows how to filter input java files, for https://github.com/INRIA/spoon/issues/877
 		Launcher launcher = new Launcher() {
 			@Override
-			public SpoonCompiler createCompiler() {
+			public SpoonModelBuilder createCompiler() {
 				return new JDTBasedSpoonCompiler(getFactory()) {
 					@Override
 					protected JDTBatchCompiler createBatchCompiler() {
@@ -204,7 +203,7 @@ public class CompilationTest {
 		// only in package called "reference"
 		Launcher launcher = new Launcher() {
 			@Override
-			public SpoonCompiler createCompiler() {
+			public SpoonModelBuilder createCompiler() {
 				return new JDTBasedSpoonCompiler(getFactory()) {
 					@Override
 					protected JDTBatchCompiler createBatchCompiler() {

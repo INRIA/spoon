@@ -16,7 +16,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -270,7 +270,7 @@ public class GenericsTest {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 
-		SpoonCompiler compiler = spoon.createCompiler(
+		SpoonModelBuilder compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
 						"./src/test/java/spoon/test/generics/Foo.java",

@@ -17,7 +17,7 @@
 package spoon.testing.utils;
 
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -38,7 +38,7 @@ public final class ModelUtils {
 	}
 
 	public static <T extends CtType<?>> T build(String packageName, String className) throws Exception {
-		SpoonCompiler comp = new Launcher().createCompiler();
+		SpoonModelBuilder comp = new Launcher().createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + packageName.replace('.', '/') + "/" + className + ".java"));
 		comp.build();
 		return comp.getFactory().Package().get(packageName).getType(className);
@@ -51,14 +51,14 @@ public final class ModelUtils {
 				return f;
 			}
 		};
-		SpoonCompiler comp = launcher.createCompiler();
+		SpoonModelBuilder comp = launcher.createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + packageName.replace('.', '/') + "/" + className + ".java"));
 		comp.build();
 		return comp.getFactory().Package().get(packageName).getType(className);
 	}
 
 	public static Factory build(Class<?>... classesToBuild) throws Exception {
-		SpoonCompiler comp = new Launcher().createCompiler();
+		SpoonModelBuilder comp = new Launcher().createCompiler();
 		for (Class<?> classToBuild : classesToBuild) {
 			comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + classToBuild.getName().replace('.', '/') + ".java"));
 		}
@@ -69,7 +69,7 @@ public final class ModelUtils {
 	public static Factory buildNoClasspath(Class<?>... classesToBuild) throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		SpoonCompiler comp = launcher.createCompiler();
+		SpoonModelBuilder comp = launcher.createCompiler();
 		for (Class<?> classToBuild : classesToBuild) {
 			comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + classToBuild.getName().replace('.', '/') + ".java"));
 		}
@@ -80,7 +80,7 @@ public final class ModelUtils {
 	public static Factory build(File... filesToBuild) {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		SpoonCompiler comp = launcher.createCompiler();
+		SpoonModelBuilder comp = launcher.createCompiler();
 		for (File fileToBuild : filesToBuild) {
 			try {
 				comp.addInputSource(SpoonResourceHelper.createResource(fileToBuild));
@@ -109,7 +109,7 @@ public final class ModelUtils {
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setComplianceLevel(complianceLevel);
 		factory.getEnvironment().setNoClasspath(noClasspath);
-		final SpoonCompiler compiler = launcher.createCompiler(factory);
+		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		compiler.addInputSource(outputDirectoryFile);
 		try {
 			compiler.build();
