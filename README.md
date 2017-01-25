@@ -64,22 +64,7 @@ R6) When feasible, the text version of a Spoon model is close to the original on
 
 # Ecosystem
 
-[SpoonLabs](http://github.com/SpoonLabs) is a GitHub group for software libraries and applications built on top of Spoon.
-
-You can find plugins for [Maven](https://github.com/SpoonLabs/spoon-maven-plugin) and [Gradle](https://github.com/SpoonLabs/spoon-gradle-plugin) to run spoon on a target project with some processors if necessary.
-
-Here are some projects already using Spoon:
-
-- [Spooet](https://github.com/SpoonLabs/spooet): A Spoon printer implemented with JavaPoet.
-- [Metamutator](https://github.com/SpoonLabs/metamutator): A muta-mutation tool for Java.
-- [Astor](https://github.com/SpoonLabs/astor): Evolutionary automatic software repair tool for Java. 
-- [Nopol](https://github.com/SpoonLabs/nopol): Automatic repair system developed at the University of Lille and Inria.
-- [Gumtree Spoon AST diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff): Computes the AST difference between two Spoon abstract syntax trees.
-- [c2spoon](https://github.com/SpoonLabs/c2spoon): Loads C code as a Spoon model using srcml.
-- [trebuchet](https://github.com/slipperyseal/trebuchet): a Java to C++ transpiler
-- [CoCoSpoon](https://github.com/SpoonLabs/CoCoSpoon) and [CoCoSpoon-ui](https://github.com/SpoonLabs/CoCoSpoon-ui): Measuring and visualizing code coverage with Spoon
-- [jmixer](https://github.com/seintur/jmixer) is an implementation of mixins for Java
-- Yours?
+See <http://spoon.gforge.inria.fr/ecosystem.html>
 
 # Download
 
