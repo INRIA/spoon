@@ -11,7 +11,7 @@ revapi_file = "./target/revapi.report"
 args = sys.argv
 
 def usage():
-    print "Usage: "+str(args[0])+ " <github_login> <github_token> <PRPayload>"
+    print "Usage: "+str(args[0])+ " <github_login> <github_token> <PR_payload_path>"
     exit(1)
 
 if (args.__len__() < 4):
@@ -22,7 +22,11 @@ if (not(os.path.isfile(revapi_file))):
     print "Revapi report file cannot be found at the following location: "+revapi_file
     exit(1)
 
-file_content = "";
+if (not(os.path.isfile(args[3]))):
+    print "JSON payload file cannot be found at the following location: "+args[3]
+    exit(1)
+
+file_content = ""
 with open(revapi_file) as f:
     for line in f:
         file_content += line+"\n"
@@ -41,7 +45,16 @@ except GithubException as e:
     print e
     exit(1)
 
-payloadJSON = json.loads(args[3])
+payload_string = ""
+with open(args[3]) as f:
+    for line in f:
+        payload_string += line
+
+if (payload_string == ""):
+    print "Payload is empty"
+    exit(1)
+
+payloadJSON = json.loads(payload_string)
 repo_name = payloadJSON['repository']['full_name']
 pr_id = payloadJSON['pull_request']['number']
 
