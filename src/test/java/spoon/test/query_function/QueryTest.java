@@ -22,6 +22,7 @@ import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
+import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
 import spoon.reflect.visitor.filter.ParameterReferenceFunction;
 import spoon.test.query_function.testclasses.packageA.ClassA;
 
@@ -95,7 +96,7 @@ public class QueryTest {
 		assertEquals(countOfModelClasses, context.classCount);
 	}
 
-	@Test
+  @Test
 	public void testParameterReferenceFunction() throws Exception {
 		//visits all the CtParameter elements whose name is "field" and search for all their references
 		//The test detects whether found references are correct by these two checks:
@@ -106,6 +107,22 @@ public class QueryTest {
 			if(param.getSimpleName().equals("field")) {
 				int value = getLiteralValue(param);
 				checkVariableAccess(param, value, new ParameterReferenceFunction());
+			}
+			return false;
+		}).list();
+	}
+  
+	@Test
+	public void testCatchVariableReferenceFunction() throws Exception {
+		//visits all the CtCatchVariable elements whose name is "field" and search for all their references
+		//The test detects whether found references are correct by these two checks:
+		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
+		//2) the model is searched for all variable references which has same identification number and counts them
+		//Then it checks that counted number of references and found number of references is same 
+		factory.Package().getRootPackage().filterChildren((CtCatchVariable<?> var)->{
+			if(var.getSimpleName().equals("field")) {
+				int value = getLiteralValue(var);
+				checkVariableAccess(var, value, new CatchVariableReferenceFunction());
 			}
 			return false;
 		}).list();
