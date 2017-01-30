@@ -8,19 +8,20 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 
 /**
  * The mapping function, accepting {@link CtVariable}
- * and returning all the CtElements, which exists in visibility scope of this variable
  * <ul>
  * <li>CtLocalVariable - local variable declared in body
  * <li>CtField - member field of an type
  * <li>CtParameter - method parameter
  * <li>CtCatchVariable - try - catch variable
  * </ul>
+ * and returning all the {@link CtVariableReference}, which refers this variable
  */
 public class VariableReferenceFunction implements CtConsumableFunction<CtVariable<?>> {
 
