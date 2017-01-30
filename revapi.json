@@ -23,24 +23,9 @@
       }
     },
 
-    // use the semantic version module to check changes respectively to the versions of the API
-    // doc here: http://revapi.org/modules/revapi-basic-features/extensions/semver-ignore.html
-    "semver" : {
-      "ignore" : {
-        "enabled" : true,
-
-        // specify to ignore kind of errors based on version number
-        "versionIncreaseAllows" : {
-          "major" : "breaking",
-          "minor" : "nonBreaking",
-          "patch" : "equivalent"
-        },
-      }
-    },
-
     "reporter" : {
       "text" : {
-        "minSeverity": "POTENTIALLY_BREAKING",
+        "minSeverity": "BREAKING",
         "output" : "target/revapi.report"
       }
     }
