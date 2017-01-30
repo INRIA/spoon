@@ -52,7 +52,7 @@ public class LocalVariableScopeFunction implements CtConsumableFunction<CtLocalV
 	public void apply(CtLocalVariable<?> localVariable, CtConsumer<Object> outputConsumer) {
 		CtStatementList statements = localVariable.getParent(CtStatementList.class);
 		if (statements == null) {
-			//cannot search for parameter references of parameter which has no executable
+			//cannot search for variable references of variable which has no parent statement list/block
 			return;
 		}
 		//create query which will be evaluated on each statement after local variable declaration
