@@ -1723,10 +1723,27 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			this.importsContext = new MinimalImportScanner();
 		}
-		Set<CtReference> imports = new HashSet<>();
+		Set<CtReference> importsBeforeFiltering = new HashSet<>();
 		for (CtType<?> t : types) {
-			imports.addAll(computeImports(t));
+			importsBeforeFiltering.addAll(computeImports(t));
 		}
+
+		Set<CtReference> imports = new HashSet<>();
+		for (CtReference ref : importsBeforeFiltering) {
+			if (ref instanceof CtTypeReference) {
+				CtTypeReference typeRef = (CtTypeReference) ref;
+				printer.write("import " + typeRef.getQualifiedName() + ";").writeln().writeTabs();
+			} else if (ref instanceof CtExecutableReference) {
+				CtExecutableReference execRef = (CtExecutableReference) ref;
+				if (execRef.getDeclaringType() != null) {
+					printer.write("import static " + this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName() + ";").writeln().writeTabs();
+				}
+			} else if (ref instanceof CtFieldReference) {
+				CtFieldReference fieldRef = (CtFieldReference) ref;
+				printer.write("import static " + this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName() + ";").writeln().writeTabs();
+			}
+		}
+
 		elementPrinterHelper.writeHeader(types, imports);
 		for (CtType<?> t : types) {
 			scan(t);

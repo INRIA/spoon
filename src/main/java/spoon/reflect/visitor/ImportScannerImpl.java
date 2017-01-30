@@ -381,6 +381,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				return true;
 			}
 
+			if (addClassImport(declaringType)) {
+				return true;
+			}
+
 			while (declaringType != null) {
 				if (declaringType.equals(targetType)) {
 					return true;
