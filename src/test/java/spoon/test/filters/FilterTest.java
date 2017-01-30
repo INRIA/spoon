@@ -25,6 +25,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
@@ -61,6 +62,7 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodQuery;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
+import spoon.reflect.visitor.filter.ParentFunction;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -916,5 +918,35 @@ public class FilterTest {
 		
 		assertTrue(firstMethod!=null);
 		assertTrue(context.wasTerminated);
+	}
+	@Test
+	public void testParentFunction() throws Exception {
+		// contract: a mapping function which returns all parents of CtElement
+
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		CtLocalVariable<?> varStrings = cls.filterChildren(new NameFilter<>("strings")).first();
+		
+		class Context {
+			CtElement expectedParent;
+		}
+		
+		Context context = new Context();
+		
+		context.expectedParent = varStrings.getParent();
+		
+		varStrings.map(new ParentFunction()).forEach((parent)->{
+			assertSame(context.expectedParent, parent);
+			if(context.expectedParent.getParent()!=null) {
+				context.expectedParent = context.expectedParent.getParent();
+			}
+		});
+		
+		//Check that it visited all parents till root package
+		assertSame(launcher.getFactory().Package().getRootPackage(), context.expectedParent);
 	}
 }
