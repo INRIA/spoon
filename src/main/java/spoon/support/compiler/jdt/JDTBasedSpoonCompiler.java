@@ -28,7 +28,6 @@ import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.ModelBuildingException;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
@@ -71,7 +70,7 @@ import java.util.Set;
  * Main class of Spoon to build the model.
  * Highly depends on {@link JDTBatchCompiler} for performing the job.
  */
-public class JDTBasedSpoonCompiler implements SpoonCompiler {
+public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	protected INameEnvironment environment = null;
 	protected final List<CategorizedProblem> probs = new ArrayList<>();
 	protected final TreeBuilderRequestor requestor = new TreeBuilderRequestor(this);
@@ -618,11 +617,6 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 
 	protected Environment getEnvironment() {
 		return getFactory().getEnvironment();
-	}
-
-	@Override
-	public boolean compileInputSources() {
-		return compile(InputType.FILES);
 	}
 
 	@Override

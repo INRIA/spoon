@@ -368,11 +368,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		return inputClassloader;
 	}
 
-	@Override
-	public ClassLoader getClassLoader() {
-		return getInputClassLoader();
-	}
-
 	/**
 	 * Creates a URL class path from {@link Environment#getSourceClasspath()}
 	 */

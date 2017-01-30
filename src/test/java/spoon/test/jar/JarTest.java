@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.VirtualFile;
@@ -22,7 +22,7 @@ public class JarTest {
 		Factory factory = spoon.createFactory();
 		factory.getEnvironment().setNoClasspath(true);
 
-		SpoonCompiler compiler = spoon.createCompiler(
+		SpoonModelBuilder compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources("./src/test/resources/sourceJar/test.jar"));
 		Assert.assertTrue(compiler.build());
@@ -34,7 +34,7 @@ public class JarTest {
 	public void testFile() throws Exception {
 		Launcher launcher = new Launcher();
 
-		SpoonCompiler compiler = launcher.createCompiler(
+		SpoonModelBuilder compiler = launcher.createCompiler(
 				launcher.getFactory(),
 				Arrays.asList(
 						SpoonResourceHelper.createFile(new File("./src/test/resources/spoon/test/api/Foo.java"))));
@@ -47,7 +47,7 @@ public class JarTest {
 	public void testResource() throws Exception {
 		Launcher launcher = new Launcher();
 
-		SpoonCompiler compiler = launcher.createCompiler(
+		SpoonModelBuilder compiler = launcher.createCompiler(
 				launcher.getFactory(),
 				Arrays.asList(
 						new VirtualFile("class Foo {}" , "Foo.java")

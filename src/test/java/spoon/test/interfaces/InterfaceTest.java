@@ -3,7 +3,7 @@ package spoon.test.interfaces;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
@@ -32,7 +32,7 @@ public class InterfaceTest {
 
 		this.factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(8);
-		SpoonCompiler compiler = launcher.createCompiler(this.factory);
+		SpoonModelBuilder compiler = launcher.createCompiler(this.factory);
 
 		compiler.addInputSource(testDirectory);
 		compiler.build();

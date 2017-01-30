@@ -15,7 +15,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
@@ -165,7 +165,7 @@ public class TryCatchTest {
 	@Test
 	public void testMultiTryCatchWithCustomExceptions() throws Exception {
 		final Launcher launcher = new Launcher();
-		final SpoonCompiler compiler = launcher.createCompiler();
+		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/trycatch/testclasses/"));
 		compiler.build();
 		Factory factory = compiler.getFactory();
@@ -190,7 +190,7 @@ public class TryCatchTest {
 		});
 
 		final Launcher launcher = new Launcher();
-		final SpoonCompiler newCompiler = launcher.createCompiler();
+		final SpoonModelBuilder newCompiler = launcher.createCompiler();
 		newCompiler.addInputSource(new File("./target/spooned/spoon/test/trycatch/testclasses/"));
 		try {
 			assertTrue(newCompiler.build());

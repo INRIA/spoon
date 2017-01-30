@@ -2,9 +2,9 @@ package spoon.test.exceptions;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.ModelBuildingException;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.factory.Factory;
 
@@ -70,7 +70,7 @@ public class ExceptionTest {
 		try {
 			Launcher spoon = new Launcher();
 			spoon.getFactory().getEnvironment().setLevel("OFF");
-			SpoonCompiler comp = spoon.createCompiler();
+			SpoonModelBuilder comp = spoon.createCompiler();
 			comp.setSourceClasspath("does_not_exist.jar");
 			fail();
 		} catch (InvalidClassPathException e) {
@@ -79,7 +79,7 @@ public class ExceptionTest {
 		try {
 			Launcher spoon = new Launcher();
 			spoon.getFactory().getEnvironment().setLevel("OFF");
-			SpoonCompiler comp = spoon.createCompiler();
+			SpoonModelBuilder comp = spoon.createCompiler();
 			comp.setSourceClasspath("src");
 		} catch (InvalidClassPathException e) {
 			fail();

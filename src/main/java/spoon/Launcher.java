@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
@@ -541,8 +540,8 @@ public class Launcher implements SpoonAPI {
 	 * @param factory
 	 * 		the factory this compiler works on
 	 */
-	public SpoonCompiler createCompiler(Factory factory) {
-		SpoonCompiler comp = new JDTBasedSpoonCompiler(factory);
+	public SpoonModelBuilder createCompiler(Factory factory) {
+		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
 		comp.setEncoding(getArguments().getString("encoding"));
@@ -565,8 +564,8 @@ public class Launcher implements SpoonAPI {
 		return comp;
 	}
 
-	public SpoonCompiler createCompiler(Factory factory, List<SpoonResource> inputSources) {
-		SpoonCompiler c = createCompiler(factory);
+	public SpoonModelBuilder createCompiler(Factory factory, List<SpoonResource> inputSources) {
+		SpoonModelBuilder c = createCompiler(factory);
 		c.addInputSources(inputSources);
 		return c;
 	}
@@ -583,7 +582,7 @@ public class Launcher implements SpoonAPI {
 	}
 
 	@Override
-	public SpoonCompiler createCompiler() {
+	public SpoonModelBuilder createCompiler() {
 		return createCompiler(factory);
 	}
 
@@ -591,8 +590,8 @@ public class Launcher implements SpoonAPI {
 	 * Creates a new Spoon Java compiler with a default factory and a list of
 	 * input sources.
 	 */
-	public SpoonCompiler createCompiler(List<SpoonResource> inputSources) {
-		SpoonCompiler c = createCompiler(factory);
+	public SpoonModelBuilder createCompiler(List<SpoonResource> inputSources) {
+		SpoonModelBuilder c = createCompiler(factory);
 		c.addInputSources(inputSources);
 		return c;
 	}

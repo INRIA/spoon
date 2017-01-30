@@ -16,8 +16,8 @@
  */
 package spoon.support.compiler;
 
+import spoon.SpoonModelBuilder;
 import spoon.compiler.ModelBuildingException;
-import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -109,7 +109,7 @@ public class SnippetCompilationHelper {
 
 	private static void build(Factory f, String contents) {
 		// Build contents
-		SpoonCompiler builder = new JDTSnippetCompiler(f, contents);
+		SpoonModelBuilder builder = new JDTSnippetCompiler(f, contents);
 		try {
 			builder.build();
 		} catch (Exception e) {

@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtType;
@@ -20,7 +20,7 @@ public class StaticAccessTest {
 
     Launcher spoon;
     Factory factory;
-    SpoonCompiler compiler;
+    SpoonModelBuilder compiler;
 
     @Before
     public void setUp()  throws Exception {

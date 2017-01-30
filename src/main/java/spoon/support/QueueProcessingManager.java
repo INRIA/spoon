@@ -76,7 +76,7 @@ public class QueueProcessingManager implements ProcessingManager {
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
-			addProcessor((Class<? extends Processor<?>>) getFactory().getEnvironment().getClassLoader().loadClass(qualifiedName));
+			addProcessor((Class<? extends Processor<?>>) getFactory().getEnvironment().getInputClassLoader().loadClass(qualifiedName));
 		} catch (ClassNotFoundException e) {
 			throw new SpoonException("Unable to load processor \"" + qualifiedName + "\" - Check your classpath.", e);
 		}

@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
@@ -46,7 +46,7 @@ public class LambdaTest {
 	private CtType<Bar> bar;
 	private CtType<Object> panini;
 	private CtType<Object> tacos;
-	private SpoonCompiler compiler;
+	private SpoonModelBuilder compiler;
 
 	@Before
 	public void setUp() throws Exception {
