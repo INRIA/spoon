@@ -28,7 +28,9 @@ import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
 import spoon.reflect.visitor.filter.FieldReferenceFunction;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.ParameterReferenceFunction;
+import spoon.test.query_function.testclasses.ClassC;
 import spoon.test.query_function.testclasses.packageA.ClassA;
+import spoon.test.query_function.testclasses.packageA.ClassB;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +44,7 @@ import static org.junit.Assert.fail;
 
 public class QueryTest {
 	
-	static int countOfModelClasses = 5;
+	static int countOfModelClasses = 12;
 
 	Factory factory;
 	CtClass<?> classA;
@@ -70,6 +72,9 @@ public class QueryTest {
 	public void testCheckModelConsistency() {
 		//this constructor creates all nested classes, creates all fields and calls all methods and checks that each field occurrence has assigned correct literal
 		new ClassA();
+		new ClassB();
+		new spoon.test.query_function.testclasses.packageB.ClassA();
+		new ClassC();
 		
 		//1) search for all variable declarations with name "field" 
 		//2) check that each of them is using different identification value
@@ -97,7 +102,7 @@ public class QueryTest {
 			}
 			return false;
 		}).list();
-		assertEquals(countOfModelClasses, context.classCount);
+		assertEquals("Update count of model classes:", countOfModelClasses, context.classCount);
 	}
 
 	@Test
