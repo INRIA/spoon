@@ -25,10 +25,15 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
+import spoon.reflect.visitor.filter.CatchVariableScopeFunction;
 import spoon.reflect.visitor.filter.FieldReferenceFunction;
+import spoon.reflect.visitor.filter.FieldScopeFunction;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
+import spoon.reflect.visitor.filter.LocalVariableScopeFunction;
 import spoon.reflect.visitor.filter.ParameterReferenceFunction;
+import spoon.reflect.visitor.filter.ParameterScopeFunction;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
+import spoon.reflect.visitor.filter.VariableScopeFunction;
 import spoon.test.query_function.testclasses.ClassC;
 import spoon.test.query_function.testclasses.packageA.ClassA;
 import spoon.test.query_function.testclasses.packageA.ClassB;
@@ -40,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -184,6 +190,31 @@ public class QueryTest {
 			}
 			return false;
 		}).list();
+	}
+
+	@Test
+	public void testVariableScopeFunction() throws Exception {
+		//visits all the CtVariable elements whose name is "field" and search for all elements in their scopes
+		//Comparing with the result found by basic functions
+		List list = factory.Package().getRootPackage().filterChildren((CtVariable<?> var)->{
+			if(var.getSimpleName().equals("field")) {
+				CtElement[] real = var.map(new VariableScopeFunction()).list().toArray(new CtElement[0]);
+				if(var instanceof CtLocalVariable) {
+					assertArrayEquals(var.map(new LocalVariableScopeFunction()).list().toArray(new CtElement[0]), real);
+				} else if(var instanceof CtField) {
+					assertArrayEquals(var.map(new FieldScopeFunction()).list().toArray(new CtElement[0]), real);
+				} else if(var instanceof CtParameter) {
+					assertArrayEquals(var.map(new ParameterScopeFunction()).list().toArray(new CtElement[0]), real);
+				} else if(var instanceof CtCatchVariable) {
+					assertArrayEquals(var.map(new CatchVariableScopeFunction()).list().toArray(new CtElement[0]), real);
+				} else {
+					fail("Unexpected variable of type "+var.getClass().getName());
+				}
+				return true;
+			}
+			return false;
+		}).list();
+		assertTrue(list.size()>0);
 	}
 
 	private void checkVariableAccess(CtVariable<?> var, int value, CtConsumableFunction<?> query) {
