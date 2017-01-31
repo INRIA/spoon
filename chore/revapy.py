@@ -6,7 +6,7 @@
 import os, sys, json
 from github import *
 
-revapi_file = "./target/revapi.report"
+revapi_file = "./target/revapi_report.md"
 
 args = sys.argv
 
