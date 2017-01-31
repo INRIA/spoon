@@ -69,8 +69,14 @@ public class CtTypeTest {
 	@Test
 	public void testIsSubTypeOf() throws Exception {
 		CtType<X> xCtType = buildClass(X.class);
+		CtType<?> yCtType = xCtType.getFactory().Type().get("spoon.test.ctType.testclasses.Y");
 
-		assertFalse(xCtType.isSubtypeOf(xCtType.getFactory().Type().createReference("spoon.test.ctType.testclasses.Y")));
-		assertTrue(xCtType.getFactory().Type().get("spoon.test.ctType.testclasses.Y").isSubtypeOf(xCtType.getReference()));
+		assertFalse(xCtType.isSubtypeOf(yCtType.getReference()));
+		assertTrue(yCtType.isSubtypeOf(xCtType.getReference()));
+		//contract: x isSubtypeOf x
+		//using CtTypeReference implementation
+		assertTrue(xCtType.getReference().isSubtypeOf(xCtType.getReference()));
+		//using CtType implementation
+		assertTrue(xCtType.isSubtypeOf(xCtType.getReference()));
 	}
 }
