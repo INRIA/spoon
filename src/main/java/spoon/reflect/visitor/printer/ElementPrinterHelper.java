@@ -265,19 +265,27 @@ public class ElementPrinterHelper {
 			}
 			printer.writeln().writeln().writeTabs();
 			for (CtReference ref : imports) {
+				String importStr = "import";
+				String importTypeStr = "";
+
 				if (ref instanceof CtTypeReference) {
 					CtTypeReference typeRef = (CtTypeReference) ref;
-					printer.write("import " + typeRef.getQualifiedName() + ";").writeln().writeTabs();
+					importTypeStr = typeRef.getQualifiedName();
 				} else if (ref instanceof CtExecutableReference) {
+					importStr += " static";
 					CtExecutableReference execRef = (CtExecutableReference) ref;
 					if (execRef.getDeclaringType() != null) {
-						printer.write("import static " + this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName() + ";").writeln().writeTabs();
+						importTypeStr = this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName();
 					}
 				} else if (ref instanceof CtFieldReference) {
+					importStr += " static";
 					CtFieldReference fieldRef = (CtFieldReference) ref;
-					printer.write("import static " + this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName() + ";").writeln().writeTabs();
+					importTypeStr = this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName();
 				}
 
+				if (!importTypeStr.equals("")) {
+					printer.write(importStr + " " + importTypeStr + ";").writeln().writeTabs();
+				}
 			}
 			printer.writeln().writeTabs();
 		}

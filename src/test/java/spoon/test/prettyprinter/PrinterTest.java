@@ -77,6 +77,27 @@ public class PrinterTest {
 	}
 
 	@Test
+	public void testAutoimportModeDontImportUselessStatic() {
+		Launcher spoon = new Launcher();
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/ImportStatic.java");
+		spoon.buildModel();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		assertTrue("The result should not contain import static: ", !result.contains("import static spoon.test.prettyprinter.testclasses.sub.Constants.READY"));
+		assertTrue("The result should contain import type: ", result.contains("import spoon.test.prettyprinter.testclasses.sub.Constants"));
+		assertTrue("The result should contain import for TestCase: ", result.contains("import junit.framework.TestCase;"));
+		assertTrue("The result should contain assertTrue(...): ", result.contains("TestCase.assertTrue(\"blabla\".equals(\"toto\"));"));
+		assertTrue("The result should use System.out.println(Constants.READY): "+result, result.contains("System.out.println(Constants.READY);"));
+	}
+
+	@Test
 	public void testRuleCanBeBuild() {
 		Launcher spoon = new Launcher();
 		PrettyPrinter printer = spoon.createPrettyPrinter();
