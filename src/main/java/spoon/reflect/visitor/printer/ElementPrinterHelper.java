@@ -275,7 +275,7 @@ public class ElementPrinterHelper {
 					importStr += " static";
 					CtExecutableReference execRef = (CtExecutableReference) ref;
 					if (execRef.getDeclaringType() != null) {
-						importTypeStr = this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName())+ "." + execRef.getSimpleName();
+						importTypeStr = this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName();
 					}
 				} else if (ref instanceof CtFieldReference) {
 					importStr += " static";
@@ -284,7 +284,7 @@ public class ElementPrinterHelper {
 				}
 
 				if (!importTypeStr.equals("")) {
-					printer.write(importStr+" "+importTypeStr+";").writeln().writeTabs();
+					printer.write(importStr + " " + importTypeStr + ";").writeln().writeTabs();
 				}
 			}
 			printer.writeln().writeTabs();
