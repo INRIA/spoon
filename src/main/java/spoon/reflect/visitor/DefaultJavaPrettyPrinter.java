@@ -1727,7 +1727,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}
-
 		elementPrinterHelper.writeHeader(types, imports);
 		for (CtType<?> t : types) {
 			scan(t);
