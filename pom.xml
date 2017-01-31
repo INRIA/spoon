@@ -177,6 +177,11 @@
       <name>Maven Repository for JDT Compiler release</name>
       <url>http://spoon.gforge.inria.fr/repositories/releases</url>
     </repository>
+    <repository>
+      <id>gforge.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://spoon.gforge.inria.fr/repositories/snapshots</url>
+    </repository>
   </repositories>
 
   <distributionManagement>
@@ -482,7 +487,34 @@
 	</executions>
       </plugin>
 
+      <!-- Used for checking backward compatibility (binary and source) -->
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <!-- Lock down plugin version for build reproducibility -->
+        <version>0.8.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.revapi</groupId>
+            <artifactId>revapi-java</artifactId>
+            <version>0.13.1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.revapi</groupId>
+            <artifactId>revapi-reporter-text</artifactId>
+            <version>0.7.0</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <alwaysCheckForReleaseVersion>false</alwaysCheckForReleaseVersion>
+          <oldVersion>LATEST</oldVersion>
+          <analysisConfigurationFiles>
+            <file>${project.basedir}/revapi.json</file>
+          </analysisConfigurationFiles>
+        </configuration>
+      </plugin>
     </plugins>
+
 
     <pluginManagement>
       <plugins>

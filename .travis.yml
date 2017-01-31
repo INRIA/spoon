@@ -11,7 +11,7 @@ jdk:
 install:
   - # download deps with maven
   - mvn dependency:resolve
-  - pip install --user CommonMark requests
+  - pip install --user CommonMark requests pygithub
   - sudo apt-get install xmlstarlet
   
 script: |

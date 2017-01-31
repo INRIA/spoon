@@ -67,7 +67,7 @@ import java.util.Set;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
-class JDTTreeBuilderHelper {
+public class JDTTreeBuilderHelper {
 	private final JDTTreeBuilder jdtTreeBuilder;
 
 	JDTTreeBuilderHelper(JDTTreeBuilder jdtTreeBuilder) {

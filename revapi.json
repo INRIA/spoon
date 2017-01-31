@@ -1,0 +1,36 @@
+{
+  "revapi": {
+    // use java module
+    // Doc there: http://revapi.org/modules/revapi-java/extensions/java.html
+    "java": {
+
+      // filter rules to compare API
+      "filter": {
+
+        // specify which package to filter
+        "packages": {
+          "regex": true,
+          "include": ["spoon\\..*"],
+          "exclude": ["spoon\\..*\\.test(\\..*)?"]
+        },
+
+        // Exclude all impl classes
+        "classes": {
+          "regex": true,
+          "exclude": [".*Impl.*"]
+        }
+
+      },
+      "reportUsesFor": ["java.missing.newClass", "java.missing.oldClass"]
+    },
+
+    "reporter" : {
+      "text" : {
+        "minSeverity": "BREAKING",
+        "output" : "target/revapi_report.md",
+        "template": "chore/revapi_tpl.ftl",
+        "append": false
+      }
+    }
+  }
+}
