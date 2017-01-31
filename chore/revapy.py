@@ -29,7 +29,7 @@ if (not(os.path.isfile(args[3]))):
 file_content = ""
 with open(revapi_file) as f:
     for line in f:
-        file_content += line+"\n"
+        file_content += line
 
 if (file_content == ""):
     print "Revapi report is empty"

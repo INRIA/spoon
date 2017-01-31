@@ -12,7 +12,7 @@ New API: **<#list analysis.newApi.archives as archive>${archive.name}<#sep>, </#
 | New | ${report.newElement!"none"} |
 | Code | ${diff.code} |
 | Description | ${diff.description!"none"} |
-| Breaking | <#list diff.classification?keys as compat>${compat}: ${diff.classification?api.get(compat)}<#sep>, </#list> |
+| Breaking | <#list diff.classification?keys as compat>${compat}?lower_case: ${diff.classification?api.get(compat)}?lower_case<#sep>, </#list> |
 </#list>
 <#sep>
 
