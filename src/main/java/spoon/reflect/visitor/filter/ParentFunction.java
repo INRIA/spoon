@@ -17,6 +17,7 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 
@@ -44,11 +45,15 @@ public class ParentFunction implements CtConsumableFunction<CtElement> {
 
 	@Override
 	public void apply(CtElement input, CtConsumer<Object> outputConsumer) {
+		if (input == null) {
+			return;
+		}
 		if (includingSelf) {
 			outputConsumer.accept(input);
 		}
+		CtPackage rootPackage = input.getFactory().getModel().getRootPackage();
 		CtElement parent = input;
-		while (parent != null) {
+		while (parent != null && parent != rootPackage) {
 			parent = parent.getParent();
 			outputConsumer.accept(parent);
 		}

@@ -937,16 +937,21 @@ public class FilterTest {
 		
 		Context context = new Context();
 		
-		context.expectedParent = varStrings.getParent();
+		context.expectedParent = varStrings;
 		
 		varStrings.map(new ParentFunction()).forEach((parent)->{
+			context.expectedParent = context.expectedParent.getParent();
 			assertSame(context.expectedParent, parent);
-			if(context.expectedParent.getParent()!=null) {
-				context.expectedParent = context.expectedParent.getParent();
-			}
 		});
 		
-		//Check that it visited all parents till root package
-		assertSame(launcher.getFactory().Package().getRootPackage(), context.expectedParent);
+		//context.expectedParent is last visited element
+		
+		//Check that last visited element was root package
+		assertSame(launcher.getFactory().getModel().getRootPackage(), context.expectedParent);
+		
+		//contract: if includingSelf(false), then parent of input element is first element
+		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
+		//contract: if includingSelf(true), then input element is first element
+		assertSame(varStrings, varStrings.map(new ParentFunction().includingSelf(true)).first());
 	}
 }
