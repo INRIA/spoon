@@ -76,4 +76,9 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 		// unsettable property
 		return (C) this;
 	}
+
+	@Override
+	public boolean overridesMethod(final String signature) {
+		return false;
+	}
 }

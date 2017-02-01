@@ -90,4 +90,9 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 		}
 		return super.addMethod(method);
 	}
+
+	@Override
+	public boolean overridesMethod(final String signature) {
+		return false;
+	}
 }
