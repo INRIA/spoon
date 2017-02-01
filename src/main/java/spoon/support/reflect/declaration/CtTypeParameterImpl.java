@@ -239,7 +239,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <M , C extends CtType<Object>> C addMethod(CtMethod<M> method) {
+	public <M, C extends CtType<Object>> C addMethod(CtMethod<M> method) {
 		// unsettable property
 		return (C) this;
 	}
