@@ -51,7 +51,12 @@ public class CtModelImpl implements CtModel {
 				public CtElement getParent() throws ParentNotInitializedException {
 					return null;
 				}
-							});
+
+				@Override
+				public Factory getFactory() {
+					return CtRootPackage.this.getFactory();
+				}
+			});
 		}
 
 		@Override

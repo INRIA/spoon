@@ -25,6 +25,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
@@ -61,6 +62,7 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodQuery;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
+import spoon.reflect.visitor.filter.ParentFunction;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -916,5 +918,40 @@ public class FilterTest {
 		
 		assertTrue(firstMethod!=null);
 		assertTrue(context.wasTerminated);
+	}
+	@Test
+	public void testParentFunction() throws Exception {
+		// contract: a mapping function which returns all parents of CtElement
+
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		CtLocalVariable<?> varStrings = cls.filterChildren(new NameFilter<>("strings")).first();
+		
+		class Context {
+			CtElement expectedParent;
+		}
+		
+		Context context = new Context();
+		
+		context.expectedParent = varStrings;
+		
+		varStrings.map(new ParentFunction()).forEach((parent)->{
+			context.expectedParent = context.expectedParent.getParent();
+			assertSame(context.expectedParent, parent);
+		});
+		
+		//context.expectedParent is last visited element
+		
+		//Check that last visited element was root package
+		assertSame(launcher.getFactory().getModel().getRootPackage(), context.expectedParent);
+		
+		//contract: if includingSelf(false), then parent of input element is first element
+		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
+		//contract: if includingSelf(true), then input element is first element
+		assertSame(varStrings, varStrings.map(new ParentFunction().includingSelf(true)).first());
 	}
 }
