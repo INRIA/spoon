@@ -56,12 +56,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		for (CtTypeReference<?> ref : getSuperInterfaces()) {
-			if (ref.isSubtypeOf(type)) {
-				return true;
-			}
-		}
-		return getSuperclass().isSubtypeOf(type);
+		return getReference().isSubtypeOf(type);
 	}
 
 	@Override

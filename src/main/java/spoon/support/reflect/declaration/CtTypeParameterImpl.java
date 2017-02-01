@@ -234,12 +234,12 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		return false;
+		return getReference().isSubtypeOf(type);
 	}
 
 	@Override
 	@UnsettableProperty
-	public <M, C extends CtType<Object>> C addMethod(CtMethod<M> method) {
+	public <M , C extends CtType<Object>> C addMethod(CtMethod<M> method) {
 		// unsettable property
 		return (C) this;
 	}

@@ -66,7 +66,7 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 
 	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		return false;
+		return getReference().isSubtypeOf(type);
 	}
 
 	@Override
