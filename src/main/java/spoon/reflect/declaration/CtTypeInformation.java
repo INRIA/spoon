@@ -98,6 +98,7 @@ public interface CtTypeInformation {
 
 	/**
 	 * Returns true if the referenced type is a sub-type of the given type.
+	 * Returns true is type is self, it means: typeX.isSubtypeOf(typeX) is true too
 	 */
 	boolean isSubtypeOf(CtTypeReference<?> type);
 
