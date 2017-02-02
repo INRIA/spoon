@@ -7,7 +7,7 @@ import os, sys, json
 from github import *
 
 revapi_file = "./target/revapi_report.md"
-accepted_actions = ["opened", "synchronized"]
+accepted_actions = ["opened", "synchronize"]
 
 args = sys.argv
 
