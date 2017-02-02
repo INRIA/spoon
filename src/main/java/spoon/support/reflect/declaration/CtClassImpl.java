@@ -176,15 +176,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		if ((getSuperclass() != null) && getSuperclass().isSubtypeOf(type)) {
-			return true;
-		}
-		for (CtTypeReference<?> ref : getSuperInterfaces()) {
-			if (ref.isSubtypeOf(type)) {
-				return true;
-			}
-		}
-		return false;
+		return getReference().isSubtypeOf(type);
 	}
 
 	@Override

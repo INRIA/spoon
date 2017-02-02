@@ -17,3 +17,9 @@ interface Z {
 abstract class W implements Z {
 }
 
+class O<A extends X> {
+	<B extends A> B foo() {
+		return null;
+	}
+}
+

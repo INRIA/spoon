@@ -82,11 +82,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		return false;
-	}
-
-	@Override
 	public boolean isPrimitive() {
 		return false;
 	}

@@ -39,12 +39,7 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 
 	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		for (CtTypeReference<?> ref : getSuperInterfaces()) {
-			if (ref.isSubtypeOf(type)) {
-				return true;
-			}
-		}
-		return false;
+		return getReference().isSubtypeOf(type);
 	}
 
 	@Override
