@@ -7,7 +7,7 @@ import os, sys, json
 from github import *
 
 revapi_file = "./target/revapi_report.md"
-accepted_actions = ["opened", "edited"]
+accepted_actions = ["opened", "synchronized"]
 
 args = sys.argv
 
@@ -70,3 +70,6 @@ if (action in accepted_actions):
         print "Error while creating the PR comment."
         print e
         exit(1)
+else:
+    print "Call action: "+action
+    exit(0)
