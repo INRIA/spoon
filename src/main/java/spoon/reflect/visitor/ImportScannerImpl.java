@@ -255,6 +255,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	 * Adds a type to the classImports.
 	 */
 	protected boolean addClassImport(CtTypeReference<?> ref) {
+		if (targetType.getSimpleName().equals(ref.getSimpleName())) {
+			return false;
+		}
 		if (classImports.containsKey(ref.getSimpleName())) {
 			return isImportedInClassImports(ref);
 		}
