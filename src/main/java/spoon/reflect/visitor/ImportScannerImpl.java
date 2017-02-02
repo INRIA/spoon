@@ -255,6 +255,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	 * Adds a type to the classImports.
 	 */
 	protected boolean addClassImport(CtTypeReference<?> ref) {
+		if (ref == null) {
+			return false;
+		}
+
+		if (targetType != null && targetType.getSimpleName().equals(ref.getSimpleName()) && !targetType.equals(ref)) {
+			return false;
+		}
 		if (classImports.containsKey(ref.getSimpleName())) {
 			return isImportedInClassImports(ref);
 		}
@@ -277,6 +284,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		// we want to be sure that we are not importing a class because a static field or method we already imported
 		// moreover we make exception for same package classes to avoid problems in FQN mode
+
 		if (targetType != null) {
 			try {
 				CtElement parent = ref.getParent();
@@ -341,7 +349,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				}
 			}
 		}
-
 		//note: we must add the type refs from the same package too, to assure that isImported(typeRef) returns true for them
 		//these type refs are removed in #getClassImports()
 		classImports.put(ref.getSimpleName(), ref);

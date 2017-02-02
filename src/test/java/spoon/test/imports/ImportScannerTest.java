@@ -57,6 +57,21 @@ public class ImportScannerTest {
 		assertEquals(2, imports.size());
 	}
 
+	@Test
+	public void testComputeImportsInClassWithSameName() throws Exception {
+		String packageName = "spoon.test.imports.testclasses2";
+		String className = "ImportSameName";
+		String qualifiedName = packageName + "." + className;
+
+		Factory aFactory = build(packageName, className).getFactory();
+		CtType<?> theClass = aFactory.Type().get(qualifiedName);
+
+		ImportScanner importContext = new ImportScannerImpl();
+		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
+
+		assertEquals(0, imports.size());
+	}
+
 
 	@Test
 	public void testMultiCatchImport() throws Exception {
