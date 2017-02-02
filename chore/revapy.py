@@ -7,6 +7,7 @@ import os, sys, json
 from github import *
 
 revapi_file = "./target/revapi_report.md"
+accepted_actions = ["opened", "synchronize"]
 
 args = sys.argv
 
@@ -57,13 +58,18 @@ if (payload_string == ""):
 payloadJSON = json.loads(payload_string)
 repo_name = payloadJSON['repository']['full_name']
 pr_id = payloadJSON['pull_request']['number']
+action = payloadJSON['action']
 
-try:
-    repo = gh.get_repo(repo_name,True)
+if (action in accepted_actions):
+    try:
+        repo = gh.get_repo(repo_name,True)
 
-    pr = repo.get_pull(pr_id)
-    pr.create_issue_comment(file_content)
-except GithubException as e:
-    print "Error while creating the PR comment."
-    print e
-    exit(1)
+        pr = repo.get_pull(pr_id)
+        pr.create_issue_comment(file_content)
+    except GithubException as e:
+        print "Error while creating the PR comment."
+        print e
+        exit(1)
+else:
+    print "Call action: "+action
+    exit(0)
