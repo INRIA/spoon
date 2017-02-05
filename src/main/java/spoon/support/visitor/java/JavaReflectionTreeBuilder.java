@@ -245,6 +245,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctMethod.setSimpleName(method.getName());
 		ctMethod.setBody(factory.Core().createBlock());
 		setModifier(ctMethod, method.getModifiers());
+		ctMethod.setDefaultMethod(method.isDefault());
 
 		enter(new ExecutableRuntimeBuilderContext(ctMethod));
 		super.visitMethod(method);

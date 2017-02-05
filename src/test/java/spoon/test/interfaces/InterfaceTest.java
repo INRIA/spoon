@@ -15,6 +15,7 @@ import spoon.test.interfaces.testclasses.RedefinesDefaultMethodInterface;
 import spoon.test.interfaces.testclasses.RedefinesStaticMethodInterface;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,6 +52,14 @@ public class InterfaceTest {
 						+ "    return java.time.ZonedDateTime.of(getLocalDateTime(), spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods.getZoneId(zoneString));"
 						+ System.lineSeparator() + "}";
 		assertEquals("The default method must to be well printed", expected, ctMethod.toString());
+	}
+
+	@Test
+	public void testDefaultMethodInConsumer() throws Exception {
+		final CtInterface<?> ctInterface = (CtInterface<?>) factory.Type().get(Consumer.class);
+
+		final CtMethod<?> ctMethod = ctInterface.getMethodsByName("andThen").get(0);
+		assertTrue("The method in the interface must to be default", ctMethod.isDefaultMethod());
 	}
 
 	@Test
