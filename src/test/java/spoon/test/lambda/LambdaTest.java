@@ -360,6 +360,13 @@ public class LambdaTest {
 		CtTypeReference<?> iface = lambda.getType();
 		assertEquals(Consumer.class.getName(), iface.getQualifiedName());
 		assertEquals(iface.getTypeDeclaration().getMethodsByName("accept").get(0), method);
+/* This assertion fails now		
+		CtExecutableReference<?> lambdaRef = lambda.getReference();
+		CtExecutableReference<?> methodRef = lambdaRef.getOverridingExecutable();
+// because methodRef is null
+		CtExecutable<?> method2 = methodRef.getDeclaration();
+		assertEquals("The lambda.getMethod() != lambda.getReference().getOverridingExecutable().getDeclaration()", method, method2);
+*/
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {
