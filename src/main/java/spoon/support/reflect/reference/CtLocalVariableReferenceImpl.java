@@ -23,7 +23,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.filter.VariableReferencePossibleDeclarationFunction;
+import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
 /**
  * An implementation for {@link CtLocalVariableReference}.
@@ -70,7 +70,7 @@ public class CtLocalVariableReferenceImpl<T>
 			// successively iterate through all parents of this reference and
 			// return first result (which must be the closest declaration
 			// respecting visible scope)
-			CtVariable<?> var = map(new VariableReferencePossibleDeclarationFunction()).select(new Filter<CtVariable<?>>() {
+			CtVariable<?> var = map(new PotentialVariableDeclarationFunction()).select(new Filter<CtVariable<?>>() {
 				@Override
 				public boolean matches(CtVariable<?> var) {
 					return simpleName.equals(var.getSimpleName());

@@ -28,15 +28,18 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 
 /**
  * This Query expects a {@link CtVariableReference}, which represents reference to an variable, as input
- * and returns all {@link CtElement} instances, which might be declaration of that variable reference
+ * and returns all {@link CtElement} instances, which might be a declaration of that variable reference
+ * <br>
  * In other words, it returns all elements,
  * which might be declaration of input variable reference.
+ * <br>
  * It returns {@link CtParameter} instances from methods, lambdas and catch blocks.
  * It returns {@link CtField} instances from wrapping classes and their super classes too.
  * <br>
@@ -49,15 +52,15 @@ import spoon.reflect.visitor.chain.CtQuery;
  * Usage:<br>
  * <pre> {@code
  * CtVariableReference varRef = ...;
- * varRef.map(new VariableReferencePossibleDeclarationFunction()).forEach(...process result...);
+ * varRef.map(new PotentialVariableDeclarationFunction()).forEach(...process result...);
  * }
  * </pre>
  */
-public class VariableReferencePossibleDeclarationFunction implements CtConsumableFunction<CtElement> {
+public class PotentialVariableDeclarationFunction implements CtConsumableFunction<CtElement> {
 
 	private boolean includingFields = true;
 
-	public VariableReferencePossibleDeclarationFunction() {
+	public PotentialVariableDeclarationFunction() {
 	}
 
 	@Override
@@ -102,7 +105,7 @@ public class VariableReferencePossibleDeclarationFunction implements CtConsumabl
 	/**
 	 * @param includingFields if true then CtFields of wrapping class and all super classes are returned too
 	 */
-	public VariableReferencePossibleDeclarationFunction includingFields(boolean includingFields) {
+	public PotentialVariableDeclarationFunction includingFields(boolean includingFields) {
 		this.includingFields = includingFields;
 		return this;
 	}
