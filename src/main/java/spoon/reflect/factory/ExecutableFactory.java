@@ -111,7 +111,7 @@ public class ExecutableFactory extends SubFactory {
 			boolean isStatic = ((CtMethod) e).hasModifier(ModifierKind.STATIC);
 			return createReference(((CtMethod<T>) e).getDeclaringType().getReference(), isStatic, ((CtMethod<T>) e).getType().clone(), executableName, refs);
 		} else if (e instanceof CtLambda) {
-			CtMethod<T> lambdaMethod = ((CtLambda) e).getMethod();
+			CtMethod<T> lambdaMethod = ((CtLambda) e).getOverriddenMethod();
 			return createReference(e.getParent(CtType.class).getReference(), lambdaMethod == null ? null : lambdaMethod.getType(), executableName, refs);
 		} else if (e instanceof CtAnonymousExecutable) {
 			return createReference(((CtAnonymousExecutable) e).getDeclaringType().getReference(), e.getType().clone(), executableName);

@@ -91,7 +91,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <R> CtMethod<R> getMethod() {
+	public <R> CtMethod<R> getOverriddenMethod() {
 		//The type of this lambda expression. For example: `Consumer<Integer>`
 		CtTypeReference<T> lambdaTypeRef = getType();
 		if (lambdaTypeRef == null) {

@@ -66,7 +66,7 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	 * Must be defined as a non-default method in an interface, e.g. Consumer.accept().
 	 */
 	@DerivedProperty
-	<R> CtMethod<R> getMethod();
+	<R> CtMethod<R> getOverriddenMethod();
 
 	/**
 	 * Sets the expression in the body of the lambda. Nothing will change

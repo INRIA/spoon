@@ -356,7 +356,7 @@ public class LambdaTest {
 	@Test
 	public void testLambdaMethod() throws Exception {
 		CtLambda<?> lambda = getLambdaInFooByNumber(8);
-		CtMethod<?> method = lambda.getMethod();
+		CtMethod<?> method = lambda.getOverriddenMethod();
 		CtTypeReference<?> iface = lambda.getType();
 		assertEquals(Consumer.class.getName(), iface.getQualifiedName());
 		assertEquals(iface.getTypeDeclaration().getMethodsByName("accept").get(0), method);
