@@ -2,6 +2,7 @@ package spoon.test.lambda.testclasses;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Foo {
@@ -46,6 +47,12 @@ public class Foo {
 		if (((Predicate<Person>) p -> p.age > 18).test(new Person(10))) {
 			System.err.println("Enjoy, you have more than 18.");
 		}
+	}
+
+	public void m9() {
+		Consumer<Integer> c = (field)->{
+			field=1;
+		};
 	}
 
 	public static void printPersonsWithPredicate(List<Person> roster, Predicate<Person> tester) {

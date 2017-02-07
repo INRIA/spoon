@@ -17,7 +17,9 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.util.Set;
@@ -58,6 +60,13 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	 * of statements.
 	 */
 	CtExpression<T> getExpression();
+
+	/**
+	 * @return the method that this lambda expression implements.
+	 * Must be defined as a non-default method in an interface, e.g. Consumer.accept().
+	 */
+	@DerivedProperty
+	<R> CtMethod<R> getOverriddenMethod();
 
 	/**
 	 * Sets the expression in the body of the lambda. Nothing will change

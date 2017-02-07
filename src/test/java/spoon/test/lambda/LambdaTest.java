@@ -29,6 +29,7 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -340,6 +341,32 @@ public class LambdaTest {
 
 		assertNotNull(collect);
 		assertEquals(1, collect.size());
+	}
+	
+	@Test
+	public void testEqualsLambdaParameterRef() throws Exception {
+		CtLambda<?> lambda = getLambdaInFooByNumber(8);
+		CtParameter<?> param = (CtParameter<?>)lambda.getParameters().get(0);
+		CtParameterReference paramRef1 = param.getReference();
+		CtParameterReference paramRef2 = lambda.filterChildren(new TypeFilter<>(CtParameterReference.class)).first();
+		assertTrue(paramRef1.getDeclaringExecutable().getType().equals(paramRef2.getDeclaringExecutable().getType())); 
+		assertTrue(paramRef1.equals(paramRef2));
+	}
+
+	@Test
+	public void testLambdaMethod() throws Exception {
+		CtLambda<?> lambda = getLambdaInFooByNumber(8);
+		CtMethod<?> method = lambda.getOverriddenMethod();
+		CtTypeReference<?> iface = lambda.getType();
+		assertEquals(Consumer.class.getName(), iface.getQualifiedName());
+		assertEquals(iface.getTypeDeclaration().getMethodsByName("accept").get(0), method);
+/* This assertion fails now		
+		CtExecutableReference<?> lambdaRef = lambda.getReference();
+		CtExecutableReference<?> methodRef = lambdaRef.getOverridingExecutable();
+// because methodRef is null
+		CtExecutable<?> method2 = methodRef.getDeclaration();
+		assertEquals("The lambda.getMethod() != lambda.getReference().getOverridingExecutable().getDeclaration()", method, method2);
+*/
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {
