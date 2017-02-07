@@ -16,15 +16,9 @@
  */
 package spoon.reflect.visitor.filter;
 
-import java.util.List;
-
-import spoon.SpoonException;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
-import spoon.reflect.visitor.chain.CtQuery;
 
 /**
  * This Query expects a {@link CtLocalVariable} as input
@@ -50,22 +44,6 @@ public class LocalVariableScopeFunction implements CtConsumableFunction<CtLocalV
 
 	@Override
 	public void apply(CtLocalVariable<?> localVariable, CtConsumer<Object> outputConsumer) {
-		CtStatementList statements = localVariable.getParent(CtStatementList.class);
-		if (statements == null) {
-			//cannot search for variable references of variable which has no parent statement list/block
-			return;
-		}
-		//create query which will be evaluated on each statement after local variable declaration
-		CtQuery query = localVariable.getFactory().createQuery().filterChildren(null);
-		List<CtStatement> stats = statements.getStatements();
-		//search for variable declaration in statements of current block
-		int idxOfVar = stats.indexOf(localVariable);
-		if (idxOfVar < 0) {
-			throw new SpoonException("Cannot found index of local variable declaration " + localVariable + " in statement list " + statements);
-		}
-		//scan only all elements AFTER this variable declaration
-		for (int i = idxOfVar + 1; i < stats.size(); i++) {
-			query.setInput(stats.get(i)).forEach(outputConsumer);
-		}
+		localVariable.map(new SiblingsFunction().mode(SiblingsFunction.Mode.NEXT).includingSelf(true)).filterChildren(null).forEach(outputConsumer);
 	}
 }
