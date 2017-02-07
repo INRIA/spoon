@@ -16,6 +16,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
 import spoon.test.reference.testclasses.Tortillas;
@@ -176,6 +177,20 @@ public class VariableAccessTest {
 		assertSame(localVarRefCloned.getDeclaration(), localVarCloned);
 		assertEquals(localVarCloned.getReference().getDeclaration(), localVarCloned);
 		assertSame(localVarCloned.getReference().getDeclaration(), localVarCloned);
+	}
+	@Test
+	public void testReferencesInInitExpression() throws Exception {
+		/* test getReference on local variable
+		*  getReference().getDeclaration() must be circular
+		*/
+
+		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
+		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
+		
+		final CtLocalVariable localVarNumber = make.getBody().getStatement(1);
+		List<CtLocalVariableReference<?>> refs = localVarNumber.map(new LocalVariableReferenceFunction()).list();
+		assertEquals(1, refs.size());
+		assertSame(localVarNumber, refs.get(0).getParent(CtLocalVariable.class));
 	}
 
 	@Test
