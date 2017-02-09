@@ -1,7 +1,6 @@
 ---
 title: About
 keywords: about
-last_updated: September 9, 2015
 ---
 
 Spoon is developed at Inria Lille within at the [Spirals research group](https://team.inria.fr/spirals/).

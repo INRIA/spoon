@@ -1,7 +1,6 @@
 ---
 title: Papers
 keywords: papers
-last_updated: September 9, 2015
 ---
 
 # Articles 

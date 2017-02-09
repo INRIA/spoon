@@ -2,7 +2,6 @@
 title: Gradle
 tags: [usage]
 keywords: gradle, usage, java, plugin
-last_updated: October 1, 2015
 ---
 
 ## Dependency

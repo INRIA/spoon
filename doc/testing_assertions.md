@@ -2,7 +2,6 @@
 title: Testing Spoon Transformations
 tags: [assert, assertions]
 keywords: testing, assert, assertion
-last_updated: February 10, 2015
 ---
 
 Spoon provides a way to test transformations as follows.

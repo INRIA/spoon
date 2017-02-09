@@ -2,7 +2,6 @@
 title: Path
 tags: [quering]
 keywords: quering, query, path, ast, elements
-last_updated: October 5, 2015
 ---
 
 `CtPath` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPath.html)) 

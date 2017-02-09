@@ -2,7 +2,6 @@
 title: Filter
 tags: [quering]
 keywords: quering, query, filter, ast, elements
-last_updated: May 27, 2016
 ---
 
 Spoon gives developers a way to query code elements.

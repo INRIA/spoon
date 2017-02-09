@@ -2,7 +2,6 @@
 title: Structural elements
 tags: [meta-model]
 keywords: structural, elements, ast, meta, model
-last_updated: October 1, 2015
 ---
 
 A programming language can have different meta models. 

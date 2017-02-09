@@ -2,7 +2,6 @@
 title: Quickstart
 tags: [quickstart]
 keywords: testing, quickstart
-last_updated: February 10, 2015
 ---
 
 ## Overview

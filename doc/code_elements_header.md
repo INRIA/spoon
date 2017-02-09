@@ -2,7 +2,6 @@
 title: Code elements
 tags: [meta-model]
 keywords: code, elements, ast, meta, model
-last_updated: October 1, 2015
 ---
 
 Figure at the end of this page shows the meta model for Java executable code. 

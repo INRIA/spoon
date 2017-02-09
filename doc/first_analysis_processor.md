@@ -2,7 +2,6 @@
 title: First analysis processor
 tags: [getting-started]
 keywords: start, begin, hello world, processor, spoon
-last_updated: October 1, 2015
 ---
 
 ## Visualizing the model of a Java file

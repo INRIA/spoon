@@ -2,7 +2,6 @@
 title: Create elements with factories
 tags: [meta-model]
 keywords: factories, elements, ast, meta, model
-last_updated: October 1, 2015
 ---
 
 When you design and implement transformations, with processors 

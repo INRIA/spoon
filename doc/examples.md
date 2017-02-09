@@ -1,7 +1,6 @@
 ---
 title: Examples
 keywords: examples
-last_updated: September 9, 2015
 ---
 
 ## Program Analysis

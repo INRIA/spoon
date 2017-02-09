@@ -2,7 +2,6 @@
 title: Matching elements
 tags: [quering]
 keywords: quering, query, filter, ast, elements
-last_updated: March 26, 2016
 ---
 
 Spoon provides a way to declaratively specify a code snippet to match, this is called a `TemplateMatcher`.

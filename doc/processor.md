@@ -2,7 +2,6 @@
 title: Processor for elements
 tags: [processor]
 keywords: processor, processing, elements
-last_updated: October 6, 2015
 ---
 
 A program analysis is a combination of query and analysis code.

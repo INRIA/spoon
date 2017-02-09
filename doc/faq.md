@@ -1,7 +1,6 @@
 ---
 title: FAQ
 keywords: frequently asked questions, FAQ, question and answer, collapsible sections, expand, collapse
-last_updated: September 9, 2015
 ---
 
 ## Practical Information
