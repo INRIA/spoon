@@ -23,13 +23,16 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
 import spoon.test.lambda.testclasses.Kuu;
+import spoon.test.lambda.testclasses.LambdaRxJava;
 import spoon.test.lambda.testclasses.Panini;
 import spoon.test.lambda.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,7 @@ public class LambdaTest {
 	private CtType<Bar> bar;
 	private CtType<Object> panini;
 	private CtType<Object> tacos;
+	private CtType<LambdaRxJava> lambdaRxJava;
 	private SpoonModelBuilder compiler;
 
 	@Before
@@ -64,6 +68,7 @@ public class LambdaTest {
 		bar = factory.Type().get(Bar.class);
 		panini = factory.Type().get(Panini.class);
 		tacos = factory.Type().get(Tacos.class);
+		lambdaRxJava = factory.Type().get(LambdaRxJava.class);
 	}
 
 	@Test
@@ -367,6 +372,16 @@ public class LambdaTest {
 		CtExecutable<?> method2 = methodRef.getDeclaration();
 		assertEquals("The lambda.getMethod() != lambda.getReference().getOverridingExecutable().getDeclaration()", method, method2);
 */
+	}
+
+	@Test
+	public void testGetOverriddenMethodWithFunction() throws Exception {
+		List<CtLambda<?>> allLambdas = lambdaRxJava.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
+		assertEquals(1, allLambdas.size());
+		CtLambda<?> lambda = allLambdas.get(0);
+		CtMethod<?> method = lambda.getOverriddenMethod();
+		CtTypeReference<?> iface = lambda.getType();
+		assertEquals(LambdaRxJava.NbpOperator.class.getName(), iface.getQualifiedName());
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {
