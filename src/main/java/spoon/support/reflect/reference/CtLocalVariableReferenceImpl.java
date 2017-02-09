@@ -17,15 +17,13 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.visitor.filter.AbstractFilter;
-
-import java.util.List;
+import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
 /**
  * An implementation for {@link CtLocalVariableReference}.
@@ -50,6 +48,7 @@ public class CtLocalVariableReferenceImpl<T>
 		visitor.visitCtLocalVariableReference(this);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public CtLocalVariable<T> getDeclaration() {
 		// without a factory, we are not able to filter for local variables
@@ -57,30 +56,35 @@ public class CtLocalVariableReferenceImpl<T>
 		if (factory == null) {
 			return null;
 		}
-		final SimpleNameFilter filter = new SimpleNameFilter();
 
-		// successively iterate through all parents of this reference and
-		// return first result (which must be the closest declaration
-		// respecting visible scope)
-		try {
-			CtElement parent = getParent();
-			// stop at `package` level to avoid lookups to foreign Java files
-			while (parent != null && !(parent instanceof CtPackage)) {
-				final List<CtLocalVariable<T>> localVariables =
-						parent.getElements(filter);
-				// since `parent` may be a class declaring multiple local
-				// variables with same name in different methods, we have to
-				// check if any of the findings is visible in current scope by
-				// validating that the parent of a finding is parent of this
-				// reference as well
-				for (final CtLocalVariable<T> lv : localVariables) {
-					if (getParent().equals(lv) || hasParent(lv.getParent())) {
-						return lv;
-					}
-				}
-				parent = parent.getParent();
+		final String simpleName = getSimpleName();
+
+		//handle the CtLocalVariableReference which were created by CtLocalVariable#getReference() and which are not yet part of model, so we cannot found them using standard rules
+		if (parent instanceof CtLocalVariable) {
+			CtLocalVariable<T> var = (CtLocalVariable<T>) parent;
+			if (simpleName.equals(var.getSimpleName())) {
+				return var;
 			}
-		} catch (final ParentNotInitializedException e) {
+		}
+		try {
+			// successively iterate through all parents of this reference and
+			// return first result (which must be the closest declaration
+			// respecting visible scope)
+			CtVariable<?> var = map(new PotentialVariableDeclarationFunction()).select(new Filter<CtVariable<?>>() {
+				@Override
+				public boolean matches(CtVariable<?> var) {
+					return simpleName.equals(var.getSimpleName());
+				}
+			}).first();
+			if (var instanceof CtLocalVariable) {
+				return (CtLocalVariable<T>) var;
+			}
+			if (var != null) {
+				//we have found another variable declaration with same simple name, which hides declaration of this local variable reference
+				//handle it as not found
+				return null;
+			}
+		} catch (ParentNotInitializedException e) {
 			// handle this case as 'not found'
 		}
 		return null;
@@ -89,23 +93,5 @@ public class CtLocalVariableReferenceImpl<T>
 	@Override
 	public CtLocalVariableReference<T> clone() {
 		return (CtLocalVariableReference<T>) super.clone();
-	}
-
-	/**
-	 * A {@link spoon.reflect.visitor.Filter} that filters all
-	 * {@link CtLocalVariable}s with simple name equals to
-	 * {@link #getSimpleName()}.
-	 */
-	private final class SimpleNameFilter
-			extends AbstractFilter<CtLocalVariable<T>> {
-
-		SimpleNameFilter() {
-			super();
-		}
-
-		@Override
-		public boolean matches(final CtLocalVariable<T> element) {
-			return element.getSimpleName().equals(getSimpleName());
-		}
 	}
 }
