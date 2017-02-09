@@ -2,7 +2,6 @@
 title: Maven
 tags: [usage]
 keywords: maven, central, usage, java, plugin
-last_updated: October 1, 2015
 ---
 
 ## Dependency

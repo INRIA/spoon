@@ -2,7 +2,6 @@
 title: First transformation processor
 tags: [getting-started]
 keywords: start, begin, hello world, processor, spoon, factory, setter
-last_updated: October 1, 2015
 ---
 
 

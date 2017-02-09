@@ -2,7 +2,6 @@
 title: References
 tags: [meta-model]
 keywords: references, elements, ast, meta, model
-last_updated: October 1, 2015
 ---
 
 The reference part of the meta model expresses the fact that program references 

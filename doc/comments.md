@@ -1,7 +1,6 @@
 ---
 title: Comments and position
 keywords: comments position
-last_updated: November 25, 2016
 ---
 
 # Comment

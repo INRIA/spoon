@@ -2,7 +2,6 @@
 title: Processor for annotations
 tags: [processor]
 keywords: processor, processing, annotations
-last_updated: October 6, 2015
 ---
 
 We now discuss how Spoon deals with the processing of annotations. 

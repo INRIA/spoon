@@ -2,7 +2,6 @@
 title: Command Line
 tags: [usage]
 keywords: command, line, usage, java, jar
-last_updated: May 25, 2016
 ---
 
 To run Spoon in command line, you first have to download the corresponding jar file.
