@@ -109,7 +109,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			lambdaExecutableMethod = lambdaTypeMethods.iterator().next();
 		} else {
 			for (CtMethod<?> method : lambdaTypeMethods) {
-				if (method.isDefaultMethod() || method.hasModifier(ModifierKind.PRIVATE)) {
+				if (method.isDefaultMethod() || method.hasModifier(ModifierKind.PRIVATE) || method.hasModifier(ModifierKind.STATIC)) {
 					continue;
 				}
 				if (lambdaExecutableMethod != null) {
