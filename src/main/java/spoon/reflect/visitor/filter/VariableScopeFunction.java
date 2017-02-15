@@ -32,7 +32,6 @@ import spoon.reflect.visitor.chain.CtConsumer;
  * The mapping function, accepting {@link CtVariable}
  * <ul>
  * <li>CtLocalVariable - local variable declared in body
- * <li>CtField - member field of an type
  * <li>CtParameter - method parameter
  * <li>CtCatchVariable - try - catch variable
  * </ul>
@@ -49,7 +48,6 @@ public class VariableScopeFunction implements CtConsumableFunction<CtVariable<?>
 		variable.accept(visitor);
 	}
 
-	private static final FieldScopeFunction fieldScopeFunction = new FieldScopeFunction();
 	private static final LocalVariableScopeFunction localVariableScopeFunction = new LocalVariableScopeFunction();
 	private static final ParameterScopeFunction parameterScopeFunction = new ParameterScopeFunction();
 	private static final CatchVariableScopeFunction catchVariableScopeFunction = new CatchVariableScopeFunction();
@@ -64,7 +62,7 @@ public class VariableScopeFunction implements CtConsumableFunction<CtVariable<?>
 		 */
 		@Override
 		public <T> void visitCtField(CtField<T> field) {
-			fieldScopeFunction.apply(field, outputConsumer);
+			throw new SpoonException("Field scope function is not supported");
 		}
 
 		/**

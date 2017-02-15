@@ -41,9 +41,8 @@ public class FieldReferenceFunction implements CtConsumableFunction<CtField<?>> 
 
 	@Override
 	public void apply(CtField<?> field, CtConsumer<Object> outputConsumer) {
-		field
-			.map(new FieldScopeFunction())
-			.select(new DirectReferenceFilter<CtFieldReference<?>>(field.getReference()))
+		field.getFactory().getModel().getRootPackage()
+			.filterChildren(new DirectReferenceFilter<CtFieldReference<?>>(field.getReference()))
 			.forEach(outputConsumer);
 	}
 }
