@@ -20,6 +20,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.chain.CtQuery;
+import spoon.reflect.visitor.chain.CtQueryAware;
 
 /**
  * This Function expects a {@link CtElement} as input
@@ -28,9 +30,10 @@ import spoon.reflect.visitor.chain.CtConsumer;
  * By default input is not returned,
  * but this behavior can be changed by call of {@link #includingSelf(boolean)} with value true
  */
-public class ParentFunction implements CtConsumableFunction<CtElement> {
+public class ParentFunction implements CtConsumableFunction<CtElement>, CtQueryAware {
 
 	private boolean includingSelf = false;
+	private CtQuery query;
 
 	public ParentFunction() {
 	}
@@ -53,9 +56,14 @@ public class ParentFunction implements CtConsumableFunction<CtElement> {
 		}
 		CtPackage rootPackage = input.getFactory().getModel().getRootPackage();
 		CtElement parent = input;
-		while (parent != null && parent != rootPackage) {
+		while (parent != null && parent != rootPackage && query.isTerminated() == false) {
 			parent = parent.getParent();
 			outputConsumer.accept(parent);
 		}
+	}
+
+	@Override
+	public void setQuery(CtQuery query) {
+		this.query = query;
 	}
 }
