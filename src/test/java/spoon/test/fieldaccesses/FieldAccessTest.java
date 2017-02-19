@@ -11,6 +11,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableWrite;
@@ -395,5 +396,18 @@ public class FieldAccessTest {
 		// now static fields are used with the name of the parent class
 		assertEquals("A.myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).toString());
 		assertEquals("finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
+	}
+	@Test
+	public void testFieldAccessAutoExplicit() throws Exception {
+		CtClass mouse = (CtClass)ModelUtils.buildClass(Mouse.class);
+		CtMethod method = mouse.filterChildren((CtMethod m)->"meth1".equals(m.getSimpleName())).first();
+		
+		CtFieldReference ageFR = method.filterChildren((CtFieldReference fr)->"age".equals(fr.getSimpleName())).first();
+		//first is the field printed with implicit "this."
+ 		assertEquals("age", ageFR.getParent().toString());
+ 		//add local variable declaration which hides the field declaration 
+ 		method.getBody().insertBegin((CtStatement) mouse.getFactory().createCodeSnippetStatement("int age = 1").compile());
+		//now the field access must use explicit "this."
+ 		assertEquals("this.age", ageFR.getParent().toString());
 	}
 }
