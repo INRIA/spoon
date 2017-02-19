@@ -264,6 +264,22 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
+	/**
+	 * Detects if this type is an code responsible for implementing of that type.<br>
+	 * In means it detects whether this type can access protected members of that type
+	 * @return true if this type or any declaring type recursively is subtype of type or directly is the type.
+	 */
+	private boolean isImplementationOf(CtTypeReference<?> type) {
+		CtTypeReference<?> impl = this;
+		while (impl != null) {
+			if (impl.isSubtypeOf(type)) {
+				return true;
+			}
+			impl = impl.getDeclaringType();
+		}
+		return false;
+	}
+
 	@Override
 	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
@@ -621,26 +637,45 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				return true;
 			}
 			if (modifiers.contains(ModifierKind.PROTECTED)) {
-				if (isSubtypeOf(type)) {
-					//is visible in subtypes
+				//the accessed type is protected in scope of declaring type.
+				CtTypeReference<?> declaringType = type.getDeclaringType();
+				if (declaringType == null) {
+					//top level type cannot be protected. So this is a model inconsistency.
+					throw new SpoonException("The protected class " + type.getQualifiedName() + " has no declaring class.");
+				}
+				if (isImplementationOf(declaringType)) {
+					//type is visible in code which implements declaringType
 					return true;
 				} //else it is visible in same package, like package protected
+				return isInSamePackage(type);
 			}
 			if (modifiers.contains(ModifierKind.PRIVATE)) {
 				//it is visible in scope of the same class only
 				return type.getTopLevelType().getQualifiedName().equals(this.getTopLevelType().getQualifiedName());
 			}
-			//package protected
-			if (type.getTopLevelType().getPackage().getSimpleName().equals(this.getTopLevelType().getPackage().getSimpleName())) {
-				//visible only in scope of the same package
+			/*
+			 * no modifier, we have to check if it is nested type and if yes, if parent is interface or class.
+			 * In case of no parent then implicit access is package protected
+			 * In case of parent is interface, then implicit access is PUBLIC
+			 * In case of parent is class, then implicit access is package protected
+			 */
+			CtTypeReference<?> declaringTypeRef = type.getDeclaringType();
+			if (declaringTypeRef != null && declaringTypeRef.isInterface()) {
+				//the declaring type is interface, then implicit access is PUBLIC
 				return true;
 			}
-			return false;
+			//package protected
+			//visible only in scope of the same package
+			return isInSamePackage(type);
 		} catch (SpoonClassNotFoundException e) {
 			handleParentNotFound(e);
 			//if the modifiers cannot be resolved then we expect that it is visible
 			return true;
 		}
+	}
+
+	private boolean isInSamePackage(CtTypeReference<?> type) {
+		return type.getTopLevelType().getPackage().getSimpleName().equals(this.getTopLevelType().getPackage().getSimpleName());
 	}
 
 	@Override
@@ -659,7 +694,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public CtTypeReference<?> getAccessType() {
 		CtTypeReference<?> declType = this.getDeclaringType();
 		if (declType == null) {
-			throw new SpoonException("The nestedType is expected, but it is: " + getQualifiedName());
+			throw new SpoonException("The declaring type is expected, but " + getQualifiedName() + " is top level type");
 		}
 		CtType<?> contextType = getParent(CtType.class);
 		if (contextType == null) {
