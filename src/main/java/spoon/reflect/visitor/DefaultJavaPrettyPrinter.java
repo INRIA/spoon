@@ -104,6 +104,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
+import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
 import spoon.reflect.visitor.printer.PrinterHelper;
@@ -669,14 +670,35 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (f.getVariable().isStatic() && f.getTarget() instanceof CtTypeAccess) {
 				_context.ignoreGenerics(true);
 			}
-			if (f.getTarget() != null) {
+			CtExpression<?> target = f.getTarget();
+			if (target != null) {
 				boolean isInitializeStaticFinalField = isInitializeStaticFinalField(f.getTarget());
 				boolean isStaticField = f.getVariable().isStatic();
 				boolean isImportedField = importsContext.isImported(f.getVariable());
 
 				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
+					if (target.isImplicit()) {
+						/*
+						 * target is implicit, check whether there is no conflict with an local variable, catch variable or parameter
+						 * in case of conflict make it explicit, otherwise the field access is shadowed by that variable.
+						 * Search for potential variable declaration until we found a class which declares or inherits this field
+						 */
+						final CtField<?> field = f.getVariable().getFieldDeclaration();
+						final String fieldName = field.getSimpleName();
+						CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction()).select(new Filter<CtVariable<?>>() {
+							@Override
+							public boolean matches(CtVariable<?> element) {
+								//finish if we have found a declaration of variable with the same name.
+								return fieldName.equals(element.getSimpleName());
+							}
+						}).first();
+						if (var != field) {
+							//another variable declaration was found which is hiding the field declaration for this field access. Make the field access expicit
+							target.setImplicit(false);
+						}
+					}
 					printer.snapshotLength();
-					scan(f.getTarget());
+					scan(target);
 					if (printer.hasNewContent()) {
 						printer.write(".");
 					}
