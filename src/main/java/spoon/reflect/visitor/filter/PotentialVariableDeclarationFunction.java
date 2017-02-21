@@ -20,6 +20,8 @@ import java.util.Collection;
 
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -27,19 +29,19 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
+import spoon.reflect.visitor.chain.CtQueryAware;
 
 /**
- * This Query expects a {@link CtVariableReference}, which represents reference to an variable, as input
- * and returns all {@link CtElement} instances, which might be a declaration of that variable reference
+ * This mapping function searches for all {@link CtVariable} instances,
+ * which might be a declaration of an input {@link CtElement}.
  * <br>
- * In other words, it returns all elements,
- * which might be declaration of input variable reference.
- * <br>
+ * It returns {@link CtLocalVariable} instances too
+ * It returns {@link CtCatchVariable} instances from catch blocks.
  * It returns {@link CtParameter} instances from methods, lambdas and catch blocks.
  * It returns {@link CtField} instances from wrapping classes and their super classes too.
  * <br>
@@ -49,48 +51,82 @@ import spoon.reflect.visitor.chain.CtQuery;
  * It can be used to search for variable declarations of
  * variable references and for detection of variable name conflicts
  * <br>
- * Usage:<br>
+ * Example: Search for all potential {@link CtVariable} declarations<br>
  * <pre> {@code
  * CtVariableReference varRef = ...;
  * varRef.map(new PotentialVariableDeclarationFunction()).forEach(...process result...);
  * }
  * </pre>
+ * Example: Search for {@link CtVariable} declaration of variable named `varName` in scope scop
+ * <pre> {@code
+ * CtElement scope = ...;
+ * String varName = "anVariableName";
+ * CtVariable varOrNull = scope.map(new PotentialVariableDeclarationFunction(varName)).first();
+ * }
+ * </pre>
  */
-public class PotentialVariableDeclarationFunction implements CtConsumableFunction<CtElement> {
+public class PotentialVariableDeclarationFunction implements CtConsumableFunction<CtElement>, CtQueryAware {
 
-	private boolean includingFields = true;
+	private boolean isTypeOnTheWay;
+	private final String variableName;
+	private CtQuery query;
 
 	public PotentialVariableDeclarationFunction() {
+		this.variableName = null;
+	}
+
+	/**
+	 * Searches for a variable with exact name.
+	 * @param variableName
+	 */
+	public PotentialVariableDeclarationFunction(String variableName) {
+		this.variableName = variableName;
 	}
 
 	@Override
 	public void apply(CtElement input, CtConsumer<Object> outputConsumer) {
+		isTypeOnTheWay = false;
 		//Search previous siblings for element which may represents the declaration of this local variable
-		CtQuery siblingsQuery = input.getFactory().createQuery().map(new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS));
+		CtQuery siblingsQuery = input.getFactory().createQuery()
+				.map(new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS))
+				//select only CtVariable nodes
+				.select(new TypeFilter<>(CtVariable.class));
+		if (variableName != null) {
+			//variable name is defined so we have to search only for variables with that name
+			siblingsQuery = siblingsQuery.select(new NameFilter<>(variableName));
+		}
 
 		CtElement scopeElement = input;
 		//Search input and then all parents until first CtPackage for element which may represents the declaration of this local variable
 		while (scopeElement != null && !(scopeElement instanceof CtPackage)) {
 			CtElement parent = scopeElement.getParent();
 			if (parent instanceof CtType<?>) {
-				if (includingFields) {
-					//TODO replace getAllFields() followed by getFieldDeclaration, by direct visiting of fields of types in super classes.
-					Collection<CtFieldReference<?>> allFields = ((CtType<?>) parent).getAllFields();
-					for (CtFieldReference<?> fieldReference : allFields) {
-						outputConsumer.accept(fieldReference.getFieldDeclaration());
+				isTypeOnTheWay = true;
+				//TODO replace getAllFields() followed by getFieldDeclaration, by direct visiting of fields of types in super classes.
+				Collection<CtFieldReference<?>> allFields = ((CtType<?>) parent).getAllFields();
+				for (CtFieldReference<?> fieldReference : allFields) {
+					if (sendToOutput(fieldReference.getFieldDeclaration(), outputConsumer)) {
+						return;
 					}
 				}
 			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList) {
-				//visit all previous siblings of scopeElement element in parent BodyHolder or Statement list
+				//visit all previous CtVariable siblings of scopeElement element in parent BodyHolder or Statement list
 				siblingsQuery.setInput(scopeElement).forEach(outputConsumer);
+				if (query.isTerminated()) {
+					return;
+				}
 				//visit parameters of CtCatch and CtExecutable (method, lambda)
 				if (parent instanceof CtCatch) {
 					CtCatch ctCatch = (CtCatch) parent;
-					outputConsumer.accept(ctCatch.getParameter());
+					if (sendToOutput(ctCatch.getParameter(), outputConsumer)) {
+						return;
+					}
 				} else if (parent instanceof CtExecutable) {
 					CtExecutable<?> exec = (CtExecutable<?>) parent;
 					for (CtParameter<?> param : exec.getParameters()) {
-						outputConsumer.accept(param);
+						if (sendToOutput(param, outputConsumer)) {
+							return;
+						}
 					}
 				}
 			}
@@ -98,15 +134,31 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 		}
 	}
 
-	public boolean isIncludingFields() {
-		return includingFields;
+	/**
+	 * @param var
+	 * @param output
+	 * @return true if query processing is terminated
+	 */
+	private boolean sendToOutput(CtVariable<?> var, CtConsumer<Object> output) {
+		if (variableName == null || variableName.equals(var.getSimpleName())) {
+			output.accept(var);
+		}
+		return query.isTerminated();
 	}
 
 	/**
-	 * @param includingFields if true then CtFields of wrapping class and all super classes are returned too
+	 * This method provides access to current state of this function.
+	 * It is intended to be called by other mapping functions at query processing time or after query is finished.
+	 *
+	 * @return true if there is an local class on the way from the input of this mapping function
+	 * to the actually found potential variable declaration
 	 */
-	public PotentialVariableDeclarationFunction includingFields(boolean includingFields) {
-		this.includingFields = includingFields;
-		return this;
+	public boolean isTypeOnTheWay() {
+		return isTypeOnTheWay;
+	}
+
+	@Override
+	public void setQuery(CtQuery query) {
+		this.query = query;
 	}
 }
