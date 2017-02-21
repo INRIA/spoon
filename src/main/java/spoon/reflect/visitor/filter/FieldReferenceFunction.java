@@ -16,6 +16,8 @@
  */
 package spoon.reflect.visitor.filter;
 
+import spoon.SpoonException;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
@@ -34,14 +36,32 @@ import spoon.reflect.visitor.chain.CtConsumer;
  * }
  * </pre>
  */
-public class FieldReferenceFunction implements CtConsumableFunction<CtField<?>> {
+public class FieldReferenceFunction implements CtConsumableFunction<CtElement> {
+	private final CtField<?> field;
 
 	public FieldReferenceFunction() {
+		this.field = null;
+	}
+
+	public FieldReferenceFunction(CtField<?> field) {
+		this.field = field;
 	}
 
 	@Override
-	public void apply(CtField<?> field, CtConsumer<Object> outputConsumer) {
-		field.getFactory().getModel().getRootPackage()
+	public void apply(CtElement fieldOrScope, CtConsumer<Object> outputConsumer) {
+		CtElement scope;
+		CtField<?> field = this.field;
+		if (field == null) {
+			if (fieldOrScope instanceof CtField) {
+				field = (CtField<?>) fieldOrScope;
+			} else {
+				throw new SpoonException("The input of FieldReferenceFunction must be a CtField but is " + fieldOrScope.getClass().getSimpleName());
+			}
+			scope = field.getFactory().getModel().getRootPackage();
+		} else {
+			scope = fieldOrScope;
+		}
+		scope
 			.filterChildren(new DirectReferenceFilter<CtFieldReference<?>>(field.getReference()))
 			.forEach(outputConsumer);
 	}

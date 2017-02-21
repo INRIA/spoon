@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.chain.CtScannerListener;
 
 /**
  * This Query expects a {@link CtParameter} as input
@@ -39,8 +40,13 @@ import spoon.reflect.visitor.chain.CtConsumer;
  * </pre>
  */
 public class ParameterScopeFunction implements CtConsumableFunction<CtParameter<?>> {
+	private final CtScannerListener listener;
 
 	public ParameterScopeFunction() {
+		this.listener = null;
+	}
+	public ParameterScopeFunction(CtScannerListener queryListener) {
+		this.listener = queryListener;
 	}
 
 	@Override
@@ -50,6 +56,8 @@ public class ParameterScopeFunction implements CtConsumableFunction<CtParameter<
 			//cannot search for parameter references of parameter which has no executable
 			return;
 		}
-		exec.filterChildren(null).forEach(outputConsumer);
+		exec
+			.map(new CtScannerFunction().setListener(this.listener))
+			.forEach(outputConsumer);
 	}
 }

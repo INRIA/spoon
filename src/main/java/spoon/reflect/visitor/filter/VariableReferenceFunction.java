@@ -39,21 +39,35 @@ import spoon.reflect.visitor.chain.CtConsumer;
  * </ul>
  * and returning all the {@link CtVariableReference}, which refers this variable
  */
-public class VariableReferenceFunction implements CtConsumableFunction<CtVariable<?>> {
+public class VariableReferenceFunction implements CtConsumableFunction<CtElement> {
 
 	protected final Visitor visitor = new Visitor();
+	private final CtVariable<?> variable;
 	protected CtConsumer<Object> outputConsumer;
+	protected CtElement scope;
 
-	@Override
-	public void apply(CtVariable<?> variable, CtConsumer<Object> outputConsumer) {
-		this.outputConsumer = outputConsumer;
-		variable.accept(visitor);
+	public VariableReferenceFunction() {
+		this.variable = null;
 	}
 
-	private static final FieldReferenceFunction fieldReferenceFunction = new FieldReferenceFunction();
-	private static final LocalVariableReferenceFunction localVariableReferenceFunction = new LocalVariableReferenceFunction();
-	private static final ParameterReferenceFunction parameterReferenceFunction = new ParameterReferenceFunction();
-	private static final CatchVariableReferenceFunction catchVariableReferenceFunction = new CatchVariableReferenceFunction();
+	public VariableReferenceFunction(CtVariable<?> variable) {
+		this.variable = variable;
+	}
+
+	@Override
+	public void apply(CtElement variableOrScope, CtConsumer<Object> outputConsumer) {
+		scope = variableOrScope;
+		CtVariable<?> var = this.variable;
+		if (var == null) {
+			if (variableOrScope instanceof CtVariable<?>) {
+				var = (CtVariable<?>) variableOrScope;
+			} else {
+				throw new SpoonException("The input of VariableReferenceFunction must be a CtVariable but is a " + variableOrScope.getClass().getSimpleName());
+			}
+		}
+		this.outputConsumer = outputConsumer;
+		var.accept(visitor);
+	}
 
 	protected class Visitor extends CtScanner {
 		@Override
@@ -65,7 +79,7 @@ public class VariableReferenceFunction implements CtConsumableFunction<CtVariabl
 		 */
 		@Override
 		public <T> void visitCtField(CtField<T> field) {
-			fieldReferenceFunction.apply(field, outputConsumer);
+			new FieldReferenceFunction((CtField<?>) variable).apply(scope, outputConsumer);
 		}
 
 		/**
@@ -73,7 +87,7 @@ public class VariableReferenceFunction implements CtConsumableFunction<CtVariabl
 		 */
 		@Override
 		public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-			localVariableReferenceFunction.apply(localVariable, outputConsumer);
+			new LocalVariableReferenceFunction((CtLocalVariable<?>) variable).apply(scope, outputConsumer);
 		}
 
 		/**
@@ -81,7 +95,7 @@ public class VariableReferenceFunction implements CtConsumableFunction<CtVariabl
 		 */
 		@Override
 		public <T> void visitCtParameter(CtParameter<T> parameter) {
-			parameterReferenceFunction.apply(parameter, outputConsumer);
+			new ParameterReferenceFunction((CtParameter<?>) variable).apply(scope, outputConsumer);
 		}
 
 		/**
@@ -89,7 +103,7 @@ public class VariableReferenceFunction implements CtConsumableFunction<CtVariabl
 		 */
 		@Override
 		public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
-			catchVariableReferenceFunction.apply(catchVariable, outputConsumer);
+			new CatchVariableReferenceFunction((CtCatchVariable<?>) variable).apply(scope, outputConsumer);
 		}
 	}
 }
