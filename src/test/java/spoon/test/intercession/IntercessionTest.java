@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -31,6 +32,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.UnsettableProperty;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -181,28 +183,32 @@ public class IntercessionTest {
 
 	@Test
 	public void testSettersAreAllGood() throws Exception {
-		StringBuilder classpath = new StringBuilder();
+		ArrayList classpath = new ArrayList();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
-				classpath.append(classpathEntry);
-				classpath.append(File.pathSeparator);
+				classpath.add(classpathEntry);
 			}
 		}
-		String systemClassPath = classpath.substring(0, classpath.length() - 1);
 
 		final Launcher launcher = new Launcher();
-		launcher.run(new String[] {
-				"-i", "./src/main/java",
-				"--output-type", "nooutput",
-				"--source-classpath", systemClassPath
-		});
+		launcher.addInputResource("./src/main/java/spoon/reflect/");
+		launcher.addInputResource("./src/main/java/spoon/support/");
+		launcher.getModelBuilder().setSourceClasspath((String[]) classpath.toArray(new String[]{}));
+		launcher.buildModel();
+
 		final Factory factory = launcher.getFactory();
 		final List<CtMethod<?>> setters = Query
 				.getElements(factory, new AbstractFilter<CtMethod<?>>(CtMethod.class) {
 					@Override
 					public boolean matches(CtMethod<?> element) {
-						return element.getDeclaringType().isInterface() &&
-								element.getDeclaringType().getSimpleName().startsWith("Ct") &&
+						CtType<?> declaringType = element.getDeclaringType();
+						if (declaringType.getPackage() != null &&
+								(declaringType.getPackage().getQualifiedName().startsWith("spoon.support.visitor")
+								|| declaringType.getPackage().getQualifiedName().startsWith("spoon.reflect.visitor"))) {
+							return false;
+						}
+						return declaringType.isInterface() &&
+								declaringType.getSimpleName().startsWith("Ct") &&
 								(element.getSimpleName().startsWith("set") ||
 								element.getSimpleName().startsWith("add"));
 					}
