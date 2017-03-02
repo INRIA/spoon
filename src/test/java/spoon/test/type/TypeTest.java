@@ -95,7 +95,7 @@ public class TypeTest {
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
 		CtBlock<?> body = foo.getBody();
-		CtLocalVariable<?> ass = body.getStatement(1);
+		CtLocalVariable<?> ass = body.getIthStatement(1);
 		CtBinaryOperator<?> op = (CtBinaryOperator<?>) ass.getDefaultExpression();
 		assertEquals("Class", op.getLeftHandOperand().getType().getSimpleName());
 		assertFalse(op.getLeftHandOperand().getType().isPrimitive());

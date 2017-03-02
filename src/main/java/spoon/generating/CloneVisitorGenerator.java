@@ -99,18 +99,18 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 
 				// Changes body of the cloned method.
 				for (int i = 1; i < clone.getBody().getStatements().size() - 1; i++) {
-					final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(0);
+					final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getIthStatement(i)).getArguments().get(0);
 					if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
-						clone.getBody().getStatement(i--).delete();
+						clone.getBody().getIthStatement(i--).delete();
 						continue;
 					}
-					clone.getBody().getStatement(i) //
-							.replace(createSetter((CtInvocation) clone.getBody().getStatement(i), factory.Code().createVariableRead(localCloningElement.getReference(), false)));
+					clone.getBody().getIthStatement(i) //
+							.replace(createSetter((CtInvocation) clone.getBody().getIthStatement(i), factory.Code().createVariableRead(localCloningElement.getReference(), false)));
 				}
 
 				// Delete enter and exit methods.
-				clone.getBody().getStatement(0).delete();
-				clone.getBody().getStatement(clone.getBody().getStatements().size() - 1).delete();
+				clone.getBody().getIthStatement(0).delete();
+				clone.getBody().getIthStatement(clone.getBody().getStatements().size() - 1).delete();
 
 				// Inserts cloning element at the beginning of the method.
 				clone.getBody().insertBegin(localCloningElement);
@@ -320,10 +320,10 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				if (candidate.getBody().getStatements().size() != 1) {
 					return true;
 				}
-				if (!(candidate.getBody().getStatement(0) instanceof CtThrow)) {
+				if (!(candidate.getBody().getIthStatement(0) instanceof CtThrow)) {
 					return true;
 				}
-				CtThrow ctThrow = candidate.getBody().getStatement(0);
+				CtThrow ctThrow = candidate.getBody().getIthStatement(0);
 				if (!(ctThrow.getThrownExpression() instanceof CtConstructorCall)) {
 					return true;
 				}
@@ -425,8 +425,8 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						if (body.getStatements().size() != 2) {
 							return false;
 						}
-						if (body.getStatement(0) instanceof CtAssignment) {
-							final CtExpression assigned = ((CtAssignment) body.getStatement(0)).getAssigned();
+						if (body.getIthStatement(0) instanceof CtAssignment) {
+							final CtExpression assigned = ((CtAssignment) body.getIthStatement(0)).getAssigned();
 							if (!(assigned instanceof CtFieldAccess)) {
 								return false;
 							}
@@ -464,7 +464,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				}
 				// Search with template.
 				final CtBlock<?> templateRoot = GETTER_TEMPLATE_MATCHER_CLASS.getMethod("getElement").getBody();
-				((CtReturn) templateRoot.getStatement(0)).setReturnedExpression(factory.Code().createVariableRead(ctField.getReference(), true));
+				((CtReturn) templateRoot.getIthStatement(0)).setReturnedExpression(factory.Code().createVariableRead(ctField.getReference(), true));
 				List<CtMethod> matchers = ctField.getDeclaringType().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
 					@Override
 					public boolean matches(CtMethod element) {

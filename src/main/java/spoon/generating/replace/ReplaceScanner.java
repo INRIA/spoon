@@ -80,7 +80,7 @@ public class ReplaceScanner extends CtScanner {
 		factory.Annotation().annotate(clone, Override.class);
 		clone.getBody().getStatements().clear();
 		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
-			CtInvocation inv = element.getBody().getStatement(i);
+			CtInvocation inv = element.getBody().getIthStatement(i);
 			CtInvocation getter = (CtInvocation) inv.getArguments().get(0);
 
 			if (clone.getComments().size() == 0) {
@@ -191,7 +191,7 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtParameter<?> updateConstructor(CtClass listener, CtTypeReference type) {
 		final CtConstructor ctConstructor = (CtConstructor) listener.getConstructors().toArray(new CtConstructor[listener.getConstructors().size()])[0];
-		CtAssignment assign = (CtAssignment) ctConstructor.getBody().getStatement(1);
+		CtAssignment assign = (CtAssignment) ctConstructor.getBody().getIthStatement(1);
 		CtThisAccess fieldAccess = (CtThisAccess) ((CtFieldAccess) assign.getAssigned()).getTarget();
 		((CtTypeAccess) fieldAccess.getTarget()).getAccessedType().setImplicit(true);
 		final CtParameter<?> aParameter = (CtParameter<?>) ctConstructor.getParameters().get(0);

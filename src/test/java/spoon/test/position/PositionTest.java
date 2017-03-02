@@ -98,7 +98,7 @@ public class PositionTest {
 		assertEquals("field2", contentAtPosition(classContent, position2.getNameStart(), position2.getNameEnd()));
 		assertEquals("", contentAtPosition(classContent, position2.getModifierSourceStart(), position2.getModifierSourceEnd()));
 
-		CtAssignment m = foo.getMethod("m").getBody().getStatement(0);
+		CtAssignment m = foo.getMethod("m").getBody().getIthStatement(0);
 		CtFieldAccess assigned = (CtFieldAccess) m.getAssigned();
 		SourcePosition position3 = assigned.getPosition();
 		assertEquals(13, position3.getLine());
@@ -262,21 +262,21 @@ public class PositionTest {
 				+ "\t\treturn;\n"
 				+ "\t}", contentAtPosition(classContent, positionBody));
 
-		SourcePosition positionLocalVariable = body.getStatement(0).getPosition();
+		SourcePosition positionLocalVariable = body.getIthStatement(0).getPosition();
 
 		assertEquals(8, positionLocalVariable.getLine());
 		assertEquals(8, positionLocalVariable.getEndLine());
 
 		assertEquals("int field2 = m2(parm1);", contentAtPosition(classContent, positionLocalVariable));
 
-		SourcePosition positionFieldWrite = body.getStatement(1).getPosition();
+		SourcePosition positionFieldWrite = body.getIthStatement(1).getPosition();
 
 		assertEquals(9, positionFieldWrite.getLine());
 		assertEquals(9, positionFieldWrite.getEndLine());
 
 		assertEquals("this.field = m2(parm1);", contentAtPosition(classContent, positionFieldWrite));
 
-		CtIf ctIf = body.getStatement(2);
+		CtIf ctIf = body.getIthStatement(2);
 		SourcePosition positionIf = ctIf.getPosition();
 
 		assertEquals(10, positionIf.getLine());
@@ -295,7 +295,7 @@ public class PositionTest {
 				+ "\t\t\t}\n"
 				+ "\t\t}", contentAtPosition(classContent, positionIf));
 
-		SourcePosition positionSwitch = ((CtBlock)ctIf.getThenStatement()).getStatement(0).getPosition();
+		SourcePosition positionSwitch = ((CtBlock)ctIf.getThenStatement()).getIthStatement(0).getPosition();
 
 		assertEquals(11, positionSwitch.getLine());
 		assertEquals(16, positionSwitch.getEndLine());
@@ -307,14 +307,14 @@ public class PositionTest {
 				+ "\t\t\t\tparm1++;\n"
 				+ "\t\t\t}", contentAtPosition(classContent, positionSwitch));
 
-		positionLocalVariable = ((CtBlock)ctIf.getThenStatement()).getStatement(1).getPosition();
+		positionLocalVariable = ((CtBlock)ctIf.getThenStatement()).getIthStatement(1).getPosition();
 
 		assertEquals(17, positionLocalVariable.getLine());
 		assertEquals(17, positionLocalVariable.getEndLine());
 
 		assertEquals("int count = 0;", contentAtPosition(classContent, positionLocalVariable));
 
-		SourcePosition positionFor = ((CtBlock)ctIf.getThenStatement()).getStatement(2).getPosition();
+		SourcePosition positionFor = ((CtBlock)ctIf.getThenStatement()).getIthStatement(2).getPosition();
 
 		assertEquals(18, positionFor.getLine());
 		assertEquals(20, positionFor.getEndLine());
@@ -323,7 +323,7 @@ public class PositionTest {
 				+ "\t\t\t\tcount ++;\n"
 				+ "\t\t\t}", contentAtPosition(classContent, positionFor));
 
-		SourcePosition positionReturn = method1.getBody().getStatement(3).getPosition();
+		SourcePosition positionReturn = method1.getBody().getIthStatement(3).getPosition();
 
 		assertEquals(22, positionReturn.getLine());
 		assertEquals(22, positionReturn.getEndLine());
@@ -373,7 +373,7 @@ public class PositionTest {
 		CtClass<Foo> aClass = (CtClass<Foo>) buildClass(Foo.class);
 		CtConstructor<Foo> defaultConstructor = aClass.getConstructor();
 		assertEquals(SourcePosition.NOPOSITION, defaultConstructor.getPosition());
-		CtStatement implicitSuperCall = defaultConstructor.getBody().getStatement(0);
+		CtStatement implicitSuperCall = defaultConstructor.getBody().getIthStatement(0);
 		assertTrue(implicitSuperCall.isImplicit());
 		assertEquals(SourcePosition.NOPOSITION, implicitSuperCall.getPosition());
 	}

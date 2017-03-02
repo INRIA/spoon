@@ -261,10 +261,10 @@ public class ExecutableReferenceGenericTest {
 		if (aConstructor.getBody().getStatements().size() == 0) {
 			return new ArrayList<>();
 		}
-		if (!(aConstructor.getBody().getStatement(0) instanceof CtInvocation)) {
+		if (!(aConstructor.getBody().getIthStatement(0) instanceof CtInvocation)) {
 			return new ArrayList<>();
 		}
-		final CtInvocation inv = aConstructor.getBody().getStatement(0);
+		final CtInvocation inv = aConstructor.getBody().getIthStatement(0);
 		if (!inv.getExecutable().getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
 			return new ArrayList<>();
 		}

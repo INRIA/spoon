@@ -55,10 +55,10 @@ public class ConditionalTest {
 			CtIf ctIf = conditions.get(i);
 
 			// replace the block to a statement
-			CtStatement then = ((CtBlock) ctIf.getThenStatement()).getStatement(0);
+			CtStatement then = ((CtBlock) ctIf.getThenStatement()).getIthStatement(0);
 			ctIf.setThenStatement(then);
 			if (ctIf.getElseStatement() != null) {
-				CtStatement elseStatement = ((CtBlock) ctIf.getElseStatement()).getStatement(0);
+				CtStatement elseStatement = ((CtBlock) ctIf.getElseStatement()).getIthStatement(0);
 				ctIf.setElseStatement(elseStatement);
 			}
 		}
@@ -69,6 +69,6 @@ public class ConditionalTest {
 				+ "    java.lang.System.out.println();" + newLine
 				+ "else" + newLine
 				+ "    java.lang.System.out.println();" + newLine,
-				method.getBody().getStatement(0).toString());
+				method.getBody().getIthStatement(0).toString());
 	}
 }

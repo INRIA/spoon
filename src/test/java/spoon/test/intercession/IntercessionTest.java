@@ -282,7 +282,7 @@ public class IntercessionTest {
 					// we don't check the contracts for unsettable setters
 					return;
 				}
-				final CtStatement statement = element.getBody().getStatement(0);
+				final CtStatement statement = element.getBody().getIthStatement(0);
 				if (!(statement instanceof CtIf)) {
 					fail(log(element, "First statement should be an if to check the parameter of the setter"));
 				}
@@ -307,10 +307,10 @@ public class IntercessionTest {
 			}
 
 			private boolean hasCallEmptyInv(CtBlock thenStatement, CtTypeReference<? extends Collection> collectionReference) {
-				if (!(thenStatement.getStatement(0) instanceof CtAssignment)) {
+				if (!(thenStatement.getIthStatement(0) instanceof CtAssignment)) {
 					return false;
 				}
-				final CtExpression assignment = ((CtAssignment) thenStatement.getStatement(0)).getAssignment();
+				final CtExpression assignment = ((CtAssignment) thenStatement.getIthStatement(0)).getAssignment();
 				if (!(assignment instanceof CtInvocation)) {
 					return false;
 				}

@@ -57,6 +57,6 @@ public class ControlTest {
 		List<CtStatement> stmts = meth.getBody().getStatements();
 		assertEquals(2, stmts.size());
 		assertTrue(stmts.get(1) instanceof CtDo);
-		assertEquals("i++", ((CtBlock) ((CtDo) stmts.get(1)).getBody()).getStatement(0).toString());
+		assertEquals("i++", ((CtBlock) ((CtDo) stmts.get(1)).getBody()).getIthStatement(0).toString());
 	}
 }

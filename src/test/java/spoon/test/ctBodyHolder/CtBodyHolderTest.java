@@ -50,8 +50,8 @@ public class CtBodyHolderTest
         assertEquals(2, cwbClass.getMethods().size());
         CtMethod<?> method =  cwbClass.getMethod("method2");
         CtBlock<?> methodBody = method.getBody();
-        assertTrue(methodBody.getStatement(0) instanceof CtTry);
-        CtTry tryStmnt = (CtTry)methodBody.getStatement(0);
+        assertTrue(methodBody.getIthStatement(0) instanceof CtTry);
+        CtTry tryStmnt = (CtTry)methodBody.getIthStatement(0);
         checkCtBody(tryStmnt, "try_body", 0);
         assertEquals(1, tryStmnt.getCatchers().size());
         assertTrue(tryStmnt.getCatchers().get(0) instanceof CtCatch);
@@ -65,8 +65,8 @@ public class CtBodyHolderTest
         assertEquals(2, cwbClass.getMethods().size());
         CtMethod<?> method =  cwbClass.getMethod("method2");
         CtBlock<?> methodBody = method.getBody();
-        assertTrue(methodBody.getStatement(1) instanceof CtFor);
-        CtFor forStmnt = (CtFor)methodBody.getStatement(1);
+        assertTrue(methodBody.getIthStatement(1) instanceof CtFor);
+        CtFor forStmnt = (CtFor)methodBody.getIthStatement(1);
         checkCtBody(forStmnt, "for_statemnt", 0);
     }
 
@@ -77,8 +77,8 @@ public class CtBodyHolderTest
         assertEquals(2, cwbClass.getMethods().size());
         CtMethod<?> method =  cwbClass.getMethod("method2");
         CtBlock<?> methodBody = method.getBody();
-        assertTrue(methodBody.getStatement(2) instanceof CtFor);
-        CtFor forStmnt = (CtFor)methodBody.getStatement(2);
+        assertTrue(methodBody.getIthStatement(2) instanceof CtFor);
+        CtFor forStmnt = (CtFor)methodBody.getIthStatement(2);
         checkCtBody(forStmnt, "for_block", 0);
     }
 
@@ -89,8 +89,8 @@ public class CtBodyHolderTest
         assertEquals(2, cwbClass.getMethods().size());
         CtMethod<?> method =  cwbClass.getMethod("method2");
         CtBlock<?> methodBody = method.getBody();
-        assertTrue(methodBody.getStatement(3) instanceof CtWhile);
-        CtWhile whileStmnt = (CtWhile)methodBody.getStatement(3);
+        assertTrue(methodBody.getIthStatement(3) instanceof CtWhile);
+        CtWhile whileStmnt = (CtWhile)methodBody.getIthStatement(3);
         checkCtBody(whileStmnt, "while_block", 0);
     }
 
@@ -102,9 +102,9 @@ public class CtBodyHolderTest
 		CtBlock<?> block = (CtBlock)body;
 		assertEquals(1+off, block.getStatements().size());
 		
-		assertTrue(block.getStatement(off) instanceof CtAssignment);
+		assertTrue(block.getIthStatement(off) instanceof CtAssignment);
 		
-		CtAssignment assignment = block.getStatement(off);
+		CtAssignment assignment = block.getIthStatement(off);
 		assertEquals(p_constant, ((CtLiteral<String>)assignment.getAssignment().partiallyEvaluate()).getValue());
 		
 		Factory f = body.getFactory();

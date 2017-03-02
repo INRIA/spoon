@@ -508,7 +508,7 @@ public class TypeReferenceTest {
 	@Test
 	public void testIgnoreEnclosingClassInActualTypes() throws Exception {
 		final CtType<Panini> aPanini = buildClass(Panini.class);
-		final CtStatement ctReturn = aPanini.getMethod("entryIterator").getBody().getStatement(0);
+		final CtStatement ctReturn = aPanini.getMethod("entryIterator").getBody().getIthStatement(0);
 		assertTrue(ctReturn instanceof CtReturn);
 		final CtExpression ctConstructorCall = ((CtReturn) ctReturn).getReturnedExpression();
 		assertTrue(ctConstructorCall instanceof CtConstructorCall);
@@ -562,7 +562,7 @@ public class TypeReferenceTest {
 		CtType<Panini> paniniCtType = buildClass(Panini.class);
 
 		CtClass anonymousClass = ((CtNewClass) ((CtReturn) paniniCtType
-				.getMethod("entryIterator").getBody().getStatement(0))
+				.getMethod("entryIterator").getBody().getIthStatement(0))
 				.getReturnedExpression()).getAnonymousClass();
 
 		assertTrue(anonymousClass.getReference().isSubtypeOf(paniniCtType.getFactory().Type().createReference("spoon.test.reference.testclasses.Panini$Itr")));

@@ -37,7 +37,7 @@ public class DeleteTest {
 
 		assertEquals(2, instanceExec.getBody().getStatements().size());
 
-		final CtStatement statement = instanceExec.getBody().getStatement(1);
+		final CtStatement statement = instanceExec.getBody().getIthStatement(1);
 		statement.delete();
 
 		assertEquals(1, instanceExec.getBody().getStatements().size());
@@ -54,7 +54,7 @@ public class DeleteTest {
 
 		assertEquals(2, staticExec.getBody().getStatements().size());
 
-		final CtStatement statement = staticExec.getBody().getStatement(1);
+		final CtStatement statement = staticExec.getBody().getIthStatement(1);
 		statement.delete();
 
 		assertEquals(1, staticExec.getBody().getStatements().size());
@@ -70,7 +70,7 @@ public class DeleteTest {
 
 		assertEquals(3, constructor.getBody().getStatements().size());
 
-		final CtStatement statement = constructor.getBody().getStatement(1);
+		final CtStatement statement = constructor.getBody().getIthStatement(1);
 		statement.delete();
 
 		assertEquals(2, constructor.getBody().getStatements().size());
@@ -86,7 +86,7 @@ public class DeleteTest {
 
 		assertEquals(2, method.getBody().getStatements().size());
 
-		final CtStatement statement = method.getBody().getStatement(1);
+		final CtStatement statement = method.getBody().getIthStatement(1);
 		statement.delete();
 
 		assertEquals(1, method.getBody().getStatements().size());
@@ -102,7 +102,7 @@ public class DeleteTest {
 
 		assertEquals(1, method.getBody().getStatements().size());
 
-		final CtStatement statement = method.getBody().getStatement(0);
+		final CtStatement statement = method.getBody().getIthStatement(0);
 		statement.delete();
 
 		assertEquals(0, method.getBody().getStatements().size());
