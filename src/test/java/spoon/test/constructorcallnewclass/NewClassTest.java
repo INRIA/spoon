@@ -162,9 +162,9 @@ public class NewClassTest {
 		assertNotNull(anonymousClass);
 		assertNotNull(anonymousClass.getSuperclass());
 		assertEquals("With", anonymousClass.getSuperclass().getSimpleName());
-		assertEquals("Lock$With", anonymousClass.getSuperclass().getQualifiedName());
+		assertEquals("org.apache.lucene.store.Lock$With", anonymousClass.getSuperclass().getQualifiedName());
 		assertEquals("Lock", anonymousClass.getSuperclass().getDeclaringType().getSimpleName());
-		assertEquals("Lock.With", anonymousClass.getSuperclass().toString());
+		assertEquals("org.apache.lucene.store.Lock.With", anonymousClass.getSuperclass().toString());
 		assertEquals("1", anonymousClass.getSimpleName());
 		assertEquals("2", secondNewClass.getAnonymousClass().getSimpleName());
 		assertEquals(1, anonymousClass.getMethods().size());

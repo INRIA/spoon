@@ -26,6 +26,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -154,6 +155,22 @@ public class TypeTest {
 		assertEquals("a instanceof java.lang.Object[]", typeAccesses.get(1).getParent().toString());
 
 		canBeBuilt(target, 8, true);
+	}
+
+	@Test
+	public void test() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/TorIntegration.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		CtType<?> ctType = launcher.getFactory().Class().getAll().get(0);
+		List<CtNewClass> elements = ctType.getElements(new TypeFilter<>(CtNewClass.class));
+		assertEquals(4, elements.size());
+		for (int i = 0; i < elements.size(); i++) {
+			CtNewClass ctNewClass = elements.get(i);
+			assertEquals("android.content.DialogInterface$OnClickListener", ctNewClass.getAnonymousClass().getSuperclass().getQualifiedName());
+		}
 	}
 
 	@Test
