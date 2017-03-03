@@ -546,4 +546,10 @@ public class GenericsTest {
 		assertFalse(aTacos.isGenerics());
 		assertFalse(ctTypeReference.isGenerics());
 	}
+
+	@Test
+	public void testImplicitAndJoker() throws Exception {
+		CtClass<?> type = build("spoon.test.generics.testclasses", "ImplicitAndJoker");
+		assertEquals("ImplicitAndJoker", type.getSimpleName());
+	}
 }
