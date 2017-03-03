@@ -60,7 +60,7 @@ public class ArraysTest {
 		assertEquals(1, local.getDimensionExpressions().size());
 		assertTrue(local.getDimensionExpressions().get(0) instanceof CtInvocation);
 		assertTrue(local.getType() instanceof CtArrayTypeReference);
-		assertEquals("new Type[list.size()]", local.toString());
+		assertEquals("new com.example.Type[list.size()]", local.toString());
 	}
 
 	@Test
