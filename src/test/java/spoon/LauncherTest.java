@@ -1,6 +1,7 @@
 package spoon;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.compiler.Environment;
@@ -75,9 +76,10 @@ public class LauncherTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void testLauncherInEmptyWorkingDir() throws Exception {
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("/Users/urli/Github/spoon/src/test/java/spoon/LauncherTest.java");
+		launcher.addInputResource("/set/absolute/path/spoon/src/test/java/spoon/LauncherTest.java");
 		launcher.buildModel();
 	}
 
