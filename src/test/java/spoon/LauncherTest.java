@@ -76,11 +76,6 @@ public class LauncherTest {
 	 */
 	@Test
 	public void testLauncherInEmptyWorkingDir() throws Exception {
-		Path path = Files.createTempDirectory("spoon-empty");
-
-		String workingDir = System.getProperty("user.dir");
-		System.setProperty("user.dir", path.toFile().getAbsolutePath());
-
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("/Users/urli/Github/spoon/src/test/java/spoon/LauncherTest.java");
 		launcher.buildModel();
