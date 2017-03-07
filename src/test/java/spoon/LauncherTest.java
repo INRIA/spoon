@@ -71,16 +71,25 @@ public class LauncherTest {
 
 	}
 
-	/**
-	 * This test should be launched after setting an empty working directory
-	 * @throws Exception
-	 */
 	@Test
-	@Ignore
 	public void testLauncherInEmptyWorkingDir() throws Exception {
+
+		// Contract: Spoon can be launched in an empty folder as a working directory
+		// See: https://github.com/INRIA/spoon/pull/1208
+		// This test does not fail (it's not enough to change user.dir we should launch process inside that dir) but it explains the problem
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("/set/absolute/path/spoon/src/test/java/spoon/LauncherTest.java");
-		launcher.buildModel();
+		Path path = Files.createTempDirectory("emptydir");
+
+		String oldUserDir = System.getProperty("user.dir");
+		System.setProperty("user.dir", path.toFile().getAbsolutePath());
+
+		// path should exist, otherwise it would crash on a filenotfoundexception before showing the bug
+		launcher.addInputResource(oldUserDir+"/src/test/java/spoon/LauncherTest.java");
+		try {
+			launcher.buildModel();
+		} finally {
+			System.setProperty("user.dir", oldUserDir);
+		}
 	}
 
 }
