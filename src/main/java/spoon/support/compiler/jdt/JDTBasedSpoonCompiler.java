@@ -392,7 +392,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(classpath)) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					.sources(new SourceOptions().sources()) // no sources, handled by the JDTBatchCompiler
+					.sources(new SourceOptions().sources(sourcesFolder.getFiles())) // no sources, handled by the JDTBatchCompiler
 					.build();
 		} else {
 			args = jdtBuilder.build();

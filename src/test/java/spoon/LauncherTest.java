@@ -8,6 +8,8 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +68,22 @@ public class LauncherTest {
 		assertTrue(inputSources.get(0).getPath().replace('\\', '/').contains("src/main/java"));
 		assertEquals("UTF-16", builder.getEncoding());
 
+	}
+
+	/**
+	 * This test should be launched after setting an empty working directory
+	 * @throws Exception
+	 */
+	@Test
+	public void testLauncherInEmptyWorkingDir() throws Exception {
+		Path path = Files.createTempDirectory("spoon-empty");
+
+		String workingDir = System.getProperty("user.dir");
+		System.setProperty("user.dir", path.toFile().getAbsolutePath());
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("/Users/urli/Github/spoon/src/test/java/spoon/LauncherTest.java");
+		launcher.buildModel();
 	}
 
 }
