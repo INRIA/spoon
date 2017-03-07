@@ -1,6 +1,7 @@
 package spoon;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.compiler.Environment;
@@ -8,6 +9,8 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +69,27 @@ public class LauncherTest {
 		assertTrue(inputSources.get(0).getPath().replace('\\', '/').contains("src/main/java"));
 		assertEquals("UTF-16", builder.getEncoding());
 
+	}
+
+	@Test
+	public void testLauncherInEmptyWorkingDir() throws Exception {
+
+		// Contract: Spoon can be launched in an empty folder as a working directory
+		// See: https://github.com/INRIA/spoon/pull/1208
+		// This test does not fail (it's not enough to change user.dir we should launch process inside that dir) but it explains the problem
+		final Launcher launcher = new Launcher();
+		Path path = Files.createTempDirectory("emptydir");
+
+		String oldUserDir = System.getProperty("user.dir");
+		System.setProperty("user.dir", path.toFile().getAbsolutePath());
+
+		// path should exist, otherwise it would crash on a filenotfoundexception before showing the bug
+		launcher.addInputResource(oldUserDir+"/src/test/java/spoon/LauncherTest.java");
+		try {
+			launcher.buildModel();
+		} finally {
+			System.setProperty("user.dir", oldUserDir);
+		}
 	}
 
 }
