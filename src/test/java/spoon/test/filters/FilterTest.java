@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -48,12 +49,15 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtQueryImpl;
+import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.QueryFailurePolicy;
+import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
+import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.reflect.visitor.filter.FieldAccessFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
 import spoon.reflect.visitor.filter.InvocationFilter;
@@ -953,5 +957,88 @@ public class FilterTest {
 		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
 		//contract: if includingSelf(true), then input element is first element
 		assertSame(varStrings, varStrings.map(new ParentFunction().includingSelf(true)).first());
+	}
+	@Test
+	public void testCtScannerListener() throws Exception {
+		// contract: a mapping function which returns all parents of CtElement
+
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+		
+		class Context {
+			long nrOfEnter = 0;
+			long nrOfEnterRetTrue = 0;
+			long nrOfExit = 0;
+			long nrOfResults = 0;
+		}
+		
+		Context context1 = new Context();
+
+		//scan only from packages till top level classes. Do not scan class internals
+		List<CtElement> result1 = launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
+			@Override
+			public ScanningMode enter(CtElement element) {
+				context1.nrOfEnter++;
+				if (element instanceof CtType) {
+					return ScanningMode.SKIP_CHILDREN;
+				}
+				return ScanningMode.NORMAL;
+			}
+			@Override
+			public void exit(CtElement element) {
+				context1.nrOfExit++;
+			}
+			
+		})).list();
+
+		//check that test is visiting some nodes
+		assertTrue(context1.nrOfEnter>0);
+		assertTrue(result1.size()>0);
+		//contract: if enter is called and returns SKIP_CHILDREN or NORMAL, then exit must be called too. Exceptions are ignored for now
+		assertEquals(context1.nrOfEnter, context1.nrOfExit);
+
+		Context context2 = new Context();
+		
+		Iterator iter = result1.iterator();
+		
+		//scan only from packages till top level classes. Do not scan class internals
+		launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
+			int inClass = 0;
+			@Override
+			public ScanningMode enter(CtElement element) {
+				context2.nrOfEnter++;
+				if(inClass>0) {
+					//we are in class. skip this node and all children
+					return ScanningMode.SKIP_ALL;
+				}
+				if (element instanceof CtType) {
+					inClass++;
+				}
+				context2.nrOfEnterRetTrue++;
+				return ScanningMode.NORMAL;
+			}
+			@Override
+			public void exit(CtElement element) {
+				context2.nrOfExit++;
+				if (element instanceof CtType) {
+					inClass--;
+				}
+				assertTrue(inClass==0 || inClass==1);
+			}
+			
+		})).forEach(ele->{
+			context2.nrOfResults++;
+			assertTrue(ele instanceof CtPackage || ele instanceof CtType);
+			//check that first and second query returned same results
+			assertSame(ele, iter.next());
+		});
+		//check that test is visiting some nodes
+		assertTrue(context2.nrOfEnter>0);
+		assertTrue(context2.nrOfEnter>context2.nrOfEnterRetTrue);
+		assertEquals(result1.size(), context2.nrOfResults);
+		//contract: if enter is called and does not returns SKIP_ALL, then exit must be called too. Exceptions are ignored for now
+		assertEquals(context2.nrOfEnterRetTrue, context2.nrOfExit);
 	}
 }
