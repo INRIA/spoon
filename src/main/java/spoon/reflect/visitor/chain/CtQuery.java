@@ -166,4 +166,16 @@ public interface CtQuery extends CtQueryable {
 	 */
 	@Override
 	<I> CtQuery map(CtConsumableFunction<I> queryStep);
+
+	/**
+	 * Terminates the evaluation of this query.
+	 * The query still returns all results collected before termination.
+	 * This method should not throw an exception.
+	 */
+	void terminate();
+
+	/**
+	 * @return true if the evaluation has been terminated.
+	 */
+	boolean isTerminated();
 }

@@ -24,8 +24,8 @@ import java.util.List;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.filter.CtScannerFunction;
 
 /**
  * The facade of {@link CtQuery} which represents a query bound to the {@link CtElement},
@@ -38,6 +38,12 @@ public class CtQueryImpl implements CtQuery {
 	 * All the constant inputs of this query.
 	 */
 	private List<Object> inputs;
+
+	private OutputFunctionWrapper outputStep = new OutputFunctionWrapper();
+	private AbstractStep lastStep = outputStep;
+	private AbstractStep firstStep = lastStep;
+
+	private boolean terminated = false;
 
 	public CtQueryImpl(Object... input) {
 		setInput(input);
@@ -76,65 +82,11 @@ public class CtQueryImpl implements CtQuery {
 		return this;
 	}
 
-	/**
-	 * The evaluation context of the CtQuery. Can be used to bind the query the the output {@link CtConsumer}
-	 * using {@link CtQueryContext#outputConsumer(CtConsumer)} and then
-	 * <ul>
-	 * <li>to evaluate the query on provided input using {@link CtQueryContext#accept(Object)}
-	 * <li>to terminate the query evaluation at any phase of query execution using {@link CtQueryContext#terminate()}
-	 * <li>to check if query is terminated at any phase of query execution using {@link CtQueryContext#isTerminated()}
-	 * and to stop an expensive query evaluating process
-	 * </ul>
-	 */
-	private interface CtQueryContext extends CtConsumer<Object> {
-		/**
-		 * @return the {@link CtConsumer} used to deliver results of the query evaluation
-		 */
-		CtConsumer<?> getOutputConsumer();
-		/**
-		 * @param outputConsumer the {@link CtConsumer} used to deliver results of the query evaluation
-		 * @return this to support fluent API
-		 */
-		CtQueryContext outputConsumer(CtConsumer<?> outputConsumer);
-
-		/**
-		 * terminates current query evaluation.
-		 * This method returns normally. It does not throw exception.
-		 * But it causes that query evaluation engine terminates
-		 * and returns all the till now collected results.
-		 */
-		void terminate();
-		/**
-		 * @return true if evaluation has to be/was terminated
-		 */
-		boolean isTerminated();
-	}
-
-	/**
-	 * Creates CtQueryContext, which can be used to evaluate or terminate the query.
-	 * Usage:<br>
-	 * <pre>
-	 * {@code
-	 * CtQueryContext cc = factory.createQuery().map(...).createQueryContext();
-	 * cc.setOutputConsumer(e->{
-	 *   //... process returned elements
-	 *   //... or optionally terminate the query by
-	 *   cc.terminate();
-	 * });
-	 * //evaluate the query with `input`. The results will be delivered to `resultConsumer`
-	 * cc.accept(input);
-	 * }
-	 * </pre>
-	 * @return new instance of CtQueryContext of this query
-	 */
-	private <R> CtQueryContext createQueryContext() {
-		return new CurrentStep();
-	}
-
+	@Override
 	public <R> void forEach(CtConsumer<R> consumer) {
-		CtQueryContext cc = createQueryContext().outputConsumer(consumer);
+		outputStep.setNext(consumer);
 		for (Object input : inputs) {
-			cc.accept(input);
+			firstStep.accept(input);
 		}
 	}
 
@@ -166,44 +118,46 @@ public class CtQueryImpl implements CtQuery {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <R> R first(final Class<R> itemClass) {
-		final CtQueryContext cc = createQueryContext();
 		final Object[] result = new Object[1];
-		cc.outputConsumer(new CtConsumer<R>() {
+		outputStep.setNext(new CtConsumer<R>() {
 			@Override
 			public void accept(R out) {
 				if (out != null && itemClass.isAssignableFrom(out.getClass())) {
 					result[0] = out;
-					cc.terminate();
+					terminate();
 				}
 			}
 		});
 		for (Object input : inputs) {
-			cc.accept(input);
+			firstStep.accept(input);
+			if (isTerminated()) {
+				break;
+			}
 		}
 		return (R) result[0];
 	}
-
-	private List<AbstractStep> steps = new ArrayList<>();
 
 	private boolean logging = false;
 	private QueryFailurePolicy failurePolicy = QueryFailurePolicy.FAIL;
 
 	@Override
 	public <I> CtQueryImpl map(CtConsumableFunction<I> code) {
-		steps.add(new LazyFunctionWrapper(code));
+		addStep(new LazyFunctionWrapper(code));
 		return this;
 	}
 
 	@Override
 	public <I, R> CtQueryImpl map(CtFunction<I, R> function) {
-		steps.add(new FunctionWrapper(function));
+		addStep(new FunctionWrapper(function));
 		return this;
 	}
 
 	@Override
 	public <R extends CtElement> CtQueryImpl filterChildren(Filter<R> filter) {
-		map(new ChildrenFilteringFunction(filter));
-		stepFailurePolicy(QueryFailurePolicy.IGNORE);
+		map(new CtScannerFunction());
+		if (filter != null) {
+			select(filter);
+		}
 		return this;
 	}
 
@@ -219,6 +173,15 @@ public class CtQueryImpl implements CtQuery {
 		return this;
 	}
 
+	@Override
+	public boolean isTerminated() {
+		return terminated;
+	}
+	@Override
+	public void terminate() {
+		terminated = true;
+	}
+
 	/**
 	 * Evaluates this query, ignoring bound input - if any
 	 *
@@ -226,12 +189,13 @@ public class CtQueryImpl implements CtQuery {
 	 * @param outputConsumer method accept of the outputConsumer is called for each element produced by last mapping function of this query
 	 */
 	public <I, R> void evaluate(I input, CtConsumer<R> outputConsumer) {
-		createQueryContext().outputConsumer(outputConsumer).accept(input);
+		outputStep.setNext(outputConsumer);
+		firstStep.accept(input);
 	}
 
 	@Override
 	public CtQueryImpl name(String name) {
-		getLastStep().setName(name);
+		lastStep.setName(name);
 		return this;
 	}
 
@@ -242,7 +206,7 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	public CtQueryImpl stepFailurePolicy(QueryFailurePolicy policy) {
-		getLastStep().setLocalFailurePolicy(policy);
+		lastStep.setLocalFailurePolicy(policy);
 		return this;
 	}
 	/**
@@ -257,18 +221,33 @@ public class CtQueryImpl implements CtQuery {
 		return this;
 	}
 
-	private AbstractStep getStep(int stepIdx) {
-		if (stepIdx >= steps.size()) {
-			return null;
+	protected void handleListenerSetQuery(Object target) {
+		if (target instanceof CtQueryAware) {
+			((CtQueryAware) target).setQuery(this);
 		}
-		return steps.get(stepIdx);
 	}
 
-	private AbstractStep getLastStep() {
-		if (steps.isEmpty()) {
-			throw new SpoonException("There is no step in the query");
+	private void addStep(AbstractStep step) {
+		step.nextStep = outputStep;
+		lastStep.nextStep = step;
+		lastStep = step;
+		if (firstStep == outputStep) {
+			firstStep = step;
 		}
-		return getStep(steps.size() - 1);
+		step.setName(String.valueOf(getStepIndex(step) + 1));
+	}
+
+	private int getStepIndex(AbstractStep step) {
+		int idx = 0;
+		AbstractStep s = firstStep;
+		while (s != outputStep) {
+			if (s == step) {
+				return idx;
+			}
+			s = (AbstractStep) s.nextStep;
+			idx++;
+		}
+		return -1;
 	}
 
 	private boolean isLogging() {
@@ -281,7 +260,7 @@ public class CtQueryImpl implements CtQuery {
 	 * @param e
 	 * @param parameters
 	 */
-	private void onClassCastException(CurrentStep step, ClassCastException e, Object... parameters) {
+	private void onClassCastException(AbstractStep step, ClassCastException e, Object... parameters) {
 		if (step.isFailOnCCE()) {
 			throw new SpoonException(getStepDescription(step, e.getMessage(), parameters), e);
 		} else if (Launcher.LOGGER.isTraceEnabled()) {
@@ -291,13 +270,13 @@ public class CtQueryImpl implements CtQuery {
 		log(step, e.getMessage(), parameters);
 	}
 
-	private void log(CurrentStep step, String message, Object... parameters) {
+	private void log(AbstractStep step, String message, Object... parameters) {
 		if (isLogging() && Launcher.LOGGER.isInfoEnabled()) {
 			Launcher.LOGGER.info(getStepDescription(step, message, parameters));
 		}
 	}
 
-	private String getStepDescription(CurrentStep step, String message, Object... parameters) {
+	private String getStepDescription(AbstractStep step, String message, Object... parameters) {
 		StringBuilder sb = new StringBuilder("Step ");
 		sb.append(step.getName()).append(") ");
 		sb.append(message);
@@ -313,112 +292,12 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	/**
-	 * The thread local implementation of CtConsumer,
-	 * which knows index of actually processed step
-	 * and handles response of current step and sends it to next step.
-	 *
-	 * This class plays a role of an orchestrator to move the step cursor forward,
-	 * get the step, apply it and finally to call the output consumer.
-	 */
-	private class CurrentStep implements CtQueryContext {
-		private CtConsumer<?> outputConsumer;
-		private int stepIdx = 0;
-		private boolean terminated = false;
-
-		CurrentStep() {
-		}
-
-		@Override
-		public CtConsumer<?> getOutputConsumer() {
-			return outputConsumer;
-		}
-
-		@Override
-		public CtQueryContext outputConsumer(CtConsumer<?> outputConsumer) {
-			this.outputConsumer = outputConsumer;
-			return this;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public void accept(Object input) {
-			if (input == null || isTerminated()) {
-				return;
-			}
-			stepIdx++;
-			try {
-				if (stepIdx <= steps.size()) {
-					//process next intermediate step
-					AbstractStep step = getStep();
-					log(this, "received", input);
-					try {
-						step.apply(input, this);
-					} catch (ClassCastException e) {
-						onClassCastException(this, e, input);
-					}
-				} else {
-					//send element to outputConsumer, it means return one value of the query
-					log(this, "returning", input);
-					if (outputConsumer != null) {
-						try {
-							((CtConsumer<Object>) outputConsumer).accept(input);
-						} catch (ClassCastException e) {
-							onClassCastException(this, e, input);
-						}
-					}
-				}
-			} finally {
-				stepIdx--;
-			}
-		}
-
-		private String getName() {
-			AbstractStep stepFunction = getStep();
-			if (stepFunction == null) {
-				return "outputConsumer";
-			}
-			String name = stepFunction.getName();
-			if (name == null) {
-				name = String.valueOf(stepIdx);
-			}
-			return name;
-		}
-
-		private boolean isFailOnCCE() {
-			AbstractStep step = getStep();
-			if (step == null) {
-				//it is final consumer. Never throw CCE on final forEach consumer
-				return false;
-			}
-			return step.isFailOnCCE();
-		}
-
-		private AbstractStep getStep() {
-			return CtQueryImpl.this.getStep(stepIdx - 1);
-		}
-
-		@Override
-		public String toString() {
-			return "Step " + getName();
-		}
-
-		@Override
-		public void terminate() {
-			terminated = true;
-		}
-
-		@Override
-		public boolean isTerminated() {
-			return terminated;
-		}
-	}
-
-	/**
 	 * Holds optional name and local QueryFailurePolicy of each step
 	 */
-	private abstract class AbstractStep {
+	private abstract class AbstractStep implements CtConsumer<Object> {
 		String name;
 		QueryFailurePolicy localFailurePolicy = null;
+		CtConsumer<Object> nextStep;
 
 		/**
 		 * @return name of this Step - for debugging purposes
@@ -446,8 +325,40 @@ public class CtQueryImpl implements CtQuery {
 		private void setLocalFailurePolicy(QueryFailurePolicy localFailurePolicy) {
 			this.localFailurePolicy = localFailurePolicy;
 		}
+	}
 
-		abstract void apply(Object input, CurrentStep outputConsumer);
+	/**
+	 * Wrapper around terminal {@link CtConsumer}, which accepts output of this query
+	 */
+	private class OutputFunctionWrapper extends AbstractStep {
+		@Override
+		public void accept(Object element) {
+			if (element == null || isTerminated()) {
+				return;
+			}
+			try {
+				nextStep.accept(element);
+			} catch (ClassCastException e) {
+				if (Launcher.LOGGER.isTraceEnabled()) {
+					//log expected CCE ... there might be some unexpected too!
+					Launcher.LOGGER.trace(e);
+				}
+			}
+		}
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		<R> void setNext(CtConsumer<R> out) {
+			//we are preparing new query execution.
+			reset();
+			nextStep = (CtConsumer) out;
+			handleListenerSetQuery(nextStep);
+		}
+	}
+
+	/**
+	 * Called before query is evaluated again
+	 */
+	protected void reset() {
+		terminated = false;
 	}
 
 	private class LazyFunctionWrapper extends AbstractStep {
@@ -457,14 +368,18 @@ public class CtQueryImpl implements CtQuery {
 		LazyFunctionWrapper(CtConsumableFunction<?> fnc) {
 			super();
 			this.fnc = (CtConsumableFunction<Object>) fnc;
+			handleListenerSetQuery(this.fnc);
 		}
 
 		@Override
-		public void apply(Object input, CurrentStep outputConsumer) {
+		public void accept(Object input) {
+			if (input == null || isTerminated()) {
+				return;
+			}
 			try {
-				fnc.apply(input, outputConsumer);
+				fnc.apply(input, nextStep);
 			} catch (ClassCastException e) {
-				onClassCastException(outputConsumer, e, input);
+				onClassCastException(this, e, input);
 				return;
 			}
 		}
@@ -480,35 +395,39 @@ public class CtQueryImpl implements CtQuery {
 		FunctionWrapper(CtFunction<?, ?> code) {
 			super();
 			fnc = (CtFunction<Object, Object>) code;
+			handleListenerSetQuery(fnc);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void apply(Object input, CurrentStep outputConsumer) {
+		public void accept(Object input) {
+			if (input == null || isTerminated()) {
+				return;
+			}
 			Object result;
 			try {
 				result = fnc.apply(input);
 			} catch (ClassCastException e) {
-				onClassCastException(outputConsumer, e, input);
+				onClassCastException(this, e, input);
 				return;
 			}
-			if (result == null || outputConsumer.isTerminated()) {
+			if (result == null || isTerminated()) {
 				return;
 			}
 			if (result instanceof Boolean) {
 				//the code is a predicate. send the input to output if result is true
 				if ((Boolean) result) {
-					outputConsumer.accept(input);
+					nextStep.accept(input);
 				} else {
-					log(outputConsumer, "Skipped element, because CtFunction#accept(input) returned false", input);
+					log(this, "Skipped element, because CtFunction#accept(input) returned false", input);
 				}
 				return;
 			}
 			if (result instanceof Iterable) {
 				//send each item of Iterable to the next step
 				for (Object out : (Iterable<Object>) result) {
-					outputConsumer.accept(out);
-					if (outputConsumer.isTerminated()) {
+					nextStep.accept(out);
+					if (isTerminated()) {
 						return;
 					}
 				}
@@ -517,67 +436,14 @@ public class CtQueryImpl implements CtQuery {
 			if (result.getClass().isArray()) {
 				//send each item of Array to the next step
 				for (int i = 0; i < Array.getLength(result); i++) {
-					outputConsumer.accept(Array.get(result, i));
-					if (outputConsumer.isTerminated()) {
+					nextStep.accept(Array.get(result, i));
+					if (isTerminated()) {
 						return;
 					}
 				}
 				return;
 			}
-			outputConsumer.accept(result);
-		}
-	}
-
-	/**
-	 * a step which scans all children of input element and only elements matching filter go to the next step
-	 */
-	private class ChildrenFilteringFunction extends EarlyTerminatingScanner<Void> implements CtConsumableFunction<CtElement> {
-
-		protected CurrentStep next;
-		private Filter<CtElement> filter;
-
-		@SuppressWarnings("unchecked")
-		ChildrenFilteringFunction(Filter<? extends CtElement> filter) {
-			this.filter = (Filter<CtElement>) filter;
-		}
-
-		@Override
-		public void apply(CtElement input, CtConsumer<Object> outputConsumer) {
-			next = (CurrentStep) (CtConsumer<?>) outputConsumer;
-			scan(input);
-		}
-		@Override
-		public void scan(CtElement element) {
-			processFilter(element);
-			super.scan(element);
-		}
-		@Override
-		protected boolean isTerminated() {
-			return next.isTerminated();
-		}
-
-		private void processFilter(CtElement element) {
-			if (element == null || isTerminated()) {
-				return;
-			}
-			boolean matches = true;
-			if (filter != null) {
-				try {
-					matches = filter.matches(element);
-				} catch (ClassCastException e) {
-					onClassCastException(next, e, element);
-					return;
-				}
-			}
-			if (isTerminated()) {
-				return;
-			}
-			if (matches) {
-				//send input to output, because Fitler.matches returned true
-				next.accept(element);
-			} else {
-				log(next, "Skipped child element, because Filter#matches(input) returned false", element);
-			}
+			nextStep.accept(result);
 		}
 	}
 }
