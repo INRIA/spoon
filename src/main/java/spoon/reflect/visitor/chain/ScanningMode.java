@@ -17,19 +17,19 @@
 package spoon.reflect.visitor.chain;
 
 /**
- * Use in {@link CtScannerListener#enter(spoon.reflect.declaration.CtElement)} to define how to continue with scanning
+ * Defines how a {@link CtScannerListener} drives the scanning of {@link spoon.reflect.visitor.EarlyTerminatingScanner}
  */
 public enum ScanningMode {
 	/**
-	 * Continue with scanning in a normal way. Means current element and all children are visited.
+	 * Continue with scanning in a normal way, the current element and all children are visited.
 	 */
 	NORMAL(true, true),
 	/**
-	 * Skip current element and all it's children.
+	 * Skip the current element and skip all its children.
 	 */
 	SKIP_ALL(false, false),
 	/**
-	 * Visit current element but skip all it's children.
+	 * Visit current element but skips all its children.
 	 */
 	SKIP_CHILDREN(true, false);
 

@@ -25,17 +25,13 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * The extension of {@link CtScanner}, which supports early termination of scanning process.
- * Is useful when your algorithm is searching for an node after node is found
- * future scanning makes no sense.
- * Then you can call {@link #terminate()}, which assures that no more AST nodes are visited,
- * means no {@link #scan(CtElement)} method is called and the scanning algorithm finishes
- * as soon as possible.
+ * Extends {@link CtScanner}, to support early termination of scanning process and scan listeners.
+ * It is useful when your algorithm is searching for a specific node only.
+ * In this case, you can call {@link #terminate()}, which ensures that no more AST nodes are visited,
  *<br>
- * There is possible to register an implementation of {@link CtScannerListener},
+ * It is possible to register an implementation of {@link CtScannerListener},
  * whose {@link CtScannerListener#enter(CtElement)}/{@link CtScannerListener#exit(CtElement)}
  * methods are called before/after each AST node is visited.<br>
- * Note that the {@link CtScannerListener#enter(CtElement)} can influence whether AST node and it's children is visited. See it's documentation for details.
  *
  * @param <T> the type of the result produced by this scanner.
  */
@@ -58,21 +54,22 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 	}
 
 	/**
-	 * @return the result of scanning - the value, which was stored by previous call of {@link #setResult(Object)}
+	 * @return the result of scanning - the value, which was stored by a previous call of {@link #setResult(Object)}
 	 */
 	public T getResult() {
 		return result;
 	}
 
 	/**
-	 * @return null or the implementation of {@link CtScannerListener}, which is registered to listen for enter/exit of nodes during scanning of AST
+	 * @return null or the implementation of {@link CtScannerListener}, which is registered to listen for enter/exit of nodes during scanning of the AST
 	 */
 	public CtScannerListener getListener() {
 		return listener;
 	}
 
 	/**
-	 * @param listener the implementation of {@link CtScannerListener}, which will listen for enter/exit of nodes during scanning of AST
+	 * @param listener the implementation of {@link CtScannerListener}, which will be called back when entering/exiting
+	 * odes during scanning.
 	 * @return this to support fluent API
 	 */
 	public EarlyTerminatingScanner<T> setListener(CtScannerListener listener) {
@@ -117,8 +114,8 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 	}
 
 	/**
-	 * This method is called ONLY when listener decides that element and children may be visited.
-	 * It is needed to let child classes to override it and to react on that situation
+	 * This method is called ONLY when the listener decides that the current element and children should be visited.
+	 * Subclasses can override it to react accordingly.
 	 */
 	protected void doScan(CtElement element, ScanningMode mode) {
 		super.scan(element);
