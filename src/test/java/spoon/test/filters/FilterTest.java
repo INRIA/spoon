@@ -960,7 +960,7 @@ public class FilterTest {
 	}
 	@Test
 	public void testCtScannerListener() throws Exception {
-		// contract: a mapping function which returns all parents of CtElement
+		// contract: CtScannerFunction can be subclassed and configured by a CtScannerListener
 
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
@@ -976,7 +976,7 @@ public class FilterTest {
 		
 		Context context1 = new Context();
 
-		//scan only from packages till top level classes. Do not scan class internals
+		// scan only packages until top level classes. Do not scan class internals
 		List<CtElement> result1 = launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
 			@Override
 			public ScanningMode enter(CtElement element) {
