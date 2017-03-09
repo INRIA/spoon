@@ -21,7 +21,8 @@ package spoon.reflect.visitor.chain;
  * that need to access the state of the top-level {@link CtQuery} instance
  * containing the function to be evaluated.
  *
- * Not meant to be implemented directly, only in conjunction with {@link CtFunction} or {@link spoon.reflect.visitor.Filter}.
+ * Not meant to be implemented directly, only in conjunction with
+ * {@link CtConsumableFunction}, {@link CtFunction} or {@link spoon.reflect.visitor.Filter}.
  */
 public interface CtQueryAware {
 	/**
