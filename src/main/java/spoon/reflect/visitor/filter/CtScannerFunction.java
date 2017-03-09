@@ -18,7 +18,6 @@ package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
-import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
