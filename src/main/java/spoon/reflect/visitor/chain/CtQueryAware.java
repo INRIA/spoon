@@ -17,14 +17,16 @@
 package spoon.reflect.visitor.chain;
 
 /**
- * The mapping function can implement this interface,
- * when it needs the context of the {@link CtQuery} instance,
- * where this mapping function is going to be evaluated
+ * Expert-only capability interface so as to write advanced {@link CtFunction} and {@link spoon.reflect.visitor.Filter}
+ * that need to access the state of the top-level {@link CtQuery} instance
+ * containing the function to be evaluated.
+ *
+ * Not meant to be implemented directly, only in conjunction with {@link CtFunction} or {@link spoon.reflect.visitor.Filter}.
  */
 public interface CtQueryAware {
 	/**
-	 * This method is called once when mapping function is added to the {@link CtQuery}
-	 * @param query the instance of bound {@link CtQuery}
+	 * This method is called when the filter/function is added as a step to a {@link CtQuery} by the query engine ({@link CtQueryImpl}).
+	 * @param query an instance registering this function/filter.
 	 */
 	void setQuery(CtQuery query);
 }

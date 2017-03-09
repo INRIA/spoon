@@ -27,11 +27,11 @@ import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 
 /**
- * A mapping function, which scans all children of input element.<br>
- * There is possible to register {@link CtScannerListener} to listen for enter/exit of each scanned AST node
- * and optionally to skip processing of children.<br>
- * There is possible to register {@link Filter} to filter AST nodes which are sent to the next step<br>
- * Note: The listener is called for each scanned AST node, but the filter is called only for nodes where {@link CtScannerListener#enter(CtElement)} returns true
+ * Returns all children of an element.
+ * More than this, it is a parameterizable class to be subclassed which provides all the power of {@link spoon.reflect.visitor.CtScanner} in the context of queries.
+ * <br>
+ * In particular, one can a register a {@link CtScannerListener}, it is called-back when entering/exiting each scanned AST node
+ * and it drives the scanning process (see {@link ScanningMode}).
  */
 public class CtScannerFunction implements CtConsumableFunction<CtElement>, CtQueryAware {
 
