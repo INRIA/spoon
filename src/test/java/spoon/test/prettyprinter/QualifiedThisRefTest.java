@@ -34,6 +34,7 @@ import java.util.List;
 
 import static javax.swing.text.html.HTML.Tag.HEAD;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
@@ -135,7 +136,7 @@ public class QualifiedThisRefTest {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 		printer.visitCtClass(zeclass);
 
-		String result = printer.getResult();
+		assertFalse(printer.getResult().isEmpty());
 
 	}
 }
