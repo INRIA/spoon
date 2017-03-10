@@ -17,17 +17,14 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.SpoonClassNotFoundException;
 import spoon.support.util.RtHelper;
 
 import java.lang.reflect.AnnotatedElement;

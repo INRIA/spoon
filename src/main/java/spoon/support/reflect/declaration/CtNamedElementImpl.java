@@ -16,7 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.refactoring.Refactoring;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
