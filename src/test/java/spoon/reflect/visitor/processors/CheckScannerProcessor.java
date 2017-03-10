@@ -60,7 +60,7 @@ public class CheckScannerProcessor extends AbstractProcessor<CtClass<?>> {
 			throw new AssertionError("You must have minimum 2 statements in the visit method to call enter and exit in visit" + theInterface.getSimpleName());
 		}
 
-		checkInvocation("enter", visit.getBody().getStatement(0));
+		checkInvocation("enter", visit.getBody().getIthStatement(0));
 		checkInvocation("exit", visit.getBody().getLastStatement());
 	}
 

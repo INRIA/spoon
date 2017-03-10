@@ -330,7 +330,7 @@ public class ImportTest {
 		launcher.buildModel();
 
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
-		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
+		final CtStatement assignment = aTacos.getMethod("m").getBody().getIthStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
 		assertEquals("spoon.test.imports.testclasses.internal4.Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
 	}

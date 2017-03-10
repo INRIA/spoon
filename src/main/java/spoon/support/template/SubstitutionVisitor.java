@@ -175,7 +175,7 @@ public class SubstitutionVisitor extends CtScanner {
 							va.replace((CtExpression) element);
 						}
 						if (b instanceof CtBlock && ((CtBlock) b).getStatements().size() == 1) {
-							b = ((CtBlock) b).getStatement(0);
+							b = ((CtBlock) b).getIthStatement(0);
 						}
 						l.addStatement(b);
 					}

@@ -140,8 +140,8 @@ public class VariableAccessTest {
 		final CtMethod<Object> methodA2 = getMethod(launcher, a2);
 		final CtMethod<Object> methodA2Cloned = getMethod(launcher, a2Cloned);
 
-		final CtLocalVariable declaration = methodA2.getBody().getStatement(0);
-		final CtLocalVariable declarationCloned = methodA2Cloned.getBody().getStatement(0);
+		final CtLocalVariable declaration = methodA2.getBody().getIthStatement(0);
+		final CtLocalVariable declarationCloned = methodA2Cloned.getBody().getIthStatement(0);
 
 		final CtLocalVariableReference localVarRef = getLocalVariableRefF1(methodA2);
 		final CtLocalVariableReference localVarRefCloned = getLocalVariableRefF1(methodA2Cloned);
@@ -162,7 +162,7 @@ public class VariableAccessTest {
 		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
 		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
 
-		final CtLocalVariable localVar = make.getBody().getStatement(0);
+		final CtLocalVariable localVar = make.getBody().getIthStatement(0);
 		final CtLocalVariable localVarCloned = localVar.clone();
 
 		final CtLocalVariableReference localVarRef = localVar.getReference();
@@ -187,7 +187,7 @@ public class VariableAccessTest {
 		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
 		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
 		
-		final CtLocalVariable localVarNumber = make.getBody().getStatement(1);
+		final CtLocalVariable localVarNumber = make.getBody().getIthStatement(1);
 		List<CtLocalVariableReference<?>> refs = localVarNumber.map(new LocalVariableReferenceFunction()).list();
 		assertEquals(1, refs.size());
 		assertSame(localVarNumber, refs.get(0).getParent(CtLocalVariable.class));

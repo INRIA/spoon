@@ -6,15 +6,12 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.delete.testclasses.Adobada;
@@ -24,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static javax.swing.text.html.HTML.Tag.HEAD;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -71,7 +67,7 @@ public class QualifiedThisRefTest {
 		CtThisAccess th = (CtThisAccess) m2.getElements(new TypeFilter(CtThisAccess.class)).get(0);
 		assertEquals(true,th.isImplicit());
 		assertEquals("notify()",th.getParent().toString());
-		CtInvocation<?> clone = m2.clone().getBody().getStatement(0);
+		CtInvocation<?> clone = m2.clone().getBody().getIthStatement(0);
 		// clone preserves implicitness
 		assertEquals(true, clone.getTarget().isImplicit());
 		assertEquals("notify()", clone.toString()); // the original bug

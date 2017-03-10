@@ -84,7 +84,7 @@ public class PathTest {
 		equals(
 				new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body[index=0]"),
 				factory.Package().get("spoon.test.path").getType("Foo").getMethod("foo").getBody()
-						.getStatement(0));
+						.getIthStatement(0));
 
 		equals(new CtPathStringBuilder().fromString(".spoon.test.path.Foo.bar/CtParameter"),
 				factory.Package().get("spoon.test.path").getType("Foo").getMethod("bar",
@@ -104,12 +104,12 @@ public class PathTest {
 		// get the first statements of all Foo methods
 		equals(new CtPathStringBuilder().fromString(".spoon.test.path.Foo.*#body[index=0]"),
 				((CtClass) factory.Package().get("spoon.test.path").getType("Foo")).getConstructor().getBody()
-						.getStatement(0),
+						.getIthStatement(0),
 				factory.Package().get("spoon.test.path").getType("Foo").getMethod("foo").getBody()
-						.getStatement(0),
+						.getIthStatement(0),
 				factory.Package().get("spoon.test.path").getType("Foo").getMethod("bar",
 						factory.Type().createReference(int.class), factory.Type().createReference(int.class)).getBody()
-						.getStatement(0)
+						.getIthStatement(0)
 		);
 	}
 
@@ -118,11 +118,11 @@ public class PathTest {
 		// get the then statement
 		equals(new CtPathStringBuilder().fromString(".**/CtIf#else"),
 				((CtIf) factory.Package().get("spoon.test.path").getType("Foo").getMethod("foo").getBody()
-						.getStatement(2)).getElseStatement()
+						.getIthStatement(2)).getElseStatement()
 		);
 		equals(new CtPathStringBuilder().fromString(".**#else"),
 				((CtIf) factory.Package().get("spoon.test.path").getType("Foo").getMethod("foo").getBody()
-						.getStatement(2)).getElseStatement()
+						.getIthStatement(2)).getElseStatement()
 		);
 	}
 

@@ -43,14 +43,14 @@ public class EqualTest {
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
 		CtMethod<?> method = (CtMethod<?>) clazz1.getMethods().toArray()[0];
 
-		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getStatement(0);
+		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getIthStatement(0);
 
 		CtLiteral<?> argument1 = (CtLiteral<?>) invo.getArguments().get(0);
 
 		assertEquals(realParam1 , argument1.toString());
 
 
-		CtReturn<?> returnStatement = (CtReturn<?>) method.getBody().getStatement(1);
+		CtReturn<?> returnStatement = (CtReturn<?>) method.getBody().getIthStatement(1);
 
 		CtLiteral<?> returnExp = (CtLiteral<?>) returnStatement.getReturnedExpression();
 

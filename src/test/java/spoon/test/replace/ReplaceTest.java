@@ -130,7 +130,7 @@ public class ReplaceTest {
 
 		CtLocalVariable<?> assignment = (CtLocalVariable<?>) fooMethod.getBody()
 				.getStatements().get(0);
-		CtLocalVariable<?> newAssignment = barMethod.getBody().getStatement(0);
+		CtLocalVariable<?> newAssignment = barMethod.getBody().getIthStatement(0);
 
 		assignment.replace(newAssignment);
 
@@ -141,7 +141,7 @@ public class ReplaceTest {
 		final CtElement parent = lit.getParent();
 		CtLiteral<Integer> newLit = factory.Code().createLiteral(0);
 		lit.replace(newLit);
-		assertEquals("int y = 0", fooMethod.getBody().getStatement(0).toString());
+		assertEquals("int y = 0", fooMethod.getBody().getIthStatement(0).toString());
 		assertEquals(parent, newLit.getParent());
 	}
 
@@ -151,7 +151,7 @@ public class ReplaceTest {
 				.getType("Foo");
 
 		// replace retry content by statements
-		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
+		CtStatement stmt = sample.getMethod("retry").getBody().getIthStatement(0);
 		CtBlock lst = sample.getMethod("statements").getBody();
 
 		// replace a single statement by a statement list
@@ -159,7 +159,7 @@ public class ReplaceTest {
 
 		// we should have only 2 statements after (from the stmt list)
 		assertEquals(1, sample.getMethod("retry").getBody().getStatements().size());
-		assertEquals(2, ((CtBlock) sample.getMethod("retry").getBody().getStatement(0)).getStatements().size());
+		assertEquals(2, ((CtBlock) sample.getMethod("retry").getBody().getIthStatement(0)).getStatements().size());
 	}
 
 	@Test
@@ -208,7 +208,7 @@ public class ReplaceTest {
 		CtMethod<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo").getMethod("foo");
 
-		CtVariable<?> var = sample.getBody().getStatement(0);
+		CtVariable<?> var = sample.getBody().getIthStatement(0);
 
 		Assert.assertTrue(var.getDefaultExpression() instanceof CtLiteral);
 		Assert.assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
@@ -226,12 +226,12 @@ public class ReplaceTest {
 		CtMethod<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo").getMethod("foo");
 
-		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtVariable);
+		Assert.assertTrue(sample.getBody().getIthStatement(0) instanceof CtVariable);
 
 		CtStatement replacement = factory.Core().createInvocation();
-		sample.getBody().getStatement(0).replace(replacement);
+		sample.getBody().getIthStatement(0).replace(replacement);
 
-		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtInvocation);
+		Assert.assertTrue(sample.getBody().getIthStatement(0) instanceof CtInvocation);
 	}
 
 	@Test

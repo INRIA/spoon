@@ -44,7 +44,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 		final CtLocalVariable<?> peekElement = getFactory().Class()
 				.get(GENERATING_BISCANNER_PACKAGE + ".PeekElementTemplate")
 				.getMethod("statement")
-				.getBody().getStatement(0);
+				.getBody().getIthStatement(0);
 		final CtClass<Object> target = createBiScanner();
 
 		for (CtTypeMember tm : getFactory().Class().get(CtScanner.class).getTypeMembers()) {
@@ -69,12 +69,12 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 			clone.getBody().insertBegin(peek);
 
 			for (int i = 2; i < clone.getBody().getStatements().size() - 1; i++) {
-				final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(0);
+				final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getIthStatement(i)).getArguments().get(0);
 				if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
-					clone.getBody().getStatement(i--).delete();
+					clone.getBody().getIthStatement(i--).delete();
 					continue;
 				}
-				CtInvocation replace = (CtInvocation) factory.Core().clone(clone.getBody().getStatement(i));
+				CtInvocation replace = (CtInvocation) factory.Core().clone(clone.getBody().getIthStatement(i));
 
 				// Changes to biScan method.
 				replace.getExecutable().setSimpleName("biScan");
@@ -89,7 +89,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 					replace.getArguments().remove(2);
 				}
 
-				clone.getBody().getStatement(i).replace(replace);
+				clone.getBody().getIthStatement(i).replace(replace);
 			}
 
 			target.addMethod(clone);

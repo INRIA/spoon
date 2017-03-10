@@ -101,7 +101,7 @@ public class InsertMethodsTest {
 		ifWithoutBraces.getThenStatement().insertBefore(s);
 
 		assertTrue(ifWithoutBraces.getThenStatement() instanceof CtBlock);
-		assertEquals(s, ((CtBlock<?>) ifWithoutBraces.getThenStatement()).getStatement(0));
+		assertEquals(s, ((CtBlock<?>) ifWithoutBraces.getThenStatement()).getIthStatement(0));
 		assertEquals(ifWithoutBraces.getThenStatement(), s.getParent());
 	}
 
@@ -117,7 +117,7 @@ public class InsertMethodsTest {
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertBefore(s);
 		assertTrue(ifWithBraces.getThenStatement() instanceof CtBlock);
-		assertEquals(s, ((CtBlock<?>) ifWithBraces.getThenStatement()).getStatement(0));
+		assertEquals(s, ((CtBlock<?>) ifWithBraces.getThenStatement()).getIthStatement(0));
 		assertEquals(ifWithBraces.getThenStatement(), s.getParent());
 	}
 
@@ -134,7 +134,7 @@ public class InsertMethodsTest {
 		ifWithoutBraces.getThenStatement().insertAfter(s);
 
 		assertTrue(ifWithoutBraces.getThenStatement() instanceof CtBlock);
-		assertEquals(s, ((CtBlock<?>) ifWithoutBraces.getThenStatement()).getStatement(1));
+		assertEquals(s, ((CtBlock<?>) ifWithoutBraces.getThenStatement()).getIthStatement(1));
 		assertEquals(ifWithoutBraces.getThenStatement(), s.getParent());
 	}
 
@@ -150,7 +150,7 @@ public class InsertMethodsTest {
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertAfter(s);
 		assertTrue(ifWithBraces.getThenStatement() instanceof CtBlock);
-		assertEquals(s, ((CtBlock<?>) ifWithBraces.getThenStatement()).getStatement(1));
+		assertEquals(s, ((CtBlock<?>) ifWithBraces.getThenStatement()).getIthStatement(1));
 		assertEquals(ifWithBraces.getThenStatement(), s.getParent());
 	}
 

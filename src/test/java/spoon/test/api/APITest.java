@@ -389,12 +389,12 @@ public class APITest {
 
 		// Template matcher.
 		CtClass<CheckNotNullToSetParentMatcher> matcherCtClass = launcher.getFactory().Class().get(CheckNotNullToSetParentMatcher.class);
-		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getStatement(0);
+		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getIthStatement(0);
 
 		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
 		assertTrue("Number of setters found null", setters.size() > 0);
 
-		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
+		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getIthStatement(0)).collect(Collectors.toList())) {
 
 			// First statement should be a condition to protect the setter of the parent.
 			assertTrue("Check the method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(), statement instanceof CtIf);

@@ -63,21 +63,21 @@ public class BlockTest {
 		List<CtStatement> statements = body.getStatements();
 		statements.add(snippet);
 
-		assertEquals(snippet, body.getStatement(0));
+		assertEquals(snippet, body.getIthStatement(0));
 		// plus implicit assertion: no exception
 
 		CtCodeSnippetStatement snippet2 = factory.Core()
 				.createCodeSnippetStatement();
 		body.getStatements().add(snippet2);
 
-		assertEquals(snippet2, body.getStatement(1));
+		assertEquals(snippet2, body.getIthStatement(1));
 		assertEquals(2, body.getStatements().size());
 
 		CtCodeSnippetStatement snippet3 = factory.Core()
 				.createCodeSnippetStatement();
 		statements.add(snippet3);
 
-		assertEquals(snippet3, body.getStatement(2));
+		assertEquals(snippet3, body.getIthStatement(2));
 		assertEquals(3, body.getStatements().size());
 
 	}

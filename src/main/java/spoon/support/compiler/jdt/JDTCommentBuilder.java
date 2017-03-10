@@ -341,8 +341,8 @@ class JDTCommentBuilder {
 					}
 				}
 				if (e.getElseStatement() != null) {
-					SourcePosition thenPosition = e.getThenStatement().getPosition() == null ? ((CtBlock) e.getThenStatement()).getStatement(0).getPosition() : e.getThenStatement().getPosition();
-					SourcePosition elsePosition = e.getElseStatement().getPosition() == null ? ((CtBlock) e.getElseStatement()).getStatement(0).getPosition() : e.getElseStatement().getPosition();
+					SourcePosition thenPosition = e.getThenStatement().getPosition() == null ? ((CtBlock) e.getThenStatement()).getIthStatement(0).getPosition() : e.getThenStatement().getPosition();
+					SourcePosition elsePosition = e.getElseStatement().getPosition() == null ? ((CtBlock) e.getElseStatement()).getIthStatement(0).getPosition() : e.getElseStatement().getPosition();
 					if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd() && comment.getPosition().getSourceEnd() < elsePosition.getSourceStart()) {
 						e.getElseStatement().addComment(comment);
 					}

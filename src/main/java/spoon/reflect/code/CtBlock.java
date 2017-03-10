@@ -82,7 +82,7 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	/**
 	 * Gets the ith statement of this block.
 	 */
-	<T extends CtStatement> T getStatement(int i);
+	<T extends CtStatement> T getIthStatement(int i);
 
 	/**
 	 * Gets the last statement of this block.

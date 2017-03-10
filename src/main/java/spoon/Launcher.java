@@ -417,7 +417,7 @@ public class Launcher implements SpoonAPI {
 	 * Returns the command-line given launching arguments in JSAP format.
 	 */
 	protected final JSAPResult getArguments() {
-		return parseArgs();
+		return parseJSAPArgs();
 	}
 
 	protected void processArguments() {
@@ -504,7 +504,7 @@ public class Launcher implements SpoonAPI {
 	 *
 	 * @return the JSAP-presented arguments
 	 */
-	protected JSAPResult parseArgs() {
+	protected JSAPResult parseJSAPArgs() {
 		if (jsapSpec == null) {
 			throw new IllegalStateException("no args, please call setArgs before");
 		}

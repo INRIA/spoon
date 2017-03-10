@@ -96,21 +96,21 @@ public class TemplateTest {
 		assertEquals(1, subc.getNestedTypes().size());
 
 		// contract: variable are renamed
-		assertEquals("java.util.List newVarName = null", methodWithTemplatedParameters.getBody().getStatement(0).toString());
+		assertEquals("java.util.List newVarName = null", methodWithTemplatedParameters.getBody().getIthStatement(0).toString());
 
 		// contract: types are replaced by other types
-		assertEquals("java.util.LinkedList l = null", methodWithTemplatedParameters.getBody().getStatement(1).toString());
+		assertEquals("java.util.LinkedList l = null", methodWithTemplatedParameters.getBody().getIthStatement(1).toString());
 
 		// contract: casts are replaced by substitution types
-		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))", methodWithTemplatedParameters.getBody().getStatement(2).toString());
+		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))", methodWithTemplatedParameters.getBody().getIthStatement(2).toString());
 
 		// contract: invocations are replaced by actual invocations
-		assertEquals("toBeOverriden()", methodWithTemplatedParameters.getBody().getStatement(3).toString());
+		assertEquals("toBeOverriden()", methodWithTemplatedParameters.getBody().getIthStatement(3).toString());
 
 		// contract: foreach are inlined
-		CtBlock templatedForEach = methodWithTemplatedParameters.getBody().getStatement(4);
-		assertEquals("java.lang.System.out.println(0)", templatedForEach.getStatement(0).toString());
-		assertEquals("java.lang.System.out.println(1)", templatedForEach.getStatement(1).toString());
+		CtBlock templatedForEach = methodWithTemplatedParameters.getBody().getIthStatement(4);
+		assertEquals("java.lang.System.out.println(0)", templatedForEach.getIthStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)", templatedForEach.getIthStatement(1).toString());
 	}
 
 	@Test
@@ -158,12 +158,12 @@ public class TemplateTest {
 
 		CtMethod<?> m = c1.getMethod("methodToBeInserted");
 		assertNotNull(m);
-		assertEquals("return \"testparam\"", m.getBody().getStatement(0)
+		assertEquals("return \"testparam\"", m.getBody().getIthStatement(0)
 				.toString());
 
 		CtMethod<?> m2 = c1.getMethod("methodToBeInserted2");
 		assertNotNull(m2);
-		assertEquals("return \"testparam2\"", m2.getBody().getStatement(0)
+		assertEquals("return \"testparam2\"", m2.getBody().getIthStatement(0)
 				.toString());
 
 		new ModelConsistencyChecker(factory.getEnvironment(), false, true).scan(c1);
@@ -213,7 +213,7 @@ public class TemplateTest {
 
 		// adds the bound check at the beginning of a method
 		method.getBody().insertBegin(injectedCode);
-		assertEquals(injectedCode, method.getBody().getStatement(0));
+		assertEquals(injectedCode, method.getBody().getIthStatement(0));
 	}
 
 	@Test
@@ -230,7 +230,7 @@ public class TemplateTest {
 		{// testing matcher1
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0)).getBody().getIthStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 		}
@@ -238,7 +238,7 @@ public class TemplateTest {
 		{// testing matcher2
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher2")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher2")).get(0)).getBody().getIthStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(1, matcher.find(klass).size());
 		}
@@ -246,7 +246,7 @@ public class TemplateTest {
 		{// testing matcher3
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0)).getBody().getIthStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 		}
@@ -254,7 +254,7 @@ public class TemplateTest {
 		{// testing matcher4
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher4")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher4")).get(0)).getBody().getIthStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
 		}
@@ -262,7 +262,7 @@ public class TemplateTest {
 		{// testing matcher5
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0)).getBody().getIthStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
 		}
@@ -270,7 +270,7 @@ public class TemplateTest {
 		{// testing matcher6
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher6")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher6")).get(0)).getBody().getIthStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 		}
@@ -324,12 +324,12 @@ public class TemplateTest {
 
 		final CtClass<Logger> aLogger = launcher.getFactory().Class().get(Logger.class);
 		final CtMethod aMethod = aLogger.getMethodsByName("enter").get(0);
-		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
-		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
-		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
-		assertEquals("spoon.test.template.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
-		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
-		assertEquals("spoon.test.template.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
+		assertTrue(aMethod.getBody().getIthStatement(0) instanceof CtTry);
+		final CtTry aTry = (CtTry) aMethod.getBody().getIthStatement(0);
+		assertTrue(aTry.getFinalizer().getIthStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.Logger.exit(\"enter\")", aTry.getFinalizer().getIthStatement(0).toString());
+		assertTrue(aTry.getBody().getIthStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getIthStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
 	}
 
@@ -370,7 +370,7 @@ public class TemplateTest {
 
 		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
 		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
-		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
+		CtIf templateRoot = (CtIf) templateMethod.getBody().getIthStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
 		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
@@ -413,7 +413,7 @@ public class TemplateTest {
 
 		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
 		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
-		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
+		CtIf templateRoot = (CtIf) templateMethod.getBody().getIthStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
 		//match using legacy TemplateMatcher#find method

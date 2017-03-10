@@ -242,7 +242,7 @@ public class ParentTest {
 
 		CtMethod<Object> m = clazz.getMethod("m");
 		// get three = "" in one = two = three = "";
-		CtExpression statement = ((CtAssignment)((CtAssignment)m.getBody().getStatement(3)).getAssignment()).getAssignment();
+		CtExpression statement = ((CtAssignment)((CtAssignment)m.getBody().getIthStatement(3)).getAssignment()).getAssignment();
 		CtPackage ctPackage = statement.getParent(new TypeFilter<CtPackage>(CtPackage.class));
 		assertEquals(Foo.class.getPackage().getName(), ctPackage.getQualifiedName());
 
@@ -254,7 +254,7 @@ public class ParentTest {
 					}
 				});
 		// the filter has to return one = two = three = ""
-		assertEquals(m.getBody().getStatement(3), ctStatement);
+		assertEquals(m.getBody().getIthStatement(3), ctStatement);
 
 		m = clazz.getMethod("internalClass");
 		CtStatement ctStatement1 = m.getElements(
@@ -357,7 +357,7 @@ public class ParentTest {
 			}
 
 			private void checkAddStrategy(CtMethod<?> element) {
-				final CtStatement statement = element.getBody().getStatement(0);
+				final CtStatement statement = element.getBody().getIthStatement(0);
 				if (!(statement instanceof CtIf)) {
 					fail("First statement should be an if to check the parameter of the setter." + element.getSignature() + " declared in " + element.getDeclaringType().getQualifiedName());
 				}

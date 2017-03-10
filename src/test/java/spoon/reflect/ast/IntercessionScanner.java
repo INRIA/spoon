@@ -46,10 +46,10 @@ public abstract class IntercessionScanner extends CtScanner {
 		if (candidate.getBody().getStatements().size() != 1) {
 			return true;
 		}
-		if (!(candidate.getBody().getStatement(0) instanceof CtThrow)) {
+		if (!(candidate.getBody().getIthStatement(0) instanceof CtThrow)) {
 			return true;
 		}
-		CtThrow ctThrow = candidate.getBody().getStatement(0);
+		CtThrow ctThrow = candidate.getBody().getIthStatement(0);
 		if (!(ctThrow.getThrownExpression() instanceof CtConstructorCall)) {
 			return true;
 		}

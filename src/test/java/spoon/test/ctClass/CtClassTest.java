@@ -105,7 +105,7 @@ public class CtClassTest {
 		final Set<? extends CtConstructor<?>> constructors = cook.getConstructors();
 		final String expectedConstructor = "public Cook() {" + System.lineSeparator() + "}";
 		assertEquals(expectedConstructor, constructors.toArray(new CtConstructor[constructors.size()])[0].toString());
-		assertEquals("final java.lang.Class<Cook> cookClass = Cook.class", cook.getMethod("m").getBody().getStatement(0).toString());
+		assertEquals("final java.lang.Class<Cook> cookClass = Cook.class", cook.getMethod("m").getBody().getIthStatement(0).toString());
 
 		Factory factory = aPozole.getFactory();
 

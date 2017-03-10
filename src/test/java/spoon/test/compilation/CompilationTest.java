@@ -117,7 +117,7 @@ public class CompilationTest {
 	@Test
 	public void testNewInstanceFromExistingClass() throws Exception {
 		CtClass<Bar> barCtType = (CtClass<Bar>) ModelUtils.buildClass(Bar.class);
-		CtReturn<Integer> m = barCtType.getMethod("m").getBody().getStatement(0);
+		CtReturn<Integer> m = barCtType.getMethod("m").getBody().getIthStatement(0);
 		// we cannot use Bar because it causes a runtime cast exception (2 different Bar from different classloader)
 		IBar bar = barCtType.newInstance();
 		int value = bar.m();
@@ -151,7 +151,7 @@ public class CompilationTest {
 		Ifoo o = c.newInstance();
 		assertEquals(0, o.foo());
 		for (int i = 1; i <= 10; i++) {
-			body.getStatement(0).replace(factory.Code().createCodeSnippetStatement("int i = " + i + ";"));
+			body.getIthStatement(0).replace(factory.Code().createCodeSnippetStatement("int i = " + i + ";"));
 			o = c.newInstance();
 			// each time this is a new class
 			// each time the behavior has changed!
