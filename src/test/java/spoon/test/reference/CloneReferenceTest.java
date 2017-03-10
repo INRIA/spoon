@@ -36,12 +36,14 @@ public class CloneReferenceTest {
         }
 
         CtClass b = a.clone();
+        b.setSimpleName("newName");
+        b.getPackage().addType(b);
 
         // test after clone
         for (String name : names) {
             CtVariable var1 = findVariable(b, name);
             CtVariable var2 = findReference(b, name).getDeclaration();
-            assertTrue(var1 == var2);
+            assertTrue("Var1 and var2 are not the same element", var1 == var2);
         }
     }
 

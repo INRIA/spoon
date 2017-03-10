@@ -91,9 +91,8 @@ public class SnippetCompilationHelper {
 
 		if (ret instanceof CtClass) {
 			CtClass klass = (CtClass) ret;
-			klass.setSimpleName(klass.getSimpleName().replaceAll("^[0-9]*", ""));
-			klass.setParent(ret.getFactory().Package().getRootPackage());
 			ret.getFactory().Package().getRootPackage().addType(klass);
+			klass.setSimpleName(klass.getSimpleName().replaceAll("^[0-9]*", ""));
 		}
 		return ret;
 	}
