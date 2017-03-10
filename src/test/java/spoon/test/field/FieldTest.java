@@ -30,12 +30,17 @@ import java.util.List;
 
 import org.junit.Test;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.eval.VisitorPartialEvaluator;
+import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
 
 public class FieldTest {
@@ -101,5 +106,27 @@ public class FieldTest {
 		first.setType(factory.Type().INTEGER_PRIMITIVE);
 		first.setSimpleName(name);
 		return first;
+	}
+
+	@Test
+	public void testGetDefaultExpression() throws Exception {
+		final CtClass<A> aClass = (CtClass<A>) buildClass(A.class);
+
+		CtClass<A.ClassB> bClass = aClass.getFactory().Class().get(A.ClassB.class);
+		List<CtMethod<?>> methods = bClass.getMethodsByName("getKey");
+
+		assertEquals(1, methods.size());
+
+		CtReturn<?> returnExpression = methods.get(0).getBody().getStatement(0);
+
+		CtFieldRead field = (CtFieldRead) returnExpression.getReturnedExpression();
+
+		assertEquals("spoon.test.field.testclasses.A.BaseClass.PREFIX", field.toString());
+
+		VisitorPartialEvaluator visitorPartial = new VisitorPartialEvaluator();
+
+		Object retour = visitorPartial.evaluate(methods.get(0));
+
+		assertTrue(retour != null);
 	}
 }
