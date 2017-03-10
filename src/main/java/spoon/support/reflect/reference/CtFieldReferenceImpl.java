@@ -27,6 +27,7 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.util.RtHelper;
 
 import java.lang.reflect.AnnotatedElement;
@@ -130,33 +131,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtField<T> getDeclaration() {
-		final CtField<T> ctField = lookupDynamically();
-		if (ctField != null) {
-			return ctField;
-		}
 		return fromDeclaringType();
-	}
-
-	private CtField<T> lookupDynamically() {
-		CtElement element = this;
-		CtField optional = null;
-		String name = getSimpleName();
-		try {
-			do {
-				CtType type = element.getParent(CtType.class);
-				if (type == null) {
-					return null;
-				}
-				final CtField potential = type.getField(name);
-				if (potential != null) {
-					optional = potential;
-				}
-				element = type;
-			} while (optional == null);
-		} catch (ParentNotInitializedException e) {
-			return null;
-		}
-		return optional;
 	}
 
 	private CtField<T> fromDeclaringType() {
