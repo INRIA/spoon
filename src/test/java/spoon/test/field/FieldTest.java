@@ -30,7 +30,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
@@ -42,6 +44,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
+import spoon.test.field.testclasses.BaseClass;
 
 public class FieldTest {
 	@Test
@@ -110,7 +113,12 @@ public class FieldTest {
 
 	@Test
 	public void testGetDefaultExpression() throws Exception {
-		final CtClass<A> aClass = (CtClass<A>) buildClass(A.class);
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/field/testclasses/A.java");
+		spoon.addInputResource("./src/test/java/spoon/test/field/testclasses/BaseClass.java");
+		spoon.buildModel();
+
+		final CtClass<A> aClass = spoon.getFactory().Class().get(A.class);
 
 		CtClass<A.ClassB> bClass = aClass.getFactory().Class().get(A.ClassB.class);
 		List<CtMethod<?>> methods = bClass.getMethodsByName("getKey");
@@ -119,9 +127,16 @@ public class FieldTest {
 
 		CtReturn<?> returnExpression = methods.get(0).getBody().getStatement(0);
 
-		CtFieldRead field = (CtFieldRead) returnExpression.getReturnedExpression();
+		CtFieldRead fieldRead = (CtFieldRead) returnExpression.getReturnedExpression();
 
-		assertEquals("spoon.test.field.testclasses.A.BaseClass.PREFIX", field.toString());
+		assertEquals("spoon.test.field.testclasses.BaseClass.PREFIX", fieldRead.toString());
+
+		CtField<?> field = fieldRead.getVariable().getDeclaration();
+
+		CtClass<BaseClass> baseClass = aClass.getFactory().Class().get(BaseClass.class);
+		CtField<?> expectedField = baseClass.getField("PREFIX");
+
+		assertEquals(expectedField, field);
 
 		VisitorPartialEvaluator visitorPartial = new VisitorPartialEvaluator();
 
