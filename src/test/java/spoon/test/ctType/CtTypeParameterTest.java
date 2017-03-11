@@ -87,4 +87,25 @@ public class CtTypeParameterTest {
 		}
 		throw new AssertionError();
 	}
+	
+	@Test
+	public void testTypeAdapted() throws Exception {
+		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
+		CtTypeParameter tpA = ctModel.getFormalCtTypeParameters().get(0);
+		CtTypeParameter tpB = ctModel.getFormalCtTypeParameters().get(1);
+		CtTypeParameter tpC = ctModel.getFormalCtTypeParameters().get(2);
+		CtTypeParameter tpD = ctModel.getFormalCtTypeParameters().get(3);
+		
+		CtClass<?> ctModelB = ctModel.filterChildren(new NameFilter<>("ModelB")).first();
+		assertEquals("A2", tpA.getTypeAdaptedTo(ctModelB).getQualifiedName());
+		assertEquals("B2", tpB.getTypeAdaptedTo(ctModelB).getQualifiedName());
+		assertEquals("C2", tpC.getTypeAdaptedTo(ctModelB).getQualifiedName());
+		assertEquals("D2", tpD.getTypeAdaptedTo(ctModelB).getQualifiedName());
+		
+		CtClass<?> ctModelC = ctModel.filterChildren(new NameFilter<>("ModelC")).first();
+		assertEquals("java.lang.Integer", tpA.getTypeAdaptedTo(ctModelC).getQualifiedName());
+		assertEquals("java.lang.RuntimeException", tpB.getTypeAdaptedTo(ctModelC).getQualifiedName());
+		assertEquals("java.lang.IllegalArgumentException", tpC.getTypeAdaptedTo(ctModelC).getQualifiedName());
+		assertEquals("spoon.test.ctType.testclasses.ErasureModelA$ModelC", tpD.getTypeAdaptedTo(ctModelC).getQualifiedName());
+	}
 }

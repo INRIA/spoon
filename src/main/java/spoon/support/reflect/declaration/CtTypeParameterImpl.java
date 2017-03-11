@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -259,6 +260,47 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 			return typeRef.getDeclaration().getTypeErasure();
 		}
 		return typeErasure;
+	}
+
+	@Override
+	public CtTypeReference<?> getTypeAdaptedTo(CtFormalTypeDeclarer targetScope) {
+		CtFormalTypeDeclarer scope = getTypeParameterDeclarer();
+		if (scope == null) {
+			throw new SpoonException("Can't adapt type param to another scope if it has no current scope (no parent formal type declarer).");
+		}
+		if (targetScope == scope) {
+			//type parameter is declared in required scope. Just return it.
+			return getReference();
+		}
+		if (scope instanceof CtType) {
+			if ((targetScope instanceof CtType) == false && targetScope instanceof CtTypeMember) {
+				targetScope = ((CtTypeMember) targetScope).getDeclaringType();
+				if (targetScope == scope) {
+					//type parameter is declared in required scope. Just return it.
+					return getReference();
+				}
+			}
+			if (targetScope instanceof CtType) {
+				return getReferenceInTypeScope(this, (CtType<?>) targetScope, (CtType<?>) scope);
+			}
+			//cannot map from Type scope to another scope
+			return null;
+		} else if (scope instanceof CtMethod) {
+			if (targetScope instanceof CtMethod) {
+				if (scope.getFormalCtTypeParameters().size() != targetScope.getFormalCtTypeParameters().size()) {
+					//cannot map type parameter of method 1 to method 2 if they have different number of formal type parameters
+					return null;
+				}
+				int myPosition = getTypeParameterPosition(this, scope);
+				return targetScope.getFormalCtTypeParameters().get(myPosition).getReference();
+			}
+			return null;
+		} else if (scope instanceof CtConstructor) {
+			//cannot map to scope of different constructor
+			return null;
+		} else {
+			throw new SpoonException("Unexpected scope of type parameter of type: " + scope.getClass().getName());
+		}
 	}
 
 	/**

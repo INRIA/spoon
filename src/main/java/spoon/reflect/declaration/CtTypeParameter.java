@@ -48,6 +48,12 @@ public interface CtTypeParameter extends CtType<Object> {
 	@DerivedProperty
 	CtTypeReference<?> getTypeErasure();
 
+	/**
+	 * @param targetScope - the scope where this type parameter is needed
+	 * @return type reference adapted from origin scope to scope of `targetScope`
+	 */
+	CtTypeReference<?> getTypeAdaptedTo(CtFormalTypeDeclarer targetScope);
+
 	// override the return type
 	@Override
 	CtTypeParameter clone();
