@@ -20,7 +20,6 @@ import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -43,9 +42,11 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.filter.AllTypeMembersFunction;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.UnsettableProperty;
-import spoon.support.SpoonClassNotFoundException;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
@@ -56,6 +57,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -185,25 +187,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
-		CtFieldReference<?> field = getDeclaredField(fieldName);
-		if (field != null) {
-			return field;
-		}
-		CtTypeReference<?> typeRef = getSuperclass();
-		if (typeRef != null) {
-			field = typeRef.getDeclaredOrInheritedField(fieldName);
-			if (field != null) {
-				return field;
-			}
-		}
-		Set<CtTypeReference<?>> ifaces = getSuperInterfaces();
-		for (CtTypeReference<?> iface : ifaces) {
-			field = iface.getDeclaredOrInheritedField(fieldName);
-			if (field != null) {
-				return field;
-			}
-		}
-		return field;
+		CtField<?> field = map(new AllTypeMembersFunction(CtField.class)).select(new NameFilter<>(fieldName)).first();
+		return field == null ? null : field.getReference();
 	}
 
 
@@ -510,17 +495,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public List<CtFieldReference<?>> getAllFields() {
-		final List<CtFieldReference<?>> fields = getDeclaredFields();
-		if (this instanceof CtClass) {
-			CtTypeReference<?> st = ((CtClass<?>) this).getSuperclass();
-			if (st != null) {
-				fields.addAll(st.getAllFields());
+		final List<CtFieldReference<?>> fields = new ArrayList<>();
+		map(new AllTypeMembersFunction(CtField.class)).forEach(new CtConsumer<CtField<?>>() {
+			@Override
+			public void accept(CtField<?> field) {
+				fields.add(field.getReference());
 			}
-			Set<CtTypeReference<?>> superIFaces = ((CtClass<?>) this).getSuperInterfaces();
-			for (CtTypeReference<?> superIFace : superIFaces) {
-				fields.addAll(superIFace.getAllFields());
-			}
-		}
+		});
 		return fields;
 	}
 
@@ -884,46 +865,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return l;
 	}
 
-	/**
-	 * puts all methods of from in destination based on signatures only
-	 */
-	private void addAllBasedOnSignature(Set<CtMethod<?>> from, Set<CtMethod<?>> destination) {
-		List<String> signatures = new ArrayList<>();
-		for (CtMethod<?> m : destination) {
-			signatures.add(m.getSignature());
-		}
-
-		for (CtMethod<?> m : from) {
-			if (!signatures.contains(m.getSignature())) {
-				destination.add(m);
-			}
-		}
-	}
-
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
-		Set<CtMethod<?>> l = new SignatureBasedSortedSet<>(getMethods());
-		if ((getSuperclass() != null)) {
-			try {
-				CtType<?> t = getSuperclass().getTypeDeclaration();
-				addAllBasedOnSignature(t.getAllMethods(), l);
-			} catch (SpoonClassNotFoundException ignored) {
-				// should not be thrown in 'noClasspath' environment (#775)
+		final Set<String> distinctSignatures = new HashSet<>();
+		final Set<CtMethod<?>> l = new SignatureBasedSortedSet<>();
+		map(new AllTypeMembersFunction(CtMethod.class)).forEach(new CtConsumer<CtMethod<?>>() {
+			@Override
+			public void accept(CtMethod<?> method) {
+				if (distinctSignatures.add(method.getSignature())) {
+					l.add(method);
+				}
 			}
-		} else if (this instanceof CtClass) {
-			// only CtCLasses extend object
-			addAllBasedOnSignature(getFactory().Type().get(Object.class).getMethods(), l);
-		}
-
-		for (CtTypeReference<?> ref : getSuperInterfaces()) {
-			try {
-				CtType<?> t = ref.getTypeDeclaration();
-				addAllBasedOnSignature(t.getAllMethods(), l);
-			} catch (SpoonClassNotFoundException ignored) {
-				// should not be thrown in 'noClasspath' environment (#775)
-			}
-		}
-
+		});
 		return Collections.unmodifiableSet(l);
 	}
 
