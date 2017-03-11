@@ -22,7 +22,6 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
 /**
@@ -70,12 +69,7 @@ public class CtLocalVariableReferenceImpl<T>
 			// successively iterate through all parents of this reference and
 			// return first result (which must be the closest declaration
 			// respecting visible scope)
-			CtVariable<?> var = map(new PotentialVariableDeclarationFunction()).select(new Filter<CtVariable<?>>() {
-				@Override
-				public boolean matches(CtVariable<?> var) {
-					return simpleName.equals(var.getSimpleName());
-				}
-			}).first();
+			CtVariable<?> var = map(new PotentialVariableDeclarationFunction(simpleName)).first();
 			if (var instanceof CtLocalVariable) {
 				return (CtLocalVariable<T>) var;
 			}
