@@ -62,7 +62,7 @@ public class AllTypeMembersFunction implements CtConsumableFunction<CtType<?>>, 
 
 	@Override
 	public void apply(CtType<?> input, final CtConsumer<Object> outputConsumer) {
-		final CtQuery q = input.map(new SuperHierarchyFunction(distintSet == null ? new HashSet<String>() : distintSet).includingSelf(true));
+		final CtQuery q = input.map(new SuperInheritanceHierarchyFunction(distintSet == null ? new HashSet<String>() : distintSet).includingSelf(true));
 		q.forEach(new CtConsumer<CtType<?>>() {
 			@Override
 			public void accept(CtType<?> type) {

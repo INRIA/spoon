@@ -41,7 +41,7 @@ import spoon.support.SpoonClassNotFoundException;
  * <li>goto 1: using  parent class as input type
  * </ol>
  */
-public class SuperHierarchyFunction implements CtConsumableFunction<CtType<?>>, CtQueryAware {
+public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<CtType<?>>, CtQueryAware {
 	private boolean includingSelf = false;
 	private boolean includingInterfaces = true;
 	private Set<String> visitedSet;
@@ -56,20 +56,20 @@ public class SuperHierarchyFunction implements CtConsumableFunction<CtType<?>>, 
 	 * if they are in hierarchy more then once.<br>
 	 * Use second constructor if you want to visit each interface only once.
 	 */
-	public SuperHierarchyFunction() {
+	public SuperInheritanceHierarchyFunction() {
 	}
 
 	/**
 	 * @param visitedSet assures that each class/interface is visited only once
 	 */
-	public SuperHierarchyFunction(Set<String> visitedSet) {
+	public SuperInheritanceHierarchyFunction(Set<String> visitedSet) {
 		this.visitedSet = visitedSet;
 	}
 
 	/**
 	 * @param includingSelf if true then input element is sent to output too. By default it is false.
 	 */
-	public SuperHierarchyFunction includingSelf(boolean includingSelf) {
+	public SuperInheritanceHierarchyFunction includingSelf(boolean includingSelf) {
 		this.includingSelf = includingSelf;
 		return this;
 	}
@@ -77,7 +77,7 @@ public class SuperHierarchyFunction implements CtConsumableFunction<CtType<?>>, 
 	/**
 	 * @param includingInterfaces if false then interfaces are not visited - only super classes. By default it is true.
 	 */
-	public SuperHierarchyFunction includingInterfaces(boolean includingInterfaces) {
+	public SuperInheritanceHierarchyFunction includingInterfaces(boolean includingInterfaces) {
 		this.includingInterfaces = includingInterfaces;
 		return this;
 	}
@@ -188,7 +188,10 @@ public class SuperHierarchyFunction implements CtConsumableFunction<CtType<?>>, 
 		this.query = query;
 	}
 
-	public SuperHierarchyFunction failOnClassNotFound(boolean failOnClassNotFound) {
+	/**
+	 * @param failOnClassNotFound sets whether processing should throw an exception if class is missing in noClassPath mode
+	 */
+	public SuperInheritanceHierarchyFunction failOnClassNotFound(boolean failOnClassNotFound) {
 		this.failOnClassNotFound = failOnClassNotFound;
 		return this;
 	}
