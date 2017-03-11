@@ -40,16 +40,16 @@ import spoon.reflect.visitor.chain.CtQueryAware;
  * This mapping function searches for all {@link CtVariable} instances,
  * which might be a declaration of an input {@link CtElement}.
  * <br>
- * It returns {@link CtLocalVariable} instances too
- * It returns {@link CtCatchVariable} instances from catch blocks.
- * It returns {@link CtParameter} instances from methods, lambdas and catch blocks.
- * It returns {@link CtField} instances from wrapping classes and their super classes too.
- * <br>
- * The elements are visited in defined order. First are elements from nearest parent blocks,
- * then fields of wrapping classes, then fields of super classes, etc.
- * <br>
  * It can be used to search for variable declarations of
  * variable references and for detection of variable name conflicts
+ * <br>
+ * It returns {@link CtLocalVariable} instances,
+ * or it returns {@link CtCatchVariable} instances of catch blocks,
+ * or i returns {@link CtParameter} instances of methods, lambdas and catch blocks.
+ * or it returns {@link CtField} instances from wrapping classes and their super classes too.
+ * <br>
+ * The elements are visited in the following order: first elements are thought in the nearest parent blocks,
+ * then in the fields of wrapping classes, then in the fields of super classes, etc.
  * <br>
  * Example: Search for all potential {@link CtVariable} declarations<br>
  * <pre> {@code
@@ -57,7 +57,7 @@ import spoon.reflect.visitor.chain.CtQueryAware;
  * varRef.map(new PotentialVariableDeclarationFunction()).forEach(...process result...);
  * }
  * </pre>
- * Example: Search for {@link CtVariable} declaration of variable named `varName` in scope scop
+ * Example: Search for {@link CtVariable} declaration of variable named `varName` in scope "scope"
  * <pre> {@code
  * CtElement scope = ...;
  * String varName = "anVariableName";
