@@ -17,12 +17,14 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -76,6 +78,15 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	@Override
 	public CtTypeParameter clone() {
 		return (CtTypeParameter) super.clone();
+	}
+
+	@Override
+	public CtFormalTypeDeclarer getTypeDeclarer() {
+		try {
+			return getParent(CtFormalTypeDeclarer.class);
+		} catch (ParentNotInitializedException e) {
+			return null;
+		}
 	}
 
 	@Override
