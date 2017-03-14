@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.buildNoClasspath;
@@ -29,6 +30,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
@@ -159,6 +161,25 @@ public class GenericsTest {
 		assertEquals(java.io.File.class, trExtends.getActualClass());
 		assertEquals("T", tr2.getSimpleName());
 		assertEquals("T", tr3.getSimpleName());
+	}
+
+	@Test
+	public void testTypeParameterDeclarer() throws Exception {
+		CtClass<?> classThatBindsAGenericType = build("spoon.test.generics", "ClassThatBindsAGenericType");
+		CtClass<?> classThatDefinesANewTypeArgument = classThatBindsAGenericType.getPackage().getElements(new NameFilter<CtClass<?>>("ClassThatDefinesANewTypeArgument")).get(0);
+
+		CtTypeParameter typeParam = classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0);
+		assertSame(typeParam.getParent(CtFormalTypeDeclarer.class), typeParam.getTypeParameterDeclarer()); 
+	}
+
+	@Test
+	public void testTypeParameterReferenceDeclaration() throws Exception {
+		CtClass<?> classThatBindsAGenericType = build("spoon.test.generics", "ClassThatBindsAGenericType");
+		CtClass<?> classThatDefinesANewTypeArgument = classThatBindsAGenericType.getPackage().getElements(new NameFilter<CtClass<?>>("ClassThatDefinesANewTypeArgument")).get(0);
+
+		CtTypeParameter typeParam = classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0);
+		//contract: the the reference to type parameter must be able to return the same type parameter
+		assertSame(typeParam, typeParam.getReference().getDeclaration()); 
 	}
 
 	@Test

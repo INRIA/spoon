@@ -81,7 +81,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
-	public CtFormalTypeDeclarer getTypeDeclarer() {
+	public CtFormalTypeDeclarer getTypeParameterDeclarer() {
 		try {
 			return getParent(CtFormalTypeDeclarer.class);
 		} catch (ParentNotInitializedException e) {

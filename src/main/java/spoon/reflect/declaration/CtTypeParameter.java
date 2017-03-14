@@ -38,7 +38,7 @@ public interface CtTypeParameter extends CtType<Object> {
 	 * @return the {@link CtFormalTypeDeclarer}, which declares this {@link CtTypeParameter}
 	 */
 	@DerivedProperty
-	CtFormalTypeDeclarer getTypeDeclarer();
+	CtFormalTypeDeclarer getTypeParameterDeclarer();
 
 	// override the return type
 	@Override
