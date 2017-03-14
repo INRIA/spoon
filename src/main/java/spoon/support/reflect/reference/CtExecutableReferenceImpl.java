@@ -236,11 +236,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (!isSame) {
 			return false;
 		}
-		if (getDeclaringType().isAnonymous()) {
-			if (!getDeclaringType().getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
-				return false;
-			}
-		} else if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
+		if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
 			return false;
 		}
 		return true;
