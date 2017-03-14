@@ -143,8 +143,9 @@ public class GenericsTest {
 
 	@Test
 	public void testTypeParameterReference() throws Exception {
-		CtClass<?> classThatBindsAGenericType = build("spoon.test.generics", "ClassThatBindsAGenericType");
-		CtClass<?> classThatDefinesANewTypeArgument = classThatBindsAGenericType.getPackage().getElements(new NameFilter<CtClass<?>>("ClassThatDefinesANewTypeArgument")).get(0);
+		Factory factory = build(ClassThatBindsAGenericType.class, ClassThatDefinesANewTypeArgument.class);
+		CtClass<?> classThatBindsAGenericType = factory.Class().get(ClassThatBindsAGenericType.class);
+		CtClass<?> classThatDefinesANewTypeArgument = factory.Class().get(ClassThatDefinesANewTypeArgument.class);
 
 		CtTypeReference<?> tr1 = classThatBindsAGenericType.getSuperclass();
 		CtTypeReference<?> trExtends = tr1.getActualTypeArguments().get(0);
@@ -165,21 +166,11 @@ public class GenericsTest {
 
 	@Test
 	public void testTypeParameterDeclarer() throws Exception {
-		CtClass<?> classThatBindsAGenericType = build("spoon.test.generics", "ClassThatBindsAGenericType");
-		CtClass<?> classThatDefinesANewTypeArgument = classThatBindsAGenericType.getPackage().getElements(new NameFilter<CtClass<?>>("ClassThatDefinesANewTypeArgument")).get(0);
-
+		// contract: one can navigate to the declarer of a type parameter
+		CtClass<?> classThatDefinesANewTypeArgument = build("spoon.test.generics", "ClassThatDefinesANewTypeArgument");
 		CtTypeParameter typeParam = classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0);
-		assertSame(typeParam.getParent(CtFormalTypeDeclarer.class), typeParam.getTypeParameterDeclarer()); 
-	}
-
-	@Test
-	public void testTypeParameterReferenceDeclaration() throws Exception {
-		CtClass<?> classThatBindsAGenericType = build("spoon.test.generics", "ClassThatBindsAGenericType");
-		CtClass<?> classThatDefinesANewTypeArgument = classThatBindsAGenericType.getPackage().getElements(new NameFilter<CtClass<?>>("ClassThatDefinesANewTypeArgument")).get(0);
-
-		CtTypeParameter typeParam = classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0);
-		//contract: the the reference to type parameter must be able to return the same type parameter
-		assertSame(typeParam, typeParam.getReference().getDeclaration()); 
+		assertSame(classThatDefinesANewTypeArgument, typeParam.getTypeParameterDeclarer());
+		assertSame(typeParam, typeParam.getReference().getDeclaration());
 	}
 
 	@Test
