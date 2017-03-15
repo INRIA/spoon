@@ -28,7 +28,7 @@ import java.util.List;
  */
 public final class Refactoring {
 	/**
-	 * Changes names of the inherited reference of type qualified by oldName
+	 * Changes name of a type element.
 	 *
 	 * @param type
 	 * 		Type in the AST.
