@@ -43,6 +43,7 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		if (factory instanceof FactoryImpl) {
 			simpleName = ((FactoryImpl) factory).dedup(simpleName);
 		}
+
 		this.simpleName = simpleName;
 		return (T) this;
 	}
