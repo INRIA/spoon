@@ -525,6 +525,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private CtClass<Object> createCloneBuilder() {
 		final CtPackage aPackage = getFactory().Package().getOrCreate(TARGET_CLONE_PACKAGE);
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_BUILDER_CLONE);
+		target.setSimpleName(TARGET_BUILDER_CLONE_TYPE);
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
 		final List<CtTypeReference> references = target.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
@@ -537,7 +538,6 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			reference.setSimpleName(TARGET_BUILDER_CLONE_TYPE);
 			reference.setPackage(aPackage.getReference());
 		}
-		target.setSimpleName(TARGET_BUILDER_CLONE_TYPE);
 		return target;
 	}
 }

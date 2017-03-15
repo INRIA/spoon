@@ -28,6 +28,33 @@ import java.util.List;
  */
 public final class Refactoring {
 	/**
+	 * Changes names of the inherited reference of type qualified by oldName
+	 *
+	 * @param type
+	 * 		Type in the AST.
+	 * @param oldName
+	 * 		The old qualified name of type
+	 * @param name
+	 * 		New name of the element.
+	 */
+	public static void changeInheritedTypeName(final CtType<?> type, String oldName, String name) {
+
+		final String typeQFN = oldName;
+
+		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(), new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
+			@Override
+			public boolean matches(CtTypeReference<?> reference) {
+				String refFQN = reference.getQualifiedName();
+				return typeQFN.equals(refFQN);
+			}
+		});
+
+		for (CtTypeReference<?> reference : references) {
+			reference.setSimpleName(name);
+		}
+	}
+
+	/**
 	 * Changes name of a type element.
 	 *
 	 * @param type
@@ -36,16 +63,7 @@ public final class Refactoring {
 	 * 		New name of the element.
 	 */
 	public static void changeTypeName(final CtType<?> type, String name) {
-		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(), new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
-			@Override
-			public boolean matches(CtTypeReference<?> reference) {
-				return type.getQualifiedName().equals(reference.getQualifiedName());
-			}
-		});
-
+		Refactoring.changeInheritedTypeName(type, type.getQualifiedName(), name);
 		type.setSimpleName(name);
-		for (CtTypeReference<?> reference : references) {
-			reference.setSimpleName(name);
-		}
 	}
 }

@@ -17,15 +17,9 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.List;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements CtNamedElement {
 
@@ -50,21 +44,6 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 			simpleName = ((FactoryImpl) factory).dedup(simpleName);
 		}
 
-		if (this instanceof CtType && !simpleName.equals("")) {
-			final CtType type = (CtType) this;
-			final List<CtTypeReference<?>> references = Query.getElements(type, new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
-				@Override
-				public boolean matches(CtTypeReference<?> reference) {
-					return type.getQualifiedName().equals(reference.getQualifiedName());
-				}
-			});
-
-			this.simpleName = simpleName;
-			for (CtTypeReference<?> reference : references) {
-				reference.setSimpleName(simpleName);
-			}
-			return (T) this;
-		}
 		this.simpleName = simpleName;
 		return (T) this;
 	}

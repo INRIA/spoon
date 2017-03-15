@@ -2,6 +2,7 @@ package spoon.test.reference;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
@@ -36,13 +37,15 @@ public class CloneReferenceTest {
         }
 
         CtClass b = a.clone();
-        b.setSimpleName("newName");
+        b.setSimpleName("newName"); // this won't work: you should use a real refactoring of names
         b.getPackage().addType(b);
+        Refactoring.changeInheritedTypeName(b, a.getQualifiedName(), "newName");
 
         // test after clone
         for (String name : names) {
             CtVariable var1 = findVariable(b, name);
-            CtVariable var2 = findReference(b, name).getDeclaration();
+            CtVariableReference refVar1 = findReference(b, name);
+            CtVariable var2 = refVar1.getDeclaration();
             assertTrue("Var1 and var2 are not the same element", var1 == var2);
         }
     }
