@@ -685,13 +685,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 						 */
 						final CtField<?> field = f.getVariable().getFieldDeclaration();
 						final String fieldName = field.getSimpleName();
-						CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction()).select(new Filter<CtVariable<?>>() {
-							@Override
-							public boolean matches(CtVariable<?> element) {
-								//finish if we have found a declaration of variable with the same name.
-								return fieldName.equals(element.getSimpleName());
-							}
-						}).first();
+						CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();
 						if (var != field) {
 							//another variable declaration was found which is hiding the field declaration for this field access. Make the field access expicit
 							target.setImplicit(false);

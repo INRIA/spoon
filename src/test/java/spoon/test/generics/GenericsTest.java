@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.buildNoClasspath;
@@ -29,6 +30,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
@@ -141,8 +143,9 @@ public class GenericsTest {
 
 	@Test
 	public void testTypeParameterReference() throws Exception {
-		CtClass<?> classThatBindsAGenericType = build("spoon.test.generics", "ClassThatBindsAGenericType");
-		CtClass<?> classThatDefinesANewTypeArgument = classThatBindsAGenericType.getPackage().getElements(new NameFilter<CtClass<?>>("ClassThatDefinesANewTypeArgument")).get(0);
+		Factory factory = build(ClassThatBindsAGenericType.class, ClassThatDefinesANewTypeArgument.class);
+		CtClass<?> classThatBindsAGenericType = factory.Class().get(ClassThatBindsAGenericType.class);
+		CtClass<?> classThatDefinesANewTypeArgument = factory.Class().get(ClassThatDefinesANewTypeArgument.class);
 
 		CtTypeReference<?> tr1 = classThatBindsAGenericType.getSuperclass();
 		CtTypeReference<?> trExtends = tr1.getActualTypeArguments().get(0);
@@ -159,6 +162,15 @@ public class GenericsTest {
 		assertEquals(java.io.File.class, trExtends.getActualClass());
 		assertEquals("T", tr2.getSimpleName());
 		assertEquals("T", tr3.getSimpleName());
+	}
+
+	@Test
+	public void testTypeParameterDeclarer() throws Exception {
+		// contract: one can navigate to the declarer of a type parameter
+		CtClass<?> classThatDefinesANewTypeArgument = build("spoon.test.generics", "ClassThatDefinesANewTypeArgument");
+		CtTypeParameter typeParam = classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0);
+		assertSame(classThatDefinesANewTypeArgument, typeParam.getTypeParameterDeclarer());
+		assertSame(typeParam, typeParam.getReference().getDeclaration());
 	}
 
 	@Test
