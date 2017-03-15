@@ -32,14 +32,12 @@ public final class Refactoring {
 	 *
 	 * @param type
 	 * 		Type in the AST.
-	 * @param oldName
-	 * 		The old qualified name of type
 	 * @param name
 	 * 		New name of the element.
 	 */
-	public static void changeInheritedTypeName(final CtType<?> type, String oldName, String name) {
+	public static void changeTypeName(final CtType<?> type, String name) {
 
-		final String typeQFN = oldName;
+		final String typeQFN = type.getQualifiedName();
 
 		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(), new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
@@ -49,21 +47,9 @@ public final class Refactoring {
 			}
 		});
 
+		type.setSimpleName(name);
 		for (CtTypeReference<?> reference : references) {
 			reference.setSimpleName(name);
 		}
-	}
-
-	/**
-	 * Changes name of a type element.
-	 *
-	 * @param type
-	 * 		Type in the AST.
-	 * @param name
-	 * 		New name of the element.
-	 */
-	public static void changeTypeName(final CtType<?> type, String name) {
-		Refactoring.changeInheritedTypeName(type, type.getQualifiedName(), name);
-		type.setSimpleName(name);
 	}
 }
