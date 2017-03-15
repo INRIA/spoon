@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.SpoonException;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -246,6 +248,107 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
 		return getReference().isSubtypeOf(type);
+	}
+
+	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		CtTypeReference<?> boundType = getBound(this);
+		CtTypeReference<?> typeErasure = getReferenceInScope(boundType, getDeclaringType());
+		if (typeErasure instanceof CtTypeParameterReference) {
+			CtTypeParameterReference typeRef = (CtTypeParameterReference) typeErasure;
+			return typeRef.getDeclaration().getTypeErasure();
+		}
+		return typeErasure;
+	}
+
+	/**
+	 * Converts potentially generic parameters from namespace of some super class to namespace of `targetScope`
+	 * @param type - the reference to to be converted parameter (generic) type or normal type.
+	 * @param targetScope - the type which represents target scope of the generic parameter.
+	 * @return a `type` converted into scope of `targetType` or null if conversion is not possible, because scopes are incompatible
+	 */
+	private static CtTypeReference<?> getReferenceInScope(CtTypeReference<?> type, CtType<?> targetScope) {
+		if (type instanceof CtTypeParameterReference) {
+			CtTypeParameterReference typeParamRef = (CtTypeParameterReference) type;
+			CtTypeParameter typeParam = typeParamRef.getDeclaration();
+			CtFormalTypeDeclarer scope = typeParam.getTypeParameterDeclarer();
+			if (scope == null) {
+				throw new SpoonException("Can't convert scope of type param if it has no parent formal type declarer.");
+			}
+			if (targetScope == scope) {
+				//type parameter is declared in required scope. Just return it.
+				return typeParamRef;
+			}
+			if (scope instanceof CtType) {
+				//this type reference is declared in scope of different type. Compute how it is declared in `targetType`
+				return getReferenceInTypeScope(typeParam, targetScope, (CtType<?>) scope);
+			} else if (scope instanceof CtMethod) {
+
+			} else if (scope instanceof CtConstructor) {
+
+			} else {
+				throw new SpoonException("Unexpected scope of type parameter of type: " + scope.getClass().getName());
+			}
+		}
+		return type;
+	}
+
+
+	/**
+	 * Converts generic `typeParam` in scope of type `sourceScope` to namespace of `targetScope`
+	 * @param typeParam the to be converted type parameter
+	 * @param targetScope - type of target scope, which should be a sub type of source scope
+	 * @param sourceScope - type of source scope
+	 * @return reference to type converted into targetScope
+	 */
+	private static CtTypeReference<?> getReferenceInTypeScope(CtTypeParameter typeParam, CtType<?> targetScope, CtType<?> sourceScope) {
+		if (targetScope == sourceScope) {
+			return typeParam.getReference();
+		}
+		CtTypeReference<?> superTypeRef = targetScope.getSuperclass();
+		if (superTypeRef == null) {
+			return null;
+		}
+		CtType<?> superType = superTypeRef.getTypeDeclaration();
+		if (superType == null) {
+			return null;
+		}
+		CtTypeReference<?> superTypeParamRef = getReferenceInTypeScope(typeParam, superType, sourceScope);
+		if (superTypeParamRef instanceof CtTypeParameterReference) {
+			CtTypeParameter superTypeParam = ((CtTypeParameterReference) superTypeParamRef).getDeclaration();
+			//convert typeParam  of super type to typeParam of `targetType`
+			int paramTypeIdxInSuperType = getTypeParameterPosition(superTypeParam, superType);
+			List<CtTypeReference<?>> actTRs = superTypeRef.getActualTypeArguments();
+			if (paramTypeIdxInSuperType < actTRs.size()) {
+				//the actual type argument is defined in `targetType`. Return that type parameter declared in targetScope
+				return actTRs.get(paramTypeIdxInSuperType);
+			}
+			//the super type actual type arguments are not defined in sub class. The type erasure is applied
+			return superTypeParam.getTypeErasure();
+		}
+		//else it is normal type reference.
+		return superTypeParamRef;
+	}
+
+	private static CtTypeReference<?> getBound(CtTypeParameter typeParam) {
+		CtTypeReference<?> bound = typeParam.getSuperclass();
+		if (bound == null) {
+			bound = typeParam.getFactory().Type().OBJECT;
+		}
+		return bound;
+	}
+
+	/**
+	 * @param parameterType
+	 * @param scope
+	 * @return index of parameterType declaration in scope or throws SpoonException if not found (= spoon model inconsistency)
+	 */
+	private static int getTypeParameterPosition(CtTypeParameter parameterType, CtFormalTypeDeclarer scope) {
+		int position = scope.getFormalCtTypeParameters().indexOf(parameterType);
+		if (position == -1) {
+			throw new SpoonException("Type parameter <" + parameterType.getSimpleName() + " not found in scope " + scope.getShortRepresentation());
+		}
+		return position;
 	}
 
 	@Override
