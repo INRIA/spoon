@@ -33,7 +33,6 @@ import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -296,7 +295,7 @@ public class SignatureTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.run();
 
-		final List<CtExecutableReference> references = Query.getElements(launcher.getFactory(), new ReferenceTypeFilter<CtExecutableReference>(CtExecutableReference.class) {
+		final List<CtExecutableReference> references = Query.getElements(launcher.getFactory(), new TypeFilter<CtExecutableReference>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference reference) {
 				return "addField".equals(reference.getSimpleName()) && super.matches(reference);

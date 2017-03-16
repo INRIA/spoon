@@ -15,7 +15,7 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -295,7 +295,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getReferencesOfAMethod(CtMethod<?> method1) {
-		return method1.getElements(new ReferenceTypeFilter<CtExecutableReference<?>>(CtExecutableReference.class));
+		return method1.getElements(new TypeFilter<CtExecutableReference<?>>(CtExecutableReference.class));
 	}
 
 	private CtMethod<?> getCtMethodByNameFromCtClass(CtClass<?> clazz, String nameMethod5) {

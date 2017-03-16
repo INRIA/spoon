@@ -37,7 +37,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.UnsettableProperty;
 import spoon.test.replace.testclasses.Tacos;
@@ -144,7 +143,7 @@ public class ParentTest {
 		// so the root packages are not deeply equals
 		assertNotEquals(pack1, topLevelParent);
 
-		final CtTypeReference<?> burritos = panini.getElements(new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
+		final CtTypeReference<?> burritos = panini.getElements(new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference<?> reference) {
 				return "Burritos".equals(reference.getSimpleName()) && super.matches(reference);
@@ -187,7 +186,7 @@ public class ParentTest {
 	public void testParentOfGenericInTypeReference() throws Exception {
 		// contract: parent of a generic in a type reference is the type reference.
 		final Factory factory = build(Tacos.class);
-		final CtTypeReference referenceWithGeneric = Query.getElements(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
+		final CtTypeReference referenceWithGeneric = Query.getElements(factory, new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
 				return reference.getActualTypeArguments().size() > 0 && super.matches(reference);

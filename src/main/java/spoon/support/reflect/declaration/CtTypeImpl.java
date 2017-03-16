@@ -45,7 +45,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
@@ -229,7 +229,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage) {
 		Set<CtTypeReference<?>> typeRefs = new QualifiedNameBasedSortedSet<>();
-		for (CtTypeReference<?> typeRef : Query.getReferences(this, new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
+		for (CtTypeReference<?> typeRef : Query.getReferences(this, new TypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
 			if (isValidTypeReference(typeRef) && shouldIncludeSamePackage(includeSamePackage, typeRef)) {
 				typeRefs.add(typeRef);
 			}

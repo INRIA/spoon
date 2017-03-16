@@ -30,7 +30,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
@@ -109,7 +108,7 @@ public class TypeReferenceTest {
 
 		// now we retrieve the reference to ReferencedClass
 		CtTypeReference referencedType = null;
-		ReferenceTypeFilter<CtTypeReference> referenceTypeFilter = new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class);
+		TypeFilter<CtTypeReference> referenceTypeFilter = new TypeFilter<CtTypeReference>(CtTypeReference.class);
 		List<CtTypeReference> elements = Query.getElements(theClass, referenceTypeFilter);
 		for (CtTypeReference reference : elements) {
 			if (reference.getQualifiedName().equals(referencedQualifiedName)) {
@@ -445,8 +444,7 @@ public class TypeReferenceTest {
 		final CtClass anonymousClass = aClass.getElements(new TypeFilter<>(CtNewClass.class)).get(0).getAnonymousClass();
 		assertEquals("1", anonymousClass.getReference().getSimpleName());
 		Set<CtTypeReference<?>> referencedTypes = aClass.getReferencedTypes();
-		List<String> referencedTypeNames = referencedTypes.stream().map(Object::toString)
-				.collect(Collectors.toList());
+		List<String> referencedTypeNames = referencedTypes.stream().map(Object::toString).collect(Collectors.toList());
 		assertEquals(7, referencedTypeNames.size());
 		assertTrue(referencedTypeNames.contains("A"));
 		assertTrue(referencedTypeNames.contains("example.B"));

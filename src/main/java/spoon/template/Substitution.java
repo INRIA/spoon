@@ -35,7 +35,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
 
@@ -563,7 +563,7 @@ public abstract class Substitution {
 	 */
 	public static void redirectTypeReferences(CtElement element, CtTypeReference<?> source, CtTypeReference<?> target) {
 
-		List<CtTypeReference<?>> refs = Query.getReferences(element, new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class));
+		List<CtTypeReference<?>> refs = Query.getReferences(element, new TypeFilter<CtTypeReference<?>>(CtTypeReference.class));
 
 		String srcName = source.getQualifiedName();
 		String targetName = target.getSimpleName();
