@@ -18,7 +18,6 @@ package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.CtFunction;
 
 import java.util.List;
