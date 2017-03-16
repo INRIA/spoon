@@ -31,7 +31,7 @@ public class ExecutableReferenceTest {
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/executable-reference", "--output-type", "nooutput", "--noclasspath"
 		});
-		final List<CtExecutableReference<?>> references = Query.getReferences(launcher.getFactory(), new TypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+		final List<CtExecutableReference<?>> references = Query.getElements(launcher.getFactory(), new TypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return !reference.isConstructor() && super.matches(reference);
