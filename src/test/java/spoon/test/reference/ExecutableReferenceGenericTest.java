@@ -13,7 +13,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -216,7 +216,7 @@ public class ExecutableReferenceGenericTest {
 		CtClass<?> classMyClass = Query.getElements(factory, new NameFilter<CtClass>("MyClass")).get(0);
 		assertEquals("MyClass", classMyClass.getSimpleName());
 		List<CtExecutableReference<?>> refsExecutableClass1 = Query.getElements(classMyClass,
-				new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+				new AbstractFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 					public boolean matches(CtExecutableReference<?> reference) {
 						return true;
 					}
@@ -225,7 +225,7 @@ public class ExecutableReferenceGenericTest {
 		CtClass<?> classMyClass2 =  Query.getElements(factory, new NameFilter<CtClass>("MyClass2")).get(0);
 		assertEquals("MyClass2", classMyClass2.getSimpleName());
 		List<CtExecutableReference<?>> refsExecutableClass2 = Query.getElements(classMyClass2,
-				new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+				new AbstractFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 					public boolean matches(CtExecutableReference<?> reference) {
 						return true;
 					}
@@ -268,7 +268,7 @@ public class ExecutableReferenceGenericTest {
 		if (!inv.getExecutable().getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
 			return new ArrayList<>();
 		}
-		return inv.getExecutable().getElements(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+		return inv.getExecutable().getElements(new AbstractFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return reference.isConstructor();
@@ -277,7 +277,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getCtConstructorsReferencedInCtConstructor(CtConstructor<?> aConstructor) {
-		return aConstructor.getElements(new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+		return aConstructor.getElements(new AbstractFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return reference.isConstructor();

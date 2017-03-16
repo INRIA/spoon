@@ -15,7 +15,7 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
@@ -40,7 +40,7 @@ public class VariableAccessTest {
 		CtClass<?> type = build("spoon.test.reference", "FooBar");
 		assertEquals("FooBar", type.getSimpleName());
 
-		final CtParameterReference<?> ref = type.getElements(new AbstractReferenceFilter<CtParameterReference<?>>(CtParameterReference.class) {
+		final CtParameterReference<?> ref = type.getElements(new AbstractFilter<CtParameterReference<?>>(CtParameterReference.class) {
 			@Override
 			public boolean matches(CtParameterReference<?> reference) {
 				return "myArg".equals(reference.getSimpleName());

@@ -9,7 +9,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.refactoring.testclasses.AClass;
 
@@ -44,7 +43,7 @@ public class RefactoringTest {
 		final CtClass<?> aClassX = launcher.getFactory().Class().get("spoon.test.refactoring.testclasses.AClassX");
 		assertNotNull(aClassX);
 
-		final List<CtTypeReference<?>> references = Query.getElements(aClassX.getFactory(), new AbstractReferenceFilter<CtTypeReference<?>>(CtTypeReference.class) {
+		final List<CtTypeReference<?>> references = Query.getElements(aClassX.getFactory(), new AbstractFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference<?> reference) {
 				return aClassX.getQualifiedName().equals(reference.getQualifiedName());
