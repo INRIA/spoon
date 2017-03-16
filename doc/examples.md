@@ -5,7 +5,7 @@ keywords: examples
 
 ## Program Analysis
 
-The [`CatchProcessor`](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/analysis/processing/CatchProcessor.java?view=markup&root=spoon) detects empty catch blocks.
+The [`CatchProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/CatchProcessor.java) detects empty catch blocks.
 
 The [`ReferenceProcessor`](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/analysis/processing/ReferenceProcessor.java?view=markup&root=spoon) detects circular references between packages.
 
@@ -13,7 +13,9 @@ This [`Factory`](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src
 
 ## Program Transformation
 
-The [`NotNullProcessor`](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/notnull/NotNullCheckAdderProcessor.java?view=markup&root=spoon) adds a not-null check for all method parameters.
+The [`NotNullProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/NotNullCheckAdderProcessor.java) adds a not-null check for all method parameters.
+
+The [`LogProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/LogProcessor.java) adds a log information when entering a method.
 
 The [`MutationProcessor`](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/mutation/MutationProcessor.java?view=markup&root=spoon) randomly mutates some parts of the abstract syntax tree for [mutation testing](http://en.wikipedia.org/wiki/Mutation_testing).
 
