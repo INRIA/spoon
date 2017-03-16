@@ -229,7 +229,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage) {
 		Set<CtTypeReference<?>> typeRefs = new QualifiedNameBasedSortedSet<>();
-		for (CtTypeReference<?> typeRef : Query.getReferences(this, new TypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
+		for (CtTypeReference<?> typeRef : Query.getElements(this, new TypeFilter<CtTypeReference<?>>(CtTypeReference.class))) {
 			if (isValidTypeReference(typeRef) && shouldIncludeSamePackage(includeSamePackage, typeRef)) {
 				typeRefs.add(typeRef);
 			}
