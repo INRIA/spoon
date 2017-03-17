@@ -20,6 +20,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.chain.CtScannerListener;
 
 /**
  * This Query expects a {@link CtCatchVariable} as input
@@ -39,12 +40,20 @@ import spoon.reflect.visitor.chain.CtConsumer;
  * </pre>
  */
 public class CatchVariableScopeFunction implements CtConsumableFunction<CtCatchVariable<?>> {
+	private final CtScannerListener listener;
 
 	public CatchVariableScopeFunction() {
+		this.listener = null;
+	}
+	public CatchVariableScopeFunction(CtScannerListener queryListener) {
+		this.listener = queryListener;
 	}
 
 	@Override
 	public void apply(CtCatchVariable<?> catchVariable, CtConsumer<Object> outputConsumer) {
-		catchVariable.getParent(CtCatch.class).getBody().filterChildren(null).forEach(outputConsumer);
+		catchVariable
+			.getParent(CtCatch.class).getBody()
+			.map(new CtScannerFunction().setListener(this.listener))
+			.forEach(outputConsumer);
 	}
 }
