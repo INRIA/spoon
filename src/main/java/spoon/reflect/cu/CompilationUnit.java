@@ -41,6 +41,13 @@ public interface CompilationUnit extends FactoryAccessor {
 	void setFile(File file);
 
 	/**
+	 * Gets all binary (.class) files that corresponds to this compilation unit
+	 * and have been created by calling
+	 * {@link spoon.SpoonModelBuilder#compile(spoon.SpoonModelBuilder.InputType...)}.
+	 */
+	List<File> getBinaryFiles();
+
+	/**
 	 * Gets all the types declared in this compilation unit.
 	 */
 	List<CtType<?>> getDeclaredTypes();

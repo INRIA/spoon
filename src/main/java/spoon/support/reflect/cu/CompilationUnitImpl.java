@@ -23,8 +23,11 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
@@ -81,6 +84,40 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setFile(File file) {
 		this.file = file;
+	}
+
+	@Override
+	public List<File> getBinaryFiles() {
+		final List<File> binaries = new ArrayList<>();
+		final String output = getFactory()
+				.getEnvironment()
+				.getBinaryOutputDirectory();
+		if (output != null) {
+			final File base = Paths
+					.get(output, getDeclaredPackage()
+					.getQualifiedName()
+					.replace(".", File.separator))
+					.toFile();
+			if (base.isDirectory()) {
+				for (final CtType type : getDeclaredTypes()) {
+					final File[] arr = base.listFiles(new FileFilter() {
+						@Override
+						public boolean accept(File file) {
+							final String fileName = file.getName();
+							final String typeName = type.getSimpleName();
+							// main type, for instance, 'Foo.class'
+							return fileName.equals(typeName + ".class")
+									// inner/anonymous types, for instance,
+									// 'Foo$Bar.class'
+									|| fileName.startsWith(typeName + "$")
+									&& fileName.endsWith(".class");
+						}
+					});
+					binaries.addAll(Arrays.asList(arr));
+				}
+			}
+		}
+		return binaries;
 	}
 
 	String originalSourceCode;
