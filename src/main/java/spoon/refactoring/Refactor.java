@@ -16,12 +16,18 @@
  */
 package spoon.refactoring;
 
-import java.util.List;
-
 /**
- *
+ * Defines basic contract of all refactoring implementations.<br>
+ * Usage:<br>
+ * <pre>
+ * SomeRefactoring r = new SomeRefactoring();
+ * //configure refactoring by calling setters on `r`
+ * r.refactor();
+ * </pre>
  */
 public interface Refactor {
-	List<Issue> getIssues();
+	/**
+	 * Process refactoring operation
+	 */
 	void refactor();
 }

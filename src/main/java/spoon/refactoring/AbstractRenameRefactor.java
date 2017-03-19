@@ -16,14 +16,10 @@
  */
 package spoon.refactoring;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.chain.CtConsumer;
 
 public abstract class AbstractRenameRefactor<T extends CtNamedElement> implements Refactor {
 	public static final Pattern javaIdentifierRE = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
@@ -44,45 +40,25 @@ public abstract class AbstractRenameRefactor<T extends CtNamedElement> implement
 		if (getNewName() == null) {
 			throw new SpoonException("The new name of refactoring is not defined");
 		}
-		List<Issue> issues = getIssues();
-		if (issues.isEmpty() == false) {
-			throw new SpoonException("Refactoring cannot be processed. There are issues: " + issues.toString());
-		}
+		detectIssues();
 		refactorNoCheck();
 	}
 
-	protected void refactorNoCheck() {
-		forEachReference(new CtConsumer<CtReference>() {
-			@Override
-			public void accept(CtReference t) {
-				t.setSimpleName(AbstractRenameRefactor.this.newName);
-			}
-		});
-		target.setSimpleName(newName);
-	}
+	protected abstract void refactorNoCheck();
 
-	protected abstract void forEachReference(CtConsumer<CtReference> consumer);
-
-	@Override
-	public List<Issue> getIssues() {
-		List<Issue> issues = new ArrayList<>();
-		detectIssues(issues);
-		return issues;
-	}
-
-	protected void detectIssues(List<Issue> issues) {
-		checkNewNameIsValid(issues);
-		detectNameConflicts(issues);
+	protected void detectIssues() {
+		checkNewNameIsValid();
+		detectNameConflicts();
 	}
 
 	/**
 	 * checks whether {@link #newName} is valid java identifier
 	 * @param issues
 	 */
-	protected void checkNewNameIsValid(List<Issue> issues) {
+	protected void checkNewNameIsValid() {
 	}
 
-	protected void detectNameConflicts(List<Issue> issues) {
+	protected void detectNameConflicts() {
 	}
 
 

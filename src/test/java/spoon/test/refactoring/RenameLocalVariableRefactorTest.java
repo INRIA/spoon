@@ -3,18 +3,18 @@ package spoon.test.refactoring;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
-import spoon.refactoring.ChangeLocalVariableName;
+import spoon.refactoring.RenameLocalVariableRefactor;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -22,54 +22,48 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.test.refactoring.testclasses.TryRename;
-import spoon.test.refactoring.testclasses.VariableRename;
+import spoon.test.refactoring.testclasses.TestTryRename;
+import spoon.test.refactoring.testclasses.RenameLocalVariableRefactorTestSubject;
 import spoon.testing.utils.ModelUtils;
 
-public class ChangeVariableNameTest
+public class RenameLocalVariableRefactorTest
 {
-	Launcher launcher;
-	Factory factory;
-	CtClass<VariableRename> varRenameClass;
-	CtTypeReference<TryRename> tryRename;
-	CtLocalVariable<?> local1Var;
-
-	@Before
-	public void setup() throws Exception {
-		varRenameClass = (CtClass<VariableRename>)ModelUtils.buildClass(VariableRename.class);
-		launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/refactoring/testclasses/VariableRename.java");
-		File outputBinDirectory = new File("./target/spooned-refactoring-test");
-		if (!outputBinDirectory.exists()) {
-			outputBinDirectory.mkdirs();
-		}
-		launcher.setBinaryOutputDirectory(outputBinDirectory);
-		launcher.setSourceOutputDirectory(outputBinDirectory);
-		launcher.buildModel();
-		factory = launcher.getFactory();
-		varRenameClass = factory.Class().get(VariableRename.class);
-		tryRename = factory.createCtTypeReference(TryRename.class);
-		local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
-	}
-
 	@Test
 	public void testModelConsistency() throws Throwable {
-		new VariableRename();
+		//contract: check that all assertions in all methods of the RenameLocalVariableRefactorTestSubject are correct
+		new RenameLocalVariableRefactorTestSubject().checkModelConsistency();
 	}
 	
-	String[] DEBUG = new String[]{/*"nestedClassMethodWithoutRefs", "var3", "var1"*/};
+	/**
+	 * If you need to debug behavior of refactoring on the exact method and variable in the {@link RenameLocalVariableRefactorTestSubject} model,
+	 * then provide
+	 * 1) name of method of {@link RenameLocalVariableRefactorTestSubject}
+	 * 2) original name variable in the method
+	 * 3) new name of variable in the method
+	 * then put breakpoint on the line `this.getClass();` below and the debugger stops just before 
+	 * the to be inspected refactoring starts
+	 */
+	private String[] DEBUG = new String[]{/*"nestedClassMethodWithoutRefs", "var3", "var1"*/};
 
+	/**
+	 * The {@link RenameLocalVariableRefactorTestSubject} class is loaded as spoon model. Then:
+	 * - It looks for each CtVariable and it's CtAnnotation and tries to rename that variable to the name defined by annotation.
+	 * - If the annotation name is prefixed with "-", then that refactoring should fail.
+	 * - If the annotation name is not prefixed, then that refactoring should pass.
+	 * If it behaves different then expected, then this test fails
+	 */
 	@Test
-	public void testRenameLocalVariableToUsedName() throws Exception {
+	public void testRenameAllLocalVariablesOfRenameTestSubject() throws Exception {
+		CtClass<?> varRenameClass = (CtClass<?>)ModelUtils.buildClass(RenameLocalVariableRefactorTestSubject.class);
+		CtTypeReference<TestTryRename> tryRename = varRenameClass.getFactory().createCtTypeReference(TestTryRename.class);
 		
 		varRenameClass.getMethods().forEach(method->{
 			//debugging support
 			if(DEBUG.length==3 && DEBUG[0].equals(method.getSimpleName())==false) return;
 			method.filterChildren((CtVariable var)->true)
 				.map((CtVariable var)->var.getAnnotation(tryRename))
-				.forEach((CtAnnotation<TryRename> annotation)->{
+				.forEach((CtAnnotation<TestTryRename> annotation)->{
 					String[] newNames = annotation.getActualAnnotation().value();
 					CtVariable<?> targetVariable = (CtVariable<?>)annotation.getAnnotatedElement();
 					for (String newName : newNames) {
@@ -85,7 +79,7 @@ public class ChangeVariableNameTest
 							}
 							checkLocalVariableRename((CtLocalVariable<?>) targetVariable, newName, renameShouldPass);
 						} else {
-							//TODO rename of other variables
+							//TODO test rename of other variables, e.g. parameters and catch... later
 						}
 					}
 				});
@@ -95,7 +89,7 @@ public class ChangeVariableNameTest
 	protected void checkLocalVariableRename(CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
 		
 		String originName = targetVariable.getSimpleName();
-		ChangeLocalVariableName refactor = new ChangeLocalVariableName();
+		RenameLocalVariableRefactor refactor = new RenameLocalVariableRefactor();
 		refactor.setTarget(targetVariable);
 		refactor.setNewName(newName);
 		if(renameShouldPass) {
@@ -122,7 +116,7 @@ public class ChangeVariableNameTest
 	
 	private void rollback(CtLocalVariable<?> targetVariable, String originName) {
 		String newName = targetVariable.getSimpleName();
-		ChangeLocalVariableName refactor = new ChangeLocalVariableName();
+		RenameLocalVariableRefactor refactor = new RenameLocalVariableRefactor();
 		refactor.setTarget(targetVariable);
 		//rollback changes
 		refactor.setNewName(originName);
@@ -134,6 +128,14 @@ public class ChangeVariableNameTest
 	}
 
 	private void printModelAndTestConsistency(String refactoringDescription) {
+		Launcher launcher = new Launcher();
+		File outputBinDirectory = new File("./target/spooned-refactoring-test");
+		if (!outputBinDirectory.exists()) {
+			outputBinDirectory.mkdirs();
+		}
+		launcher.setBinaryOutputDirectory(outputBinDirectory);
+		launcher.setSourceOutputDirectory(outputBinDirectory);
+		
 //		 1) print modified model,
 		try {
 			launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
@@ -151,17 +153,19 @@ public class ChangeVariableNameTest
 //		 3) create instance using that new model and test consistency
 		try {
 //			varRenameClass.newInstance();
-			TestClassloader classLoader = new TestClassloader();
-			Class testModelClass = classLoader.loadClass(VariableRename.class.getName());
-			testModelClass.newInstance();
+			TestClassloader classLoader = new TestClassloader(launcher);
+			Class testModelClass = classLoader.loadClass(RenameLocalVariableRefactorTestSubject.class.getName());
+			testModelClass.getMethod("checkModelConsistency").invoke(testModelClass.newInstance());
+		} catch (InvocationTargetException e) {
+			throw new AssertionError("The model validation of code in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e.getTargetException());
 		} catch (Throwable e) {
 			throw new AssertionError("The model validation of code in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e);
 		}
 	}
 	
 	private class TestClassloader extends URLClassLoader {
-		TestClassloader() throws MalformedURLException {
-			super(new URL[] { new File(launcher.getEnvironment().getBinaryOutputDirectory()).toURL()}, ChangeVariableNameTest.class.getClassLoader());
+		TestClassloader(Launcher launcher) throws MalformedURLException {
+			super(new URL[] { new File(launcher.getEnvironment().getBinaryOutputDirectory()).toURL()}, RenameLocalVariableRefactorTest.class.getClassLoader());
 		}
 
 		@Override
@@ -190,55 +194,62 @@ public class ChangeVariableNameTest
 	
 
 	@Test
-	public void testRefactorWithoutTarget() throws Exception {
+	public void testRefactorWrongUsage() throws Exception {
+		CtType varRenameClass = ModelUtils.buildClass(RenameLocalVariableRefactorTestSubject.class);
+		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
 		
-		ChangeLocalVariableName refactor = new ChangeLocalVariableName();
+		//contract: a target variable is not defined. Throw SpoonException
+		RenameLocalVariableRefactor refactor = new RenameLocalVariableRefactor();
 		refactor.setNewName("local1");
 		try {
 			refactor.refactor();
 			fail();
 		} catch(SpoonException e) {
-			
+			//should fail - OK
 		}
-	}
-
-	@Test
-	public void testRenameLocalVariableToSameName() throws Exception {
-		
-		ChangeLocalVariableName refactor = new ChangeLocalVariableName();
-		refactor.setTarget(local1Var);
-		refactor.setNewName("local1");
-		refactor.refactor();
-		assertEquals("local1", local1Var.getSimpleName());
-	}
-	
-	@Test
-	public void testRenameLocalVariableToInvalidName() throws Exception {
-		
-		ChangeLocalVariableName refactor = new ChangeLocalVariableName();
+		//contract: invalid rename request to empty string. Throw SpoonException
 		refactor.setTarget(local1Var);
 		try {
 			refactor.setNewName("");
 			fail();
 		} catch(SpoonException e) {
+			//should fail - OK
 		}
 		
+		//contract: invalid rename request to variable name which contains space. Throw SpoonException
 		try {
 			refactor.setNewName("x ");
 			fail();
 		} catch(SpoonException e) {
+			//should fail - OK
 		}
 		
+		//contract: invalid rename request to variable name which contains space. Throw SpoonException
 		try {
 			refactor.setNewName("x y");
 			fail();
 		} catch(SpoonException e) {
+			//should fail - OK
 		}
 		
+		//contract: invalid rename request to variable name which contains character which is not allowed in variable name. Throw SpoonException
 		try {
 			refactor.setNewName("x(");
 			fail();
 		} catch(SpoonException e) {
+			//should fail - OK
 		}
-	}		
+	}
+
+	@Test
+	public void testRenameLocalVariableToSameName() throws Exception {
+		CtType varRenameClass = ModelUtils.buildClass(RenameLocalVariableRefactorTestSubject.class);
+		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
+		
+		RenameLocalVariableRefactor refactor = new RenameLocalVariableRefactor();
+		refactor.setTarget(local1Var);
+		refactor.setNewName("local1");
+		refactor.refactor();
+		assertEquals("local1", local1Var.getSimpleName());
+	}
 }

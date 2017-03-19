@@ -17,7 +17,6 @@
 package spoon.refactoring;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import spoon.SpoonException;
@@ -44,17 +43,38 @@ import spoon.reflect.visitor.filter.SiblingsFunction;
 import spoon.reflect.visitor.filter.SiblingsFunction.Mode;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
 
-public class ChangeLocalVariableName extends AbstractRenameRefactor<CtLocalVariable<?>> {
+/**
+ * Spoon model refactoring function which renames `target` local variable to `newName`<br>
+ * This refactoring will throw {@link RefactoringException} if the model would be not consistent after rename to new name.
+ * The exception is thrown before the model modificatons are started.
+ * <pre>
+ * CtLocalVariable anLocalVariable = ...
+ * RenameLocalVariableRefactor refactor = new RenameLocalVariableRefactor();
+ * refactor.setTarget(anLocalVariable);
+ * refactor.setNewName("someNewName");
+ * try {
+ *   refactor.refactor();
+ * } catch (RefactoringException e) {
+ *   //handle name conflict or name shadowing problem
+ * }
+ * </pre>
+ */
+public class RenameLocalVariableRefactor extends AbstractRenameRefactor<CtLocalVariable<?>> {
 
 	public static Pattern validVariableNameRE = javaIdentifierRE;
 
-	public ChangeLocalVariableName() {
+	public RenameLocalVariableRefactor() {
 		super(validVariableNameRE);
 	}
 
-	@Override
-	protected void forEachReference(CtConsumer<CtReference> consumer) {
-		getTarget().map(new VariableReferenceFunction()).forEach(consumer);
+	protected void refactorNoCheck() {
+		getTarget().map(new VariableReferenceFunction()).forEach(new CtConsumer<CtReference>() {
+			@Override
+			public void accept(CtReference t) {
+				t.setSimpleName(newName);
+			}
+		});
+		target.setSimpleName(newName);
 	}
 
 	private static class QueryDriver implements CtScannerListener {
@@ -99,7 +119,7 @@ public class ChangeLocalVariableName extends AbstractRenameRefactor<CtLocalVaria
 	}
 
 	@Override
-	protected void detectNameConflicts(final List<Issue> issues) {
+	protected void detectNameConflicts() {
 		/*
 		 * There can be these conflicts
 		 * 1) target variable would shadow before declared variable (parameter, localVariable, catchVariable)
@@ -126,7 +146,7 @@ public class ChangeLocalVariableName extends AbstractRenameRefactor<CtLocalVaria
 						.map(new VariableReferenceFunction(var)).first();
 				if (shadowedVar != null) {
 					//found variable reference, which would be shadowed by variable after rename.
-					createNameConflictIssue(issues, var, shadowedVar);
+					createNameConflictIssue(var, shadowedVar);
 				} else {
 					/*
 					 * there is no local variable reference, which would be shadowed by variable after rename.
@@ -137,7 +157,7 @@ public class ChangeLocalVariableName extends AbstractRenameRefactor<CtLocalVaria
 				/*
 				 * the found variable is in conflict with target variable with newName
 				 */
-				createNameConflictIssue(issues, var);
+				createNameConflictIssue(var);
 			}
 		}
 		/*
@@ -165,7 +185,7 @@ public class ChangeLocalVariableName extends AbstractRenameRefactor<CtLocalVaria
 							queryDriver.ignoreChildrenOf(element);
 							CtLocalVariableReference<?> shadowedVar = element.map(new LocalVariableReferenceFunction(target)).first();
 							if (shadowedVar != null) {
-								createNameConflictIssue(issues, fieldRef.getFieldDeclaration(), shadowedVar);
+								createNameConflictIssue(fieldRef.getFieldDeclaration(), shadowedVar);
 								return true;
 							}
 							return false;
@@ -204,7 +224,7 @@ public class ChangeLocalVariableName extends AbstractRenameRefactor<CtLocalVaria
 							CtLocalVariableReference<?> shadowedVar = searchScope.map(new LocalVariableReferenceFunction(target)).first();
 							if (shadowedVar != null) {
 								//found local variable reference, which would be shadowed by variable after rename.
-								createNameConflictIssue(issues, variable, shadowedVar);
+								createNameConflictIssue(variable, shadowedVar);
 								return true;
 							}
 							//there is no local variable reference, which would be shadowed by variable after rename.
@@ -214,7 +234,7 @@ public class ChangeLocalVariableName extends AbstractRenameRefactor<CtLocalVaria
 							 * We are not in context of local class.
 							 * So this variable is in conflict. Return it
 							 */
-							createNameConflictIssue(issues, variable);
+							createNameConflictIssue(variable);
 							return true;
 						}
 					} else {
@@ -228,11 +248,19 @@ public class ChangeLocalVariableName extends AbstractRenameRefactor<CtLocalVaria
 		}).first();
 	}
 
-	protected void createNameConflictIssue(List<Issue> issues, CtVariable<?> conflictVar) {
-		issues.add(new IssueImpl(conflictVar.getClass().getSimpleName() + " with name " + conflictVar.getSimpleName() + " is in conflict."));
+	/**
+	 * Override this method to get access to details about this refactoring issue
+	 * @param conflictVar - variable which would be in conflict with the `targetVariable` after it's rename to new name
+	 */
+	protected void createNameConflictIssue(CtVariable<?> conflictVar) {
+		throw new RefactoringException(conflictVar.getClass().getSimpleName() + " with name " + conflictVar.getSimpleName() + " is in conflict.");
 	}
-	protected void createNameConflictIssue(List<Issue> issues, CtVariable<?> conflictVar, CtVariableReference<?> shadowedVarRef) {
-		issues.add(new IssueImpl(conflictVar.getClass().getSimpleName() + " with name " + conflictVar.getSimpleName() + " would shadow local variable reference."));
+	/**
+	 * Override this method to get access to details about this refactoring issue
+	 * @param conflictVar - variable which would shadow reference to `targetVariable` after it's rename to new name
+	 * @param shadowedVarRef - the reference to `targetVariable`, which would be shadowed by `conflictVar`
+	 */
+	protected void createNameConflictIssue(CtVariable<?> conflictVar, CtVariableReference<?> shadowedVarRef) {
+		throw new RefactoringException(conflictVar.getClass().getSimpleName() + " with name " + conflictVar.getSimpleName() + " would shadow local variable reference.");
 	}
-
 }
