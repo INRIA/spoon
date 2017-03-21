@@ -18,14 +18,16 @@ package spoon.refactoring;
 
 /**
  * Defines basic contract of all refactoring implementations.<br>
+ * Contract: to process a required refactoring.<br>
  * Usage:<br>
  * <pre>
  * SomeRefactoring r = new SomeRefactoring();
  * //configure refactoring by calling setters on `r`
  * r.refactor();
  * </pre>
+ * See child interfaces, which implements other supported refactoring methods
  */
-public interface Refactor {
+public interface CtRefactoring {
 	/**
 	 * Process refactoring operation
 	 */

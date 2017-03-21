@@ -16,6 +16,7 @@
  */
 package spoon.refactoring;
 
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
@@ -51,5 +52,18 @@ public final class Refactoring {
 		for (CtTypeReference<?> reference : references) {
 			reference.setSimpleName(name);
 		}
+	}
+
+	/**
+	 * Changes name of a {@link CtLocalVariable}.
+	 *
+	 * @param localVariable
+	 * 		to be renamed {@link CtLocalVariable} in the AST.
+	 * @param name
+	 * 		New name of the element.
+	 * @throws RefactoringException when rename to newName would cause model inconsistency, like ambiguity, shadowing of other variables, etc.
+	 */
+	public static void changeLocalVariableName(CtLocalVariable<?> localVariable, String name) throws RefactoringException {
+		new RenameLocalVariableRefactor().setTarget(localVariable).setNewName(name).refactor();
 	}
 }

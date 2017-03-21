@@ -99,7 +99,7 @@ public class RenameLocalVariableRefactorTest
 				throw new AssertionError(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" should NOT fail when trying rename to \""+newName+"\"\n"+targetVariable.toString(), e);
 			}
 			assertEquals(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\" passed, but the name of variable was not changed", newName, targetVariable.getSimpleName());
-			printModelAndTestConsistency(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\"");
+			assertCorrectModel(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\"");
 		} else {
 			try {
 				refactor.refactor();
@@ -127,7 +127,7 @@ public class RenameLocalVariableRefactorTest
 		}
 	}
 
-	private void printModelAndTestConsistency(String refactoringDescription) {
+	private void assertCorrectModel(String refactoringDescription) {
 		Launcher launcher = new Launcher();
 		File outputBinDirectory = new File("./target/spooned-refactoring-test");
 		if (!outputBinDirectory.exists()) {

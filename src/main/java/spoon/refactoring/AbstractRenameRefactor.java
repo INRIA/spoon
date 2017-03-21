@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtNamedElement;
 
-public abstract class AbstractRenameRefactor<T extends CtNamedElement> implements Refactor {
+public abstract class AbstractRenameRefactor<T extends CtNamedElement> implements CtRenameRefactoring<T> {
 	public static final Pattern javaIdentifierRE = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
 
 	protected T target;
@@ -70,18 +70,20 @@ public abstract class AbstractRenameRefactor<T extends CtNamedElement> implement
 		return target;
 	}
 
-	public void setTarget(T target) {
+	public AbstractRenameRefactor<T> setTarget(T target) {
 		this.target = target;
+		return this;
 	}
 
 	public String getNewName() {
 		return newName;
 	}
 
-	public void setNewName(String newName) {
+	public AbstractRenameRefactor<T> setNewName(String newName) {
 		if (newNameValidationRE != null && newNameValidationRE.matcher(newName).matches() == false) {
 			throw new SpoonException("New name \"" + newName + "\" is not valid name");
 		}
 		this.newName = newName;
+		return this;
 	}
 }
