@@ -21,9 +21,11 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +83,52 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setFile(File file) {
 		this.file = file;
+	}
+
+	@Override
+	public List<File> getBinaryFiles() {
+		final List<File> binaries = new ArrayList<>();
+		final String output = getFactory()
+				.getEnvironment()
+				.getBinaryOutputDirectory();
+		if (output != null) {
+			final File base = Paths
+					.get(output, getDeclaredPackage()
+					.getQualifiedName()
+					.replace(".", File.separator))
+					.toFile();
+			if (base.isDirectory()) {
+				for (final CtType type : getDeclaredTypes()) {
+					// Add main type, for instance, 'Foo.class'.
+					final String nameOfType = type.getSimpleName();
+					final File fileOfType = new File(
+							base, nameOfType + ".class");
+					if (fileOfType.isFile()) {
+						binaries.add(fileOfType);
+					}
+					// Add inner/anonymous types, for instance,
+					// 'Foo$Bar.class'. Use 'getElements()' rather than
+					// 'getNestedTypes()' to also fetch inner types of inner
+					// types of inner types ... and so on.
+					for (final CtType inner : type.getElements(
+							new TypeFilter<>(CtType.class))) {
+						// 'getElements' does not only return inner types but
+						// also returns 'type' itself. Thus, we need to ensure
+						// to not add 'type' twice.
+						if (!inner.equals(type)) {
+							final String nameOfInner =
+									nameOfType + "$" + inner.getSimpleName();
+							final File fileOfInnerType = new File(
+									base, nameOfInner + ".class");
+							if (fileOfInnerType.isFile()) {
+								binaries.add(fileOfInnerType);
+							}
+						}
+					}
+				}
+			}
+		}
+		return binaries;
 	}
 
 	String originalSourceCode;
