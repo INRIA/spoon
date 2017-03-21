@@ -112,4 +112,28 @@ public class GetBinaryFilesTest {
 		assertTrue(binaries.get(1).isFile());
 		assertTrue(binaries.get(2).isFile());
 	}
+
+	@Test
+	public void testAnonymousClasses() throws IOException {
+		final String input = "./src/test/java/spoon/test/secondaryclasses/AnonymousClass.java";
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource(input);
+		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());
+		launcher.buildModel();
+		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
+
+		final Map<String, CompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
+		assertEquals(1, cus.size());
+
+		final List<File> binaries = cus.get(new File(input).getCanonicalFile().getAbsolutePath()).getBinaryFiles();
+		assertEquals(4, binaries.size());
+		assertEquals("AnonymousClass.class", binaries.get(0).getName());
+		assertEquals("AnonymousClass$I.class", binaries.get(1).getName());
+		assertEquals("AnonymousClass$1.class", binaries.get(2).getName());
+		assertEquals("AnonymousClass$2.class", binaries.get(3).getName());
+		assertTrue(binaries.get(0).isFile());
+		assertTrue(binaries.get(1).isFile());
+		assertTrue(binaries.get(2).isFile());
+		assertTrue(binaries.get(3).isFile());
+	}
 }
