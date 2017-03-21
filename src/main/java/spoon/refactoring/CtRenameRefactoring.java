@@ -29,11 +29,19 @@ import spoon.reflect.declaration.CtNamedElement;
  */
 public interface CtRenameRefactoring<T extends CtNamedElement> extends CtRefactoring {
 	/**
+	 * @return target model element, which has to be refactored.
+	 */
+	T getTarget();
+	/**
 	 * @param target the model element, which has to be refactored.
 	 * @return this to support fluent API
 	 */
 	CtRenameRefactoring<T> setTarget(T target);
 
+	/**
+	 * @return the required name of the `target` model element
+	 */
+	String getNewName();
 	/**
 	 * @param newName the required name of the `target` model element
 	 * @return this to support fluent API

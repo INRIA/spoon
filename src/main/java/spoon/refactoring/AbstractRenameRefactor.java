@@ -21,6 +21,11 @@ import java.util.regex.Pattern;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtNamedElement;
 
+/**
+ * abstract implementation of rename element refactoring
+ *
+ * @param <T> the type of target renamed element
+ */
 public abstract class AbstractRenameRefactor<T extends CtNamedElement> implements CtRenameRefactoring<T> {
 	public static final Pattern javaIdentifierRE = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
 
@@ -52,33 +57,44 @@ public abstract class AbstractRenameRefactor<T extends CtNamedElement> implement
 	}
 
 	/**
-	 * checks whether {@link #newName} is valid java identifier
-	 * @param issues
+	 * client may implement this method to check whether {@link #newName} is valid
 	 */
 	protected void checkNewNameIsValid() {
 	}
 
+	/**
+	 * client may implement this method to check whether {@link #newName}
+	 * is in conflict with names of other model elements
+	 */
 	protected void detectNameConflicts() {
 	}
 
-
+	/**
+	 * Helper method, which can be used by the child classes to check if name is an java identifier
+	 * @param name the to be checked name
+	 * @return true if name is valid java identifier
+	 */
 	protected boolean isJavaIdentifier(String name) {
 		return javaIdentifierRE.matcher(name).matches();
 	}
 
+	@Override
 	public T getTarget() {
 		return target;
 	}
 
+	@Override
 	public AbstractRenameRefactor<T> setTarget(T target) {
 		this.target = target;
 		return this;
 	}
 
+	@Override
 	public String getNewName() {
 		return newName;
 	}
 
+	@Override
 	public AbstractRenameRefactor<T> setNewName(String newName) {
 		if (newNameValidationRE != null && newNameValidationRE.matcher(newName).matches() == false) {
 			throw new SpoonException("New name \"" + newName + "\" is not valid name");
