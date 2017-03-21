@@ -18,13 +18,16 @@ package spoon.support.reflect.cu;
 
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,20 +103,32 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 					.toFile();
 			if (base.isDirectory()) {
 				for (final CtType type : getDeclaredTypes()) {
-					final File[] arr = base.listFiles(new FileFilter() {
-						@Override
-						public boolean accept(File file) {
-							final String fileName = file.getName();
-							final String typeName = type.getSimpleName();
-							// main type, for instance, 'Foo.class'
-							return fileName.equals(typeName + ".class")
-									// inner/anonymous types, for instance,
-									// 'Foo$Bar.class'
-									|| fileName.startsWith(typeName + "$")
-									&& fileName.endsWith(".class");
+					// Add main type, for instance, 'Foo.class'.
+					final String nameOfType = type.getSimpleName();
+					final File fileOfType = new File(
+							base, nameOfType + ".class");
+					if (fileOfType.isFile()) {
+						binaries.add(fileOfType);
+					}
+					// Add inner/anonymous types, for instance,
+					// 'Foo$Bar.class'. Use 'getElements()' rather than
+					// 'getNestedTypes()' to also fetch inner types of inner
+					// types of inner types ... and so on.
+					for (final CtType inner : type.getElements(
+							new TypeFilter<>(CtType.class))) {
+						// 'getElements' does not only return inner types but
+						// also returns 'type' itself. Thus, we need to ensure
+						// to not add 'type' twice.
+						if (!inner.equals(type)) {
+							final String nameOfInner =
+									nameOfType + "$" + inner.getSimpleName();
+							final File fileOfInnerType = new File(
+									base, nameOfInner + ".class");
+							if (fileOfInnerType.isFile()) {
+								binaries.add(fileOfInnerType);
+							}
 						}
-					});
-					binaries.addAll(Arrays.asList(arr));
+					}
 				}
 			}
 		}
