@@ -8,9 +8,9 @@ import java.util.function.Function;
 
 import static org.junit.Assert.*;
 
-public class RenameLocalVariableRefactorTestSubject
+public class CtRenameLocalVariableRefactoringTestSubject
 {
-	public RenameLocalVariableRefactorTestSubject()
+	public CtRenameLocalVariableRefactoringTestSubject()
 	{
 		int local1 = 0;
 	}

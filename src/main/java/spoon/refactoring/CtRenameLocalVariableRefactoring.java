@@ -59,11 +59,11 @@ import spoon.reflect.visitor.filter.VariableReferenceFunction;
  * }
  * </pre>
  */
-public class RenameLocalVariableRefactor extends AbstractRenameRefactor<CtLocalVariable<?>> {
+public class CtRenameLocalVariableRefactoring extends AbstractRenameRefactoring<CtLocalVariable<?>> {
 
 	public static Pattern validVariableNameRE = javaIdentifierRE;
 
-	public RenameLocalVariableRefactor() {
+	public CtRenameLocalVariableRefactoring() {
 		super(validVariableNameRE);
 	}
 

@@ -26,14 +26,14 @@ import spoon.reflect.declaration.CtNamedElement;
  *
  * @param <T> the type of target renamed element
  */
-public abstract class AbstractRenameRefactor<T extends CtNamedElement> implements CtRenameRefactoring<T> {
+public abstract class AbstractRenameRefactoring<T extends CtNamedElement> implements CtRenameRefactoring<T> {
 	public static final Pattern javaIdentifierRE = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*");
 
 	protected T target;
 	protected String newName;
 	protected Pattern newNameValidationRE;
 
-	protected AbstractRenameRefactor(Pattern newNameValidationRE) {
+	protected AbstractRenameRefactoring(Pattern newNameValidationRE) {
 		this.newNameValidationRE = newNameValidationRE;
 	}
 
@@ -84,7 +84,7 @@ public abstract class AbstractRenameRefactor<T extends CtNamedElement> implement
 	}
 
 	@Override
-	public AbstractRenameRefactor<T> setTarget(T target) {
+	public AbstractRenameRefactoring<T> setTarget(T target) {
 		this.target = target;
 		return this;
 	}
@@ -95,7 +95,7 @@ public abstract class AbstractRenameRefactor<T extends CtNamedElement> implement
 	}
 
 	@Override
-	public AbstractRenameRefactor<T> setNewName(String newName) {
+	public AbstractRenameRefactoring<T> setNewName(String newName) {
 		if (newNameValidationRE != null && newNameValidationRE.matcher(newName).matches() == false) {
 			throw new SpoonException("New name \"" + newName + "\" is not valid name");
 		}
