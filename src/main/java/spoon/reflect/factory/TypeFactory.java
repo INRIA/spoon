@@ -316,15 +316,29 @@ public class TypeFactory extends SubFactory {
 	 * Create a reference to a simple type
 	 */
 	public <T> CtTypeReference<T> createReference(CtType<T> type) {
+		return createReference(type, false);
+	}
+
+	/**
+	 * @param includingFormalTypeParameter if true then references to formal type parameters
+	 * 	are added as actual type arguments of returned {@link CtTypeReference}
+	 */
+	public <T> CtTypeReference<T> createReference(CtType<T> type, boolean includingFormalTypeParameter) {
 		CtTypeReference<T> ref = factory.Core().createTypeReference();
 
 		if (type.getDeclaringType() != null) {
-			ref.setDeclaringType(createReference(type.getDeclaringType()));
+			ref.setDeclaringType(createReference(type.getDeclaringType(), includingFormalTypeParameter));
 		} else if (type.getPackage() != null) {
 			ref.setPackage(factory.Package().createReference(type.getPackage()));
 		}
 
 		ref.setSimpleName(type.getSimpleName());
+
+		if (includingFormalTypeParameter) {
+			for (CtTypeParameter formalTypeParam : type.getFormalCtTypeParameters()) {
+				ref.addActualTypeArgument(formalTypeParam.getReference());
+			}
+		}
 		return ref;
 	}
 
