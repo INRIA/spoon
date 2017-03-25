@@ -559,6 +559,31 @@ public class GenericsTest {
 		assertFalse(ctTypeReference.isGenerics());
 	}
 	@Test
+	public void testTypeParameterReferenceAsActualTypeArgument() throws Exception {
+		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
+		
+		CtTypeReference<?> typeRef = aTacos.getReference();
+		CtTypeParameter typeParam = aTacos.getFormalCtTypeParameters().get(0);
+		CtTypeParameterReference typeParamRef = typeParam.getReference();
+		
+		//typeParamRef is able to resolve it's typeParam - OK
+		assertSame(typeParam, typeParamRef.getDeclaration());
+		//the reference to parent is used by legacy 
+		//CtTypeParameterReferenceImpl#getRecursiveDeclaration 
+		//to detect declaration - it is probably wrong approach
+		assertSame(typeParam, typeParamRef.getParent());
+		
+		//this assignment changes parent of typeParamRef to typeRef
+		typeRef.addActualTypeArgument(typeParamRef);
+		//stored typeParamRef is same like the added one, no clone - OK
+		assertSame(typeParamRef, typeRef.getActualTypeArguments().get(0));
+		//typeParamRef has got new parent 
+		assertSame(typeRef, typeParamRef.getParent());
+		//and therefore it lost the link to declaring CtFormalTypeDeclarer, 
+		//so this assertion FAILS
+		assertSame(typeParam, typeParamRef.getDeclaration());
+	}
+	@Test
 	public void testGenericTypeReference() throws Exception {
 		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
 		//this returns a type reference with unitialized actual type arguments.
