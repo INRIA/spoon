@@ -558,4 +558,17 @@ public class GenericsTest {
 		assertFalse(aTacos.isGenerics());
 		assertFalse(ctTypeReference.isGenerics());
 	}
+	@Test
+	public void testGenericTypeReference() throws Exception {
+		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
+		//this returns a type reference with unitialized actual type arguments.
+//		CtTypeReference<?> genericTypeRef = aTacos.getReference();
+		CtTypeReference<?> genericTypeRef = aTacos.getFactory().Type().createReference(aTacos, true);
+		
+		assertTrue(genericTypeRef.getActualTypeArguments().size()>0);
+		assertEquals(aTacos.getFormalCtTypeParameters().size(), genericTypeRef.getActualTypeArguments().size());
+		for(int i=0; i<aTacos.getFormalCtTypeParameters().size(); i++) {
+			assertSame("TypeParameter reference idx="+i+" is different", aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getDeclaration());
+		}
+	}
 }
