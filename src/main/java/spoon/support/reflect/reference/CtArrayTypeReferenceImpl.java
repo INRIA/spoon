@@ -40,7 +40,7 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 	public CtTypeReference<?> getComponentType() {
 		if (componentType == null) {
 			// a sensible default component type to facilitate object creation and testing
-			componentType = getFactory().Type().get(Object.class).getReference();
+			componentType = getFactory().Type().OBJECT;
 		}
 		return componentType;
 	}
