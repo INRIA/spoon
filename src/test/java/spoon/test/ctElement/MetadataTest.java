@@ -23,6 +23,8 @@ public class MetadataTest {
 		final CtMethod<?> staticMethod = returnerClass.getMethodsByName("get").get(0);
 		final CtReturn<Integer> ret = staticMethod.getBody().getLastStatement();
 
+		assertNotNull(ret.getMetadataKeys());
+
 		final CtMethod<?> staticMethod2 = returnerClass.getMethodsByName("get2").get(0);
 		final CtReturn<Integer> ret2 = staticMethod2.getBody().getLastStatement();
 
