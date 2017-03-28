@@ -13,6 +13,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -21,7 +22,10 @@ import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.chain.CtScannerListener;
+import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
@@ -50,6 +54,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ImportTest {
@@ -715,5 +720,132 @@ public class ImportTest {
 
 		canBeBuilt(outputDir, 7);
 	}
+	@Test
+	public void testSuperInheritanceHierarchyFunction() throws Exception {
+		CtType<?> clientClass = (CtClass<?>) ModelUtils.buildClass(ClientClass.class);
+		CtTypeReference<?> childClass = clientClass.getSuperclass();
+		CtTypeReference<?> superClass = childClass.getSuperclass();
+		
+		List<String> result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true)).map(e->{
+			assertTrue(e instanceof CtType);
+			return ((CtType)e).getQualifiedName();
+		}).list();
+		//contract: includingSelf(true) should return input type too
+		assertTrue(result.contains(clientClass.getQualifiedName()));
+		assertTrue(result.contains(childClass.getQualifiedName()));
+		assertTrue(result.contains(superClass.getQualifiedName()));
+		assertTrue(result.contains(Object.class.getName()));
+
+		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(false)).map(e->{
+			assertTrue(e instanceof CtType);
+			return ((CtType)e).getQualifiedName();
+		}).list();
+		//contract: includingSelf(false) should return input type too
+		assertFalse(result.contains(clientClass.getQualifiedName()));
+		assertTrue(result.contains(childClass.getQualifiedName()));
+		assertTrue(result.contains(superClass.getQualifiedName()));
+		assertTrue(result.contains(Object.class.getName()));
+		
+		//contract: returnTypeReferences(true) returns CtTypeReferences
+		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).map(e->{
+			assertTrue(e instanceof CtTypeReference);
+			return ((CtTypeReference)e).getQualifiedName();
+		}).list();
+		//contract: includingSelf(false) should return input type too
+		assertTrue(result.contains(clientClass.getQualifiedName()));
+		assertTrue(result.contains(childClass.getQualifiedName()));
+		assertTrue(result.contains(superClass.getQualifiedName()));
+		assertTrue(result.contains(Object.class.getName()));
+		
+		//contract: the mapping can be started on type reference too
+		result = clientClass.getReference().map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).map(e->{
+			assertTrue(e instanceof CtTypeReference);
+			return ((CtTypeReference)e).getQualifiedName();
+		}).list();
+		//contract: includingSelf(false) should return input type too
+		assertTrue(result.contains(clientClass.getQualifiedName()));
+		assertTrue(result.contains(childClass.getQualifiedName()));
+		assertTrue(result.contains(superClass.getQualifiedName()));
+		assertTrue(result.contains(Object.class.getName()));
+
+		//contract: super type of Object is nothing
+		List<CtTypeReference<?>> typeResult = clientClass.getFactory().Type().OBJECT.map(new SuperInheritanceHierarchyFunction().includingSelf(false).returnTypeReferences(true)).list();
+		assertEquals(0, typeResult.size());
+		typeResult = clientClass.getFactory().Type().OBJECT.map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).list();
+		assertEquals(1, typeResult.size());
+		assertEquals(clientClass.getFactory().Type().OBJECT, typeResult.get(0));
+	}
 	
+	@Test
+	public void testSuperInheritanceHierarchyFunctionListener() throws Exception {
+		CtType<?> clientClass = (CtClass<?>) ModelUtils.buildClass(ClientClass.class);
+		CtTypeReference<?> childClass = clientClass.getSuperclass();
+		CtTypeReference<?> superClass = childClass.getSuperclass();
+		
+		//contract: the enter and exit are always called with CtTypeReference instance
+		List<String> result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
+			@Override
+			public ScanningMode enter(CtElement element) {
+				assertTrue(element instanceof CtTypeReference);
+				return ScanningMode.NORMAL;
+			}
+			@Override
+			public void exit(CtElement element) {
+				assertTrue(element instanceof CtTypeReference);
+			}
+		})).map(e->{
+			assertTrue(e instanceof CtType);
+			return ((CtType)e).getQualifiedName();
+		}).list();
+		assertTrue(result.contains(clientClass.getQualifiedName()));
+		assertTrue(result.contains(childClass.getQualifiedName()));
+		assertTrue(result.contains(superClass.getQualifiedName()));
+		assertTrue(result.contains(Object.class.getName()));
+
+		//contract: if listener skips ALL, then skipped element and all super classes are not returned
+		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
+			@Override
+			public ScanningMode enter(CtElement element) {
+				assertTrue(element instanceof CtTypeReference);
+				if(superClass.getQualifiedName().equals(((CtTypeReference<?>)element).getQualifiedName())) {
+					return ScanningMode.SKIP_ALL;
+				}
+				return ScanningMode.NORMAL;
+			}
+			@Override
+			public void exit(CtElement element) {
+				assertTrue(element instanceof CtTypeReference);
+			}
+		})).map(e->{
+			assertTrue(e instanceof CtType);
+			return ((CtType)e).getQualifiedName();
+		}).list();
+		assertTrue(result.contains(clientClass.getQualifiedName()));
+		assertTrue(result.contains(childClass.getQualifiedName()));
+		assertFalse(result.contains(superClass.getQualifiedName()));
+		assertFalse(result.contains(Object.class.getName()));
+		
+		//contract: if listener skips CHIDLREN, then skipped element is returned but all super classes are not returned
+		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
+			@Override
+			public ScanningMode enter(CtElement element) {
+				assertTrue(element instanceof CtTypeReference);
+				if(superClass.getQualifiedName().equals(((CtTypeReference<?>)element).getQualifiedName())) {
+					return ScanningMode.SKIP_CHILDREN;
+				}
+				return ScanningMode.NORMAL;
+			}
+			@Override
+			public void exit(CtElement element) {
+				assertTrue(element instanceof CtTypeReference);
+			}
+		})).map(e->{
+			assertTrue(e instanceof CtType);
+			return ((CtType)e).getQualifiedName();
+		}).list();
+		assertTrue(result.contains(clientClass.getQualifiedName()));
+		assertTrue(result.contains(childClass.getQualifiedName()));
+		assertTrue(result.contains(superClass.getQualifiedName()));
+		assertFalse(result.contains(Object.class.getName()));
+	}
 }
