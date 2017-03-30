@@ -166,11 +166,32 @@ public class GenericsTest {
 
 	@Test
 	public void testTypeParameterDeclarer() throws Exception {
-		// contract: one can navigate to the declarer of a type parameter
+		// contract: one can lookup the declarer of a type parameter if it is in appropriate context (the declararer is in the parent hierarchy)
 		CtClass<?> classThatDefinesANewTypeArgument = build("spoon.test.generics", "ClassThatDefinesANewTypeArgument");
 		CtTypeParameter typeParam = classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0);
+		assertEquals("T", classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0).getSimpleName());
 		assertSame(classThatDefinesANewTypeArgument, typeParam.getTypeParameterDeclarer());
-		assertSame(typeParam, typeParam.getReference().getDeclaration());
+		CtTypeParameterReference typeParamReference = typeParam.getReference();
+
+		// creating an appropriate context
+		CtMethod m = classThatDefinesANewTypeArgument.getFactory().createMethod();
+		m.setParent(classThatDefinesANewTypeArgument);
+		// setting the return type of the method
+		m.setType(typeParamReference);
+		classThatDefinesANewTypeArgument.addMethod(m);
+
+		// the final assertions
+		assertSame(typeParam, typeParamReference.getDeclaration());
+		assertSame(classThatDefinesANewTypeArgument, typeParamReference.getDeclaration().getParent());
+
+		// now testing that the getDeclaration of a type parameter is actually a dynamic lookup
+		CtClass<?> c2 = classThatDefinesANewTypeArgument.clone();
+		c2.addMethod(m);
+		assertSame(c2, typeParamReference.getDeclaration().getParent());
+		// even if we rename it
+		typeParamReference.setSimpleName("R"); // renaming the reference
+		c2.getFormalCtTypeParameters().get(0).setSimpleName("R"); // renaming the declaration
+		assertSame(c2, typeParamReference.getDeclaration().getParent());
 	}
 
 	@Test
@@ -560,33 +581,45 @@ public class GenericsTest {
 	}
 	@Test
 	public void testTypeParameterReferenceAsActualTypeArgument() throws Exception {
-		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
+		CtType<Tacos> aTacos = buildNoClasspath(ClassThatDefinesANewTypeArgument.class).Type().get(ClassThatDefinesANewTypeArgument.class);
 		
 		CtTypeReference<?> typeRef = aTacos.getReference();
+
+		assertSame(aTacos, typeRef.getDeclaration());
+
 		CtTypeParameter typeParam = aTacos.getFormalCtTypeParameters().get(0);
 		CtTypeParameterReference typeParamRef = typeParam.getReference();
-		
-		//typeParamRef is able to resolve it's typeParam - OK
-		assertSame(typeParam, typeParamRef.getDeclaration());
-		//the reference to parent is used by legacy 
-		//CtTypeParameterReferenceImpl#getRecursiveDeclaration 
-		//to detect declaration - it is probably wrong approach
-		assertSame(typeParam, typeParamRef.getParent());
-		
-		//this assignment changes parent of typeParamRef to typeRef
+
+
+		// a tyoe parameter ref with no context cannot be resolved
+		assertSame(null, typeParamRef.getDeclaration());
+		// by default a typeParamRef is not in a tree
+		assertEquals(false, typeParamRef.isParentInitialized());
+
+		assertEquals("spoon.test.generics.ClassThatDefinesANewTypeArgument", typeRef.toString());
+
+		// creating a reference to "ClassThatDefinesANewTypeArgument<T>"
+		//this assignment changes parent of typeParamRef to TYPEREF
 		typeRef.addActualTypeArgument(typeParamRef);
+
+		assertEquals("spoon.test.generics.ClassThatDefinesANewTypeArgument<T>", typeRef.toString());
+
+		// this does not change the declaration
+		assertSame(aTacos, typeRef.getDeclaration());
 		//stored typeParamRef is same like the added one, no clone - OK
 		assertSame(typeParamRef, typeRef.getActualTypeArguments().get(0));
 		//typeParamRef has got new parent 
 		assertSame(typeRef, typeParamRef.getParent());
-		//and therefore it lost the link to declaring CtFormalTypeDeclarer, 
-		//so this assertion FAILS
+
 		assertSame(typeParam, typeParamRef.getDeclaration());
 	}
 	@Test
 	public void testGenericTypeReference() throws Exception {
+
+		// contract: the parameter includingFormalTypeParameter of createReference enables one to also create actual type arguments
+
 		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
-		//this returns a type reference with unitialized actual type arguments.
+		//this returns a type reference with uninitialized actual type arguments.
 //		CtTypeReference<?> genericTypeRef = aTacos.getReference();
 		CtTypeReference<?> genericTypeRef = aTacos.getFactory().Type().createReference(aTacos, true);
 		

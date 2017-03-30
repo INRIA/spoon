@@ -356,8 +356,7 @@ public class TypeFactory extends SubFactory {
 			ref.addAnnotation(ctAnnotation.clone());
 		}
 		ref.setSimpleName(type.getSimpleName());
-		//TypeParameter reference without parent is unusable. It lost information about it's declarer
-		ref.setParent(type);
+
 		return ref;
 	}
 

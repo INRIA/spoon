@@ -16,11 +16,15 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -171,20 +175,43 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (!isParentInitialized()) {
 			return null;
 		}
-		return getRecursiveDeclaration(this);
-	}
 
-	private CtTypeParameter getRecursiveDeclaration(CtElement element) {
-		final CtFormalTypeDeclarer formalTypeDeclarer = element.getParent(CtFormalTypeDeclarer.class);
-		if (formalTypeDeclarer == null) {
-			return null;
-		}
-		for (CtTypeParameter typeParameter : formalTypeDeclarer.getFormalCtTypeParameters()) {
-			if (simplename.equals(typeParameter.getSimpleName())) {
-				return typeParameter;
+		// case #1: we're a type of a method parameter, a local variable, ...
+		// the strategy is to look in the parents
+		// collecting all formal type declarers of the hierarchy
+		CtElement e = this;
+		while ((e = e.getParent(CtFormalTypeDeclarer.class)) != null) {
+			CtTypeParameter result = findTypeParamDeclaration((CtFormalTypeDeclarer) e, this.getSimpleName());
+			if (result != null) {
+				return result;
 			}
 		}
-		return getRecursiveDeclaration(formalTypeDeclarer);
+
+		CtElement parent = this.getParent();
+
+		// case 2: this is an actual type argument of a type reference eg List<E>
+		if (parent instanceof CtTypeReference) {
+			CtType t = ((CtTypeReference) parent).getTypeDeclaration();
+			return findTypeParamDeclaration(t, this.getSimpleName());
+		}
+
+		// case 3: this is an actual type argument of a method/constructor reference
+		if (parent instanceof CtExecutableReference) {
+			CtExecutable<?> exec = ((CtExecutableReference<?>) parent).getExecutableDeclaration();
+			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
+				return findTypeParamDeclaration((CtFormalTypeDeclarer) exec, this.getSimpleName());
+			}
+		}
+		return null;
+	}
+
+	private CtTypeParameter findTypeParamDeclaration(CtFormalTypeDeclarer type, String refName) {
+		for (CtTypeParameter typeParam : type.getFormalCtTypeParameters()) {
+			if (typeParam.getSimpleName().equals(refName)) {
+				return typeParam;
+			}
+		}
+		return null;
 	}
 
 	@Override
