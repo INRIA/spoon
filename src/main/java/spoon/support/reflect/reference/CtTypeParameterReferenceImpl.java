@@ -16,15 +16,11 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtActualTypeContainer;
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -184,22 +180,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			CtTypeParameter result = findTypeParamDeclaration((CtFormalTypeDeclarer) e, this.getSimpleName());
 			if (result != null) {
 				return result;
-			}
-		}
-
-		CtElement parent = this.getParent();
-
-		// case 2: this is an actual type argument of a type reference eg List<E>
-		if (parent instanceof CtTypeReference) {
-			CtType t = ((CtTypeReference) parent).getTypeDeclaration();
-			return findTypeParamDeclaration(t, this.getSimpleName());
-		}
-
-		// case 3: this is an actual type argument of a method/constructor reference
-		if (parent instanceof CtExecutableReference) {
-			CtExecutable<?> exec = ((CtExecutableReference<?>) parent).getExecutableDeclaration();
-			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
-				return findTypeParamDeclaration((CtFormalTypeDeclarer) exec, this.getSimpleName());
 			}
 		}
 		return null;

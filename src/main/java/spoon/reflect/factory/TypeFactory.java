@@ -356,7 +356,7 @@ public class TypeFactory extends SubFactory {
 			ref.addAnnotation(ctAnnotation.clone());
 		}
 		ref.setSimpleName(type.getSimpleName());
-
+		ref.setParent(type);
 		return ref;
 	}
 

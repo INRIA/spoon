@@ -19,9 +19,15 @@ package spoon.support.reflect.reference;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -800,5 +806,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public CtTypeReference<T> clone() {
 		return (CtTypeReference<T>) super.clone();
+	}
+
+	@Override
+	public CtTypeParameter getTypeParameterDeclaration() {
+
+		CtElement parent = this.getParent();
+
+		// case 1: this is an actual type argument of a type reference eg List<E>
+		if (parent instanceof CtTypeReference) {
+			CtType t = ((CtTypeReference) parent).getTypeDeclaration();
+			return findTypeParamDeclarationByPosition(t, ((CtTypeReference) parent).getActualTypeArguments().indexOf(this));
+		}
+
+		// case 2: this is an actual type argument of a method/constructor reference
+		if (parent instanceof CtExecutableReference) {
+			CtExecutable<?> exec = ((CtExecutableReference<?>) parent).getExecutableDeclaration();
+			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
+				return findTypeParamDeclarationByPosition((CtFormalTypeDeclarer) exec, ((CtTypeReference) parent).getActualTypeArguments().indexOf(this));
+			}
+		}
+
+		return null;
+	}
+
+	private CtTypeParameter findTypeParamDeclarationByPosition(CtFormalTypeDeclarer type, int position) {
+		return type.getFormalCtTypeParameters().get(position);
 	}
 }

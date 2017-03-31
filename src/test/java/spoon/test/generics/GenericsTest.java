@@ -172,6 +172,7 @@ public class GenericsTest {
 		assertEquals("T", classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0).getSimpleName());
 		assertSame(classThatDefinesANewTypeArgument, typeParam.getTypeParameterDeclarer());
 		CtTypeParameterReference typeParamReference = typeParam.getReference();
+		assertSame(typeParam, typeParamReference.getDeclaration());
 
 		// creating an appropriate context
 		CtMethod m = classThatDefinesANewTypeArgument.getFactory().createMethod();
@@ -182,6 +183,7 @@ public class GenericsTest {
 
 		// the final assertions
 		assertSame(typeParam, typeParamReference.getDeclaration());
+
 		assertSame(classThatDefinesANewTypeArgument, typeParamReference.getDeclaration().getParent());
 
 		// now testing that the getDeclaration of a type parameter is actually a dynamic lookup
@@ -589,12 +591,7 @@ public class GenericsTest {
 
 		CtTypeParameter typeParam = aTacos.getFormalCtTypeParameters().get(0);
 		CtTypeParameterReference typeParamRef = typeParam.getReference();
-
-
-		// a tyoe parameter ref with no context cannot be resolved
-		assertSame(null, typeParamRef.getDeclaration());
-		// by default a typeParamRef is not in a tree
-		assertEquals(false, typeParamRef.isParentInitialized());
+		assertSame(typeParam, typeParamRef.getDeclaration());
 
 		assertEquals("spoon.test.generics.ClassThatDefinesANewTypeArgument", typeRef.toString());
 
@@ -611,7 +608,11 @@ public class GenericsTest {
 		//typeParamRef has got new parent 
 		assertSame(typeRef, typeParamRef.getParent());
 
-		assertSame(typeParam, typeParamRef.getDeclaration());
+		// null because without context
+		assertEquals(null, typeParamRef.getDeclaration());
+		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());
+		typeParamRef.setSimpleName("Y");
+		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());
 	}
 	@Test
 	public void testGenericTypeReference() throws Exception {
@@ -626,7 +627,13 @@ public class GenericsTest {
 		assertTrue(genericTypeRef.getActualTypeArguments().size()>0);
 		assertEquals(aTacos.getFormalCtTypeParameters().size(), genericTypeRef.getActualTypeArguments().size());
 		for(int i=0; i<aTacos.getFormalCtTypeParameters().size(); i++) {
-			assertSame("TypeParameter reference idx="+i+" is different", aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getDeclaration());
+			assertSame("TypeParameter reference idx="+i+" is different", aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
+
+			// contract: getTypeParameterDeclaration goes back to the declaration, eevn without context
+			assertSame(aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
+
 		}
+
+
 	}
 }
