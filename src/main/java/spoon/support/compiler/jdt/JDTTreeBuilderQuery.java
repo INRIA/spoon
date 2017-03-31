@@ -39,7 +39,9 @@ import spoon.reflect.declaration.ModifierKind;
 import java.util.EnumSet;
 import java.util.Set;
 
+/** Helper class for JDTTreeBuilder */
 class JDTTreeBuilderQuery {
+	private JDTTreeBuilderQuery() { }
 	/**
 	 * Searches a type from an entry-point according to a simple name.
 	 *

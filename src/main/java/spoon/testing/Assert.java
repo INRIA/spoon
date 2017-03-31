@@ -31,6 +31,7 @@ import static spoon.testing.utils.Check.assertNotNull;
  * more readable.
  */
 public class Assert {
+	private Assert() { }
 	/**
 	 * Create a new instance of <code>{@link FileAssert}</code>.
 	 *
