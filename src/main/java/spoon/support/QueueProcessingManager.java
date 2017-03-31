@@ -17,7 +17,6 @@
 package spoon.support;
 
 import spoon.SpoonException;
-import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
@@ -113,8 +112,7 @@ public class QueueProcessingManager implements ProcessingManager {
 			try {
 				getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
 				current = p;
-				p.initProperties(AbstractProcessor.loadProperties(p));
-				p.init();
+				p.init(); // load the properties
 				p.process();
 				for (CtElement e : new ArrayList<>(elements)) {
 					getVisitor().setProcessor(p);

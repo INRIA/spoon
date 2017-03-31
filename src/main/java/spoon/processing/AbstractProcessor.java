@@ -21,11 +21,10 @@ import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.support.util.RtHelper;
+import spoon.testing.utils.ProcessorUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -90,7 +89,8 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 	 * Helper method to load the properties of the given processor (uses
 	 * {@link Environment#getProcessorProperties(String)}).
 	 */
-	public static ProcessorProperties loadProperties(Processor<?> p) {
+	public ProcessorProperties loadProperties() {
+		Processor<?> p = this;
 		ProcessorProperties props = null;
 		try {
 			props = p.getFactory().getEnvironment().getProcessorProperties(p.getClass().getName());
@@ -114,11 +114,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 	}
 
 	public void init() {
-		// loadProperties();
-	}
-
-	public final void initProperties(ProcessorProperties properties) {
-		initProperties(this, properties);
+		this.initProperties(loadProperties());
 	}
 
 	public boolean isToBeProcessed(E candidate) {
@@ -128,26 +124,8 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 	/**
 	 * Helper method to initialize the properties of a given processor.
 	 */
-	public static void initProperties(Processor<?> p, ProcessorProperties properties) {
-		if (properties != null) {
-			for (Field f : RtHelper.getAllFields(p.getClass())) {
-				if (f.isAnnotationPresent(Property.class)) {
-					Object obj = properties.get(f.getType(), f.getName());
-					if (obj != null) {
-						f.setAccessible(true);
-						try {
-							f.set(p, obj);
-						} catch (Exception e) {
-							Launcher.LOGGER.error(e.getMessage(), e);
-						}
-					} else {
-						p.getFactory().getEnvironment().report(p, Level.WARN,
-								"No value found for property '" + f.getName() + "' in processor " + p.getClass()
-										.getName());
-					}
-				}
-			}
-		}
+	public void initProperties(ProcessorProperties properties) {
+		ProcessorUtils.initProperties(this, properties);
 	}
 
 	/**

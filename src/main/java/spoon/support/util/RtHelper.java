@@ -16,6 +16,7 @@
  */
 package spoon.support.util;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -24,6 +25,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.visitor.java.reflect.RtMethod;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -206,4 +208,61 @@ public abstract class RtHelper {
 		}
 		return null;
 	}
+
+	public static  <T> RtMethod[] methodsOf(Class<T> clazz) {
+		final RtMethod[] methods = new RtMethod[clazz.getDeclaredMethods().length];
+		int i = 0;
+		for (Method method : clazz.getDeclaredMethods()) {
+			methods[i++] = create(method);
+		}
+		return methods;
+	}
+
+	private static Method _method_isDefault;
+	static {
+		try {
+			_method_isDefault = Method.class.getMethod("isDefault");
+		} catch (NoSuchMethodException | SecurityException e) {
+			//spoon is running with java 7 JDK
+			_method_isDefault = null;
+		}
+	}
+
+	public static RtMethod create(Method method) {
+		return new RtMethod(method.getDeclaringClass(), method.getName(), method.getReturnType(),
+				method.getTypeParameters(), method.getParameterTypes(), method.getExceptionTypes(), method.getModifiers(),
+				method.getDeclaredAnnotations(), method.getParameterAnnotations(), method.isVarArgs(),
+				//spoon is compatible with Java 7, so compilation fails here
+				//method.isDefault());
+				_java8_isDefault(method));
+	}
+
+
+	private static boolean _java8_isDefault(Method method) {
+		if (_method_isDefault == null) {
+			//spoon is running with java 7 JDK, all methods are not default, because java 7 does not have default methods
+			return false;
+		}
+		try {
+			return (Boolean) _method_isDefault.invoke(method);
+		} catch (IllegalAccessException | IllegalArgumentException e) {
+			throw new SpoonException("Calling of Java8 Method#isDefault() failed", e);
+		} catch (InvocationTargetException e) {
+			throw new SpoonException("Calling of Java8 Method#isDefault() failed", e.getTargetException());
+		}
+	}
+
+	public static <T> RtMethod[] sameMethodsWithDifferentTypeOf(Class<T> superClass, List<RtMethod> comparedMethods) {
+		final List<RtMethod> methods = new ArrayList<>();
+		for (Method method : superClass.getDeclaredMethods()) {
+			final RtMethod rtMethod = RtHelper.create(method);
+			for (RtMethod potential : comparedMethods) {
+				if (potential.isLightEquals(rtMethod) && !rtMethod.getReturnType().equals(potential.getReturnType())) {
+					methods.add(rtMethod);
+				}
+			}
+		}
+		return methods.toArray(new RtMethod[methods.size()]);
+	}
+
 }

@@ -138,6 +138,37 @@ public class SpoonArchitectureEnforcerTest {
 
 
 	@Test
+	public void testGoodDesignOfStaticMethods() throws Exception {
+		// contract: never mix stateful objects and stateless helper classes containing static methods
+
+		SpoonAPI spoon = new Launcher();
+		spoon.addInputResource("src/main/java/");
+		spoon.buildModel();
+
+		for (CtClass<?> klass : spoon.getModel().getRootPackage().getElements(new TypeFilter<CtClass>(CtClass.class) {
+			@Override
+			public boolean matches(CtClass element) {
+				return element.getSuperclass() == null && super.matches(element) && element.getFields().size()>0
+						&& element.getElements(new TypeFilter<>(CtField.class)).stream().anyMatch( x -> !x.hasModifier(ModifierKind.STATIC) && !x.hasModifier(ModifierKind.FINAL)) // is a stateful instantiable class
+						&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().anyMatch( x -> x.hasModifier(ModifierKind.STATIC)); // is a helper class
+			}
+		})) {
+			// we allow three exceptions
+
+			// contains emptyList, etc., not beautiful but too central to be refactored
+			if ("spoon.support.reflect.declaration.CtElementImpl".equals(klass.getQualifiedName())) continue;
+
+			// useless fossil class
+			if ("spoon.support.util.Timer".equals(klass.getQualifiedName())) continue;
+
+			// contains the main method
+			if ("spoon.Launcher".equals(klass.getQualifiedName())) continue;
+
+			fail(klass.getQualifiedName()+" mixes a stateful design and a stateless helper class style");
+		}
+	}
+
+	@Test
 	public void testGoodTestClassNames() throws Exception {
 		// contract: to be run by Maven surefire, all test classes must be called Test* or *Test
 		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard patterns:"
@@ -156,7 +187,7 @@ public class SpoonArchitectureEnforcerTest {
 			assertTrue("naming contract violated for "+meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
 		}
 	}
-
+	
 	@Test
 	public void testStaticClasses() throws Exception {
 		// contract: helper classes only have static methods and a private constructor
