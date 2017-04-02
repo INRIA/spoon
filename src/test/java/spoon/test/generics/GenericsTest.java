@@ -11,6 +11,7 @@ import static spoon.testing.utils.ModelUtils.buildNoClasspath;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,13 +31,13 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -44,12 +45,15 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.CtSuperTypeHierarchy;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
+import spoon.test.generics.testclasses.CelebrationLunch;
+import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
@@ -557,5 +561,92 @@ public class GenericsTest {
 		CtTypeReference ctTypeReference = aTacos.getSuperInterfaces().toArray(new CtTypeReference[aTacos.getSuperInterfaces().size()])[0];
 		assertFalse(aTacos.isGenerics());
 		assertFalse(ctTypeReference.isGenerics());
+	}
+
+	@Test
+	public void testCtTypeReference_getSuperclass() throws Exception {
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
+		CtTypeReference<?> trWeddingLunch_Mole = ctClassCelebrationLunch.filterChildren(new NameFilter<>("disgust")).map((CtTypedElement te)->{
+			return te.getType();
+		}).first();
+		
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<java.lang.Integer, java.lang.Long, java.lang.Double>.WeddingLunch<spoon.test.generics.testclasses.Mole>",trWeddingLunch_Mole.toString());
+		CtType<?> tWeddingLunch_X = trWeddingLunch_Mole.getDeclaration();
+		CtTypeReference<?> trCelebrationLunch_Tacos_Paella_X = tWeddingLunch_X.getSuperclass();
+		//current correct behavior of CtType#getSuperclass()
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<"
+				+ "spoon.test.generics.testclasses.Tacos, "
+				+ "spoon.test.generics.testclasses.Paella, "
+				+ "X"
+				+ ">",trCelebrationLunch_Tacos_Paella_X.toString());
+		//current - wrong behavior of CtTypeReference#getSuperclass()
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<"
+				+ "spoon.test.generics.testclasses.Tacos, "
+				+ "spoon.test.generics.testclasses.Paella, "
+				+ "X"
+				+ ">",trWeddingLunch_Mole.getSuperclass().toString());
+		//future suggested behavior of CtTypeReference#getSuperclass() - the 3rd argument is Mole.
+//		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<"
+//				+ "spoon.test.generics.testclasses.Tacos, "
+//				+ "spoon.test.generics.testclasses.Paella, "
+//				+ "spoon.test.generics.testclasses.Mole"
+//				+ ">",trWeddingLunch_Mole.getSuperclass().toString());
+		//future suggested behavior of CtTypeReference#getSuperclass() 
+//		assertEquals("spoon.test.generics.testclasses.Lunch<"
+//				+ "spoon.test.generics.testclasses.Mole, "
+//				+ "spoon.test.generics.testclasses.Tacos"
+//				+ ">",trWeddingLunch_Mole.getSuperclass().getSuperclass().toString());
+	}
+	
+	@Test
+	public void testCtSuperTypeHierarchy() throws Exception {
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
+		CtTypeReference<?> trWeddingLunch_Mole = ctClassCelebrationLunch.filterChildren(new NameFilter<>("disgust")).map((CtTypedElement te)->{
+			return te.getType();
+		}).first();
+		
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<java.lang.Integer, java.lang.Long, java.lang.Double>.WeddingLunch<spoon.test.generics.testclasses.Mole>",trWeddingLunch_Mole.toString());
+		//method WeddingLunch#eatMe
+		CtMethod<?> tWeddingLunch_eatMe = trWeddingLunch_Mole.getDeclaration().filterChildren((CtNamedElement e)->"eatMe".equals(e.getSimpleName())).first();
+		
+		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
+		//method Lunch#eatMe
+		CtMethod<?> ctClassLunch_eatMe = ctClassLunch.filterChildren((CtNamedElement e)->"eatMe".equals(e.getSimpleName())).first();
+
+		
+		//type of first parameter of  method WeddingLunch#eatMe
+		CtTypeReference<?> ctWeddingLunch_X = tWeddingLunch_eatMe.getParameters().get(0).getType();
+		assertEquals("X", ctWeddingLunch_X.getSimpleName());
+		//type of first parameter of method Lunch#eatMe
+		CtTypeReference<?> ctClassLunch_A = ctClassLunch_eatMe.getParameters().get(0).getType();
+		assertEquals("A", ctClassLunch_A.getSimpleName());
+		
+		//are these two types same?
+		CtSuperTypeHierarchy sthOftrWeddingLunch_Mole = new CtSuperTypeHierarchy(trWeddingLunch_Mole);
+		
+		//adapt X to scope of CelebrationLunch<Integer,Long,Double>.WeddingLunch<Mole>
+		CtTypeReference<?> adapted = sthOftrWeddingLunch_Mole.adaptType(ctWeddingLunch_X);
+		assertEquals("spoon.test.generics.testclasses.Mole", adapted.getQualifiedName());
+		//adapt A to scope of CelebrationLunch<Integer,Long,Double>.WeddingLunch<Mole>
+		adapted = sthOftrWeddingLunch_Mole.adaptType(ctClassLunch_A);
+		assertEquals("spoon.test.generics.testclasses.Mole", adapted.getQualifiedName());
+		//adapt A to scope of enclosing class of CelebrationLunch<Integer,Long,Double>.WeddingLunch<Mole>, which is CelebrationLunch<Integer,Long,Double>
+		adapted = sthOftrWeddingLunch_Mole.getEnclosingHierarchy().adaptType(ctClassLunch_A);
+		assertEquals("java.lang.Double", adapted.getQualifiedName());
+		
+		//are these two types same in scope of CelebrationLunch<K,L,M>.WddingLunch<X> class itself
+		CtSuperTypeHierarchy sthOftWeddingLunch_X = new CtSuperTypeHierarchy(trWeddingLunch_Mole.getDeclaration());
+		
+		//adapt X to scope of type CelebrationLunch<K,L,M>.WddingLunch<X>
+		adapted = sthOftWeddingLunch_X.adaptType(ctWeddingLunch_X);
+		assertEquals("X", adapted.getQualifiedName());
+		//adapt A to scope of type CelebrationLunch<K,L,M>.WddingLunch<X>
+		adapted = sthOftWeddingLunch_X.adaptType(ctClassLunch_A);
+		assertEquals("X", adapted.getQualifiedName());
+		//adapt A to scope of enclosing class of CelebrationLunch<K,L,M>.WddingLunch<X>, which is CelebrationLunch<K,L,M>
+		adapted = sthOftWeddingLunch_X.getEnclosingHierarchy().adaptType(ctClassLunch_A);
+		assertEquals("M", adapted.getQualifiedName());
 	}
 }

@@ -18,7 +18,6 @@ package spoon.support.reflect.reference;
 
 import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -32,6 +31,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.filter.CtSuperTypeHierarchy;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
@@ -211,57 +211,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (isPrimitive() || type.isPrimitive()) {
 			return equals(type);
 		}
-		CtType<?> superTypeDecl = type.getDeclaration();
-		CtType<?> subTypeDecl = getDeclaration();
-		if ((subTypeDecl == null) && (superTypeDecl == null)) {
-			try {
-				if (((this instanceof CtArrayTypeReference) && (type instanceof CtArrayTypeReference))) {
-					return ((CtArrayTypeReference<?>) this).getComponentType().isSubtypeOf(((CtArrayTypeReference<?>) type).getComponentType());
-				}
-				Class<?> actualSubType = getActualClass();
-				Class<?> actualSuperType = type.getActualClass();
-				return actualSuperType.isAssignableFrom(actualSubType);
-			} catch (Exception e) {
-				Launcher.LOGGER.error("cannot determine runtime types for '" + this + "' (" + getQualifiedName() + ") and '" + type + "' (" + type.getQualifiedName() + ")", e);
-				return false;
-			}
+		if (((this instanceof CtArrayTypeReference) && (type instanceof CtArrayTypeReference))) {
+			return ((CtArrayTypeReference<?>) this).getComponentType().isSubtypeOf(((CtArrayTypeReference<?>) type).getComponentType());
 		}
-		if (getQualifiedName().equals(type.getQualifiedName())) {
+		if (Object.class.getName().equals(type.getQualifiedName())) {
+			//everything is a sub type of Object
 			return true;
 		}
-		if (subTypeDecl != null) {
-			if (getFactory().Type().OBJECT.equals(type)) {
-				return true;
-			}
-			for (CtTypeReference<?> ref : subTypeDecl.getSuperInterfaces()) {
-				if (ref.isSubtypeOf(type)) {
-					return true;
-				}
-			}
-			if (subTypeDecl instanceof CtClass) {
-				if (((CtClass<?>) subTypeDecl).getSuperclass() != null) {
-					if (((CtClass<?>) subTypeDecl).getSuperclass().equals(type)) {
-						return true;
-					}
-					return ((CtClass<?>) subTypeDecl).getSuperclass().isSubtypeOf(type);
-				}
-			}
-			return false;
-		} else {
-			try {
-				Class<?> actualSubType = getActualClass();
-				for (Class<?> c : actualSubType.getInterfaces()) {
-					if (getFactory().Type().createReference(c).isSubtypeOf(type)) {
-						return true;
-					}
-				}
-				CtTypeReference<?> superType = getFactory().Type().createReference(actualSubType.getSuperclass());
-				return superType != null && (superType.equals(type) || superType.isSubtypeOf(type));
-			} catch (Exception e) {
-				Launcher.LOGGER.error("cannot determine runtime types for '" + this + "' and '" + type + "'", e);
-				return false;
-			}
-		}
+		return new CtSuperTypeHierarchy(this).isSubtypeOf(type);
 	}
 
 	/**
