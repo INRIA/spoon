@@ -249,6 +249,24 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		CtTypeReference<?> boundType = getBound(this);
+		if (boundType instanceof CtTypeParameterReference) {
+			CtTypeParameterReference typeRef = (CtTypeParameterReference) boundType;
+			return typeRef.getDeclaration().getTypeErasure();
+		}
+		return boundType;
+	}
+
+	private static CtTypeReference<?> getBound(CtTypeParameter typeParam) {
+		CtTypeReference<?> bound = typeParam.getSuperclass();
+		if (bound == null) {
+			bound = typeParam.getFactory().Type().OBJECT;
+		}
+		return bound;
+	}
+
+	@Override
 	@UnsettableProperty
 	public <M, C extends CtType<Object>> C addMethod(CtMethod<M> method) {
 		// unsettable property
