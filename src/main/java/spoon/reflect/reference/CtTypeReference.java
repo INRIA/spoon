@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 
@@ -181,4 +182,25 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 */
 	@DerivedProperty
 	CtTypeReference<?> getAccessType();
+
+	/**
+	 * If this type reference is used as a type argument (see {@link #getActualTypeArguments()}), returns the type parameter declaration in the target type, returns null otherwise.
+	 *
+	 * In the following example, getTypeParameterDeclaration of "String" returns the type parameter definition "X".
+	 * <pre>
+	 * class Dog&lt;X&gt;{}
+	 * Dog&lt;String&gt;var = ...;
+	 * </pre>
+	 **
+	 * In this other example, getTypeParameterDeclaration of T in Dog&lt;T&gt; returns the type parameter definition "X" (while {@link #getDeclaration()} returns the "T" of Cat).
+	 * <pre>
+	 * class Dog&lt;X&gt;{}
+	 * class Cat&lt;T&gt; {
+	 * Dog&lt;T&gt; dog;
+	 * }
+	 * </pre>
+	 */
+	@DerivedProperty
+	CtTypeParameter getTypeParameterDeclaration();
+
 }

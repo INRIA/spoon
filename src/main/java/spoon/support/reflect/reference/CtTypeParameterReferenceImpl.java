@@ -171,20 +171,27 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (!isParentInitialized()) {
 			return null;
 		}
-		return getRecursiveDeclaration(this);
-	}
 
-	private CtTypeParameter getRecursiveDeclaration(CtElement element) {
-		final CtFormalTypeDeclarer formalTypeDeclarer = element.getParent(CtFormalTypeDeclarer.class);
-		if (formalTypeDeclarer == null) {
-			return null;
-		}
-		for (CtTypeParameter typeParameter : formalTypeDeclarer.getFormalCtTypeParameters()) {
-			if (simplename.equals(typeParameter.getSimpleName())) {
-				return typeParameter;
+		// case #1: we're a type of a method parameter, a local variable, ...
+		// the strategy is to look in the parents
+		// collecting all formal type declarers of the hierarchy
+		CtElement e = this;
+		while ((e = e.getParent(CtFormalTypeDeclarer.class)) != null) {
+			CtTypeParameter result = findTypeParamDeclaration((CtFormalTypeDeclarer) e, this.getSimpleName());
+			if (result != null) {
+				return result;
 			}
 		}
-		return getRecursiveDeclaration(formalTypeDeclarer);
+		return null;
+	}
+
+	private CtTypeParameter findTypeParamDeclaration(CtFormalTypeDeclarer type, String refName) {
+		for (CtTypeParameter typeParam : type.getFormalCtTypeParameters()) {
+			if (typeParam.getSimpleName().equals(refName)) {
+				return typeParam;
+			}
+		}
+		return null;
 	}
 
 	@Override
