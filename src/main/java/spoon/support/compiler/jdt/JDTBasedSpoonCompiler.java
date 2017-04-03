@@ -148,7 +148,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 				.annotationProcessingOptions(new AnnotationProcessingOptions().compileProcessors()) //
 				.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-				.sources(new SourceOptions().sources()) // no sources, handled by the JDTBatchCompiler
+				.sources(new SourceOptions().sources(sources.getAllJavaFiles())) // no sources, handled by the JDTBatchCompiler
 				.build();
 
 		getFactory().getEnvironment().debugMessage("compile args: " + Arrays.toString(args));

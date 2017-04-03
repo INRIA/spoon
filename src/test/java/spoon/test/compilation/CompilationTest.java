@@ -31,10 +31,14 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -375,5 +379,26 @@ public class CompilationTest {
 
 		assertEquals(3, l.size());
 		assertTrue(l.contains("KJHKY"));
+	}
+
+	@Test
+	public void testCompilationInEmptyDir() throws Exception {
+		// Contract: Spoon can be launched in an empty folder as a working directory
+		// See: https://github.com/INRIA/spoon/pull/1208 and https://github.com/INRIA/spoon/issues/1246
+		// This test does not fail (it's not enough to change user.dir we should launch process inside that dir) but it explains the problem
+		String userDir = System.getProperty("user.dir");
+		File testFile = new File("src/test/resources/compilation/compilation-tests/IBar.java");
+		String absoluteTestPath = testFile.getAbsolutePath();
+
+		Path tempDirPath = Files.createTempDirectory("test_compilation");
+
+		System.setProperty("user.dir", tempDirPath.toFile().getAbsolutePath());
+		SpoonModelBuilder compiler = new Launcher().createCompiler();
+		compiler.addInputSource(new File(absoluteTestPath));
+		compiler.setBinaryOutputDirectory(tempDirPath.toFile());
+		compiler.compile(SpoonModelBuilder.InputType.FILES);
+		System.setProperty("user.dir", userDir);
+
+		assertThat(tempDirPath.toFile().listFiles().length, not(0));
 	}
 }
