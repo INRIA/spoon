@@ -24,7 +24,11 @@ public class ErasureModelA<A, B extends Exception, C extends B, D extends List<B
 
 	public <I> void wildCardMethod(I paramI, ErasureModelA<? extends I, B, C, D> extendsI) {
 	}
-	
+
+	// simple case
+	public void list(List<Object> x, List<List<Object>> y, List<String> z) {
+	}
+
 	static class ModelB<A2,B2 extends Exception, C2 extends B2, D2 extends List<B2>> extends ErasureModelA<A2,B2,C2,D2> {
 		A2 paramA2;
 		B2 paramB2;

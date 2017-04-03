@@ -28,7 +28,7 @@ public class CtTypeParameterTest {
 
 	@Test
 	public void testTypeErasure() throws Exception {
-		//contract: the erasure type computed by CtParameterType(Reference)#getTypeErasure is same like the type of method parameter made by java compiler 
+		//contract: the type erasure computed by getTypeErasure is same as the one computed by the Java compiler
 		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
 		//visit all methods of type ctModel
 		//visit all inner types and their methods recursively `getTypeErasure` returns expected value
@@ -37,25 +37,26 @@ public class CtTypeParameterTest {
 	}
 	
 	private void checkType(CtType<?> type) throws NoSuchFieldException, SecurityException {
-		List<CtTypeParameter> l_typeParams = type.getFormalCtTypeParameters();
-		for (CtTypeParameter ctTypeParameter : l_typeParams) {
+		List<CtTypeParameter> formalTypeParameters = type.getFormalCtTypeParameters();
+		for (CtTypeParameter ctTypeParameter : formalTypeParameters) {
 			checkTypeParamErasureOfType(ctTypeParameter, type.getActualClass());
 		}
 		
-		for (CtTypeMember typeMemeber : type.getTypeMembers()) {
-			if (typeMemeber instanceof CtFormalTypeDeclarer) {
-				CtFormalTypeDeclarer ftDecl = (CtFormalTypeDeclarer) typeMemeber;
-				l_typeParams = ftDecl.getFormalCtTypeParameters();
-				if (typeMemeber instanceof CtExecutable<?>) {
-					CtExecutable<?> exec = (CtExecutable<?>) typeMemeber;
-					for (CtTypeParameter ctTypeParameter : l_typeParams) {
-						checkTypeParamErasureOfExecutable(ctTypeParameter, exec);
+		for (CtTypeMember member : type.getTypeMembers()) {
+			if (member instanceof CtFormalTypeDeclarer) {
+				CtFormalTypeDeclarer ftDecl = (CtFormalTypeDeclarer) member;
+				formalTypeParameters = ftDecl.getFormalCtTypeParameters();
+				if (member instanceof CtExecutable<?>) {
+					CtExecutable<?> exec = (CtExecutable<?>) member;
+					for (CtTypeParameter ctTypeParameter : formalTypeParameters) {
+						checkTypeParamErasureOfExecutable(ctTypeParameter);
 					}
 					for (CtParameter<?> param : exec.getParameters()) {
-						checkParameterErasureOfExecutable(param, exec);
+						checkParameterErasureOfExecutable(param);
 					}
-				} else if (typeMemeber instanceof CtType<?>) {
-					CtType<?> nestedType = (CtType<?>) typeMemeber;
+				} else if (member instanceof CtType<?>) {
+					CtType<?> nestedType = (CtType<?>) member;
+					// recursive call for nested type
 					checkType(nestedType);
 				}
 			}
@@ -67,7 +68,8 @@ public class CtTypeParameterTest {
 		assertEquals("TypeErasure of type param "+getTypeParamIdentification(typeParam), field.getType().getName(), typeParam.getTypeErasure().getQualifiedName());
 	}
 
-	private void checkTypeParamErasureOfExecutable(CtTypeParameter typeParam, CtExecutable<?> exec) throws NoSuchFieldException, SecurityException {
+	private void checkTypeParamErasureOfExecutable(CtTypeParameter typeParam) throws NoSuchFieldException, SecurityException {
+		CtExecutable<?> exec = (CtExecutable<?>) typeParam.getParent();
 		CtParameter<?> param = exec.filterChildren(new NameFilter<>("param"+typeParam.getSimpleName())).first();
 		assertNotNull("Missing param"+typeParam.getSimpleName() + " in "+ exec.getSignature(), param);
 		int paramIdx = exec.getParameters().indexOf(param);
@@ -79,12 +81,13 @@ public class CtTypeParameterTest {
 			declExec = getMethodByName(declClass, exec.getSimpleName());
 		}
 		Class<?> paramType = declExec.getParameterTypes()[paramIdx];
+		// contract the type erasure given with Java reflection is the same as the one computed by spoon
 		assertEquals("TypeErasure of executable param "+getTypeParamIdentification(typeParam), paramType.getName(), typeParam.getTypeErasure().toString());
 	}
 	
-	private void checkParameterErasureOfExecutable(CtParameter<?> param, CtExecutable<?> exec) {
-		CtTypeReference<?> paramTypeRef = param.getType();
-		paramTypeRef = paramTypeRef.getTypeErasure();
+	private void checkParameterErasureOfExecutable(CtParameter<?> param) {
+		CtExecutable<?> exec = param.getParent();
+		CtTypeReference<?> typeErasure = param.getType().getTypeErasure();
 		int paramIdx = exec.getParameters().indexOf(param);
 		Class declClass = exec.getParent(CtType.class).getActualClass();
 		Executable declExec;
@@ -94,8 +97,9 @@ public class CtTypeParameterTest {
 			declExec = getMethodByName(declClass, exec.getSimpleName());
 		}
 		Class<?> paramType = declExec.getParameterTypes()[paramIdx];
-		assertEquals(0, paramTypeRef.getActualTypeArguments().size());
-		assertEquals("TypeErasure of executable "+exec.getSignature()+" parameter "+param.getSimpleName(), paramType.getName(), paramTypeRef.getQualifiedName());
+		assertEquals(0, typeErasure.getActualTypeArguments().size());
+		// contract the type erasure of the method parameter given with Java reflection is the same as the one computed by spoon
+		assertEquals("TypeErasure of executable "+exec.getSignature()+" parameter "+param.getSimpleName(), paramType.getName(), typeErasure.getQualifiedName());
 	}
 	
 	
