@@ -200,6 +200,11 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		return getDeclaration().getTypeErasure();
+	}
+
+	@Override
 	public CtTypeParameterReference clone() {
 		return (CtTypeParameterReference) super.clone();
 	}

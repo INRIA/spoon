@@ -160,4 +160,10 @@ public interface CtTypeInformation {
 	@DerivedProperty
 	Collection<CtExecutableReference<?>> getAllExecutables();
 
+	/**
+	 * @return the type erasure, which is computed by the java compiler to ensure that no new classes are created for parametrized types so that generics incur no runtime overhead.
+	 * See https://docs.oracle.com/javase/tutorial/java/generics/erasure.html
+	 */
+	@DerivedProperty
+	CtTypeReference<?> getTypeErasure();
 }

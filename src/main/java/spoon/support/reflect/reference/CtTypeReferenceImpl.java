@@ -833,4 +833,14 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	private CtTypeParameter findTypeParamDeclarationByPosition(CtFormalTypeDeclarer type, int position) {
 		return type.getFormalCtTypeParameters().get(position);
 	}
+
+	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		if (getActualTypeArguments().isEmpty()) {
+			return this;
+		}
+		CtTypeReference<?> erasedRef = clone();
+		erasedRef.getActualTypeArguments().clear();
+		return erasedRef;
+	}
 }

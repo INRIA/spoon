@@ -74,6 +74,14 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	}
 
 	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		if (bounds == null || bounds.isEmpty()) {
+			return getFactory().Type().OBJECT;
+		}
+		return bounds.get(0).getTypeErasure();
+	}
+
+	@Override
 	public CtIntersectionTypeReference<T> clone() {
 		return (CtIntersectionTypeReference<T>) super.clone();
 	}
