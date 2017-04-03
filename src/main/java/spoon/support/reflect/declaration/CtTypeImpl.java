@@ -880,6 +880,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return Collections.unmodifiableSet(l);
 	}
 
+	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		return getReference();
+	}
+
 	boolean isShadow;
 
 	@Override

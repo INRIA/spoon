@@ -160,4 +160,11 @@ public interface CtTypeInformation {
 	@DerivedProperty
 	Collection<CtExecutableReference<?>> getAllExecutables();
 
+	/**
+	 * @return type (not generic one), which is used by java compiler to ensure that no new classes are created for parameterized types;
+	 * consequently, generics incur no runtime overhead.
+	 * See https://docs.oracle.com/javase/tutorial/java/generics/erasure.html
+	 */
+	@DerivedProperty
+	CtTypeReference<?> getTypeErasure();
 }
