@@ -24,7 +24,6 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -46,8 +45,6 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	CtTypeReference<T> returnType;
 
 	boolean defaultMethod = false;
-
-	List<CtTypeParameterReference> formalTypeParameters = emptyList();
 
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
