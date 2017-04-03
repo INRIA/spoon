@@ -6,6 +6,7 @@ import spoon.SpoonAPI;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
@@ -156,4 +157,34 @@ public class SpoonArchitectureEnforcerTest {
 		}
 	}
 
+	@Test
+	public void testStaticClasses() throws Exception {
+		// contract: helper classes only have static methods and a private constructor
+
+//		spoon.compiler.SpoonResourceHelper
+//		spoon.reflect.visitor.Query
+//		spoon.support.compiler.jdt.JDTTreeBuilderQuery
+//		spoon.support.compiler.SnippetCompilationHelper
+//		spoon.support.util.ByteSerialization
+//		spoon.support.util.RtHelper
+//		spoon.support.visitor.equals.CloneHelper
+//		spoon.template.Substitution
+//		spoon.testing.utils.Check
+//		spoon.testing.utils.ProcessorUtils
+//		spoon.testing.Assert
+
+		SpoonAPI spoon = new Launcher();
+		spoon.addInputResource("src/main/java/");
+		spoon.buildModel();
+
+		for (CtClass<?> klass : spoon.getModel().getRootPackage().getElements(new TypeFilter<CtClass>(CtClass.class) {
+			@Override
+			public boolean matches(CtClass element) {
+				return element.getSuperclass() == null && super.matches(element) && element.getMethods().size()>0
+						&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().allMatch( x -> x.hasModifier(ModifierKind.STATIC));
+			}
+		})) {
+			assertTrue(klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
+		}
+	}
 }

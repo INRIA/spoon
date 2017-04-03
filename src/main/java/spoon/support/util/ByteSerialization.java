@@ -24,6 +24,8 @@ import java.io.ObjectOutputStream;
 
 public class ByteSerialization {
 
+	private ByteSerialization() { }
+
 	public static byte[] serialize(Object obj) throws IOException {
 
 		byte[] serializedObject = null;

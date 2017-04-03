@@ -40,7 +40,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/** Helper class for working with snippets */
 public class SnippetCompilationHelper {
+
+	private SnippetCompilationHelper() { }
 
 	private static final String WRAPPER_CLASS_NAME = "Wrapper";
 	private static final String WRAPPER_METHOD_NAME = "wrap";
