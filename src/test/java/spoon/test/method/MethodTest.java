@@ -19,11 +19,13 @@ package spoon.test.method;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.method.testclasses.Tacos;
 
@@ -33,6 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -83,6 +86,26 @@ public class MethodTest {
 		l.buildModel();
 		Set<CtMethod<?>> methods = l.getFactory().Class().get("A3").getAllMethods();
 		assertEquals(1, methods.stream().filter(method -> "foo".equals(method.getSimpleName())).count());
+	}
+
+	@Test
+	public void testNonStaticProblemMethodCallNoClasspath() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("src/test/resources/noclasspath/problem-method/UsersView.java");
+		launcher.buildModel();
+
+		final CtInvocation inv = launcher.getModel().getElements(
+				new TypeFilter<CtInvocation>(CtInvocation.class))
+				.stream()
+				.filter(i -> i.getExecutable()
+						.getSimpleName()
+						.equals("createUserBinding"))
+				.findFirst().orElseThrow(IllegalStateException::new);
+		assertEquals("de.unibremen.st.gradelog.view.UsersView",
+				inv.getExecutable().getDeclaringType().getQualifiedName());
+		assertFalse(inv.getExecutable().isStatic());
+		assertEquals(1, inv.getExecutable().getParameters().size());
 	}
 
 }

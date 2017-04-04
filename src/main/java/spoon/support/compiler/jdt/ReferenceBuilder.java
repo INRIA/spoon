@@ -20,9 +20,11 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
@@ -384,6 +387,75 @@ public class ReferenceBuilder {
 				parameters.add(getTypeReference(b));
 			}
 			ref.setParameters(parameters);
+		}
+
+		// We may have a call to a non-imported method here. Thus, let's try to
+		// find a matching method within `ref's` declaring type.
+		if (exec instanceof ProblemMethodBinding
+				&& ref.getDeclaringType() == null
+				&& exec.declaringClass instanceof SourceTypeBinding
+				&& ((SourceTypeBinding) exec.declaringClass).scope != null) {
+			// 1. Find corresponding TypeDeclaration because a
+			// ProblemMethodBinding's declaring class may not list our searched
+			// method (for instance, if the method was not compilable).
+			TypeDeclaration typeDeclaration = null;
+
+			// Iteratively process all types of current compilation unit until
+			// we find the type with matching name.
+			final CompilationUnitDeclaration unit = jdtTreeBuilder
+					.getContextBuilder().compilationunitdeclaration;
+			final Deque<TypeDeclaration> allTypes = new ArrayDeque<>();
+			for (final TypeDeclaration td : unit.types) {
+				allTypes.addLast(td);
+			}
+			while (!allTypes.isEmpty()) {
+				final TypeDeclaration type = allTypes.pop();
+				if (Arrays.equals(type.name, exec.declaringClass.sourceName)) {
+					typeDeclaration = type;
+					break;
+				} else if (type.memberTypes != null) {
+					for (final TypeDeclaration td : type.memberTypes) {
+						allTypes.addLast(td);
+					}
+				}
+			}
+
+			// 2. Now, let's try to find our method.
+			if (typeDeclaration != null) {
+				for (final AbstractMethodDeclaration md : typeDeclaration.methods) {
+					if (Arrays.equals(md.selector, exec.selector)) {
+						// expected method and actual method don't have any
+						// parameters => check!
+						if (md.arguments == null && exec.parameters.length == 0) {
+							ref.setDeclaringType(getTypeReference(exec.declaringClass));
+							ref.setStatic(md.isStatic());
+						} else if (md.arguments != null && md.arguments.length == exec.parameters.length) {
+							boolean allParametersMatch = true;
+							for (int i = 0; i < md.arguments.length; i++) {
+								final CtTypeReference argTypeRef = getTypeReference(
+										md.arguments[i].type.resolveType(
+												((SourceTypeBinding) exec.declaringClass).scope));
+								final CtTypeReference parTypeRef = getTypeReference(exec.parameters[i]);
+								if (argTypeRef == null || parTypeRef == null) {
+									allParametersMatch = false;
+									break;
+								}
+								final String argQualName = argTypeRef.getQualifiedName();
+								final String parQualName = parTypeRef.getQualifiedName();
+								if (argQualName == null || parQualName == null
+										|| !argQualName.equals(parQualName)) {
+									allParametersMatch = false;
+									break;
+								}
+							}
+							if (allParametersMatch) {
+								ref.setDeclaringType(getTypeReference(exec.declaringClass));
+								ref.setStatic(md.isStatic());
+							}
+						}
+					}
+				}
+			}
 		}
 
 		return ref;
