@@ -71,6 +71,8 @@ public class SpoonArchitectureEnforcerTest {
 				for (CtType<?> t : factoryPackage.getTypes()) {
 					if (t.getSimpleName().startsWith("Mega")) continue; //
 					for (CtMethod<?> m : t.getMethods()) {
+						// we check only public methods
+						if (m.hasModifier(ModifierKind.PUBLIC) == false) continue;
 						// we only consider factory methods
 						if (!m.getSimpleName().startsWith("create")) continue;
 
