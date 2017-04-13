@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -225,6 +226,7 @@ public class ImportTest {
 		CtExecutableReference executableReference = invocation.getExecutable();
 
 		assertEquals("fr.inria.AnotherMissingImport#doSomething(externallib.SomeType)", executableReference.getSignature());
+		assertSame(methods.get(0), executableReference.getDeclaration());
 	}
 
 	@Test
