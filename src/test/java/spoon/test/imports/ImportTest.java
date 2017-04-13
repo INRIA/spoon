@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -212,6 +213,18 @@ public class ImportTest {
 		CtTypeReference<?> type = methods.get(0).getParameters().get(0).getType();
 		assertEquals("SomeType", type.getSimpleName());
 		assertEquals("externallib", type.getPackage().getSimpleName());
+
+		CtMethod<?> mainMethod = factory.Class().getAll().get(0).getMethodsByName("main").get(0);
+		List<CtStatement> statements = mainMethod.getBody().getStatements();
+
+		CtStatement invocationStatement = statements.get(1);
+
+		assertTrue(invocationStatement instanceof CtInvocation);
+
+		CtInvocation invocation = (CtInvocation) invocationStatement;
+		CtExecutableReference executableReference = invocation.getExecutable();
+
+		assertEquals("fr.inria.AnotherMissingImport#doSomething(externallib.SomeType)", executableReference.getSignature());
 	}
 
 	@Test
