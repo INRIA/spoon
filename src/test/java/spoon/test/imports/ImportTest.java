@@ -197,6 +197,24 @@ public class ImportTest {
 	}
 
 	@Test
+	public void testAnotherMissingImport() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
+		Factory factory = spoon.createFactory();
+		factory.getEnvironment().setNoClasspath(true);
+		factory.getEnvironment().setLevel("OFF");
+
+		SpoonModelBuilder compiler = spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/import-resources/fr/inria/AnotherMissingImport.java"));
+
+		compiler.build();
+		List<CtMethod<?>> methods = factory.getModel().getElements(new NameFilter<CtMethod<?>>("doSomething"));
+
+		CtTypeReference<?> type = methods.get(0).getParameters().get(0).getType();
+		assertEquals("SomeType", type.getSimpleName());
+		assertEquals("externallib", type.getPackage().getSimpleName());
+	}
+
+	@Test
 	public void testSpoonWithImports() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
