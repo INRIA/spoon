@@ -4,7 +4,11 @@ import org.apache.log4j.Level;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.processing.ProcessorProperties;
+import spoon.processing.ProcessorPropertiesImpl;
+import spoon.processing.Property;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -12,11 +16,13 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.testing.utils.ProcessorUtils;
 
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -140,5 +146,38 @@ public class ProcessingTest {
 			assertTrue(e.getMessage().endsWith("Your processor should have a constructor with no arguments"));
 			assertTrue(e.getCause() instanceof java.lang.InstantiationException);// we are able to retrieve the exception parent
 		}
+	}
+
+	@Test
+	public void testInitProperties() throws Exception {
+		class AProcessor extends AbstractManualProcessor {
+			@Property
+			String aString;
+
+			@Property
+			int anInt;
+
+			@Property
+			Object anObject;
+
+			@Override
+			public void process() {
+
+			}
+		};
+
+		AProcessor p = new AProcessor();
+
+		ProcessorProperties props = new ProcessorPropertiesImpl();
+		props.set("aString", "foo");
+		props.set("anInt", 5);
+		Object o = new Object();
+		props.set("anObject", o);
+
+		ProcessorUtils.initProperties(p, props);
+
+		assertEquals("foo", p.aString);
+		assertEquals(5, p.anInt);
+		assertSame(o, p.anObject);
 	}
 }

@@ -25,8 +25,9 @@ import java.util.Set;
  * This interface defines a generic code processor. To define a new processor,
  * the user should subclass {@link spoon.processing.AbstractProcessor}, the
  * abstract default implementation of this interface.
+ *
+ * If a processor contains fields annotated with @{@link Property}, they can be set using a {@link ProcessorProperties}
  */
-
 public interface Processor<E extends CtElement> extends FactoryAccessor {
 
 	/**

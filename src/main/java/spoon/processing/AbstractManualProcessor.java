@@ -19,6 +19,7 @@ package spoon.processing;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import spoon.testing.utils.ProcessorUtils;
 
 import java.util.Set;
 
@@ -98,7 +99,7 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	}
 
 	public final void initProperties(ProcessorProperties properties) {
-		AbstractProcessor.initProperties(this, properties);
+		ProcessorUtils.initProperties(this, properties);
 	}
 
 	@Override
