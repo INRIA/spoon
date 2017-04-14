@@ -444,10 +444,10 @@ class JDTCommentBuilder {
 	}
 
 	/**
-	 * @param element
+	 * @param e
 	 * @return body of element or null if this element has no body
 	 */
-	static CtElement getBody(CtElement e) {
+	private CtElement getBody(CtElement e) {
 		if (e instanceof CtBodyHolder) {
 			return ((CtBodyHolder) e).getBody();
 		}
@@ -466,7 +466,7 @@ class JDTCommentBuilder {
 		return cleanComment(new String(contents, start, end - start));
 	}
 
-	public static String cleanComment(String comment) {
+	public String cleanComment(String comment) {
 		StringBuffer ret = new StringBuffer();
 		String[] lines = comment.split("\n");
 		// limit case

@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.support.util.RtHelper;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
@@ -316,10 +317,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {
 		final List<RtMethod> methods = new ArrayList<>();
-		methods.addAll(Arrays.asList(RtMethod.methodsOf(clazz)));
+		methods.addAll(Arrays.asList(RtHelper.methodsOf(clazz)));
 		final Class<?> superclass = clazz.getSuperclass();
 		if (superclass != null) {
-			methods.removeAll(Arrays.asList(RtMethod.sameMethodsWithDifferentTypeOf(superclass, methods)));
+			methods.removeAll(Arrays.asList(RtHelper.sameMethodsWithDifferentTypeOf(superclass, methods)));
 		}
 		return methods;
 	}
