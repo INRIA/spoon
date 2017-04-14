@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -51,6 +52,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -194,6 +196,37 @@ public class ImportTest {
 		CtTypeReference<?> type = factory.Class().getAll().get(0).getFields().get(0).getType();
 		assertEquals("Abcd", type.getSimpleName());
 		assertEquals("fr.inria.internal", type.getPackage().getSimpleName());
+	}
+
+	@Test
+	public void testAnotherMissingImport() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[] {"--output-type", "nooutput" });
+		Factory factory = spoon.createFactory();
+		factory.getEnvironment().setNoClasspath(true);
+		factory.getEnvironment().setLevel("OFF");
+
+		SpoonModelBuilder compiler = spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/import-resources/fr/inria/AnotherMissingImport.java"));
+
+		compiler.build();
+		List<CtMethod<?>> methods = factory.getModel().getElements(new NameFilter<CtMethod<?>>("doSomething"));
+
+		CtTypeReference<?> type = methods.get(0).getParameters().get(0).getType();
+		assertEquals("SomeType", type.getSimpleName());
+		assertEquals("externallib", type.getPackage().getSimpleName());
+
+		CtMethod<?> mainMethod = factory.Class().getAll().get(0).getMethodsByName("main").get(0);
+		List<CtStatement> statements = mainMethod.getBody().getStatements();
+
+		CtStatement invocationStatement = statements.get(1);
+
+		assertTrue(invocationStatement instanceof CtInvocation);
+
+		CtInvocation invocation = (CtInvocation) invocationStatement;
+		CtExecutableReference executableReference = invocation.getExecutable();
+
+		assertEquals("fr.inria.AnotherMissingImport#doSomething(externallib.SomeType)", executableReference.getSignature());
+		assertSame(methods.get(0), executableReference.getDeclaration());
 	}
 
 	@Test

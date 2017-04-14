@@ -641,6 +641,9 @@ public class ReferenceBuilder {
 					}
 				}
 			}
+			if (binding.actualType() instanceof MissingTypeBinding) {
+				ref = getTypeReference(binding.actualType());
+			}
 
 			if (((ParameterizedTypeBinding) binding).arguments != null) {
 				for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
