@@ -16,25 +16,26 @@
  */
 package spoon.processing;
 
-/**
- * An interface to retrieve processor properties.
- */
-public interface ProcessorProperties {
+import java.util.HashMap;
+import java.util.Map;
 
-	/**
-	 * Gets the property converted in given type or null (can be an array).
-	 */
-	<T> T get(Class<T> type, String name);
+public class ProcessorPropertiesImpl implements ProcessorProperties {
 
-	/**
-	 * Sets the given property.
-	 */
-	void set(String name, Object o);
+	private final Map<String, Object> _properties = new HashMap<>();
 
+	public <T> T get(Class<T> type, String name) {
+		return (T) _properties.get(name);
+	}
+
+	public void set(String name, Object o) {
+		_properties.put(name, o);
+	}
 
 	/**
 	 * Gets the corresponding processor name.
 	 */
-	String getProcessorName();
+	public String getProcessorName() {
+		return (String) _properties.get("__NAME__");
+	}
 
 }
