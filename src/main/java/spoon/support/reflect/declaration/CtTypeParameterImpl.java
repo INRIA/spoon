@@ -32,6 +32,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.visitor.GenericTypeAdapter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -244,8 +245,48 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
-	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		return getReference().isSubtypeOf(type);
+	public boolean isSubtypeOf(CtTypeReference<?> superTypeRef) {
+		if (superTypeRef instanceof CtTypeParameterReference) {
+			//the type is type parameter too. Use appropriate sub type checking algorithm
+			CtTypeParameter superTypeParam = (CtTypeParameter) superTypeRef.getDeclaration();
+			return isSubtypeOf(getFactory().Type().createTypeAdapter(getTypeParameterDeclarer()), this, superTypeParam);
+		}
+		//type is normal type
+		return getTypeErasure().isSubtypeOf(superTypeRef);
+	}
+
+	private static boolean isSubtypeOf(GenericTypeAdapter typeAdapter, CtTypeParameter subTypeParam, CtTypeParameter superTypeParam) {
+		while (subTypeParam != null) {
+			if (isSameInSameScope(subTypeParam, typeAdapter.adaptType(superTypeParam))) {
+				//both type params are same
+				return true;
+			}
+			CtTypeReference<?> superTypeOfSubTypeParam = subTypeParam.getSuperclass();
+			if (superTypeOfSubTypeParam == null) {
+				//there is no super type defined, so they are different type parameters
+				return false;
+			}
+			if (superTypeOfSubTypeParam instanceof CtTypeParameterReference) {
+				subTypeParam = ((CtTypeParameterReference) superTypeOfSubTypeParam).getDeclaration();
+			} else {
+				//the super type is not type parameter. Normal type cannot be a super type of generic parameter
+				return false;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Note: This method expects that both arguments are already adapted to the same scope
+	 * @param typeParam a type param 1
+	 * @param typeRef a reference to some type 2
+	 * @return true if typeParam and typeRef represents same type parameter.
+	 */
+	private static boolean isSameInSameScope(CtTypeParameter typeParam, CtTypeReference<?> typeRef) {
+		if (typeRef instanceof CtTypeParameterReference) {
+			return typeParam.getSimpleName().equals(((CtTypeParameterReference) typeRef).getSimpleName());
+		}
+		return false;
 	}
 
 	@Override
