@@ -36,6 +36,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 import spoon.support.visitor.ClassTypingContext;
+import spoon.support.visitor.GenericTypeAdapter;
 import spoon.support.visitor.MethodTypingContext;
 import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.CelebrationLunch;
@@ -772,5 +773,53 @@ public class GenericsTest {
 		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
 		
 		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
+		
+		CtInvocation<?> invokeReserve = factory.Class().get(CelebrationLunch.class)
+				.filterChildren(new TypeFilter<>(CtInvocation.class))
+				.select((CtInvocation i)->"reserve".equals(i.getExecutable().getSimpleName()))
+				.first();
+		
+		
+		MethodTypingContext methodReserveTC = new MethodTypingContext().setInvocation(invokeReserve);
+		
+		//check that MethodTypingContext made from invocation knows actual type arguments of method and all declaring types
+		//1) check method actual type argument
+		CtMethod<?> methodReserve = (CtMethod<?>) invokeReserve.getExecutable().getDeclaration();
+		CtTypeParameter methodReserve_S = methodReserve.getFormalCtTypeParameters().get(0);
+		assertEquals("S", methodReserve_S.getSimpleName());
+		assertEquals("spoon.test.generics.testclasses.Tacos", methodReserveTC.adaptType(methodReserve_S).getQualifiedName());
+
+		//2) check actual type arguments of declaring type `Section` 
+		CtClass classSection = (CtClass)methodReserve.getDeclaringType();
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch$WeddingLunch$Section", classSection.getQualifiedName());
+		CtTypeParameter classSection_Y = classSection.getFormalCtTypeParameters().get(0);
+		assertEquals("Y", classSection_Y.getSimpleName());
+		assertEquals("spoon.test.generics.testclasses.Paella", methodReserveTC.adaptType(classSection_Y).getQualifiedName());
+		
+		//3) check actual type arguments of declaring type `WeddingLunch` 
+		CtClass classWeddingLunch = (CtClass)classSection.getDeclaringType();
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch$WeddingLunch", classWeddingLunch.getQualifiedName());
+		CtTypeParameter classWeddingLunch_X = classWeddingLunch.getFormalCtTypeParameters().get(0);
+		assertEquals("X", classWeddingLunch_X.getSimpleName());
+		assertEquals("spoon.test.generics.testclasses.Mole", methodReserveTC.adaptType(classWeddingLunch_X).getQualifiedName());
+		
+		//4) check actual type arguments of declaring type `CelebrationLunch` 
+		CtClass classCelebrationLunch = (CtClass)classWeddingLunch.getDeclaringType();
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch", classCelebrationLunch.getQualifiedName());
+		CtTypeParameter classCelebrationLunch_K = classCelebrationLunch.getFormalCtTypeParameters().get(0);
+		CtTypeParameter classCelebrationLunch_L = classCelebrationLunch.getFormalCtTypeParameters().get(1);
+		CtTypeParameter classCelebrationLunch_M = classCelebrationLunch.getFormalCtTypeParameters().get(2);
+		assertEquals("K", classCelebrationLunch_K.getSimpleName());
+		assertEquals("L", classCelebrationLunch_L.getSimpleName());
+		assertEquals("M", classCelebrationLunch_M.getSimpleName());
+		assertEquals("spoon.test.generics.testclasses.Tacos", methodReserveTC.adaptType(classCelebrationLunch_K).getQualifiedName());
+		assertEquals("spoon.test.generics.testclasses.Paella", methodReserveTC.adaptType(classCelebrationLunch_L).getQualifiedName());
+		assertEquals("spoon.test.generics.testclasses.Mole", methodReserveTC.adaptType(classCelebrationLunch_M).getQualifiedName());
+
+		//method->Section->WeddingLunch->CelebrationLunch
+		GenericTypeAdapter celebrationLunchTC = methodReserveTC.getEnclosingGenericTypeAdapter().getEnclosingGenericTypeAdapter().getEnclosingGenericTypeAdapter();
+		assertEquals("java.lang.Integer", celebrationLunchTC.adaptType(classCelebrationLunch_K).getQualifiedName());
+		assertEquals("java.lang.Long", celebrationLunchTC.adaptType(classCelebrationLunch_L).getQualifiedName());
+		assertEquals("java.lang.Double", celebrationLunchTC.adaptType(classCelebrationLunch_M).getQualifiedName());
 	}
 }
