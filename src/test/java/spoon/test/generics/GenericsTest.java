@@ -1,21 +1,6 @@
 package spoon.test.generics;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
-import static spoon.testing.utils.ModelUtils.buildNoClasspath;
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
-import static spoon.testing.utils.ModelUtils.createFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -30,13 +15,13 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -50,11 +35,33 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
+import spoon.support.visitor.ClassTypingContext;
+import spoon.support.visitor.MethodTypingContext;
+import spoon.test.ctType.testclasses.ErasureModelA;
+import spoon.test.generics.testclasses.CelebrationLunch;
+import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
+import spoon.testing.utils.ModelUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
+import static spoon.testing.utils.ModelUtils.buildNoClasspath;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class GenericsTest {
 
@@ -633,7 +640,137 @@ public class GenericsTest {
 			assertSame(aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
 
 		}
+	}
+	@Test
+	public void testCtTypeReference_getSuperclass() throws Exception {
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
+		CtTypeReference<?> trWeddingLunch_Mole = ctClassCelebrationLunch.filterChildren(new NameFilter<>("disgust")).map((CtTypedElement te)->{
+			return te.getType();
+		}).first();
+		
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<java.lang.Integer, java.lang.Long, java.lang.Double>.WeddingLunch<spoon.test.generics.testclasses.Mole>",trWeddingLunch_Mole.toString());
+		CtType<?> tWeddingLunch_X = trWeddingLunch_Mole.getDeclaration();
+		CtTypeReference<?> trCelebrationLunch_Tacos_Paella_X = tWeddingLunch_X.getSuperclass();
+		//current correct behavior of CtType#getSuperclass()
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<"
+				+ "spoon.test.generics.testclasses.Tacos, "
+				+ "spoon.test.generics.testclasses.Paella, "
+				+ "X"
+				+ ">",trCelebrationLunch_Tacos_Paella_X.toString());
+		//current - wrong behavior of CtTypeReference#getSuperclass()
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<"
+				+ "spoon.test.generics.testclasses.Tacos, "
+				+ "spoon.test.generics.testclasses.Paella, "
+				+ "X"
+				+ ">",trWeddingLunch_Mole.getSuperclass().toString());
+		//future suggested behavior of CtTypeReference#getSuperclass() - the 3rd argument is Mole.
+//		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<"
+//				+ "spoon.test.generics.testclasses.Tacos, "
+//				+ "spoon.test.generics.testclasses.Paella, "
+//				+ "spoon.test.generics.testclasses.Mole"
+//				+ ">",trWeddingLunch_Mole.getSuperclass().toString());
+		//future suggested behavior of CtTypeReference#getSuperclass() 
+//		assertEquals("spoon.test.generics.testclasses.Lunch<"
+//				+ "spoon.test.generics.testclasses.Mole, "
+//				+ "spoon.test.generics.testclasses.Tacos"
+//				+ ">",trWeddingLunch_Mole.getSuperclass().getSuperclass().toString());
+	}
+
+	@Test
+	public void testTypeAdapted() throws Exception {
+		// contract: one can get the actual value of a generic type in a given context
+		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
+		CtTypeParameter tpA = ctModel.getFormalCtTypeParameters().get(0);
+		CtTypeParameter tpB = ctModel.getFormalCtTypeParameters().get(1);
+		CtTypeParameter tpC = ctModel.getFormalCtTypeParameters().get(2);
+		CtTypeParameter tpD = ctModel.getFormalCtTypeParameters().get(3);
+
+		CtClass<?> ctModelB = ctModel.filterChildren(new NameFilter<>("ModelB")).first();
+		ClassTypingContext sth = new ClassTypingContext(ctModelB);
+		// in ModelB, "A" is "A2"
+		assertEquals("A2", sth.adaptType(tpA).getQualifiedName());
+		// in ModelB, "B" is "B2"
+		assertEquals("B2", sth.adaptType(tpB).getQualifiedName());
+		// and so on and so forth
+		assertEquals("C2", sth.adaptType(tpC).getQualifiedName());
+		assertEquals("D2", sth.adaptType(tpD).getQualifiedName());
+
+		CtClass<?> ctModelC = ctModel.filterChildren(new NameFilter<>("ModelC")).first();
+		ClassTypingContext sthC = new ClassTypingContext(ctModelC);
+		assertEquals("java.lang.Integer", sthC.adaptType(tpA).getQualifiedName());
+		assertEquals("java.lang.RuntimeException", sthC.adaptType(tpB).getQualifiedName());
+		assertEquals("java.lang.IllegalArgumentException", sthC.adaptType(tpC).getQualifiedName());
+		assertEquals("java.util.List", sthC.adaptType(tpD).getQualifiedName());
+	}
 
 
+	@Test
+	public void testClassTypingContext() throws Exception {
+		// contract: a ClassTypingContext enables one to perform type resolution of generic types
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
+		CtTypeReference<?> typeReferenceOfDisgust = ctClassCelebrationLunch.filterChildren(new NameFilter<>("disgust")).map((CtTypedElement te)->{
+			return te.getType();
+		}).first();
+		
+		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<java.lang.Integer, java.lang.Long, java.lang.Double>.WeddingLunch<spoon.test.generics.testclasses.Mole>",typeReferenceOfDisgust.toString());
+		//method WeddingLunch#eatMe
+		CtMethod<?> tWeddingLunch_eatMe = typeReferenceOfDisgust.getDeclaration().filterChildren((CtNamedElement e)->"eatMe".equals(e.getSimpleName())).first();
+		
+		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
+		//method Lunch#eatMe
+		CtMethod<?> ctClassLunch_eatMe = ctClassLunch.filterChildren((CtNamedElement e)->"eatMe".equals(e.getSimpleName())).first();
+
+		
+		//type of first parameter of  method WeddingLunch#eatMe
+		CtTypeReference<?> ctWeddingLunch_X = tWeddingLunch_eatMe.getParameters().get(0).getType();
+		// X is the type parameter of WeddingLunch
+		assertEquals("X", ctWeddingLunch_X.getSimpleName());
+		//type of first parameter of method Lunch#eatMe
+		CtTypeReference<?> ctClassLunch_A = ctClassLunch_eatMe.getParameters().get(0).getType();
+		assertEquals("A", ctClassLunch_A.getSimpleName());
+		
+		//are these two types same?
+		ClassTypingContext typingContextOfDisgust = new ClassTypingContext(typeReferenceOfDisgust);
+		
+		// in disgust, X of WeddingLunch is bound to "Model"
+		assertEquals("spoon.test.generics.testclasses.Mole", typingContextOfDisgust.adaptType(ctWeddingLunch_X).getQualifiedName());
+		//adapt A to scope of CelebrationLunch<Integer,Long,Double>.WeddingLunch<Mole>
+
+		// in disgust, the A of Lunch is bound to "Mole"
+		assertEquals("spoon.test.generics.testclasses.Mole", typingContextOfDisgust.adaptType(ctClassLunch_A).getQualifiedName());
+
+		// I don't understand the goal and utility of this one
+		assertEquals("java.lang.Double", typingContextOfDisgust.getEnclosingGenericTypeAdapter().adaptType(ctClassLunch_A).getQualifiedName());
+
+
+		// now we resolve those types, but in the context of the declaration, where no concrete types exist
+		//are these two types same in scope of CelebrationLunch<K,L,M>.WddingLunch<X> class itself
+		ClassTypingContext sthOftWeddingLunch_X = new ClassTypingContext(typeReferenceOfDisgust.getDeclaration());
+		
+		// in WeddingLunch "X" is still "X"
+		assertEquals("X", sthOftWeddingLunch_X.adaptType(ctWeddingLunch_X).getQualifiedName());
+
+		// in WeddingLunch the "A" from Lunch of is called "X"
+		assertEquals("X", sthOftWeddingLunch_X.adaptType(ctClassLunch_A).getQualifiedName());
+
+		// ?????
+		//adapt A to scope of enclosing class of CelebrationLunch<K,L,M>.WddingLunch<X>, which is CelebrationLunch<K,L,M>
+		assertEquals("M", sthOftWeddingLunch_X.getEnclosingGenericTypeAdapter().adaptType(ctClassLunch_A).getQualifiedName());
+	}
+	
+	@Test
+	public void testMethodTypingContext() throws Exception {
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
+		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
+
+		MethodTypingContext methodSTH = new MethodTypingContext().setMethod(trWeddingLunch_eatMe);
+
+		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
+		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		
+		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
 	}
 }
