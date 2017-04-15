@@ -16,7 +16,6 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.test.ctType.testclasses.ErasureModelA;
@@ -127,5 +126,75 @@ public class CtTypeParameterTest {
 			return exec.getParent(CtType.class).getQualifiedName()+"#"+result;
 		}
 		throw new AssertionError();
+	}
+	
+	@Test
+	public void testTypeSame() throws Exception {
+		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
+		CtTypeParameter tpA = ctModel.getFormalCtTypeParameters().get(0);
+		CtTypeParameter tpB = ctModel.getFormalCtTypeParameters().get(1);
+		CtTypeParameter tpC = ctModel.getFormalCtTypeParameters().get(2);
+		CtTypeParameter tpD = ctModel.getFormalCtTypeParameters().get(3);
+		
+		CtConstructor<?> ctModelCons = ctModel.getConstructors().iterator().next();
+		CtMethod<?> ctModelMethod = ctModel.getMethodsByName("method").get(0);
+		CtMethod<?> ctModelMethod2 = ctModel.getMethodsByName("method2").get(0);
+		
+		CtClass<?> ctModelB = ctModel.filterChildren(new NameFilter<>("ModelB")).first();
+		CtTypeParameter tpA2 = ctModelB.getFormalCtTypeParameters().get(0);
+		CtTypeParameter tpB2 = ctModelB.getFormalCtTypeParameters().get(1);
+		CtTypeParameter tpC2 = ctModelB.getFormalCtTypeParameters().get(2);
+		CtTypeParameter tpD2 = ctModelB.getFormalCtTypeParameters().get(3);
+
+		CtConstructor<?> ctModelBCons = ctModelB.getConstructors().iterator().next();
+		CtMethod<?> ctModelBMethod = ctModelB.getMethodsByName("method").get(0);
+		
+		//the type parameters of ErasureModelA and ErasureModelA$ModelB are same if they are on the same position.
+		checkIsSame(ctModel.getFormalCtTypeParameters(), ctModelB.getFormalCtTypeParameters(), true);
+		
+		//the type parameters of ErasureModelA#constructor and ErasureModelA$ModelB constructor are NOT same, because constructors does not override
+		checkIsSame(ctModelCons.getFormalCtTypeParameters(), ctModelBCons.getFormalCtTypeParameters(), false);
+		//the type parameters of ctModel ErasureModelA#method and ErasureModelA$ModelB#method are same if they are on the same position.
+		checkIsSame(ctModelMethod.getFormalCtTypeParameters(), ctModelBMethod.getFormalCtTypeParameters(), true);
+		
+		//the type parameters of ctModel ErasureModelA#constructor and ErasureModelA$ModelB#method are never same, because they have different type of scope (Method!=Constructor) 
+		checkIsSame(ctModelCons.getFormalCtTypeParameters(), ctModelBMethod.getFormalCtTypeParameters(), false);
+		//the type parameters of ctModel ErasureModelA#method and ErasureModelA#method2 are never same, because we can be sure that method does not override method2 
+		checkIsSame(ctModelMethod.getFormalCtTypeParameters(), ctModelMethod2.getFormalCtTypeParameters(), false);
+		
+		CtClass<?> ctModelC = ctModel.filterChildren(new NameFilter<>("ModelC")).first();
+	}
+
+	/**
+	 * checks that parameters on the same position are same and parameters on other positions are not same
+	 * @param isSameOnSameIndex TODO
+	 */
+	private void checkIsSame(List<CtTypeParameter> tps1, List<CtTypeParameter> tps2, boolean isSameOnSameIndex) {
+		for(int i=0; i<tps1.size(); i++) {
+			CtTypeParameter tp1 = tps1.get(i);
+			for(int j=0; j<tps2.size(); j++) {
+				CtTypeParameter tp2 = tps2.get(j);
+				if(i==j && isSameOnSameIndex) {
+					checkIsSame(tp1, tp2);
+				} else {
+					checkIsNotSame(tp1, tp2);
+				}
+			}
+		}
+	}
+
+	private void checkIsSame(CtTypeParameter tp1, CtTypeParameter tp2) {
+		assertTrue(isSame(tp1, tp2, false, true) || isSame(tp2, tp1, false, true));
+	}
+	private void checkIsNotSame(CtTypeParameter tp1, CtTypeParameter tp2) {
+		assertFalse(isSame(tp1, tp2, false, true) || isSame(tp2, tp1, false, true));
+	}
+
+	private static boolean isSame(CtTypeParameter thisType, CtTypeParameter thatType, boolean canTypeErasure, boolean checkMethodOverrides) {
+		CtTypeReference<?> thatAdaptedType = thisType.getFactory().Type().createTypeAdapter(thisType.getTypeParameterDeclarer()).adaptType(thatType);
+		if (thatAdaptedType == null) {
+			return false;
+		}
+		return thisType.getQualifiedName().equals(thatAdaptedType.getQualifiedName());
 	}
 }
