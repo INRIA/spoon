@@ -23,3 +23,13 @@ class O<A extends X> {
 	}
 }
 
+class P<D extends X, F> extends O<D> {
+	@Override
+	<E extends D> E foo() {
+		return null;
+	}
+}
+
+class K<A extends List<? extends X>> {
+	<B extends A> void m(List<? extends B> l) {}
+}
