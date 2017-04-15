@@ -19,7 +19,11 @@ package spoon.reflect.factory;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -27,11 +31,15 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.StandardEnvironment;
+import spoon.support.visitor.ClassTypingContext;
+import spoon.support.visitor.GenericTypeAdapter;
+import spoon.support.visitor.MethodTypingContext;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.lang.annotation.Annotation;
@@ -589,6 +597,37 @@ public class TypeFactory extends SubFactory {
 		CtTypeParameterReference typeParam = factory.Core().createTypeParameterReference();
 		typeParam.setSimpleName(name);
 		return typeParam;
+	}
+
+	/**
+	 * Create a {@link GenericTypeAdapter} for adapting of formal type parameters from any compatible context to the context of provided `formalTypeDeclarer`
+	 *
+	 * @param formalTypeDeclarer
+	 * 		the target scope of the returned {@link GenericTypeAdapter}
+	 */
+	public GenericTypeAdapter createTypeAdapter(CtFormalTypeDeclarer formalTypeDeclarer) {
+		class Visitor extends CtAbstractVisitor {
+			GenericTypeAdapter adapter;
+			@Override
+			public <T> void visitCtClass(CtClass<T> ctClass) {
+				adapter = new ClassTypingContext(ctClass);
+			}
+			@Override
+			public <T> void visitCtInterface(CtInterface<T> intrface) {
+				adapter = new ClassTypingContext(intrface);
+			}
+			@Override
+			public <T> void visitCtMethod(CtMethod<T> m) {
+				adapter = new MethodTypingContext().setMethod(m);
+			}
+			@Override
+			public <T> void visitCtConstructor(CtConstructor<T> c) {
+				adapter = new MethodTypingContext().setConstructor(c);
+			}
+		}
+		Visitor visitor = new Visitor();
+		((CtElement) formalTypeDeclarer).accept(visitor);
+		return visitor.adapter;
 	}
 
 	/**

@@ -82,6 +82,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
@@ -105,6 +106,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.chain.CtQuery;
+import spoon.support.visitor.GenericTypeAdapter;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -743,6 +745,11 @@ public interface Factory {
 	 *  @see TypeFactory#createIntersectionTypeReferenceWithBounds(List)
 	 */
 	<T> CtIntersectionTypeReference<T> createIntersectionTypeReferenceWithBounds(List<CtTypeReference<?>> bounds);
+
+	/**
+	 * @see TypeFactory#createTypeAdapter(CtFormalTypeDeclarer)
+	 */
+	GenericTypeAdapter createTypeAdapter(CtFormalTypeDeclarer formalTypeDeclarer);
 
 	/**
 	 *  @see TypeFactory#createReferences(List)
