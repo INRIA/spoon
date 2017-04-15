@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtType;
@@ -91,7 +92,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
 			if (getBoundingType() == null) {
-				return Object.class;
+				return (Class<Object>) getTypeErasure().getActualClass();
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
 		}
@@ -201,7 +202,16 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public CtTypeReference<?> getTypeErasure() {
-		return getDeclaration().getTypeErasure();
+		CtTypeParameter typeParam = getDeclaration();
+		if (typeParam == null) {
+			throw new SpoonException("Cannot resolve type erasure of the type parameter reference, which is not able to found it's declaration.");
+		}
+		return typeParam.getTypeErasure();
+	}
+
+	@Override
+	public boolean isSubtypeOf(CtTypeReference<?> type) {
+		return getDeclaration().isSubtypeOf(type);
 	}
 
 	@Override
