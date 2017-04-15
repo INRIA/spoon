@@ -17,6 +17,7 @@
 package spoon.reflect.code;
 
 import spoon.reflect.visitor.Filter;
+import spoon.support.DerivedProperty;
 import spoon.template.TemplateParameter;
 
 /**
@@ -87,6 +88,7 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	/**
 	 * Gets the last statement of this block.
 	 */
+	@DerivedProperty
 	<T extends CtStatement> T getLastStatement();
 
 	/**
