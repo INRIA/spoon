@@ -18,6 +18,7 @@ package spoon.support.visitor.equals;
 
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBreak;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtOperatorAssignment;
@@ -253,5 +254,34 @@ public class EqualsChecker extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtLiteral(e);
+	}
+
+	@Override
+	public void visitCtComment(CtComment e) {
+		final CtComment peek = (CtComment) this.other;
+		if (e.getCommentType() == null) {
+			if (peek.getCommentType() != null) {
+				isNotEqual = true;
+				return;
+			}
+		} else if (peek.getCommentType() == null) {
+			isNotEqual = true;
+			return;
+		} else if (e.getContent() == null) {
+			if (peek.getContent() != null) {
+				isNotEqual = true;
+				return;
+			}
+		} else if (peek.getContent() == null) {
+			isNotEqual = true;
+			return;
+		} else if (!e.getCommentType().equals(peek.getCommentType())) {
+			isNotEqual = true;
+			return;
+		} else if (!e.getContent().equals(peek.getContent())) {
+			isNotEqual = true;
+			return;
+		}
+		super.visitCtComment(e);
 	}
 }
