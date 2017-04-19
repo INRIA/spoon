@@ -17,7 +17,6 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -29,11 +28,6 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 
 	public CtWildcardReferenceImpl() {
 		simplename = "?";
-	}
-
-	@Override
-	public <T extends CtReference> T setSimpleName(String simplename) {
-		return (T) this;
 	}
 
 	@Override
