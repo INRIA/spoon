@@ -485,6 +485,12 @@
 	    </goals>
 	  </execution>
 	</executions>
+	<configuration>
+	  <excludes>
+	    <exclude>spoon.test.*</exclude>
+	    <exclude>spoon.testing.*</exclude>
+	  </excludes>
+	</configuration>
       </plugin>
 
       <!-- Used for checking backward compatibility (binary and source) -->
