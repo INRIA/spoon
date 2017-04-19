@@ -27,6 +27,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.visitor.DeepRepresentationVisitor;
 import spoon.test.parent.ParentTest;
 
 import java.io.ByteArrayOutputStream;
@@ -41,6 +42,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MainTest {
 
@@ -93,6 +95,13 @@ public class MainTest {
 
 		// type parameter reference.
 		checkBoundAndUnboundTypeReference(pack);
+
+		// no exception in deep representations
+		try {
+			pack.accept(new DeepRepresentationVisitor());
+		} catch (Exception e) {
+			fail();
+		}
 	}
 
 	private void checkBoundAndUnboundTypeReference(CtPackage pack) {
