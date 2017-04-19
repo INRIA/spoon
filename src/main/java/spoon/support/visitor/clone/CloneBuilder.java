@@ -25,10 +25,10 @@ package spoon.support.visitor.clone;
  */
 public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
-		return spoon.support.visitor.clone.CloneBuilder.build(new spoon.support.visitor.clone.CloneBuilder(), element, other);
+		return CloneBuilder.build(new CloneBuilder(), element, other);
 	}
 
-	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.support.visitor.clone.CloneBuilder builder, spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
+	public static <T extends spoon.reflect.declaration.CtElement> T build(CloneBuilder builder, spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
 		builder.setOther(other);
 		builder.scan(element);
 		return ((T) (builder.other));
