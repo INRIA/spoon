@@ -101,6 +101,10 @@ public class SpoonTestHelpers {
 	public static List<CtMethod<?>> getAllSetters(CtType<?> baseType) {
 		List<CtMethod<?>> result = new ArrayList<>();
 		for (CtMethod<?> m : getAllMetamodelMethods(baseType)) {
+			if("setParent".equals(m.getSimpleName())) {
+				//parent is a special kind of setter, which does not influence model properties of element, but link to parent element.
+				continue;
+			}
 			if (!m.getSimpleName().startsWith("set") && !m.getSimpleName().startsWith("set")) {
 				continue;
 			}
