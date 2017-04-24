@@ -656,7 +656,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				final CtTypeReference<?> parameterType = parameterTypes[i];
 				if (parameterType instanceof CtArrayTypeReference) {
 					if (ctParameterType instanceof CtArrayTypeReference) {
-						if (!isSameParameter(((CtArrayTypeReference) ctParameterType).getComponentType(), ((CtArrayTypeReference) parameterType).getComponentType())) {
+						if (!isSameParameter(candidate, ((CtArrayTypeReference) ctParameterType).getComponentType(), ((CtArrayTypeReference) parameterType).getComponentType())) {
 							cont = false;
 						} else {
 							if (!(((CtArrayTypeReference) ctParameterType).getDimensionCount() == ((CtArrayTypeReference) parameterType).getDimensionCount())) {
@@ -666,7 +666,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					} else {
 						cont = false;
 					}
-				} else if (!isSameParameter(ctParameterType, parameterType)) {
+				} else if (!isSameParameter(candidate, ctParameterType, parameterType)) {
 					cont = false;
 				}
 			}
@@ -677,7 +677,19 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return null;
 	}
 
-	private boolean isSameParameter(CtTypeReference<?> ctParameterType, CtTypeReference<?> expectedType) {
+	private boolean isSameParameter(CtMethod<?> method, CtTypeReference<?> ctParameterType, CtTypeReference<?> expectedType) {
+		if (expectedType instanceof CtTypeParameterReference) {
+			/*
+			 * the expectedType is a generic parameter whose declaration should be searched in scope of method
+			 * (not in scope of it's parent, where it can found another/wrong type parameter declaration of same name.
+			 */
+			CtTypeParameterReference tpr = (CtTypeParameterReference) expectedType;
+			expectedType = tpr.clone();
+			expectedType.setParent(method);
+			if (expectedType.getDeclaration() == null) {
+				return false;
+			}
+		}
 		if (expectedType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
 			// Check if Object or extended.
 			if (!ctParameterType.equals(expectedType)) {

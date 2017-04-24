@@ -83,6 +83,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
@@ -108,6 +109,7 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.visitor.GenericTypeAdapter;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -1015,6 +1017,11 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public <T> CtIntersectionTypeReference<T> createIntersectionTypeReferenceWithBounds(List<CtTypeReference<?>> bounds) {
 		return Type().createIntersectionTypeReferenceWithBounds(bounds);
+	}
+
+	@Override
+	public GenericTypeAdapter createTypeAdapter(CtFormalTypeDeclarer formalTypeDeclarer) {
+		return Type().createTypeAdapter(formalTypeDeclarer);
 	}
 
 	@Override

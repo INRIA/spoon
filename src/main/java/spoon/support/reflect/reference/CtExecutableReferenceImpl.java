@@ -31,6 +31,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
+import spoon.support.visitor.MethodTypingContext;
 import spoon.support.visitor.SignaturePrinter;
 
 import java.lang.reflect.AnnotatedElement;
@@ -232,14 +233,25 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public boolean isOverriding(CtExecutableReference<?> executable) {
-		final boolean isSame = getSimpleName().equals(executable.getSimpleName()) && getParameters().equals(executable.getParameters()) && getActualTypeArguments().equals(executable.getActualTypeArguments());
-		if (!isSame) {
-			return false;
+		CtExecutable<?> exec = executable.getDeclaration();
+		if (exec == null) {
+			//the declaration of this executable is not in spoon model
+			//use light detection algorithm, which ignores generic types
+			final boolean isSame = getSimpleName().equals(executable.getSimpleName()) && getParameters().equals(executable.getParameters()) && getActualTypeArguments().equals(executable.getActualTypeArguments());
+			if (!isSame) {
+				return false;
+			}
+			if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
+				return false;
+			}
+			return true;
 		}
-		if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
-			return false;
+		if (exec instanceof CtMethod<?>) {
+			CtMethod<?> method = (CtMethod<?>) exec;
+			return new MethodTypingContext().setExecutableReference(this).isOverriding(method);
 		}
-		return true;
+		//it is not a method. So we can return true only if it is reference to the this executable
+		return exec == getDeclaration();
 	}
 
 	@Override

@@ -97,6 +97,12 @@ public class ExecutableFactory extends SubFactory {
 	 * Creates an executable reference from an existing executable.
 	 */
 	public <T> CtExecutableReference<T> createReference(CtExecutable<T> e) {
+		CtExecutableReference<T> er = createReferenceInternal(e);
+		er.setParent(e);
+		return er;
+	}
+
+	private <T> CtExecutableReference<T> createReferenceInternal(CtExecutable<T> e) {
 		CtTypeReference<?> refs[] = new CtTypeReference[e.getParameters().size()];
 		int i = 0;
 		for (CtParameter<?> param : e.getParameters()) {
