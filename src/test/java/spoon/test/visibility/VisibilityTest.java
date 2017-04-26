@@ -15,7 +15,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.AbstractReferenceFilter;
+import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.visibility.testclasses.A;
 import spoon.test.visibility.testclasses.A2;
@@ -124,7 +124,7 @@ public class VisibilityTest {
 				"-o", "./target/spooned/visibility"
 		});
 
-		final List<CtFieldReference<?>> references = Query.getElements(launcher.getFactory(), new AbstractReferenceFilter<CtFieldReference<?>>(CtFieldReference.class) {
+		final List<CtFieldReference<?>> references = Query.getElements(launcher.getFactory(), new AbstractFilter<CtFieldReference<?>>(CtFieldReference.class) {
 			@Override
 			public boolean matches(CtFieldReference<?> reference) {
 				return "x".equals(reference.getSimpleName());

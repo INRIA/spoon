@@ -18,7 +18,6 @@ package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.CtFunction;
 
 import java.util.List;
@@ -65,43 +64,6 @@ public abstract class Query {
 	public static <E extends CtElement> List<E> getElements(
 			CtElement rootElement, Filter<E> filter) {
 		return rootElement.filterChildren(filter).list();
-	}
-
-	/**
-	 * Returns all the program element references that match the filter.
-	 *
-	 * @param <T>
-	 * 		the type of the sought program element references
-	 * @param rootElement
-	 * 		the element to start the recursive search on
-	 * @param filter
-	 * 		the filter which defines the matching criteria
-	 *
-	 * @deprecated use {@link #getElements(CtElement, Filter)} instead.
-	 */
-	@Deprecated
-	public static <T extends CtReference> List<T> getReferences(
-			CtElement rootElement, Filter<T> filter) {
-		return getElements(rootElement, filter);
-	}
-
-	/**
-	 * Within a given factory, returns all the program element references that
-	 * match the filter.
-	 *
-	 * @param <R>
-	 * 		the type of the sought program element references
-	 * @param factory
-	 * 		the factory that contains the references where to recursive
-	 * 		search on
-	 * @param filter
-	 * 		the filter which defines the matching criteria
-	 * @deprecated use {@link #getElements(CtElement, Filter)} instead.
-	 */
-	@Deprecated
-	public static <R extends CtReference> List<R> getReferences(
-			Factory factory, Filter<R> filter) {
-		return getElements(factory, filter);
 	}
 
 }

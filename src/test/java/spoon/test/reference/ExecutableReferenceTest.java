@@ -9,7 +9,6 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Bar;
 import spoon.test.reference.testclasses.Burritos;
@@ -32,7 +31,7 @@ public class ExecutableReferenceTest {
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/executable-reference", "--output-type", "nooutput", "--noclasspath"
 		});
-		final List<CtExecutableReference<?>> references = Query.getReferences(launcher.getFactory(), new ReferenceTypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+		final List<CtExecutableReference<?>> references = Query.getElements(launcher.getFactory(), new TypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override
 			public boolean matches(CtExecutableReference<?> reference) {
 				return !reference.isConstructor() && super.matches(reference);

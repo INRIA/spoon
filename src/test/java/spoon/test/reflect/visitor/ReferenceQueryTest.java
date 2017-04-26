@@ -6,7 +6,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class ReferenceQueryTest {
 	@Test
 	public void getAllTypeReferencesInEnum() throws Exception {
 		CtEnum<ReferenceQueryTestEnum> testEnum = build("spoon.test.reflect.visitor", "ReferenceQueryTestEnum");
-		List< CtTypeReference<?> > enumTypeRefs = Query.getElements(testEnum, new ReferenceTypeFilter< CtTypeReference<?> >(CtTypeReference.class));
+		List< CtTypeReference<?> > enumTypeRefs = Query.getElements(testEnum, new TypeFilter< CtTypeReference<?> >(CtTypeReference.class));
 		TypeFactory typeFactory = testEnum.getFactory().Type();
 		for (Class<?> c : new Class<?>[]{Integer.class, Long.class, Boolean.class, Number.class, String.class, Void.class}) {
 			Assert.assertTrue("the reference query on the enum should return all the types defined in the enum declaration", enumTypeRefs.contains(typeFactory.createReference(c)));
