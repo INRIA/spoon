@@ -373,7 +373,7 @@ public class ClassTypingContext implements GenericTypeAdapter {
 					throw new SpoonException("Cannot adapt type parameters of non type scope");
 				}
 				CtType<?> typeDeclarer = (CtType<?>) declarer;
-				List<CtTypeReference<?>> actualTypeArguments = typeToArguments.get(typeDeclarer.getQualifiedName());
+				List<CtTypeReference<?>> actualTypeArguments = getActualTypeArguments(typeDeclarer.getQualifiedName());
 				if (actualTypeArguments == null) {
 					/*
 					 * the actualTypeArguments of this declarer cannot be resolved.
@@ -397,6 +397,17 @@ public class ClassTypingContext implements GenericTypeAdapter {
 			result.add(typeRef);
 		}
 		return result;
+	}
+
+	private List<CtTypeReference<?>> getActualTypeArguments(String qualifiedName) {
+		List<CtTypeReference<?>> actualTypeArguments = typeToArguments.get(qualifiedName);
+		if (actualTypeArguments != null) {
+			return actualTypeArguments;
+		}
+		if (enclosingClassTypingContext != null) {
+			return enclosingClassTypingContext.getActualTypeArguments(qualifiedName);
+		}
+		return null;
 	}
 
 	private static CtTypeReference<?> getValue(List<CtTypeReference<?>> arguments, CtTypeParameter typeParam, CtFormalTypeDeclarer declarer) {

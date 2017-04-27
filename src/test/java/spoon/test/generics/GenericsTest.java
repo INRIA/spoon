@@ -39,6 +39,7 @@ import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.GenericTypeAdapter;
 import spoon.support.visitor.MethodTypingContext;
 import spoon.test.ctType.testclasses.ErasureModelA;
+import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
 import spoon.test.generics.testclasses.Lunch;
@@ -821,5 +822,14 @@ public class GenericsTest {
 		assertEquals("java.lang.Integer", celebrationLunchTC.adaptType(classCelebrationLunch_K).getQualifiedName());
 		assertEquals("java.lang.Long", celebrationLunchTC.adaptType(classCelebrationLunch_L).getQualifiedName());
 		assertEquals("java.lang.Double", celebrationLunchTC.adaptType(classCelebrationLunch_M).getQualifiedName());
+	}
+	
+	@Test
+	public void testClassContextOnInnerClass() throws Exception {
+		CtClass<?> classBanana = (CtClass<?>)buildClass(Banana.class);
+		CtClass<?> classVitamins = classBanana.getNestedType("Vitamins");
+		CtTypeReference<?> refList_T = classVitamins.getSuperclass();
+		//contract: generic types defined in enclocing classe (Banana<T>) are resolved from inner class hierarchy (Vitamins->List<T>) too.
+		assertSame(classBanana.getFormalCtTypeParameters().get(0), new ClassTypingContext(classVitamins).adaptType(refList_T.getActualTypeArguments().get(0)).getDeclaration());
 	}
 }
