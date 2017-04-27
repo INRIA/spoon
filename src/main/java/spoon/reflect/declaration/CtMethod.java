@@ -21,6 +21,11 @@ package spoon.reflect.declaration;
  */
 public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtFormalTypeDeclarer, CtShadowable {
 	/**
+	 * @param superMethod to be checked method
+	 * @return true if this method overrides `superMethod`
+	 */
+	boolean isOverriding(CtMethod<?> superMethod);
+	/**
 	 * Checks if the method is a default method. Default method can be in interfaces from
 	 * Java 8: http://docs.oracle.com/javase/tutorial/java/IandI/defaultmethods.html.
 	 */
