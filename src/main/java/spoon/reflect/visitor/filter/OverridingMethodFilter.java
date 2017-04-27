@@ -17,7 +17,6 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 
 /**
@@ -25,6 +24,7 @@ import spoon.reflect.visitor.Filter;
  */
 public class OverridingMethodFilter implements Filter<CtMethod<?>> {
 	private final CtMethod<?> method;
+	private boolean includingSelf = false;
 
 	/**
 	 * Creates a new overriding method filter.
@@ -36,12 +36,20 @@ public class OverridingMethodFilter implements Filter<CtMethod<?>> {
 		this.method = method;
 	}
 
+	/**
+	 * @param includingSelf if false then element which is equal to the #method is not matching.
+	 * false is default behavior
+	 */
+	public OverridingMethodFilter includingSelf(boolean includingSelf) {
+		this.includingSelf = includingSelf;
+		return this;
+	}
+
 	@Override
 	public boolean matches(CtMethod<?> element) {
-		final CtType expectedParent = method.getParent(CtType.class);
-		final CtType<?> currentParent = element.getParent(CtType.class);
-		return currentParent.isSubtypeOf(expectedParent.getReference()) //
-				&& !currentParent.equals(expectedParent) //
-				&& element.getReference().isOverriding(method.getReference());
+		if (method == element) {
+			return this.includingSelf;
+		}
+		return element.isOverriding(method);
 	}
 }
