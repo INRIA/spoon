@@ -54,7 +54,7 @@ import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
  * assertEquals(Integer.class.getName(), typeParamE_adaptedTo_arrayListRef.getQualifiedName());
  * </pre>
  */
-public class ClassTypingContext implements GenericTypeAdapter {
+public class ClassTypingContext extends AbstractTypingContext {
 	/*
 	 * super type hierarchy of the enclosing class
 	 */
@@ -97,20 +97,6 @@ public class ClassTypingContext implements GenericTypeAdapter {
 			enclosingClassTypingContext = createEnclosingHierarchy(enclosing);
 		}
 		typeToArguments.put(type.getQualifiedName(), getTypeReferences(type.getFormalCtTypeParameters()));
-	}
-
-	@Override
-	public CtTypeReference<?> adaptType(CtTypeInformation type) {
-		if (type instanceof CtTypeReference<?>) {
-			if (type instanceof CtTypeParameterReference) {
-				return adaptTypeParameter(((CtTypeParameterReference) type).getDeclaration());
-			}
-			return (CtTypeReference<?>) type;
-		}
-		if (type instanceof CtTypeParameter) {
-			return adaptTypeParameter((CtTypeParameter) type);
-		}
-		return ((CtType<?>) type).getReference();
 	}
 
 	/**
@@ -293,7 +279,8 @@ public class ClassTypingContext implements GenericTypeAdapter {
 	 * @return {@link CtTypeReference} or {@link CtTypeParameterReference} adapted to scope of this {@link ClassTypingContext}
 	 *  or null if `typeParam` cannot be adapted to target `scope`
 	 */
-	private CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
+	@Override
+	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
 		CtFormalTypeDeclarer declarer = typeParam.getTypeParameterDeclarer();
 		if ((declarer instanceof CtType<?>) == false) {
 			return null;

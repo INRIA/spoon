@@ -29,7 +29,6 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtExecutableReference;
@@ -41,7 +40,7 @@ import spoon.reflect.reference.CtTypeReference;
  * it is able to adapt type parameters
  * and compare method signatures.
  */
-public class MethodTypingContext implements GenericTypeAdapter {
+public class MethodTypingContext extends AbstractTypingContext {
 
 	private CtExecutable<?> scopeMethod;
 	private List<CtTypeReference<?>> actualTypeArguments;
@@ -99,20 +98,6 @@ public class MethodTypingContext implements GenericTypeAdapter {
 			}
 		}
 		return this;
-	}
-
-	@Override
-	public CtTypeReference<?> adaptType(CtTypeInformation type) {
-		if (type instanceof CtTypeReference<?>) {
-			if (type instanceof CtTypeParameterReference) {
-				return adaptTypeParameter(((CtTypeParameterReference) type).getDeclaration());
-			}
-			return (CtTypeReference<?>) type;
-		}
-		if (type instanceof CtTypeParameter) {
-			return adaptTypeParameter((CtTypeParameter) type);
-		}
-		return ((CtType<?>) type).getReference();
 	}
 
 	/**
@@ -223,9 +208,14 @@ public class MethodTypingContext implements GenericTypeAdapter {
 			//the methods has different count of parameters they cannot have same signature
 			return false;
 		}
-		if (((CtFormalTypeDeclarer) scopeMethod).getFormalCtTypeParameters().size() != thatMethod.getFormalCtTypeParameters().size()) {
-			//the methods has different count of formal type parameters they cannot have same signature
-			return false;
+		int nrTypeParamsOfScope = ((CtFormalTypeDeclarer) scopeMethod).getFormalCtTypeParameters().size();
+		int nrTypeParamsOfThat = thatMethod.getFormalCtTypeParameters().size();
+		if (nrTypeParamsOfThat != nrTypeParamsOfThat) {
+			//the methods has different count of formal type parameters
+			if (nrTypeParamsOfScope != 0) {
+				//they cannot have same signature
+				return false;
+			} //the overriding method has 0 parameters, it can have same signature after type erasure
 		}
 		return true;
 	}
@@ -243,7 +233,8 @@ public class MethodTypingContext implements GenericTypeAdapter {
 	 * @return {@link CtTypeReference} or {@link CtTypeParameterReference} adapted to scope of this {@link MethodTypingContext}
 	 *  or null if `typeParam` cannot be adapted to target `scope`
 	 */
-	private CtTypeReference<?> adaptTypeParameter(CtTypeParameter superParam) {
+	@Override
+	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter superParam) {
 		CtFormalTypeDeclarer superDeclarer = superParam.getTypeParameterDeclarer();
 		if (superDeclarer instanceof CtType<?>) {
 			return getEnclosingGenericTypeAdapter().adaptType(superParam);
