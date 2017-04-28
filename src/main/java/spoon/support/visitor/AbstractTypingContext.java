@@ -84,5 +84,14 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 		return typeParamRefAdapted;
 	}
 
+	/**
+	 * adapts `typeParam` to the {@link CtTypeReference}
+	 * of scope of this {@link GenericTypeAdapter}
+	 * In can be {@link CtTypeParameterReference} again - depending actual type arguments of this {@link GenericTypeAdapter}.
+	 *
+	 * @param typeParam to be resolved {@link CtTypeParameter}
+	 * @return {@link CtTypeReference} or {@link CtTypeParameterReference} adapted to scope of this {@link GenericTypeAdapter}
+	 *  or null if `typeParam` cannot be adapted to target `scope`
+	 */
 	protected abstract CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam);
 }
