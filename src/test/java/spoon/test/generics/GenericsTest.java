@@ -44,6 +44,7 @@ import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
 import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
+import spoon.test.generics.testclasses.Orange;
 import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.Spaghetti;
@@ -760,6 +761,43 @@ public class GenericsTest {
 		// ?????
 		//adapt A to scope of enclosing class of CelebrationLunch<K,L,M>.WddingLunch<X>, which is CelebrationLunch<K,L,M>
 		assertEquals("M", sthOftWeddingLunch_X.getEnclosingGenericTypeAdapter().adaptType(ctClassLunch_A).getQualifiedName());
+	}
+	
+	@Test
+	public void testRecursiveTypeAdapting() throws Exception {
+		CtType<?> classOrange = buildClass(Orange.class);
+		CtClass<?> classA = classOrange.getNestedType("A");
+		CtTypeParameter typeParamO = classA.getFormalCtTypeParameters().get(0);
+		CtTypeParameter typeParamM = classA.getFormalCtTypeParameters().get(1);
+		assertEquals("O", typeParamO.getQualifiedName());
+		assertEquals("M", typeParamM.getQualifiedName());
+		assertEquals("K", typeParamO.getSuperclass().getQualifiedName());
+		assertEquals("O", typeParamM.getSuperclass().getQualifiedName());
+		assertEquals("K", typeParamM.getSuperclass().getSuperclass().getQualifiedName());
+		
+		CtClass<?> classB = classOrange.getNestedType("B");
+		CtTypeParameter typeParamN = classB.getFormalCtTypeParameters().get(0);
+		CtTypeParameter typeParamP = classB.getFormalCtTypeParameters().get(1);
+		assertEquals("N", typeParamN.getQualifiedName());
+		assertEquals("P", typeParamP.getQualifiedName());
+		
+		ClassTypingContext ctcB = new ClassTypingContext(classB);
+		assertEquals("N", ctcB.adaptType(typeParamO).getQualifiedName());
+		assertEquals("P", ctcB.adaptType(typeParamM).getQualifiedName());
+		//contract: superClass of CtTypeParam is adapted too
+		assertEquals("K", ctcB.adaptType(typeParamO).getSuperclass().getQualifiedName());
+		assertEquals("N", ctcB.adaptType(typeParamM).getSuperclass().getQualifiedName());
+		assertEquals("K", ctcB.adaptType(typeParamM).getSuperclass().getSuperclass().getQualifiedName());
+		
+		CtTypeReference<?> typeRef_list2m = classA.getField("list2m").getType();
+		assertEquals("java.util.List<java.util.List<M>>", typeRef_list2m.toString());
+		//contract: the CtTypeReference is adapted recursive including actual type arguments
+		assertEquals("java.util.List<java.util.List<P>>", ctcB.adaptType(typeRef_list2m).toString());
+		
+		CtTypeReference<?> typeRef_ListQextendsM = classA.getMethodsByName("method").get(0).getParameters().get(0).getType();
+		assertEquals("java.util.List<? extends M>", typeRef_ListQextendsM.toString());
+		//contract: the CtTypeReference is adapted recursive including actual type arguments and their bounds
+		assertEquals("java.util.List<? extends P>", ctcB.adaptType(typeRef_ListQextendsM).toString());
 	}
 	
 	@Test
