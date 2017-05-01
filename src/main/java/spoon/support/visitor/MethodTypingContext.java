@@ -105,7 +105,16 @@ public class MethodTypingContext extends AbstractTypingContext {
 	 * @return true if scope method overrides `thatMethod`
 	 */
 	public boolean isOverriding(CtMethod<?> thatMethod) {
+		if (scopeMethod == thatMethod) {
+			//method overrides itself in spoon model
+			return true;
+		}
 		CtType<?> thatDeclType = thatMethod.getDeclaringType();
+		CtType<?> thisDeclType = ((CtTypeMember) scopeMethod).getDeclaringType();
+		if (thatDeclType == thisDeclType) {
+			//both methods has same declarer, they cannot override.
+			return false;
+		}
 		if (getEnclosingGenericTypeAdapter().isSubtypeOf(thatDeclType.getReference()) == false) {
 			return false;
 		}
