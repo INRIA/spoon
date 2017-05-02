@@ -90,7 +90,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 
 	public MethodTypingContext setExecutableReference(CtExecutableReference<?> execRef) {
 		this.actualTypeArguments = execRef.getActualTypeArguments();
-		this.scopeMethod = (CtMethod<?>) execRef.getDeclaration();
+		this.scopeMethod = execRef.getExecutableDeclaration();
 		if (classTypingContext == null) {
 			CtTypeReference<?> declaringTypeRef = execRef.getDeclaringType();
 			if (declaringTypeRef != null) {

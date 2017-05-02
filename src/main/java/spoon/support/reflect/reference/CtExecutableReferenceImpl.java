@@ -233,8 +233,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public boolean isOverriding(CtExecutableReference<?> executable) {
-		CtExecutable<?> exec = executable.getDeclaration();
-		CtExecutable<?> thisExec = getDeclaration();
+		CtExecutable<?> exec = executable.getExecutableDeclaration();
+		CtExecutable<?> thisExec = getExecutableDeclaration();
 		if (exec == null || thisExec == null) {
 			//the declaration of this executable is not in spoon model
 			//use light detection algorithm, which ignores generic types
