@@ -1,6 +1,8 @@
 package spoon.test.support;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -39,9 +41,8 @@ public class ResourceTest {
 		String entry1 = "src/test/resources/spoon/test/api/CommentedClass.java";
 		FileSystemFile file1 = new FileSystemFile(new File(entry1));
 
-		// this file in Foo.java
-		assertEquals(file1, fileSystemFolder.getAllFiles().get(0));
-		assertEquals(file, fileSystemFolder.getAllFiles().get(1));
+		assertThat(fileSystemFolder.getAllFiles().contains(file), is(true));
+		assertThat(fileSystemFolder.getAllFiles().contains(file1), is(true));
 	}
 
 	@Test
