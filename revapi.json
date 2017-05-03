@@ -10,7 +10,7 @@
         // specify which package to filter
         "packages": {
           "regex": true,
-          "include": ["spoon\\..*"],
+          "include": ["spoon.*"],
           "exclude": ["spoon\\..*\\.test(\\..*)?"]
         },
 
