@@ -30,14 +30,18 @@ public class ResourceTest {
 		FileSystemFolder fileSystemFolder = new FileSystemFolder(new File(dir));
 
 		// there is one file in api
-		assertEquals(1, fileSystemFolder.getAllFiles().size());
-		assertEquals(1, fileSystemFolder.getAllJavaFiles().size());
+		assertEquals(2, fileSystemFolder.getAllFiles().size());
+		assertEquals(2, fileSystemFolder.getAllJavaFiles().size());
 
 		String entry = "src/test/resources/spoon/test/api/Foo.java";
 		FileSystemFile file = new FileSystemFile(new File(entry));
 
+		String entry1 = "src/test/resources/spoon/test/api/CommentedClass.java";
+		FileSystemFile file1 = new FileSystemFile(new File(entry1));
+
 		// this file in Foo.java
-		assertEquals(file, fileSystemFolder.getAllFiles().get(0));
+		assertEquals(file1, fileSystemFolder.getAllFiles().get(0));
+		assertEquals(file, fileSystemFolder.getAllFiles().get(1));
 	}
 
 	@Test
@@ -52,10 +56,10 @@ public class ResourceTest {
 		folder.addFolder(fileSystemFolder);
 		folder.addFolder(fileSystemFolder2);
 
-		assertEquals(3, folder.getAllFiles().size());
+		assertEquals(4, folder.getAllFiles().size());
 
 		// the README is not a Java file
-		assertEquals(2, folder.getAllJavaFiles().size());
+		assertEquals(3, folder.getAllJavaFiles().size());
 	}
 
 	@Test
