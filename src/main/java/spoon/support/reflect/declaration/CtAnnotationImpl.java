@@ -110,7 +110,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			// Value should be converted to a CtNewArray.
 			res = getFactory().Core().createNewArray();
 			Object[] values = (Object[]) value;
-			res.setType(getFactory().Type().createArrayReference(getFactory().Type().createReference(values[0].getClass())));
+
+			res.setType(getFactory().Type().createArrayReference(getFactory().Type().createReference(value.getClass().getComponentType())));
 			for (Object o : values) {
 				((CtNewArray) res).addElement(convertValueToExpression(o));
 			}

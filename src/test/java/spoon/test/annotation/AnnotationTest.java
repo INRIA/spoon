@@ -67,10 +67,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -926,5 +929,24 @@ public class AnnotationTest {
 		CtAnnotation annotation = annotations.get(0);
 
 		assertEquals("Annotation should be @spoon.test.annotation.testclasses.PortRange", "spoon.test.annotation.testclasses.PortRange", annotation.getAnnotationType().getQualifiedName());
+	}
+
+	@Test
+	public void annotationAddValue() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Bar.java");
+		spoon.buildModel();
+
+		factory = spoon.getFactory();
+
+		List<CtMethod> methods = factory.getModel().getElements(new NameFilter<CtMethod>("bidule"));
+
+		assertThat(methods.size(), is(1));
+
+		CtAnnotation anno1 = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[] { "test"});
+		assertThat(anno1.getValue("params").getType(), is(factory.Type().createReference(String[].class)));
+
+		CtAnnotation anno = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[0]);
+		assertThat(anno.getValue("params").getType(), is(factory.Type().createReference(String[].class))); 
 	}
 }
