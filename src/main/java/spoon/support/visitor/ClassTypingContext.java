@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import spoon.SpoonException;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtType;
@@ -318,14 +317,13 @@ public class ClassTypingContext extends AbstractTypingContext {
 			super(visitedSet);
 		}
 		@Override
-		public ScanningMode enter(CtElement element) {
-			ScanningMode mode = super.enter(element);
+		public ScanningMode enter(CtTypeReference<?> typeRef, boolean isClass) {
+			ScanningMode mode = super.enter(typeRef);
 			if (mode == ScanningMode.SKIP_ALL) {
 				//this interface was already visited. Do not visit it again
 				return mode;
 			}
-			CtType<?> type = ((CtTypeReference<?>) element).getTypeDeclaration();
-			if (type instanceof CtClass) {
+			if (isClass) {
 				if (foundArguments != null) {
 					//we have found result then we can finish before entering super class. All interfaces of found type should be still visited
 					//skip before super class (and it's interfaces) of found type is visited
@@ -336,7 +334,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 				 * Remember that, so we can continue at this place if needed.
 				 * If we enter class, then this listener assures that that class and all it's not yet visited interfaces are visited
 				 */
-				lastResolvedSuperclass = type;
+				lastResolvedSuperclass = typeRef;
 			}
 			//this type was not visited yet. Visit it normally
 			return ScanningMode.NORMAL;
