@@ -274,7 +274,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			//this method is called only for classes (not for interfaces) so we know we can visit java.lang.Object now too
 			superClassRef = superTypeRef.getFactory().Type().OBJECT;
 		}
-		ScanningMode mode = enter(superClassRef, false);
+		ScanningMode mode = enter(superClassRef, true);
 		if (mode == SKIP_ALL) {
 			return;
 		}
@@ -282,7 +282,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		if (mode == NORMAL && query.isTerminated() == false) {
 			visitSuperClasses(superClassRef, outputConsumer, includingInterfaces);
 		}
-		exit(superClassRef, false);
+		exit(superClassRef, true);
 	}
 
 	/**
@@ -301,7 +301,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			return;
 		}
 		for (CtTypeReference<?> ifaceRef : superInterfaces) {
-			ScanningMode mode = enter(ifaceRef, true);
+			ScanningMode mode = enter(ifaceRef, false);
 			if (mode == SKIP_ALL) {
 				continue;
 			}
@@ -309,7 +309,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			if (mode == NORMAL && query.isTerminated() == false) {
 				visitSuperInterfaces(ifaceRef, outputConsumer);
 			}
-			exit(ifaceRef, true);
+			exit(ifaceRef, false);
 			if (query.isTerminated()) {
 				return;
 			}
