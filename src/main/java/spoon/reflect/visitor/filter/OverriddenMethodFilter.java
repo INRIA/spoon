@@ -17,14 +17,16 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
+import spoon.support.visitor.MethodTypingContext;
 
 /**
  * Gets all overridden method from the method given.
  */
 public class OverriddenMethodFilter implements Filter<CtMethod<?>> {
 	private final CtMethod<?> method;
+	private final MethodTypingContext context;
+	private boolean includingSelf = false;
 
 	/**
 	 * Creates a new overridden method filter.
@@ -34,14 +36,23 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>> {
 	 */
 	public OverriddenMethodFilter(CtMethod<?> method) {
 		this.method = method;
+		context = new MethodTypingContext().setMethod(method);
+	}
+
+	/**
+	 * @param includingSelf if false then element which is equal to the #method is not matching.
+	 * false is default behavior
+	 */
+	public OverriddenMethodFilter includingSelf(boolean includingSelf) {
+		this.includingSelf = includingSelf;
+		return this;
 	}
 
 	@Override
 	public boolean matches(CtMethod<?> element) {
-		final CtType expectedParent = method.getParent(CtType.class);
-		final CtType<?> currentParent = element.getParent(CtType.class);
-		return expectedParent.isSubtypeOf(currentParent.getReference()) //
-				&& !currentParent.equals(expectedParent) //
-				&& method.getReference().isOverriding(element.getReference());
+		if (method == element) {
+			return this.includingSelf;
+		}
+		return context.isOverriding(element);
 	}
 }
