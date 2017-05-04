@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.visitor.MethodTypingContext;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -184,6 +185,11 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@Override
 	public <R extends T> void replace(CtMethod<T> element) {
 		replace((CtElement) element);
+	}
+
+	@Override
+	public boolean isOverriding(CtMethod<?> superMethod) {
+		return new MethodTypingContext().setMethod(this).isOverriding(superMethod);
 	}
 
 	boolean isShadow;

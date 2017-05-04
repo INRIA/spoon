@@ -90,7 +90,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 
 	public MethodTypingContext setExecutableReference(CtExecutableReference<?> execRef) {
 		this.actualTypeArguments = execRef.getActualTypeArguments();
-		this.scopeMethod = (CtMethod<?>) execRef.getDeclaration();
+		this.scopeMethod = execRef.getExecutableDeclaration();
 		if (classTypingContext == null) {
 			CtTypeReference<?> declaringTypeRef = execRef.getDeclaringType();
 			if (declaringTypeRef != null) {
@@ -105,7 +105,16 @@ public class MethodTypingContext extends AbstractTypingContext {
 	 * @return true if scope method overrides `thatMethod`
 	 */
 	public boolean isOverriding(CtMethod<?> thatMethod) {
+		if (scopeMethod == thatMethod) {
+			//method overrides itself in spoon model
+			return true;
+		}
 		CtType<?> thatDeclType = thatMethod.getDeclaringType();
+		CtType<?> thisDeclType = ((CtTypeMember) scopeMethod).getDeclaringType();
+		if (thatDeclType == thisDeclType) {
+			//both methods has same declarer, they cannot override.
+			return false;
+		}
 		if (getEnclosingGenericTypeAdapter().isSubtypeOf(thatDeclType.getReference()) == false) {
 			return false;
 		}
