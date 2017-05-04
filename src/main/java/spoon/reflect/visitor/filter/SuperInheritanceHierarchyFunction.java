@@ -61,7 +61,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 	 * Use it instead of {@link CtScannerListener}
 	 * if you need to know whether visited type reference is class or interface
 	 */
-	public static class Listener implements CtScannerListener {
+	private static class Listener implements CtScannerListener {
 
 		/**
 		 * Called before the scanner enters an type
