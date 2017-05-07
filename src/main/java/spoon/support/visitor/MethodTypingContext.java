@@ -49,6 +49,11 @@ public class MethodTypingContext extends AbstractTypingContext {
 	public MethodTypingContext() {
 	}
 
+	@Override
+	public CtFormalTypeDeclarer getScope() {
+		return (CtFormalTypeDeclarer) scopeMethod;
+	}
+
 	public MethodTypingContext setMethod(CtMethod<?> scopeMethod) {
 		this.scopeMethod = scopeMethod;
 		actualTypeArguments = getTypeReferences(scopeMethod.getFormalCtTypeParameters());
