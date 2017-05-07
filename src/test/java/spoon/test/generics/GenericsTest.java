@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.factory.Factory;
@@ -872,6 +873,68 @@ public class GenericsTest {
 		assertEquals("java.lang.Long", celebrationLunchTC.adaptType(classCelebrationLunch_L).getQualifiedName());
 		assertEquals("java.lang.Double", celebrationLunchTC.adaptType(classCelebrationLunch_M).getQualifiedName());
 	}
+	
+	@Test
+	public void testMethodTypingContextAdaptMethod() throws Exception {
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
+		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
+		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
+
+		MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClassWeddingLunch));
+		assertSame(trWeddingLunch_eatMe, methodSTH.adaptMethod(trWeddingLunch_eatMe));
+		CtMethod<?> adaptedLunchEatMe = methodSTH.adaptMethod(trLunch_eatMe);
+		//contract: adapting of method declared in different scope, returns new method
+		assertTrue(adaptedLunchEatMe != trLunch_eatMe);
+		//contract: adapting of adapted method returns input method
+		assertSame(adaptedLunchEatMe, methodSTH.adaptMethod(adaptedLunchEatMe));
+		//check that new method is adapted correctly
+		//is declared in correct class
+		assertSame(ctClassWeddingLunch, adaptedLunchEatMe.getDeclaringType());
+		//is not member of that class
+		for (CtTypeMember typeMember : ctClassWeddingLunch.getTypeMembers()) {
+			assertFalse(adaptedLunchEatMe==typeMember);
+		}
+		//name is correct
+		assertEquals("eatMe", adaptedLunchEatMe.getSimpleName());
+		//formal type parameters are correct
+		assertEquals(1, adaptedLunchEatMe.getFormalCtTypeParameters().size());
+		assertEquals("C", adaptedLunchEatMe.getFormalCtTypeParameters().get(0).getQualifiedName());
+		//parameters are correct
+		assertEquals(3, adaptedLunchEatMe.getParameters().size());
+		assertEquals("X", adaptedLunchEatMe.getParameters().get(0).getType().getQualifiedName());
+		assertEquals(Tacos.class.getName(), adaptedLunchEatMe.getParameters().get(1).getType().getQualifiedName());
+		assertEquals("C", adaptedLunchEatMe.getParameters().get(2).getType().getQualifiedName());
+		
+		//contract: adapted method can be used as scope method of Method typing context
+		methodSTH.setMethod(adaptedLunchEatMe);
+
+		//contract: check that adapted method in role of method typing context can be used
+		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
+		assertTrue(methodSTH.isOverriding(trWeddingLunch_eatMe));
+		assertTrue(methodSTH.isSubSignature(trWeddingLunch_eatMe));
+		
+		methodSTH = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClassWeddingLunch));
+		//contract: method typing context creates adapted method automatically
+		methodSTH.setMethod(trLunch_eatMe);
+		//contract: method typing context creates adapted method automatically, which is equal to manually adapted one
+		assertEquals(adaptedLunchEatMe, methodSTH.getAdaptationScope());
+
+		//contract: check that adapted method in role of method typing context can be used
+		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
+		assertTrue(methodSTH.isOverriding(trWeddingLunch_eatMe));
+		assertTrue(methodSTH.isSubSignature(trWeddingLunch_eatMe));
+
+		//contract: use method from correct scope and check whether it has same signature like adapted method
+		methodSTH.setMethod(trWeddingLunch_eatMe);
+		//contract: check that adapting of methods still produces same results, even when scopeMethod is already assigned
+		assertEquals(adaptedLunchEatMe, methodSTH.adaptMethod(trLunch_eatMe));
+		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
+		assertTrue(methodSTH.isOverriding(trWeddingLunch_eatMe));
+		assertTrue(methodSTH.isSubSignature(trWeddingLunch_eatMe));
+	}
+	
 	
 	@Test
 	public void testClassContextOnInnerClass() throws Exception {
