@@ -38,7 +38,7 @@ import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
 import static spoon.reflect.visitor.chain.ScanningMode.SKIP_CHILDREN;
 
 /**
- * Expects a {@link CtType} as input
+ * Expects a {@link CtTypeInformation} as input
  * and produces all super classes and super interfaces recursively.<br>
  * The output is produced in following order:
  * <ol>
