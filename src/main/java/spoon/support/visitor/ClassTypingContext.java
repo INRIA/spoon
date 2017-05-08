@@ -54,6 +54,8 @@ import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
  * </pre>
  */
 public class ClassTypingContext extends AbstractTypingContext {
+
+	private final CtType<?> scopeType;
 	/*
 	 * super type hierarchy of the enclosing class
 	 */
@@ -77,6 +79,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * @param typeReference {@link CtTypeReference} whose actual type arguments are used for resolving of input type parameters
 	 */
 	public ClassTypingContext(CtTypeReference<?> typeReference) {
+		scopeType = typeReference.getTypeDeclaration();
 		lastResolvedSuperclass = typeReference;
 		CtTypeReference<?> enclosing = getEnclosingType(typeReference);
 		if (enclosing != null) {
@@ -90,12 +93,18 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * which plays role of actual type arguments, used for resolving of input type parameters
 	 */
 	public ClassTypingContext(CtType<?> type) {
+		scopeType = type;
 		lastResolvedSuperclass = type;
 		CtType<?> enclosing = getEnclosingType(type);
 		if (enclosing != null) {
 			enclosingClassTypingContext = createEnclosingHierarchy(enclosing);
 		}
 		typeToArguments.put(type.getQualifiedName(), getTypeReferences(type.getFormalCtTypeParameters()));
+	}
+
+	@Override
+	public CtType<?> getAdaptationScope() {
+		return scopeType;
 	}
 
 	/**
