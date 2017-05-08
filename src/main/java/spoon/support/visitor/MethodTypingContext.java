@@ -50,7 +50,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 	}
 
 	@Override
-	public CtFormalTypeDeclarer getScope() {
+	public CtFormalTypeDeclarer getAdaptationScope() {
 		return (CtFormalTypeDeclarer) scopeMethod;
 	}
 

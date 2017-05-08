@@ -738,7 +738,7 @@ public class GenericsTest {
 		ClassTypingContext typingContextOfDisgust = new ClassTypingContext(typeReferenceOfDisgust);
 		
 		//contract: the class typing context provides its scope 
-		assertSame(typeReferenceOfDisgust.getTypeDeclaration(), typingContextOfDisgust.getScope());
+		assertSame(typeReferenceOfDisgust.getTypeDeclaration(), typingContextOfDisgust.getAdaptationScope());
 		
 		// in disgust, X of WeddingLunch is bound to "Model"
 		assertEquals("spoon.test.generics.testclasses.Mole", typingContextOfDisgust.adaptType(ctWeddingLunch_X).getQualifiedName());
@@ -756,7 +756,7 @@ public class GenericsTest {
 		ClassTypingContext sthOftWeddingLunch_X = new ClassTypingContext(typeReferenceOfDisgust.getDeclaration());
 		
 		//contract: the class typing context provides its scope 
-		assertSame(typeReferenceOfDisgust.getDeclaration(), sthOftWeddingLunch_X.getScope());
+		assertSame(typeReferenceOfDisgust.getDeclaration(), sthOftWeddingLunch_X.getAdaptationScope());
 		
 		// in WeddingLunch "X" is still "X"
 		assertEquals("X", sthOftWeddingLunch_X.adaptType(ctWeddingLunch_X).getQualifiedName());
@@ -815,7 +815,7 @@ public class GenericsTest {
 		MethodTypingContext methodSTH = new MethodTypingContext().setMethod(trWeddingLunch_eatMe);
 
 		//contract: the method typing context provides its scope 
-		assertSame(trWeddingLunch_eatMe, methodSTH.getScope());
+		assertSame(trWeddingLunch_eatMe, methodSTH.getAdaptationScope());
 
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
 		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
@@ -830,7 +830,7 @@ public class GenericsTest {
 		
 		MethodTypingContext methodReserveTC = new MethodTypingContext().setInvocation(invokeReserve);
 		//contract: the method typing context provides its scope 
-		assertSame(invokeReserve.getExecutable().getDeclaration(), methodReserveTC.getScope());
+		assertSame(invokeReserve.getExecutable().getDeclaration(), methodReserveTC.getAdaptationScope());
 		
 		//check that MethodTypingContext made from invocation knows actual type arguments of method and all declaring types
 		//1) check method actual type argument

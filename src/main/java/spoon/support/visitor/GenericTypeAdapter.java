@@ -28,7 +28,7 @@ public interface GenericTypeAdapter {
 	/**
 	 * @return the scope of this type adapter
 	 */
-	CtFormalTypeDeclarer getScope();
+	CtFormalTypeDeclarer getAdaptationScope();
 	/**
 	 * adapts `type` to the {@link CtTypeReference}
 	 * of the scope of this {@link GenericTypeAdapter}

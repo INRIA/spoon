@@ -103,7 +103,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	}
 
 	@Override
-	public CtType<?> getScope() {
+	public CtType<?> getAdaptationScope() {
 		return scopeType;
 	}
 
