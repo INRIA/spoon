@@ -502,7 +502,7 @@
           <dependency>
             <groupId>org.revapi</groupId>
             <artifactId>revapi-reporter-text</artifactId>
-            <version>0.8.0</version>
+            <version>0.7.0</version>
           </dependency>
         </dependencies>
         <configuration>
