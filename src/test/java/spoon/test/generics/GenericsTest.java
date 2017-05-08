@@ -737,7 +737,7 @@ public class GenericsTest {
 		//are these two types same?
 		ClassTypingContext typingContextOfDisgust = new ClassTypingContext(typeReferenceOfDisgust);
 		
-		//contract: the class typing context provides it's scope 
+		//contract: the class typing context provides its scope 
 		assertSame(typeReferenceOfDisgust.getTypeDeclaration(), typingContextOfDisgust.getScope());
 		
 		// in disgust, X of WeddingLunch is bound to "Model"
@@ -755,7 +755,7 @@ public class GenericsTest {
 		//are these two types same in scope of CelebrationLunch<K,L,M>.WddingLunch<X> class itself
 		ClassTypingContext sthOftWeddingLunch_X = new ClassTypingContext(typeReferenceOfDisgust.getDeclaration());
 		
-		//contract: the class typing context provides it's scope 
+		//contract: the class typing context provides its scope 
 		assertSame(typeReferenceOfDisgust.getDeclaration(), sthOftWeddingLunch_X.getScope());
 		
 		// in WeddingLunch "X" is still "X"
@@ -814,7 +814,7 @@ public class GenericsTest {
 
 		MethodTypingContext methodSTH = new MethodTypingContext().setMethod(trWeddingLunch_eatMe);
 
-		//contract: the method typing context provides it's scope 
+		//contract: the method typing context provides its scope 
 		assertSame(trWeddingLunch_eatMe, methodSTH.getScope());
 
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
@@ -829,7 +829,7 @@ public class GenericsTest {
 		
 		
 		MethodTypingContext methodReserveTC = new MethodTypingContext().setInvocation(invokeReserve);
-		//contract: the method typing context provides it's scope 
+		//contract: the method typing context provides its scope 
 		assertSame(invokeReserve.getExecutable().getDeclaration(), methodReserveTC.getScope());
 		
 		//check that MethodTypingContext made from invocation knows actual type arguments of method and all declaring types
