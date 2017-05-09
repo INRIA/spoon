@@ -921,9 +921,7 @@ public class GenericsTest {
 		methodSTH.setMethod(trLunch_eatMe);
 		//contract: method typing context creates adapted method automatically, which is equal to manually adapted one
 		assertEquals(adaptedLunchEatMe, methodSTH.getAdaptationScope());
-
-		//contract: check that adapted method in role of method typing context can be used
-		//contract: check that adapted method in role of method typing context can be used
+		
 		// represents <C> void eatMe(M paramA, K paramB, C paramC)
 		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
 		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
