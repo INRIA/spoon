@@ -56,6 +56,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javafx.scene.input.KeyCode.M;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -876,52 +877,56 @@ public class GenericsTest {
 	
 	@Test
 	public void testMethodTypingContextAdaptMethod() throws Exception {
+		// core contracts of MethodTypingContext#adaptMethod
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
+
+		// represents <C> void eatMe(A paramA, B paramB, C paramC){}
 		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
 		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
-		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
 
-		MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClassWeddingLunch));
-		assertSame(trWeddingLunch_eatMe, methodSTH.adaptMethod(trWeddingLunch_eatMe));
+		// we all analyze new methods
+		final MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClassWeddingLunch));
 		CtMethod<?> adaptedLunchEatMe = methodSTH.adaptMethod(trLunch_eatMe);
+
 		//contract: adapting of method declared in different scope, returns new method
 		assertTrue(adaptedLunchEatMe != trLunch_eatMe);
-		//contract: adapting of adapted method returns input method
-		assertSame(adaptedLunchEatMe, methodSTH.adaptMethod(adaptedLunchEatMe));
+
 		//check that new method is adapted correctly
 		//is declared in correct class
 		assertSame(ctClassWeddingLunch, adaptedLunchEatMe.getDeclaringType());
-		//is not member of that class
+		//  is not member of the same class (WeddingLunch)
 		for (CtTypeMember typeMember : ctClassWeddingLunch.getTypeMembers()) {
 			assertFalse(adaptedLunchEatMe==typeMember);
 		}
-		//name is correct
+		// the name is the same
 		assertEquals("eatMe", adaptedLunchEatMe.getSimpleName());
-		//formal type parameters are correct
+		// it has the same number of of formal type parameters
 		assertEquals(1, adaptedLunchEatMe.getFormalCtTypeParameters().size());
 		assertEquals("C", adaptedLunchEatMe.getFormalCtTypeParameters().get(0).getQualifiedName());
+
 		//parameters are correct
 		assertEquals(3, adaptedLunchEatMe.getParameters().size());
-		assertEquals("X", adaptedLunchEatMe.getParameters().get(0).getType().getQualifiedName());
-		assertEquals(Tacos.class.getName(), adaptedLunchEatMe.getParameters().get(1).getType().getQualifiedName());
-		assertEquals("C", adaptedLunchEatMe.getParameters().get(2).getType().getQualifiedName());
-		
-		//contract: adapted method can be used as scope method of Method typing context
-		methodSTH.setMethod(adaptedLunchEatMe);
 
-		//contract: check that adapted method in role of method typing context can be used
-		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
-		assertTrue(methodSTH.isOverriding(trWeddingLunch_eatMe));
-		assertTrue(methodSTH.isSubSignature(trWeddingLunch_eatMe));
-		
-		methodSTH = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClassWeddingLunch));
+		// "A paramA" becomes "X paramA" becomes Lunch%A corresponds to X in WeddingLunch
+		assertEquals("X", adaptedLunchEatMe.getParameters().get(0).getType().getQualifiedName());
+		// B paramB becomes Tacos becomes Lunch%B corresponds to Tacos in WeddingLunch (class WeddingLunch<X> extends CelebrationLunch<Tacos, Paella, X>)
+		assertEquals(Tacos.class.getName(), adaptedLunchEatMe.getParameters().get(1).getType().getQualifiedName());
+		// "C paramC" stays "C paramC"
+		assertEquals("C", adaptedLunchEatMe.getParameters().get(2).getType().getQualifiedName());
+
+		//contract: adapting of adapted method returns input method
+		assertSame(adaptedLunchEatMe, methodSTH.adaptMethod(adaptedLunchEatMe));
+
 		//contract: method typing context creates adapted method automatically
 		methodSTH.setMethod(trLunch_eatMe);
 		//contract: method typing context creates adapted method automatically, which is equal to manually adapted one
 		assertEquals(adaptedLunchEatMe, methodSTH.getAdaptationScope());
 
 		//contract: check that adapted method in role of method typing context can be used
+		//contract: check that adapted method in role of method typing context can be used
+		// represents <C> void eatMe(M paramA, K paramB, C paramC)
+		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
 		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
 		assertTrue(methodSTH.isOverriding(trWeddingLunch_eatMe));
 		assertTrue(methodSTH.isSubSignature(trWeddingLunch_eatMe));
