@@ -321,8 +321,8 @@ public class MethodTypingContext extends AbstractTypingContext {
 	}
 
 	/**
-	 * @param method to be adapted method
-	 * @return new method whose parameters are adapted to `classTypingContext` or origin `method` if it is already declared there
+	 * @param method to be adapted to this context
+	 * @return new method whose parameters are adapted to `this context` or the same`method` if there is no need to adapt it
 	 */
 	public <T> CtMethod<T> adaptMethod(CtMethod<T> method) {
 		CtType<?> declType = method.getDeclaringType();
