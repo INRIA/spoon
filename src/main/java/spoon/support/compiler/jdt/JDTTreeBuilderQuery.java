@@ -25,7 +25,6 @@ import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.OperatorIds;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
@@ -35,8 +34,8 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.support.util.RtHelper;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 /** Helper class for JDTTreeBuilder */
@@ -299,40 +298,6 @@ class JDTTreeBuilderQuery {
 	 * @return Set of enum value of {@link ModifierKind}.
 	 */
 	static Set<ModifierKind> getModifiers(int modifier) {
-		Set<ModifierKind> modifiers = EnumSet.noneOf(ModifierKind.class);
-		if ((modifier & ClassFileConstants.AccPublic) != 0) {
-			modifiers.add(ModifierKind.PUBLIC);
-		}
-		if ((modifier & ClassFileConstants.AccPrivate) != 0) {
-			modifiers.add(ModifierKind.PRIVATE);
-		}
-		if ((modifier & ClassFileConstants.AccProtected) != 0) {
-			modifiers.add(ModifierKind.PROTECTED);
-		}
-		if ((modifier & ClassFileConstants.AccStatic) != 0) {
-			modifiers.add(ModifierKind.STATIC);
-		}
-		if ((modifier & ClassFileConstants.AccFinal) != 0) {
-			modifiers.add(ModifierKind.FINAL);
-		}
-		if ((modifier & ClassFileConstants.AccSynchronized) != 0) {
-			modifiers.add(ModifierKind.SYNCHRONIZED);
-		}
-		if ((modifier & ClassFileConstants.AccVolatile) != 0) {
-			modifiers.add(ModifierKind.VOLATILE);
-		}
-		if ((modifier & ClassFileConstants.AccTransient) != 0) {
-			modifiers.add(ModifierKind.TRANSIENT);
-		}
-		if ((modifier & ClassFileConstants.AccAbstract) != 0) {
-			modifiers.add(ModifierKind.ABSTRACT);
-		}
-		if ((modifier & ClassFileConstants.AccStrictfp) != 0) {
-			modifiers.add(ModifierKind.STRICTFP);
-		}
-		if ((modifier & ClassFileConstants.AccNative) != 0) {
-			modifiers.add(ModifierKind.NATIVE);
-		}
-		return modifiers;
+		return RtHelper.getModifiers(modifier);
 	}
 }
