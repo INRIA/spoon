@@ -884,9 +884,10 @@ public class GenericsTest {
 		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
 		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
 
+		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
 		// we all analyze new methods
-		final MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClassWeddingLunch));
-		CtMethod<?> adaptedLunchEatMe = methodSTH.adaptMethod(trLunch_eatMe);
+		final MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(ctcWeddingLunch);
+		CtMethod<?> adaptedLunchEatMe = ctcWeddingLunch.adaptMethod(trLunch_eatMe);
 
 		//contract: adapting of method declared in different scope, returns new method
 		assertTrue(adaptedLunchEatMe != trLunch_eatMe);
@@ -915,7 +916,7 @@ public class GenericsTest {
 		assertEquals("C", adaptedLunchEatMe.getParameters().get(2).getType().getQualifiedName());
 
 		//contract: adapting of adapted method returns input method
-		assertSame(adaptedLunchEatMe, methodSTH.adaptMethod(adaptedLunchEatMe));
+		assertSame(adaptedLunchEatMe, ctcWeddingLunch.adaptMethod(adaptedLunchEatMe));
 
 		//contract: method typing context creates adapted method automatically
 		methodSTH.setMethod(trLunch_eatMe);
@@ -931,7 +932,7 @@ public class GenericsTest {
 		//contract: use method from correct scope and check whether it has same signature like adapted method
 		methodSTH.setMethod(trWeddingLunch_eatMe);
 		//contract: check that adapting of methods still produces same results, even when scopeMethod is already assigned
-		assertEquals(adaptedLunchEatMe, methodSTH.adaptMethod(trLunch_eatMe));
+		assertEquals(adaptedLunchEatMe, ctcWeddingLunch.adaptMethod(trLunch_eatMe));
 		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
 		assertTrue(methodSTH.isOverriding(trWeddingLunch_eatMe));
 		assertTrue(methodSTH.isSubSignature(trWeddingLunch_eatMe));
