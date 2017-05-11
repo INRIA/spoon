@@ -32,7 +32,6 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -59,7 +58,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 	public MethodTypingContext setMethod(CtMethod<?> scopeMethod) {
 		if (classTypingContext != null) {
 			//assure that scopeMethod fits to required classTypingContext
-			scopeMethod = adaptMethod(scopeMethod);
+			scopeMethod = classTypingContext.adaptMethod(scopeMethod);
 		}
 		setScopeMethod(scopeMethod);
 		actualTypeArguments = getTypeReferences(scopeMethod.getFormalCtTypeParameters());
@@ -320,70 +319,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 		return types;
 	}
 
-	/**
-	 * @param method to be adapted to this context
-	 * @return new method whose parameters are adapted to `this context` or the same`method` if there is no need to adapt it
-	 */
-	public <T> CtMethod<T> adaptMethod(CtMethod<T> method) {
-		CtType<?> declType = method.getDeclaringType();
-		if (declType == null) {
-			throw new SpoonException("Cannot adapt method, which has no declaringType");
-		}
-		if (classTypingContext == null) {
-			throw new SpoonException("Cannot adapt method becasue target classTypingContext was not set");
-		}
-		if (classTypingContext.getAdaptationScope() == declType) {
-			return method;
-		}
-		//the scope method is declared in different type then scope of assigned classTypingContext
-		if (classTypingContext.isSubtypeOf(declType.getReference()) == false) {
-			throw new SpoonException("Cannot create MethodTypingContext for method declared in different ClassTypingContext");
-		}
-		/*
-		 * The method is declared in an supertype of classTypingContext.
-		 * Create virtual scope method by adapting generic types of supertype method to required scope
-		 */
-		Factory factory = method.getFactory();
-		//create new method
-		CtMethod<T> adaptedMethod = factory.Core().createMethod();
-		adaptedMethod.setParent(classTypingContext.getAdaptationScope());
-		adaptedMethod.setModifiers(method.getModifiers());
-		adaptedMethod.setSimpleName(method.getSimpleName());
-		for (CtTypeReference<? extends Throwable> thrownType : method.getThrownTypes()) {
-			adaptedMethod.addThrownType(thrownType.clone());
-		}
-		for (CtTypeParameter typeParam : method.getFormalCtTypeParameters()) {
-			CtTypeParameter newTypeParam = typeParam.clone();
-			newTypeParam.setSuperclass(adaptTypeForNewMethod(typeParam.getSuperclass()));
-			adaptedMethod.addFormalCtTypeParameter(newTypeParam);
-		}
-		//adapt return type
-		adaptedMethod.setType((CtTypeReference) adaptTypeForNewMethod(method.getType()));
-		//adapt parameters
-		List<CtParameter<?>> adaptedParams = new ArrayList<>(method.getParameters().size());
-		for (CtParameter<?> parameter : method.getParameters()) {
-			adaptedParams.add(factory.Executable().createParameter(null,
-					adaptTypeForNewMethod(parameter.getType()),
-					parameter.getSimpleName()));
-		}
-		adaptedMethod.setParameters(adaptedParams);
-		return adaptedMethod;
-	}
 
-	private CtTypeReference<?> adaptTypeForNewMethod(CtTypeReference<?> typeRef) {
-		if (typeRef == null) {
-			return null;
-		}
-		if (typeRef instanceof CtTypeParameterReference) {
-			CtTypeParameterReference typeParamRef = (CtTypeParameterReference) typeRef;
-			CtTypeParameter typeParam = typeParamRef.getDeclaration();
-			if (typeParam.getTypeParameterDeclarer() instanceof CtExecutable) {
-				//the parameter is declared in scope of Method or Constructor
-				return typeRef.clone();
-			}
-		}
-		return adaptType(typeRef);
-	}
 
 	private CtType<?> getScopeMethodDeclaringType() {
 		if (scopeMethod != null) {
