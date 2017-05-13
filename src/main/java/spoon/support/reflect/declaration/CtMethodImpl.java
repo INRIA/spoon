@@ -26,7 +26,7 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.visitor.MethodTypingContext;
+import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -189,7 +189,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public boolean isOverriding(CtMethod<?> superMethod) {
-		return new MethodTypingContext().setMethod(this).isOverriding(superMethod);
+		return new ClassTypingContext(getDeclaringType()).isOverriding(this, superMethod);
 	}
 
 	boolean isShadow;
