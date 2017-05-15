@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.chain.CtFunction;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
 
@@ -77,12 +78,13 @@ public abstract class Query {
 	 * @param filter
 	 * 		the filter which defines the matching criteria
 	 *
-	 * @deprecated use {@link #getElements(CtElement, Filter)} instead.
 	 */
-	@Deprecated
 	public static <T extends CtReference> List<T> getReferences(
 			CtElement rootElement, Filter<T> filter) {
-		return getElements(rootElement, filter);
+		// note that the new TypeFilter<>(CtReference.class) should not be necessary
+		// thanks to using <T extends CtReference>
+		// however, playing safe to satisfy contract in case of type erasure
+		return rootElement.filterChildren(new TypeFilter<>(CtReference.class)).filterChildren(filter).list();
 	}
 
 	/**
@@ -96,12 +98,10 @@ public abstract class Query {
 	 * 		search on
 	 * @param filter
 	 * 		the filter which defines the matching criteria
-	 * @deprecated use {@link #getElements(CtElement, Filter)} instead.
 	 */
-	@Deprecated
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, Filter<R> filter) {
-		return getElements(factory, filter);
+		return getReferences(factory.Package().getRootPackage(), filter);
 	}
 
 }
