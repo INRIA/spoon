@@ -6,6 +6,7 @@ import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
@@ -880,5 +881,38 @@ public class ImportTest {
 		assertTrue(result.contains(childClass.getQualifiedName()));
 		assertTrue(result.contains(superClass.getQualifiedName()));
 		assertFalse(result.contains(Object.class.getName()));
+	}
+	
+	@Test
+	public void testSuperInheritanceHierarchyFunctionNoClasspath() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("src/test/resources/noclasspath/superclass/UnknownSuperClass.java");
+		launcher.buildModel();
+		final CtModel model = launcher.getModel();
+		
+		CtClass<?> classUSC = launcher.getFactory().Class().get("UnknownSuperClass");
+		
+		//contract: super inheritance scanner returns only Types on class path including final Object
+		List<CtType> types = classUSC.map(new SuperInheritanceHierarchyFunction().includingSelf(true)).list();
+		assertEquals(2, types.size());
+		assertEquals("UnknownSuperClass", types.get(0).getQualifiedName());
+		assertEquals("java.lang.Object", types.get(1).getQualifiedName());
+
+		//contract: super inheritance scanner in reference mode returns type references including these which are not on class path and including final Object
+		List<CtTypeReference> typeRefs = classUSC.map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).list();
+		assertEquals(3, typeRefs.size());
+		assertEquals("UnknownSuperClass", typeRefs.get(0).getQualifiedName());
+		assertEquals("NotInClasspath", typeRefs.get(1).getQualifiedName());
+		assertEquals("java.lang.Object", typeRefs.get(2).getQualifiedName());
+
+		//contract: super inheritance scanner in reference mode, which starts on class which is not available in model returns no Object, because it does not know if type is class or interface 
+		typeRefs = classUSC.getSuperclass().map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).list();
+		assertEquals(1, typeRefs.size());
+		assertEquals("NotInClasspath", typeRefs.get(0).getQualifiedName());
+
+		//contract: super inheritance scanner in type mode, which starts on class which is not available in model returns nothing 
+		types = classUSC.getSuperclass().map(new SuperInheritanceHierarchyFunction().includingSelf(true)).list();
+		assertEquals(0, types.size());
 	}
 }

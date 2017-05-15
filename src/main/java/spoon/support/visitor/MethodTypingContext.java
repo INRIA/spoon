@@ -21,6 +21,7 @@ import static spoon.support.visitor.ClassTypingContext.getTypeReferences;
 import java.util.ArrayList;
 import java.util.List;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtConstructor;
@@ -49,14 +50,23 @@ public class MethodTypingContext extends AbstractTypingContext {
 	public MethodTypingContext() {
 	}
 
+	@Override
+	public CtFormalTypeDeclarer getAdaptationScope() {
+		return (CtFormalTypeDeclarer) scopeMethod;
+	}
+
 	public MethodTypingContext setMethod(CtMethod<?> scopeMethod) {
-		this.scopeMethod = scopeMethod;
+		if (classTypingContext != null) {
+			//assure that scopeMethod fits to required classTypingContext
+			scopeMethod = classTypingContext.adaptMethod(scopeMethod);
+		}
+		setScopeMethod(scopeMethod);
 		actualTypeArguments = getTypeReferences(scopeMethod.getFormalCtTypeParameters());
 		return this;
 	}
 
 	public MethodTypingContext setConstructor(CtConstructor<?> scopeConstructor) {
-		this.scopeMethod = scopeConstructor;
+		setScopeMethod(scopeConstructor);
 		actualTypeArguments = getTypeReferences(scopeConstructor.getFormalCtTypeParameters());
 		return this;
 	}
@@ -64,12 +74,13 @@ public class MethodTypingContext extends AbstractTypingContext {
 	@Override
 	public ClassTypingContext getEnclosingGenericTypeAdapter() {
 		if (classTypingContext == null && scopeMethod != null) {
-			classTypingContext = new ClassTypingContext(((CtTypeMember) scopeMethod).getDeclaringType());
+			classTypingContext = new ClassTypingContext(getScopeMethodDeclaringType());
 		}
 		return classTypingContext;
 	}
 
 	public MethodTypingContext setClassTypingContext(ClassTypingContext classTypingContext) {
+		checkSameTypingContext(classTypingContext, scopeMethod);
 		this.classTypingContext = classTypingContext;
 		return this;
 	}
@@ -90,7 +101,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 
 	public MethodTypingContext setExecutableReference(CtExecutableReference<?> execRef) {
 		this.actualTypeArguments = execRef.getActualTypeArguments();
-		this.scopeMethod = (CtMethod<?>) execRef.getDeclaration();
+		setScopeMethod(execRef.getExecutableDeclaration());
 		if (classTypingContext == null) {
 			CtTypeReference<?> declaringTypeRef = execRef.getDeclaringType();
 			if (declaringTypeRef != null) {
@@ -105,9 +116,16 @@ public class MethodTypingContext extends AbstractTypingContext {
 	 * @return true if scope method overrides `thatMethod`
 	 */
 	public boolean isOverriding(CtMethod<?> thatMethod) {
+		if (scopeMethod == thatMethod) {
+			//method overrides itself in spoon model
+			return true;
+		}
 		CtType<?> thatDeclType = thatMethod.getDeclaringType();
-		if (getEnclosingGenericTypeAdapter().isSubtypeOf(thatDeclType.getReference()) == false) {
-			return false;
+		CtType<?> thisDeclType = getScopeMethodDeclaringType();
+		if (thatDeclType != thisDeclType) {
+			if (getEnclosingGenericTypeAdapter().isSubtypeOf(thatDeclType.getReference()) == false) {
+				return false;
+			}
 		}
 		return isSubSignature(thatMethod);
 	}
@@ -299,5 +317,31 @@ public class MethodTypingContext extends AbstractTypingContext {
 			types.add(param.getType());
 		}
 		return types;
+	}
+
+
+
+	private CtType<?> getScopeMethodDeclaringType() {
+		if (scopeMethod != null) {
+			return ((CtTypeMember) scopeMethod).getDeclaringType();
+		}
+		throw new SpoonException("scopeMethod is not assigned");
+	}
+
+	private void setScopeMethod(CtExecutable<?> executable) {
+		checkSameTypingContext(classTypingContext, executable);
+		scopeMethod = executable;
+	}
+
+	private void checkSameTypingContext(ClassTypingContext ctc, CtExecutable<?> executable) {
+		if (ctc != null && executable != null) {
+			CtType<?> scope = ((CtTypeMember) executable).getDeclaringType();
+			if (scope == null) {
+				throw new SpoonException("Cannot use executable without declaring type as scope of method typing context");
+			}
+			if (scope != ctc.getAdaptationScope()) {
+				throw new SpoonException("Declaring type of executable is not same like scope of classTypingContext provided for method typing context");
+			}
+		}
 	}
 }

@@ -9,10 +9,12 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -20,9 +22,12 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.methodreference.testclasses.Cloud;
 import spoon.test.methodreference.testclasses.Foo;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.function.Supplier;
 
@@ -30,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class MethodReferenceTest {
@@ -197,6 +203,28 @@ public class MethodReferenceTest {
 		assertNotNull(toStringMethod.getAnnotation(overrideRef));
 		assertNotNull(toStringMethod.getReference().getOverridingExecutable());
 	}
+	
+	@Test
+	public void testGetGenericMethodFromReferene() throws Exception {
+		CtType<?> classCloud = ModelUtils.buildClass(Cloud.class);
+		CtMethod<?> ctMethod = classCloud.getMethodsByName("method").get(0);
+		CtExecutableReference<?> execRef = ctMethod.getReference();
+		Method method = execRef.getActualMethod();
+		assertNotNull(method);
+		assertEquals("method", method.getName());
+
+		CtClass<?> classSun = classCloud.getFactory().Class().get("spoon.test.methodreference.testclasses.Sun");
+//		CtExecutableReference<?> execRef2 = classSun.filterChildren(new TypeFilter<>(CtExecutableReference.class)).select(new NameFilter<>("method")).first();
+		CtExecutableReference<?> execRef2 = classSun.filterChildren(new TypeFilter<>(CtInvocation.class))
+				.select(((CtInvocation i)->i.getExecutable().getSimpleName().equals("method")))
+				.map((CtInvocation i)->i.getExecutable())
+				.first();
+		assertNotNull(execRef2);
+		Method method2 = execRef2.getActualMethod();
+		assertNotNull(method2);
+		assertEquals("method", method2.getName());
+	}
+	
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
 		assertEquals("Method reference must be typed.", expected, type.getActualClass());

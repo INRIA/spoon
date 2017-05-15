@@ -538,6 +538,7 @@ public class FilterTest {
 		// actual evaluation
 		q.forEach((CtMethod<?> method) -> {
 			assertTrue(context.method.getReference().isOverriding(method.getReference()));
+			assertTrue(context.method.isOverriding(method));
 			context.count++;
 		});
 		// sanity check

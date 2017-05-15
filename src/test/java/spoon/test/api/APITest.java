@@ -54,7 +54,7 @@ public class APITest {
 		// this test shows a basic usage of the Launcher API without command line
 		// and asserts there is no exception
 		Launcher spoon = new Launcher();
-		spoon.setArgs(new String[] {"--output-type", "nooutput" });
+		spoon.setArgs(new String[] {"--compile", "--output-type", "compilationunits" });
 		spoon.addInputResource("src/test/resources/spoon/test/api");
 		spoon.run();
 		Factory factory = spoon.getFactory();

@@ -506,6 +506,7 @@
           </dependency>
         </dependencies>
         <configuration>
+          <failSeverity>breaking</failSeverity>
           <alwaysCheckForReleaseVersion>false</alwaysCheckForReleaseVersion>
           <oldVersion>LATEST</oldVersion>
           <analysisConfigurationFiles>

@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor;
 
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
@@ -24,6 +25,10 @@ import spoon.reflect.reference.CtTypeReference;
  * Provides adapting of generic types from one scope to another scope.
  */
 public interface GenericTypeAdapter {
+	/**
+	 * @return the scope of this type adapter
+	 */
+	CtFormalTypeDeclarer getAdaptationScope();
 	/**
 	 * adapts `type` to the {@link CtTypeReference}
 	 * of the scope of this {@link GenericTypeAdapter}

@@ -67,7 +67,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+
 import static org.hamcrest.core.Is.is;
+
+import static org.hamcrest.CoreMatchers.notNullValue;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -934,7 +938,7 @@ public class AnnotationTest {
 	public void testGetAnnotationFromParameter() {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("src/test/resources/noclasspath/Initializer.java");
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-firstspoon/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-firstspoon/";
 		spoon.setSourceOutputDirectory(output);
 		spoon.getEnvironment().setNoClasspath(true);
 		factory = spoon.getFactory();
@@ -946,5 +950,24 @@ public class AnnotationTest {
 		CtMethod methodSet = methods.get(0);
 
 		assertThat(methodSet.getParameters().size(), is(1));
+	}
+
+	@Test
+	public void annotationAddValue() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Bar.java");
+		spoon.buildModel();
+
+		factory = spoon.getFactory();
+
+		List<CtMethod> methods = factory.getModel().getElements(new NameFilter<CtMethod>("bidule"));
+
+		assertThat(methods.size(), is(1));
+
+		CtAnnotation anno1 = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[] { "test"});
+		assertThat(anno1.getValue("params").getType(), is(factory.Type().createReference(String[].class)));
+
+		CtAnnotation anno = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[0]);
+		assertThat(anno.getValue("params").getType(), is(factory.Type().createReference(String[].class)));
 	}
 }
