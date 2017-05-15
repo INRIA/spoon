@@ -821,8 +821,6 @@ public class GenericsTest {
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
 		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
 		
-		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
-		
 		CtInvocation<?> invokeReserve = factory.Class().get(CelebrationLunch.class)
 				.filterChildren(new TypeFilter<>(CtInvocation.class))
 				.select((CtInvocation i)->"reserve".equals(i.getExecutable().getSimpleName()))
@@ -923,20 +921,33 @@ public class GenericsTest {
 		//contract: method typing context creates adapted method automatically, which is equal to manually adapted one
 		assertEquals(adaptedLunchEatMe, methodSTH.getAdaptationScope());
 		
+	}
+	
+	@Test
+	public void testClassTypingContextMethodSignature() throws Exception {
+		// core contracts of MethodTypingContext#adaptMethod
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
+		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
+
+		// represents <C> void eatMe(A paramA, B paramB, C paramC){}
+		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		
 		// represents <C> void eatMe(M paramA, K paramB, C paramC)
 		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
-		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
-		assertTrue(methodSTH.isOverriding(trWeddingLunch_eatMe));
-		assertTrue(methodSTH.isSubSignature(trWeddingLunch_eatMe));
+		
+		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
+		
+		assertTrue(ctcWeddingLunch.isOverriding(trLunch_eatMe, trLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isOverriding(trLunch_eatMe, trWeddingLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isSubSignature(trLunch_eatMe, trWeddingLunch_eatMe));
 
-		//contract: use method from correct scope and check whether it has same signature like adapted method
-		methodSTH.setMethod(trWeddingLunch_eatMe);
 		//contract: check that adapting of methods still produces same results, even when scopeMethod is already assigned
-		assertEquals(adaptedLunchEatMe, ctcWeddingLunch.adaptMethod(trLunch_eatMe));
-		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
-		assertTrue(methodSTH.isOverriding(trWeddingLunch_eatMe));
-		assertTrue(methodSTH.isSubSignature(trWeddingLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isOverriding(trWeddingLunch_eatMe, trLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isOverriding(trWeddingLunch_eatMe, trWeddingLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isSubSignature(trWeddingLunch_eatMe, trWeddingLunch_eatMe));
 	}
+	
 	
 	
 	@Test
