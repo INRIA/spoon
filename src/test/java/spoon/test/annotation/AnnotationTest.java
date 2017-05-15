@@ -67,10 +67,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -926,5 +928,23 @@ public class AnnotationTest {
 		CtAnnotation annotation = annotations.get(0);
 
 		assertEquals("Annotation should be @spoon.test.annotation.testclasses.PortRange", "spoon.test.annotation.testclasses.PortRange", annotation.getAnnotationType().getQualifiedName());
+	}
+
+	@Test
+	public void testGetAnnotationFromParameter() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/resources/noclasspath/Initializer.java");
+		String output = "target/spooned-" + this.getClass().getSimpleName()+"-firstspoon/";
+		spoon.setSourceOutputDirectory(output);
+		spoon.getEnvironment().setNoClasspath(true);
+		factory = spoon.getFactory();
+		spoon.buildModel();
+
+		List<CtMethod> methods = factory.getModel().getElements(new NameFilter<CtMethod>("setField"));
+		assertThat(methods.size(), is(1));
+
+		CtMethod methodSet = methods.get(0);
+
+		assertThat(methodSet.getParameters().size(), is(1));
 	}
 }
