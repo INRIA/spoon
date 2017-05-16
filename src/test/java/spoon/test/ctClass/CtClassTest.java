@@ -18,6 +18,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -138,7 +139,9 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testGetFQNOfSuperClassOnSingleClass() throws Exception {
+	public void testSpoonShouldInferImplicitPackageInNoClasspath() throws Exception {
+    	// contract: in noClasspath, when a type is used and no import is specified, then Spoon
+		// should infer that this type is in the same package as the current class.
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/issue1293");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -156,6 +159,9 @@ public class CtClassTest {
 
 		final CtClass<Object> aClass2 = launcher2.getFactory().Class().get("com.cristal.ircica.applicationcolis.userinterface.fragments.TransporteurFragment");
 		final String type2 = aClass2.getSuperclass().getQualifiedName();
+
+		CtField field = aClass2.getField("transporteurRadioGroup");
+		assertThat(field.getType().getQualifiedName(), is("android.widget.RadioGroup"));
 
 		assertThat(type2, is("com.cristal.ircica.applicationcolis.userinterface.fragments.CompletableFragment"));
 	}
