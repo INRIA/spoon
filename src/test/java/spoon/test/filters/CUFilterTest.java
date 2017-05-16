@@ -65,6 +65,6 @@ public class CUFilterTest {
                 .getMethod("createB").getBody().getStatement(0);
         final CtConstructorCall ctConstructorCall =
                 (CtConstructorCall)ctReturn.getReturnedExpression();
-        assertEquals("B", ctConstructorCall.getType().getQualifiedName());
+        assertEquals("spoon.test.same.B", ctConstructorCall.getType().getQualifiedName());
     }
 }
