@@ -142,16 +142,6 @@ public class CtClassTest {
 	public void testSpoonShouldInferImplicitPackageInNoClasspath() throws Exception {
     	// contract: in noClasspath, when a type is used and no import is specified, then Spoon
 		// should infer that this type is in the same package as the current class.
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/noclasspath/issue1293");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-
-		final CtClass<Object> aClass = launcher.getFactory().Class().get("com.cristal.ircica.applicationcolis.userinterface.fragments.TransporteurFragment");
-		final String type = aClass.getSuperclass().getQualifiedName();
-
-		assertThat(type, is("com.cristal.ircica.applicationcolis.userinterface.fragments.CompletableFragment"));
-
 		final Launcher launcher2 = new Launcher();
 		launcher2.addInputResource("./src/test/resources/noclasspath/issue1293/com/cristal/ircica/applicationcolis/userinterface/fragments/TransporteurFragment.java");
 		launcher2.getEnvironment().setNoClasspath(true);
