@@ -1,8 +1,10 @@
 package spoon.test.ctClass;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -16,6 +18,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -133,6 +136,23 @@ public class CtClassTest {
 
 		factory.getEnvironment().setAutoImports(false);
 		factory.Code().createCodeSnippetStatement(aPozole.toString()).compile();
+	}
 
+	@Test
+	public void testSpoonShouldInferImplicitPackageInNoClasspath() throws Exception {
+    	// contract: in noClasspath, when a type is used and no import is specified, then Spoon
+		// should infer that this type is in the same package as the current class.
+		final Launcher launcher2 = new Launcher();
+		launcher2.addInputResource("./src/test/resources/noclasspath/issue1293/com/cristal/ircica/applicationcolis/userinterface/fragments/TransporteurFragment.java");
+		launcher2.getEnvironment().setNoClasspath(true);
+		launcher2.buildModel();
+
+		final CtClass<Object> aClass2 = launcher2.getFactory().Class().get("com.cristal.ircica.applicationcolis.userinterface.fragments.TransporteurFragment");
+		final String type2 = aClass2.getSuperclass().getQualifiedName();
+
+		CtField field = aClass2.getField("transporteurRadioGroup");
+		assertThat(field.getType().getQualifiedName(), is("android.widget.RadioGroup"));
+
+		assertThat(type2, is("com.cristal.ircica.applicationcolis.userinterface.fragments.CompletableFragment"));
 	}
 }
