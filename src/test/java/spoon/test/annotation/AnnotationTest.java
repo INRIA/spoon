@@ -936,6 +936,7 @@ public class AnnotationTest {
 
 	@Test
 	public void testGetAnnotationFromParameter() {
+		// contract: Java 8 receiver parameters are handled
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("src/test/resources/noclasspath/Initializer.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName() + "-firstspoon/";
@@ -948,13 +949,27 @@ public class AnnotationTest {
 		assertThat(methods.size(), is(1));
 
 		CtMethod methodSet = methods.get(0);
+		assertThat(methodSet.getSimpleName(), is("setField"));
 
 		List<CtParameter> parameters = methodSet.getParameters();
 
 		assertThat(parameters.size(), is(1));
 
-		List<CtAnnotation<?>> annotations = parameters.get(0).getType().getAnnotations();
+		CtParameter thisParameter = parameters.get(0);
+		assertThat(thisParameter.getSimpleName(), is("this"));
+
+
+		CtTypeReference thisParamType = thisParameter.getType();
+		assertThat(thisParamType.getSimpleName(), is("Initializer"));
+
+		List<CtAnnotation<?>> annotations = thisParameter.getType().getAnnotations();
 		assertThat(annotations.size(), is(2));
+
+		CtAnnotation unknownInit = annotations.get(0);
+		CtAnnotation raw = annotations.get(1);
+
+		assertThat(unknownInit.getAnnotationType().getSimpleName(), is("UnknownInitialization"));
+		assertThat(raw.getAnnotationType().getSimpleName(), is("Raw"));
 	}
 
 	@Test
