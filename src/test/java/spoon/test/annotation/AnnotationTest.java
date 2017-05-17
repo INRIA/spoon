@@ -949,7 +949,12 @@ public class AnnotationTest {
 
 		CtMethod methodSet = methods.get(0);
 
-		assertThat(methodSet.getParameters().size(), is(1));
+		List<CtParameter> parameters = methodSet.getParameters();
+
+		assertThat(parameters.size(), is(1));
+
+		List<CtAnnotation<?>> annotations = parameters.get(0).getType().getAnnotations();
+		assertThat(annotations.size(), is(2));
 	}
 
 	@Test
