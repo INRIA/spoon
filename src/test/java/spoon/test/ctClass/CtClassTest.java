@@ -1,8 +1,11 @@
 package spoon.test.ctClass;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -134,5 +137,24 @@ public class CtClassTest {
 		factory.getEnvironment().setAutoImports(false);
 		factory.Code().createCodeSnippetStatement(aPozole.toString()).compile();
 
+	}
+
+	@Test
+	public void testDefaultConstructorAreOk() throws Exception {
+		// contract: When we specify a superclass which is declared in an interface and
+		// where the visibility is okay, we must use it.
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/ctClass/testclasses/issue1306");
+		launcher.setSourceOutputDirectory("./target/issue1306");
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.run();
+
+		final CtClass<Object> aClass = launcher.getFactory().Class().get("spoon.test.ctClass.testclasses.issue1306.internal.BooleanArraysBaseTest");
+		assertThat(aClass, notNullValue());
+
+		canBeBuilt("./target/issue1306", 8, true);
 	}
 }
