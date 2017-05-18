@@ -44,9 +44,7 @@ import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
 
 /**
  * Expects a {@link CtPackage} as input
- * and produces all sub classes and sub interfaces, which extends or implements super type(s) provided in constructor and stored as `targetSuperTypes`.<br>
- * The input `targetSuperTypes` itself are not returned as result.
- * The output is produced in arbitrary order.
+ * and  upon calls to forEachSubTypeInPackage produces all sub classes and sub interfaces, which extends or implements super type(s) provided in constructor and stored as `targetSuperTypes`.<br>
  *
  * The repeated processing of this mapping function on the same input returns only newly found sub types.
  * The instance of {@link SubInheritanceHierarchyResolver} returns found sub types only once.
@@ -54,6 +52,9 @@ import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
  * Create and use new instance of {@link SubInheritanceHierarchyResolver} if you need to scan the subtype hierarchy again.
  */
 public class SubInheritanceHierarchyResolver {
+
+	CtPackage inputPackage;
+
 	private boolean includingInterfaces = true;
 	/**
 	 * Set of qualified names of all super types whose sub types we are searching for.
@@ -66,22 +67,9 @@ public class SubInheritanceHierarchyResolver {
 	 */
 	boolean hasSuperInterface = false;
 	private boolean failOnClassNotFound = false;
-	private boolean returnTypeReferences = false;
 
-	private boolean terminated = false;
-
-	/**
-	 * @param superType target super type
-	 */
-	public SubInheritanceHierarchyResolver(CtTypeInformation superType) {
-		addSuperType(superType);
-	}
-
-	/**
-	 * @return set of qualified names of types, of all super types and all found sub types
-	 */
-	public Set<String> getHierarchyTypesQualifiedNames() {
-		return targetSuperTypes;
+	public SubInheritanceHierarchyResolver(CtPackage input) {
+		inputPackage = input;
 	}
 
 	/**
@@ -107,16 +95,6 @@ public class SubInheritanceHierarchyResolver {
 	}
 
 	/**
-	 * configures whether {@link CtType} or {@link CtTypeReference} instances are returned by this mapping function
-	 * @param returnTypeReferences if true then {@link CtTypeReference} instances are returned by this mapping function
-	 * @return this to support fluent API
-	 */
-	public SubInheritanceHierarchyResolver returnTypeReferences(boolean returnTypeReferences) {
-		this.returnTypeReferences = returnTypeReferences;
-		return this;
-	}
-
-	/**
 	 * @param failOnClassNotFound sets whether processing should throw an exception if class is missing in noClassPath mode
 	 */
 	public SubInheritanceHierarchyResolver failOnClassNotFound(boolean failOnClassNotFound) {
@@ -125,31 +103,15 @@ public class SubInheritanceHierarchyResolver {
 	}
 
 	/**
-	 * Terminates the evaluation.
-	 */
-	public void terminate() {
-		terminated = true;
-	}
-
-	/**
-	 * @return true if the evaluation has been terminated.
-	 */
-	public boolean isTerminated() {
-		return terminated;
-	}
-
-	/**
-	 * Calls `outputConsumer.apply(subType)` for each sub type found in `inputPackage`.
+	 * Calls `outputConsumer.apply(subType)` for each sub type of the targetSuperTypes that are found in `inputPackage`.
 	 * Each sub type is returned only once.
-	 * If {@link #forEachSubTypeInPackage(CtPackage, CtConsumer)} is called again with same input and configuration
-	 * on the same instance of {@link SubInheritanceHierarchyResolver} and on the same model,
-	 * then it returns no sub types, because there are no NEW subtypes.
 	 * It makes sense to call this method again for example after new super types are added
 	 * by {@link #addSuperType(CtTypeInformation)}.
-	 * @param inputPackage the package where sub types are searched for
+	 *
+	 * 	If this method is called again with same input and configuration, nothing in sent to outputConsumer
 	 * @param outputConsumer the consumer for found sub types
 	 */
-	public <T extends CtTypeInformation> void forEachSubTypeInPackage(CtPackage inputPackage, final CtConsumer<T> outputConsumer) {
+	public <T extends CtTypeInformation> void forEachSubTypeInPackage(final CtConsumer<T> outputConsumer) {
 		/*
 		 * Set of qualified names of all visited types, independent on whether they are sub types or not.
 		 */
@@ -189,10 +151,6 @@ public class SubInheritanceHierarchyResolver {
 			.setListener(new CtScannerListener() {
 				@Override
 				public ScanningMode enter(CtElement element) {
-					if (terminated) {
-						q.terminate();
-						return SKIP_ALL;
-					}
 					CtTypeReference<?> typeRef = (CtTypeReference<?>) element;
 					String qName = typeRef.getQualifiedName();
 					if (targetSuperTypes.contains(qName)) {
@@ -205,7 +163,10 @@ public class SubInheritanceHierarchyResolver {
 							/*
 							 * Send them to outputConsumer and add then as targetSuperTypes too, to perform faster with detection of next sub types.
 							 */
-							sendResult(typeRef, outputConsumer);
+							if (!targetSuperTypes.contains(typeRef.getQualifiedName())) {
+								targetSuperTypes.add(typeRef.getQualifiedName());
+								outputConsumer.accept((T) typeRef.getTypeDeclaration());
+							}
 						}
 						//we do not have to go deeper into super inheritance hierarchy. Skip visiting of further super types
 						//but continue visiting of siblings (do not terminate query)
@@ -247,17 +208,6 @@ public class SubInheritanceHierarchyResolver {
 				//but we have to consume all these results to let query running
 			}
 		});
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends CtTypeInformation> void sendResult(CtTypeReference<?> typeRef, CtConsumer<T> outputConsumer) {
-		if (targetSuperTypes.add(typeRef.getQualifiedName())) {
-			if (returnTypeReferences) {
-				outputConsumer.accept((T) typeRef);
-			} else {
-				outputConsumer.accept((T) typeRef.getTypeDeclaration());
-			}
-		}
 	}
 
 	/**

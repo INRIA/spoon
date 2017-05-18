@@ -39,6 +39,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -72,6 +73,7 @@ import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.support.reflect.declaration.CtMethodImpl;
+import spoon.support.visitor.SubInheritanceHierarchyResolver;
 import spoon.test.filters.testclasses.AbstractTostada;
 import spoon.test.filters.testclasses.Antojito;
 import spoon.test.filters.testclasses.FieldAccessFilterTacos;
@@ -1044,5 +1046,61 @@ public class FilterTest {
 		assertEquals(result1.size(), context2.nrOfResults);
 		//contract: if enter is called and does not returns SKIP_ALL, then exit must be called too. Exceptions are ignored for now
 		assertEquals(context2.nrOfEnterRetTrue, context2.nrOfExit);
+	}
+
+	@Test
+	public void testSubInheritanceHierarchyResolver() throws Exception {
+		// contract; SubInheritanceHierarchyResolver supports finding subtypes in an incremental manner
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.buildModel();
+
+		SubInheritanceHierarchyResolver resolver = new SubInheritanceHierarchyResolver(launcher.getModel().getRootPackage());
+
+		// contract: by default, nothing is sent to the consumer
+		resolver.forEachSubTypeInPackage(new CtConsumer<CtTypeInformation>() {
+			@Override
+			public void accept(CtTypeInformation ctTypeInformation) {
+				fail();
+			}
+		});
+
+		// we add a type
+		resolver.addSuperType(launcher.getFactory().Type().createReference(AbstractTostada.class));
+		class Counter { int counter =0;}
+		Counter c = new Counter();
+		resolver.forEachSubTypeInPackage(new CtConsumer<CtTypeInformation>() {
+			@Override
+			public void accept(CtTypeInformation ctTypeInformation) {
+				c.counter++;
+			}
+		});
+
+		// there are 5 subtypes of AbstractTostada
+		assertEquals(5, c.counter);
+
+		// we add a type already visited
+		resolver.addSuperType(launcher.getFactory().Type().createReference(Tostada.class));
+		// nothing is sent to the consumer
+		resolver.forEachSubTypeInPackage(new CtConsumer<CtTypeInformation>() {
+			@Override
+			public void accept(CtTypeInformation ctTypeInformation) {
+				fail();
+			}
+		});
+
+		// we add a new type
+		resolver.addSuperType(launcher.getFactory().Type().createReference(ITostada.class));
+		Counter c2 = new Counter();
+		resolver.forEachSubTypeInPackage(new CtConsumer<CtTypeInformation>() {
+			@Override
+			public void accept(CtTypeInformation ctTypeInformation) {
+				c2.counter++;
+			}
+		});
+
+		// only one subtype remains unvisited
+		assertEquals(1, c2.counter);
 	}
 }
