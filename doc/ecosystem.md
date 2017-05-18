@@ -23,6 +23,7 @@ Here are some active projects already using Spoon:
 - [CoCoSpoon](https://github.com/SpoonLabs/CoCoSpoon) and [CoCoSpoon-ui](https://github.com/SpoonLabs/CoCoSpoon-ui): Measuring and visualizing code coverage with Spoon
 - [jmixer](https://github.com/seintur/jmixer) is an implementation of mixins for Java
 - [syringe](https://github.com/DIVERSIFY-project/syringe) defines high-level transformation events
+- [InspectorGuidget](https://github.com/diverse-project/InspectorGuidget) finds and repairs code smells in  in Java SWING/AWT/JavaFX GUI code 
 - Yours?
 
 [SpoonLabs](https://github.com/SpoonLabs) is a Github group for centralizing all projects and experiments that use Spoon.
