@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.SpoonException;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -178,7 +179,8 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		CtElement e = this;
 		CtElement parent = getParent();
 		if (parent instanceof CtExecutableReference) {
-			CtElement parent2 = parent.getParent();
+
+			CtElement parent2 = ((CtExecutableReference) parent).getDeclaration();
 			if (parent2 instanceof CtMethod) {
 				e = parent2;
 			} else {
