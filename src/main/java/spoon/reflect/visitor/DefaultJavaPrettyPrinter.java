@@ -46,6 +46,8 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -799,6 +801,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	public void visitCtJavaDoc(CtJavaDoc comment) {
+		visitCtComment(comment);
+	}
+
+	@Override
+	public void visitCtJavaDocTag(CtJavaDocTag docTag) {
+		String tagContent = docTag.toString();
+		String[] tagLines = tagContent.split("\n");
+		for (int i = 0; i < tagLines.length; i++) {
+			String com = tagLines[i];
+			printer.write(" * " + com).writeln().writeTabs();
+		}
+	}
+
+	@Override
 	public void visitCtComment(CtComment comment) {
 		if (!env.isCommentsEnabled() && context.elementStack.size() > 1) {
 			return;
@@ -839,6 +856,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					}
 				}
 
+			}
+			if (comment instanceof CtJavaDoc) {
+				if (!((CtJavaDoc) comment).getTags().isEmpty()) {
+					printer.write(" *").writeln().writeTabs();
+				}
+				for (CtJavaDocTag docTag : ((CtJavaDoc) comment).getTags()) {
+					scan(docTag);
+				}
 			}
 			break;
 		}

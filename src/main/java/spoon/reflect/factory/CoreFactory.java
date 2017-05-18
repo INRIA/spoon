@@ -42,6 +42,8 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -63,9 +65,9 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.position.DeclarationSourcePosition;
-import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -495,6 +497,16 @@ public interface CoreFactory {
 	 * Creates a comment.
 	 */
 	CtComment createComment();
+
+	/**
+	 * Creates a javadoc comment.
+	 */
+	CtJavaDoc createJavaDoc();
+
+	/**
+	 * Creates a javadoc tag.
+	 */
+	CtJavaDocTag createJavaDocTag();
 
 	/**
 	 * Gets the main factory of that core factory (cannot be <code>null</code>).

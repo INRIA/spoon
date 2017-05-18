@@ -42,6 +42,8 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -866,5 +868,23 @@ public abstract class CtScanner implements CtVisitor {
 		scan(comment.getComments());
 		scan(comment.getAnnotations());
 		exit(comment);
+	}
+
+
+	@Override
+	public void visitCtJavaDoc(final CtJavaDoc javaDoc) {
+		enter(javaDoc);
+		scan(javaDoc.getComments());
+		scan(javaDoc.getAnnotations());
+		scan(javaDoc.getTags());
+		exit(javaDoc);
+	}
+
+	@Override
+	public void visitCtJavaDocTag(final CtJavaDocTag docTag) {
+		enter(docTag);
+		scan(docTag.getComments());
+		scan(docTag.getAnnotations());
+		exit(docTag);
 	}
 }

@@ -212,6 +212,17 @@ switch(x) {
     System.out.println("foo");
 
 ```
+### CtJavaDoc
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtJavaDoc.html)
+
+```java
+
+/**
+ * Description
+ * @tag a tag in the javadoc
+*/
+
+```
 ### CtLambda
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLambda.html)
 

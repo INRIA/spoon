@@ -28,6 +28,8 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -127,10 +129,58 @@ class JDTCommentBuilder {
 		SourcePosition sourcePosition = factory.Core().createSourcePosition(spoonUnit, start, end, lineSeparatorPositions);
 
 		// create the Spoon comment element
-		comment.setContent(commentContent);
+		comment = parseTags(comment, commentContent);
 		comment.setPosition(sourcePosition);
 
 		insertCommentInAST(comment);
+	}
+
+	private CtComment parseTags(CtComment comment, String commentContent) {
+		if (comment.getCommentType() != CtComment.CommentType.JAVADOC) {
+			comment.setContent(commentContent);
+			return comment;
+		}
+		if (!(comment instanceof CtJavaDoc)) {
+			comment = comment.getFactory().Core().createJavaDoc();
+		}
+
+		String currentTagContent = "";
+		CtJavaDocTag.TagType currentTag = null;
+
+		String[] lines = commentContent.split("\n");
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i].trim();
+			if (line.startsWith(CtJavaDocTag.JAVADOC_TAG_PREFIX)) {
+				int endIndex = line.indexOf(" ");
+				if (endIndex == -1) {
+					endIndex = line.length();
+				}
+				if (currentTag != null) {
+					CtJavaDocTag docTag = comment.getFactory().Core().createJavaDocTag();
+					docTag.setName(currentTag).setContent(currentTagContent.trim());
+					((CtJavaDoc) comment).addTag(docTag);
+				} else if (!currentTagContent.isEmpty()) {
+					comment.setContent(currentTagContent.trim());
+				}
+
+				currentTag = CtJavaDocTag.TagType.fromName(line.substring(1, endIndex).toLowerCase());
+				if (endIndex == line.length()) {
+					currentTagContent = "";
+				} else {
+					currentTagContent = line.substring(endIndex + 1);
+				}
+			} else {
+				currentTagContent += "\n" + lines[i];
+			}
+		}
+		if (currentTag != null) {
+			CtJavaDocTag docTag = comment.getFactory().Core().createJavaDocTag();
+			docTag.setName(currentTag).setContent(currentTagContent.trim());
+			((CtJavaDoc) comment).addTag(docTag);
+		} else if (!currentTagContent.isEmpty()) {
+			comment.setContent(currentTagContent.trim());
+		}
+		return comment;
 	}
 
 	/**
@@ -444,7 +494,7 @@ class JDTCommentBuilder {
 	}
 
 	/**
-	 * @param element
+	 * @param e
 	 * @return body of element or null if this element has no body
 	 */
 	static CtElement getBody(CtElement e) {
