@@ -1097,6 +1097,7 @@ public class FilterTest {
 			@Override
 			public void accept(CtTypeInformation ctTypeInformation) {
 				c2.counter++;
+				assertEquals("spoon.test.filters.testclasses.Tacos", ctTypeInformation.getQualifiedName());
 			}
 		});
 

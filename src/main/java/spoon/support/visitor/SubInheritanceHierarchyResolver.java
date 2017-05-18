@@ -152,7 +152,7 @@ public class SubInheritanceHierarchyResolver {
 			.setListener(new CtScannerListener() {
 				@Override
 				public ScanningMode enter(CtElement element) {
-					CtTypeReference<?> typeRef = (CtTypeReference<?>) element;
+					final CtTypeReference<?> typeRef = (CtTypeReference<?>) element;
 					String qName = typeRef.getQualifiedName();
 					if (targetSuperTypes.contains(qName)) {
 						/*
@@ -160,13 +160,14 @@ public class SubInheritanceHierarchyResolver {
 						 * All `currentSubTypes` are sub types of searched super type
 						 */
 						while (currentSubTypes.size() > 0) {
-							typeRef = currentSubTypes.pop();
+							final CtTypeReference<?> currentTypeRef  = currentSubTypes.pop();
+							String currentQName = currentTypeRef.getQualifiedName();
 							/*
 							 * Send them to outputConsumer and add then as targetSuperTypes too, to perform faster with detection of next sub types.
 							 */
-							if (!targetSuperTypes.contains(qName)) {
-								targetSuperTypes.add(qName);
-								outputConsumer.accept((T) typeRef.getTypeDeclaration());
+							if (!targetSuperTypes.contains(currentQName)) {
+								targetSuperTypes.add(currentQName);
+								outputConsumer.accept((T) currentTypeRef.getTypeDeclaration());
 							}
 						}
 						//we do not have to go deeper into super inheritance hierarchy. Skip visiting of further super types
