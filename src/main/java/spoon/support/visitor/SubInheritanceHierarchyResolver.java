@@ -53,8 +53,10 @@ import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
  */
 public class SubInheritanceHierarchyResolver {
 
-	CtPackage inputPackage;
+	/** where the subtypes will be looked for */
+	private CtPackage inputPackage;
 
+	/** whether interfaces are included in the result */
 	private boolean includingInterfaces = true;
 	/**
 	 * Set of qualified names of all super types whose sub types we are searching for.
@@ -65,7 +67,8 @@ public class SubInheritanceHierarchyResolver {
 	 * if true then we have to check if type is a subtype of superClass or superInterfaces too
 	 * if false then it is enough to search in superClass hierarchy only (faster)
 	 */
-	boolean hasSuperInterface = false;
+	private boolean hasSuperInterface = false;
+
 	private boolean failOnClassNotFound = false;
 
 	public SubInheritanceHierarchyResolver(CtPackage input) {
@@ -139,8 +142,6 @@ public class SubInheritanceHierarchyResolver {
 		q.map(new SuperInheritanceHierarchyFunction()
 			//if there is any interface between `targetSuperTypes`, then we have to check superInterfaces too
 			.includingInterfaces(hasSuperInterface)
-			//internally it works always with references
-			.returnTypeReferences(true)
 			.failOnClassNotFound(failOnClassNotFound)
 			/*
 			 * listen for types in super inheritance hierarchy
@@ -163,8 +164,8 @@ public class SubInheritanceHierarchyResolver {
 							/*
 							 * Send them to outputConsumer and add then as targetSuperTypes too, to perform faster with detection of next sub types.
 							 */
-							if (!targetSuperTypes.contains(typeRef.getQualifiedName())) {
-								targetSuperTypes.add(typeRef.getQualifiedName());
+							if (!targetSuperTypes.contains(qName)) {
+								targetSuperTypes.add(qName);
 								outputConsumer.accept((T) typeRef.getTypeDeclaration());
 							}
 						}
