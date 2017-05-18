@@ -3,14 +3,16 @@ title: Using Spoon for Architecture Enforcement
 tags: [getting-started]
 ---
 
-Spoon can be used to check the architectural rules of your application.
-For this, the idea is to write a standard Junit test case that loads the application code and checks the rule.
-You only need to depend on spoon at testing time, ie `<scope>test</scope>` in Maven.
+In software, an architectural rule (aka architectural constraint) specifies a design decision on the application. Architectural rules cannot usually be expressed in the programming language itself.
+Architectural rules can be written as AST analysis (see [this post](https://saturnnetwork.wordpress.com/2012/11/26/ultimate-architecture-enforcement-prevent-code-violations-at-code-commit-time/)), which makes Spoon very appropriate to express and check them.
+Since architectural rules must be automatically checked as often as possible, it's good to have them part of continuous integration (hence, the meaningful yet limited [Sonar architecture rule engine](https://docs.sonarqube.org/display/SONARQUBE44/Architecture+Rule+Engine)).
 
-Example: rules on constructor usage
+To write an architectural rule in Spoon that is checked in CI, the idea is to write a standard Junit test case that loads the application code, express the rule and check it. Doing this only requires to depend on Spoon at testing time, ie `<scope>test</scope>` in Maven.
+
+Example rule: never use the TreeSet constructor
 ----------------------------------
 
-For instance, let's imagine that you want to forbid the usage of `TreeSet`, in your code base, you would simply write a test case as follows:
+For instance, let's imagine that you want to forbid the usage of `TreeSet`'s constructor, in your code base, you would simply write a test case as follows:
 
 ```java
 @Test
@@ -33,7 +35,7 @@ That's it! Every time you run the tests, incl. on your continuous integration se
 For instance, you can check that you never return null, or always use an appropriate factory, or that all classes implementing an interface are in the same package.
 
 
-Example: checking naming conventions for test cases
+Example rule: all test classes must start or end with "Test"
 ----------------------------
 
 A common mistake is to forget to follow a naming convention. For instance, if you use Maven, all test classes must be named `Test*` or `*Test` in order to be run by Maven's standard test plugin `surefire` ([see doc](http://maven.apache.org/surefire/maven-surefire-plugin/examples/inclusion-exclusion.html)). This rule simply reads:

@@ -152,15 +152,17 @@ public class CtTypeParameterTest {
 		//the type parameters of ErasureModelA and ErasureModelA$ModelB are same if they are on the same position.
 		checkIsSame(ctModel.getFormalCtTypeParameters(), ctModelB.getFormalCtTypeParameters(), true);
 		
-		//the type parameters of ErasureModelA#constructor and ErasureModelA$ModelB constructor are NOT same, because constructors does not override
-		checkIsSame(ctModelCons.getFormalCtTypeParameters(), ctModelBCons.getFormalCtTypeParameters(), false);
+		//the type parameters of ErasureModelA#constructor and ErasureModelA$ModelB constructor are same, because constructors has same formal type parameters
+		//https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
+		checkIsSame(ctModelCons.getFormalCtTypeParameters(), ctModelBCons.getFormalCtTypeParameters(), true);
 		//the type parameters of ctModel ErasureModelA#method and ErasureModelA$ModelB#method are same if they are on the same position.
 		checkIsSame(ctModelMethod.getFormalCtTypeParameters(), ctModelBMethod.getFormalCtTypeParameters(), true);
 		
 		//the type parameters of ctModel ErasureModelA#constructor and ErasureModelA$ModelB#method are never same, because they have different type of scope (Method!=Constructor) 
 		checkIsSame(ctModelCons.getFormalCtTypeParameters(), ctModelBMethod.getFormalCtTypeParameters(), false);
-		//the type parameters of ctModel ErasureModelA#method and ErasureModelA#method2 are never same, because we can be sure that method does not override method2 
-		checkIsSame(ctModelMethod.getFormalCtTypeParameters(), ctModelMethod2.getFormalCtTypeParameters(), false);
+		//the type parameters of ctModel ErasureModelA#method and ErasureModelA#method2 are same, because they have same formal type parameters 
+		//https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
+		checkIsSame(ctModelMethod.getFormalCtTypeParameters(), ctModelMethod2.getFormalCtTypeParameters(), true);
 		
 		CtClass<?> ctModelC = ctModel.filterChildren(new NameFilter<>("ModelC")).first();
 	}

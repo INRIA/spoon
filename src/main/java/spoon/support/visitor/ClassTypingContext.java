@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -262,6 +263,53 @@ public class ClassTypingContext extends AbstractTypingContext {
 		}
 		adaptedMethod.setParameters(adaptedParams);
 		return adaptedMethod;
+	}
+
+	/**
+	 * @param thatMethod - to be checked method
+	 * @return true if scope method overrides `thatMethod`
+	 */
+	public boolean isOverriding(CtMethod<?> thisMethod, CtMethod<?> thatMethod) {
+		if (thisMethod == thatMethod) {
+			//method overrides itself in spoon model
+			return true;
+		}
+		CtType<?> thatDeclType = thatMethod.getDeclaringType();
+		CtType<?> thisDeclType = getAdaptationScope();
+		if (thatDeclType != thisDeclType) {
+			if (isSubtypeOf(thatDeclType.getReference()) == false) {
+				//the declaringType of that method must be superType of this scope type
+				return false;
+			}
+		}
+		//TODO check method visibility following https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.8.1
+		return isSubSignature(thisMethod, thatMethod);
+	}
+
+	/**
+	 * scope method is subsignature of thatMethod if either
+	 * A) scope method is same signature like thatMethod
+	 * B) scope method is same signature like type erasure of thatMethod
+	 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
+	 *
+	 * @param thatMethod - the checked method
+	 * @return true if scope method is subsignature of thatMethod
+	 */
+	public boolean isSubSignature(CtMethod<?> thisMethod, CtMethod<?> thatMethod) {
+		return isSameSignature(thisMethod, thatMethod, true);
+	}
+
+	/**
+	 * The same signature is the necessary condition for method A overrides method B.
+	 * @param thatExecutable - the checked method
+	 * @return true if this method and `thatMethod` has same signature
+	 */
+	public boolean isSameSignature(CtExecutable<?> thisExecutable, CtMethod<?> thatExecutable) {
+		if ((thatExecutable instanceof CtMethod || thatExecutable instanceof CtConstructor) == false) {
+			//only method or constructor can have same signature
+			return false;
+		}
+		return isSameSignature(thisExecutable, thatExecutable, false);
 	}
 
 	@Override
@@ -562,5 +610,100 @@ public class ClassTypingContext extends AbstractTypingContext {
 			}
 		}
 		return adaptType(typeRef);
+	}
+
+	private boolean isSameSignature(CtExecutable<?> thisMethod, CtExecutable<?> thatMethod, boolean canTypeErasure) {
+		if (thisMethod == thatMethod) {
+			return true;
+		}
+		ExecutableContext mtc = new ExecutableContext();
+		mtc.setClassTypingContext(this);
+
+		if (thisMethod instanceof CtMethod) {
+			if (thatMethod instanceof CtMethod) {
+				mtc.setMethod((CtMethod<?>) thisMethod);
+			} else {
+				return false;
+			}
+		} else if (thisMethod instanceof CtConstructor) {
+			if (thatMethod instanceof CtConstructor) {
+				mtc.setConstructor((CtConstructor<?>) thisMethod);
+			} else {
+				return false;
+			}
+		} else {
+			//only method or constructor can compare signatures
+			return false;
+		}
+		return mtc.isSameSignatureLikeScopeMethod(thatMethod, canTypeErasure);
+	}
+
+	private static class ExecutableContext extends MethodTypingContext {
+		private boolean isSameSignatureLikeScopeMethod(CtExecutable<?> thatExecutable, boolean canTypeErasure) {
+			//https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
+			CtFormalTypeDeclarer thatDeclarer = (CtFormalTypeDeclarer) thatExecutable;
+			CtFormalTypeDeclarer thisDeclarer = getAdaptationScope();
+			CtExecutable<?> thisExecutable = (CtExecutable<?>) thisDeclarer;
+			if (thatExecutable.getSimpleName().equals(thisExecutable.getSimpleName()) == false) {
+				return false;
+			}
+			if (thisExecutable.getParameters().size() != thatExecutable.getParameters().size()) {
+				//the executables has different count of parameters they cannot have same signature
+				return false;
+			}
+			List<CtTypeParameter> thisTypeParameters = thisDeclarer.getFormalCtTypeParameters();
+			List<CtTypeParameter> thatTypeParameters = thatDeclarer.getFormalCtTypeParameters();
+			boolean useTypeErasure = false;
+			if (thisTypeParameters.size() == thatTypeParameters.size()) {
+				//the methods has same count of formal parameters
+				//check that formal type parameters are same
+				if (hasSameMethodFormalTypeParameters((CtFormalTypeDeclarer) thatExecutable) == false) {
+					return false;
+				}
+			} else {
+				//the methods has different count of formal type parameters.
+				if (canTypeErasure == false) {
+					//type erasure is not allowed. So non-generic methods cannot match with generic methods
+					return false;
+				}
+				//non-generic method can override a generic one if type erasure is allowed
+				if (thisTypeParameters.isEmpty() == false) {
+					//scope methods has some parameters. It is generic too, it is not a subsignature of that method
+					return false;
+				}
+				//scope method has zero formal type parameters. It is not generic.
+				useTypeErasure = true;
+			}
+			List<CtTypeReference<?>> thisParameterTypes = getParameterTypes(thisExecutable.getParameters());
+			List<CtTypeReference<?>> thatParameterTypes = getParameterTypes(thatExecutable.getParameters());
+			//check that parameters are same after adapting to the same scope
+			for (int i = 0; i < thisParameterTypes.size(); i++) {
+				CtTypeReference<?> thisType = thisParameterTypes.get(i);
+				CtTypeReference<?> thatType = thatParameterTypes.get(i);
+				if (useTypeErasure) {
+					if (thatType instanceof CtTypeParameterReference) {
+						thatType = ((CtTypeParameterReference) thatType).getTypeErasure();
+					}
+				} else {
+					thatType = adaptType(thatType);
+				}
+				if (thatType == null) {
+					//the type cannot be adapted.
+					return false;
+				}
+				if (thisType.equals(thatType) == false) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private static List<CtTypeReference<?>> getParameterTypes(List<CtParameter<?>> params) {
+			List<CtTypeReference<?>> types = new ArrayList<>(params.size());
+			for (CtParameter<?> param : params) {
+				types.add(param.getType());
+			}
+			return types;
+		}
 	}
 }

@@ -18,32 +18,31 @@ package spoon.support.visitor;
 
 import static spoon.support.visitor.ClassTypingContext.getTypeReferences;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
- * For the `scopeMethod` and super type hierarchy of it's declaring type,
- * it is able to adapt type parameters
- * and compare method signatures.
+ * For the scope method or constructor and super type hierarchy of it's declaring type,
+ * it is able to adapt type parameters.
+ *
+ * https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
+ * Where two methods or constructors M and N have the same type parameters {@link #hasSameMethodFormalTypeParameters(CtFormalTypeDeclarer)},
+ * a type mentioned in N can be adapted to the type parameters of M
  */
 public class MethodTypingContext extends AbstractTypingContext {
 
-	private CtExecutable<?> scopeMethod;
+	private CtFormalTypeDeclarer scopeMethod;
 	private List<CtTypeReference<?>> actualTypeArguments;
 	private ClassTypingContext classTypingContext;
 
@@ -52,7 +51,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 
 	@Override
 	public CtFormalTypeDeclarer getAdaptationScope() {
-		return (CtFormalTypeDeclarer) scopeMethod;
+		return scopeMethod;
 	}
 
 	public MethodTypingContext setMethod(CtMethod<?> scopeMethod) {
@@ -101,7 +100,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 
 	public MethodTypingContext setExecutableReference(CtExecutableReference<?> execRef) {
 		this.actualTypeArguments = execRef.getActualTypeArguments();
-		setScopeMethod(execRef.getExecutableDeclaration());
+		setScopeMethod((CtFormalTypeDeclarer) execRef.getExecutableDeclaration());
 		if (classTypingContext == null) {
 			CtTypeReference<?> declaringTypeRef = execRef.getDeclaringType();
 			if (declaringTypeRef != null) {
@@ -112,188 +111,73 @@ public class MethodTypingContext extends AbstractTypingContext {
 	}
 
 	/**
-	 * @param thatMethod - to be checked method
-	 * @return true if scope method overrides `thatMethod`
-	 */
-	public boolean isOverriding(CtMethod<?> thatMethod) {
-		if (scopeMethod == thatMethod) {
-			//method overrides itself in spoon model
-			return true;
-		}
-		CtType<?> thatDeclType = thatMethod.getDeclaringType();
-		CtType<?> thisDeclType = getScopeMethodDeclaringType();
-		if (thatDeclType != thisDeclType) {
-			if (getEnclosingGenericTypeAdapter().isSubtypeOf(thatDeclType.getReference()) == false) {
-				return false;
-			}
-		}
-		return isSubSignature(thatMethod);
-	}
-
-	/**
-	 * scope method is subsignature of thatMethod if either
-	 * A) scope method is same signature like thatMethod
-	 * B) scope method is same signature like type erasure of thatMethod
-	 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
-	 *
-	 * @param thatMethod - the checked method
-	 * @return true if scope method is subsignature of thatMethod
-	 */
-	public boolean isSubSignature(CtMethod<?> thatMethod) {
-		return checkSignature(thatMethod, true);
-	}
-
-	/**
-	 * The same signature is the necessary condition for method A overrides method B.
-	 * @param thatMethod - the checked method
-	 * @return true if this method and `thatMethod` has same signature
-	 */
-	public boolean isSameSignature(CtMethod<?> thatMethod) {
-		return checkSignature(thatMethod, false);
-	}
-
-	private boolean checkSignature(CtMethod<?> thatMethod, boolean canTypeErasure) {
-		//https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
-		if (mightBeSameSignature(thatMethod) == false) {
-			return false;
-		}
-		List<CtTypeParameter> formalCtTypeParameters = ((CtFormalTypeDeclarer) scopeMethod).getFormalCtTypeParameters();
-		List<CtTypeParameter> thatTypeParameters = thatMethod.getFormalCtTypeParameters();
-		boolean useTypeErasure = false;
-		if (formalCtTypeParameters.size() == thatTypeParameters.size()) {
-			//the methods has same count of formal parameters
-			//check that formal type parameters are same
-			for (int i = 0; i < formalCtTypeParameters.size(); i++) {
-				if (isSameMethodFormalTypeParameter(formalCtTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
-					return false;
-				}
-			}
-		} else {
-			//the methods has different count of formal type parameters.
-			if (canTypeErasure == false) {
-				//type erasure is not allowed. So not generic methods cannot match with generic methods
-				return false;
-			}
-			//non generic method can override a generic one if type erasure is allowed
-			if (formalCtTypeParameters.isEmpty() == false) {
-				//scope methods has some parameters. It is generic too, it is not a subsignature of that method
-				return false;
-			}
-			//scope method has zero formal type parameters. It is not generic.
-			useTypeErasure = true;
-		}
-		List<CtTypeReference<?>> thisParameterTypes = getParameterTypes(scopeMethod.getParameters());
-		List<CtTypeReference<?>> thatParameterTypes = getParameterTypes(thatMethod.getParameters());
-		//check that parameters are same after adapted to same scope
-		for (int i = 0; i < thisParameterTypes.size(); i++) {
-			CtTypeReference<?> thisType = thisParameterTypes.get(i);
-			CtTypeReference<?> thatType = thatParameterTypes.get(i);
-			if (useTypeErasure) {
-				if (thatType instanceof CtTypeParameterReference) {
-					thatType = ((CtTypeParameterReference) thatType).getTypeErasure();
-				}
-			} else {
-				thatType = adaptType(thatType);
-			}
-			if (thatType == null) {
-				//the type cannot be adapted.
-				return false;
-			}
-			if (thisType.equals(thatType) == false) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Check if thatMethod might have same signature like scope method.
-	 * Check only attributes, which does not need adapting or type erasure
-	 * @param thatMethod the to be checked method
-	 * @return true if `thatMethod` might have same signature like scope method
-	 */
-	private boolean mightBeSameSignature(CtMethod<?> thatMethod) {
-		if (scopeMethod == thatMethod) {
-			return true;
-		}
-		if ((thatMethod instanceof CtMethod) == false) {
-			return false;
-		}
-		if (thatMethod.getSimpleName().equals(scopeMethod.getSimpleName()) == false) {
-			return false;
-		}
-		if (scopeMethod.getParameters().size() != thatMethod.getParameters().size()) {
-			//the methods has different count of parameters they cannot have same signature
-			return false;
-		}
-		int nrTypeParamsOfScope = ((CtFormalTypeDeclarer) scopeMethod).getFormalCtTypeParameters().size();
-		int nrTypeParamsOfThat = thatMethod.getFormalCtTypeParameters().size();
-		if (nrTypeParamsOfThat != nrTypeParamsOfThat) {
-			//the methods has different count of formal type parameters
-			if (nrTypeParamsOfScope != 0) {
-				//they cannot have same signature
-				return false;
-			} //the overriding method has 0 parameters, it can have same signature after type erasure
-		}
-		return true;
-	}
-
-	/**
-	 * adapts `typeParam` to the {@link CtTypeReference}
+	 * Adapts `typeParam` to the {@link CtTypeReference}
 	 * of scope of this {@link MethodTypingContext}
 	 * In can be {@link CtTypeParameterReference} again - depending actual type arguments of this {@link MethodTypingContext}.
 	 *
-	 * Note: this method is not checking whether declarer method is overridden by scope method,
-	 * so it it may adapt parameters of potentially override equivalent methods.
-	 * Use {@link #checkSignature(CtMethod, boolean)} to check if method overrides another method
-	 *
-	 * @param superParam to be resolved {@link CtTypeParameter}
+	 * @param typeParam to be resolved {@link CtTypeParameter}
 	 * @return {@link CtTypeReference} or {@link CtTypeParameterReference} adapted to scope of this {@link MethodTypingContext}
 	 *  or null if `typeParam` cannot be adapted to target `scope`
 	 */
 	@Override
-	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter superParam) {
-		CtFormalTypeDeclarer superDeclarer = superParam.getTypeParameterDeclarer();
-		if (superDeclarer instanceof CtType<?>) {
-			return getEnclosingGenericTypeAdapter().adaptType(superParam);
+	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
+		CtFormalTypeDeclarer typeParamDeclarer = typeParam.getTypeParameterDeclarer();
+		if (typeParamDeclarer instanceof CtType<?>) {
+			return getEnclosingGenericTypeAdapter().adaptType(typeParam);
 		}
-		if (superDeclarer instanceof CtMethod) {
-			CtMethod<?> superMethod = (CtMethod<?>) superDeclarer;
-			/*
-			 * The type parameters of generic executables are same (can be adapted to each other)
-			 * 1) the methods are same or if methods overrides each other
-			 * 2) they are declared on same position
-			 * 3) they have same bound after adapting
-			 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
-			 */
-			if (mightBeSameSignature(superMethod) == false) {
-				//the methods are different. Cannot adapt parameter
+		//only method to method or constructor to constructor can be adapted
+		if (typeParamDeclarer instanceof CtMethod<?>) {
+			if ((scopeMethod instanceof CtMethod<?>) == false) {
 				return null;
 			}
-			/*
-			 * we do not know 100% if thatMethod overrides scope method,
-			 * but we cannot detect it here, because that check would need adapting of type parameters,
-			 * which would cause StackOverflowError
-			 */
-			int superParamPosition = superMethod.getFormalCtTypeParameters().indexOf(superParam);
-			CtTypeParameter scopeParam = ((CtFormalTypeDeclarer) scopeMethod).getFormalCtTypeParameters().get(superParamPosition);
-			if (isSameMethodFormalTypeParameter(scopeParam, superParam) == false) {
-				//the argument cannot be adapted if bounds are not same
+		} else if (typeParamDeclarer instanceof CtConstructor<?>) {
+			if ((scopeMethod instanceof CtConstructor<?>) == false) {
 				return null;
 			}
-			return actualTypeArguments.get(superParamPosition);
+		} else {
+			throw new SpoonException("Unexpected type parameter declarer");
 		}
-		return null;
+		//the typeParamDeclarer is method or constructor
+		/*
+		 *
+		 * Two methods or constructors M and N have the same type parameters if both of the following are true:
+		 * 1) M and N have same number of type parameters (possibly zero).
+		 * 2) Where A1, ..., An are the type parameters of M and B1, ..., Bn are the type parameters of N, let T=[B1:=A1, ..., Bn:=An].
+		 * Then, for all i (1 ≤ i ≤ n), the bound of Ai is the same type as T applied to the bound of Bi.
+		 */
+		if (hasSameMethodFormalTypeParameters(typeParamDeclarer) == false) {
+			//the methods formal type parameters are different. We cannot adapt such parameters
+			return null;
+		}
+		int typeParamPosition = typeParamDeclarer.getFormalCtTypeParameters().indexOf(typeParam);
+		return actualTypeArguments.get(typeParamPosition);
 	}
 
 	/**
+	 * https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
+	 *
 	 * Formal type parameters of method are same if
 	 * 1) both methods have same number of formal type parameters
 	 * 2) bounds of Formal type parameters are after adapting same types
 	 *
-	 * This method checks only point (2). Point (1) has to be already checked by caller
-	 * @return if bounds are same after adapting
+	 * @return true if formal type parameters of method are same
 	 */
+	public boolean hasSameMethodFormalTypeParameters(CtFormalTypeDeclarer typeParamDeclarer) {
+		List<CtTypeParameter> thisTypeParameters = scopeMethod.getFormalCtTypeParameters();
+		List<CtTypeParameter> thatTypeParameters = typeParamDeclarer.getFormalCtTypeParameters();
+		if (thisTypeParameters.size() != thatTypeParameters.size()) {
+			return false;
+		}
+		//the methods has same count of formal parameters
+		//check that bounds of formal type parameters are same after adapting
+		for (int i = 0; i < thisTypeParameters.size(); i++) {
+			if (isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private boolean isSameMethodFormalTypeParameter(CtTypeParameter scopeParam, CtTypeParameter superParam) {
 		CtTypeReference<?> scopeBound = getBound(scopeParam);
 		CtTypeReference<?> superBoundAdapted = adaptType(getBound(superParam));
@@ -311,31 +195,21 @@ public class MethodTypingContext extends AbstractTypingContext {
 		return bound;
 	}
 
-	private static List<CtTypeReference<?>> getParameterTypes(List<CtParameter<?>> params) {
-		List<CtTypeReference<?>> types = new ArrayList<>(params.size());
-		for (CtParameter<?> param : params) {
-			types.add(param.getType());
-		}
-		return types;
-	}
-
-
-
 	private CtType<?> getScopeMethodDeclaringType() {
 		if (scopeMethod != null) {
-			return ((CtTypeMember) scopeMethod).getDeclaringType();
+			return scopeMethod.getDeclaringType();
 		}
 		throw new SpoonException("scopeMethod is not assigned");
 	}
 
-	private void setScopeMethod(CtExecutable<?> executable) {
+	private void setScopeMethod(CtFormalTypeDeclarer executable) {
 		checkSameTypingContext(classTypingContext, executable);
 		scopeMethod = executable;
 	}
 
-	private void checkSameTypingContext(ClassTypingContext ctc, CtExecutable<?> executable) {
+	private void checkSameTypingContext(ClassTypingContext ctc, CtFormalTypeDeclarer executable) {
 		if (ctc != null && executable != null) {
-			CtType<?> scope = ((CtTypeMember) executable).getDeclaringType();
+			CtType<?> scope = executable.getDeclaringType();
 			if (scope == null) {
 				throw new SpoonException("Cannot use executable without declaring type as scope of method typing context");
 			}
