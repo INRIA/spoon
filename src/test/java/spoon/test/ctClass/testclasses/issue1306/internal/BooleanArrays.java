@@ -1,7 +1,5 @@
 package spoon.test.ctClass.testclasses.issue1306.internal;
 
-import org.assertj.core.util.VisibleForTesting;
-
 
 /**
  * Reusable assertions for arrays of {@code boolean}s.
@@ -24,10 +22,9 @@ public class BooleanArrays {
     return INSTANCE;
   }
 
-  @VisibleForTesting
   Failures failures = Failures.instance();
 
-  @VisibleForTesting
+
   BooleanArrays() {
   }
 

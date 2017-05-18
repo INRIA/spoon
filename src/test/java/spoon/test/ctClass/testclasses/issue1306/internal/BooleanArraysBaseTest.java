@@ -29,7 +29,7 @@ public class BooleanArraysBaseTest {
 
 
   public void setUp() {
-    actual = new boolean[] {true, false};
+    actual = spoon.test.ctClass.testclasses.issue1306.test.BooleanArrays.arrayOf(true, false);
     failures = new Failures();
     arrays = new BooleanArrays();
     arrays.failures = failures;
