@@ -975,6 +975,7 @@ public class AnnotationTest {
 	@Test
 	public void annotationAddValue() {
 		Launcher spoon = new Launcher();
+
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Bar.java");
 		spoon.buildModel();
 
@@ -989,5 +990,25 @@ public class AnnotationTest {
 
 		CtAnnotation anno = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[0]);
 		assertThat(anno.getValue("params").getType(), is(factory.Type().createReference(String[].class)));
+	}
+
+	@Test
+	public void annotationOverrideFQNIsOK() {
+		Launcher spoon = new Launcher();
+		factory = spoon.getFactory();
+		factory.getEnvironment().setNoClasspath(true);
+		spoon.addInputResource("./src/test/resources/noclasspath/annotation/issue1307/SpecIterator.java");
+		spoon.buildModel();
+
+
+
+		List<CtAnnotation> overrideAnnotations = factory.getModel().getElements(new TypeFilter<CtAnnotation>(CtAnnotation.class));
+
+		for (CtAnnotation annotation : overrideAnnotations) {
+			CtTypeReference typeRef = annotation.getAnnotationType();
+			if (typeRef.getSimpleName().equals("Override")) {
+				assertThat(typeRef.getQualifiedName(), is("java.lang.Override"));
+			}
+		}
 	}
 }
