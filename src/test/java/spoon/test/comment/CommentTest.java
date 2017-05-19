@@ -152,7 +152,7 @@ public class CommentTest {
 		assertEquals("RuntimeException", throwsTags.get(0).getParam());
 
 
-		assertEquals("JavaDoc test class.", classJavaDoc.getSortDescription());
+		assertEquals("JavaDoc test class.", classJavaDoc.getShortDescription());
 		assertEquals("Long description", classJavaDoc.getLongDescription());
 
 		CtJavaDocTag deprecatedTag = classJavaDoc.getTags().get(0);

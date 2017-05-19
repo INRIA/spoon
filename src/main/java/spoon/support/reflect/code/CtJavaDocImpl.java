@@ -81,7 +81,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 	}
 
 	@Override
-	public String getSortDescription() {
+	public String getShortDescription() {
 		int indexEndSentence = this.getContent().indexOf(".");
 		if (indexEndSentence == -1) {
 			indexEndSentence = this.getContent().indexOf("\n");
@@ -97,7 +97,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 	@Override
 	public String getLongDescription() {
-		int indexStartLongDescription = getSortDescription().length();
+		int indexStartLongDescription = getShortDescription().length();
 
 		return this.getContent().substring(indexStartLongDescription).trim();
 	}
