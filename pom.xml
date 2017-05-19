@@ -296,6 +296,10 @@
           <target>${java.src.version}</target>
           <testSource>${java.test.version}</testSource>
           <testTarget>${java.test.version}</testTarget>
+          <showWarnings>true</showWarnings>
+          <compilerArgs>
+              <arg>-Xlint:deprecation</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
 
