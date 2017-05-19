@@ -109,20 +109,23 @@ class JDTCommentBuilder {
 		int start = positions[0];
 		int end = -positions[1];
 
-		CtComment comment = factory.Core().createComment();
+		CtComment comment;
 
-		//
-		comment.setCommentType(CtComment.CommentType.BLOCK);
-		// the inline comments have negative start
-		if (start < 0) {
-			comment.setCommentType(CtComment.CommentType.INLINE);
-			start = -start;
-		}
 		// Javadoc comments have negative end position
 		if (end <= 0) {
-			comment.setCommentType(CtComment.CommentType.JAVADOC);
+			comment = factory.Core().createJavaDoc();
 			end = -end;
+		} else {
+			comment = factory.Core().createComment();
+			comment.setCommentType(CtComment.CommentType.BLOCK);
+
+			// the inline comments have negative start
+			if (start < 0) {
+				comment.setCommentType(CtComment.CommentType.INLINE);
+				start = -start;
+			}
 		}
+
 		String commentContent = getCommentContent(start, end);
 
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;
@@ -142,12 +145,9 @@ class JDTCommentBuilder {
 	 * @return a CtComment or a CtJavaDoc comment with a defined content
 	 */
 	private CtComment parseTags(CtComment comment, String commentContent) {
-		if (comment.getCommentType() != CtComment.CommentType.JAVADOC) {
+		if (!(comment instanceof CtJavaDoc)) {
 			comment.setContent(commentContent);
 			return comment;
-		}
-		if (!(comment instanceof CtJavaDoc)) {
-			comment = comment.getFactory().Core().createJavaDoc();
 		}
 
 		String currentTagContent = "";
