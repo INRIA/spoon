@@ -139,6 +139,10 @@ public class CommentTest {
 		assertEquals("the parameters", paramTags.get(0).getContent());
 		assertEquals("i", paramTags.get(0).getParam());
 
+		CtJavaDocTag tagClone = paramTags.get(0).clone();
+		assertEquals("the parameters", tagClone.getContent());
+		assertEquals("i", tagClone.getParam());
+
 		List<CtJavaDocTag> throwsTags = getTagByType(elements, CtJavaDocTag.TagType.THROWS);
 		assertEquals(1, throwsTags.size());
 		assertEquals("an exception", throwsTags.get(0).getContent());

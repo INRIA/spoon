@@ -185,8 +185,7 @@ class JDTCommentBuilder {
 	 */
 	private void defineCommentContent(CtComment comment, String tagContent, CtJavaDocTag.TagType tagType) {
 		if (tagType != null) {
-			CtJavaDocTag docTag = comment.getFactory().Core().createJavaDocTag();
-			docTag.setType(tagType).setContent(tagContent.trim());
+			CtJavaDocTag docTag = comment.getFactory().Code().createJavaDocTag(tagContent, tagType);
 			((CtJavaDoc) comment).addTag(docTag);
 		} else if (!tagContent.isEmpty()) {
 			comment.setContent(tagContent.trim());

@@ -50,19 +50,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setContent(String content) {
-		if (this.type != null && this.type.hasParam()) {
-			int firstWord = content.indexOf(" ");
-			int firstLine = content.indexOf("\n");
-			if (firstLine < firstWord && firstLine >= 0) {
-				firstWord = firstLine;
-			}
-			if (firstWord == -1) {
-				firstWord = content.length();
-			}
-			this.param = content.substring(0, firstWord);
-			content = content.substring(firstWord);
-		}
-		this.content = content.trim();
+		this.content = content;
 		return (E) this;
 	}
 
@@ -85,9 +73,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 		sb.append(" ");
 		if (type.hasParam()) {
 			sb.append(param);
-			if (!content.isEmpty() && !content.startsWith("\n")) {
-				sb.append(" ");
-			}
+			sb.append("\n\t\t");
 		}
 		sb.append(content);
 		return sb.toString();
