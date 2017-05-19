@@ -22,9 +22,6 @@ public class BooleanArrays {
     return INSTANCE;
   }
 
-  Failures failures = Failures.instance();
-
-
   BooleanArrays() {
   }
 

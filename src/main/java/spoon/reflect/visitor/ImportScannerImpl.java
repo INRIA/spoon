@@ -66,6 +66,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private static final Collection<String> namesPresentInJavaLang9 = Arrays.asList(
 			"ProcessHandle", "StackWalker", "StackFramePermission");
 
+	protected Set<CtReference> implicitImports = new HashSet<>();
 	protected Map<String, CtTypeReference<?>> classImports = new TreeMap<>();
 	protected Map<String, CtFieldReference<?>> fieldImports = new TreeMap<>();
 	protected Map<String, CtExecutableReference<?>> methodImports = new TreeMap<>();
@@ -200,6 +201,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public Collection<CtReference> computeAllImports(CtType<?> simpleType) {
+		implicitImports.clear();
 		classImports.clear();
 		fieldImports.clear();
 		methodImports.clear();
@@ -217,6 +219,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
+		implicitImports.clear();
 		classImports.clear();
 		fieldImports.clear();
 		methodImports.clear();
@@ -240,6 +243,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public boolean isImported(CtReference ref) {
+		if (this.implicitImports.contains(ref)) {
+			return true;
+		}
 		if (ref instanceof CtFieldReference) {
 			return isImportedInFieldImports((CtFieldReference) ref);
 		} else if (ref instanceof CtExecutableReference) {
@@ -274,6 +280,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				// Don't import class with names clashing with some classes present in java.lang,
 				// because it leads to undecidability and compilation errors. I. e. always leave
 				// com.mycompany.String fully-qualified.
+				this.implicitImports.add(ref);
 				return false;
 			}
 		}
@@ -325,6 +332,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 											// ignore type in same package
 											if (declaringType.getPackage().getSimpleName()
 													.equals(pack.getSimpleName())) {
+
+												// if an implicit import has the same name we have to avoid importing it.
+												for (CtReference implicitRef : this.implicitImports) {
+													if (implicitRef.getSimpleName().equals(ref.getSimpleName())) {
+														return false;
+													}
+												}
 												classImports.put(ref.getSimpleName(), ref);
 												return true;
 											}
@@ -344,13 +358,18 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					// ignore type in same package
 					if (ref.getPackage().getSimpleName()
 							.equals(pack.getSimpleName())) {
+						this.implicitImports.add(ref);
 						return false;
 					}
 				}
 			}
 		}
-		//note: we must add the type refs from the same package too, to assure that isImported(typeRef) returns true for them
-		//these type refs are removed in #getClassImports()
+		// if an implicit import has the same name we have to avoid importing it.
+		for (CtReference implicitRef : this.implicitImports) {
+			if (implicitRef.getSimpleName().equals(ref.getSimpleName())) {
+				return false;
+			}
+		}
 		classImports.put(ref.getSimpleName(), ref);
 		return true;
 	}
