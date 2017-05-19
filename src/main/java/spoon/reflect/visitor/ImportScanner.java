@@ -29,8 +29,7 @@ import java.util.Collection;
 public interface ImportScanner {
 
 	/**
-	 * Computes import of a {@link spoon.reflect.declaration.CtType}
-	 * (represent a class).
+	 * Computes import of a {@link spoon.reflect.declaration.CtElement}
 	 *
 	 * @return class imports computed by Spoon, it does not contain static imports
 	 */
