@@ -73,7 +73,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected CtTypeReference<?> targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
-	private Set<CtTypeReference> exploredReferences = new HashSet<>();
+	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
