@@ -92,6 +92,7 @@ public class SubInheritanceHierarchyFunction implements CtConsumableFunction<CtT
 				outputConsumer.accept(typeInfo);
 				if (query.isTerminated()) {
 					//Cannot terminate, because it's support was removed.
+					//I think there are cases where it might be useful.
 //					fnc.terminate();
 				}
 			}
