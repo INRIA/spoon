@@ -28,8 +28,14 @@ import spoon.reflect.declaration.CtElement;
  */
 public interface CtJavaDocTag extends CtElement {
 
+	/**
+	 * The tag prefix
+	 */
 	String JAVADOC_TAG_PREFIX = "@";
 
+	/**
+	 * Define the possible type for a tag
+	 */
 	enum TagType {
 		AUTHOR,
 		DEPRECATED,
@@ -45,43 +51,74 @@ public interface CtJavaDocTag extends CtElement {
 		VERSION,
 		UNKNOWN;
 
-		TagType() {
-			this.keyword = name().toLowerCase();
-		}
-
-		private String keyword;
-
+		/**
+		 * Return true if the tag can have a parameter
+		 * @return true if the tag can have a parameter
+		 */
 		public boolean hasParam() {
 			return this == PARAM || this == THROWS;
 		}
 
-		public String getKeyword() {
-			return keyword;
-		}
-
-		public static TagType fromName(String tagName) {
+		/**
+		 * Get the tag type associated to a name
+		 * @param tagName the tag name
+		 * @return the tag type
+		 */
+		public static TagType tagFromName(String tagName) {
 			for (TagType t : TagType.values()) {
-				if (t.keyword.equals(tagName)) {
+				if (t.name().toLowerCase().equals(tagName.toLowerCase())) {
 					return t;
 				}
 			}
 			return UNKNOWN;
 		}
+
+		@Override
+		public String toString() {
+			return JAVADOC_TAG_PREFIX + name().toLowerCase();
+		}
 	}
 
+	/**
+	 * The type of the tag
+	 * @return the type of the tag
+	 */
+	TagType getType();
 
-	TagType getName();
+	/**
+	 * Define the type of the tag
+	 * @param type the type name
+	 */
+	<E extends CtJavaDocTag> E setType(String type);
 
-	<E extends CtJavaDocTag> E setName(String name);
+	/**
+	 * Define the type of the tag
+	 * @param type the new type
+	 */
+	<E extends CtJavaDocTag> E setType(TagType type);
 
-	<E extends CtJavaDocTag> E setName(TagType name);
-
+	/**
+	 * Get the content of the atg
+	 * @return the content of the tag
+	 */
 	String getContent();
 
+	/**
+	 * Define the content of the tag
+	 * @param content the new content of the tag
+	 */
 	<E extends CtJavaDocTag> E setContent(String content);
 
+	/**
+	 * Get the parameter of the tag return null when none is specified (only for @param and @throws)
+	 * @return the parameter
+	 */
 	String getParam();
 
+	/**
+	 * Define a parameter
+	 * @param param the parameter
+	 */
 	<E extends CtJavaDocTag> E setParam(String param);
 
 	@Override

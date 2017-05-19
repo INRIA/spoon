@@ -260,7 +260,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
 	public void visitCtJavaDocTag(spoon.reflect.code.CtJavaDocTag e) {
-		((spoon.reflect.code.CtJavaDocTag) (other)).setName(e.getName());
+		((spoon.reflect.code.CtJavaDocTag) (other)).setType(e.getType());
 		((spoon.reflect.code.CtJavaDocTag) (other)).setContent(e.getContent());
 		((spoon.reflect.code.CtJavaDocTag) (other)).setParam(e.getParam());
 		super.visitCtJavaDocTag(e);

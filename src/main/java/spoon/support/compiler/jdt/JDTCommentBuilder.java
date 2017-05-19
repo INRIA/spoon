@@ -135,6 +135,12 @@ class JDTCommentBuilder {
 		insertCommentInAST(comment);
 	}
 
+	/**
+	 * Parse the content of a comment to extract the tags
+	 * @param comment the original comment
+	 * @param commentContent the content of the comment
+	 * @return a CtComment or a CtJavaDoc comment with a defined content
+	 */
 	private CtComment parseTags(CtComment comment, String commentContent) {
 		if (comment.getCommentType() != CtComment.CommentType.JAVADOC) {
 			comment.setContent(commentContent);
@@ -155,15 +161,9 @@ class JDTCommentBuilder {
 				if (endIndex == -1) {
 					endIndex = line.length();
 				}
-				if (currentTag != null) {
-					CtJavaDocTag docTag = comment.getFactory().Core().createJavaDocTag();
-					docTag.setName(currentTag).setContent(currentTagContent.trim());
-					((CtJavaDoc) comment).addTag(docTag);
-				} else if (!currentTagContent.isEmpty()) {
-					comment.setContent(currentTagContent.trim());
-				}
+				defineCommentContent(comment, currentTagContent, currentTag);
 
-				currentTag = CtJavaDocTag.TagType.fromName(line.substring(1, endIndex).toLowerCase());
+				currentTag = CtJavaDocTag.TagType.tagFromName(line.substring(1, endIndex).toLowerCase());
 				if (endIndex == line.length()) {
 					currentTagContent = "";
 				} else {
@@ -173,14 +173,24 @@ class JDTCommentBuilder {
 				currentTagContent += "\n" + lines[i];
 			}
 		}
-		if (currentTag != null) {
-			CtJavaDocTag docTag = comment.getFactory().Core().createJavaDocTag();
-			docTag.setName(currentTag).setContent(currentTagContent.trim());
-			((CtJavaDoc) comment).addTag(docTag);
-		} else if (!currentTagContent.isEmpty()) {
-			comment.setContent(currentTagContent.trim());
-		}
+		defineCommentContent(comment, currentTagContent, currentTag);
 		return comment;
+	}
+
+	/**
+	 * Define the content of the comment
+	 * @param comment the comment
+	 * @param tagContent the tagContent of the tag
+	 * @param tagType the tag type
+	 */
+	private void defineCommentContent(CtComment comment, String tagContent, CtJavaDocTag.TagType tagType) {
+		if (tagType != null) {
+			CtJavaDocTag docTag = comment.getFactory().Core().createJavaDocTag();
+			docTag.setType(tagType).setContent(tagContent.trim());
+			((CtJavaDoc) comment).addTag(docTag);
+		} else if (!tagContent.isEmpty()) {
+			comment.setContent(tagContent.trim());
+		}
 	}
 
 	/**

@@ -22,24 +22,24 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
-	private CtJavaDocTag.TagType name;
+	private CtJavaDocTag.TagType type;
 	private String content;
 	private String param;
 
 	@Override
-	public TagType getName() {
-		return name;
+	public TagType getType() {
+		return type;
 	}
 
 	@Override
-	public <E extends CtJavaDocTag> E setName(String name) {
-		this.setName(CtJavaDocTag.TagType.fromName(name));
+	public <E extends CtJavaDocTag> E setType(String type) {
+		this.setType(CtJavaDocTag.TagType.tagFromName(type));
 		return (E) this;
 	}
 
 	@Override
-	public <E extends CtJavaDocTag> E setName(TagType name) {
-		this.name = name;
+	public <E extends CtJavaDocTag> E setType(TagType type) {
+		this.type = type;
 		return (E) this;
 	}
 
@@ -50,7 +50,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setContent(String content) {
-		if (this.name != null && this.name.hasParam()) {
+		if (this.type != null && this.type.hasParam()) {
 			int firstWord = content.indexOf(" ");
 			int firstLine = content.indexOf("\n");
 			if (firstLine < firstWord && firstLine >= 0) {
@@ -81,9 +81,9 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(CtJavaDocTag.JAVADOC_TAG_PREFIX);
-		sb.append(name.getKeyword());
+		sb.append(type.name().toLowerCase());
 		sb.append(" ");
-		if (name.hasParam()) {
+		if (type.hasParam()) {
 			sb.append(param);
 			if (!content.isEmpty() && !content.startsWith("\n")) {
 				sb.append(" ");

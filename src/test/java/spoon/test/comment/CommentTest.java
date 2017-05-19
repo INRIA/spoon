@@ -13,6 +13,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -100,7 +101,7 @@ public class CommentTest {
 	private List<CtJavaDocTag> getTagByType(List<CtJavaDocTag> elements, CtJavaDocTag.TagType type) {
 		List<CtJavaDocTag> output = new ArrayList<>();
 		for (CtJavaDocTag element : elements) {
-			if (element.getName() == type) {
+			if (element.getType() == type) {
 				output.add(element);
 			}
 		}
@@ -112,7 +113,8 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocComment.class);
 
-		assertEquals("JavaDoc test class", type.getComments().get(0).getContent());
+		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		assertEquals("JavaDoc test class", classJavaDoc.getContent());
 
 		List<CtJavaDocTag> elements = type.getElements(new TypeFilter<>(CtJavaDocTag.class));
 		assertEquals(8, elements.size());
@@ -141,6 +143,13 @@ public class CommentTest {
 		assertEquals(1, throwsTags.size());
 		assertEquals("an exception", throwsTags.get(0).getContent());
 		assertEquals("RuntimeException", throwsTags.get(0).getParam());
+
+		CtJavaDocTag deprecatedTag = classJavaDoc.getTags().get(0);
+		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);
+		classJavaDoc.removeTag(0);
+		assertEquals(-1, classJavaDoc.toString().indexOf("@deprecated"));
+		classJavaDoc.addTag(deprecatedTag);
+		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);
 	}
 
 	@Test
