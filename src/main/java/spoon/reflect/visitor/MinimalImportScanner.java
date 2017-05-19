@@ -94,8 +94,6 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	@Override
 	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
-		// in this mode we should not consider implicit imports as FQN are used
-		this.implicitImports.clear();
 		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
 			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
