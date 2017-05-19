@@ -30,6 +30,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -680,4 +681,33 @@ public class CodeFactory extends SubFactory {
 	public CtComment createInlineComment(String content) {
 		return createComment(content, CtComment.CommentType.INLINE);
 	}
+
+	/**
+	 * Creates a javadoc tag
+	 *
+	 * @param content The content of the javadoc tag with a possible paramater
+	 * @param type The tag type
+	 * @return a new CtJavaDocTag
+	 */
+	public CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type) {
+		if (content == null) {
+			content = "";
+		}
+		CtJavaDocTag docTag = factory.Core().createJavaDocTag();
+		if (type != null && type.hasParam()) {
+			int firstWord = content.indexOf(" ");
+			int firstLine = content.indexOf("\n");
+			if (firstLine < firstWord && firstLine >= 0) {
+				firstWord = firstLine;
+			}
+			if (firstWord == -1) {
+				firstWord = content.length();
+			}
+			String param = content.substring(0, firstWord);
+			content = content.substring(firstWord);
+			docTag.setParam(param);
+		}
+		return docTag.setContent(content.trim()).setType(type);
+	}
+
 }

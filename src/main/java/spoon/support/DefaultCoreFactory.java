@@ -42,6 +42,8 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -121,6 +123,8 @@ import spoon.support.reflect.code.CtForEachImpl;
 import spoon.support.reflect.code.CtForImpl;
 import spoon.support.reflect.code.CtIfImpl;
 import spoon.support.reflect.code.CtInvocationImpl;
+import spoon.support.reflect.code.CtJavaDocImpl;
+import spoon.support.reflect.code.CtJavaDocTagImpl;
 import spoon.support.reflect.code.CtLambdaImpl;
 import spoon.support.reflect.code.CtLiteralImpl;
 import spoon.support.reflect.code.CtLocalVariableImpl;
@@ -627,6 +631,20 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		return e;
 	}
 
+	@Override
+	public CtJavaDoc createJavaDoc() {
+		CtJavaDoc e = new CtJavaDocImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public CtJavaDocTag createJavaDocTag() {
+		CtJavaDocTag e = new CtJavaDocTagImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
 	public CtWhile createWhile() {
 		CtWhile e = new CtWhileImpl();
 		e.setFactory(getMainFactory());
@@ -721,6 +739,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		}
 		if (klass.equals(spoon.reflect.code.CtComment.class)) {
 			return createComment();
+		}
+		if (klass.equals(spoon.reflect.code.CtJavaDoc.class)) {
+			return createJavaDoc();
+		}
+		if (klass.equals(spoon.reflect.code.CtJavaDocTag.class)) {
+			return createJavaDocTag();
 		}
 		if (klass.equals(spoon.reflect.code.CtConditional.class)) {
 			return createConditional();
