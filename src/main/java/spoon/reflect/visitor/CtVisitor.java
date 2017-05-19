@@ -458,9 +458,12 @@ public interface CtVisitor {
 	void visitCtComment(CtComment comment);
 
 	/**
-	 * Visits a comment
+	 * Visits a javadoc comment
 	 */
 	void visitCtJavaDoc(CtJavaDoc comment);
 
+	/**
+	 * Visits a javadoc tag
+	 */
 	void visitCtJavaDocTag(CtJavaDocTag docTag);
 }
