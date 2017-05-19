@@ -110,11 +110,14 @@ public class CommentTest {
 
 	@Test
 	public void testJavaDocComment() {
+		String EOL = System.getProperty("line.separator");
+
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocComment.class);
 
 		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
-		assertEquals("JavaDoc test class", classJavaDoc.getContent());
+		assertEquals("JavaDoc test class."+EOL+EOL
+				+ "Long description", classJavaDoc.getContent());
 
 		List<CtJavaDocTag> elements = type.getElements(new TypeFilter<>(CtJavaDocTag.class));
 		assertEquals(8, elements.size());
@@ -147,6 +150,10 @@ public class CommentTest {
 		assertEquals(1, throwsTags.size());
 		assertEquals("an exception", throwsTags.get(0).getContent());
 		assertEquals("RuntimeException", throwsTags.get(0).getParam());
+
+
+		assertEquals("JavaDoc test class.", classJavaDoc.getSortDescription());
+		assertEquals("Long description", classJavaDoc.getLongDescription());
 
 		CtJavaDocTag deprecatedTag = classJavaDoc.getTags().get(0);
 		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);

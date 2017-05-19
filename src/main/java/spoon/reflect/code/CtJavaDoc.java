@@ -67,6 +67,18 @@ public interface CtJavaDoc extends CtComment {
 	 */
 	<E extends CtJavaDoc> E removeTag(CtJavaDocTag tag);
 
+	/**
+	 * Get the sort summary of the javadoc (first sentence of the javadoc)
+	 * @return the summary of the javadoc
+	 */
+	String getSortDescription();
+
+	/**
+	 * Get the long description of the javadoc
+	 * @return the long description of the javadoc
+	 */
+	String getLongDescription();
+
 	@Override
 	CtJavaDoc clone();
 }

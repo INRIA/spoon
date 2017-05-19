@@ -807,11 +807,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtJavaDocTag(CtJavaDocTag docTag) {
-		String tagContent = docTag.toString();
-		String[] tagLines = tagContent.split("\n");
+		String EOL = System.getProperty("line.separator");
+
+		printer.write(" * ");
+		printer.write(CtJavaDocTag.JAVADOC_TAG_PREFIX);
+		printer.write(docTag.getType().name().toLowerCase());
+		printer.write(" ");
+		if (docTag.getType().hasParam()) {
+			printer.write(docTag.getParam()).writeln().writeTabs();
+		}
+
+		String[] tagLines = docTag.getContent().split(EOL);
 		for (int i = 0; i < tagLines.length; i++) {
 			String com = tagLines[i];
-			printer.write(" * " + com).writeln().writeTabs();
+			if (i > 0 || docTag.getType().hasParam()) {
+				printer.write(" * ");
+			}
+			if (docTag.getType().hasParam()) {
+				printer.write("\t\t");
+			}
+			printer.write(com.trim()).writeln().writeTabs();
 		}
 	}
 
@@ -840,7 +855,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write(content);
 			break;
 		default:
-			String[] lines = content.split("\n");
+			String EOL = System.getProperty("line.separator");
+			String[] lines = content.split(EOL);
 			for (int i = 0; i < lines.length; i++) {
 				String com = lines[i];
 				if (comment.getCommentType() == CtComment.CommentType.BLOCK) {

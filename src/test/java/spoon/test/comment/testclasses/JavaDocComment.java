@@ -3,7 +3,9 @@ package spoon.test.comment.testclasses;
 import java.util.ArrayList;
 
 /**
- * JavaDoc test class
+ * JavaDoc test class.
+ *
+ * Long description
  *
  * @deprecated
  * @since 1.3

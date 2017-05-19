@@ -66,20 +66,6 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(CtJavaDocTag.JAVADOC_TAG_PREFIX);
-		sb.append(type.name().toLowerCase());
-		sb.append(" ");
-		if (type.hasParam()) {
-			sb.append(param);
-			sb.append("\n\t\t");
-		}
-		sb.append(content);
-		return sb.toString();
-	}
-
-	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtJavaDocTag(this);
 	}
