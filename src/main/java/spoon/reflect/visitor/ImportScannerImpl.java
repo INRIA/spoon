@@ -216,26 +216,23 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
+	public Collection<CtTypeReference<?>> computeImports(CtElement element) {
 		classImports.clear();
 		fieldImports.clear();
 		methodImports.clear();
 		//look for top declaring type of that simpleType
-		targetType = simpleType.getReference().getTopLevelType();
-		addClassImport(simpleType.getReference());
-		scan(simpleType);
-		return this.classImports.values();
-	}
 
-	@Override
-	public void computeImports(CtElement element) {
-		classImports.clear();
-		fieldImports.clear();
-		methodImports.clear();
-		//look for top declaring type of that element
-		CtType<?> type = element.getParent(CtType.class);
-		targetType = type == null ? null : type.getReference().getTopLevelType();
-		scan(element);
+		if (element instanceof CtType) {
+			CtType simpleType = (CtType) element;
+			targetType = simpleType.getReference().getTopLevelType();
+			addClassImport(simpleType.getReference());
+			scan(simpleType);
+		} else {
+			CtType<?> type = element.getParent(CtType.class);
+			targetType = type == null ? null : type.getReference().getTopLevelType();
+			scan(element);
+		}
+		return this.classImports.values();
 	}
 
 	@Override
