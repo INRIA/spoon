@@ -48,6 +48,7 @@ import spoon.support.visitor.SubInheritanceHierarchyResolver;
 public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtExecutable<?>>, CtQueryAware {
 
 	private boolean includingSelf = false;
+	private boolean includingLambdas = true;
 	private CtQuery query;
 
 	public AllMethodsSameSignatureFunction() {
@@ -61,8 +62,20 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		return this;
 	}
 
+	/**
+	 * @param includingLambdas if true then extra search for {@link CtLambda} executables,
+	 * with same signature will be processed too.
+	 * If false, then it returns only {@link CtMethod} instances.
+	 * By default it is true.
+	 */
+	public AllMethodsSameSignatureFunction includingLambdas(boolean includingLambdas) {
+		this.includingLambdas = includingLambdas;
+		return this;
+	}
+
 	@Override
 	public void apply(CtExecutable<?> targetExecutable, final CtConsumer<Object> outputConsumer) {
+		final LambdaFilter lambdaFilter = new LambdaFilter();
 		final List<CtExecutable<?>> targetMethods = new ArrayList<>();
 		targetMethods.add(targetExecutable);
 		if (includingSelf) {
@@ -81,12 +94,13 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 			return;
 		}
 		CtType<?> declaringType = targetMethod.getDeclaringType();
+		lambdaFilter.addImplementingInterface(declaringType);
 		//search for all declarations and implementations of this method in sub and super classes and interfaces of all related hierarchies.
 		class Context {
 			boolean haveToSearchForSubtypes;
 		}
 		final Context context = new Context();
-		//at the beginning we know that we have to always search for sub types too. 
+		//at the beginning we know that we have to always search for sub types too.
 		context.haveToSearchForSubtypes = true;
 		//Sub inheritance hierarchy function, which remembers visited sub types and does not returns/visits them again
 		final SubInheritanceHierarchyResolver subHierarchyFnc = new SubInheritanceHierarchyResolver(declaringType.getFactory().getModel().getRootPackage());
@@ -110,6 +124,7 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 						targetMethods.add(overriddenMethod);
 						outputConsumer.accept(overriddenMethod);
 						CtType<?> type = overriddenMethod.getDeclaringType();
+						lambdaFilter.addImplementingInterface(type);
 						subHierarchyFnc.addSuperType(type);
 						//mark that new super type was added, so we have to search for sub types again
 						context.haveToSearchForSubtypes = true;
@@ -131,6 +146,10 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 					}
 				});
 			}
+		}
+		if (includingLambdas) {
+			//search for all lambdas implementing any of the found interfaces
+			declaringType.getFactory().getModel().getRootPackage().filterChildren(lambdaFilter).forEach(outputConsumer);
 		}
 	}
 
