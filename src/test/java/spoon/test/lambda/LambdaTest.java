@@ -9,6 +9,7 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -18,6 +19,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.LambdaFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.lambda.testclasses.Bar;
@@ -30,9 +32,7 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -382,6 +382,27 @@ public class LambdaTest {
 		CtMethod<?> method = lambda.getOverriddenMethod();
 		CtTypeReference<?> iface = lambda.getType();
 		assertEquals(LambdaRxJava.NbpOperator.class.getName(), iface.getQualifiedName());
+	}
+
+	@Test
+	public void testLambdaFilter() throws Exception {
+		List<String> methodNames = foo.filterChildren(new LambdaFilter((CtInterface<?>) foo.getNestedType("CheckPerson"))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
+		assertHasStrings(methodNames);
+		methodNames = foo.filterChildren(new LambdaFilter((CtInterface<?>) foo.getNestedType("Check"))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
+		assertHasStrings(methodNames, "m", "m6");
+		methodNames = foo.filterChildren(new LambdaFilter((CtInterface<?>) foo.getNestedType("CheckPersons"))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
+		assertHasStrings(methodNames, "m3", "m5");
+		methodNames = foo.filterChildren(new LambdaFilter(factory.Interface().get(Predicate.class))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
+		assertHasStrings(methodNames, "m2", "m4", "m7", "m8");
+	}
+
+	private void assertHasStrings(List<String> methodNames, String... strs) {
+		for (String str : strs) {
+			assertTrue("List should contain "+str+" but it is missing.", methodNames.remove(str));
+		}
+		if(methodNames.size()>0) {
+			fail("List should't contain "+methodNames);
+		}
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {
