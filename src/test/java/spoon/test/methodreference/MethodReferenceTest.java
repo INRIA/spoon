@@ -205,7 +205,7 @@ public class MethodReferenceTest {
 	}
 	
 	@Test
-	public void testGetGenericMethodFromReferene() throws Exception {
+	public void testGetGenericMethodFromReference() throws Exception {
 		CtType<?> classCloud = ModelUtils.buildClass(Cloud.class);
 		CtMethod<?> ctMethod = classCloud.getMethodsByName("method").get(0);
 		CtExecutableReference<?> execRef = ctMethod.getReference();
@@ -225,6 +225,17 @@ public class MethodReferenceTest {
 		assertEquals("method", method2.getName());
 	}
 	
+	@Test
+	public void testGetGenericExecutableReference() throws Exception {
+		CtType<?> classCloud = ModelUtils.buildClass(Cloud.class);
+		for (CtMethod<?> ctMethod : classCloud.getMethodsByName("method")) {
+			CtExecutableReference<?> execRef = ctMethod.getReference();
+			Method method = execRef.getActualMethod();
+			assertNotNull(method);
+			assertEquals("method", method.getName());
+			assertSame(ctMethod, execRef.getDeclaration());
+		}
+	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
 		assertEquals("Method reference must be typed.", expected, type.getActualClass());
