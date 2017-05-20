@@ -114,7 +114,7 @@ public class SubInheritanceHierarchyResolver {
 	 * 	If this method is called again with same input and configuration, nothing in sent to outputConsumer
 	 * @param outputConsumer the consumer for found sub types
 	 */
-	public <T extends CtTypeInformation> void forEachSubTypeInPackage(final CtConsumer<T> outputConsumer) {
+	public <T extends CtType<?>> void forEachSubTypeInPackage(final CtConsumer<T> outputConsumer) {
 		/*
 		 * Set of qualified names of all visited types, independent on whether they are sub types or not.
 		 */

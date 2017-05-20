@@ -39,7 +39,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -1059,9 +1058,9 @@ public class FilterTest {
 		SubInheritanceHierarchyResolver resolver = new SubInheritanceHierarchyResolver(launcher.getModel().getRootPackage());
 
 		// contract: by default, nothing is sent to the consumer
-		resolver.forEachSubTypeInPackage(new CtConsumer<CtTypeInformation>() {
+		resolver.forEachSubTypeInPackage(new CtConsumer<CtType<?>>() {
 			@Override
-			public void accept(CtTypeInformation ctTypeInformation) {
+			public void accept(CtType<?> ctType) {
 				fail();
 			}
 		});
@@ -1070,9 +1069,9 @@ public class FilterTest {
 		resolver.addSuperType(launcher.getFactory().Type().createReference(AbstractTostada.class));
 		class Counter { int counter =0;}
 		Counter c = new Counter();
-		resolver.forEachSubTypeInPackage(new CtConsumer<CtTypeInformation>() {
+		resolver.forEachSubTypeInPackage(new CtConsumer<CtType<?>>() {
 			@Override
-			public void accept(CtTypeInformation ctTypeInformation) {
+			public void accept(CtType<?> ctType) {
 				c.counter++;
 			}
 		});
@@ -1083,9 +1082,9 @@ public class FilterTest {
 		// we add a type already visited
 		resolver.addSuperType(launcher.getFactory().Type().createReference(Tostada.class));
 		// nothing is sent to the consumer
-		resolver.forEachSubTypeInPackage(new CtConsumer<CtTypeInformation>() {
+		resolver.forEachSubTypeInPackage(new CtConsumer<CtType<?>>() {
 			@Override
-			public void accept(CtTypeInformation ctTypeInformation) {
+			public void accept(CtType<?> ctType) {
 				fail();
 			}
 		});
@@ -1093,11 +1092,11 @@ public class FilterTest {
 		// we add a new type
 		resolver.addSuperType(launcher.getFactory().Type().createReference(ITostada.class));
 		Counter c2 = new Counter();
-		resolver.forEachSubTypeInPackage(new CtConsumer<CtTypeInformation>() {
+		resolver.forEachSubTypeInPackage(new CtConsumer<CtType<?>>() {
 			@Override
-			public void accept(CtTypeInformation ctTypeInformation) {
+			public void accept(CtType<?> ctType) {
 				c2.counter++;
-				assertEquals("spoon.test.filters.testclasses.Tacos", ctTypeInformation.getQualifiedName());
+				assertEquals("spoon.test.filters.testclasses.Tacos", ctType.getQualifiedName());
 			}
 		});
 
