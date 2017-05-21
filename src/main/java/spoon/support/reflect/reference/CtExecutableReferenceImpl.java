@@ -158,13 +158,13 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			return null;
 		}
 		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
-		if ((method == null) && (typeDecl instanceof CtClass) && (getSimpleName().equals("<init>"))) {
+		if ((method == null) && (typeDecl instanceof CtClass) && (getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME))) {
 			try {
 				return (CtExecutable<T>) ((CtClass<?>) typeDecl).getConstructor(parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
 			} catch (ClassCastException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
-		} else if (method == null && getSimpleName().startsWith("lambda$")) {
+		} else if (method == null && getSimpleName().startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX)) {
 			final List<CtLambda<T>> elements = (List<CtLambda<T>>) typeDecl.getElements(new NameFilter<CtLambda<T>>(getSimpleName()));
 			if (elements.size() == 0) {
 				return null;
