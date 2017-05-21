@@ -386,13 +386,17 @@ public class LambdaTest {
 
 	@Test
 	public void testLambdaFilter() throws Exception {
+		//check constructor with CtInterface
 		List<String> methodNames = foo.filterChildren(new LambdaFilter((CtInterface<?>) foo.getNestedType("CheckPerson"))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
 		assertHasStrings(methodNames);
-		methodNames = foo.filterChildren(new LambdaFilter((CtInterface<?>) foo.getNestedType("Check"))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
+		//check constructor with CtTypeReference
+		methodNames = foo.filterChildren(new LambdaFilter(foo.getNestedType("Check").getReference())).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
 		assertHasStrings(methodNames, "m", "m6");
-		methodNames = foo.filterChildren(new LambdaFilter((CtInterface<?>) foo.getNestedType("CheckPersons"))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
+		//check empty constructor and addImplementingInterface with Interface
+		methodNames = foo.filterChildren(new LambdaFilter().addImplementingInterface((CtInterface<?>) foo.getNestedType("CheckPersons"))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
 		assertHasStrings(methodNames, "m3", "m5");
-		methodNames = foo.filterChildren(new LambdaFilter(factory.Interface().get(Predicate.class))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
+		//check empty constructor and addImplementingInterface with CtTypeReference
+		methodNames = foo.filterChildren(new LambdaFilter().addImplementingInterface(factory.createCtTypeReference(Predicate.class))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
 		assertHasStrings(methodNames, "m2", "m4", "m7", "m8");
 	}
 
