@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -11,6 +13,7 @@ import org.junit.Test;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
@@ -94,33 +97,59 @@ public class MethodsRefactoringTest {
 		
 		//each executable in test classes is marked with a annotation TestHierarchy,
 		//which defines the name of the hierarchy where this executable belongs to. 
-		List<CtExecutable<?>> executablesOfHierarchyA = getExecutablesOfHierarchy(factory, "A_method1");
-		
-		//contract: check that found methods does not depend on the starting point
-		checkMethodHierarchy(executablesOfHierarchyA, factory.Class().get(TypeA.class).getMethodsByName("method1").get(0));
-		checkMethodHierarchy(executablesOfHierarchyA, factory.Class().get(TypeC.class).getMethodsByName("method1").get(0));
-		checkMethodHierarchy(executablesOfHierarchyA, factory.Interface().get(IFaceB.class).getMethodsByName("method1").get(0));
-		checkMethodHierarchy(executablesOfHierarchyA, factory.Class().get(TypeL.class).getMethodsByName("method1").get(0));
-		checkMethodHierarchy(executablesOfHierarchyA, ((CtClass<?>)factory.Class().get(TypeB.class).filterChildren(new NameFilter<>("1Local")).first()).getMethodsByName("method1").get(0));
 
+		//collect all executables which are marked that they belong to hierarchy A_method1
+		List<CtExecutable<?>> executablesOfHierarchyA = getExecutablesOfHierarchy(factory, "A_method1");
+		//check executables of this hierarchy
+		checkMethodHierarchies(executablesOfHierarchyA);
+
+		//collect all executables which are marked that they belong to hierarchy R_method1
 		List<CtExecutable<?>> executablesOfHierarchyR = getExecutablesOfHierarchy(factory, "R_method1");
+		//check executables of this hierarchy
+		checkMethodHierarchies(executablesOfHierarchyR);
 		
-		checkMethodHierarchy(executablesOfHierarchyR, factory.Class().get(TypeR.class).getMethodsByName("method1").get(0));
-		checkMethodHierarchy(executablesOfHierarchyR, factory.Class().get(TypeS.class).getMethodsByName("method1").get(0));
+		//contract: CtConstructor has no other same signature
+		CtConstructor<?> constructorTypeA = factory.Class().get(TypeA.class).getConstructors().iterator().next();
+		CtExecutable<?> exec = constructorTypeA.map(new AllMethodsSameSignatureFunction()).first();
+		assertNull("Unexpected executable found by Constructor of TypeA "+exec, exec);
+		CtConstructor<?> constructorTypeB = factory.Class().get(TypeB.class).getConstructors().iterator().next();
+		exec = constructorTypeA.map(new AllMethodsSameSignatureFunction()).first();
+		assertNull("Unexpected executable found by Constructor of TypeA "+exec, exec);
+		//contract: constructor is returned if includingSelf == true
+		assertSame(constructorTypeA, constructorTypeA.map(new AllMethodsSameSignatureFunction().includingSelf(true)).first());
+	}
+
+	private void checkMethodHierarchies(List<CtExecutable<?>> expectedExecutables) {
+		//contract: check that found methods does not depend on the starting point. 
+		//The same set of executables has to be found if we start on any of them
+		int countOfTestedLambdas = 0;
+		int countOfTestedMethods = 0;
+		for (CtExecutable<?> ctExecutable : expectedExecutables) {
+			if (ctExecutable instanceof CtLambda) {
+				countOfTestedLambdas++;
+			} else {
+				assertTrue(ctExecutable instanceof CtMethod);
+				countOfTestedMethods++;
+			}
+			//start checking of method hierarchy from each expected executable. It must always return same results
+			checkMethodHierarchy(expectedExecutables, ctExecutable);
+		}
+		assertTrue(countOfTestedLambdas>0);
+		assertTrue(countOfTestedMethods>0);
 	}
 	
-	private void checkMethodHierarchy(List<CtExecutable<?>> expectedExecutables, CtMethod startMethod) {
+	private void checkMethodHierarchy(List<CtExecutable<?>> expectedExecutables, CtExecutable startExecutable) {
 		//contract: check that by default it does not includes self
 		//contract: check that by default it returns lambdas
 		{
-			final List<CtExecutable<?>> executables = startMethod.map(new AllMethodsSameSignatureFunction()).list();
-			assertFalse(executables.contains(startMethod));
+			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction()).list();
+			assertFalse("Unexpected start executable "+startExecutable, containsSame(executables, startExecutable));
 			//check that some method was found
 			assertTrue(executables.size()>0);
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
-				boolean found = executables.remove(m);
-				if(startMethod==m) {
+				boolean found = removeSame(executables, m);
+				if(startExecutable==m) {
 					//it is start method. It should not be there
 					assertFalse("The signature "+getQSignature(m)+" was returned too", found);
 				} else {
@@ -134,13 +163,13 @@ public class MethodsRefactoringTest {
 		//contract: check that includingSelf(true) returns startMethod too
 		//contract: check that by default it still returns lambdas
 		{
-			final List<CtExecutable<?>> executables = startMethod.map(new AllMethodsSameSignatureFunction().includingSelf(true)).list();
-			assertTrue(executables.contains(startMethod));
+			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true)).list();
+			assertTrue("Missing start executable "+startExecutable, containsSame(executables, startExecutable));
 			//check that some method was found
 			assertTrue(executables.size()>0);
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
-				assertTrue("The signature "+getQSignature(m)+" not found", executables.remove(m));
+				assertTrue("The signature "+getQSignature(m)+" not found", removeSame(executables, m));
 			});
 			//check that there is no unexpected executable
 			assertTrue("Unexpected executables: "+executables, executables.isEmpty());
@@ -148,8 +177,14 @@ public class MethodsRefactoringTest {
 		
 		//contract: check that includingLambdas(false) returns no lambda expressions
 		{
-			final List<CtExecutable<?>> executables = startMethod.map(new AllMethodsSameSignatureFunction().includingSelf(true).includingLambdas(false)).list();
-			assertTrue(executables.contains(startMethod));
+			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true).includingLambdas(false)).list();
+			if (startExecutable instanceof CtLambda) {
+				//lambda must not be returned even if it is first 
+				assertFalse("Unexpected start executable "+startExecutable, containsSame(executables, startExecutable));
+			} else {
+				assertTrue("Missing start executable "+startExecutable, containsSame(executables, startExecutable));
+			}
+			
 			//check that some method was found
 			assertTrue(executables.size()>0);
 			//check that expected methods were found and remove them 
@@ -158,11 +193,19 @@ public class MethodsRefactoringTest {
 					//the lambdas are not expected. Do not ask for them
 					return;
 				}
-				assertTrue("The signature "+getQSignature(m)+" not found", executables.remove(m));
+				assertTrue("The signature "+getQSignature(m)+" not found", removeSame(executables, m));
 			});
 			//check that there is no unexpected executable or lambda
 			assertTrue("Unexepcted executables "+executables, executables.isEmpty());
 		}
+		//contract: check early termination
+		//contract: check that first returned element is the startExecutable itself if includingSelf == true
+		CtExecutable<?> exec = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true)).first();
+		assertSame(startExecutable, exec);
+		//contract: check that first returned element is not the startExecutable itself if includingSelf == false, but some other executable from the expected
+		exec = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(false)).first();
+		assertNotSame(startExecutable, exec);
+		assertTrue(containsSame(expectedExecutables, exec));
 	}
 	
 	private String getQSignature(CtExecutable e) {
@@ -192,4 +235,22 @@ public class MethodsRefactoringTest {
 		}).list();
 	}
 
+	private boolean containsSame(Collection list, Object item) {
+		for (Object object : list) {
+			if(object==item) {
+				return true;
+			}
+		}
+		return false;
+	}
+	private boolean removeSame(Collection list, Object item) {
+		for (Iterator iter = list.iterator(); iter.hasNext();) {
+			Object object = (Object) iter.next();
+			if(object==item) {
+				iter.remove();
+				return true;
+			}
+		}
+		return false;
+	}
 }

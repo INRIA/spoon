@@ -27,6 +27,7 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -74,25 +75,52 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 	}
 
 	@Override
-	public void apply(CtExecutable<?> targetExecutable, final CtConsumer<Object> outputConsumer) {
+	public void apply(final CtExecutable<?> targetExecutable, final CtConsumer<Object> outputConsumer) {
+		//prepare filter for lambda expression. It will be configured by the algorithm below
 		final LambdaFilter lambdaFilter = new LambdaFilter();
-		final List<CtExecutable<?>> targetMethods = new ArrayList<>();
-		targetMethods.add(targetExecutable);
-		if (includingSelf) {
-			outputConsumer.accept(targetExecutable);
+		final CtQuery lambdaQuery = targetExecutable.getFactory().getModel().getRootPackage().filterChildren(lambdaFilter);
+		//the to be searched method
+		CtMethod<?> targetMethod;
+		if (targetExecutable instanceof CtLambda) {
+			//the input is lambda
+			if (includingSelf && includingLambdas) {
+				outputConsumer.accept(targetExecutable);
+				if (query.isTerminated()) {
+					return;
+				}
+			}
+			//in case of lambda, the target method is the method implemented by lambda
+			targetMethod = ((CtLambda<?>) targetExecutable).getOverriddenMethod();
+			outputConsumer.accept(targetMethod);
 			if (query.isTerminated()) {
 				return;
 			}
-		}
-		CtMethod<?> targetMethod;
-		if (targetExecutable instanceof CtLambda) {
-			targetMethod = ((CtLambda) targetExecutable).getOverriddenMethod();
+			//the input is the lambda expression, which was already returned or doesn't have to be returned at all because includingSelf == false
+			//add extra filter into lambdaQuery which skips that input lambda expression
+			lambdaQuery.select(new Filter<CtLambda<?>>() {
+				@Override
+				public boolean matches(CtLambda<?> lambda) {
+					return targetExecutable != lambda;
+				}
+			});
 		} else if (targetExecutable instanceof CtMethod) {
+			if (includingSelf) {
+				outputConsumer.accept(targetExecutable);
+				if (query.isTerminated()) {
+					return;
+				}
+			}
 			targetMethod = (CtMethod<?>) targetExecutable;
 		} else {
 			//CtConstructor or CtAnonymousExecutable never overrides other executable. We are done
+			if (includingSelf) {
+				outputConsumer.accept(targetExecutable);
+			}
 			return;
 		}
+
+		final List<CtMethod<?>> targetMethods = new ArrayList<>();
+		targetMethods.add(targetMethod);
 		CtType<?> declaringType = targetMethod.getDeclaringType();
 		lambdaFilter.addImplementingInterface(declaringType);
 		//search for all declarations and implementations of this method in sub and super classes and interfaces of all related hierarchies.
@@ -149,7 +177,7 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		}
 		if (includingLambdas) {
 			//search for all lambdas implementing any of the found interfaces
-			declaringType.getFactory().getModel().getRootPackage().filterChildren(lambdaFilter).forEach(outputConsumer);
+			lambdaQuery.forEach(outputConsumer);
 		}
 	}
 
@@ -187,14 +215,11 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		});
 	}
 
-	private CtMethod<?> getTargetMethodOfHierarchy(List<CtExecutable<?>> targetMethods, ClassTypingContext ctc) {
-		for (CtExecutable<?> ctExecutable : targetMethods) {
-			if (ctExecutable instanceof CtMethod) {
-				CtMethod<?> method = (CtMethod<?>) ctExecutable;
-				CtType<?> declaringType = method.getDeclaringType();
-				if (ctc.isSubtypeOf(declaringType.getReference())) {
-					return method;
-				}
+	private CtMethod<?> getTargetMethodOfHierarchy(List<CtMethod<?>> targetMethods, ClassTypingContext ctc) {
+		for (CtMethod<?> method : targetMethods) {
+			CtType<?> declaringType = method.getDeclaringType();
+			if (ctc.isSubtypeOf(declaringType.getReference())) {
+				return method;
 			}
 		}
 		//this should never happen
