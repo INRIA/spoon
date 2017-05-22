@@ -915,4 +915,16 @@ public class ImportTest {
 		types = classUSC.getSuperclass().map(new SuperInheritanceHierarchyFunction().includingSelf(true)).list();
 		assertEquals(0, types.size());
 	}
+
+	@Test
+	public void testJavaLangIsConsideredAsImported() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(false);
+		String outputDir = "./target/spooned-javalang";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/JavaLangConflict.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+
+		canBeBuilt(outputDir, 7);
+	}
 }
