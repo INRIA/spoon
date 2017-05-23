@@ -54,6 +54,13 @@ public class PrinterHelper {
 	private int line = 1;
 
 	/**
+	 * Current column number
+	 * Not used yet, but this shows the advantage of encapsulating all sbf.append in calls to {@link #write(char)} or {@link #write(String)}.
+	 * This will be used for sniper mode later
+	 */
+	private int column = 1;
+
+	/**
 	 * Mapping for line numbers.
 	 */
 	private Map<Integer, Integer> lineNumberMapping = new HashMap<>();
@@ -68,6 +75,7 @@ public class PrinterHelper {
 	public PrinterHelper write(String s) {
 		if (s != null) {
 			sbf.append(s);
+			column += s.length();
 		}
 		return this;
 	}
@@ -77,6 +85,7 @@ public class PrinterHelper {
 	 */
 	public PrinterHelper write(char c) {
 		sbf.append(c);
+		column += 1;
 		return this;
 	}
 
@@ -84,18 +93,20 @@ public class PrinterHelper {
 	 * Generates a new line.
 	 */
 	public PrinterHelper writeln() {
-		sbf.append(LINE_SEPARATOR);
+		write(LINE_SEPARATOR);
 		line++;
+		// reset the column index
+		column = 1;
 		return this;
 	}
 
 	public PrinterHelper writeTabs() {
 		for (int i = 0; i < nbTabs; i++) {
 			if (env.isUsingTabulations()) {
-				sbf.append("\t");
+				write('\t');
 			} else {
 				for (int j = 0; j < env.getTabulationSize(); j++) {
-					sbf.append(" ");
+					write(' ');
 				}
 			}
 		}
@@ -125,16 +136,6 @@ public class PrinterHelper {
 		nbTabs = tabCount;
 		return this;
 	}
-
-	public void insertLine() {
-		int i = sbf.length() - 1;
-		while (i >= 0 && (sbf.charAt(i) == ' ' || sbf.charAt(i) == '\t')) {
-			i--;
-		}
-		sbf.insert(i + 1, LINE_SEPARATOR);
-		line++;
-	}
-
 	public boolean removeLine() {
 		String ls = LINE_SEPARATOR;
 		int i = sbf.length() - ls.length();
@@ -162,8 +163,9 @@ public class PrinterHelper {
 	public void adjustPosition(CtElement e, CompilationUnit unitExpected) {
 		if (e.getPosition() != null && !e.isImplicit() && e.getPosition().getCompilationUnit() != null && e.getPosition().getCompilationUnit() == unitExpected) {
 			while (line < e.getPosition().getLine()) {
-				insertLine();
+				writeln();
 			}
+			// trying to remove some lines
 			while (line > e.getPosition().getLine()) {
 				if (!removeLine()) {
 					if (line > e.getPosition().getEndLine()) {
