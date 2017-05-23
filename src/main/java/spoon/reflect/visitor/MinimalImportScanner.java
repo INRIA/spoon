@@ -29,7 +29,8 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	/**
 	 * This method use @link{ImportScannerImpl#isTypeInCollision} to import a ref only if there is a collision
-	 * @param ref
+	 * @param ref: the type we are testing, it can be a CtTypeReference, a CtFieldReference or a CtExecutableReference
+	 *
 	 * @return true if the ref should be imported.
 	 */
 	private boolean shouldTypeBeImported(CtReference ref) {
@@ -54,6 +55,12 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	@Override
 	protected boolean addFieldImport(CtFieldReference ref) {
+		if (ref.getDeclaringType() != null) {
+			if (isImportedInClassImports(ref.getDeclaringType())) {
+				return false;
+			}
+		}
+
 		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
 
 		if (shouldTypeBeImported) {
@@ -70,6 +77,11 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	@Override
 	protected boolean addMethodImport(CtExecutableReference ref) {
+		if (ref.getDeclaringType() != null) {
+			if (isImportedInClassImports(ref.getDeclaringType())) {
+				return false;
+			}
+		}
 		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
 
 		if (shouldTypeBeImported) {

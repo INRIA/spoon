@@ -283,7 +283,7 @@ public class ElementPrinterHelper {
 					importTypeStr = this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName();
 				}
 
-				if (!importTypeStr.equals("")) {
+				if (!importTypeStr.equals("") && !importTypeStr.startsWith("java.lang")) {
 					printer.write(importStr + " " + importTypeStr + ";").writeln().writeTabs();
 				}
 			}
