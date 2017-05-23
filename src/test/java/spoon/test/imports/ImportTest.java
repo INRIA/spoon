@@ -1,5 +1,6 @@
 package spoon.test.imports;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -42,6 +43,8 @@ import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,13 +54,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ImportTest {
@@ -240,14 +242,16 @@ public class ImportTest {
 		final CtClass<ImportTest> anotherClass = launcher.getFactory().Class().get(ClientClass.class);
 		final CtClass<ImportTest> classWithInvocation = launcher.getFactory().Class().get(ClassWithInvocation.class);
 
-		final ImportScanner importScanner = new ImportScannerImpl();
+		ImportScanner importScanner = new ImportScannerImpl();
 		final Collection<CtTypeReference<?>> imports = importScanner.computeImports(aClass);
 		assertEquals(2, imports.size());
+		importScanner = new ImportScannerImpl();
 		final Collection<CtTypeReference<?>> imports1 = importScanner.computeImports(anotherClass);
 		//ClientClass needs 2 imports: ChildClass, PublicInterface2
 		assertEquals(2, imports1.size());
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
+		importScanner = new ImportScannerImpl();
 		final Collection<CtTypeReference<?>> imports2 = importScanner.computeImports(classWithInvocation);
 		// java.lang imports are also computed
 		assertEquals("Spoon ignores the arguments of CtInvocations", 3, imports2.size());
@@ -941,4 +945,33 @@ public class ImportTest {
 
 		canBeBuilt(outputDir, 7);
 	}
+
+	public void testmportInCu() throws  Exception{
+		// contract: auto-import works for compilation units with multiple classes
+		String[] options = {"--output-type", "compilationunits",
+				"--output", "target/testmportInCu", "--with-imports"};
+
+		String path = "spoon/test/prettyprinter/testclasses/A.java";
+
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(options);
+		launcher.addInputResource("./src/test/java/"+path);
+		launcher.run();
+
+		File output = new File("target/testmportInCu/"+path);
+		String code = IOUtils.toString(new FileReader(output));
+
+		// the ArrayList is imported and used in short mode
+		assertTrue(code.contains("import java.util.ArrayList"));
+
+		// no fully qualified usage
+		assertFalse(code.contains("new java.util.ArrayList"));
+
+		// sanity check: the actual code
+		assertTrue(code.contains("ArrayList<String> list = new ArrayList<>()"));
+
+		// cleaning
+		output.delete();
+	}
+
 }
