@@ -249,7 +249,8 @@ public class ImportTest {
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
 		final Collection<CtTypeReference<?>> imports2 = importScanner.computeImports(classWithInvocation);
-		assertEquals("Spoon ignores the arguments of CtInvocations", 1, imports2.size());
+		// java.lang imports are also computed
+		assertEquals("Spoon ignores the arguments of CtInvocations", 3, imports2.size());
 	}
 
 	@Test
@@ -339,9 +340,10 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
-		assertEquals(2, imports.size());
+		// java.lang.Object is considered as imported but it will never be output
+		assertEquals(3, imports.size());
 		Set<String> expectedImports = new HashSet<>(
-				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File"));
+				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
 		Set<String> actualImports = imports.stream().map(CtTypeReference::toString).collect(Collectors.toSet());
 		assertEquals(expectedImports, actualImports);
 	}
@@ -914,5 +916,17 @@ public class ImportTest {
 		//contract: super inheritance scanner in type mode, which starts on class which is not available in model returns nothing 
 		types = classUSC.getSuperclass().map(new SuperInheritanceHierarchyFunction().includingSelf(true)).list();
 		assertEquals(0, types.size());
+	}
+
+	@Test
+	public void testJavaLangIsConsideredAsImported() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(false);
+		String outputDir = "./target/spooned-javalang";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/JavaLangConflict.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+
+		canBeBuilt(outputDir, 7);
 	}
 }

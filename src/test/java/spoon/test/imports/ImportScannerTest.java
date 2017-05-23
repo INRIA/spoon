@@ -54,7 +54,8 @@ public class ImportScannerTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
 
-		assertEquals(2, imports.size());
+		// java.lang are also computed
+		assertEquals(4, imports.size());
 	}
 
 	@Test
