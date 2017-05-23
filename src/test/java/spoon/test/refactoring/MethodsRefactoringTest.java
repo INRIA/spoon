@@ -251,7 +251,17 @@ public class MethodsRefactoringTest {
 		}
 		//contract check that ExecutableReferenceFilter found CtExecutableReferences of all executables together 
 		int nrExecRefsTotal2 = checkExecutableReferenceFilter(factory, executables);
+		
 		assertSame(nrExecRefsTotal, nrExecRefsTotal2);
+
+		//contract check that it found lambdas too
+		CtLambda lambda = factory.getModel().getRootPackage().filterChildren((CtLambda<?> e)->true).first();
+		assertNotNull(lambda);
+		//this test case is quite wild, because there is normally lambda reference in spoon model. So make one lambda reference here:
+		CtExecutableReference<?> lambdaRef = lambda.getReference();
+		List<CtExecutableReference<?>> refs = lambdaRef.filterChildren(null).select(new ExecutableReferenceFilter(lambda)).list();
+		assertEquals(1, refs.size());
+		assertSame(lambdaRef, refs.get(0));
 	}
 
 	private int checkExecutableReferenceFilter(Factory factory, List<CtExecutable<?>> executables) {
