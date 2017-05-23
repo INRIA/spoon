@@ -17,12 +17,17 @@ public class TypeB extends TypeA implements IFaceB<Exception> {
 
 	private void anMethodWithLambdaByParam(IFaceB ifaceB) {
 		//this lambda is an implementation IFaceB#method1
-		anMethodWithLambdaByParam(/*A_method1*/p->{});
+		anMethodWithLambdaByParam(p->{
+			@TestHierarchy("A_method1")
+			int x;
+		});
 	}
 	private void anMethodWithLambda() {
 		//this lambda is an implementation IFaceB#method1
-		@TestHierarchy("A_method1")
-		IFaceB ifaceB = p->{};
+		IFaceB ifaceB = p->{
+			@TestHierarchy("A_method1")
+			int x;
+		};
 		ifaceB.method1(1);
 	}
 	private void anMethodWithLocalClass() {
