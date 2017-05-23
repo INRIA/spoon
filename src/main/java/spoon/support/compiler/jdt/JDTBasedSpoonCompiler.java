@@ -472,7 +472,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		List<File> printedFiles = new ArrayList<>();
 		for (spoon.reflect.cu.CompilationUnit cu : factory.CompilationUnit().getMap().values()) {
 
-			factory.getEnvironment().debugMessage("Generating source for compilation unit: " + cu.getFile());
+			if (cu.getDeclaredTypes().size() == 0) { // case of package-info
+				continue;
+			}
 
 			CtType<?> element = cu.getMainType();
 

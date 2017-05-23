@@ -581,10 +581,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (constructor.getFormalCtTypeParameters().size() > 0) {
 			printer.write(' ');
 		}
-		if (constructor.getDeclaringType().isLocalType()) {
-			printer.write(constructor.getDeclaringType().getSimpleName().replaceAll("^[0-9]*", ""));
-		} else {
-			printer.write(constructor.getDeclaringType().getSimpleName());
+		if (constructor.getDeclaringType() != null) {
+			if (constructor.getDeclaringType().isLocalType()) {
+				printer.write(constructor.getDeclaringType().getSimpleName().replaceAll("^[0-9]*", ""));
+			} else {
+				printer.write(constructor.getDeclaringType().getSimpleName());
+			}
 		}
 		elementPrinterHelper.writeExecutableParameters(constructor);
 		elementPrinterHelper.writeThrowsClause(constructor);
