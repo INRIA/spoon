@@ -609,7 +609,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					CtTypeReference typeReference;
 					if (parent instanceof CtFieldReference) {
 						typeReference = ((CtFieldReference) parent).getDeclaringType();
-					} else if (parent instanceof CtExecutableReference){
+					} else if (parent instanceof CtExecutableReference) {
 						typeReference = ((CtExecutableReference) parent).getDeclaringType();
 					} else {
 						typeReference = ((CtInvocation) parent).getExecutable().getDeclaringType();
