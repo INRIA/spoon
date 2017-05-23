@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor.printer;
 
-import org.apache.log4j.Level;
 import spoon.compiler.Environment;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.UnaryOperatorKind;
@@ -160,24 +159,30 @@ public class PrinterHelper {
 		return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 	}
 
-	public void adjustPosition(CtElement e, CompilationUnit unitExpected) {
-		if (e.getPosition() != null && !e.isImplicit() && e.getPosition().getCompilationUnit() != null && e.getPosition().getCompilationUnit() == unitExpected) {
+	public PrinterHelper adjustStartPosition(CtElement e) {
+		if (e.getPosition() != null && !e.isImplicit()) {
+			// we should add some lines
 			while (line < e.getPosition().getLine()) {
 				writeln();
 			}
 			// trying to remove some lines
 			while (line > e.getPosition().getLine()) {
 				if (!removeLine()) {
-					if (line > e.getPosition().getEndLine()) {
-						final String message = "cannot adjust position of " + e.getClass().getSimpleName() + " '" //
-								+ e.getShortRepresentation() + "' " + " to match lines: " + line + " > [" //
-								+ e.getPosition().getLine() + ", " + e.getPosition().getEndLine() + "]"; //
-						env.report(null, Level.WARN, e, message);
-					}
 					break;
 				}
 			}
 		}
+		return this;
+	}
+
+	public PrinterHelper adjustEndPosition(CtElement e) {
+		if (env.isPreserveLineNumbers() && e.getPosition() != null) {
+			// let's add lines if required
+			while (line < e.getPosition().getEndLine()) {
+				writeln();
+			}
+		}
+		return this;
 	}
 
 	public void undefineLine() {
