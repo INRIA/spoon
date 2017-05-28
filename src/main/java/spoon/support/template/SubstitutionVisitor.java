@@ -47,6 +47,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
@@ -131,22 +132,30 @@ public class SubstitutionVisitor extends CtScanner {
 				element.setDocComment(substituteInDocComment(element.getDocComment()));
 			}
 			// replace parameters in names
-			String name = element.getSimpleName();
+			element.setSimpleName(substituteName(element.getSimpleName(), element));
+			super.scanCtNamedElement(element);
+		}
+
+		@Override
+		public void scanCtReference(CtReference reference) {
+			reference.setSimpleName(substituteName(reference.getSimpleName(), reference));
+			super.scanCtReference(reference);
+		}
+
+		private String substituteName(String name, CtElement element) {
 			for (String pname : parameterNames) {
 				if (name.contains(pname)) {
 					Object value = Parameters.getValue(template, pname, null);
 					if (value instanceof String) {
 						// replace with the string value
 						name = name.replace(pname, (String) value);
-						element.setSimpleName(name);
 					} else if ((value instanceof CtTypeReference) && (element instanceof CtType)) {
 						// replace with the type reference's name
 						name = name.replace(pname, ((CtTypeReference<?>) value).getSimpleName());
-						element.setSimpleName(name);
 					}
 				}
 			}
-			super.scanCtNamedElement(element);
+			return name;
 		}
 
 		private String substituteInDocComment(String docComment) {
