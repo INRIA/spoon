@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import spoon.reflect.reference.CtExecutableReference;
+
 /**
  * This enum defines the Java keywords and some helper method to determine if
  * some strings are Java identifiers.
@@ -99,7 +101,7 @@ public enum JavaIdentifiers {
 		if (string == null) {
 			return false;
 		}
-		if (string.equals("<init>")) {
+		if (string.equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
 			return true;
 		}
 		return isLegalJavaIdentifier(string);

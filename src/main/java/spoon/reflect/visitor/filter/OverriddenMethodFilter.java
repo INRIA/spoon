@@ -18,14 +18,14 @@ package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.Filter;
-import spoon.support.visitor.MethodTypingContext;
+import spoon.support.visitor.ClassTypingContext;
 
 /**
  * Gets all overridden method from the method given.
  */
 public class OverriddenMethodFilter implements Filter<CtMethod<?>> {
 	private final CtMethod<?> method;
-	private final MethodTypingContext context;
+	private final ClassTypingContext context;
 	private boolean includingSelf = false;
 
 	/**
@@ -36,7 +36,7 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>> {
 	 */
 	public OverriddenMethodFilter(CtMethod<?> method) {
 		this.method = method;
-		context = new MethodTypingContext().setMethod(method);
+		context = new ClassTypingContext(method.getDeclaringType());
 	}
 
 	/**
@@ -53,6 +53,6 @@ public class OverriddenMethodFilter implements Filter<CtMethod<?>> {
 		if (method == element) {
 			return this.includingSelf;
 		}
-		return context.isOverriding(element);
+		return context.isOverriding(method, element);
 	}
 }

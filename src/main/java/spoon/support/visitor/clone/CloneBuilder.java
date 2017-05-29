@@ -256,5 +256,14 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		((spoon.reflect.code.CtComment) (other)).setCommentType(e.getCommentType());
 		super.visitCtComment(e);
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtJavaDocTag(spoon.reflect.code.CtJavaDocTag e) {
+		((spoon.reflect.code.CtJavaDocTag) (other)).setType(e.getType());
+		((spoon.reflect.code.CtJavaDocTag) (other)).setContent(e.getContent());
+		((spoon.reflect.code.CtJavaDocTag) (other)).setParam(e.getParam());
+		super.visitCtJavaDocTag(e);
+	}
 }
 

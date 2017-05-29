@@ -22,6 +22,7 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -54,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 /**
@@ -73,6 +75,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected CtTypeReference<?> targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
+	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
@@ -99,10 +102,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
+		scan(reference.getDeclaringType());
 		if (reference.isStatic()) {
-			if (!addFieldImport(reference)) {
-				scan(reference.getDeclaringType());
-			}
+			addFieldImport(reference);
 		} else {
 			scan(reference.getDeclaringType());
 		}
@@ -136,10 +138,15 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 		if (!(reference instanceof CtArrayTypeReference)) {
+			CtTypeReference typeReference;
 			if (reference.getDeclaringType() == null) {
-				addClassImport(reference);
+				typeReference = reference;
 			} else {
-				addClassImport(reference.getAccessType());
+				typeReference = reference.getAccessType();
+			}
+
+			if (!this.isTypeInCollision(typeReference, false)) {
+				this.addClassImport(typeReference);
 			}
 		}
 		super.visitCtTypeReference(reference);
@@ -216,26 +223,23 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public Collection<CtTypeReference<?>> computeImports(CtType<?> simpleType) {
+	public Collection<CtTypeReference<?>> computeImports(CtElement element) {
 		classImports.clear();
 		fieldImports.clear();
 		methodImports.clear();
 		//look for top declaring type of that simpleType
-		targetType = simpleType.getReference().getTopLevelType();
-		addClassImport(simpleType.getReference());
-		scan(simpleType);
-		return this.classImports.values();
-	}
 
-	@Override
-	public void computeImports(CtElement element) {
-		classImports.clear();
-		fieldImports.clear();
-		methodImports.clear();
-		//look for top declaring type of that element
-		CtType<?> type = element.getParent(CtType.class);
-		targetType = type == null ? null : type.getReference().getTopLevelType();
-		scan(element);
+		if (element instanceof CtType) {
+			CtType simpleType = (CtType) element;
+			targetType = simpleType.getReference().getTopLevelType();
+			addClassImport(simpleType.getReference());
+			scan(simpleType);
+		} else {
+			CtType<?> type = element.getParent(CtType.class);
+			targetType = type == null ? null : type.getReference().getTopLevelType();
+			scan(element);
+		}
+		return this.classImports.values();
 	}
 
 	@Override
@@ -251,10 +255,20 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 	}
 
+	private boolean isThereAnotherClassWithSameNameInAnotherPackage(CtTypeReference<?> ref) {
+		for (CtTypeReference typeref : this.exploredReferences) {
+			if (typeref.getSimpleName().equals(ref.getSimpleName()) && !typeref.getQualifiedName().equals(ref.getQualifiedName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Adds a type to the classImports.
 	 */
 	protected boolean addClassImport(CtTypeReference<?> ref) {
+		this.exploredReferences.add(ref);
 		if (ref == null) {
 			return false;
 		}
@@ -269,16 +283,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (ref.getPackage() == null || ref.getPackage().isUnnamedPackage()) {
 			return false;
 		}
-		if (ref.getPackage().getSimpleName().equals("java.lang")) {
-			if (classNamePresentInJavaLang(ref)) {
-				// Don't import class with names clashing with some classes present in java.lang,
-				// because it leads to undecidability and compilation errors. I. e. always leave
-				// com.mycompany.String fully-qualified.
-				return false;
-			}
-		}
+
 		if (targetType != null && targetType.canAccess(ref) == false) {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
+			return false;
+		}
+
+		if (this.isThereAnotherClassWithSameNameInAnotherPackage(ref)) {
 			return false;
 		}
 
@@ -349,8 +360,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				}
 			}
 		}
-		//note: we must add the type refs from the same package too, to assure that isImported(typeRef) returns true for them
-		//these type refs are removed in #getClassImports()
+
 		classImports.put(ref.getSimpleName(), ref);
 		return true;
 	}
@@ -549,12 +559,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	/**
 	 * Test if the reference can be imported, i.e. test if the importation could lead to a collision.
-	 * In FQN mode, it only tests the first package name: if a collision occurs with this first one, it should be imported.
 	 * @param ref
 	 * @return true if the ref should be imported.
 	 */
 	protected boolean isTypeInCollision(CtReference ref, boolean fqnMode) {
-		if (targetType.getSimpleName().equals(ref.getSimpleName()) && !targetType.equals(ref)) {
+		if (targetType != null && targetType.getSimpleName().equals(ref.getSimpleName()) && !targetType.equals(ref)) {
 			return true;
 		}
 
@@ -564,6 +573,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				parent = ref.getParent();
 			} else {
 				parent = ref;
+			}
+
+			// in that case we are trying to import a type because of a literal we are scanning
+			// i.e. a string, an int, etc.
+			if (parent instanceof CtLiteral) {
+				return false;
 			}
 
 			Set<String> localVariablesOfBlock = new HashSet<>();
@@ -577,8 +592,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			}
 
 			while (!(parent instanceof CtPackage)) {
-				if ((parent instanceof CtFieldReference) || (parent instanceof CtExecutableReference)) {
-					CtReference parentType = (CtReference) parent;
+				if ((parent instanceof CtFieldReference) || (parent instanceof CtExecutableReference) || (parent instanceof CtInvocation)) {
+					CtReference parentType;
+					if (parent instanceof CtInvocation) {
+						parentType = ((CtInvocation) parent).getExecutable();
+					} else {
+						parentType = (CtReference) parent;
+					}
 					LinkedList<String> qualifiedNameTokens = new LinkedList<>();
 
 					// we don't want to test the current ref name, as we risk to create field import and make autoreference
@@ -589,39 +609,54 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					CtTypeReference typeReference;
 					if (parent instanceof CtFieldReference) {
 						typeReference = ((CtFieldReference) parent).getDeclaringType();
-					} else {
+					} else if (parent instanceof CtExecutableReference) {
 						typeReference = ((CtExecutableReference) parent).getDeclaringType();
+					} else {
+						typeReference = ((CtInvocation) parent).getExecutable().getDeclaringType();
 					}
 
 					if (typeReference != null) {
-						qualifiedNameTokens.add(typeReference.getSimpleName());
+						qualifiedNameTokens.addFirst(typeReference.getSimpleName());
 
 						if (typeReference.getPackage() != null) {
-							CtPackage ctPackage = typeReference.getPackage().getDeclaration();
-
-							while (ctPackage != null) {
-								qualifiedNameTokens.add(ctPackage.getSimpleName());
-
-								CtElement packParent = ctPackage.getParent();
-								if (packParent.getParent() != null && !((CtPackage) packParent).getSimpleName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
-									ctPackage = (CtPackage) packParent;
-								} else {
-									ctPackage = null;
-								}
+							StringTokenizer token = new StringTokenizer(typeReference.getPackage().getSimpleName(), CtPackage.PACKAGE_SEPARATOR);
+							int index = 0;
+							while (token.hasMoreElements()) {
+								qualifiedNameTokens.add(index, token.nextToken());
+								index++;
 							}
 						}
 					}
 					if (!qualifiedNameTokens.isEmpty()) {
 						// qualified name token are ordered in the reverse order
 						// if the first package name is a variable name somewhere, it could lead to a collision
-						if (fieldAndMethodsNames.contains(qualifiedNameTokens.getLast()) || localVariablesOfBlock.contains(qualifiedNameTokens.getLast())) {
-							qualifiedNameTokens.removeLast();
+						if (fieldAndMethodsNames.contains(qualifiedNameTokens.getFirst()) || localVariablesOfBlock.contains(qualifiedNameTokens.getFirst())) {
+							qualifiedNameTokens.removeFirst();
 
 							if (fqnMode) {
-								return true;
+								// in case we are testing a type: we should not import it if its entire name is in collision
+								// for example: spoon.Launcher if a field spoon and another one Launcher exists
+								if (ref instanceof CtTypeReference) {
+									if (qualifiedNameTokens.isEmpty()) {
+										return true;
+									}
+									// but if the other package names are not a variable name, it's ok to import
+									for (int i =  0; i < qualifiedNameTokens.size(); i++) {
+										String testedToken = qualifiedNameTokens.get(i);
+										if (!fieldAndMethodsNames.contains(testedToken) && !localVariablesOfBlock.contains(testedToken)) {
+											return true;
+										}
+									}
+									return false;
+
+								// However if it is a static method/field, we always accept to import them in this case
+								// It is the last possibility for managing import for us
+								} else {
+									return true;
+								}
 							} else {
 								// but if the other package names are not a variable name, it's ok to import
-								for (int i = qualifiedNameTokens.size() - 1; i > 0; i--) {
+								for (int i =  0; i < qualifiedNameTokens.size(); i++) {
 									String testedToken = qualifiedNameTokens.get(i);
 									if (!fieldAndMethodsNames.contains(testedToken) && !localVariablesOfBlock.contains(testedToken)) {
 										return false;

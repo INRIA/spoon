@@ -7,7 +7,6 @@ import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -15,7 +14,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -88,7 +86,7 @@ public class SpoonArchitectureEnforcerTest {
 						sanityCheck.val++;
 
 						// the core assertion
-						assertTrue(factoryImpl.hasMethod(m));
+						assertTrue(m.getSignature() + " is not present in the main factory", factoryImpl.hasMethod(m));
 					}
 				}
 			}

@@ -67,8 +67,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
+
+import static org.hamcrest.core.Is.is;
+
 import static org.hamcrest.CoreMatchers.notNullValue;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -932,8 +935,47 @@ public class AnnotationTest {
 	}
 
 	@Test
+	public void testGetAnnotationFromParameter() {
+		// contract: Java 8 receiver parameters are handled
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/resources/noclasspath/Initializer.java");
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-firstspoon/";
+		spoon.setSourceOutputDirectory(output);
+		spoon.getEnvironment().setNoClasspath(true);
+		factory = spoon.getFactory();
+		spoon.buildModel();
+
+		List<CtMethod> methods = factory.getModel().getElements(new NameFilter<CtMethod>("setField"));
+		assertThat(methods.size(), is(1));
+
+		CtMethod methodSet = methods.get(0);
+		assertThat(methodSet.getSimpleName(), is("setField"));
+
+		List<CtParameter> parameters = methodSet.getParameters();
+
+		assertThat(parameters.size(), is(1));
+
+		CtParameter thisParameter = parameters.get(0);
+		assertThat(thisParameter.getSimpleName(), is("this"));
+
+
+		CtTypeReference thisParamType = thisParameter.getType();
+		assertThat(thisParamType.getSimpleName(), is("Initializer"));
+
+		List<CtAnnotation<?>> annotations = thisParameter.getType().getAnnotations();
+		assertThat(annotations.size(), is(2));
+
+		CtAnnotation unknownInit = annotations.get(0);
+		CtAnnotation raw = annotations.get(1);
+
+		assertThat(unknownInit.getAnnotationType().getSimpleName(), is("UnknownInitialization"));
+		assertThat(raw.getAnnotationType().getSimpleName(), is("Raw"));
+	}
+
+	@Test
 	public void annotationAddValue() {
 		Launcher spoon = new Launcher();
+
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Bar.java");
 		spoon.buildModel();
 
@@ -947,6 +989,26 @@ public class AnnotationTest {
 		assertThat(anno1.getValue("params").getType(), is(factory.Type().createReference(String[].class)));
 
 		CtAnnotation anno = factory.Annotation().annotate(methods.get(0), TypeAnnotation.class).addValue("params", new String[0]);
-		assertThat(anno.getValue("params").getType(), is(factory.Type().createReference(String[].class))); 
+		assertThat(anno.getValue("params").getType(), is(factory.Type().createReference(String[].class)));
+	}
+
+	@Test
+	public void annotationOverrideFQNIsOK() {
+		Launcher spoon = new Launcher();
+		factory = spoon.getFactory();
+		factory.getEnvironment().setNoClasspath(true);
+		spoon.addInputResource("./src/test/resources/noclasspath/annotation/issue1307/SpecIterator.java");
+		spoon.buildModel();
+
+
+
+		List<CtAnnotation> overrideAnnotations = factory.getModel().getElements(new TypeFilter<CtAnnotation>(CtAnnotation.class));
+
+		for (CtAnnotation annotation : overrideAnnotations) {
+			CtTypeReference typeRef = annotation.getAnnotationType();
+			if (typeRef.getSimpleName().equals("Override")) {
+				assertThat(typeRef.getQualifiedName(), is("java.lang.Override"));
+			}
+		}
 	}
 }

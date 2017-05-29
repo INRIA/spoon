@@ -929,7 +929,18 @@ public class ReferenceBuilder {
 		} else if (declaring instanceof CtTypeReference) {
 			ref.setDeclaringType((CtTypeReference) declaring);
 		} else if (declaring == null) {
-			ref.setPackage(jdtTreeBuilder.getFactory().Package().topLevel());
+			try {
+				// sometimes JDT does not provide the information that ref comes from java.lang
+				// it seems to occurs in particular with anonymous inner classes: see #1307
+				// In that case, we try to load the class to check if it belongs to java.lang
+				Class.forName("java.lang." + ref.getSimpleName());
+				CtPackageReference javaLangPackageReference = this.jdtTreeBuilder.getFactory().Core().createPackageReference();
+				javaLangPackageReference.setSimpleName("java.lang");
+				ref.setPackage(javaLangPackageReference);
+			} catch (ClassNotFoundException e) {
+				// in that case we consider the package should be the same as the current one. Fix #1293
+				ref.setPackage(jdtTreeBuilder.getContextBuilder().compilationUnitSpoon.getDeclaredPackage().getReference());
+			}
 		} else {
 			throw new AssertionError("unexpected declaring type: " + declaring.getClass() + " of " + declaring);
 		}

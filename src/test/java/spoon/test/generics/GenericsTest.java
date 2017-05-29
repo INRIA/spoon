@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.factory.Factory;
@@ -737,6 +738,9 @@ public class GenericsTest {
 		//are these two types same?
 		ClassTypingContext typingContextOfDisgust = new ClassTypingContext(typeReferenceOfDisgust);
 		
+		//contract: the class typing context provides its scope 
+		assertSame(typeReferenceOfDisgust.getTypeDeclaration(), typingContextOfDisgust.getAdaptationScope());
+		
 		// in disgust, X of WeddingLunch is bound to "Model"
 		assertEquals("spoon.test.generics.testclasses.Mole", typingContextOfDisgust.adaptType(ctWeddingLunch_X).getQualifiedName());
 		//adapt A to scope of CelebrationLunch<Integer,Long,Double>.WeddingLunch<Mole>
@@ -751,6 +755,9 @@ public class GenericsTest {
 		// now we resolve those types, but in the context of the declaration, where no concrete types exist
 		//are these two types same in scope of CelebrationLunch<K,L,M>.WddingLunch<X> class itself
 		ClassTypingContext sthOftWeddingLunch_X = new ClassTypingContext(typeReferenceOfDisgust.getDeclaration());
+		
+		//contract: the class typing context provides its scope 
+		assertSame(typeReferenceOfDisgust.getDeclaration(), sthOftWeddingLunch_X.getAdaptationScope());
 		
 		// in WeddingLunch "X" is still "X"
 		assertEquals("X", sthOftWeddingLunch_X.adaptType(ctWeddingLunch_X).getQualifiedName());
@@ -808,10 +815,11 @@ public class GenericsTest {
 
 		MethodTypingContext methodSTH = new MethodTypingContext().setMethod(trWeddingLunch_eatMe);
 
+		//contract: the method typing context provides its scope 
+		assertSame(trWeddingLunch_eatMe, methodSTH.getAdaptationScope());
+
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
 		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
-		
-		assertTrue(methodSTH.isOverriding(trLunch_eatMe));
 		
 		CtInvocation<?> invokeReserve = factory.Class().get(CelebrationLunch.class)
 				.filterChildren(new TypeFilter<>(CtInvocation.class))
@@ -820,6 +828,8 @@ public class GenericsTest {
 		
 		
 		MethodTypingContext methodReserveTC = new MethodTypingContext().setInvocation(invokeReserve);
+		//contract: the method typing context provides its scope 
+		assertSame(invokeReserve.getExecutable().getDeclaration(), methodReserveTC.getAdaptationScope());
 		
 		//check that MethodTypingContext made from invocation knows actual type arguments of method and all declaring types
 		//1) check method actual type argument
@@ -861,6 +871,84 @@ public class GenericsTest {
 		assertEquals("java.lang.Long", celebrationLunchTC.adaptType(classCelebrationLunch_L).getQualifiedName());
 		assertEquals("java.lang.Double", celebrationLunchTC.adaptType(classCelebrationLunch_M).getQualifiedName());
 	}
+	
+	@Test
+	public void testMethodTypingContextAdaptMethod() throws Exception {
+		// core contracts of MethodTypingContext#adaptMethod
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
+
+		// represents <C> void eatMe(A paramA, B paramB, C paramC){}
+		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
+
+		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
+		// we all analyze new methods
+		final MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(ctcWeddingLunch);
+		CtMethod<?> adaptedLunchEatMe = ctcWeddingLunch.adaptMethod(trLunch_eatMe);
+
+		//contract: adapting of method declared in different scope, returns new method
+		assertTrue(adaptedLunchEatMe != trLunch_eatMe);
+
+		//check that new method is adapted correctly
+		//is declared in correct class
+		assertSame(ctClassWeddingLunch, adaptedLunchEatMe.getDeclaringType());
+		//  is not member of the same class (WeddingLunch)
+		for (CtTypeMember typeMember : ctClassWeddingLunch.getTypeMembers()) {
+			assertFalse(adaptedLunchEatMe==typeMember);
+		}
+		// the name is the same
+		assertEquals("eatMe", adaptedLunchEatMe.getSimpleName());
+		// it has the same number of of formal type parameters
+		assertEquals(1, adaptedLunchEatMe.getFormalCtTypeParameters().size());
+		assertEquals("C", adaptedLunchEatMe.getFormalCtTypeParameters().get(0).getQualifiedName());
+
+		//parameters are correct
+		assertEquals(3, adaptedLunchEatMe.getParameters().size());
+
+		// "A paramA" becomes "X paramA" becomes Lunch%A corresponds to X in WeddingLunch
+		assertEquals("X", adaptedLunchEatMe.getParameters().get(0).getType().getQualifiedName());
+		// B paramB becomes Tacos becomes Lunch%B corresponds to Tacos in WeddingLunch (class WeddingLunch<X> extends CelebrationLunch<Tacos, Paella, X>)
+		assertEquals(Tacos.class.getName(), adaptedLunchEatMe.getParameters().get(1).getType().getQualifiedName());
+		// "C paramC" stays "C paramC"
+		assertEquals("C", adaptedLunchEatMe.getParameters().get(2).getType().getQualifiedName());
+
+		//contract: adapting of adapted method returns input method
+		assertSame(adaptedLunchEatMe, ctcWeddingLunch.adaptMethod(adaptedLunchEatMe));
+
+		//contract: method typing context creates adapted method automatically
+		methodSTH.setMethod(trLunch_eatMe);
+		//contract: method typing context creates adapted method automatically, which is equal to manually adapted one
+		assertEquals(adaptedLunchEatMe, methodSTH.getAdaptationScope());
+		
+	}
+	
+	@Test
+	public void testClassTypingContextMethodSignature() throws Exception {
+		// core contracts of MethodTypingContext#adaptMethod
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
+		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
+
+		// represents <C> void eatMe(A paramA, B paramB, C paramC){}
+		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		
+		// represents <C> void eatMe(M paramA, K paramB, C paramC)
+		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		
+		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
+		
+		assertTrue(ctcWeddingLunch.isOverriding(trLunch_eatMe, trLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isOverriding(trLunch_eatMe, trWeddingLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isSubSignature(trLunch_eatMe, trWeddingLunch_eatMe));
+
+		//contract: check that adapting of methods still produces same results, even when scopeMethod is already assigned
+		assertTrue(ctcWeddingLunch.isOverriding(trWeddingLunch_eatMe, trLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isOverriding(trWeddingLunch_eatMe, trWeddingLunch_eatMe));
+		assertTrue(ctcWeddingLunch.isSubSignature(trWeddingLunch_eatMe, trWeddingLunch_eatMe));
+	}
+	
+	
 	
 	@Test
 	public void testClassContextOnInnerClass() throws Exception {

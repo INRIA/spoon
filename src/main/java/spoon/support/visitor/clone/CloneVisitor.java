@@ -793,5 +793,24 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtComment.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(comment.getAnnotations()));
 		this.other = aCtComment;
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtJavaDoc(final spoon.reflect.code.CtJavaDoc javaDoc) {
+		spoon.reflect.code.CtJavaDoc aCtJavaDoc = spoon.support.visitor.clone.CloneBuilder.build(this.builder, javaDoc, javaDoc.getFactory().Core().createJavaDoc());
+		aCtJavaDoc.setComments(spoon.support.visitor.equals.CloneHelper.clone(javaDoc.getComments()));
+		aCtJavaDoc.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(javaDoc.getAnnotations()));
+		aCtJavaDoc.setTags(spoon.support.visitor.equals.CloneHelper.clone(javaDoc.getTags()));
+		this.other = aCtJavaDoc;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtJavaDocTag(final spoon.reflect.code.CtJavaDocTag docTag) {
+		spoon.reflect.code.CtJavaDocTag aCtJavaDocTag = spoon.support.visitor.clone.CloneBuilder.build(this.builder, docTag, docTag.getFactory().Core().createJavaDocTag());
+		aCtJavaDocTag.setComments(spoon.support.visitor.equals.CloneHelper.clone(docTag.getComments()));
+		aCtJavaDocTag.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(docTag.getAnnotations()));
+		this.other = aCtJavaDocTag;
+	}
 }
 

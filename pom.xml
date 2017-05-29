@@ -296,6 +296,10 @@
           <target>${java.src.version}</target>
           <testSource>${java.test.version}</testSource>
           <testTarget>${java.test.version}</testTarget>
+          <showWarnings>true</showWarnings>
+          <compilerArgs>
+              <arg>-Xlint:deprecation</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
 
@@ -502,7 +506,7 @@
           <dependency>
             <groupId>org.revapi</groupId>
             <artifactId>revapi-reporter-text</artifactId>
-            <version>0.8.0</version>
+            <version>0.7.0</version>
           </dependency>
         </dependencies>
         <configuration>

@@ -46,6 +46,8 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -137,6 +139,31 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Line separator which is used by the system
 	 */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
+	/**
+	 * The star at the beginning of a block/JavaDoc comment line
+	 */
+	public static final String COMMENT_STAR = " * ";
+
+	/**
+	 * The end of a block/JavaDoc comment
+	 */
+	public static final String BLOCK_COMMENT_END = " */";
+
+	/**
+	 * The beginning of a JavaDoc comment
+	 */
+	public static final String JAVADOC_START = "/**";
+
+	/**
+	 * The beginning of a inline comment
+	 */
+	public static final String INLINE_COMMENT_START = "// ";
+
+	/**
+	 * The beginning of a block comment
+	 */
+	public static final String BLOCK_COMMENT_START = "/* ";
 
 	/**
 	 * The printing context.
@@ -799,22 +826,50 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	public void visitCtJavaDoc(CtJavaDoc comment) {
+		visitCtComment(comment);
+	}
+
+	@Override
+	public void visitCtJavaDocTag(CtJavaDocTag docTag) {
+		printer.write(COMMENT_STAR);
+		printer.write(CtJavaDocTag.JAVADOC_TAG_PREFIX);
+		printer.write(docTag.getType().name().toLowerCase());
+		printer.write(" ");
+		if (docTag.getType().hasParam()) {
+			printer.write(docTag.getParam()).writeln().writeTabs();
+		}
+
+		String[] tagLines = docTag.getContent().split(LINE_SEPARATOR);
+		for (int i = 0; i < tagLines.length; i++) {
+			String com = tagLines[i];
+			if (i > 0 || docTag.getType().hasParam()) {
+				printer.write(COMMENT_STAR);
+			}
+			if (docTag.getType().hasParam()) {
+				printer.write("\t\t");
+			}
+			printer.write(com.trim()).writeln().writeTabs();
+		}
+	}
+
+	@Override
 	public void visitCtComment(CtComment comment) {
 		if (!env.isCommentsEnabled() && context.elementStack.size() > 1) {
 			return;
 		}
 		switch (comment.getCommentType()) {
 		case FILE:
-			printer.write("/**").writeln();
+			printer.write(JAVADOC_START).writeln();
 			break;
 		case JAVADOC:
-			printer.write("/**").writeln().writeTabs();
+			printer.write(JAVADOC_START).writeln().writeTabs();
 			break;
 		case INLINE:
-			printer.write("// ");
+			printer.write(INLINE_COMMENT_START);
 			break;
 		case BLOCK:
-			printer.write("/* ");
+			printer.write(BLOCK_COMMENT_START);
 			break;
 		}
 		String content = comment.getContent();
@@ -823,7 +878,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write(content);
 			break;
 		default:
-			String[] lines = content.split("\n");
+			String[] lines = content.split(LINE_SEPARATOR);
 			for (int i = 0; i < lines.length; i++) {
 				String com = lines[i];
 				if (comment.getCommentType() == CtComment.CommentType.BLOCK) {
@@ -833,25 +888,33 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					}
 				} else {
 					if (com.length() > 0) {
-						printer.write(" * " + com).writeln().writeTabs();
+						printer.write(COMMENT_STAR + com).writeln().writeTabs();
 					} else {
 						printer.write(" *" /* no trailing space */ + com).writeln().writeTabs();
 					}
 				}
 
 			}
+			if (comment instanceof CtJavaDoc) {
+				if (!((CtJavaDoc) comment).getTags().isEmpty()) {
+					printer.write(" *").writeln().writeTabs();
+				}
+				for (CtJavaDocTag docTag : ((CtJavaDoc) comment).getTags()) {
+					scan(docTag);
+				}
+			}
 			break;
 		}
 
 		switch (comment.getCommentType()) {
 		case BLOCK:
-			printer.write(" */");
+			printer.write(BLOCK_COMMENT_END);
 			break;
 		case FILE:
-			printer.write(" */");
+			printer.write(BLOCK_COMMENT_END);
 			break;
 		case JAVADOC:
-			printer.write(" */");
+			printer.write(BLOCK_COMMENT_END);
 			break;
 		}
 	}

@@ -33,6 +33,8 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 
 	String CONSTRUCTOR_NAME = "<init>";
 
+	String LAMBDA_NAME_PREFIX = "lambda$";
+
 	String UNKNOWN_TYPE = "<unknown>";
 
 	/**

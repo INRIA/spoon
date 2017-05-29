@@ -25,6 +25,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -60,7 +61,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	@Override
 	public String getSimpleName() {
-		return "<init>";
+		return CtExecutableReference.CONSTRUCTOR_NAME;
 	}
 
 	@Override

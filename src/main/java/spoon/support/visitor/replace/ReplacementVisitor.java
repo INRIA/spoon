@@ -17,8 +17,6 @@
 
 package spoon.support.visitor.replace;
 
-import static spoon.support.visitor.replace.ReplacementVisitor.replace;
-
 /**
  * Used to replace an element by another one.
  *
@@ -1931,6 +1929,36 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public void visitCtComment(final spoon.reflect.code.CtComment comment) {
 		replaceInListIfExist(comment.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(comment));
 		replaceInListIfExist(comment.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(comment));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtJavaDocTagsReplaceListener implements spoon.generating.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtJavaDoc element;
+
+		CtJavaDocTagsReplaceListener(spoon.reflect.code.CtJavaDoc element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setTags(replace);
+		}
+	}
+
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtJavaDoc(final spoon.reflect.code.CtJavaDoc javaDoc) {
+		replaceInListIfExist(javaDoc.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(javaDoc));
+		replaceInListIfExist(javaDoc.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(javaDoc));
+		replaceInListIfExist(javaDoc.getTags(), new spoon.support.visitor.replace.ReplacementVisitor.CtJavaDocTagsReplaceListener(javaDoc));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtJavaDocTag(final spoon.reflect.code.CtJavaDocTag docTag) {
+		replaceInListIfExist(docTag.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(docTag));
+		replaceInListIfExist(docTag.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(docTag));
 	}
 }
 

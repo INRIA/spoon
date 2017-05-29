@@ -13,6 +13,8 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
@@ -43,9 +45,11 @@ import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.comment.testclasses.Comment2;
 import spoon.test.comment.testclasses.InlineComment;
+import spoon.test.comment.testclasses.JavaDocComment;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +58,7 @@ import static org.apache.commons.io.IOUtils.write;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CommentTest {
 
@@ -91,7 +96,72 @@ public class CommentTest {
 				"@java.lang.Deprecated"+EOL+
 				"package spoon.test.comment.testclasses;",l_content);
 	}
-	
+
+
+	private List<CtJavaDocTag> getTagByType(List<CtJavaDocTag> elements, CtJavaDocTag.TagType type) {
+		List<CtJavaDocTag> output = new ArrayList<>();
+		for (CtJavaDocTag element : elements) {
+			if (element.getType() == type) {
+				output.add(element);
+			}
+		}
+		return output;
+	}
+
+	@Test
+	public void testJavaDocComment() {
+		String EOL = System.getProperty("line.separator");
+
+		Factory f = getSpoonFactory();
+		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocComment.class);
+
+		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		assertEquals("JavaDoc test class."+EOL+EOL
+				+ "Long description", classJavaDoc.getContent());
+
+		List<CtJavaDocTag> elements = type.getElements(new TypeFilter<>(CtJavaDocTag.class));
+		assertEquals(8, elements.size());
+
+
+		List<CtJavaDocTag> authorTags = getTagByType(elements, CtJavaDocTag.TagType.AUTHOR);
+		assertEquals(1, authorTags.size());
+		assertEquals("Thomas Durieux", authorTags.get(0).getContent());
+
+		List<CtJavaDocTag> deprecatedTags = getTagByType(elements, CtJavaDocTag.TagType.DEPRECATED);
+		assertEquals(1, deprecatedTags.size());
+		assertEquals("", deprecatedTags.get(0).getContent());
+
+
+		List<CtJavaDocTag> sinceTags = getTagByType(elements, CtJavaDocTag.TagType.SINCE);
+		assertEquals(2, sinceTags.size());
+		assertEquals("1.3", sinceTags.get(0).getContent());
+		assertEquals("1.3", sinceTags.get(1).getContent());
+
+		List<CtJavaDocTag> paramTags = getTagByType(elements, CtJavaDocTag.TagType.PARAM);
+		assertEquals(1, paramTags.size());
+		assertEquals("the parameters", paramTags.get(0).getContent());
+		assertEquals("i", paramTags.get(0).getParam());
+
+		CtJavaDocTag tagClone = paramTags.get(0).clone();
+		assertEquals("the parameters", tagClone.getContent());
+		assertEquals("i", tagClone.getParam());
+
+		List<CtJavaDocTag> throwsTags = getTagByType(elements, CtJavaDocTag.TagType.THROWS);
+		assertEquals(1, throwsTags.size());
+		assertEquals("an exception", throwsTags.get(0).getContent());
+		assertEquals("RuntimeException", throwsTags.get(0).getParam());
+
+
+		assertEquals("JavaDoc test class.", classJavaDoc.getShortDescription());
+		assertEquals("Long description", classJavaDoc.getLongDescription());
+
+		CtJavaDocTag deprecatedTag = classJavaDoc.getTags().get(0);
+		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);
+		classJavaDoc.removeTag(0);
+		assertEquals(-1, classJavaDoc.toString().indexOf("@deprecated"));
+		classJavaDoc.addTag(deprecatedTag);
+		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);
+	}
 
 	@Test
 	public void testRemoveComment() {
@@ -638,7 +708,12 @@ public class CommentTest {
 				Matcher m = p.matcher(x.getDocComment());
 				m.find();
 				do {
-					String snippet = m.group(1);
+					String snippet = null;
+					try {
+						snippet = m.group(1);
+					} catch (IllegalStateException e) {
+						fail(x + " does not have code snippet");
+					}
 					snippet = StringEscapeUtils.unescapeHtml4(snippet);
 
 					// it must compile

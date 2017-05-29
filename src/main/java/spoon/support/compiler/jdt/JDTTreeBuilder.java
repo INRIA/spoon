@@ -88,6 +88,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedSuperReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.Receiver;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
@@ -953,6 +954,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (!methodDeclaration.isAbstract() && (methodDeclaration.modifiers & ClassFileConstants.AccNative) == 0) {
 			context.enter(getFactory().Core().createBlock(), methodDeclaration);
 			context.exit(methodDeclaration);
+		}
+
+		// We consider the receiver as a standard argument (i.e. as a parameter)
+		Receiver receiver = methodDeclaration.receiver;
+		if (receiver != null) {
+			receiver.traverse(this, methodDeclaration.scope);
 		}
 
 		return true;

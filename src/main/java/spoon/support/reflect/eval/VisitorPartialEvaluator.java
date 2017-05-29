@@ -49,6 +49,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.eval.PartialEvaluator;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
@@ -380,7 +381,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			i.addArgument(re);
 		}
 		// do not partially evaluate super(...)
-		if (i.getExecutable().getSimpleName().equals("<init>")) {
+		if (i.getExecutable().getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
 			setResult(i);
 			return;
 		}

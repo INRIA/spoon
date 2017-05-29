@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		}
 		try {
 			if (target.getParent(CtConstructor.class) != null) {
-				if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith("<init>")) {
+				if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith(CtExecutableReference.CONSTRUCTOR_NAME)) {
 					throw new SpoonException("cannot insert a statement before a super or this invocation.");
 				}
 			}

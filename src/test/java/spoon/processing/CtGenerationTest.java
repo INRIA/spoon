@@ -7,20 +7,14 @@ import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertTrue;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -81,7 +75,7 @@ public class CtGenerationTest {
 		launcher.run();
 
 		// cp ./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java ./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java
-		// we don't necessarily want to hard-wired the relation bewteen CtScanner and CtBiScannerDefault.java
+		// we don't necessarily want to hard-wired the relation between CtScanner and CtBiScannerDefault.java
 		// this can be done on an informed basis when important changes are made in the metamodel/scanner
 		// and then we can have smaller clean tested pull requests to see the impact of the change
 		// cp ./target/generated/spoon/reflect/visitor/CtBiScannerDefault.java ./src/main/java/spoon/reflect/visitor/CtBiScannerDefault.java

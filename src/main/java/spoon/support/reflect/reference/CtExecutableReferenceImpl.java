@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
@@ -31,7 +32,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
-import spoon.support.visitor.MethodTypingContext;
+import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.SignaturePrinter;
 
 import java.lang.reflect.AnnotatedElement;
@@ -157,13 +158,13 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			return null;
 		}
 		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
-		if ((method == null) && (typeDecl instanceof CtClass) && (getSimpleName().equals("<init>"))) {
+		if ((method == null) && (typeDecl instanceof CtClass) && (getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME))) {
 			try {
 				return (CtExecutable<T>) ((CtClass<?>) typeDecl).getConstructor(parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
 			} catch (ClassCastException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
-		} else if (method == null && getSimpleName().startsWith("lambda$")) {
+		} else if (method == null && getSimpleName().startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX)) {
 			final List<CtLambda<T>> elements = (List<CtLambda<T>>) typeDecl.getElements(new NameFilter<CtLambda<T>>(getSimpleName()));
 			if (elements.size() == 0) {
 				return null;
@@ -247,9 +248,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			}
 			return true;
 		}
-		if (exec instanceof CtMethod<?>) {
-			CtMethod<?> method = (CtMethod<?>) exec;
-			return new MethodTypingContext().setExecutableReference(this).isOverriding(method);
+		if (exec instanceof CtMethod<?> && thisExec instanceof CtMethod<?>) {
+			return new ClassTypingContext(((CtTypeMember) thisExec).getDeclaringType()).isOverriding((CtMethod<?>) thisExec, (CtMethod<?>) exec);
 		}
 		//it is not a method. So we can return true only if it is reference to the this executable
 		return exec == getDeclaration();

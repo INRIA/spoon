@@ -42,6 +42,8 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -454,4 +456,14 @@ public interface CtVisitor {
 	 * Visits a comment
 	 */
 	void visitCtComment(CtComment comment);
+
+	/**
+	 * Visits a javadoc comment
+	 */
+	void visitCtJavaDoc(CtJavaDoc comment);
+
+	/**
+	 * Visits a javadoc tag
+	 */
+	void visitCtJavaDocTag(CtJavaDocTag docTag);
 }
