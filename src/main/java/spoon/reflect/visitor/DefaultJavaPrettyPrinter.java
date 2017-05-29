@@ -1297,7 +1297,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					List<CtComment> comments = elementPrinterHelper.getComments(e, CommentOffset.AFTER);
 					// if the last element contains an inline comment, print a new line before closing the array
 					if (!comments.isEmpty() && comments.get(comments.size() - 1).getCommentType() == CtComment.CommentType.INLINE) {
-						printer.insertLine();
+						printer.writeln();
 					}
 				}
 			}
