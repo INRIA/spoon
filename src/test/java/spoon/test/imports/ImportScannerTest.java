@@ -7,6 +7,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -93,5 +94,16 @@ public class ImportScannerTest {
 		// as ArithmeticException come from java.lang it is not imported anymore
 		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
 		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
+	}
+
+	@Test
+	public void testTargetTypeNull() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		CtFieldReference fieldRef = factory.createFieldReference();
+		fieldRef.setStatic(true);
+
+		ImportScanner importScanner = new MinimalImportScanner();
+		importScanner.computeImports(fieldRef);
 	}
 }
