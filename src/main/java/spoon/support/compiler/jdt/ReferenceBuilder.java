@@ -16,23 +16,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.sun.tools.javac.code.Type;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
@@ -82,7 +65,6 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
-
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
@@ -100,7 +82,20 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.filter.NameFilter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
 
 public class ReferenceBuilder {
 
@@ -655,7 +650,8 @@ public class ReferenceBuilder {
 					if (bindingCache.containsKey(b)) {
 						ref.addActualTypeArgument(getCtCircularTypeReference(b));
 					} else {
-						if (!b.toString().contains("extends "+ref.getSimpleName())) {
+						// we want to avoid recursive ParameterType like Enum<E extends Enum<E>>
+						if (!b.toString().contains("extends " + ref.getSimpleName())) {
 							ref.addActualTypeArgument(getTypeReference(b));
 						}
 					}
@@ -688,7 +684,7 @@ public class ReferenceBuilder {
 				ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 				bounds = true;
 			} else {
-				TypeVariableBinding typeParamBinding = (TypeVariableBinding)binding;
+				TypeVariableBinding typeParamBinding = (TypeVariableBinding) binding;
 				ReferenceBinding superClass = typeParamBinding.superclass;
 
 				if (superClass != null && !superClass.toString().startsWith("public class java.lang.Object")) {
