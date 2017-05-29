@@ -1796,8 +1796,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
-		// warning: the import scanner used in this pretty-printer has been set once and for all in the constructor
-		// this is required to reuse import when multiple classes are in the same compilation unit
+
+		// reset the importsContext to avoid errors with multiple CU
+		if (env.isAutoImports()) {
+			this.importsContext = new ImportScannerImpl();
+		} else {
+			this.importsContext = new MinimalImportScanner();
+		}
+
 		Set<CtReference> imports = new HashSet<>();
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
