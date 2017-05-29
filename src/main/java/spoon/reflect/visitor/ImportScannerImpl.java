@@ -362,11 +362,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	 */
 	private boolean declaringTypeIsLocalOrImported(CtTypeReference declaringType) {
 		if (declaringType != null) {
-			if (!isTypeInCollision(declaringType, false) && (isImportedInClassImports(declaringType) || classNamePresentInJavaLang(declaringType))) {
+			if (!isTypeInCollision(declaringType, false) && addClassImport(declaringType)) {
 				return true;
 			}
 
-			if (!isTypeInCollision(declaringType, false) && addClassImport(declaringType)) {
+			if (isImportedInClassImports(declaringType) || classNamePresentInJavaLang(declaringType)) {
 				return true;
 			}
 
