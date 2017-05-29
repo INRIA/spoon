@@ -44,7 +44,9 @@ import spoon.test.imports.testclasses.internal.ChildClass;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,11 +55,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -938,7 +943,7 @@ public class ImportTest {
 	public void testJavaLangIsConsideredAsImportedButNotForSubPackages() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
-		String outputDir = "./target/spooned-javalang";
+		String outputDir = "./target/spooned-javalang-sub";
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Reflection.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
@@ -946,6 +951,7 @@ public class ImportTest {
 		canBeBuilt(outputDir, 7);
 	}
 
+	@Test
 	public void testmportInCu() throws  Exception{
 		// contract: auto-import works for compilation units with multiple classes
 		String[] options = {"--output-type", "compilationunits",
@@ -972,6 +978,31 @@ public class ImportTest {
 
 		// cleaning
 		output.delete();
+	}
+
+	@Test
+	public void testMultipleCU() throws IOException {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-multiplecu";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/multiplecu/");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+
+		canBeBuilt(outputDir, 7);
+
+		String pathA = "spoon/test/imports/testclasses/multiplecu/A.java";
+		String pathB = "spoon/test/imports/testclasses/multiplecu/B.java";
+
+		File outputA = new File(outputDir+"/"+pathA);
+		String codeA = IOUtils.toString(new FileReader(outputA));
+
+		assertThat(codeA, containsString("import java.util.List;"));
+
+		File outputB = new File(outputDir+"/"+pathB);
+		String codeB = IOUtils.toString(new FileReader(outputB));
+
+		assertThat(codeB, containsString("import java.awt.List;"));
 	}
 
 }
