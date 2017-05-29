@@ -345,7 +345,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * @param template actually checked AST node from template
 	 *
 	 * @return true if template matches this node, false if it does not matches
-	 * 
+	 *
 	 * note: Made private to hide the Objects.
 	 */
 	private boolean helperMatch(Object target, Object template) {
