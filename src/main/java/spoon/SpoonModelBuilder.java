@@ -307,7 +307,7 @@ public interface SpoonModelBuilder {
 	 * @param filter
 	 *  	The {@link CompilationUnitFilter} to add.
 	 */
-	void addCompilationUnitFilter(final CompilationUnitFilter filter);
+	void addCompilationUnitFilter(CompilationUnitFilter filter);
 
 	/**
 	 * Removes {@code filter}. Does nothing, if {@code filter} has not been
@@ -316,7 +316,7 @@ public interface SpoonModelBuilder {
 	 * @param filter
 	 *  	The {@link CompilationUnitFilter} to remove.
 	 */
-	void removeCompilationUnitFilter(final CompilationUnitFilter filter);
+	void removeCompilationUnitFilter(CompilationUnitFilter filter);
 
 	/**
 	 * Returns a copy of the internal list of {@link CompilationUnitFilter}s.
