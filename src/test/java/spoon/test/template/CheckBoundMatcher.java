@@ -45,6 +45,6 @@ public class CheckBoundMatcher {
 
 	/** defines a matcher f* for named templates */
 	@Parameter
-	Object f;
+	Object _w_;
 
 }
