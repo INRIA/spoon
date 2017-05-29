@@ -62,12 +62,9 @@ import java.util.regex.Pattern;
 public class TemplateMatcher implements Filter<CtElement> {
 
 	/**
-	 * Collects all AST nodes, which has to be substituted, because they represents a template parameter declared by {@link TemplateParameter}
+	 * Searches for all invocations of {@link TemplateParameter#S()} in "root", a CtClass model of {@link Template}
 	 *
-	 * Searches for all invocations of {@link TemplateParameter#S()} in CtClass model of {@link Template}
 	 * @param root CtClass model of {@link Template}
-	 * @return List of all variables - only these parameters which are declared by {@link TemplateParameter}.
-	 * It doesn't includes references to parameters annotated by {@link Parameter}
 	 */
 	private List<CtInvocation<?>> getMethods(CtClass<? extends Template<?>> root) {
 		CtExecutableReference<?> methodRef = root.getFactory().Executable()
@@ -80,7 +77,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 	/**
 	 * @param templateType CtClass model of {@link Template}
 	 * @return list of all names of template parameters.
-	 * It includes parameters defined by {@link TemplateParameter} and parameters with annotation {@link Parameter}.
+	 * It includes parameters typed by {@link TemplateParameter} and parameters with annotation {@link Parameter}.
 	 */
 	private List<String> getTemplateNameParameters(CtClass<? extends Template<?>> templateType) {
 		return Parameters.getNames(templateType);
