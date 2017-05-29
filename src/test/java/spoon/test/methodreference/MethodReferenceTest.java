@@ -14,6 +14,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
@@ -233,6 +234,20 @@ public class MethodReferenceTest {
 			Method method = execRef.getActualMethod();
 			assertNotNull(method);
 			assertEquals("method", method.getName());
+			//check that we have found the method with correct parameters
+			for (int i=0; i<ctMethod.getParameters().size(); i++) {
+				CtTypeReference<?> paramTypeRef = ctMethod.getParameters().get(i).getType();
+				Class<?> paramClass = paramTypeRef.getTypeErasure().getActualClass();
+				assertSame(paramClass, method.getParameterTypes()[i]);
+				//
+				CtType<?> paramType = paramTypeRef.getDeclaration();
+				//contract: declaration of parameter type can be found
+				assertNotNull(paramType);
+				//contract: reference to found parameter type is equal to origin reference
+				assertEquals(paramTypeRef, paramType.getReference());
+				//contract: reference to type can be still dereferred
+				assertSame(paramType, paramType.getReference().getDeclaration());
+			}
 			assertSame(ctMethod, execRef.getDeclaration());
 		}
 	}
