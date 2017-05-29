@@ -79,6 +79,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 		enter(fieldRead);
+		scan(fieldRead.getAnnotations());
+		scan(fieldRead.getTypeCasts());
 		scan(fieldRead.getVariable());
 		scan(fieldRead.getTarget());
 		exit(fieldRead);
