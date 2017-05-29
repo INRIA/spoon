@@ -251,7 +251,7 @@ public class ElementPrinterHelper {
 	}
 
 	private boolean isJavaLangClasses(String importType) {
-		return importType.matches("^(java.lang.){1}[^.]*$");
+		return importType.matches("^(java\\.lang\\.)[^.]*$");
 	}
 
 	/**
