@@ -61,6 +61,14 @@ import java.util.regex.Pattern;
  */
 public class TemplateMatcher implements Filter<CtElement> {
 
+	/**
+	 * Collects all AST nodes, which has to be substituted, because they represents a template parameter declared by {@link TemplateParameter}
+	 *
+	 * Searches for all invocations of {@link TemplateParameter#S()} in CtClass model of {@link Template}
+	 * @param root CtClass model of {@link Template}
+	 * @return List of all variables - only these parameters which are declared by {@link TemplateParameter}.
+	 * It doesn't includes references to parameters annotated by {@link Parameter}
+	 */
 	private List<CtInvocation<?>> getMethods(CtClass<? extends Template<?>> root) {
 		CtExecutableReference<?> methodRef = root.getFactory().Executable()
 				.createReference(root.getFactory().Type().createReference(TemplateParameter.class), root.getFactory().Type().createTypeParameterReference("T"), "S");
@@ -69,6 +77,11 @@ public class TemplateMatcher implements Filter<CtElement> {
 		return meths;
 	}
 
+	/**
+	 * @param templateType CtClass model of {@link Template}
+	 * @return list of all names of template parameters.
+	 * It includes parameters defined by {@link TemplateParameter} and parameters with annotation {@link Parameter}.
+	 */
 	private List<String> getTemplateNameParameters(CtClass<? extends Template<?>> templateType) {
 		return Parameters.getNames(templateType);
 	}
@@ -96,9 +109,15 @@ public class TemplateMatcher implements Filter<CtElement> {
 		return ts;
 	}
 
+	/**
+	 * Looks for fields of type {@link CtStatementList} in the template and returns these fields,
+	 * @param root CtClass model of {@link Template}
+	 * @param variables
+	 * @return returns for fields of type {@link CtStatementList} in the template
+	 */
 	private List<CtFieldReference<?>> getVarargs(CtClass<? extends Template<?>> root, List<CtInvocation<?>> variables) {
 		List<CtFieldReference<?>> fields = new ArrayList<>();
-		for (CtFieldReference<?> field : root.getReference().getAllFields()) {
+		for (CtFieldReference<?> field : root.getAllFields()) {
 			if (field.getType().getActualClass() == CtStatementList.class) {
 				boolean alreadyAdded = false;
 				for (CtInvocation<?> invocation : variables) {
@@ -115,18 +134,41 @@ public class TemplateMatcher implements Filter<CtElement> {
 	/** the template itself */
 	private CtElement templateRoot;
 
-	private List<CtElement> finds = new ArrayList<>();
-
+	/**
+	 * Holds matches of template parameters (keys) to nodes from matched target
+	 */
 	private Map<Object, Object> matches = new HashMap<>();
 
+	/**
+	 * Names of all template parameters declared in `templateType` and it's super types/interfaces.
+	 * There are
+	 * 1) names of all fields of type {@link TemplateParameter}
+	 * 2) value of annotation {@link Parameter#value()} applied to an parameter field
+	 * 3) name of an field annotated with {@link Parameter} with undefined {@link Parameter#value()}
+	 */
 	private List<String> names;
 
+	/**
+	 * The {@link CtClass} model of java class {@link Template},
+	 * which contains to be matched elements defined by `templateRoot`
+	 */
 	private CtClass<? extends Template<?>> templateType;
 
+	/**
+	 * All the {@link CtTypeReference}s from `templateType`, whose name is a parameter name
+	 * (is contained in `names`)
+	 */
 	private List<CtTypeReference<?>> typeVariables;
 
+	/**
+	 * List of all fields of type {@link CtStatementList},
+	 * which are not covered by `variables`
+	 */
 	private List<CtFieldReference<?>> varArgs;
 
+	/**
+	 * List of all invocations of {@link TemplateParameter#S()}) in scope of `templateType`
+	 */
 	private List<CtInvocation<?>> variables;
 
 	/**
@@ -149,12 +191,28 @@ public class TemplateMatcher implements Filter<CtElement> {
 		}
 	}
 
+	/**
+	 * adds a target element which matches and template element
+	 * @param template an object template. It can be:
+	 * - CtInvocation - represents an variable
+	 * - CtTypeReference - represents an type variable
+	 * - String - represents a matching name in a reference
+	 * - CtParameter - ??
+	 * - ...?
+	 * @param target an matching target object
+	 * @return false if there was already a different match to the same `template` object
+	 */
 	private boolean addMatch(Object template, Object target) {
 		Object inv = matches.get(template);
 		Object o = matches.put(template, target);
 		return (null == inv) || inv.equals(o);
 	}
 
+	/**
+	 * Detects whether `teList` contains a multiElement template parameter
+	 * @param teList a list of template nodes
+	 * @return a first found multiElement template parameter
+	 */
 	private CtElement checkListStatements(List<?> teList) {
 		for (Object tem : teList) {
 			if (variables.contains(tem) && (tem instanceof CtInvocation)) {
@@ -208,7 +266,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 			return new DefaultParameterMatcher();
 		}
 
-		Collection<CtFieldReference<?>> fields = clazz.getReference().getAllFields();
+		Collection<CtFieldReference<?>> fields = clazz.getAllFields();
 
 		CtFieldReference<?> param = null;
 		for (CtFieldReference<?> fieldRef : fields) {
@@ -278,8 +336,17 @@ public class TemplateMatcher implements Filter<CtElement> {
 		return instance;
 	}
 
-	/*
-	 * Made private to hide the Objects.
+	/**
+	 * Detects whether `template` AST node and `target` AST node are matching.
+	 * This method is called for each node of to be matched template
+	 * and for appropriate node of `target`
+	 *
+	 * @param target actually checked AST node from target model
+	 * @param template actually checked AST node from template
+	 *
+	 * @return true if template matches this node, false if it does not matches
+	 * 
+	 * note: Made private to hide the Objects.
 	 */
 	private boolean helperMatch(Object target, Object template) {
 		if ((target == null) && (template == null)) {
@@ -288,10 +355,14 @@ public class TemplateMatcher implements Filter<CtElement> {
 		if ((target == null) || (template == null)) {
 			return false;
 		}
-		if (variables.contains(template) || typeVariables.contains(template)) {
-			// TODO: upcall the parameter matcher if defined
+		if (containsSame(variables, template) || containsSame(typeVariables, template)) {
+			/*
+			 * we are just matching a template parameter.
+			 * Check that defined ParameterMatcher matches the target too
+			 */
 			boolean add = invokeCallBack(target, template);
 			if (add) {
+				//ParameterMatcher matches the target too, add that match
 				return addMatch(template, target);
 			}
 			return false;
@@ -307,6 +378,10 @@ public class TemplateMatcher implements Filter<CtElement> {
 		}
 		if (template instanceof CtReference) {
 			CtReference tRef = (CtReference) template;
+			/*
+			 * Check whether name of a template reference matches with name of target reference
+			 * after replacing of variables in template name
+			 */
 			boolean ok = matchNames(tRef.getSimpleName(), ((CtReference) target).getSimpleName());
 			if (ok && !template.equals(target)) {
 				boolean remove = !invokeCallBack(target, template);
@@ -398,6 +473,12 @@ public class TemplateMatcher implements Filter<CtElement> {
 		}
 	}
 
+	/**
+	 * invokes {@link ParameterMatcher} associated to the `template` (= template parameter)
+	 * @param target a potentially matching element
+	 * @param template a matching parameter, which may define extra {@link ParameterMatcher}
+	 * @return true if {@link ParameterMatcher} of `template` matches on `target`
+	 */
 	private boolean invokeCallBack(Object target, Object template) {
 		try {
 			if (template instanceof CtInvocation) {
@@ -432,6 +513,9 @@ public class TemplateMatcher implements Filter<CtElement> {
 		}
 	}
 
+	/**
+	 * Detects whether `object` represent a template variable `inMulti`
+	 */
 	private boolean isCurrentTemplate(Object object, CtElement inMulti) {
 		if (object instanceof CtInvocation<?>) {
 			return object.equals(inMulti);
@@ -466,8 +550,8 @@ public class TemplateMatcher implements Filter<CtElement> {
 
 	@SuppressWarnings("unchecked")
 	private boolean matchCollections(Collection<?> target, Collection<?> template) {
-		List<Object> teList = new ArrayList<>(template);
-		List<Object> taList = new ArrayList<>(target);
+		final List<Object> teList = new ArrayList<>(template);
+		final List<Object> taList = new ArrayList<>(target);
 
 		// inMulti keeps the multiElement templateVariable we are at
 		CtElement inMulti = nextListStatement(teList, null);
@@ -492,8 +576,11 @@ public class TemplateMatcher implements Filter<CtElement> {
 		for (int te = 0, ta = 0; (te < teList.size()) && (ta < taList.size()); te++, ta++) {
 
 			if (isCurrentTemplate(teList.get(te), inMulti)) {
+				//te index points to template parameter, which accepts multiple statements
 				if (te + 1 >= teList.size()) {
+					//it is the last parameter of template list. Add all remaining target list items
 					multi.addAll(taList.subList(te, taList.size()));
+					//create statement list and add match
 					CtStatementList tpl = templateType.getFactory().Core().createStatementList();
 					tpl.setStatements((List<CtStatement>) (List<?>) multi);
 					if (!invokeCallBack(tpl, inMulti)) {
@@ -502,11 +589,15 @@ public class TemplateMatcher implements Filter<CtElement> {
 					boolean ret = addMatch(inMulti, multi);
 					return ret;
 				}
+				//there is next template parameter. Move to it
 				te++;
+				//adds all target list items, which are not matching to next template parameter, to the actual template parameter
 				while ((te < teList.size()) && (ta < taList.size()) && !helperMatch(taList.get(ta), teList.get(te))) {
 					multi.add(taList.get(ta));
 					ta++;
 				}
+				//we have found first target parameter, which fits to next template parameter
+				//create statement list for previous parameter and add it's match
 				CtStatementList tpl = templateType.getFactory().Core().createStatementList();
 				tpl.setStatements((List<CtStatement>) (List<?>) multi);
 				if (!invokeCallBack(tpl, inMulti)) {
@@ -517,14 +608,21 @@ public class TemplateMatcher implements Filter<CtElement> {
 				inMulti = nextListStatement(teList, inMulti);
 				multi = new ArrayList<>();
 			} else {
+				//parameter on te index is not a multivalue statement
 				if (!helperMatch(taList.get(ta), teList.get(te))) {
 					return false;
 				}
 				if (!(ta + 1 < taList.size()) && (inMulti != null)) {
+					/*
+					 * there is no next target item in taList,
+					 * but there is still some template parameter,
+					 * which expects one
+					 */
 					CtStatementList tpl = templateType.getFactory().Core().createStatementList();
 					for (Object o : multi) {
 						tpl.addStatement((CtStatement) o);
 					}
+					//so it returns empty statement list
 					if (!invokeCallBack(tpl, inMulti)) {
 						return false;
 					}
@@ -538,6 +636,13 @@ public class TemplateMatcher implements Filter<CtElement> {
 		return true;
 	}
 
+	/**
+	 * Detects if `templateName` (a name from template) matches with `elementName` (a name from target),
+	 * after replacing parameter names in `templateName`
+	 * @param templateName the name from template
+	 * @param elementName the name from target
+	 * @return true if matching
+	 */
 	private boolean matchNames(String templateName, String elementName) {
 
 			for (String templateParameterName : names) {
@@ -563,6 +668,9 @@ public class TemplateMatcher implements Filter<CtElement> {
 		return templateName.equals(elementName);
 	}
 
+	/**
+	 * returns next ListStatement parameter from teList
+	 */
 	private CtElement nextListStatement(List<?> teList, CtElement inMulti) {
 		if (inMulti == null) {
 			return checkListStatements(teList);
@@ -582,4 +690,21 @@ public class TemplateMatcher implements Filter<CtElement> {
 		return checkListStatements(teList2);
 	}
 
+	/**
+	 * Is used instead of Collection#contains(Object),
+	 * which uses Object#equals operator,
+	 * which returns true even for not same objects.
+	 *
+	 * @param collection to be checked collection
+	 * @param item to be searched object
+	 * @return true if `collection` contains instance of `item`.
+	 */
+	private static boolean containsSame(Iterable<? extends Object> collection, Object item) {
+		for (Object object : collection) {
+			if (object == item) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
