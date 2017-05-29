@@ -4,21 +4,30 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.MinimalImportScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.security.AccessControlException;
 import java.util.Collection;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -93,5 +102,16 @@ public class ImportScannerTest {
 		// as ArithmeticException come from java.lang it is not imported anymore
 		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
 		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
+	}
+
+	@Test
+	public void testTargetTypeNull() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		CtFieldReference fieldRef = factory.createFieldReference();
+		fieldRef.setStatic(true);
+
+		ImportScanner importScanner = new MinimalImportScanner();
+		importScanner.computeImports(fieldRef);
 	}
 }
