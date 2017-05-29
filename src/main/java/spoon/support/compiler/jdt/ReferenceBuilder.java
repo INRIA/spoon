@@ -655,7 +655,9 @@ public class ReferenceBuilder {
 					if (bindingCache.containsKey(b)) {
 						ref.addActualTypeArgument(getCtCircularTypeReference(b));
 					} else {
-						ref.addActualTypeArgument(getTypeReference(b));
+						if (!b.toString().contains("extends "+ref.getSimpleName())) {
+							ref.addActualTypeArgument(getTypeReference(b));
+						}
 					}
 				}
 			}
@@ -688,7 +690,6 @@ public class ReferenceBuilder {
 			} else {
 				TypeVariableBinding typeParamBinding = (TypeVariableBinding)binding;
 				ReferenceBinding superClass = typeParamBinding.superclass;
-				ReferenceBinding[] superInterfaces = typeParamBinding.superInterfaces;
 
 				if (superClass != null && !superClass.toString().startsWith("public class java.lang.Object")) {
 					CtTypeParameter typeParameter = this.jdtTreeBuilder.getFactory().createTypeParameter();
@@ -699,16 +700,6 @@ public class ReferenceBuilder {
 					ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 					ref.setSimpleName(new String(binding.sourceName()));
 				}
-
-				/*if (superInterfaces != null && superInterfaces.length > 0) {
-					Set<CtTypeReference<?>> allSuperInterfaces = new HashSet<CtTypeReference<?>>();
-					for (ReferenceBinding superInterface : superInterfaces) {
-						allSuperInterfaces.add(this.getTypeReference(superInterface));
-					}
-					ref.getTypeParameterDeclaration().setSuperInterfaces(allSuperInterfaces);
-				}*/
-
-
 			}
 			TypeVariableBinding b = (TypeVariableBinding) binding;
 			if (bounds) {
