@@ -33,7 +33,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static java.util.Arrays.asList;
 
 public class TemplateTest {
 
@@ -233,6 +236,7 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
+			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
 		}
 
 		{// testing matcher2
@@ -241,6 +245,7 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher2")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(1, matcher.find(klass).size());
+			assertThat(asList("bov"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
 		}
 
 		{// testing matcher3
@@ -249,6 +254,7 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
+			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
 		}
 
 		{// testing matcher4
@@ -257,6 +263,7 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher4")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
+			assertThat(asList("foo","foo2","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
 		}
 
 		{// testing matcher5
@@ -265,6 +272,7 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
+			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
 		}
 
 		{// testing matcher6
@@ -273,6 +281,7 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher6")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
+			assertThat(asList("baz","bou"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
 		}
 
 
@@ -294,11 +303,11 @@ public class TemplateTest {
 			// contract: the name to be matched does not have to be an exact match
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtMethod meth = (CtMethod) templateKlass.getElements(new NameFilter("matcher4")).get(0);
+			CtMethod meth = (CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0);
 
-			// together with the appropriate @Parameter f, this means
-			// we match all methods with name f*
-			meth.setSimpleName("f");
+			// together with the appropriate @Parameter _w_, this means
+			// we match all methods with name f*, because parameter _w_ acts as a wildcard
+			meth.setSimpleName("f_w_");
 			TemplateMatcher matcher = new TemplateMatcher(meth);
 			List<CtMethod> ctElements = matcher.find(klass);
 			assertEquals(3, ctElements.size());
