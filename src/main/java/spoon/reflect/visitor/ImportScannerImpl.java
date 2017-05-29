@@ -318,7 +318,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			} catch (ParentNotInitializedException e) {
 			}
 			CtPackageReference pack = targetType.getPackage();
-			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
+			if (pack != null && ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
 				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
 					// ignore type in same package
@@ -340,7 +340,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 			// we consider that if a class belongs to java.lang or the same package than the actual class
 			// then it is imported by default
-			if (ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
+			if (pack != null &&  ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
 				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
 					// ignore type in same package
