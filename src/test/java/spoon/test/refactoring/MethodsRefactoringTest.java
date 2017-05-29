@@ -3,8 +3,10 @@ package spoon.test.refactoring;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,7 +21,9 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.AllMethodsSameSignatureFunction;
+import spoon.reflect.visitor.filter.ExecutableReferenceFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.SubInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -235,6 +239,49 @@ public class MethodsRefactoringTest {
 		}).list();
 	}
 
+	@Test
+	public void testExecutableReferenceFilter() {
+		Factory factory = ModelUtils.build(new File("./src/test/java/spoon/test/refactoring/parameter/testclasses"));
+		
+		List<CtExecutable<?>> executables = factory.getModel().getRootPackage().filterChildren((CtExecutable<?> e)->true).list();
+		int nrExecRefsTotal = 0;
+		//contract check that ExecutableReferenceFilter found CtExecutableReferences of each executable individually 
+		for (CtExecutable<?> executable : executables) {
+			nrExecRefsTotal += checkExecutableReferenceFilter(factory, Collections.singletonList(executable));
+		}
+		//contract check that ExecutableReferenceFilter found CtExecutableReferences of all executables together 
+		int nrExecRefsTotal2 = checkExecutableReferenceFilter(factory, executables);
+		
+		assertSame(nrExecRefsTotal, nrExecRefsTotal2);
+
+		//contract check that it found lambdas too
+		CtLambda lambda = factory.getModel().getRootPackage().filterChildren((CtLambda<?> e)->true).first();
+		assertNotNull(lambda);
+		//this test case is quite wild, because there is normally lambda reference in spoon model. So make one lambda reference here:
+		CtExecutableReference<?> lambdaRef = lambda.getReference();
+		List<CtExecutableReference<?>> refs = lambdaRef.filterChildren(null).select(new ExecutableReferenceFilter(lambda)).list();
+		assertEquals(1, refs.size());
+		assertSame(lambdaRef, refs.get(0));
+	}
+
+	private int checkExecutableReferenceFilter(Factory factory, List<CtExecutable<?>> executables) {
+		assertTrue(executables.size()>0);
+		ExecutableReferenceFilter execRefFilter = new ExecutableReferenceFilter();
+		executables.forEach((CtExecutable<?> e)->execRefFilter.addExecutable(e));
+		final List<CtExecutableReference<?>> refs = new ArrayList<>(factory.getModel().getRootPackage().filterChildren(execRefFilter).list());
+		int nrExecRefs = refs.size();
+		//use different (slower, but straight forward) algorithm to search for all executable references to check if ExecutableReferenceFilter returns correct results
+		factory.getModel().getRootPackage().filterChildren((CtExecutableReference er)->{
+			return containsSame(executables, er.getDeclaration());
+		}).forEach((CtExecutableReference er)->{
+			//check that each expected reference was found by ExecutableReferenceFilter and remove it from that list
+			assertTrue("Executable reference: "+er+" not found.", refs.remove(er));
+		});
+		//check that no other reference was found by ExecutableReferenceFilter
+		assertSame(0, refs.size());
+		return nrExecRefs;
+	}
+	
 	private boolean containsSame(Collection list, Object item) {
 		for (Object object : list) {
 			if(object==item) {
