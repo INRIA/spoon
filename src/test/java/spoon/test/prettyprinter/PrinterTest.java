@@ -39,8 +39,8 @@ public class PrinterTest {
 	@Test
 	public void testChangeAutoImportModeWorks() throws Exception {
 		Launcher spoon = new Launcher();
-		PrettyPrinter printer = spoon.createPrettyPrinter();
 		spoon.getEnvironment().setAutoImports(false);
+		PrettyPrinter printer = spoon.createPrettyPrinter();
 		spoon.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/AClass.java");
 		spoon.buildModel();
 
@@ -52,7 +52,10 @@ public class PrinterTest {
 
 		assertTrue("The result should not contain imports: "+result, !result.contains("import java.util.List;"));
 
+		// recreating an auto-immport  printer
 		spoon.getEnvironment().setAutoImports(true);
+		printer = spoon.createPrettyPrinter();
+
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		result = printer.getResult();
 		assertTrue("The result should now contain imports: "+result, result.contains("import java.util.List;"));
@@ -79,8 +82,8 @@ public class PrinterTest {
 	@Test
 	public void testAutoimportModeDontImportUselessStatic() {
 		Launcher spoon = new Launcher();
-		PrettyPrinter printer = spoon.createPrettyPrinter();
 		spoon.getEnvironment().setAutoImports(true);
+		PrettyPrinter printer = spoon.createPrettyPrinter();
 		spoon.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/ImportStatic.java");
 		spoon.buildModel();
 
