@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -686,17 +688,26 @@ public class ReferenceBuilder {
 			} else {
 				TypeVariableBinding typeParamBinding = (TypeVariableBinding)binding;
 				ReferenceBinding superClass = typeParamBinding.superclass;
-				ReferenceBinding[] referenceBindings = typeParamBinding.superInterfaces;
+				ReferenceBinding[] superInterfaces = typeParamBinding.superInterfaces;
 
-				if (superClass.superclass() != null) {
+				if (superClass != null && !superClass.toString().startsWith("public class java.lang.Object")) {
 					CtTypeParameter typeParameter = this.jdtTreeBuilder.getFactory().createTypeParameter();
-					typeParameter.setSuperclass(this.getTypeReference(superClass.superclass()));
+					typeParameter.setSuperclass(this.getTypeReference(superClass));
 					typeParameter.setSimpleName(new String(binding.sourceName()));
 					ref = typeParameter.getReference();
 				} else {
 					ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 					ref.setSimpleName(new String(binding.sourceName()));
 				}
+
+				/*if (superInterfaces != null && superInterfaces.length > 0) {
+					Set<CtTypeReference<?>> allSuperInterfaces = new HashSet<CtTypeReference<?>>();
+					for (ReferenceBinding superInterface : superInterfaces) {
+						allSuperInterfaces.add(this.getTypeReference(superInterface));
+					}
+					ref.getTypeParameterDeclaration().setSuperInterfaces(allSuperInterfaces);
+				}*/
+
 
 			}
 			TypeVariableBinding b = (TypeVariableBinding) binding;
