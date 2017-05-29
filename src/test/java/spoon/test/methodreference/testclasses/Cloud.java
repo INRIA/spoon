@@ -3,7 +3,7 @@ package spoon.test.methodreference.testclasses;
 import java.io.InputStream;
 import java.io.Reader;
 
-public class Cloud<T> {
+public class Cloud<T extends String> {
 
 	<U extends InputStream> void method(T param, U param2) {}
 	<U extends Reader> void method(T param, U param2) {}

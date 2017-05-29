@@ -30,6 +30,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sun.tools.javac.code.Type;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
@@ -83,6 +84,7 @@ import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.PackageFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -96,6 +98,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.visitor.filter.NameFilter;
 
 public class ReferenceBuilder {
 
@@ -676,12 +679,25 @@ public class ReferenceBuilder {
 			ref.setSimpleName(new String(binding.sourceName()));
 		} else if (binding instanceof TypeVariableBinding) {
 			boolean oldBounds = bounds;
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
+
 			if (binding instanceof CaptureBinding) {
 				ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 				bounds = true;
 			} else {
-				ref.setSimpleName(new String(binding.sourceName()));
+				TypeVariableBinding typeParamBinding = (TypeVariableBinding)binding;
+				ReferenceBinding superClass = typeParamBinding.superclass;
+				ReferenceBinding[] referenceBindings = typeParamBinding.superInterfaces;
+
+				if (superClass.superclass() != null) {
+					CtTypeParameter typeParameter = this.jdtTreeBuilder.getFactory().createTypeParameter();
+					typeParameter.setSuperclass(this.getTypeReference(superClass.superclass()));
+					typeParameter.setSimpleName(new String(binding.sourceName()));
+					ref = typeParameter.getReference();
+				} else {
+					ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
+					ref.setSimpleName(new String(binding.sourceName()));
+				}
+
 			}
 			TypeVariableBinding b = (TypeVariableBinding) binding;
 			if (bounds) {
