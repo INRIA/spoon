@@ -40,5 +40,5 @@ public interface CompilationUnitFilter {
 	 * @return {@code true} if and only if {@code path} should be excluded,
 	 *         {@code false} otherwise.
 	 */
-	boolean exclude(final String path);
+	boolean exclude(String path);
 }
