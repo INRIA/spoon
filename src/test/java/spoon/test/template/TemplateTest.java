@@ -438,6 +438,7 @@ public class TemplateTest {
 	}
 	@Test
 	public void testTemplateInvocationSubstitution() throws Exception {
+		//contract: the template engine supports substitution of method names in method calls.
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/InvocationTemplate.java"));
 
@@ -448,6 +449,7 @@ public class TemplateTest {
 		new InvocationTemplate(factory.Type().OBJECT, "hashCode").apply(resultKlass);
 		CtMethod<?> templateMethod = (CtMethod<?>) resultKlass.getElements(new NameFilter("invoke")).get(0);
 		CtStatement templateRoot = (CtStatement) templateMethod.getBody().getStatement(0);
+		//iface.$method$() becomes iface.hashCode()
 		assertEquals("iface.hashCode()", templateRoot.toString());
 	}
 }
