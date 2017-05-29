@@ -250,6 +250,10 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	private boolean isJavaLangClasses(String importType) {
+		return importType.matches("^(java\\.lang\\.)[^.]*$");
+	}
+
 	/**
 	 * Write the compilation unit header.
 	 */
@@ -283,7 +287,7 @@ public class ElementPrinterHelper {
 					importTypeStr = this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName();
 				}
 
-				if (!importTypeStr.equals("") && !importTypeStr.startsWith("java.lang")) {
+				if (!importTypeStr.equals("") && !isJavaLangClasses(importTypeStr)) {
 					printer.write(importStr + " " + importTypeStr + ";").writeln().writeTabs();
 				}
 			}

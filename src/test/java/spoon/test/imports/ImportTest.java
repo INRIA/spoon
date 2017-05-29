@@ -929,4 +929,16 @@ public class ImportTest {
 
 		canBeBuilt(outputDir, 7);
 	}
+
+	@Test
+	public void testJavaLangIsConsideredAsImportedButNotForSubPackages() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-javalang";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Reflection.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+
+		canBeBuilt(outputDir, 7);
+	}
 }
