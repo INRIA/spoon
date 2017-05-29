@@ -19,6 +19,7 @@ package spoon.reflect.visitor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -74,6 +75,14 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
 	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
+
+	@Override
+	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+		enter(fieldRead);
+		scan(fieldRead.getVariable());
+		scan(fieldRead.getTarget());
+		exit(fieldRead);
+	}
 
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
