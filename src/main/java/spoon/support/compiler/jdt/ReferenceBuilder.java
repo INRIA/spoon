@@ -709,14 +709,11 @@ public class ReferenceBuilder {
 					refSuperClass = this.getTypeReference(superInterfaces[0]);
 				}
 
+				ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
+				ref.setSimpleName(new String(binding.sourceName()));
+
 				if (refSuperClass != null) {
-					CtTypeParameter typeParameter = this.jdtTreeBuilder.getFactory().createTypeParameter();
-					typeParameter.setSuperclass(refSuperClass);
-					typeParameter.setSimpleName(new String(binding.sourceName()));
-					ref = typeParameter.getReference();
-				} else {
-					ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
-					ref.setSimpleName(new String(binding.sourceName()));
+					((CtTypeParameterReference) ref).addBound(refSuperClass);
 				}
 			}
 			TypeVariableBinding b = (TypeVariableBinding) binding;

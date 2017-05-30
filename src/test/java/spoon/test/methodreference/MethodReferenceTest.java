@@ -31,10 +31,13 @@ import spoon.testing.utils.ModelUtils;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Supplier;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -230,14 +233,21 @@ public class MethodReferenceTest {
 	@Test
 	public void testGetGenericExecutableReference() throws Exception {
 		CtType<?> classCloud = ModelUtils.buildClass(Cloud.class);
-		for (CtMethod<?> ctMethod : classCloud.getMethodsByName("method")) {
-			CtExecutableReference<?> execRef = ctMethod.getReference();
+		List<CtMethod<?>> methods = classCloud.getMethodsByName("method");
+		assertThat(methods.size(), is(3));
+
+		int n = 0;
+		for (CtMethod<?> method1 : classCloud.getMethodsByName("method")) {
+			CtExecutableReference<?> execRef = method1.getReference();
 			Method method = execRef.getActualMethod();
 			assertNotNull(method);
 			assertEquals("method", method.getName());
+			List<CtParameter<?>> parameters = method1.getParameters();
+			assertThat(parameters.size(), is(2));
+
 			//check that we have found the method with correct parameters
-			for (int i=0; i<ctMethod.getParameters().size(); i++) {
-				CtTypeReference<?> paramTypeRef = ctMethod.getParameters().get(i).getType();
+			for (int i = 0; i < parameters.size(); i++) {
+				CtTypeReference<?> paramTypeRef = parameters.get(i).getType();
 				Class<?> paramClass = paramTypeRef.getTypeErasure().getActualClass();
 				assertSame(paramClass, method.getParameterTypes()[i]);
 				//
@@ -249,9 +259,13 @@ public class MethodReferenceTest {
 				assertEquals(paramTypeRef, otherParamTypeRef);
 				//contract: reference to type can be still dereferred
 				assertSame(paramType, paramType.getReference().getDeclaration());
+
+				n++;
 			}
-			assertSame(ctMethod, execRef.getDeclaration());
+			assertSame(method1, execRef.getDeclaration());
 		}
+
+		assertThat(n, is(2*3));
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {

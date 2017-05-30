@@ -114,11 +114,11 @@ public class ExecutableReferenceGenericTest {
 		CtMethod<?> expectedMethod5 = getCtMethodByNameFromCtClass(clazz, "method5");
 
 		assertEquals(3, refsMethod2.size());
-		// Not true anymore, because T is inferred at execution time
-//		assertEquals(expectedMethod1, refsMethod2.get(0).getDeclaration());
 		CtExecutable execRefsMethods2 = refsMethod2.get(0).getDeclaration();
 
-		assertThat(execRefsMethods2.getSignature(), is("<T extends java.lang.String> void method1(T extends java.lang.String)"));
+		//T has more information in the invocation than its declaration because of the argument type
+		//assertEquals(expectedMethod1, refsMethod2.get(0).getDeclaration());
+		assertEquals(execRefsMethods2.getSignature(), "<T extends java.lang.String> void method1(T extends java.lang.String)");
 		assertEquals(expectedMethod1, refsMethod2.get(1).getDeclaration());
 		assertEquals(expectedMethod5, refsMethod2.get(2).getDeclaration());
 	}
@@ -167,11 +167,11 @@ public class ExecutableReferenceGenericTest {
 		CtMethod<?> expectedMethod1 = getCtMethodByNameFromCtClass(clazz, "method1");
 
 		assertEquals(1, refsMethodA.size());
-		// Not true anymore, because T is inferred at execution time
-//		assertEquals(expectedMethod1, refsMethodA.get(0).getDeclaration());
-		CtExecutable execRefsMethods2 = refsMethodA.get(0).getDeclaration();
 
-		assertThat(execRefsMethods2.getSignature(), is("<T extends java.lang.String> void method1(T extends java.lang.String)"));
+		CtExecutable execRefsMethods2 = refsMethodA.get(0).getDeclaration();
+		//T has more information in the invocation than its declaration because of the argument type
+		//	assertEquals(expectedMethod1, refsMethodA.get(0).getDeclaration());
+		assertEquals(execRefsMethods2.getSignature(), "<T extends java.lang.String> void method1(T extends java.lang.String)");
 	}
 
 	@Test
