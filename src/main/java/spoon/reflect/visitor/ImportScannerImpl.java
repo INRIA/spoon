@@ -200,7 +200,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public Collection<CtReference> computeImports(CtElement element) {
+	public Collection<CtTypeReference<?>> computeImports(CtElement element) {
 		//look for top declaring type of that simpleType
 		if (element instanceof CtType) {
 			CtType simpleType = (CtType) element;
@@ -212,7 +212,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			targetType = type == null ? null : type.getReference().getTopLevelType();
 			scan(element);
 		}
-		return this.getAllImports();
+		return this.classImports.values();
 	}
 
 	@Override
