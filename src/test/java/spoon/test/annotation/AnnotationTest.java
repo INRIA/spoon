@@ -31,9 +31,9 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -70,12 +70,11 @@ import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -1010,5 +1009,12 @@ public class AnnotationTest {
 				assertThat(typeRef.getQualifiedName(), is("java.lang.Override"));
 			}
 		}
+	}
+
+	@Test
+	public void testCreateAnnotation() throws Exception {
+		CtType<?> type = factory.Annotation().create("spoon.test.annotation.testclasses.NewAnnot");
+		assertTrue(type.isAnnotationType());
+		assertSame(type, type.getReference().getDeclaration());
 	}
 }
