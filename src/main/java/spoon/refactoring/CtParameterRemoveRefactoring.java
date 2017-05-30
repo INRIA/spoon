@@ -276,19 +276,6 @@ public class CtParameterRemoveRefactoring implements CtRefactoring {
 			return false;
 		}
 		return getTargetInvocations().contains(invocation);
-/*		CtExecutableReference<?> execRef = invocation.getExecutable();
-		if (execRef == null) {
-			return false;
-		}
-		CtExecutable<?> exec = execRef.getDeclaration();
-		if (getTargetExecutables().indexOf(exec) == -1) {
-			return false;
-		}
-		//TODO detect acceptable parameter
-		//some.toBeModifiedMethod(anotherMethod(toBeRemovedParam))
-		//make it possible to decide what code can be removed
-		//invocation.getArguments()...
-		return true;*/
 	}
 
 	/**
