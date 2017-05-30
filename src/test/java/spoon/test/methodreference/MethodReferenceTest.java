@@ -18,6 +18,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -244,7 +245,8 @@ public class MethodReferenceTest {
 				//contract: declaration of parameter type can be found
 				assertNotNull(paramType);
 				//contract: reference to found parameter type is equal to origin reference
-				assertEquals(paramTypeRef, paramType.getReference());
+				CtTypeReference otherParamTypeRef = paramType.getReference();
+				assertEquals(paramTypeRef, otherParamTypeRef);
 				//contract: reference to type can be still dereferred
 				assertSame(paramType, paramType.getReference().getDeclaration());
 			}

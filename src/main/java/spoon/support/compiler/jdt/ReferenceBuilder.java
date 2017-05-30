@@ -87,8 +87,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,6 +101,9 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
 
 public class ReferenceBuilder {
 
+	// Allow to detect circular references and to avoid endless recursivity
+	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
+	private Set<TypeBinding> exploringParameterizedBindings = new HashSet<>();
 	private Map<String, CtTypeReference<?>> basestypes = new TreeMap<>();
 
 	private boolean bounds = false;
@@ -650,9 +655,11 @@ public class ReferenceBuilder {
 					if (bindingCache.containsKey(b)) {
 						ref.addActualTypeArgument(getCtCircularTypeReference(b));
 					} else {
-						// we want to avoid recursive ParameterType like Enum<E extends Enum<E>>
-						if (!b.toString().contains("extends " + ref.getSimpleName())) {
+						if (!this.exploringParameterizedBindings.contains(b)) {
+							this.exploringParameterizedBindings.add(b);
 							ref.addActualTypeArgument(getTypeReference(b));
+						} else {
+							this.exploringParameterizedBindings.remove(b);
 						}
 					}
 				}
@@ -686,10 +693,25 @@ public class ReferenceBuilder {
 			} else {
 				TypeVariableBinding typeParamBinding = (TypeVariableBinding) binding;
 				ReferenceBinding superClass = typeParamBinding.superclass;
+				ReferenceBinding[] superInterfaces = typeParamBinding.superInterfaces();
 
-				if (superClass != null && !superClass.toString().startsWith("public class java.lang.Object")) {
+				CtTypeReference refSuperClass = null;
+
+				// if the type parameter has a super class other than java.lang.Object, we get it
+				// superClass.superclass() is null if it's java.lang.Object
+				if (superClass != null && !(superClass.superclass() == null)) {
+					refSuperClass = this.getTypeReference(superClass);
+
+				// if the type parameter has a super interface, then we'll get it too, as a superclass
+				// type parameter can only extends an interface or a class, so we don't make the distinction
+				// in Spoon. Moreover we can only have one extends in a type parameter.
+				} else if (superInterfaces != null && superInterfaces.length == 1) {
+					refSuperClass = this.getTypeReference(superInterfaces[0]);
+				}
+
+				if (refSuperClass != null) {
 					CtTypeParameter typeParameter = this.jdtTreeBuilder.getFactory().createTypeParameter();
-					typeParameter.setSuperclass(this.getTypeReference(superClass));
+					typeParameter.setSuperclass(refSuperClass);
 					typeParameter.setSimpleName(new String(binding.sourceName()));
 					ref = typeParameter.getReference();
 				} else {
@@ -735,15 +757,19 @@ public class ReferenceBuilder {
 				ref = ref == null ? ref : ref.clone();
 			}
 		} else if (binding instanceof WildcardBinding) {
+			WildcardBinding wildcardBinding = (WildcardBinding) binding;
 			ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
-			if (((WildcardBinding) binding).boundKind == Wildcard.SUPER && ref instanceof CtTypeParameterReference) {
+
+			if (wildcardBinding.boundKind == Wildcard.SUPER && ref instanceof CtTypeParameterReference) {
 				((CtTypeParameterReference) ref).setUpper(false);
 			}
 
-			if (((WildcardBinding) binding).bound != null && ref instanceof CtTypeParameterReference) {
-				if (bindingCache.containsKey(((WildcardBinding) binding).bound)) {
-					((CtTypeParameterReference) ref).setBoundingType(getCtCircularTypeReference(((WildcardBinding) binding).bound));
+			if (wildcardBinding.bound != null && ref instanceof CtTypeParameterReference) {
+				if (bindingCache.containsKey(wildcardBinding.bound)) {
+					((CtTypeParameterReference) ref).setBoundingType(getCtCircularTypeReference(wildcardBinding.bound));
 				} else {
+
+
 					((CtTypeParameterReference) ref).setBoundingType(getTypeReference(((WildcardBinding) binding).bound));
 				}
 			}
@@ -815,6 +841,7 @@ public class ReferenceBuilder {
 			throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 		}
 		bindingCache.remove(binding);
+		this.exploringParameterizedBindings.clear();
 		return (CtTypeReference<T>) ref;
 	}
 
