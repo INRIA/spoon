@@ -17,7 +17,7 @@ The [`NotNullProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master
 
 The [`LogProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/LogProcessor.java) adds a log information when entering a method.
 
-The [`MutationProcessor`](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/mutation/MutationProcessor.java?view=markup&root=spoon) randomly mutates some parts of the abstract syntax tree for [mutation testing](http://en.wikipedia.org/wiki/Mutation_testing).
+The [`MutationProcessor`](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/mutation) randomly mutates some parts of the abstract syntax tree for [mutation testing](http://en.wikipedia.org/wiki/Mutation_testing).
 
 ## Annotation Processing
 
