@@ -55,7 +55,7 @@ public class AnnotationFactory extends TypeFactory {
 	public <T extends Annotation> CtAnnotationType<?> create(CtPackage owner, String simpleName) {
 		CtAnnotationType<T> t = factory.Core().createAnnotationType();
 		t.setSimpleName(simpleName);
-		owner.getTypes().add(t);
+		owner.addType(t);
 		return t;
 	}
 
