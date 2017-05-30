@@ -184,7 +184,7 @@ public abstract class Parameters {
 	public static List<String> getNames(CtClass<? extends Template<?>> templateType) {
 		List<String> params = new ArrayList<>();
 		try {
-			for (CtFieldReference<?> f : templateType.getReference().getAllFields()) {
+			for (CtFieldReference<?> f : templateType.getAllFields()) {
 				if (isParameterSource(f)) {
 					params.add(getParameterName(f));
 				}
