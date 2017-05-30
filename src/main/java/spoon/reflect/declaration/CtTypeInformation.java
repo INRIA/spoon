@@ -87,6 +87,11 @@ public interface CtTypeInformation {
 	boolean isInterface();
 
 	/**
+	 * Returns true if this type is an enum.
+	 */
+	boolean isEnum();
+
+	/**
 	 * Returns true if this type is an annotation type.
 	 */
 	boolean isAnnotationType();

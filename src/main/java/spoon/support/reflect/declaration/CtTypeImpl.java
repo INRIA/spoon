@@ -489,6 +489,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public boolean isEnum() {
+		return false;
+	}
+
+	@Override
 	public boolean isGenerics() {
 		return false;
 	}
