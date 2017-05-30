@@ -504,6 +504,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 				IOUtils.copy(is, new FileOutputStream(file));
 
+
 				if (!printedFiles.contains(file)) {
 					printedFiles.add(file);
 				}

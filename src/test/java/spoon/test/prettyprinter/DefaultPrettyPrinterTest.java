@@ -24,6 +24,8 @@ import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -261,7 +263,7 @@ public class DefaultPrettyPrinterTest {
 		File javaFile = new File(pathname);
 		assertTrue(javaFile.exists());
 
-		assertEquals(nl + nl + "package foo;" + nl + nl + nl + "class Bar {}" + nl + nl,
+		assertEquals("package foo;" + nl + nl + nl + "class Bar {}" + nl + nl,
 				IOUtils.toString(new FileInputStream(javaFile), "UTF-8"));
 	}
 
@@ -291,4 +293,5 @@ public class DefaultPrettyPrinterTest {
 		snippet = launcher.getFactory().Code().createCodeSnippetStatement(compile.toString());
 		assertEquals(compile, snippet.compile());
 	}
+
 }

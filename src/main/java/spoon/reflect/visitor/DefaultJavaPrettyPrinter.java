@@ -282,7 +282,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			context.elementStack.push(e);
 			if (env.isPreserveLineNumbers()) {
 				if (!(e instanceof CtNamedElement)) {
-					printer.adjustPosition(e, sourceCompilationUnit);
+					printer.adjustStartPosition(e);
 				}
 			}
 			e.accept(this);
@@ -436,9 +436,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 		printer.decTab();
+		printer.adjustEndPosition(block);
 		if (env.isPreserveLineNumbers()) {
 			if (!block.isImplicit()) {
-				printer.write("}");
+				printer.writeTabs().write("}");
 			}
 		} else {
 			printer.writeln().writeTabs();
@@ -528,7 +529,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		// lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
 		printer.write(" {").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
-		printer.decTab().writeTabs().write("}");
+		printer.adjustEndPosition(ctClass).decTab().writeTabs().write("}");
 		context.popCurrentThis();
 	}
 
@@ -1092,7 +1093,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 			elementPrinterHelper.writeActualTypeArguments(invocation);
 			if (env.isPreserveLineNumbers()) {
-				printer.adjustPosition(invocation, sourceCompilationUnit);
+				printer.adjustStartPosition(invocation);
 			}
 			printer.write(invocation.getExecutable().getSimpleName());
 		}
@@ -1163,7 +1164,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			enterCtStatement(localVariable);
 		}
 		if (env.isPreserveLineNumbers()) {
-			printer.adjustPosition(localVariable, sourceCompilationUnit);
+			printer.adjustStartPosition(localVariable);
 		}
 		if (!context.noTypeDecl()) {
 			elementPrinterHelper.writeModifiers(localVariable);
@@ -1185,7 +1186,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtCatchVariable(CtCatchVariable<T> catchVariable) {
 		if (env.isPreserveLineNumbers()) {
-			printer.adjustPosition(catchVariable, sourceCompilationUnit);
+			printer.adjustStartPosition(catchVariable);
 		}
 		elementPrinterHelper.writeModifiers(catchVariable);
 		scan(catchVariable.getType());
@@ -1813,7 +1814,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeHeader(types, imports);
 		for (CtType<?> t : types) {
 			scan(t);
-			printer.writeln().writeln().writeTabs();
+			if (!env.isPreserveLineNumbers()) {
+				// saving lines and chars
+				printer.writeln().writeln().writeTabs();
+			} else {
+				printer.adjustEndPosition(t);
+			}
 		}
 	}
 

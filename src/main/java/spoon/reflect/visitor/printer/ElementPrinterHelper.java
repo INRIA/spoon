@@ -88,7 +88,7 @@ public class ElementPrinterHelper {
 	public void visitCtNamedElement(CtNamedElement namedElement, CompilationUnit sourceCompilationUnit) {
 		writeAnnotations(namedElement);
 		if (env.isPreserveLineNumbers()) {
-			printer.adjustPosition(namedElement, sourceCompilationUnit);
+			printer.adjustStartPosition(namedElement);
 		}
 	}
 
@@ -261,7 +261,6 @@ public class ElementPrinterHelper {
 		if (!types.isEmpty()) {
 			for (CtType<?> ctType : types) {
 				writeComment(ctType, CommentOffset.TOP_FILE);
-				printer.writeln().writeln().writeTabs();
 			}
 			// writing the header package
 			if (!types.get(0).getPackage().isUnnamedPackage()) {
