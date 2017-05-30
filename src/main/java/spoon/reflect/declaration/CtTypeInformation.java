@@ -82,6 +82,11 @@ public interface CtTypeInformation {
 	boolean isLocalType();
 
 	/**
+	 * Returns true if this type is an class. Returns false for others including `enum`.
+	 */
+	boolean isClass();
+
+	/**
 	 * Returns true if this type is an interface.
 	 */
 	boolean isInterface();

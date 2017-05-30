@@ -567,6 +567,20 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
+	public boolean isClass() {
+		CtType<T> t = getDeclaration();
+		if (t == null) {
+			Class<?> clazz = getActualClass();
+			if (clazz.isEnum() || clazz.isInterface() || clazz.isAnnotation() || clazz.isArray() || clazz.isPrimitive()) {
+				return false;
+			}
+			return true;
+		} else {
+			return t.isClass();
+		}
+	}
+
+	@Override
 	public boolean isInterface() {
 		CtType<T> t = getDeclaration();
 		if (t == null) {

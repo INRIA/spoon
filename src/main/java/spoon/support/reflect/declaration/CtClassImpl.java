@@ -165,6 +165,11 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
+	public boolean isClass() {
+		return true;
+	}
+
+	@Override
 	public boolean isAnonymous() {
 		try {
 			Integer.parseInt(getSimpleName());

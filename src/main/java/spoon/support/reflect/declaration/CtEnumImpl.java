@@ -193,6 +193,11 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
+	public boolean isClass() {
+		return false;
+	}
+
+	@Override
 	public boolean isEnum() {
 		return true;
 	}

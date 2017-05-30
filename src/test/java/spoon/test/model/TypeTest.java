@@ -3,9 +3,10 @@ package spoon.test.model;
 import org.junit.Test;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Collection;
@@ -91,13 +92,42 @@ public class TypeTest {
 		assertEquals("IFACE_FIELD_2", type.getDeclaredOrInheritedField("IFACE_FIELD_2").getSimpleName());
 		assertNull(type.getDeclaredOrInheritedField("notExists"));
 	}
-	@Test
 
+	@Test
 	public void testGetDeclaredOrIheritedFieldByReflection() throws Exception {
 		CtTypeReference<?> type = build("spoon.test.model", "ClassWithSuperOutOfModel").getReference();
 
 		assertEquals("buf", type.getDeclaredOrInheritedField("buf").getSimpleName());
 		assertEquals("count", type.getDeclaredOrInheritedField("count").getSimpleName());
 		
+	}
+
+	@Test
+	public void testTypeInfoIsInterface() throws Exception {
+		//contract: isInterface returns true only for interfaces
+		CtType<?> clazz = build("spoon.test.model", "ClassWithSuperOutOfModel");
+		checkIsSomething("class", clazz);
+		CtType<?> type = build("spoon.test.model", "InterfaceWrithFields");
+		checkIsSomething("interface", type);
+		checkIsSomething("enum", type.getFactory().Enum().create(type.getPackage(), "someEnum"));
+		CtType<?> ctAnnotation = type.getFactory().Annotation().create(type.getPackage(), "someAnnotation");
+		checkIsSomething("annotation", ctAnnotation);
+		CtTypeParameter ctTypeParam = type.getFactory().Core().createTypeParameter();
+		ctTypeParam.setSimpleName("T");
+		clazz.addFormalCtTypeParameter(ctTypeParam);
+		checkIsSomething("generics", ctTypeParam);
+	}
+	
+	private void checkIsSomething(String expectedType, CtType type) {
+		_checkIsSomething(expectedType, type);
+		_checkIsSomething(expectedType, type.getReference());
+	}
+	private void _checkIsSomething(String expectedType, CtTypeInformation type) {
+		assertEquals("interface".equals(expectedType), type.isInterface());
+		assertEquals("class".equals(expectedType), type.isClass());
+		assertEquals("annotation".equals(expectedType), type.isAnnotationType());
+		assertEquals("anonymous".equals(expectedType), type.isAnonymous());
+		assertEquals("enum".equals(expectedType), type.isEnum());
+		assertEquals("generics".equals(expectedType), type.isGenerics());
 	}
 }

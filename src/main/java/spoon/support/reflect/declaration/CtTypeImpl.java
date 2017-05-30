@@ -479,6 +479,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public boolean isClass() {
+		return false;
+	}
+
+	@Override
 	public boolean isInterface() {
 		return false;
 	}
