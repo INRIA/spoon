@@ -262,7 +262,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	public Collection<CtReference> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
-		return importsContext.computeAllImports(context.currentTopLevel);
+		importsContext.computeAllImports(context.currentTopLevel);
+		return importsContext.getAllImports();
 	}
 
 	/**

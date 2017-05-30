@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -38,7 +39,8 @@ public class ImportScannerTest {
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new MinimalImportScanner();
-		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
+		importContext.computeImports(theClass);
+		Collection<CtReference> imports = importContext.getAllImports();
 
 		assertTrue(imports.isEmpty());
 	}
@@ -53,7 +55,8 @@ public class ImportScannerTest {
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
+		importContext.computeImports(theClass);
+		Collection<CtReference> imports = importContext.getAllImports();
 
 		// java.lang are also computed
 		assertEquals(4, imports.size());
@@ -69,7 +72,8 @@ public class ImportScannerTest {
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtTypeReference<?>> imports = importContext.computeImports(theClass);
+		importContext.computeImports(theClass);
+		Collection<CtReference> imports = importContext.getAllImports();
 
 		assertEquals(0, imports.size());
 	}
@@ -105,5 +109,9 @@ public class ImportScannerTest {
 
 		ImportScanner importScanner = new MinimalImportScanner();
 		importScanner.computeImports(fieldRef);
+
+		Collection<CtReference> imports = importScanner.getAllImports();
+
+		assertEquals(0, imports.size());
 	}
 }

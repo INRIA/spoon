@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -248,18 +249,20 @@ public class ImportTest {
 		final CtClass<ImportTest> classWithInvocation = launcher.getFactory().Class().get(ClassWithInvocation.class);
 
 		ImportScanner importScanner = new ImportScannerImpl();
-		final Collection<CtTypeReference<?>> imports = importScanner.computeImports(aClass);
-		assertEquals(2, imports.size());
+		importScanner.computeImports(aClass);
+		assertEquals(2, importScanner.getAllImports().size());
+
 		importScanner = new ImportScannerImpl();
-		final Collection<CtTypeReference<?>> imports1 = importScanner.computeImports(anotherClass);
+		importScanner.computeImports(anotherClass);
 		//ClientClass needs 2 imports: ChildClass, PublicInterface2
-		assertEquals(2, imports1.size());
+		assertEquals(2, importScanner.getAllImports().size());
+
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
 		importScanner = new ImportScannerImpl();
-		final Collection<CtTypeReference<?>> imports2 = importScanner.computeImports(classWithInvocation);
+		importScanner.computeImports(classWithInvocation);
 		// java.lang imports are also computed
-		assertEquals("Spoon ignores the arguments of CtInvocations", 3, imports2.size());
+		assertEquals("Spoon ignores the arguments of CtInvocations", 3, importScanner.getAllImports().size());
 	}
 
 	@Test
@@ -333,7 +336,9 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(Mole.class));
+		importContext.computeImports(factory.Class().get(Mole.class));
+
+		Collection<CtReference> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
 		assertEquals("spoon.test.imports.testclasses.internal2.Chimichanga", imports.toArray()[0].toString());
@@ -347,13 +352,15 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/NotImportExecutableType.java");
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
+		importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
-		// java.lang.Object is considered as imported but it will never be output
+		Collection<CtReference> imports = importContext.getAllImports();
+
+				// java.lang.Object is considered as imported but it will never be output
 		assertEquals(3, imports.size());
 		Set<String> expectedImports = new HashSet<>(
 				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
-		Set<String> actualImports = imports.stream().map(CtTypeReference::toString).collect(Collectors.toSet());
+		Set<String> actualImports = imports.stream().map(CtReference::toString).collect(Collectors.toSet());
 		assertEquals(expectedImports, actualImports);
 	}
 
@@ -364,7 +371,9 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
 
 		ImportScanner importContext = new ImportScannerImpl();
-		Collection<CtTypeReference<?>> imports = importContext.computeImports(factory.Class().get(Pozole.class));
+		importContext.computeImports(factory.Class().get(Pozole.class));
+
+		Collection<CtReference> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
 		assertEquals("spoon.test.imports.testclasses.internal2.Menudo", imports.toArray()[0].toString());
