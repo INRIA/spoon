@@ -68,7 +68,6 @@ import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.PackageFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
