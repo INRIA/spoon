@@ -3,6 +3,7 @@ package spoon.test.refactoring;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,9 +13,14 @@ import java.util.List;
 
 import org.junit.Test;
 
+import spoon.Launcher;
+import spoon.OutputType;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.refactoring.CtParameterRemoveRefactoring;
+import spoon.refactoring.RefactoringException;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -24,7 +30,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.AllMethodsSameSignatureFunction;
 import spoon.reflect.visitor.filter.ExecutableReferenceFilter;
-import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.SubInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.refactoring.parameter.testclasses.IFaceB;
@@ -34,9 +39,7 @@ import spoon.test.refactoring.parameter.testclasses.TestHierarchy;
 import spoon.test.refactoring.parameter.testclasses.TypeA;
 import spoon.test.refactoring.parameter.testclasses.TypeB;
 import spoon.test.refactoring.parameter.testclasses.TypeC;
-import spoon.test.refactoring.parameter.testclasses.TypeL;
 import spoon.test.refactoring.parameter.testclasses.TypeR;
-import spoon.test.refactoring.parameter.testclasses.TypeS;
 import spoon.testing.utils.ModelUtils;
 
 public class MethodsRefactoringTest {
@@ -64,6 +67,7 @@ public class MethodsRefactoringTest {
 				"spoon.test.refactoring.parameter.testclasses.TypeB",
 				"spoon.test.refactoring.parameter.testclasses.TypeB$1",
 				"spoon.test.refactoring.parameter.testclasses.TypeB$1Local",
+				"spoon.test.refactoring.parameter.testclasses.TypeB$2",
 				"spoon.test.refactoring.parameter.testclasses.TypeC",
 				"spoon.test.refactoring.parameter.testclasses.IFaceL",
 				"spoon.test.refactoring.parameter.testclasses.TypeL",
@@ -299,5 +303,65 @@ public class MethodsRefactoringTest {
 			}
 		}
 		return false;
+	}
+	
+	@Test
+	public void testCtParameterRemoveRefactoring() throws FileNotFoundException {
+		String testPackagePath = "spoon/test/refactoring/parameter/testclasses";
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSource(SpoonResourceHelper.createResource(new File("./src/test/java/"+testPackagePath)));
+		comp.build();
+		Factory factory = comp.getFactory();
+		
+		CtType<?> typeA = factory.Class().get(TypeA.class);
+		
+		CtMethod<?> methodTypeA_method1 = typeA.getMethodsByName("method1").get(0);
+		CtParameterRemoveRefactoring refactor = new CtParameterRemoveRefactoring();
+		refactor.setTarget(methodTypeA_method1.getParameters().get(0));
+		//check that expected methods are targets of refactoring
+		List<CtExecutable<?>> execs = refactor.getTargetExecutables();
+		execs.forEach(exec->{
+			//check that each to be modified method has one parameter
+			assertEquals(1, exec.getParameters().size());
+		});
+		refactor.refactor();
+		execs.forEach(exec->{
+			//check that each to be modified method has no parameter after refactoring
+			assertEquals(0, exec.getParameters().size());
+		});
+		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
+		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
+		ModelUtils.canBeBuilt("./target/spooned/"+testPackagePath, 8);
+	}
+	@Test
+	public void testCtParameterRemoveRefactoringValidationCheck() throws FileNotFoundException {
+		String testPackagePath = "spoon/test/refactoring/parameter/testclasses";
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSource(SpoonResourceHelper.createResource(new File("./src/test/java/"+testPackagePath)));
+		comp.build();
+		Factory factory = comp.getFactory();
+		
+		CtType<?> typeR = factory.Class().get(TypeR.class);
+		
+		CtMethod<?> methodTypeR_method1 = typeR.getMethodsByName("method1").get(0);
+		CtParameterRemoveRefactoring refactor = new CtParameterRemoveRefactoring().setTarget(methodTypeR_method1.getParameters().get(0));
+		refactor.setTarget(methodTypeR_method1.getParameters().get(0));
+		//check that each to be refactored method has one parameter
+		List<CtExecutable<?>> execs = refactor.getTargetExecutables();
+		execs.forEach(exec->{
+			//check that each to be modified method has one parameter
+			assertEquals(1, exec.getParameters().size());
+		});
+		//try refactor
+		try {
+			refactor.refactor();
+			fail();
+		} catch (RefactoringException e) {
+			this.getClass();
+		}
 	}
 }

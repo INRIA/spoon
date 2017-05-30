@@ -39,4 +39,13 @@ public class TypeB extends TypeA implements IFaceB<Exception> {
 			}
 		}
 	}
+	private void anMethodWithNullParameterValue() {
+		IFaceB<String> ifaceB = new IFaceB<String>() {
+			@Override
+			@TestHierarchy("A_method1")
+			public void method1(String p1) {
+			}
+		};
+		ifaceB.method1(null);
+	}
 }
