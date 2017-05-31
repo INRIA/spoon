@@ -1,19 +1,6 @@
 package spoon.test.trycatch;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.createFactory;
-
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtCatch;
@@ -27,6 +14,18 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.trycatch.testclasses.Foo;
+
+import java.io.File;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class TryCatchTest {
 
@@ -178,7 +177,7 @@ public class TryCatchTest {
 			}
 		}).get(0);
 
-		final String expected = " catch (spoon.test.trycatch.testclasses.internal.MyException | spoon.test.trycatch.testclasses.internal.MyException2 ignore) {" + System.lineSeparator() + "}";
+		final String expected = "catch (spoon.test.trycatch.testclasses.internal.MyException | spoon.test.trycatch.testclasses.internal.MyException2 ignore) {" + System.lineSeparator() + "}";
 		assertEquals(expected, ctCatch.toString());
 	}
 
