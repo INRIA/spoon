@@ -19,6 +19,10 @@ The [`LogProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src
 
 The [`MutationProcessor`](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/mutation) randomly mutates some parts of the abstract syntax tree for [mutation testing](http://en.wikipedia.org/wiki/Mutation_testing).
 
+## Templates
+
+The [`RetryTemplate`](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/transformation/retry) creates retriable methods in case of exceptions if annotated by `@RetryOnFailure`.
+
 ## Annotation Processing
 
 The [Nton example](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/nton/?root=spoon) introduces a Nton design pattern (extension of singleton but for N instances) into a target class. It inserts static fields, methods, and initializer code into constructors.
