@@ -36,6 +36,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,9 +70,8 @@ public abstract class Parameters {
 	 * Gets a template field parameter value.
 	 */
 	public static Object getValue(Template<?> template, String parameterName, Integer index) {
-		Object tparamValue = null;
+		Field rtField = null;
 		try {
-			Field rtField = null;
 			for (Field f : RtHelper.getAllFields(template.getClass())) {
 				if (isParameterSource(f)) {
 					if (parameterName.equals(getParameterName(f))) {
@@ -80,6 +80,20 @@ public abstract class Parameters {
 					}
 				}
 			}
+		} catch (Exception e) {
+			throw new UndefinedParameterException(e);
+		}
+		Object tparamValue = getValue(template, parameterName, rtField);
+		if (rtField.getType().isArray() && (index != null)) {
+			tparamValue = ((Object[]) tparamValue)[index];
+		}
+		return tparamValue;
+	}
+	private static Object getValue(Template<?> template, String parameterName, Field rtField) {
+		if (rtField == null) {
+			throw new UndefinedParameterException();
+		}
+		try {
 			if (Modifier.isFinal(rtField.getModifiers())) {
 				Map<String, Object> m = finals.get(template);
 				if (m == null) {
@@ -88,14 +102,10 @@ public abstract class Parameters {
 				return m.get(parameterName);
 			}
 			rtField.setAccessible(true);
-			tparamValue = rtField.get(template);
-			if (rtField.getType().isArray() && (index != null)) {
-				tparamValue = ((Object[]) tparamValue)[index];
-			}
+			return rtField.get(template);
 		} catch (Exception e) {
-			throw new UndefinedParameterException();
+			throw new UndefinedParameterException(e);
 		}
-		return tparamValue;
 	}
 
 	static Map<Template<?>, Map<String, Object>> finals = new HashMap<>();
@@ -187,6 +197,25 @@ public abstract class Parameters {
 			for (CtFieldReference<?> f : templateType.getAllFields()) {
 				if (isParameterSource(f)) {
 					params.add(getParameterName(f));
+				}
+			}
+		} catch (Exception e) {
+			throw new SpoonException("Getting of template parameters failed", e);
+		}
+		return params;
+	}
+	/**
+	 * Gets the Map of names to template parameter value for all the template parameters of a given template type
+	 * (including the ones defined by the super types).
+	 */
+	public static Map<String, Object> getNamesToValues(Template<?> template, CtClass<? extends Template<?>> templateType) {
+		//use linked hash map to assure same order of parameter names. There are cases during substitution of parameters when substitution order matters. E.g. SubstitutionVisitor#substituteName(...)
+		Map<String, Object> params = new LinkedHashMap<>();
+		try {
+			for (CtFieldReference<?> f : templateType.getAllFields()) {
+				if (isParameterSource(f)) {
+					String parameterName = getParameterName(f);
+					params.put(parameterName, getValue(template, parameterName, (Field) f.getActualField()));
 				}
 			}
 		} catch (Exception e) {

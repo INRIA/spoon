@@ -19,6 +19,7 @@ package spoon.support.template;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtAbstractInvocation;
@@ -89,23 +90,22 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public <R> void scanCtExecutable(CtExecutable<R> e) {
 			// replace method parameters
-			for (CtParameter<?> parameter : new ArrayList<>(e.getParameters())) {
-				String name = parameter.getSimpleName();
-				for (String pname : parameterNames) {
-					if (name.equals(pname)) {
-						Object value = Parameters.getValue(template, pname, null);
-						int i = parameter.getParent().getParameters().indexOf(parameter);
-						if (value instanceof List) {
-							List<?> l = (List<?>) value;
-							for (Object p : l) {
-								CtParameter<?> p2 = ((CtParameter<?>) p).clone();
-								p2.setParent(parameter.getParent());
-								parameter.getParent().getParameters().add(i++, p2);
-							}
-							parameter.getParent().getParameters().remove(parameter);
-						}
-					}
+			List<CtParameter<?>> substitutedParams = new ArrayList<>(e.getParameters().size());
+			boolean wasChanged = false;
+			for (CtParameter<?> parameter : e.getParameters()) {
+				@SuppressWarnings({ "rawtypes", "unchecked" })
+				List<CtParameter<?>> list = (List) getParameterValueAsList(CtParameter.class, getParameterValue(parameter.getSimpleName()));
+				if (list == null) {
+					//it is normal parameter, keep it.
+					substitutedParams.add(parameter);
+				} else {
+					wasChanged = true;
+					//current parameter has to be substituted by a template parameter value
+					substitutedParams.addAll(list);
 				}
+			}
+			if (wasChanged) {
+				e.setParameters(substitutedParams);
 			}
 			super.scanCtExecutable(e);
 		}
@@ -129,59 +129,45 @@ public class SubstitutionVisitor extends CtScanner {
 		@Override
 		public void scanCtNamedElement(CtNamedElement element) {
 			if (element.getDocComment() != null) {
-				element.setDocComment(substituteInDocComment(element.getDocComment()));
+				element.setDocComment(substituteName(element.getDocComment()));
 			}
 			// replace parameters in names
-			element.setSimpleName(substituteName(element.getSimpleName(), element));
+			element.setSimpleName(substituteName(element.getSimpleName()));
 			super.scanCtNamedElement(element);
 		}
 
 		@Override
 		public void scanCtReference(CtReference reference) {
-			reference.setSimpleName(substituteName(reference.getSimpleName(), reference));
+			reference.setSimpleName(substituteName(reference.getSimpleName()));
 			super.scanCtReference(reference);
 		}
 
-		private String substituteName(String name, CtElement element) {
-			for (String pname : parameterNames) {
+		private String substituteName(String name) {
+			for (Map.Entry<String, Object> e : namesToValues.entrySet()) {
+				String pname = e.getKey();
 				if (name.contains(pname)) {
-					Object value = Parameters.getValue(template, pname, null);
-					if (value instanceof String) {
-						// replace with the string value
-						name = name.replace(pname, (String) value);
-					} else if ((value instanceof CtTypeReference) && (element instanceof CtType)) {
-						// replace with the type reference's name
-						name = name.replace(pname, ((CtTypeReference<?>) value).getSimpleName());
-					}
+					String value = getParameterValueAsString(e.getValue());
+					name = name.replace(pname, value);
 				}
 			}
 			return name;
 		}
 
-		private String substituteInDocComment(String docComment) {
-			String result = docComment;
-			for (String pname : parameterNames) {
-				Object value = Parameters.getValue(template, pname, null);
-				if (value instanceof String) {
-					result = result.replace(pname, (String) value);
-				}
-			}
-			return result;
-		}
-
 		/** statically inline foreach */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		public void visitCtForEach(CtForEach foreach) {
 			if (foreach.getExpression() instanceof CtFieldAccess) {
 				CtFieldAccess<?> fa = (CtFieldAccess<?>) foreach.getExpression();
-				if (Parameters.isParameterSource(fa.getVariable())) {
-					Object[] value = (Object[]) Parameters.getValue(template, fa.getVariable().getSimpleName(), null);
+				Object value = getParameterValue(fa.getVariable().getSimpleName());
+				if (value != null && Parameters.isParameterSource(fa.getVariable())) {
+					List<CtExpression> list = getParameterValueAsList(CtExpression.class, value);
 					CtBlock<?> l = foreach.getFactory().Core().createBlock();
 					CtStatement body = foreach.getBody();
-					for (Object element : value) {
+					for (CtExpression element : list) {
 						CtStatement b = body.clone();
 						for (CtVariableAccess<?> va : Query.getElements(b, new VariableAccessFilter<>(foreach.getVariable().getReference()))) {
-							va.replace((CtExpression) element);
+							va.replace(element);
 						}
 						if (b instanceof CtBlock && ((CtBlock) b).getStatements().size() == 1) {
 							b = ((CtBlock) b).getStatement(0);
@@ -205,22 +191,25 @@ public class SubstitutionVisitor extends CtScanner {
 			visitFieldAccess(fieldWrite);
 		}
 
-		private <T> void visitFieldAccess(CtFieldAccess<T> fieldAccess) {
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		private <T> void visitFieldAccess(final CtFieldAccess<T> fieldAccess) {
 			CtFieldReference<?> ref = fieldAccess.getVariable();
 			if ("length".equals(ref.getSimpleName())) {
 				if (fieldAccess.getTarget() instanceof CtFieldAccess) {
 					ref = ((CtFieldAccess<?>) fieldAccess.getTarget()).getVariable();
-					if (Parameters.isParameterSource(ref)) {
-						Object[] value = (Object[]) Parameters.getValue(template, ref.getSimpleName(), null);
-						replace(fieldAccess, (CtExpression) fieldAccess.getFactory().Code().createLiteral(value
-								.length));
+					Object value = getParameterValue(ref.getSimpleName());
+					if (value != null && Parameters.isParameterSource(ref)) {
+						//the items of this list are not cloned
+						List<Object> list = getParameterValueAsList(Object.class, value);
+						replace(fieldAccess, (CtExpression) fieldAccess.getFactory().Code().createLiteral(list.size()));
 						throw new DoNotFurtherTemplateThisElement(fieldAccess);
 					}
 				}
 			}
-			if (Parameters.isParameterSource(ref)) {
+			Object v = getParameterValue(ref.getSimpleName());
+			if (v != null && Parameters.isParameterSource(ref)) {
 				// replace direct field parameter accesses
-				Object value = Parameters.getValue(template, ref.getSimpleName(), Parameters.getIndex(fieldAccess));
+				Object value = getParameterValueAtIndex(Object.class, v, Parameters.getIndex(fieldAccess));
 				CtExpression toReplace = fieldAccess;
 				if (fieldAccess.getParent() instanceof CtArrayAccess) {
 					toReplace = (CtExpression) fieldAccess.getParent();
@@ -278,11 +267,9 @@ public class SubstitutionVisitor extends CtScanner {
 					fa = (CtFieldAccess<?>) ((CtArrayAccess<?, CtExpression<?>>) invocation.getTarget()).getTarget();
 				}
 				if ((fa != null) && (fa.getTarget() == null || fa.getTarget() instanceof CtThisAccess)) {
-					TemplateParameter<?> tparamValue = (TemplateParameter<?>) Parameters
-							.getValue(template, fa.getVariable().getSimpleName(), Parameters.getIndex(fa));
-					CtCodeElement r = null;
-					if (tparamValue != null) {
-						r = ((CtCodeElement) tparamValue).clone();
+					CtCodeElement r = getParameterValueAtIndex(CtCodeElement.class,
+							getParameterValue(fa.getVariable().getSimpleName()), Parameters.getIndex(fa));
+					if (r != null) {
 						// substitute in the replacement (for fixing type
 						// references
 						// and
@@ -309,18 +296,11 @@ public class SubstitutionVisitor extends CtScanner {
 		public <T> void scanCtExpression(CtExpression<T> expression) {
 			for (int i = 0; i < expression.getTypeCasts().size(); i++) {
 				CtTypeReference<T> t = (CtTypeReference<T>) expression.getTypeCasts().get(i);
-				if (parameterNames.contains(t.getSimpleName())) {
+				CtTypeReference<T> value = getParameterValueAsTypeReference(factory, getParameterValue(t.getSimpleName()));
+				if (value != null) {
 					// replace type parameters
 					// TODO: this would probably not work with inner classes!!!
-					Object o = Parameters.getValue(template, t.getSimpleName(), null);
-					if (o instanceof Class) {
-						t = factory.Type().createReference(((Class<T>) o));
-					} else if (o instanceof CtTypeReference) {
-						t = (CtTypeReference<T>) o;
-						expression.getTypeCasts().set(i, t);
-					} else {
-						throw new RuntimeException("unsupported reference substitution");
-					}
+					expression.getTypeCasts().set(i, value);
 				}
 			}
 			super.scanCtExpression(expression);
@@ -329,25 +309,21 @@ public class SubstitutionVisitor extends CtScanner {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T> void scanCtTypedElement(CtTypedElement<T> e) {
-			if ((e.getType() != null) && parameterNames.contains(e.getType().getSimpleName())) {
-				// replace type parameters
-				// TODO: this would probably not work with inner classes!!!
-				CtTypeReference<T> t;
-				Object o = Parameters.getValue(template, e.getType().getSimpleName(), null);
-				if (o instanceof Class) {
-					o = factory.Type().createReference(((Class<T>) o));
-				}
-				if (o instanceof CtTypeReference) {
-					if ((e.getType() instanceof CtArrayTypeReference) && !(o instanceof CtArrayTypeReference)) {
+			final CtTypeReference<T> typeOfE = e.getType();
+			if (typeOfE != null) {
+				CtTypeReference<T> o = getParameterValueAsTypeReference(factory, getParameterValue(typeOfE.getSimpleName()));
+				if (o != null) {
+					// replace type parameters
+					// TODO: this would probably not work with inner classes!!!
+					CtTypeReference<T> t;
+					if ((typeOfE instanceof CtArrayTypeReference) && !(o instanceof CtArrayTypeReference)) {
 						t = (CtArrayTypeReference<T>) e.getFactory().Type().createArrayReference(
-								(CtTypeReference<?>) o,
-								((CtArrayTypeReference<?>) e.getType()).getDimensionCount());
+								o,
+								((CtArrayTypeReference<?>) typeOfE).getDimensionCount());
 					} else {
 						t = (CtTypeReference<T>) o;
 					}
 					e.setType(t);
-				} else {
-					throw new RuntimeException("unsupported reference substitution");
 				}
 			}
 			super.scanCtTypedElement(e);
@@ -379,24 +355,20 @@ public class SubstitutionVisitor extends CtScanner {
 				reference.setPackage(targetRef.getPackage());
 				reference.setSimpleName(targetRef.getSimpleName());
 			}
-			if (parameterNames.contains(reference.getSimpleName())) {
+			Object o = getParameterValue(reference.getSimpleName());
+			if (o != null) {
 				// replace type parameters
 				// TODO: this would probably not work with inner classes!!!
-				CtTypeReference<?> t;
-				Object o = Parameters.getValue(template, reference.getSimpleName(), null);
-				if (o instanceof Class) {
-					t = factory.Type().createReference(((Class<?>) o));
-				} else if (o instanceof CtTypeReference) {
-					t = ((CtTypeReference<?>) o).clone();
+				boolean paramHasActualTypeArguments = o instanceof CtTypeReference;
+				CtTypeReference<?> t = getParameterValueAsTypeReference(factory, o);
+				if (paramHasActualTypeArguments) {
+					//the origin parameter has actual type arguments, apply them
 					reference.setActualTypeArguments(t.getActualTypeArguments());
-				} else {
-					throw new RuntimeException(
-							"unsupported reference substitution: " + reference.getSimpleName() + " with value " + o);
 				}
 				reference.setPackage(t.getPackage());
 				reference.setSimpleName(t.getSimpleName());
 				reference.setDeclaringType(t.getDeclaringType());
-			} else if (templateTypeRef.isSubtypeOf(reference)) {
+			} else if (templateTypeRef.equals(reference)) {
 				// this can only be a template inheritance case (to be verified)
 				CtTypeReference<?> sc = targetRef.getSuperclass();
 				if (sc != null) {
@@ -431,7 +403,7 @@ public class SubstitutionVisitor extends CtScanner {
 
 	CtClass<? extends Template<?>> templateType;
 
-	Collection<String> parameterNames;
+	Map<String, Object> namesToValues;
 
 	/**
 	 * represents root element, which is target of the substitution.
@@ -458,7 +430,7 @@ public class SubstitutionVisitor extends CtScanner {
 				f.Type().createTypeParameterReference("T"), "S");
 		templateRef = f.Type().createReference(template.getClass());
 		templateType = f.Class().get(templateRef.getQualifiedName());
-		parameterNames = Parameters.getNames(templateType);
+		namesToValues = Parameters.getNamesToValues(this.template, templateType);
 		templateTypeRef = f.Type().createReference(Template.class);
 		if (targetType != null) {
 			targetRef = f.Type().createReference(targetType);
@@ -507,5 +479,138 @@ public class SubstitutionVisitor extends CtScanner {
 		} else {
 			toBeReplaced.replace(replacement);
 		}
+	}
+
+	private Object getParameterValue(String parameterName) {
+		return namesToValues.get(parameterName);
+	}
+	/**
+	 * 1) Converts `parameterValue` to List using these rules
+	 * <ul>
+	 * <li>Array is converted to List .
+	 * <li>{@link Iterable} is converted to List .
+	 * <li>Single item is add to list.
+	 * </ul>
+	 * 2) assures that each list item has expected type `itemClass`
+	 * 3) if itemClass is sub type of CtElement then clones it
+	 *
+	 * @param itemClass the type of the items of resulting list.
+	 * 	If some item cannot be converted to the itemClass then {@link SpoonException} is thrown
+	 * @param parameterValue a value of an template parameter
+	 * @return list where each item is assured to be of type itemClass
+	 */
+	@SuppressWarnings("unchecked")
+	private static <T> List<T> getParameterValueAsList(Class<T> itemClass, Object parameterValue) {
+		if (parameterValue == null) {
+			return null;
+		}
+		List<T> list = new ArrayList<>();
+		if (parameterValue instanceof Object[]) {
+			for (T item : (T[]) parameterValue) {
+				list.add(getParameterValueAsClass(itemClass, item));
+			}
+		} else if (parameterValue instanceof Iterable) {
+			for (T item : (Iterable<T>) parameterValue) {
+				list.add(getParameterValueAsClass(itemClass, item));
+			}
+		} else {
+			list.add(getParameterValueAsClass(itemClass, parameterValue));
+		}
+		return list;
+	}
+	/**
+	 * 1) Assures that parameterValue has expected type `itemClass`
+	 * 2) if itemClass is sub type of CtElement then clones parameterValue
+	 *
+	 * @param itemClass required return class
+	 * @param parameterValue a value of an template parameter
+	 * @return parameterValue cast (in future potentially converted) to itemClass
+	 */
+	@SuppressWarnings("unchecked")
+	private static <T> T getParameterValueAsClass(Class<T> itemClass, Object parameterValue) {
+		if (parameterValue == null) {
+			return null;
+		}
+
+		if (itemClass.isInstance(parameterValue)) {
+			if (CtElement.class.isAssignableFrom(itemClass)) {
+				/*
+				 * the cloning is defined by itemClass and not by parameterValue,
+				 * because there are cases when we do not want to clone parameterValue.
+				 * In this case itemClass == Object.class
+				 */
+				parameterValue = ((CtElement) parameterValue).clone();
+			}
+			return (T) parameterValue;
+		}
+		throw new SpoonException("Parameter value has unexpected class: " + parameterValue.getClass().getName() + ". Expected class is: " + itemClass.getName());
+	}
+	/**
+	 * @param parameterValue a value of an template parameter
+	 * @return parameter value converted to String
+	 */
+	private static String getParameterValueAsString(Object parameterValue) {
+		if (parameterValue == null) {
+			return null;
+		}
+		if (parameterValue instanceof String) {
+			return (String) parameterValue;
+		} else if (parameterValue instanceof CtNamedElement) {
+			return ((CtNamedElement) parameterValue).getSimpleName();
+		} else if (parameterValue instanceof CtReference) {
+			return ((CtReference) parameterValue).getSimpleName();
+		}
+		throw new SpoonException("Parameter value has unexpected class: " + parameterValue.getClass().getName() + ", whose conversion to String is not supported");
+	}
+
+	/**
+	 * Converts `parameterValue` to {@link CtTypeReference}.
+	 * It assures that new reference is returned.
+	 * If parameterValue is already a {@link CtTypeReference}, then it is cloned.
+	 *
+	 * @param factory a Spoon factory used to create CtTypeReference instance - if needed
+	 * @param parameterValue a value of an template parameter
+	 * @return parameter value converted to {@link CtTypeReference}
+	 */
+	@SuppressWarnings("unchecked")
+	private static <T> CtTypeReference<T> getParameterValueAsTypeReference(Factory factory, Object parameterValue) {
+		if (parameterValue == null) {
+			return null;
+		}
+		if (parameterValue instanceof Class) {
+			return factory.Type().createReference((Class<T>) parameterValue);
+		} else if (parameterValue instanceof CtTypeReference) {
+			return ((CtTypeReference<T>) parameterValue).clone();
+		} else if (parameterValue instanceof CtType) {
+			return ((CtType<T>) parameterValue).getReference();
+		} else if (parameterValue instanceof String) {
+			return factory.Type().createReference((String) parameterValue);
+		} else {
+			throw new RuntimeException("unsupported reference substitution");
+		}
+	}
+
+	/**
+	 * 1a) If index is null, then parameterValue must be a single item, which will be converted to itemClass
+	 * 1b) If index is a number, then parameterValue is converted to List, the index-th item is converted to itemClass
+	 * 2) if itemClass is sub type of CtElement then returned element is a clone
+	 *
+	 * @param itemClass required return class
+	 * @param parameterValue a value of an template parameter
+	 * @param index index of item from the list, or null if item is not expected to be a list
+	 * @return parameterValue (optionally item from the list) cast (in future potentially converted) to itemClass
+	 */
+	private static <T> T getParameterValueAtIndex(Class<T> itemClass, Object parameterValue, Integer index) {
+		if (index != null) {
+			//convert to list, but do not clone
+			List<Object> list = getParameterValueAsList(Object.class, parameterValue);
+			if (list.size() > index) {
+				//convert and clone the returned item
+				return getParameterValueAsClass(itemClass, list.get(index));
+			}
+			return null;
+		}
+		//convert and clone the returned item
+		return getParameterValueAsClass(itemClass, parameterValue);
 	}
 }
