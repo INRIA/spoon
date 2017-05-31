@@ -35,12 +35,16 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class defines the substitution API for templates (see {@link Template}).
@@ -171,6 +175,7 @@ public abstract class Substitution {
 	 */
 	static void insertAllMethods(CtType<?> targetType, Template<?> template, CtClass<?> sourceClass) {
 
+		Set<CtMethod<?>> methodsOfTemplate = sourceClass.getFactory().Type().get(Template.class).getMethods();
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
 			if (m.getAnnotation(Local.class) != null) {
@@ -179,6 +184,18 @@ public abstract class Substitution {
 			if (m.getAnnotation(Parameter.class) != null) {
 				continue;
 			}
+
+			boolean isOverridingTemplateItf = false;
+			for (CtMethod m2 : methodsOfTemplate) {
+				if (m.isOverriding(m2)) {
+					isOverridingTemplateItf = true;
+				}
+			}
+
+			if (isOverridingTemplateItf) {
+				continue;
+			}
+
 			insertMethod(targetType, template, m);
 		}
 	}
