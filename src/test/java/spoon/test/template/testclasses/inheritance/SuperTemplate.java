@@ -1,4 +1,4 @@
-package spoon.test.template;
+package spoon.test.template.testclasses.inheritance;
 
 import spoon.template.ExtensionTemplate;
 

@@ -1,4 +1,4 @@
-package spoon.test.template;
+package spoon.test.template.testclasses.constructors;
 
 import spoon.template.ExtensionTemplate;
 import spoon.template.Local;
