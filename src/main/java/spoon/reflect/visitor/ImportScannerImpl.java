@@ -187,7 +187,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		targetType = simpleType.getReference().getTopLevelType();
 		addClassImport(simpleType.getReference());
 		scan(simpleType);
+		return this.getAllImports();
+	}
 
+	@Override
+	public Collection<CtReference> getAllImports() {
 		Collection<CtReference> listallImports = new ArrayList<>();
 		listallImports.addAll(this.classImports.values());
 		listallImports.addAll(this.fieldImports.values());
