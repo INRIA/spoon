@@ -315,7 +315,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 				continue;
 			}
 			for (int i = 0; i < parameters.size(); i++) {
-				if (m.getParameterTypes()[i] != parameters.get(i).getActualClass()) {
+				Class<?> methodParameterType = m.getParameterTypes()[i];
+				Class<?> currentParameterType = parameters.get(i).getActualClass();
+				if (methodParameterType != currentParameterType) {
 					continue method_loop;
 				}
 			}

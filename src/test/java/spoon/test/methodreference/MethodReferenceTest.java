@@ -14,9 +14,11 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -29,10 +31,13 @@ import spoon.testing.utils.ModelUtils;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Supplier;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -205,7 +210,7 @@ public class MethodReferenceTest {
 	}
 	
 	@Test
-	public void testGetGenericMethodFromReferene() throws Exception {
+	public void testGetGenericMethodFromReference() throws Exception {
 		CtType<?> classCloud = ModelUtils.buildClass(Cloud.class);
 		CtMethod<?> ctMethod = classCloud.getMethodsByName("method").get(0);
 		CtExecutableReference<?> execRef = ctMethod.getReference();
@@ -225,6 +230,43 @@ public class MethodReferenceTest {
 		assertEquals("method", method2.getName());
 	}
 	
+	@Test
+	public void testGetGenericExecutableReference() throws Exception {
+		CtType<?> classCloud = ModelUtils.buildClass(Cloud.class);
+		List<CtMethod<?>> methods = classCloud.getMethodsByName("method");
+		assertThat(methods.size(), is(3));
+
+		int n = 0;
+		for (CtMethod<?> method1 : classCloud.getMethodsByName("method")) {
+			CtExecutableReference<?> execRef = method1.getReference();
+			Method method = execRef.getActualMethod();
+			assertNotNull(method);
+			assertEquals("method", method.getName());
+			List<CtParameter<?>> parameters = method1.getParameters();
+			assertThat(parameters.size(), is(2));
+
+			//check that we have found the method with correct parameters
+			for (int i = 0; i < parameters.size(); i++) {
+				CtTypeReference<?> paramTypeRef = parameters.get(i).getType();
+				Class<?> paramClass = paramTypeRef.getTypeErasure().getActualClass();
+				assertSame(paramClass, method.getParameterTypes()[i]);
+				//
+				CtType<?> paramType = paramTypeRef.getDeclaration();
+				//contract: declaration of parameter type can be found
+				assertNotNull(paramType);
+				//contract: reference to found parameter type is equal to origin reference
+				CtTypeReference otherParamTypeRef = paramType.getReference();
+				assertEquals(paramTypeRef, otherParamTypeRef);
+				//contract: reference to type can be still dereferred
+				assertSame(paramType, paramType.getReference().getDeclaration());
+
+				n++;
+			}
+			assertSame(method1, execRef.getDeclaration());
+		}
+
+		assertThat(n, is(2*3));
+	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
 		assertEquals("Method reference must be typed.", expected, type.getActualClass());

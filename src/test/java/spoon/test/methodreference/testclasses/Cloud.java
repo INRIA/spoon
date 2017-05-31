@@ -1,13 +1,21 @@
 package spoon.test.methodreference.testclasses;
 
-public class Cloud<T> {
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.List;
 
-	void method(T param) {}
+public class Cloud<T extends String> {
+
+	<U extends InputStream> void method(T param, U param2) {}
+	<U extends Reader> void method(T param, U param2) {}
+	<U extends List<? extends InputStream>> void method(T param,  U param2) {}
 }
 
 class Sun {
 	void foo() {
 		Cloud<String> cc = new Cloud<>();
-		cc.method("x");
+		cc.method("x", (InputStream)null);
+		cc.method("y", (Reader)null);
+		cc.method("z", (List<InputStream>)null);
 	}
 }

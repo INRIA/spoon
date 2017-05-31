@@ -565,7 +565,9 @@ public class GenericsTest {
 
 	@Test
 	public void testWildcard() throws Exception {
-		assertEquals(3, buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class)).size());
+		List<CtWildcardReference> wildcardReferences = buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class));
+		// 4 = the class declaration + the constructor declaration + the method declaration + the type parameter of the method declaration
+		assertEquals(4, wildcardReferences.size());
 	}
 
 	@Test

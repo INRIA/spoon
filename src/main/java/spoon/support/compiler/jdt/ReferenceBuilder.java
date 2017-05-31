@@ -16,20 +16,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
@@ -79,7 +65,6 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
-
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
@@ -97,8 +82,27 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
+
 public class ReferenceBuilder {
 
+	// Allow to detect circular references and to avoid endless recursivity
+	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
+	private Set<TypeBinding> exploringParameterizedBindings = new HashSet<>();
 	private Map<String, CtTypeReference<?>> basestypes = new TreeMap<>();
 
 	private boolean bounds = false;
@@ -650,7 +654,12 @@ public class ReferenceBuilder {
 					if (bindingCache.containsKey(b)) {
 						ref.addActualTypeArgument(getCtCircularTypeReference(b));
 					} else {
-						ref.addActualTypeArgument(getTypeReference(b));
+						if (!this.exploringParameterizedBindings.contains(b)) {
+							this.exploringParameterizedBindings.add(b);
+							ref.addActualTypeArgument(getTypeReference(b));
+						} else {
+							this.exploringParameterizedBindings.remove(b);
+						}
 					}
 				}
 			}
@@ -676,12 +685,35 @@ public class ReferenceBuilder {
 			ref.setSimpleName(new String(binding.sourceName()));
 		} else if (binding instanceof TypeVariableBinding) {
 			boolean oldBounds = bounds;
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
+
 			if (binding instanceof CaptureBinding) {
 				ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
 				bounds = true;
 			} else {
+				TypeVariableBinding typeParamBinding = (TypeVariableBinding) binding;
+				ReferenceBinding superClass = typeParamBinding.superclass;
+				ReferenceBinding[] superInterfaces = typeParamBinding.superInterfaces();
+
+				CtTypeReference refSuperClass = null;
+
+				// if the type parameter has a super class other than java.lang.Object, we get it
+				// superClass.superclass() is null if it's java.lang.Object
+				if (superClass != null && !(superClass.superclass() == null)) {
+					refSuperClass = this.getTypeReference(superClass);
+
+				// if the type parameter has a super interface, then we'll get it too, as a superclass
+				// type parameter can only extends an interface or a class, so we don't make the distinction
+				// in Spoon. Moreover we can only have one extends in a type parameter.
+				} else if (superInterfaces != null && superInterfaces.length == 1) {
+					refSuperClass = this.getTypeReference(superInterfaces[0]);
+				}
+
+				ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 				ref.setSimpleName(new String(binding.sourceName()));
+
+				if (refSuperClass != null) {
+					((CtTypeParameterReference) ref).addBound(refSuperClass);
+				}
 			}
 			TypeVariableBinding b = (TypeVariableBinding) binding;
 			if (bounds) {
@@ -721,15 +753,19 @@ public class ReferenceBuilder {
 				ref = ref == null ? ref : ref.clone();
 			}
 		} else if (binding instanceof WildcardBinding) {
+			WildcardBinding wildcardBinding = (WildcardBinding) binding;
 			ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
-			if (((WildcardBinding) binding).boundKind == Wildcard.SUPER && ref instanceof CtTypeParameterReference) {
+
+			if (wildcardBinding.boundKind == Wildcard.SUPER && ref instanceof CtTypeParameterReference) {
 				((CtTypeParameterReference) ref).setUpper(false);
 			}
 
-			if (((WildcardBinding) binding).bound != null && ref instanceof CtTypeParameterReference) {
-				if (bindingCache.containsKey(((WildcardBinding) binding).bound)) {
-					((CtTypeParameterReference) ref).setBoundingType(getCtCircularTypeReference(((WildcardBinding) binding).bound));
+			if (wildcardBinding.bound != null && ref instanceof CtTypeParameterReference) {
+				if (bindingCache.containsKey(wildcardBinding.bound)) {
+					((CtTypeParameterReference) ref).setBoundingType(getCtCircularTypeReference(wildcardBinding.bound));
 				} else {
+
+
 					((CtTypeParameterReference) ref).setBoundingType(getTypeReference(((WildcardBinding) binding).bound));
 				}
 			}
@@ -801,6 +837,7 @@ public class ReferenceBuilder {
 			throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 		}
 		bindingCache.remove(binding);
+		this.exploringParameterizedBindings.clear();
 		return (CtTypeReference<T>) ref;
 	}
 

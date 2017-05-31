@@ -8,7 +8,9 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Filter;
@@ -20,9 +22,11 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by gerard on 21/11/2014.
@@ -110,7 +114,11 @@ public class ExecutableReferenceGenericTest {
 		CtMethod<?> expectedMethod5 = getCtMethodByNameFromCtClass(clazz, "method5");
 
 		assertEquals(3, refsMethod2.size());
-		assertEquals(expectedMethod1, refsMethod2.get(0).getDeclaration());
+		CtExecutable execRefsMethods2 = refsMethod2.get(0).getDeclaration();
+
+		//T has more information in the invocation than its declaration because of the argument type
+		//assertEquals(expectedMethod1, refsMethod2.get(0).getDeclaration());
+		assertEquals(execRefsMethods2.getSignature(), "<T extends java.lang.String> void method1(T extends java.lang.String)");
 		assertEquals(expectedMethod1, refsMethod2.get(1).getDeclaration());
 		assertEquals(expectedMethod5, refsMethod2.get(2).getDeclaration());
 	}
@@ -159,7 +167,11 @@ public class ExecutableReferenceGenericTest {
 		CtMethod<?> expectedMethod1 = getCtMethodByNameFromCtClass(clazz, "method1");
 
 		assertEquals(1, refsMethodA.size());
-		assertEquals(expectedMethod1, refsMethodA.get(0).getDeclaration());
+
+		CtExecutable execRefsMethods2 = refsMethodA.get(0).getDeclaration();
+		//T has more information in the invocation than its declaration because of the argument type
+		//	assertEquals(expectedMethod1, refsMethodA.get(0).getDeclaration());
+		assertEquals(execRefsMethods2.getSignature(), "<T extends java.lang.String> void method1(T extends java.lang.String)");
 	}
 
 	@Test
