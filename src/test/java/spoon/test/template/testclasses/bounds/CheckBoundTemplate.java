@@ -1,4 +1,4 @@
-package spoon.test.template;
+package spoon.test.template.testclasses.bounds;
 
 import java.util.Collection;
 

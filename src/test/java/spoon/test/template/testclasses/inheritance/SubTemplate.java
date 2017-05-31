@@ -1,4 +1,4 @@
-package spoon.test.template;
+package spoon.test.template.testclasses.inheritance;
 
 
 import spoon.reflect.code.CtExpression;
@@ -44,14 +44,16 @@ public class SubTemplate extends SuperTemplate {
 
 	// invocation template
 	@Parameter
-	CtInvocation invocation;
+	public CtInvocation invocation;
 
 	// foreach inlining
 	@Parameter
-	CtExpression[] intValues;
+	public CtExpression[] intValues;
 
 	@Local
 	public void ignoredMethod(){}
 
 	class InnerClass{}
+
+
 }

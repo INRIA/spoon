@@ -20,7 +20,22 @@ import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.template.TemplateMatcher;
+import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
+import spoon.test.template.testclasses.bounds.CheckBound;
+import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
+import spoon.test.template.testclasses.bounds.CheckBoundTemplate;
+import spoon.test.template.testclasses.bounds.FooBound;
+import spoon.test.template.testclasses.constructors.C1;
+import spoon.test.template.testclasses.constructors.TemplateWithConstructor;
+import spoon.test.template.testclasses.constructors.TemplateWithFieldsAndMethods;
+import spoon.test.template.testclasses.inheritance.InterfaceTemplate;
+import spoon.test.template.testclasses.inheritance.SubClass;
+import spoon.test.template.testclasses.inheritance.SubTemplate;
+import spoon.test.template.testclasses.inheritance.SuperClass;
+import spoon.test.template.testclasses.inheritance.SuperTemplate;
+import spoon.test.template.testclasses.logger.Logger;
+import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
 
 import java.io.File;
 import java.io.Serializable;
@@ -48,12 +63,12 @@ public class TemplateTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
-						"./src/test/java/spoon/test/template/SubClass.java",
-						"./src/test/java/spoon/test/template/SuperClass.java"),
+						"./src/test/java/spoon/test/template/testclasses/inheritance/SubClass.java",
+						"./src/test/java/spoon/test/template/testclasses/inheritance/SuperClass.java"),
 				SpoonResourceHelper
 						.resources(
-								"./src/test/java/spoon/test/template/SubTemplate.java",
-								"./src/test/java/spoon/test/template/SuperTemplate.java"))
+								"./src/test/java/spoon/test/template/testclasses/inheritance/SubTemplate.java",
+								"./src/test/java/spoon/test/template/testclasses/inheritance/SuperTemplate.java"))
 				.build();
 
 		CtClass<?> superc = factory.Class().get(SuperClass.class);
@@ -123,11 +138,11 @@ public class TemplateTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/template/C1.java"),
+						.resources("./src/test/java/spoon/test/template/testclasses/constructors/C1.java"),
 				SpoonResourceHelper
 						.resources(
-								"./src/test/java/spoon/test/template/TemplateWithConstructor.java",
-								"./src/test/java/spoon/test/template/TemplateWithFieldsAndMethods.java"))
+								"./src/test/java/spoon/test/template/testclasses/constructors/TemplateWithConstructor.java",
+								"./src/test/java/spoon/test/template/testclasses/constructors/TemplateWithFieldsAndMethods.java"))
 				.build();
 
 		CtClass<?> c1 = factory.Class().get(C1.class);
@@ -183,10 +198,10 @@ public class TemplateTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
-						"./src/test/java/spoon/test/template/FooBound.java"),
+						"./src/test/java/spoon/test/template/testclasses/bounds/FooBound.java"),
 				SpoonResourceHelper
 						.resources(
-								"./src/test/java/spoon/test/template/CheckBoundTemplate.java"))
+								"./src/test/java/spoon/test/template/testclasses/bounds/CheckBoundTemplate.java"))
 				.build();
 
 		CtClass<?> c = factory.Class().get(FooBound.class);
@@ -226,8 +241,8 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 		spoon.createCompiler(
 				factory,
-				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/CheckBound.java"),
-				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/CheckBoundMatcher.java"))
+				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/testclasses/bounds/CheckBound.java"),
+				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/testclasses/bounds/CheckBoundMatcher.java"))
 				.build();
 
 		{// testing matcher1
@@ -321,8 +336,8 @@ public class TemplateTest {
 	public void testExtensionBlock() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
-		launcher.addInputResource("./src/test/java/spoon/test/template/Logger.java");
-		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/LoggerTemplate.java"));
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/logger/LoggerTemplate.java"));
 		launcher.addProcessor(new LoggerTemplateProcessor());
 		launcher.getEnvironment().setSourceClasspath(System.getProperty("java.class.path").split(File.pathSeparator));
 		try {
@@ -336,9 +351,9 @@ public class TemplateTest {
 		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
 		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
 		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
-		assertEquals("spoon.test.template.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
+		assertEquals("spoon.test.template.testclasses.logger.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
-		assertEquals("spoon.test.template.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
+		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
 	}
 
@@ -349,10 +364,10 @@ public class TemplateTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
-						"./src/test/java/spoon/test/template/SubClass.java"),
+						"./src/test/java/spoon/test/template/testclasses/inheritance/SubClass.java"),
 				SpoonResourceHelper
 						.resources(
-								"./src/test/java/spoon/test/template/InterfaceTemplate.java")
+								"./src/test/java/spoon/test/template/testclasses/inheritance/InterfaceTemplate.java")
 				)
 				.build();
 
@@ -449,7 +464,7 @@ public class TemplateTest {
 	public void testTemplateInvocationSubstitution() throws Exception {
 		//contract: the template engine supports substitution of method names in method calls.
 		Launcher spoon = new Launcher();
-		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/InvocationTemplate.java"));
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/InvocationTemplate.java"));
 
 		spoon.buildModel();
 		Factory factory = spoon.getFactory();
