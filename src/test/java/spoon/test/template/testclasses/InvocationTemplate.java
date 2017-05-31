@@ -1,4 +1,4 @@
-package spoon.test.template;
+package spoon.test.template.testclasses;
 
 import spoon.reflect.reference.CtTypeReference;
 import spoon.template.ExtensionTemplate;

@@ -1,4 +1,4 @@
-package spoon.test.template;
+package spoon.test.template.testclasses.constructors;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,26 +15,35 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.test.template;
+package spoon.test.template.testclasses.logger;
 
-import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.declaration.CtMethod;
-import spoon.template.Template;
+import spoon.template.BlockTemplate;
+import spoon.template.Local;
+import spoon.template.Parameter;
 
-public class LoggerTemplateProcessor<T> extends AbstractProcessor<CtMethod<T>> {
-	@Override
-	public boolean isToBeProcessed(CtMethod<T> candidate) {
-		return candidate.getBody() != null && !isSubOfTemplate(candidate);
+public class LoggerTemplate extends BlockTemplate {
+	@Parameter
+	private String _classname_;
+	@Parameter
+	private String _methodName_;
+	@Parameter
+	private CtBlock<?> _block_;
+
+	@Local
+	public LoggerTemplate(String _classname_, String _methodName_, CtBlock<?> _block_) {
+		this._classname_ = _classname_;
+		this._methodName_ = _methodName_;
+		this._block_ = _block_;
 	}
 
-	private boolean isSubOfTemplate(CtMethod<T> candidate) {
-		return candidate.getDeclaringType().isSubtypeOf(getFactory().Type().createReference(Template.class));
-	}
-
 	@Override
-	public void process(CtMethod<T> element) {
-		final CtBlock log = new LoggerTemplate(element.getDeclaringType().getSimpleName(), element.getSimpleName(), element.getBody()).apply(element.getDeclaringType());
-		element.setBody(log);
+	public void block() throws Throwable {
+		try {
+			Logger.enter(_classname_, _methodName_);
+			_block_.S();
+		} finally {
+			Logger.exit(_methodName_);
+		}
 	}
 }

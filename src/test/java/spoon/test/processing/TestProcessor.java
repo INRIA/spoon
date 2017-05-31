@@ -10,7 +10,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.template.Substitution;
-import spoon.test.template.TemplateWithConstructor;
+import spoon.test.template.testclasses.constructors.TemplateWithConstructor;
 
 public class TestProcessor extends AbstractProcessor<CtElement> {
 

@@ -15,7 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.test.template;
+package spoon.test.template.testclasses.logger;
 
 public class Logger {
 	public static void enter(String className, String methodName) {
