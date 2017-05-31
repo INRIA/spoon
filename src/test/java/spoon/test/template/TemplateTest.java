@@ -21,6 +21,7 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.template.TemplateMatcher;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
+import spoon.test.template.testclasses.SimpleTemplate;
 
 import java.io.File;
 import java.io.Serializable;
@@ -28,6 +29,7 @@ import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -460,5 +462,20 @@ public class TemplateTest {
 		CtStatement templateRoot = (CtStatement) templateMethod.getBody().getStatement(0);
 		//iface.$method$() becomes iface.hashCode()
 		assertEquals("iface.hashCode()", templateRoot.toString());
+	}
+
+	@Test
+	public void testSimpleTemplate() {
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SimpleTemplate.java"));
+		spoon.buildModel();
+
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> testSimpleTpl = factory.Class().create("TestSimpleTpl");
+		new SimpleTemplate("Hello world").apply(testSimpleTpl);
+
+		Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
+		assertEquals(1, listMethods.size());
 	}
 }
