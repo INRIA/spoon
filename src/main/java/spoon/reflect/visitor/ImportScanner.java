@@ -34,6 +34,7 @@ public interface ImportScanner {
 	 * @return class imports computed by Spoon, it does not contain static imports
 	 * @deprecated This method signature will change to return void in order to improve encapsulation: Use getAllImports to get the imports after calling it.
 	 */
+	@Deprecated
 	Collection<CtTypeReference<?>> computeImports(CtElement element);
 
 	/**
@@ -43,6 +44,7 @@ public interface ImportScanner {
 	 * @return imports computed by Spoon, it can be CtTypeReference (for classes), but also CtFieldReference (static field) or CtExecutableReference (static methods)
 	 * @deprecated This method signature will change to return void in order to improve encapsulation: Use getAllImports to get the imports after calling it.
 	 */
+	@Deprecated
 	Collection<CtReference> computeAllImports(CtType<?> simpleType);
 
 	/**
