@@ -1,31 +1,23 @@
 package spoon.test.prettyprinter;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.prettyprinter.testclasses.QualifiedThisRef;
 
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
-import static spoon.test.limits.StaticFieldAccesOnInstance.test;
 
 public class LinesTest {
 
@@ -59,6 +51,11 @@ public class LinesTest {
 		}
 		assertEquals(0, factory.getEnvironment().getWarningCount());
 		assertEquals(0, factory.getEnvironment().getErrorCount());
+
+		// contract: in line preserve mode, toString is not prefixed or suffixed by newlines
+		String meth = factory.Type().get("spoon.test.prettyprinter.Validation").getMethodsByName("isIdentifier").get(0).toString();
+		// the added linebreaks due to line preservation are removed
+		assertFalse(Pattern.compile("^\\s", Pattern.DOTALL).asPredicate().test(meth.toString()));
 
 	}
 

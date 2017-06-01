@@ -31,8 +31,8 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
+import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.util.EmptyClearableList;
@@ -228,7 +228,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
 			errorMessage = ERROR_MESSAGE_TO_STRING;
 		}
-		return printer.toString() + errorMessage;
+		// in line-preservation mode, newlines are added at the beginning to matches the lines
+		// removing them from the toString() representation
+		return printer.toString().replaceFirst("^\\s+", "") + errorMessage;
 	}
 
 	@SuppressWarnings("unchecked")
