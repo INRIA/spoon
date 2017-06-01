@@ -18,6 +18,7 @@ package spoon.support.visitor.java;
 
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
+import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -184,8 +185,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (method.getReturnType() != null) {
 			if (method.getReturnType().isArray() && method.getReturnType().getComponentType() != null) {
 				visitArrayReference(method.getReturnType().getComponentType());
-			} else {
+			} else if (method.getGenericReturnType() instanceof Class){
 				visitClassReference(method.getReturnType());
+			} else {
+				visitTypeParameterReference((TypeVariable)method.getGenericReturnType());
 			}
 		}
 	}
@@ -230,6 +233,19 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameter(TypeVariable<T> parameter) {
+		for (Type type : parameter.getBounds()) {
+			if (type instanceof ParameterizedType) {
+				visitType((ParameterizedType) type);
+			} else if (type instanceof WildcardType) {
+				visitType((WildcardType) type);
+			} else {
+				visitType(type);
+			}
+		}
+	}
+
+	@Override
+	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
 		for (Type type : parameter.getBounds()) {
 			if (type instanceof ParameterizedType) {
 				visitType((ParameterizedType) type);

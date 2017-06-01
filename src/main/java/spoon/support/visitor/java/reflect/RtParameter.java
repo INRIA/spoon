@@ -18,6 +18,7 @@ package spoon.support.visitor.java.reflect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 
 /**
  * To be compatible with Java 6, RtParameter has been created from
@@ -26,13 +27,15 @@ import java.lang.reflect.Constructor;
 public class RtParameter {
 	private final String name;
 	private final Class<?> type;
+	private final Type genericType;
 	private final RtMethod method;
 	private final Constructor constructor;
 	private final int index;
 
-	public RtParameter(String name, Class<?> type, RtMethod method, Constructor constructor, int index) {
+	public RtParameter(String name, Class<?> type, Type genericType, RtMethod method, Constructor constructor, int index) {
 		this.name = name;
 		this.type = type;
+		this.genericType = genericType;
 		this.method = method;
 		this.constructor = constructor;
 		this.index = index;
@@ -63,6 +66,10 @@ public class RtParameter {
 	 */
 	public Class<?> getType() {
 		return type;
+	}
+
+	public Type getGenericType() {
+		return genericType;
 	}
 
 	/**
@@ -132,7 +139,7 @@ public class RtParameter {
 	public static RtParameter[] parametersOf(RtMethod method) {
 		RtParameter[] parameters = new RtParameter[method.getParameterTypes().length];
 		for (int index = 0; index < method.getParameterTypes().length; index++) {
-			parameters[index] = new RtParameter(null, method.getParameterTypes()[index], method, null, index);
+			parameters[index] = new RtParameter(null, method.getParameterTypes()[index], method.getGenericParameterTypes()[index], method, null, index);
 		}
 		return parameters;
 	}
@@ -147,7 +154,7 @@ public class RtParameter {
 	public static RtParameter[] parametersOf(Constructor constructor) {
 		RtParameter[] parameters = new RtParameter[constructor.getParameterTypes().length];
 		for (int index = 0; index < constructor.getParameterTypes().length; index++) {
-			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index], null, constructor, index);
+			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index], constructor.getGenericParameterTypes()[index],null, constructor, index);
 		}
 		return parameters;
 	}

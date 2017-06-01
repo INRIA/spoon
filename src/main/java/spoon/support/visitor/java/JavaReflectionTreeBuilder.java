@@ -35,6 +35,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
@@ -302,6 +303,18 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		exit();
 
 		contexts.peek().addFormalType(typeParameter);
+	}
+
+	@Override
+	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
+		final CtTypeParameterReference typeParameterReference = factory.Core().createTypeParameterReference();
+		typeParameterReference.setSimpleName(parameter.getName());
+
+		enter(new TypeReferenceRuntimeBuilderContext(typeParameterReference));
+		super.visitTypeParameterReference(parameter);
+		exit();
+
+		contexts.peek().addTypeName(typeParameterReference);
 	}
 
 	@Override
