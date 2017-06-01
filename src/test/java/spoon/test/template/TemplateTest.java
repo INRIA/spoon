@@ -21,6 +21,7 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.template.TemplateMatcher;
 import spoon.test.template.testclasses.InvocationTemplate;
+import spoon.test.template.testclasses.NtonCodeTemplate;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
 import spoon.test.template.testclasses.SimpleTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
@@ -491,6 +492,24 @@ public class TemplateTest {
 		new SimpleTemplate("Hello world").apply(testSimpleTpl);
 
 		Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
+		assertEquals(0, testSimpleTpl.getMethodsByName("apply").size());
 		assertEquals(1, listMethods.size());
+	}
+
+	@Test
+	public void testSubstitutionInsertAllNtoN() {
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/NtonCodeTemplate.java"));
+		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/C.java");
+		spoon.buildModel();
+
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> cclass = factory.Class().get("spoon.test.template.testclasses.C");
+		new NtonCodeTemplate(cclass.getReference(), 5).apply(cclass);
+
+		Set<CtMethod<?>> listMethods = cclass.getMethods();
+		assertEquals(0, cclass.getMethodsByName("apply").size());
+		assertEquals(4, listMethods.size());
 	}
 }
