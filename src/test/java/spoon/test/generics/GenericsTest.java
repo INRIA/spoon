@@ -43,6 +43,7 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Orange;
@@ -959,5 +960,55 @@ public class GenericsTest {
 		CtTypeReference<?> refList_T = classVitamins.getSuperclass();
 		//contract: generic types defined in enclocing classe (Banana<T>) are resolved from inner class hierarchy (Vitamins->List<T>) too.
 		assertSame(classBanana.getFormalCtTypeParameters().get(0), new ClassTypingContext(classVitamins).adaptType(refList_T.getActualTypeArguments().get(0)).getDeclaration());
+	}
+
+	@Test
+	public void testWildCardonShadowClass() throws Exception {
+		// contract: generics should be treated the same way in shadow classes
+
+		// test that apply argument type contains a wildcard
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+
+		launcher.addInputResource("src/test/java/spoon/test/generics/testclasses/FakeTpl.java");
+		launcher.buildModel();
+
+		CtInterface<?> fakeTplItf = factory.Interface().get("spoon.test.generics.testclasses.FakeTpl");
+		assertNotNull(fakeTplItf);
+
+		CtMethod<?> applyMethod = fakeTplItf.getMethodsByName("apply").get(0);
+
+		CtTypeReference<?> returnType = applyMethod.getType();
+		assertEquals("T", returnType.getSimpleName());
+		assertTrue(returnType instanceof CtTypeParameterReference);
+		assertEquals("CtElement", returnType.getSuperclass().getSimpleName());
+
+		CtParameter<?> targetType = applyMethod.getParameters().get(0);
+
+		List<CtTypeReference<?>> targetTypeArgument = targetType.getType().getActualTypeArguments();
+		assertEquals(1, targetTypeArgument.size());
+
+		assertTrue(targetTypeArgument.get(0) instanceof CtWildcardReference);
+
+		// same test with a shadow class
+		launcher = new Launcher();
+		factory = launcher.getFactory();
+		CtInterface<?> fakeTplItf2 = factory.Interface().get(FakeTpl.class);
+		assertNotNull(fakeTplItf);
+
+		CtMethod<?> applyMethod2 = fakeTplItf2.getMethodsByName("apply").get(0);
+
+		CtTypeReference<?> returnType2 = applyMethod2.getType();
+		assertEquals("T", returnType2.getSimpleName());
+		assertTrue(returnType2 instanceof CtTypeParameterReference);
+		assertEquals("CtElement", returnType2.getSuperclass().getSimpleName());
+
+		CtParameter<?> targetType2 = applyMethod2.getParameters().get(0);
+
+		List<CtTypeReference<?>> targetTypeArgument2 = targetType2.getType().getActualTypeArguments();
+		assertEquals(1, targetTypeArgument2.size());
+
+		assertTrue(targetTypeArgument2.get(0) instanceof CtWildcardReference);
+
 	}
 }
