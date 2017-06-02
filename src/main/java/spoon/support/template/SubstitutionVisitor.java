@@ -489,10 +489,16 @@ public class SubstitutionVisitor extends CtScanner {
 		}
 	}
 
-	public CtElement substitute(CtElement element) {
+	/**
+	 * Substitutes all template parameters of element and returns substituted element.
+	 *
+	 * @param element to be substituted model
+	 * @return substituted model
+	 */
+	public <E extends CtElement> E substitute(E element) {
 		result = element;
 		scan(element);
-		return result;
+		return (E) result;
 	}
 
 	private void replace(CtElement toBeReplaced, CtElement replacement) {

@@ -43,7 +43,7 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 		CtClass<?> c = Substitution.getTemplateCtClass(targetType, this);
 		// we substitute the first statement of method statement
 		CtStatement result = c.getMethod("statement").getBody().getStatements().get(0).clone();
-		return (CtStatement) new SubstitutionVisitor(c.getFactory(), targetType, this).substitute(result);
+		return new SubstitutionVisitor(c.getFactory(), targetType, this).substitute(result);
 	}
 
 	public Void S() {
