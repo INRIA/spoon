@@ -187,9 +187,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else if (method.getGenericReturnType() instanceof Class) {
 				visitClassReference(method.getReturnType());
 			} else if (method.getGenericReturnType() instanceof ParameterizedType) {
-				visitType((ParameterizedType)method.getGenericReturnType());
+				visitType((ParameterizedType) method.getGenericReturnType());
 			} else {
-				visitTypeParameterReference((TypeVariable)method.getGenericReturnType());
+				visitTypeParameterReference((TypeVariable) method.getGenericReturnType());
 			}
 		}
 	}
@@ -229,9 +229,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else if (parameter.getGenericType() instanceof Class) {
 				visitClassReference(parameter.getType());
 			} else if (parameter.getGenericType() instanceof ParameterizedType) {
-				visitType((ParameterizedType)parameter.getGenericType());
+				visitType((ParameterizedType) parameter.getGenericType());
 			} else {
-				visitTypeParameterReference((TypeVariable)parameter.getGenericType());
+				visitTypeParameterReference((TypeVariable) parameter.getGenericType());
 			}
 		}
 	}

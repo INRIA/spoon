@@ -166,19 +166,18 @@ public class RtParameter {
 		if (lengthGenericParameterTypes == lengthParameterTypes) {
 			parameters = new RtParameter[lengthParameterTypes];
 			offset = 0;
-		} else if (lengthGenericParameterTypes == lengthParameterTypes-1) {
+		} else if (lengthGenericParameterTypes == lengthParameterTypes - 1) {
 			parameters = new RtParameter[lengthGenericParameterTypes];
 			offset = 1;
-		} else if (constructor.getDeclaringClass().isEnum() && lengthGenericParameterTypes == lengthParameterTypes-2) {
+		} else if (constructor.getDeclaringClass().isEnum() && lengthGenericParameterTypes == lengthParameterTypes - 2) {
 			parameters = new RtParameter[lengthGenericParameterTypes];
 			offset = 2;
 		} else {
-			throw new SpoonException("Error while analyzing parameters of constructor: "+constructor+". # of parameters: "+lengthParameterTypes+" - # of generic parameter types: "+lengthGenericParameterTypes);
+			throw new SpoonException("Error while analyzing parameters of constructor: " + constructor + ". # of parameters: " + lengthParameterTypes + " - # of generic parameter types: " + lengthGenericParameterTypes);
 		}
 
 		for (int index = 0; index < constructor.getGenericParameterTypes().length; index++) {
-			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index+offset], constructor.getGenericParameterTypes()[index],null, constructor, index);
-
+			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index + offset], constructor.getGenericParameterTypes()[index], null, constructor, index);
 		}
 		return parameters;
 	}
