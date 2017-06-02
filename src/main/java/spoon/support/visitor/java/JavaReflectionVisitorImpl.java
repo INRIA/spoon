@@ -232,7 +232,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else if (parameter.getGenericType() instanceof ParameterizedType) {
 				visitType((ParameterizedType)parameter.getGenericType());
 			} else {
-				visitType(parameter.getGenericType());
+				visitTypeParameterReference((TypeVariableImpl)parameter.getGenericType());
 			}
 		}
 	}
@@ -258,7 +258,11 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else if (type instanceof WildcardType) {
 				visitType((WildcardType) type);
 			} else {
-				visitType(type);
+				// we bypass Object.class: if a generic type extends Object we don't put it in the model, it's implicit
+				// we do the same thing in ReferenceBuilder
+				if (!(type instanceof Class && type == Object.class)) {
+					visitType(type);
+				}
 			}
 		}
 	}

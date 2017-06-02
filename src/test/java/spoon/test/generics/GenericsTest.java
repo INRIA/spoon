@@ -988,6 +988,13 @@ public class GenericsTest {
 		List<CtTypeReference<?>> targetTypeArgument = targetType.getType().getActualTypeArguments();
 		assertEquals(1, targetTypeArgument.size());
 
+		CtMethod<?> testMethod = fakeTplItf.getMethodsByName("test").get(0);
+		List<CtParameter<?>> parameters = testMethod.getParameters();
+		assertEquals(3, parameters.size());
+
+		CtParameter thirdParam = parameters.get(2);
+		assertTrue(thirdParam.getType() instanceof CtTypeParameterReference);
+
 		assertTrue(targetTypeArgument.get(0) instanceof CtWildcardReference);
 
 		// same test with a shadow class
@@ -1009,6 +1016,13 @@ public class GenericsTest {
 		assertEquals(1, targetTypeArgument2.size());
 
 		assertTrue(targetTypeArgument2.get(0) instanceof CtWildcardReference);
+
+		CtMethod<?> testMethod2 = fakeTplItf2.getMethodsByName("test").get(0);
+		List<CtParameter<?>> parameters2 = testMethod2.getParameters();
+		assertEquals(3, parameters2.size());
+
+		CtParameter thirdParam2 = parameters2.get(2);
+		assertTrue(thirdParam2.getType() instanceof CtTypeParameterReference);
 
 	}
 }
