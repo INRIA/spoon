@@ -185,8 +185,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (method.getReturnType() != null) {
 			if (method.getReturnType().isArray() && method.getReturnType().getComponentType() != null) {
 				visitArrayReference(method.getReturnType().getComponentType());
-			} else if (method.getGenericReturnType() instanceof Class){
+			} else if (method.getGenericReturnType() instanceof Class) {
 				visitClassReference(method.getReturnType());
+			} else if (method.getGenericReturnType() instanceof ParameterizedType) {
+				visitType((ParameterizedType)method.getGenericReturnType());
 			} else {
 				visitTypeParameterReference((TypeVariable)method.getGenericReturnType());
 			}
