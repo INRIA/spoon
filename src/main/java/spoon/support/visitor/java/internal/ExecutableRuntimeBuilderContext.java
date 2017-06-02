@@ -72,6 +72,16 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	}
 
 	@Override
+	public void addTypeName(CtTypeReference<?> typeReference) {
+		if (ctExecutable instanceof CtMethod) {
+			final CtTypeReference ref = typeReference;
+			ctExecutable.setType(ref);
+			return;
+		}
+		super.addClassReference(typeReference);
+	}
+
+	@Override
 	public void addFormalType(CtTypeParameter parameterRef) {
 		if (ctExecutable instanceof CtFormalTypeDeclarer) {
 			((CtFormalTypeDeclarer) ctExecutable).addFormalCtTypeParameter(parameterRef);

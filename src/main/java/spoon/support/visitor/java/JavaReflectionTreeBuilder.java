@@ -320,9 +320,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	@Override
 	public void visitType(Type type) {
 		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
-		ctTypeReference.setSimpleName(getTypeName(type));
-
 		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
+		ctTypeReference.setSimpleName(getTypeName(type));
 		super.visitType(type);
 		exit();
 
@@ -385,8 +384,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				}
 				return sb.toString();
 			} catch (Throwable e) { /*FALLTHRU*/ }
+		} else {
+			visitPackage(clazz.getPackage());
 		}
-		return clazz.getName();
+
+		return clazz.getSimpleName();
 	}
 
 	@Override
