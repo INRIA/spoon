@@ -38,7 +38,9 @@ public class CtTypeInformationTest {
 
 		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
 		assertEquals(2, subClass.getMethods().size());
-		assertEquals(61+2, subClass.getAllMethods().size());
+
+		// the abstract method from Comparable which is overridden is also present in the model
+		assertEquals(61+3, subClass.getAllMethods().size());
 
 		CtTypeReference<?> superclass = subClass.getSuperclass();
 		Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());

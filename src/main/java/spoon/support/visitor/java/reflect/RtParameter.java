@@ -16,6 +16,8 @@
  */
 package spoon.support.visitor.java.reflect;
 
+import spoon.SpoonException;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
@@ -152,9 +154,31 @@ public class RtParameter {
 	 * @return Parameters of the executable.
 	 */
 	public static RtParameter[] parametersOf(Constructor constructor) {
-		RtParameter[] parameters = new RtParameter[constructor.getParameterTypes().length];
-		for (int index = 0; index < constructor.getParameterTypes().length; index++) {
-			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index], constructor.getGenericParameterTypes()[index],null, constructor, index);
+		RtParameter[] parameters;
+		// Apparently getGenericParameterTypes and getParameterTypes could have different length
+		// if the first parameter is implicit: a private non-static inner class will have an implicit parameter for its superclass
+		// but it won't be present in the result of getGenericParameterTypes (e.g. ArrayList$SubList)
+		// moreover if it's an enum, there will be 2 implicit parameters (String and int) we won't consider them in the model.
+		int lengthGenericParameterTypes = constructor.getGenericParameterTypes().length;
+		int lengthParameterTypes = constructor.getParameterTypes().length;
+
+		int offset;
+		if (lengthGenericParameterTypes == lengthParameterTypes) {
+			parameters = new RtParameter[lengthParameterTypes];
+			offset = 0;
+		} else if (lengthGenericParameterTypes == lengthParameterTypes-1) {
+			parameters = new RtParameter[lengthGenericParameterTypes];
+			offset = 1;
+		} else if (constructor.getDeclaringClass().isEnum() && lengthGenericParameterTypes == lengthParameterTypes-2) {
+			parameters = new RtParameter[lengthGenericParameterTypes];
+			offset = 2;
+		} else {
+			throw new SpoonException("Error while analyzing parameters of constructor: "+constructor+". # of parameters: "+lengthParameterTypes+" - # of generic parameter types: "+lengthGenericParameterTypes);
+		}
+
+		for (int index = 0; index < constructor.getGenericParameterTypes().length; index++) {
+			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index+offset], constructor.getGenericParameterTypes()[index],null, constructor, index);
+
 		}
 		return parameters;
 	}
