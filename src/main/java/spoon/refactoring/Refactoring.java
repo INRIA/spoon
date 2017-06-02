@@ -28,6 +28,8 @@ import java.util.List;
  * Contains all methods to refactor code elements in the AST.
  */
 public final class Refactoring {
+	private Refactoring() { }
+
 	/**
 	 * Changes name of a type element.
 	 *

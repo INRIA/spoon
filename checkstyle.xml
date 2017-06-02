@@ -61,5 +61,6 @@
     <!-- Checks for class design                         -->
     <!-- See http://checkstyle.sf.net/config_design.html -->
     <module name="InterfaceIsType"/>
+    <module name="HideUtilityClassConstructor"/>
   </module>
 </module>
