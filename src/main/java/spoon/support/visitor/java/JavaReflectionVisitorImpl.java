@@ -18,7 +18,6 @@ package spoon.support.visitor.java;
 
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
-import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -232,7 +231,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else if (parameter.getGenericType() instanceof ParameterizedType) {
 				visitType((ParameterizedType)parameter.getGenericType());
 			} else {
-				visitTypeParameterReference((TypeVariableImpl)parameter.getGenericType());
+				visitTypeParameterReference((TypeVariable)parameter.getGenericType());
 			}
 		}
 	}
