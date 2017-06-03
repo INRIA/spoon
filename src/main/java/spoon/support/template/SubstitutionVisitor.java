@@ -37,7 +37,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtNamedElement;
@@ -55,6 +54,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.VariableAccessFilter;
 import spoon.template.Local;
+import spoon.template.Parameter;
 import spoon.template.Template;
 import spoon.template.TemplateParameter;
 
@@ -160,7 +160,7 @@ public class SubstitutionVisitor extends CtScanner {
 			if (foreach.getExpression() instanceof CtFieldAccess) {
 				CtFieldAccess<?> fa = (CtFieldAccess<?>) foreach.getExpression();
 				Object value = getParameterValue(fa.getVariable().getSimpleName());
-				if (value != null && Parameters.isParameterSource(fa.getVariable())) {
+				if (value != null) {
 					List<CtExpression> list = getParameterValueAsList(CtExpression.class, value);
 					CtBlock<?> l = foreach.getFactory().Core().createBlock();
 					CtStatement body = foreach.getBody();
@@ -198,7 +198,7 @@ public class SubstitutionVisitor extends CtScanner {
 				if (fieldAccess.getTarget() instanceof CtFieldAccess) {
 					ref = ((CtFieldAccess<?>) fieldAccess.getTarget()).getVariable();
 					Object value = getParameterValue(ref.getSimpleName());
-					if (value != null && Parameters.isParameterSource(ref)) {
+					if (value != null) {
 						//the items of this list are not cloned
 						List<Object> list = getParameterValueAsList(Object.class, value);
 						replace(fieldAccess, (CtExpression) fieldAccess.getFactory().Code().createLiteral(list.size()));
@@ -207,7 +207,7 @@ public class SubstitutionVisitor extends CtScanner {
 				}
 			}
 			Object v = getParameterValue(ref.getSimpleName());
-			if (v != null && Parameters.isParameterSource(ref)) {
+			if (v != null) {
 				// replace direct field parameter accesses
 				Object value = getParameterValueAtIndex(Object.class, v, Parameters.getIndex(fieldAccess));
 				CtExpression toReplace = fieldAccess;
@@ -344,17 +344,6 @@ public class SubstitutionVisitor extends CtScanner {
 		 */
 		@Override
 		public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-			// if (reference.equals(templateRef) || (!reference.isPrimitif() &&
-			// f.Type().createReference(Template.class).isAssignableFrom(reference)
-			// && reference.isAssignableFrom(templateRef))) {
-			if (reference.equals(templateRef)) {
-				// replace references to the template type with references
-				// to the targetType (only if the referenced element exists
-				// in the target)
-				reference.setDeclaringType(targetRef.getDeclaringType());
-				reference.setPackage(targetRef.getPackage());
-				reference.setSimpleName(targetRef.getSimpleName());
-			}
 			Object o = getParameterValue(reference.getSimpleName());
 			if (o != null) {
 				// replace type parameters
@@ -368,18 +357,6 @@ public class SubstitutionVisitor extends CtScanner {
 				reference.setPackage(t.getPackage());
 				reference.setSimpleName(t.getSimpleName());
 				reference.setDeclaringType(t.getDeclaringType());
-			} else if (templateTypeRef.equals(reference)) {
-				// this can only be a template inheritance case (to be verified)
-				CtTypeReference<?> sc = targetRef.getSuperclass();
-				if (sc != null) {
-					reference.setDeclaringType(sc.getDeclaringType());
-					reference.setPackage(sc.getPackage());
-					reference.setSimpleName(sc.getSimpleName());
-				} else {
-					reference.setDeclaringType(null);
-					reference.setPackage(factory.Package().createReference("java.lang"));
-					reference.setSimpleName("Object");
-				}
 			}
 			super.visitCtTypeReference(reference);
 		}
@@ -391,18 +368,6 @@ public class SubstitutionVisitor extends CtScanner {
 
 	CtExecutableReference<?> S;
 
-	CtTypeReference<?> targetRef;
-
-	CtType<?> targetType;
-
-	Template<?> template;
-
-	CtTypeReference<? extends Template> templateRef;
-
-	CtTypeReference<Template> templateTypeRef;
-
-	CtClass<? extends Template<?>> templateType;
-
 	Map<String, Object> namesToValues;
 
 	/**
@@ -412,32 +377,37 @@ public class SubstitutionVisitor extends CtScanner {
 	CtElement result;
 
 	/**
-	 * Creates a new substitution visitor.
+	 * Creates new substitution visitor based on instance of Template,
+	 * which defines template model and template parameters
 	 *
 	 * @param f
 	 * 		the factory
 	 * @param targetType
-	 * 		the target type of the substitution
+	 * 		the target type of the substitution (can be null)
 	 * @param template
 	 * 		the template that holds the parameter values
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SubstitutionVisitor(Factory f, CtType<?> targetType, Template<?> template) {
-		inheritanceScanner = new InheritanceSustitutionScanner(this);
-		this.factory = f;
-		this.template = template;
-		this.targetType = targetType;
-		S = f.Executable().createReference(f.Type().createReference(TemplateParameter.class),
-				f.Type().createTypeParameterReference("T"), "S");
-		templateRef = f.Type().createReference(template.getClass());
-		templateType = f.Class().get(templateRef.getQualifiedName());
-		namesToValues = Parameters.getNamesToValues(this.template, templateType);
-		templateTypeRef = f.Type().createReference(Template.class);
-		if (targetType != null) {
-			targetRef = f.Type().createReference(targetType);
-			// first substitute target ref
-			targetRef.accept(this);
-		}
+		this(f, Parameters.getTemplateParametersAsMap(f, targetType, template));
+	}
 
+	/**
+	 * Creates new substitution visitor
+	 * with substitution model (doesn't have to implement {@link Template}) type
+	 * and the substitution parameters (doesn't have to be bound to {@link TemplateParameter} or {@link Parameter}).
+	 *
+	 * @param f
+	 * 		the factory
+	 * @param templateParameters
+	 * 		the parameter names and values which will be used during substitution
+	 */
+	public SubstitutionVisitor(Factory f, Map<String, Object> templateParameters) {
+		this.inheritanceScanner = new InheritanceSustitutionScanner(this);
+		this.factory = f;
+		S = factory.Executable().createReference(factory.Type().createReference(TemplateParameter.class),
+				factory.Type().createTypeParameterReference("T"), "S");
+		this.namesToValues = templateParameters;
 	}
 
 	/**

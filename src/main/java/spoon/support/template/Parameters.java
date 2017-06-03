@@ -22,6 +22,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
@@ -220,6 +221,28 @@ public abstract class Parameters {
 			}
 		} catch (Exception e) {
 			throw new SpoonException("Getting of template parameters failed", e);
+		}
+		return params;
+	}
+
+	/**
+	 * Gets the Map of names to template parameter values for all the template parameters of a given template type
+	 * + adds mapping of template model reference to target type as parameter too
+	 * @param f
+	 * 		the factory
+	 * @param targetType
+	 * 		the target type of the substitution (can be null), which will be done with result parameters
+	 * @param template
+	 * 		the template that holds the parameter values
+	 */
+	public static Map<String, Object> getTemplateParametersAsMap(Factory f, CtType<?> targetType, Template<?> template) {
+		Map<String, Object> params = new HashMap<>(Parameters.getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
+		if (targetType != null) {
+			/*
+			 * there is required to replace all template model references by target type reference.
+			 * Handle that request as template parameter too
+			 */
+			params.put(template.getClass().getSimpleName(), targetType.getReference());
 		}
 		return params;
 	}
