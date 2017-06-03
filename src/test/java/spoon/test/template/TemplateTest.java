@@ -19,10 +19,12 @@ import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
+import spoon.support.template.SubstitutionVisitor;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
+import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
 import spoon.test.template.testclasses.SubstituteRootTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
@@ -45,7 +47,9 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -351,6 +355,36 @@ public class TemplateTest {
 
 		final CtClass<Logger> aLogger = launcher.getFactory().Class().get(Logger.class);
 		final CtMethod aMethod = aLogger.getMethodsByName("enter").get(0);
+		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
+		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
+		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatements().size() > 1);
+	}
+
+	@Test
+	public void testExtensionDecoupledSubstitutionVisitor() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/LoggerModel.java"));
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		final CtClass<?> aTemplateModelType = launcher.getFactory().Class().get(LoggerModel.class);
+		final CtMethod<?> aTemplateModel = aTemplateModelType.getMethod("block");
+		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
+		final CtMethod<?> toBeLoggedMethod = aTargetType.getMethodsByName("enter").get(0);
+
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("_classname_", aTargetType.getSimpleName()) ;
+		params.put("_methodName_", toBeLoggedMethod.getSimpleName());
+		params.put("_block_", toBeLoggedMethod.getBody());
+		final CtMethod<?> aMethod = new SubstitutionVisitor(factory, params).substitute(aTemplateModel.clone());
 		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
 		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
 		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
