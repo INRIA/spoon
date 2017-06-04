@@ -32,6 +32,13 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	@MetamodelPropertyField(role = CtRole.COMMENT_TYPE)
 	private CommentType type;
 
+	public CtCommentImpl() {
+	}
+
+	protected CtCommentImpl(CommentType type) {
+		this.type = type;
+	}
+
 	@Override
 	public String getContent() {
 		return content;

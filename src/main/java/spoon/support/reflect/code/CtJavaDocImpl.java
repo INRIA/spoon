@@ -39,12 +39,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 	List<CtJavaDocTag> tags = new ArrayList<>();
 
 	public CtJavaDocImpl() {
-		this("");
-	}
-
-	public CtJavaDocImpl(String content) {
-		super.setContent(content);
-		super.setCommentType(CommentType.JAVADOC);
+		super(CommentType.JAVADOC);
 	}
 
 	@Override
