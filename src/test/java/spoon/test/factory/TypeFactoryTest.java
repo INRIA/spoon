@@ -2,6 +2,7 @@ package spoon.test.factory;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
@@ -14,29 +15,33 @@ import static org.junit.Assert.assertNotNull;
 
 public class TypeFactoryTest {
 
-    @Test
-    public void testCreateTypeRef() {
-        Launcher launcher = new Launcher();
-        CtTypeReference<Object> ctTypeReference = launcher.getFactory().Code().createCtTypeReference(short.class);
-        assertEquals("short", ctTypeReference.getSimpleName());
-        assertEquals("short", ctTypeReference.getQualifiedName());
+	@Test
+	public void testCreateTypeRef() {
+		Launcher launcher = new Launcher();
+		CtTypeReference<Object> ctTypeReference = launcher.getFactory().Code().createCtTypeReference(short.class);
+		assertEquals("short", ctTypeReference.getSimpleName());
+		assertEquals("short", ctTypeReference.getQualifiedName());
 
-        ctTypeReference = launcher.getFactory().Code().createCtTypeReference(Object.class);
-        assertEquals("Object", ctTypeReference.getSimpleName());
-        assertEquals("java.lang.Object", ctTypeReference.getQualifiedName());
+		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(Object.class);
+		assertEquals("Object", ctTypeReference.getSimpleName());
+		assertEquals("java.lang.Object", ctTypeReference.getQualifiedName());
 
-        ctTypeReference = launcher.getFactory().Code().createCtTypeReference(null);
-        assertEquals(null, ctTypeReference);
-    }
+		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(null);
+		assertEquals(null, ctTypeReference);
 
-    @Test
+		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(CtJavaDoc.CommentType.class);
+		assertEquals("CommentType", ctTypeReference.getSimpleName());
+		assertEquals("spoon.reflect.code.CtComment$CommentType", ctTypeReference.getQualifiedName());
+	}
+
+	@Test
 	public void reflectionAPI() throws Exception {
 		// Spoon can be used as reflection API
 		CtType s = new TypeFactory().get(String.class);
 		assertEquals("String", s.getSimpleName());
 		assertEquals("java.lang.String", s.getQualifiedName());
 		assertEquals(3, s.getSuperInterfaces().size());
-		assertEquals(2,s.getMethodsByName("toLowerCase").size());
+		assertEquals(2, s.getMethodsByName("toLowerCase").size());
 	}
 
 	@Test

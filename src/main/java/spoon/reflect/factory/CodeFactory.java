@@ -573,6 +573,10 @@ public class CodeFactory extends SubFactory {
 		if (originalClass.isPrimitive()) {
 			return typeReference;
 		}
+		if (originalClass.getDeclaringClass() != null) {
+			// the inner class reference does not have package
+			return typeReference.setDeclaringType(createCtTypeReference(originalClass.getDeclaringClass()));
+		}
 		return typeReference.setPackage(createCtPackageReference(originalClass.getPackage()));
 	}
 
